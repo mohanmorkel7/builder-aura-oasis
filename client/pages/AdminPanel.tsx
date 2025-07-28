@@ -31,6 +31,12 @@ const templates = [
 ];
 
 export default function AdminPanel() {
+  const navigate = useNavigate();
+
+  const handleCreateTemplate = () => {
+    navigate('/admin/templates/new');
+  };
+
   return (
     <div className="p-6">
       {/* Header */}
