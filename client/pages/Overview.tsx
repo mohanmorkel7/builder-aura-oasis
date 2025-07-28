@@ -185,15 +185,15 @@ export default function Overview() {
             <div className="space-y-3">
               {user?.role === 'admin' && (
                 <>
-                  <Button className="w-full justify-start" variant="outline">
+                  <Button className="w-full justify-start" variant="outline" onClick={() => handleQuickAction('create-template')}>
                     <Users className="w-4 h-4 mr-2" />
                     Create Onboarding Template
                   </Button>
-                  <Button className="w-full justify-start" variant="outline">
+                  <Button className="w-full justify-start" variant="outline" onClick={() => handleQuickAction('view-reports')}>
                     <Activity className="w-4 h-4 mr-2" />
                     View System Reports
                   </Button>
-                  <Button className="w-full justify-start" variant="outline">
+                  <Button className="w-full justify-start" variant="outline" onClick={() => handleQuickAction('manage-users')}>
                     <CheckCircle className="w-4 h-4 mr-2" />
                     Manage User Roles
                   </Button>
