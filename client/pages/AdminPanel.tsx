@@ -92,7 +92,7 @@ export default function AdminPanel() {
                     {template.description}
                   </CardDescription>
                 </div>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" onClick={() => handleUseTemplate(template.id)}>
                   Use Template
                 </Button>
               </div>
