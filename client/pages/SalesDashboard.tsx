@@ -122,11 +122,11 @@ export default function SalesDashboard() {
                     </td>
                     <td className="py-4 px-4">
                       <div className="flex items-center space-x-2">
-                        <Button variant="ghost" size="sm">
+                        <Button variant="ghost" size="sm" onClick={() => handleViewClient(client.id)}>
                           <Eye className="w-4 h-4" />
                           View
                         </Button>
-                        <Button variant="ghost" size="sm">
+                        <Button variant="ghost" size="sm" onClick={() => handleEditClient(client.id)}>
                           <Edit className="w-4 h-4" />
                           Edit
                         </Button>
