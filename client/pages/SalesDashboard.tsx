@@ -42,6 +42,20 @@ const clients = [
 ];
 
 export default function SalesDashboard() {
+  const navigate = useNavigate();
+
+  const handleCreateClient = () => {
+    navigate('/sales/new-client');
+  };
+
+  const handleViewClient = (clientId: number) => {
+    navigate(`/sales/client/${clientId}`);
+  };
+
+  const handleEditClient = (clientId: number) => {
+    navigate(`/sales/client/${clientId}/edit`);
+  };
+
   return (
     <div className="p-6">
       {/* Header */}
