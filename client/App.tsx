@@ -5,6 +5,7 @@ import DashboardLayout from '@/components/DashboardLayout';
 import Login from '@/pages/Login';
 import Overview from '@/pages/Overview';
 import AdminPanel from '@/pages/AdminPanel';
+import TemplateCreator from '@/pages/TemplateCreator';
 import SalesDashboard from '@/pages/SalesDashboard';
 import ProductDashboard from '@/pages/ProductDashboard';
 import AlertsNotifications from '@/pages/AlertsNotifications';
