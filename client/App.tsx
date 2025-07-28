@@ -73,6 +73,69 @@ function AppRoutes() {
           </DashboardLayout>
         </ProtectedRoute>
       } />
+
+      <Route path="/admin/users" element={
+        <ProtectedRoute allowedRoles={['admin']}>
+          <DashboardLayout>
+            <UserManagement />
+          </DashboardLayout>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/admin/users/new" element={
+        <ProtectedRoute allowedRoles={['admin']}>
+          <DashboardLayout>
+            <PlaceholderPage
+              title="Add New User"
+              description="Create a new user account and assign roles"
+            />
+          </DashboardLayout>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/admin/users/:id" element={
+        <ProtectedRoute allowedRoles={['admin']}>
+          <DashboardLayout>
+            <PlaceholderPage
+              title="User Details"
+              description="View detailed user information and activity"
+            />
+          </DashboardLayout>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/admin/users/:id/edit" element={
+        <ProtectedRoute allowedRoles={['admin']}>
+          <DashboardLayout>
+            <PlaceholderPage
+              title="Edit User"
+              description="Modify user account details and permissions"
+            />
+          </DashboardLayout>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/admin/templates/:id/edit" element={
+        <ProtectedRoute allowedRoles={['admin']}>
+          <DashboardLayout>
+            <PlaceholderPage
+              title="Edit Template"
+              description="Modify onboarding template configuration"
+            />
+          </DashboardLayout>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/admin/reports" element={
+        <ProtectedRoute allowedRoles={['admin']}>
+          <DashboardLayout>
+            <PlaceholderPage
+              title="System Reports"
+              description="View comprehensive system analytics and reports"
+            />
+          </DashboardLayout>
+        </ProtectedRoute>
+      } />
       
       <Route path="/sales" element={
         <ProtectedRoute allowedRoles={['admin', 'sales']}>
