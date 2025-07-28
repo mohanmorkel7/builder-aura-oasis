@@ -81,6 +81,12 @@ const upcomingReleases = [
 ];
 
 export default function ProductDashboard() {
+  const navigate = useNavigate();
+
+  const handleNewDeployment = () => {
+    navigate('/product/deployment/new');
+  };
+
   return (
     <div className="p-6">
       {/* Header */}
