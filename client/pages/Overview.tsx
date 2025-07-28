@@ -219,15 +219,15 @@ export default function Overview() {
 
               {user?.role === 'product' && (
                 <>
-                  <Button className="w-full justify-start" variant="outline">
+                  <Button className="w-full justify-start" variant="outline" onClick={() => handleQuickAction('new-deployment')}>
                     <Rocket className="w-4 h-4 mr-2" />
                     Create New Deployment
                   </Button>
-                  <Button className="w-full justify-start" variant="outline">
+                  <Button className="w-full justify-start" variant="outline" onClick={() => handleQuickAction('view-pipeline')}>
                     <Activity className="w-4 h-4 mr-2" />
                     View Release Pipeline
                   </Button>
-                  <Button className="w-full justify-start" variant="outline">
+                  <Button className="w-full justify-start" variant="outline" onClick={() => handleQuickAction('monitor-health')}>
                     <CheckCircle className="w-4 h-4 mr-2" />
                     Monitor System Health
                   </Button>
