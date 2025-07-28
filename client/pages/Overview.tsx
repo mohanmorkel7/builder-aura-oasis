@@ -202,15 +202,15 @@ export default function Overview() {
 
               {user?.role === 'sales' && (
                 <>
-                  <Button className="w-full justify-start" variant="outline">
+                  <Button className="w-full justify-start" variant="outline" onClick={() => handleQuickAction('add-client')}>
                     <Users className="w-4 h-4 mr-2" />
                     Add New Client
                   </Button>
-                  <Button className="w-full justify-start" variant="outline">
+                  <Button className="w-full justify-start" variant="outline" onClick={() => handleQuickAction('schedule-followup')}>
                     <Calendar className="w-4 h-4 mr-2" />
                     Schedule Follow-up
                   </Button>
-                  <Button className="w-full justify-start" variant="outline">
+                  <Button className="w-full justify-start" variant="outline" onClick={() => handleQuickAction('view-sales-report')}>
                     <TrendingUp className="w-4 h-4 mr-2" />
                     View Sales Report
                   </Button>
