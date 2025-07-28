@@ -95,7 +95,7 @@ export default function ProductDashboard() {
           <h1 className="text-2xl font-bold text-gray-900">Product Team Dashboard</h1>
           <p className="text-gray-600 mt-1">Monitor deployments and product releases</p>
         </div>
-        <Button>
+        <Button onClick={handleNewDeployment}>
           <Plus className="w-4 h-4 mr-2" />
           New Deployment
         </Button>
