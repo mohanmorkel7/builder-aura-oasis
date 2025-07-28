@@ -4,11 +4,11 @@ import { useAuth, UserRole } from '@/lib/auth-context';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
-import { 
-  Settings, 
-  BarChart3, 
-  Users, 
-  Overview, 
+import {
+  Settings,
+  BarChart3,
+  Users,
+  LayoutDashboard,
   Bell,
   LogOut,
   Grid3X3
@@ -26,7 +26,7 @@ const navigationItems: NavigationItem[] = [
   {
     name: 'Overview',
     href: '/dashboard',
-    icon: Overview,
+    icon: LayoutDashboard,
     roles: ['admin', 'sales', 'product']
   },
   {
