@@ -1,40 +1,49 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Search, Filter, Plus } from 'lucide-react';
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Search, Filter, Plus } from "lucide-react";
 
 const templates = [
   {
     id: 1,
-    name: 'Standard Client Onboarding',
-    description: 'A comprehensive template for standard client onboarding, covering initial contact to final setup.',
+    name: "Standard Client Onboarding",
+    description:
+      "A comprehensive template for standard client onboarding, covering initial contact to final setup.",
     steps: 5,
-    type: 'standard'
+    type: "standard",
   },
   {
     id: 2,
-    name: 'Enterprise Client Onboarding',
-    description: 'Tailored onboarding process for large enterprise clients with complex integration requirements.',
+    name: "Enterprise Client Onboarding",
+    description:
+      "Tailored onboarding process for large enterprise clients with complex integration requirements.",
     steps: 8,
-    type: 'enterprise'
+    type: "enterprise",
   },
   {
     id: 3,
-    name: 'SMB Onboarding Lite',
-    description: 'A streamlined onboarding template for small to medium businesses with essential steps.',
+    name: "SMB Onboarding Lite",
+    description:
+      "A streamlined onboarding template for small to medium businesses with essential steps.",
     steps: 3,
-    type: 'smb'
-  }
+    type: "smb",
+  },
 ];
 
 export default function AdminPanel() {
   const navigate = useNavigate();
 
   const handleCreateTemplate = () => {
-    navigate('/admin/templates/new');
+    navigate("/admin/templates/new");
   };
 
   const handleUseTemplate = (templateId: number) => {
@@ -56,8 +65,12 @@ export default function AdminPanel() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Onboarding Templates</h1>
-          <p className="text-gray-600 mt-1">Manage and create onboarding workflows</p>
+          <h1 className="text-2xl font-bold text-gray-900">
+            Onboarding Templates
+          </h1>
+          <p className="text-gray-600 mt-1">
+            Manage and create onboarding workflows
+          </p>
         </div>
         <Button onClick={handleCreateTemplate}>
           <Plus className="w-4 h-4 mr-2" />
@@ -69,10 +82,7 @@ export default function AdminPanel() {
       <div className="flex items-center space-x-4 mb-6">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <Input
-            placeholder="Search templates..."
-            className="pl-10"
-          />
+          <Input placeholder="Search templates..." className="pl-10" />
         </div>
         <Button variant="outline">
           <Filter className="w-4 h-4 mr-2" />
@@ -92,7 +102,11 @@ export default function AdminPanel() {
                     {template.description}
                   </CardDescription>
                 </div>
-                <Button variant="outline" size="sm" onClick={() => handleUseTemplate(template.id)}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleUseTemplate(template.id)}
+                >
                   Use Template
                 </Button>
               </div>
@@ -103,20 +117,32 @@ export default function AdminPanel() {
                   <div className="text-sm text-gray-600">
                     <span className="font-medium">{template.steps}</span> Steps
                   </div>
-                  <Badge 
-                    variant={template.type === 'enterprise' ? 'default' : 'secondary'}
-                    className={template.type === 'enterprise' ? 'bg-primary' : ''}
+                  <Badge
+                    variant={
+                      template.type === "enterprise" ? "default" : "secondary"
+                    }
+                    className={
+                      template.type === "enterprise" ? "bg-primary" : ""
+                    }
                   >
-                    {template.type === 'standard' && 'Standard'}
-                    {template.type === 'enterprise' && 'Enterprise'}
-                    {template.type === 'smb' && 'SMB'}
+                    {template.type === "standard" && "Standard"}
+                    {template.type === "enterprise" && "Enterprise"}
+                    {template.type === "smb" && "SMB"}
                   </Badge>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Button variant="ghost" size="sm" onClick={() => handleEditTemplate(template.id)}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleEditTemplate(template.id)}
+                  >
                     Edit
                   </Button>
-                  <Button variant="ghost" size="sm" onClick={() => handleDuplicateTemplate(template.id)}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleDuplicateTemplate(template.id)}
+                  >
                     Duplicate
                   </Button>
                 </div>
@@ -136,7 +162,8 @@ export default function AdminPanel() {
             Create your first template
           </h3>
           <p className="text-gray-600 mb-4">
-            Build custom onboarding workflows to streamline your client setup process.
+            Build custom onboarding workflows to streamline your client setup
+            process.
           </p>
           <Button onClick={handleCreateTemplate}>
             <Plus className="w-4 h-4 mr-2" />

@@ -1,9 +1,9 @@
-import React from 'react';
-import { Link, useLocation, Navigate } from 'react-router-dom';
-import { useAuth, UserRole } from '@/lib/auth-context';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Separator } from '@/components/ui/separator';
+import React from "react";
+import { Link, useLocation, Navigate } from "react-router-dom";
+import { useAuth, UserRole } from "@/lib/auth-context";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
 import {
   Settings,
   BarChart3,
@@ -11,9 +11,9 @@ import {
   LayoutDashboard,
   Bell,
   LogOut,
-  Grid3X3
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
+  Grid3X3,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface NavigationItem {
   name: string;
@@ -24,35 +24,35 @@ interface NavigationItem {
 
 const navigationItems: NavigationItem[] = [
   {
-    name: 'Overview',
-    href: '/dashboard',
+    name: "Overview",
+    href: "/dashboard",
     icon: LayoutDashboard,
-    roles: ['admin', 'sales', 'product']
+    roles: ["admin", "sales", "product"],
   },
   {
-    name: 'Admin Panel',
-    href: '/admin',
+    name: "Admin Panel",
+    href: "/admin",
     icon: Settings,
-    roles: ['admin']
+    roles: ["admin"],
   },
   {
-    name: 'Sales Dashboard',
-    href: '/sales',
+    name: "Sales Dashboard",
+    href: "/sales",
     icon: BarChart3,
-    roles: ['admin', 'sales']
+    roles: ["admin", "sales"],
   },
   {
-    name: 'Product Team',
-    href: '/product',
+    name: "Product Team",
+    href: "/product",
     icon: Grid3X3,
-    roles: ['admin', 'product']
+    roles: ["admin", "product"],
   },
   {
-    name: 'Alerts & Notifications',
-    href: '/alerts',
+    name: "Alerts & Notifications",
+    href: "/alerts",
     icon: Bell,
-    roles: ['admin', 'sales', 'product']
-  }
+    roles: ["admin", "sales", "product"],
+  },
 ];
 
 interface DashboardLayoutProps {
@@ -67,8 +67,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     return <Navigate to="/login" replace />;
   }
 
-  const allowedNavItems = navigationItems.filter(item => 
-    item.roles.includes(user.role)
+  const allowedNavItems = navigationItems.filter((item) =>
+    item.roles.includes(user.role),
   );
 
   return (
@@ -89,9 +89,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         <nav className="flex-1 p-4 space-y-2">
           {allowedNavItems.map((item) => {
             const Icon = item.icon;
-            const isActive = location.pathname === item.href || 
-              (item.href !== '/dashboard' && location.pathname.startsWith(item.href));
-            
+            const isActive =
+              location.pathname === item.href ||
+              (item.href !== "/dashboard" &&
+                location.pathname.startsWith(item.href));
+
             return (
               <Link
                 key={item.name}
@@ -100,7 +102,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   "flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
                   isActive
                     ? "bg-primary text-white"
-                    : "text-gray-700 hover:bg-gray-100"
+                    : "text-gray-700 hover:bg-gray-100",
                 )}
               >
                 <Icon className="w-5 h-5" />
@@ -115,16 +117,17 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           <div className="flex items-center space-x-3 mb-3">
             <Avatar>
               <AvatarFallback className="bg-primary text-white">
-                {user.name.split(' ').map(n => n[0]).join('')}
+                {user.name
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("")}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-gray-900 truncate">
                 {user.name}
               </p>
-              <p className="text-xs text-gray-500 capitalize">
-                {user.role}
-              </p>
+              <p className="text-xs text-gray-500 capitalize">{user.role}</p>
             </div>
           </div>
           <Button
@@ -141,9 +144,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        <main className="flex-1 overflow-y-auto">
-          {children}
-        </main>
+        <main className="flex-1 overflow-y-auto">{children}</main>
       </div>
     </div>
   );

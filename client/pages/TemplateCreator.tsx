@@ -1,20 +1,20 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { Checkbox } from '@/components/ui/checkbox';
-import { 
-  Plus, 
-  ArrowLeft, 
-  GripVertical, 
-  Edit, 
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Plus,
+  ArrowLeft,
+  GripVertical,
+  Edit,
   Trash2,
-  Save
-} from 'lucide-react';
+  Save,
+} from "lucide-react";
 
 interface TemplateStep {
   id: string;
@@ -27,56 +27,64 @@ interface TemplateStep {
 
 export default function TemplateCreator() {
   const navigate = useNavigate();
-  const [templateName, setTemplateName] = useState('');
+  const [templateName, setTemplateName] = useState("");
   const [steps, setSteps] = useState<TemplateStep[]>([
     {
-      id: '1',
-      name: 'Initial Contact',
-      description: 'Reach out to the client to introduce the onboarding process.',
+      id: "1",
+      name: "Initial Contact",
+      description:
+        "Reach out to the client to introduce the onboarding process.",
       defaultEtaDays: 2,
       autoAlert: true,
-      emailReminder: true
+      emailReminder: true,
     },
     {
-      id: '2',
-      name: 'Document Collection',
-      description: 'Gather all necessary legal and financial documents from the client.',
+      id: "2",
+      name: "Document Collection",
+      description:
+        "Gather all necessary legal and financial documents from the client.",
       defaultEtaDays: 5,
       autoAlert: true,
-      emailReminder: true
-    }
+      emailReminder: true,
+    },
   ]);
 
   const handleBack = () => {
-    navigate('/admin');
+    navigate("/admin");
   };
 
   const handleSaveTemplate = () => {
     // In a real app, this would save to the backend
-    console.log('Saving template:', { templateName, steps });
-    navigate('/admin');
+    console.log("Saving template:", { templateName, steps });
+    navigate("/admin");
   };
 
   const handleAddStep = () => {
     const newStep: TemplateStep = {
       id: Date.now().toString(),
-      name: '',
-      description: '',
+      name: "",
+      description: "",
       defaultEtaDays: 3,
       autoAlert: false,
-      emailReminder: false
+      emailReminder: false,
     };
     setSteps([...steps, newStep]);
   };
 
-  const handleUpdateStep = (id: string, field: keyof TemplateStep, value: any) => {
-    setSteps(steps.map(step => 
-      step.id === id ? { ...step, [field]: value } : step
-    ));
+  const handleUpdateStep = (
+    id: string,
+    field: keyof TemplateStep,
+    value: any,
+  ) => {
+    setSteps(
+      steps.map((step) =>
+        step.id === id ? { ...step, [field]: value } : step,
+      ),
+    );
   };
 
   const handleDeleteStep = (id: string) => {
-    setSteps(steps.filter(step => step.id !== id));
+    setSteps(steps.filter((step) => step.id !== id));
   };
 
   return (
@@ -88,8 +96,12 @@ export default function TemplateCreator() {
           Back to Templates
         </Button>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Onboarding Template Creator</h1>
-          <p className="text-gray-600 mt-1">Create a new template for client onboarding workflows</p>
+          <h1 className="text-2xl font-bold text-gray-900">
+            Onboarding Template Creator
+          </h1>
+          <p className="text-gray-600 mt-1">
+            Create a new template for client onboarding workflows
+          </p>
         </div>
       </div>
 
@@ -129,17 +141,21 @@ export default function TemplateCreator() {
               <div key={step.id} className="border rounded-lg p-4 space-y-4">
                 <div className="flex items-center space-x-3">
                   <GripVertical className="w-5 h-5 text-gray-400" />
-                  <span className="font-medium text-gray-700">Step {index + 1}:</span>
+                  <span className="font-medium text-gray-700">
+                    Step {index + 1}:
+                  </span>
                   <div className="flex-1">
                     <Input
                       value={step.name}
-                      onChange={(e) => handleUpdateStep(step.id, 'name', e.target.value)}
+                      onChange={(e) =>
+                        handleUpdateStep(step.id, "name", e.target.value)
+                      }
                       placeholder="Step name"
                       className="font-medium"
                     />
                   </div>
-                  <Button 
-                    variant="ghost" 
+                  <Button
+                    variant="ghost"
                     size="sm"
                     onClick={() => handleDeleteStep(step.id)}
                   >
@@ -152,7 +168,9 @@ export default function TemplateCreator() {
                     <Label>Description</Label>
                     <Textarea
                       value={step.description}
-                      onChange={(e) => handleUpdateStep(step.id, 'description', e.target.value)}
+                      onChange={(e) =>
+                        handleUpdateStep(step.id, "description", e.target.value)
+                      }
                       placeholder="Describe what happens in this step..."
                       className="mt-1"
                       rows={3}
@@ -164,7 +182,13 @@ export default function TemplateCreator() {
                     <Input
                       type="number"
                       value={step.defaultEtaDays}
-                      onChange={(e) => handleUpdateStep(step.id, 'defaultEtaDays', parseInt(e.target.value) || 0)}
+                      onChange={(e) =>
+                        handleUpdateStep(
+                          step.id,
+                          "defaultEtaDays",
+                          parseInt(e.target.value) || 0,
+                        )
+                      }
                       className="mt-1"
                       min="1"
                     />
@@ -176,14 +200,18 @@ export default function TemplateCreator() {
                       <div className="flex items-center space-x-2">
                         <Checkbox
                           checked={step.autoAlert}
-                          onCheckedChange={(checked) => handleUpdateStep(step.id, 'autoAlert', checked)}
+                          onCheckedChange={(checked) =>
+                            handleUpdateStep(step.id, "autoAlert", checked)
+                          }
                         />
                         <label className="text-sm">Auto-alert if overdue</label>
                       </div>
                       <div className="flex items-center space-x-2">
                         <Checkbox
                           checked={step.emailReminder}
-                          onCheckedChange={(checked) => handleUpdateStep(step.id, 'emailReminder', checked)}
+                          onCheckedChange={(checked) =>
+                            handleUpdateStep(step.id, "emailReminder", checked)
+                          }
                         />
                         <label className="text-sm">Email reminder</label>
                       </div>

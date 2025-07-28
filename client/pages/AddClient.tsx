@@ -1,72 +1,86 @@
-import React, { useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { 
-  ArrowLeft, 
-  Building, 
-  User, 
-  Mail, 
-  Phone, 
+import React, { useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import {
+  ArrowLeft,
+  Building,
+  User,
+  Mail,
+  Phone,
   MapPin,
   Calendar,
   FileText,
   Save,
-  UserPlus
-} from 'lucide-react';
+  UserPlus,
+} from "lucide-react";
 
 export default function AddClient() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const templateId = searchParams.get('template');
-  
+  const templateId = searchParams.get("template");
+
   const [formData, setFormData] = useState({
-    clientName: '',
-    contactPerson: '',
-    email: '',
-    phone: '',
-    companySize: '',
-    industry: '',
-    address: '',
-    city: '',
-    state: '',
-    zipCode: '',
-    country: '',
-    onboardingTemplate: templateId || '',
-    startDate: '',
-    expectedValue: '',
-    priority: 'medium',
-    notes: '',
-    salesRep: ''
+    clientName: "",
+    contactPerson: "",
+    email: "",
+    phone: "",
+    companySize: "",
+    industry: "",
+    address: "",
+    city: "",
+    state: "",
+    zipCode: "",
+    country: "",
+    onboardingTemplate: templateId || "",
+    startDate: "",
+    expectedValue: "",
+    priority: "medium",
+    notes: "",
+    salesRep: "",
   });
 
   const templates = [
-    { id: '1', name: 'Standard Client Onboarding', steps: 5 },
-    { id: '2', name: 'Enterprise Client Onboarding', steps: 8 },
-    { id: '3', name: 'SMB Onboarding Lite', steps: 3 }
+    { id: "1", name: "Standard Client Onboarding", steps: 5 },
+    { id: "2", name: "Enterprise Client Onboarding", steps: 8 },
+    { id: "3", name: "SMB Onboarding Lite", steps: 3 },
   ];
 
   const handleBack = () => {
-    navigate('/sales');
+    navigate("/sales");
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Creating client:', formData);
-    navigate('/sales');
+    console.log("Creating client:", formData);
+    navigate("/sales");
   };
 
   const handleInputChange = (field: string, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const selectedTemplate = templates.find(t => t.id === formData.onboardingTemplate);
+  const selectedTemplate = templates.find(
+    (t) => t.id === formData.onboardingTemplate,
+  );
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
@@ -78,7 +92,9 @@ export default function AddClient() {
         </Button>
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Add New Client</h1>
-          <p className="text-gray-600 mt-1">Create a new client profile and start the onboarding process</p>
+          <p className="text-gray-600 mt-1">
+            Create a new client profile and start the onboarding process
+          </p>
         </div>
       </div>
 
@@ -90,7 +106,9 @@ export default function AddClient() {
               <Building className="w-5 h-5" />
               <span>Client Information</span>
             </CardTitle>
-            <CardDescription>Basic company details and primary contact</CardDescription>
+            <CardDescription>
+              Basic company details and primary contact
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -99,7 +117,9 @@ export default function AddClient() {
                 <Input
                   id="clientName"
                   value={formData.clientName}
-                  onChange={(e) => handleInputChange('clientName', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("clientName", e.target.value)
+                  }
                   placeholder="Enter client name"
                   required
                 />
@@ -111,7 +131,9 @@ export default function AddClient() {
                   <Input
                     id="contactPerson"
                     value={formData.contactPerson}
-                    onChange={(e) => handleInputChange('contactPerson', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("contactPerson", e.target.value)
+                    }
                     placeholder="Enter contact person's name"
                     className="pl-10"
                     required
@@ -129,7 +151,7 @@ export default function AddClient() {
                     id="email"
                     type="email"
                     value={formData.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    onChange={(e) => handleInputChange("email", e.target.value)}
                     placeholder="client@company.com"
                     className="pl-10"
                     required
@@ -143,7 +165,7 @@ export default function AddClient() {
                   <Input
                     id="phone"
                     value={formData.phone}
-                    onChange={(e) => handleInputChange('phone', e.target.value)}
+                    onChange={(e) => handleInputChange("phone", e.target.value)}
                     placeholder="Enter phone number"
                     className="pl-10"
                   />
@@ -154,7 +176,12 @@ export default function AddClient() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="companySize">Company Size</Label>
-                <Select value={formData.companySize} onValueChange={(value) => handleInputChange('companySize', value)}>
+                <Select
+                  value={formData.companySize}
+                  onValueChange={(value) =>
+                    handleInputChange("companySize", value)
+                  }
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select size" />
                   </SelectTrigger>
@@ -163,13 +190,20 @@ export default function AddClient() {
                     <SelectItem value="small">Small (11-50)</SelectItem>
                     <SelectItem value="medium">Medium (51-200)</SelectItem>
                     <SelectItem value="large">Large (201-1000)</SelectItem>
-                    <SelectItem value="enterprise">Enterprise (1000+)</SelectItem>
+                    <SelectItem value="enterprise">
+                      Enterprise (1000+)
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div>
                 <Label htmlFor="industry">Industry</Label>
-                <Select value={formData.industry} onValueChange={(value) => handleInputChange('industry', value)}>
+                <Select
+                  value={formData.industry}
+                  onValueChange={(value) =>
+                    handleInputChange("industry", value)
+                  }
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select industry" />
                   </SelectTrigger>
@@ -203,7 +237,7 @@ export default function AddClient() {
               <Input
                 id="address"
                 value={formData.address}
-                onChange={(e) => handleInputChange('address', e.target.value)}
+                onChange={(e) => handleInputChange("address", e.target.value)}
                 placeholder="Enter street address"
               />
             </div>
@@ -214,7 +248,7 @@ export default function AddClient() {
                 <Input
                   id="city"
                   value={formData.city}
-                  onChange={(e) => handleInputChange('city', e.target.value)}
+                  onChange={(e) => handleInputChange("city", e.target.value)}
                   placeholder="Enter city"
                 />
               </div>
@@ -223,7 +257,7 @@ export default function AddClient() {
                 <Input
                   id="state"
                   value={formData.state}
-                  onChange={(e) => handleInputChange('state', e.target.value)}
+                  onChange={(e) => handleInputChange("state", e.target.value)}
                   placeholder="Enter state"
                 />
               </div>
@@ -232,7 +266,7 @@ export default function AddClient() {
                 <Input
                   id="zipCode"
                   value={formData.zipCode}
-                  onChange={(e) => handleInputChange('zipCode', e.target.value)}
+                  onChange={(e) => handleInputChange("zipCode", e.target.value)}
                   placeholder="Enter ZIP code"
                 />
               </div>
@@ -240,7 +274,10 @@ export default function AddClient() {
 
             <div>
               <Label htmlFor="country">Country</Label>
-              <Select value={formData.country} onValueChange={(value) => handleInputChange('country', value)}>
+              <Select
+                value={formData.country}
+                onValueChange={(value) => handleInputChange("country", value)}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select country" />
                 </SelectTrigger>
@@ -263,14 +300,18 @@ export default function AddClient() {
               <FileText className="w-5 h-5" />
               <span>Onboarding Configuration</span>
             </CardTitle>
-            <CardDescription>Set up the client onboarding process</CardDescription>
+            <CardDescription>
+              Set up the client onboarding process
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
               <Label htmlFor="onboardingTemplate">Onboarding Template *</Label>
-              <Select 
-                value={formData.onboardingTemplate} 
-                onValueChange={(value) => handleInputChange('onboardingTemplate', value)}
+              <Select
+                value={formData.onboardingTemplate}
+                onValueChange={(value) =>
+                  handleInputChange("onboardingTemplate", value)
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select template" />
@@ -301,7 +342,9 @@ export default function AddClient() {
                     id="startDate"
                     type="date"
                     value={formData.startDate}
-                    onChange={(e) => handleInputChange('startDate', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("startDate", e.target.value)
+                    }
                     className="pl-10"
                   />
                 </div>
@@ -311,13 +354,20 @@ export default function AddClient() {
                 <Input
                   id="expectedValue"
                   value={formData.expectedValue}
-                  onChange={(e) => handleInputChange('expectedValue', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("expectedValue", e.target.value)
+                  }
                   placeholder="$50,000"
                 />
               </div>
               <div>
                 <Label htmlFor="priority">Priority</Label>
-                <Select value={formData.priority} onValueChange={(value) => handleInputChange('priority', value)}>
+                <Select
+                  value={formData.priority}
+                  onValueChange={(value) =>
+                    handleInputChange("priority", value)
+                  }
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -333,7 +383,10 @@ export default function AddClient() {
 
             <div>
               <Label htmlFor="salesRep">Assigned Sales Rep</Label>
-              <Select value={formData.salesRep} onValueChange={(value) => handleInputChange('salesRep', value)}>
+              <Select
+                value={formData.salesRep}
+                onValueChange={(value) => handleInputChange("salesRep", value)}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select sales representative" />
                 </SelectTrigger>
@@ -352,7 +405,7 @@ export default function AddClient() {
               <Textarea
                 id="notes"
                 value={formData.notes}
-                onChange={(e) => handleInputChange('notes', e.target.value)}
+                onChange={(e) => handleInputChange("notes", e.target.value)}
                 placeholder="Add any relevant notes about the client..."
                 rows={3}
                 className="mt-1"

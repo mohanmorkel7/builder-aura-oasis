@@ -1,83 +1,97 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { 
-  ArrowLeft, 
-  Rocket, 
-  Package, 
-  Server, 
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import {
+  ArrowLeft,
+  Rocket,
+  Package,
+  Server,
   Calendar,
   Users,
   AlertTriangle,
   CheckCircle,
   Save,
-  Play
-} from 'lucide-react';
+  Play,
+} from "lucide-react";
 
 export default function NewDeployment() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    product: '',
-    version: '',
-    environment: '',
-    description: '',
-    assignedTo: '',
-    scheduledDate: '',
-    scheduledTime: '',
+    product: "",
+    version: "",
+    environment: "",
+    description: "",
+    assignedTo: "",
+    scheduledDate: "",
+    scheduledTime: "",
     autoRollback: true,
     notifyTeam: true,
     runTests: true,
     requireApproval: false,
-    releaseNotes: '',
-    initialStatus: 'pending'
+    releaseNotes: "",
+    initialStatus: "pending",
   });
 
   const products = [
-    { id: 'core-app', name: 'Core App', currentVersion: 'v2.0.9' },
-    { id: 'analytics', name: 'Analytics Module', currentVersion: 'v1.5.1' },
-    { id: 'api-gateway', name: 'API Gateway', currentVersion: 'v3.0.0' },
-    { id: 'mobile-app', name: 'Mobile App', currentVersion: 'v1.2.2' },
-    { id: 'reporting', name: 'Reporting Service', currentVersion: 'v0.8.9' }
+    { id: "core-app", name: "Core App", currentVersion: "v2.0.9" },
+    { id: "analytics", name: "Analytics Module", currentVersion: "v1.5.1" },
+    { id: "api-gateway", name: "API Gateway", currentVersion: "v3.0.0" },
+    { id: "mobile-app", name: "Mobile App", currentVersion: "v1.2.2" },
+    { id: "reporting", name: "Reporting Service", currentVersion: "v0.8.9" },
   ];
 
   const environments = [
-    { id: 'staging', name: 'Staging', description: 'Pre-production testing' },
-    { id: 'production', name: 'Production', description: 'Live environment' },
-    { id: 'development', name: 'Development', description: 'Dev environment' },
-    { id: 'qa', name: 'QA', description: 'Quality assurance testing' }
+    { id: "staging", name: "Staging", description: "Pre-production testing" },
+    { id: "production", name: "Production", description: "Live environment" },
+    { id: "development", name: "Development", description: "Dev environment" },
+    { id: "qa", name: "QA", description: "Quality assurance testing" },
   ];
 
   const teamMembers = [
-    { id: 'jane-doe', name: 'Jane Doe', role: 'Lead Developer' },
-    { id: 'mike-johnson', name: 'Mike Johnson', role: 'DevOps Engineer' },
-    { id: 'alice-brown', name: 'Alice Brown', role: 'QA Engineer' },
-    { id: 'john-smith', name: 'John Smith', role: 'Product Manager' }
+    { id: "jane-doe", name: "Jane Doe", role: "Lead Developer" },
+    { id: "mike-johnson", name: "Mike Johnson", role: "DevOps Engineer" },
+    { id: "alice-brown", name: "Alice Brown", role: "QA Engineer" },
+    { id: "john-smith", name: "John Smith", role: "Product Manager" },
   ];
 
   const handleBack = () => {
-    navigate('/product');
+    navigate("/product");
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Creating deployment:', formData);
-    navigate('/product');
+    console.log("Creating deployment:", formData);
+    navigate("/product");
   };
 
   const handleInputChange = (field: string, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const selectedProduct = products.find(p => p.id === formData.product);
-  const selectedEnvironment = environments.find(e => e.id === formData.environment);
+  const selectedProduct = products.find((p) => p.id === formData.product);
+  const selectedEnvironment = environments.find(
+    (e) => e.id === formData.environment,
+  );
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
@@ -89,7 +103,9 @@ export default function NewDeployment() {
         </Button>
         <div>
           <h1 className="text-2xl font-bold text-gray-900">New Deployment</h1>
-          <p className="text-gray-600 mt-1">Create and configure a new product deployment</p>
+          <p className="text-gray-600 mt-1">
+            Create and configure a new product deployment
+          </p>
         </div>
       </div>
 
@@ -101,13 +117,18 @@ export default function NewDeployment() {
               <Package className="w-5 h-5" />
               <span>Deployment Details</span>
             </CardTitle>
-            <CardDescription>Configure the basic deployment parameters</CardDescription>
+            <CardDescription>
+              Configure the basic deployment parameters
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="product">Product *</Label>
-                <Select value={formData.product} onValueChange={(value) => handleInputChange('product', value)}>
+                <Select
+                  value={formData.product}
+                  onValueChange={(value) => handleInputChange("product", value)}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select a product" />
                   </SelectTrigger>
@@ -115,7 +136,9 @@ export default function NewDeployment() {
                     {products.map((product) => (
                       <SelectItem key={product.id} value={product.id}>
                         {product.name}
-                        <span className="text-gray-500 ml-2">({product.currentVersion})</span>
+                        <span className="text-gray-500 ml-2">
+                          ({product.currentVersion})
+                        </span>
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -133,7 +156,7 @@ export default function NewDeployment() {
                 <Input
                   id="version"
                   value={formData.version}
-                  onChange={(e) => handleInputChange('version', e.target.value)}
+                  onChange={(e) => handleInputChange("version", e.target.value)}
                   placeholder="e.g., v2.1.0"
                   required
                 />
@@ -142,7 +165,12 @@ export default function NewDeployment() {
 
             <div>
               <Label htmlFor="environment">Deployment Environment *</Label>
-              <Select value={formData.environment} onValueChange={(value) => handleInputChange('environment', value)}>
+              <Select
+                value={formData.environment}
+                onValueChange={(value) =>
+                  handleInputChange("environment", value)
+                }
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select environment" />
                 </SelectTrigger>
@@ -151,16 +179,20 @@ export default function NewDeployment() {
                     <SelectItem key={env.id} value={env.id}>
                       <div className="flex flex-col">
                         <span>{env.name}</span>
-                        <span className="text-sm text-gray-500">{env.description}</span>
+                        <span className="text-sm text-gray-500">
+                          {env.description}
+                        </span>
                       </div>
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              {selectedEnvironment && formData.environment === 'production' && (
+              {selectedEnvironment && formData.environment === "production" && (
                 <div className="mt-2 flex items-center space-x-2 text-amber-600">
                   <AlertTriangle className="w-4 h-4" />
-                  <span className="text-sm">Production deployment requires additional approval</span>
+                  <span className="text-sm">
+                    Production deployment requires additional approval
+                  </span>
                 </div>
               )}
             </div>
@@ -170,7 +202,9 @@ export default function NewDeployment() {
               <Textarea
                 id="description"
                 value={formData.description}
-                onChange={(e) => handleInputChange('description', e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("description", e.target.value)
+                }
                 placeholder="Brief description of the deployment..."
                 rows={3}
                 className="mt-1"
@@ -186,7 +220,9 @@ export default function NewDeployment() {
               <Calendar className="w-5 h-5" />
               <span>Scheduling</span>
             </CardTitle>
-            <CardDescription>Set deployment timing and assignment</CardDescription>
+            <CardDescription>
+              Set deployment timing and assignment
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -196,7 +232,9 @@ export default function NewDeployment() {
                   id="scheduledDate"
                   type="date"
                   value={formData.scheduledDate}
-                  onChange={(e) => handleInputChange('scheduledDate', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("scheduledDate", e.target.value)
+                  }
                 />
               </div>
               <div>
@@ -205,14 +243,21 @@ export default function NewDeployment() {
                   id="scheduledTime"
                   type="time"
                   value={formData.scheduledTime}
-                  onChange={(e) => handleInputChange('scheduledTime', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("scheduledTime", e.target.value)
+                  }
                 />
               </div>
             </div>
 
             <div>
               <Label htmlFor="assignedTo">Assigned To</Label>
-              <Select value={formData.assignedTo} onValueChange={(value) => handleInputChange('assignedTo', value)}>
+              <Select
+                value={formData.assignedTo}
+                onValueChange={(value) =>
+                  handleInputChange("assignedTo", value)
+                }
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select team member" />
                 </SelectTrigger>
@@ -221,7 +266,9 @@ export default function NewDeployment() {
                     <SelectItem key={member.id} value={member.id}>
                       <div className="flex flex-col">
                         <span>{member.name}</span>
-                        <span className="text-sm text-gray-500">{member.role}</span>
+                        <span className="text-sm text-gray-500">
+                          {member.role}
+                        </span>
                       </div>
                     </SelectItem>
                   ))}
@@ -231,7 +278,12 @@ export default function NewDeployment() {
 
             <div>
               <Label htmlFor="initialStatus">Initial Status</Label>
-              <Select value={formData.initialStatus} onValueChange={(value) => handleInputChange('initialStatus', value)}>
+              <Select
+                value={formData.initialStatus}
+                onValueChange={(value) =>
+                  handleInputChange("initialStatus", value)
+                }
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -252,40 +304,58 @@ export default function NewDeployment() {
               <Server className="w-5 h-5" />
               <span>Configuration Options</span>
             </CardTitle>
-            <CardDescription>Set deployment behavior and notifications</CardDescription>
+            <CardDescription>
+              Set deployment behavior and notifications
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-4">
               <div className="flex items-center space-x-2">
                 <Checkbox
                   checked={formData.autoRollback}
-                  onCheckedChange={(checked) => handleInputChange('autoRollback', checked)}
+                  onCheckedChange={(checked) =>
+                    handleInputChange("autoRollback", checked)
+                  }
                 />
-                <Label className="text-sm">Enable automatic rollback on failure</Label>
+                <Label className="text-sm">
+                  Enable automatic rollback on failure
+                </Label>
               </div>
-              
+
               <div className="flex items-center space-x-2">
                 <Checkbox
                   checked={formData.runTests}
-                  onCheckedChange={(checked) => handleInputChange('runTests', checked)}
+                  onCheckedChange={(checked) =>
+                    handleInputChange("runTests", checked)
+                  }
                 />
-                <Label className="text-sm">Run automated tests before deployment</Label>
+                <Label className="text-sm">
+                  Run automated tests before deployment
+                </Label>
               </div>
-              
+
               <div className="flex items-center space-x-2">
                 <Checkbox
                   checked={formData.notifyTeam}
-                  onCheckedChange={(checked) => handleInputChange('notifyTeam', checked)}
+                  onCheckedChange={(checked) =>
+                    handleInputChange("notifyTeam", checked)
+                  }
                 />
-                <Label className="text-sm">Send notifications to team members</Label>
+                <Label className="text-sm">
+                  Send notifications to team members
+                </Label>
               </div>
-              
+
               <div className="flex items-center space-x-2">
                 <Checkbox
                   checked={formData.requireApproval}
-                  onCheckedChange={(checked) => handleInputChange('requireApproval', checked)}
+                  onCheckedChange={(checked) =>
+                    handleInputChange("requireApproval", checked)
+                  }
                 />
-                <Label className="text-sm">Require approval before deployment</Label>
+                <Label className="text-sm">
+                  Require approval before deployment
+                </Label>
               </div>
             </div>
 
@@ -296,7 +366,9 @@ export default function NewDeployment() {
               <Textarea
                 id="releaseNotes"
                 value={formData.releaseNotes}
-                onChange={(e) => handleInputChange('releaseNotes', e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("releaseNotes", e.target.value)
+                }
                 placeholder="What's new in this release..."
                 rows={4}
                 className="mt-1"
@@ -330,7 +402,9 @@ export default function NewDeployment() {
               </div>
               <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                 <div className="w-5 h-5 border-2 border-gray-300 rounded-full" />
-                <span className="text-sm text-gray-600">Database migration scripts</span>
+                <span className="text-sm text-gray-600">
+                  Database migration scripts
+                </span>
               </div>
             </div>
           </CardContent>
