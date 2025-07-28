@@ -159,9 +159,42 @@ function AppRoutes() {
       <Route path="/sales/new-client" element={
         <ProtectedRoute allowedRoles={['admin', 'sales']}>
           <DashboardLayout>
-            <PlaceholderPage 
-              title="Add New Client" 
-              description="Create a new client profile and start the onboarding process" 
+            <PlaceholderPage
+              title="Add New Client"
+              description="Create a new client profile and start the onboarding process"
+            />
+          </DashboardLayout>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/sales/client/:id/edit" element={
+        <ProtectedRoute allowedRoles={['admin', 'sales']}>
+          <DashboardLayout>
+            <PlaceholderPage
+              title="Edit Client"
+              description="Modify client information and settings"
+            />
+          </DashboardLayout>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/sales/followup/new" element={
+        <ProtectedRoute allowedRoles={['admin', 'sales']}>
+          <DashboardLayout>
+            <PlaceholderPage
+              title="Schedule Follow-up"
+              description="Create a new follow-up task for client management"
+            />
+          </DashboardLayout>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/sales/reports" element={
+        <ProtectedRoute allowedRoles={['admin', 'sales']}>
+          <DashboardLayout>
+            <PlaceholderPage
+              title="Sales Reports"
+              description="View sales performance metrics and analytics"
             />
           </DashboardLayout>
         </ProtectedRoute>
