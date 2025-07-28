@@ -88,10 +88,7 @@ function AppRoutes() {
       <Route path="/admin/users/new" element={
         <ProtectedRoute allowedRoles={['admin']}>
           <DashboardLayout>
-            <PlaceholderPage
-              title="Add New User"
-              description="Create a new user account and assign roles"
-            />
+            <AddUser />
           </DashboardLayout>
         </ProtectedRoute>
       } />
