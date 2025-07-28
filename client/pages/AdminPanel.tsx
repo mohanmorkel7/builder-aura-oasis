@@ -113,10 +113,10 @@ export default function AdminPanel() {
                   </Badge>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Button variant="ghost" size="sm">
+                  <Button variant="ghost" size="sm" onClick={() => handleEditTemplate(template.id)}>
                     Edit
                   </Button>
-                  <Button variant="ghost" size="sm">
+                  <Button variant="ghost" size="sm" onClick={() => handleDuplicateTemplate(template.id)}>
                     Duplicate
                   </Button>
                 </div>
