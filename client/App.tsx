@@ -211,9 +211,31 @@ function AppRoutes() {
       <Route path="/product/deployment/new" element={
         <ProtectedRoute allowedRoles={['admin', 'product']}>
           <DashboardLayout>
-            <PlaceholderPage 
-              title="New Deployment" 
-              description="Create and configure a new product deployment" 
+            <PlaceholderPage
+              title="New Deployment"
+              description="Create and configure a new product deployment"
+            />
+          </DashboardLayout>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/product/pipeline" element={
+        <ProtectedRoute allowedRoles={['admin', 'product']}>
+          <DashboardLayout>
+            <PlaceholderPage
+              title="Release Pipeline"
+              description="Monitor and manage the product release pipeline"
+            />
+          </DashboardLayout>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/product/health" element={
+        <ProtectedRoute allowedRoles={['admin', 'product']}>
+          <DashboardLayout>
+            <PlaceholderPage
+              title="System Health"
+              description="Monitor system performance and health metrics"
             />
           </DashboardLayout>
         </ProtectedRoute>
