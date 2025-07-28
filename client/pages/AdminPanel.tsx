@@ -45,7 +45,7 @@ export default function AdminPanel() {
           <h1 className="text-2xl font-bold text-gray-900">Onboarding Templates</h1>
           <p className="text-gray-600 mt-1">Manage and create onboarding workflows</p>
         </div>
-        <Button>
+        <Button onClick={handleCreateTemplate}>
           <Plus className="w-4 h-4 mr-2" />
           Create New Template
         </Button>
