@@ -37,6 +37,20 @@ export default function AdminPanel() {
     navigate('/admin/templates/new');
   };
 
+  const handleUseTemplate = (templateId: number) => {
+    // Navigate to client creation with pre-selected template
+    navigate(`/sales/new-client?template=${templateId}`);
+  };
+
+  const handleEditTemplate = (templateId: number) => {
+    navigate(`/admin/templates/${templateId}/edit`);
+  };
+
+  const handleDuplicateTemplate = (templateId: number) => {
+    // In real app, this would duplicate the template and navigate to edit
+    navigate(`/admin/templates/new?duplicate=${templateId}`);
+  };
+
   return (
     <div className="p-6">
       {/* Header */}
