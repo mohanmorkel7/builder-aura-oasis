@@ -124,7 +124,7 @@ export default function AdminPanel() {
           <p className="text-gray-600 mb-4">
             Build custom onboarding workflows to streamline your client setup process.
           </p>
-          <Button>
+          <Button onClick={handleCreateTemplate}>
             <Plus className="w-4 h-4 mr-2" />
             New Template
           </Button>
