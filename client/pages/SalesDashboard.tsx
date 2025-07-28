@@ -64,7 +64,7 @@ export default function SalesDashboard() {
           <h1 className="text-2xl font-bold text-gray-900">Client List</h1>
           <p className="text-gray-600 mt-1">Manage your client relationships and follow-ups</p>
         </div>
-        <Button>
+        <Button onClick={handleCreateClient}>
           <Plus className="w-4 h-4 mr-2" />
           Create Client
         </Button>
