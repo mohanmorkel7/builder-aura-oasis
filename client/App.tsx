@@ -68,10 +68,7 @@ function AppRoutes() {
       <Route path="/admin/templates/new" element={
         <ProtectedRoute allowedRoles={['admin']}>
           <DashboardLayout>
-            <PlaceholderPage 
-              title="Create New Template" 
-              description="Build custom onboarding workflows for your clients" 
-            />
+            <TemplateCreator />
           </DashboardLayout>
         </ProtectedRoute>
       } />
