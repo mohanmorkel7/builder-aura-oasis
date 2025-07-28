@@ -15,6 +15,41 @@ import {
 
 export default function Overview() {
   const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleQuickAction = (action: string) => {
+    switch (action) {
+      case 'create-template':
+        navigate('/admin/templates/new');
+        break;
+      case 'view-reports':
+        navigate('/admin/reports');
+        break;
+      case 'manage-users':
+        navigate('/admin/users');
+        break;
+      case 'add-client':
+        navigate('/sales/new-client');
+        break;
+      case 'schedule-followup':
+        navigate('/sales/followup/new');
+        break;
+      case 'view-sales-report':
+        navigate('/sales/reports');
+        break;
+      case 'new-deployment':
+        navigate('/product/deployment/new');
+        break;
+      case 'view-pipeline':
+        navigate('/product/pipeline');
+        break;
+      case 'monitor-health':
+        navigate('/product/health');
+        break;
+      default:
+        console.log('Unknown action:', action);
+    }
+  };
 
   const getGreeting = () => {
     const hour = new Date().getHours();
