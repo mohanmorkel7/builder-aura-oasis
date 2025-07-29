@@ -246,15 +246,24 @@ export default function AdminReports() {
                 <ResponsiveContainer width="100%" height={300}>
                   <AreaChart data={monthlyData}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
-                    <YAxis />
+                    <XAxis
+                      dataKey="month"
+                      axisLine={true}
+                      tickLine={true}
+                      interval="preserveStartEnd"
+                    />
+                    <YAxis
+                      axisLine={true}
+                      tickLine={true}
+                      interval="preserveStartEnd"
+                    />
                     <Tooltip />
-                    <Area 
-                      type="monotone" 
-                      dataKey="users" 
+                    <Area
+                      type="monotone"
+                      dataKey="users"
                       stackId="1"
-                      stroke="#3B82F6" 
-                      fill="#3B82F6" 
+                      stroke="#3B82F6"
+                      fill="#3B82F6"
                       fillOpacity={0.6}
                     />
                   </AreaChart>
