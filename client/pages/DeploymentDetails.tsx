@@ -347,16 +347,21 @@ export default function DeploymentDetails() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {deployment.steps.map((step: any, index: number) => (
+                {currentSteps.map((step: any, index: number) => (
                   <div key={index} className="flex items-center space-x-4 p-4 border rounded-lg">
                     {getStepStatusIcon(step.status)}
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
                         <h4 className="font-medium">{step.name}</h4>
-                        <span className="text-sm text-gray-500">{step.duration}</span>
+                        <span className="text-sm text-gray-500">{step.duration || (step.status === 'in_progress' ? 'Running...' : '')}</span>
                       </div>
                       {step.status === 'in_progress' && (
                         <Progress value={75} className="mt-2 h-2" />
+                      )}
+                      {step.startTime && (
+                        <p className="text-xs text-gray-400 mt-1">
+                          Started: {step.startTime} {step.endTime && `• Ended: ${step.endTime}`}
+                        </p>
                       )}
                     </div>
                   </div>
