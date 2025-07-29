@@ -16,18 +16,30 @@ export class ApiClient {
       const response = await fetch(url, config);
 
       if (!response.ok) {
-        let errorText: string;
-        try {
-          errorText = await response.text();
-        } catch (textError) {
-          throw new Error(`HTTP error! status: ${response.status} - Unable to read response`);
+        // Handle specific status codes
+        if (response.status === 401) {
+          throw new Error('Invalid credentials');
         }
 
+        let errorText: string = '';
         try {
-          const errorData = JSON.parse(errorText);
-          throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
-        } catch {
-          throw new Error(`HTTP error! status: ${response.status} - ${errorText || 'Unknown error'}`);
+          // Clone the response to avoid consuming the stream
+          const clonedResponse = response.clone();
+          errorText = await clonedResponse.text();
+        } catch (textError) {
+          // If we can't read the response body, provide a generic error
+          throw new Error(`Authentication failed (${response.status})`);
+        }
+
+        if (errorText) {
+          try {
+            const errorData = JSON.parse(errorText);
+            throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+          } catch {
+            throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
+          }
+        } else {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
       }
 
