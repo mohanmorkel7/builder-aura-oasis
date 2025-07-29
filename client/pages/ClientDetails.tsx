@@ -112,6 +112,22 @@ export default function ClientDetails() {
     navigate(`/sales/client/${id}/followup/new`);
   };
 
+  const updateStepStatus = (stepIndex: number, newStatus: string) => {
+    setOnboardingSteps(prev => prev.map((step, index) => {
+      if (index === stepIndex) {
+        return {
+          ...step,
+          status: newStatus,
+          completed_date: newStatus === 'completed' ? new Date().toISOString().split('T')[0] : step.completed_date
+        };
+      }
+      return step;
+    }));
+
+    // Here you would typically make an API call to save the status
+    console.log(`Updated step ${stepIndex} to status: ${newStatus}`);
+  };
+
   if (isLoading) {
     return (
       <div className="p-6">
