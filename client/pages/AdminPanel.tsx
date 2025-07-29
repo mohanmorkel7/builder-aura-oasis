@@ -63,6 +63,15 @@ export default function AdminPanel() {
     }
   };
 
+  const handleDeleteTemplate = async (templateId: number) => {
+    try {
+      await deleteTemplateMutation.mutateAsync(templateId);
+      console.log("Template deleted successfully");
+    } catch (error) {
+      console.error("Failed to delete template:", error);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="p-6">
