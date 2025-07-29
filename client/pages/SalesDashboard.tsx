@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useClients, useClientStats } from '@/hooks/useApi';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Search, Filter, Plus, Eye, Edit, Users } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Search, Filter, Plus, Eye, Edit, Users, X } from 'lucide-react';
 
 const getStatusColor = (status: string) => {
   switch (status) {
