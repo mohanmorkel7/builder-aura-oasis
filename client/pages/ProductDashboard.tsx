@@ -83,10 +83,22 @@ const upcomingReleases = [
 
 export default function ProductDashboard() {
   const navigate = useNavigate();
+  const { data: deployments = [], isLoading: deploymentsLoading } = useDeployments();
+  const { data: stats, isLoading: statsLoading } = useDeploymentStats();
 
   const handleNewDeployment = () => {
     navigate('/product/deployment/new');
   };
+
+  if (deploymentsLoading) {
+    return (
+      <div className="p-6">
+        <div className="text-center">Loading deployments...</div>
+      </div>
+    );
+  }
+
+  const recentDeployments = deployments.slice(0, 5); // Show only recent 5
 
   return (
     <div className="p-6">
