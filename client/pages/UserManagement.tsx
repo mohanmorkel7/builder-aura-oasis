@@ -245,7 +245,7 @@ export default function UserManagement() {
                   <tr key={user.id} className="hover:bg-gray-50">
                     <td className="py-4 px-4">
                       <div>
-                        <div className="font-medium text-gray-900">{user.name}</div>
+                        <div className="font-medium text-gray-900">{user.first_name} {user.last_name}</div>
                         <div className="text-sm text-gray-500">{user.email}</div>
                       </div>
                     </td>
