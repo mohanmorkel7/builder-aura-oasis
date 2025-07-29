@@ -1,51 +1,67 @@
-import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useClient } from '@/hooks/useApi';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  ArrowLeft, 
-  Save, 
-  Building, 
-  Mail, 
-  Phone, 
+import React, { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useClient } from "@/hooks/useApi";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  ArrowLeft,
+  Save,
+  Building,
+  Mail,
+  Phone,
   MapPin,
   Calendar,
   DollarSign,
   User,
-  Info
-} from 'lucide-react';
+  Info,
+} from "lucide-react";
 
 export default function ClientEdit() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { data: originalClient, isLoading, error } = useClient(parseInt(id || '0'));
-  
+  const {
+    data: originalClient,
+    isLoading,
+    error,
+  } = useClient(parseInt(id || "0"));
+
   const [client, setClient] = useState({
-    client_name: '',
-    contact_person: '',
-    email: '',
-    phone: '',
-    status: 'active',
-    priority: 'medium',
-    industry: '',
-    company_size: '',
-    expected_value: '',
-    start_date: '',
-    address: '',
-    city: '',
-    state: '',
-    zip_code: '',
-    country: '',
-    notes: ''
+    client_name: "",
+    contact_person: "",
+    email: "",
+    phone: "",
+    status: "active",
+    priority: "medium",
+    industry: "",
+    company_size: "",
+    expected_value: "",
+    start_date: "",
+    address: "",
+    city: "",
+    state: "",
+    zip_code: "",
+    country: "",
+    notes: "",
   });
-  
+
   const [hasChanges, setHasChanges] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -53,30 +69,30 @@ export default function ClientEdit() {
   React.useEffect(() => {
     if (originalClient) {
       setClient({
-        client_name: originalClient.client_name || '',
-        contact_person: originalClient.contact_person || '',
-        email: originalClient.email || '',
-        phone: originalClient.phone || '',
-        status: originalClient.status || 'active',
-        priority: originalClient.priority || 'medium',
-        industry: originalClient.industry || '',
-        company_size: originalClient.company_size || '',
-        expected_value: originalClient.expected_value || '',
-        start_date: originalClient.start_date || '',
-        address: originalClient.address || '',
-        city: originalClient.city || '',
-        state: originalClient.state || '',
-        zip_code: originalClient.zip_code || '',
-        country: originalClient.country || '',
-        notes: originalClient.notes || ''
+        client_name: originalClient.client_name || "",
+        contact_person: originalClient.contact_person || "",
+        email: originalClient.email || "",
+        phone: originalClient.phone || "",
+        status: originalClient.status || "active",
+        priority: originalClient.priority || "medium",
+        industry: originalClient.industry || "",
+        company_size: originalClient.company_size || "",
+        expected_value: originalClient.expected_value || "",
+        start_date: originalClient.start_date || "",
+        address: originalClient.address || "",
+        city: originalClient.city || "",
+        state: originalClient.state || "",
+        zip_code: originalClient.zip_code || "",
+        country: originalClient.country || "",
+        notes: originalClient.notes || "",
       });
     }
   }, [originalClient]);
 
   const updateField = (field: string, value: any) => {
-    setClient(prev => ({
+    setClient((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
     setHasChanges(true);
   };
@@ -85,12 +101,12 @@ export default function ClientEdit() {
     setSaving(true);
     try {
       // Here you would make an API call to update the client
-      console.log('Saving client:', client);
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+      console.log("Saving client:", client);
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
       setHasChanges(false);
       navigate(`/sales/client/${id}`);
     } catch (error) {
-      console.error('Failed to save client:', error);
+      console.error("Failed to save client:", error);
     } finally {
       setSaving(false);
     }
@@ -111,12 +127,17 @@ export default function ClientEdit() {
   if (error || !originalClient) {
     return (
       <div className="p-6">
-        <div className="text-center text-red-600">Error loading client details</div>
+        <div className="text-center text-red-600">
+          Error loading client details
+        </div>
       </div>
     );
   }
 
-  const isFormValid = client.client_name.trim() && client.contact_person.trim() && client.email.trim();
+  const isFormValid =
+    client.client_name.trim() &&
+    client.contact_person.trim() &&
+    client.email.trim();
 
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">
@@ -141,8 +162,8 @@ export default function ClientEdit() {
           <Button variant="outline" onClick={handleCancel}>
             Cancel
           </Button>
-          <Button 
-            onClick={handleSave} 
+          <Button
+            onClick={handleSave}
             disabled={!isFormValid || saving}
             className="min-w-20"
           >
@@ -163,7 +184,8 @@ export default function ClientEdit() {
         <Alert>
           <Info className="h-4 w-4" />
           <AlertDescription>
-            Please fill in all required fields: Client Name, Contact Person, and Email.
+            Please fill in all required fields: Client Name, Contact Person, and
+            Email.
           </AlertDescription>
         </Alert>
       )}
@@ -194,7 +216,9 @@ export default function ClientEdit() {
                     <Input
                       id="client_name"
                       value={client.client_name}
-                      onChange={(e) => updateField('client_name', e.target.value)}
+                      onChange={(e) =>
+                        updateField("client_name", e.target.value)
+                      }
                       className="pl-10"
                       placeholder="Enter client/company name"
                     />
@@ -207,7 +231,9 @@ export default function ClientEdit() {
                     <Input
                       id="contact_person"
                       value={client.contact_person}
-                      onChange={(e) => updateField('contact_person', e.target.value)}
+                      onChange={(e) =>
+                        updateField("contact_person", e.target.value)
+                      }
                       className="pl-10"
                       placeholder="Primary contact name"
                     />
@@ -224,7 +250,7 @@ export default function ClientEdit() {
                       id="email"
                       type="email"
                       value={client.email}
-                      onChange={(e) => updateField('email', e.target.value)}
+                      onChange={(e) => updateField("email", e.target.value)}
                       className="pl-10"
                       placeholder="contact@company.com"
                     />
@@ -237,7 +263,7 @@ export default function ClientEdit() {
                     <Input
                       id="phone"
                       value={client.phone}
-                      onChange={(e) => updateField('phone', e.target.value)}
+                      onChange={(e) => updateField("phone", e.target.value)}
                       className="pl-10"
                       placeholder="+1 (555) 000-0000"
                     />
@@ -248,7 +274,10 @@ export default function ClientEdit() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="status">Client Status</Label>
-                  <Select value={client.status} onValueChange={(value) => updateField('status', value)}>
+                  <Select
+                    value={client.status}
+                    onValueChange={(value) => updateField("status", value)}
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -262,7 +291,10 @@ export default function ClientEdit() {
                 </div>
                 <div>
                   <Label htmlFor="priority">Priority Level</Label>
-                  <Select value={client.priority} onValueChange={(value) => updateField('priority', value)}>
+                  <Select
+                    value={client.priority}
+                    onValueChange={(value) => updateField("priority", value)}
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -294,13 +326,18 @@ export default function ClientEdit() {
                   <Input
                     id="industry"
                     value={client.industry}
-                    onChange={(e) => updateField('industry', e.target.value)}
+                    onChange={(e) => updateField("industry", e.target.value)}
                     placeholder="e.g., Technology, Healthcare, Finance"
                   />
                 </div>
                 <div>
                   <Label htmlFor="company_size">Company Size</Label>
-                  <Select value={client.company_size} onValueChange={(value) => updateField('company_size', value)}>
+                  <Select
+                    value={client.company_size}
+                    onValueChange={(value) =>
+                      updateField("company_size", value)
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select company size" />
                     </SelectTrigger>
@@ -309,7 +346,9 @@ export default function ClientEdit() {
                       <SelectItem value="11-50">11-50 employees</SelectItem>
                       <SelectItem value="51-200">51-200 employees</SelectItem>
                       <SelectItem value="201-500">201-500 employees</SelectItem>
-                      <SelectItem value="501-1000">501-1000 employees</SelectItem>
+                      <SelectItem value="501-1000">
+                        501-1000 employees
+                      </SelectItem>
                       <SelectItem value="1000+">1000+ employees</SelectItem>
                     </SelectContent>
                   </Select>
@@ -325,7 +364,9 @@ export default function ClientEdit() {
                       id="expected_value"
                       type="number"
                       value={client.expected_value}
-                      onChange={(e) => updateField('expected_value', e.target.value)}
+                      onChange={(e) =>
+                        updateField("expected_value", e.target.value)
+                      }
                       className="pl-10"
                       placeholder="0"
                     />
@@ -339,7 +380,9 @@ export default function ClientEdit() {
                       id="start_date"
                       type="date"
                       value={client.start_date}
-                      onChange={(e) => updateField('start_date', e.target.value)}
+                      onChange={(e) =>
+                        updateField("start_date", e.target.value)
+                      }
                       className="pl-10"
                     />
                   </div>
@@ -365,7 +408,7 @@ export default function ClientEdit() {
                   <Input
                     id="address"
                     value={client.address}
-                    onChange={(e) => updateField('address', e.target.value)}
+                    onChange={(e) => updateField("address", e.target.value)}
                     className="pl-10"
                     placeholder="123 Main Street"
                   />
@@ -378,7 +421,7 @@ export default function ClientEdit() {
                   <Input
                     id="city"
                     value={client.city}
-                    onChange={(e) => updateField('city', e.target.value)}
+                    onChange={(e) => updateField("city", e.target.value)}
                     placeholder="New York"
                   />
                 </div>
@@ -387,7 +430,7 @@ export default function ClientEdit() {
                   <Input
                     id="state"
                     value={client.state}
-                    onChange={(e) => updateField('state', e.target.value)}
+                    onChange={(e) => updateField("state", e.target.value)}
                     placeholder="NY"
                   />
                 </div>
@@ -396,7 +439,7 @@ export default function ClientEdit() {
                   <Input
                     id="zip_code"
                     value={client.zip_code}
-                    onChange={(e) => updateField('zip_code', e.target.value)}
+                    onChange={(e) => updateField("zip_code", e.target.value)}
                     placeholder="10001"
                   />
                 </div>
@@ -407,7 +450,7 @@ export default function ClientEdit() {
                 <Input
                   id="country"
                   value={client.country}
-                  onChange={(e) => updateField('country', e.target.value)}
+                  onChange={(e) => updateField("country", e.target.value)}
                   placeholder="United States"
                 />
               </div>
@@ -429,7 +472,7 @@ export default function ClientEdit() {
                 <Textarea
                   id="notes"
                   value={client.notes}
-                  onChange={(e) => updateField('notes', e.target.value)}
+                  onChange={(e) => updateField("notes", e.target.value)}
                   rows={6}
                   placeholder="Add any additional notes, requirements, or important information about this client..."
                 />

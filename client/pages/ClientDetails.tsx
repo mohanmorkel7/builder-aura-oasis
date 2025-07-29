@@ -11,7 +11,13 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   ArrowLeft,
   Edit,
@@ -98,7 +104,9 @@ export default function ClientDetails() {
   const { data: client, isLoading, error } = useClient(parseInt(id || "0"));
 
   // State for onboarding progress
-  const [onboardingSteps, setOnboardingSteps] = useState(mockOnboardingProgress);
+  const [onboardingSteps, setOnboardingSteps] = useState(
+    mockOnboardingProgress,
+  );
 
   const handleBack = () => {
     navigate("/sales");
@@ -113,16 +121,21 @@ export default function ClientDetails() {
   };
 
   const updateStepStatus = (stepIndex: number, newStatus: string) => {
-    setOnboardingSteps(prev => prev.map((step, index) => {
-      if (index === stepIndex) {
-        return {
-          ...step,
-          status: newStatus,
-          completed_date: newStatus === 'completed' ? new Date().toISOString().split('T')[0] : step.completed_date
-        };
-      }
-      return step;
-    }));
+    setOnboardingSteps((prev) =>
+      prev.map((step, index) => {
+        if (index === stepIndex) {
+          return {
+            ...step,
+            status: newStatus,
+            completed_date:
+              newStatus === "completed"
+                ? new Date().toISOString().split("T")[0]
+                : step.completed_date,
+          };
+        }
+        return step;
+      }),
+    );
 
     // Here you would typically make an API call to save the status
     console.log(`Updated step ${stepIndex} to status: ${newStatus}`);
@@ -369,14 +382,18 @@ export default function ClientDetails() {
                     <div className="flex items-center space-x-2">
                       <Select
                         value={step.status}
-                        onValueChange={(value) => updateStepStatus(index, value)}
+                        onValueChange={(value) =>
+                          updateStepStatus(index, value)
+                        }
                       >
                         <SelectTrigger className="w-32">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="pending">Pending</SelectItem>
-                          <SelectItem value="in_progress">In Progress</SelectItem>
+                          <SelectItem value="in_progress">
+                            In Progress
+                          </SelectItem>
                           <SelectItem value="completed">Completed</SelectItem>
                         </SelectContent>
                       </Select>

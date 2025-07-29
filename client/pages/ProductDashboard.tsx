@@ -10,7 +10,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Plus,
   Rocket,
@@ -102,16 +108,18 @@ export default function ProductDashboard() {
   const { data: stats, isLoading: statsLoading } = useDeploymentStats();
 
   // State for managing deployment status updates
-  const [deploymentStatuses, setDeploymentStatuses] = useState<{[key: string]: string}>({});
+  const [deploymentStatuses, setDeploymentStatuses] = useState<{
+    [key: string]: string;
+  }>({});
 
   const handleNewDeployment = () => {
     navigate("/product/deployment/new");
   };
 
   const updateDeploymentStatus = (deploymentId: string, newStatus: string) => {
-    setDeploymentStatuses(prev => ({
+    setDeploymentStatuses((prev) => ({
       ...prev,
-      [deploymentId]: newStatus
+      [deploymentId]: newStatus,
     }));
 
     // Here you would typically make an API call to update the deployment status
@@ -278,21 +286,31 @@ export default function ProductDashboard() {
                           <div className="flex items-center space-x-2">
                             <StatusIcon className="w-4 h-4" />
                             <Select
-                              value={deploymentStatuses[deployment.id] || deployment.status}
-                              onValueChange={(value) => updateDeploymentStatus(deployment.id, value)}
+                              value={
+                                deploymentStatuses[deployment.id] ||
+                                deployment.status
+                              }
+                              onValueChange={(value) =>
+                                updateDeploymentStatus(deployment.id, value)
+                              }
                             >
                               <SelectTrigger className="w-32">
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectItem value="pending">Pending</SelectItem>
-                                <SelectItem value="in_progress">In Progress</SelectItem>
-                                <SelectItem value="completed">Completed</SelectItem>
+                                <SelectItem value="in_progress">
+                                  In Progress
+                                </SelectItem>
+                                <SelectItem value="completed">
+                                  Completed
+                                </SelectItem>
                                 <SelectItem value="failed">Failed</SelectItem>
                               </SelectContent>
                             </Select>
                             <Badge className={statusColor}>
-                              {deploymentStatuses[deployment.id] || deployment.status}
+                              {deploymentStatuses[deployment.id] ||
+                                deployment.status}
                             </Badge>
                           </div>
                         </td>
