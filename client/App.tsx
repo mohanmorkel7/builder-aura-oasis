@@ -212,6 +212,22 @@ function AppRoutes() {
         </ProtectedRoute>
       } />
 
+      <Route path="/product/deployment/:id" element={
+        <ProtectedRoute allowedRoles={['admin', 'product']}>
+          <DashboardLayout>
+            <DeploymentDetails />
+          </DashboardLayout>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/product/deployment/:id/edit" element={
+        <ProtectedRoute allowedRoles={['admin', 'product']}>
+          <DashboardLayout>
+            <DeploymentEdit />
+          </DashboardLayout>
+        </ProtectedRoute>
+      } />
+
       <Route path="/product/pipeline" element={
         <ProtectedRoute allowedRoles={['admin', 'product']}>
           <DashboardLayout>
