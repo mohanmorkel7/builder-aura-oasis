@@ -117,15 +117,17 @@ export default function UserManagement() {
   };
 
   const handleChangeRole = (userId: number, newRole: 'admin' | 'sales' | 'product') => {
-    setUsers(users.map(user => 
-      user.id === userId ? { ...user, role: newRole } : user
-    ));
+    updateUserMutation.mutate({ id: userId, userData: { role: newRole } });
   };
 
   const handleChangeStatus = (userId: number, newStatus: 'active' | 'inactive' | 'pending') => {
-    setUsers(users.map(user => 
-      user.id === userId ? { ...user, status: newStatus } : user
-    ));
+    updateUserMutation.mutate({ id: userId, userData: { status: newStatus } });
+  };
+
+  const handleDeleteUser = (userId: number) => {
+    if (confirm('Are you sure you want to delete this user?')) {
+      deleteUserMutation.mutate(userId);
+    }
   };
 
   const filteredUsers = users.filter(user => {
