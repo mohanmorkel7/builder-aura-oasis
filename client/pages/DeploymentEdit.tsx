@@ -54,6 +54,7 @@ export default function DeploymentEdit() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { data: deployments = [] } = useDeployments();
+  const { data: users = [] } = useUsers();
   
   // Find deployment by ID or use mock data
   const originalDeployment = deployments.find((d: any) => d.id === id) || mockDeployment;
