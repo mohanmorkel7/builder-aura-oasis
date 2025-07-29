@@ -209,13 +209,13 @@ export default function DeploymentDetails() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Progress</p>
-                <p className="text-2xl font-bold text-blue-600">{deployment.progress}%</p>
+                <p className="text-2xl font-bold text-blue-600">{currentProgress}%</p>
               </div>
               <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                <Activity className="w-6 h-6 text-blue-600" />
+                <Activity className={`w-6 h-6 text-blue-600 ${isLive ? 'animate-pulse' : ''}`} />
               </div>
             </div>
-            <Progress value={deployment.progress} className="mt-3" />
+            <Progress value={currentProgress} className="mt-3" />
           </CardContent>
         </Card>
 
