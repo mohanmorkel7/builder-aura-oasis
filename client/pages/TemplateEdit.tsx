@@ -126,6 +126,7 @@ export default function TemplateEdit() {
   
   const [template, setTemplate] = useState({
     ...originalTemplate,
+    steps: originalTemplate.steps || [],
     settings: originalTemplate.settings || {
       auto_assign: true,
       send_notifications: true,
