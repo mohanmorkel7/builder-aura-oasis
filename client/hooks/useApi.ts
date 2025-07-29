@@ -159,7 +159,13 @@ export function useClientStats() {
 export function useTemplates() {
   return useQuery({
     queryKey: ['templates'],
-    queryFn: () => apiClient.getTemplates(),
+    queryFn: async () => {
+      try {
+        return await apiClient.getTemplates();
+      } catch {
+        return mockTemplates;
+      }
+    },
   });
 }
 
