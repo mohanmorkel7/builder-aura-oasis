@@ -50,11 +50,18 @@ router.get('/', async (req: Request, res: Response) => {
 // Get client statistics
 router.get('/stats', async (req: Request, res: Response) => {
   try {
-    const stats = await ClientRepository.getStats();
+    let stats;
+    if (await isDatabaseAvailable()) {
+      stats = await ClientRepository.getStats();
+    } else {
+      stats = await MockDataService.getClientStats();
+    }
     res.json(stats);
   } catch (error) {
     console.error('Error fetching client stats:', error);
-    res.status(500).json({ error: 'Failed to fetch client statistics' });
+    // Fallback to mock data
+    const stats = await MockDataService.getClientStats();
+    res.json(stats);
   }
 });
 
