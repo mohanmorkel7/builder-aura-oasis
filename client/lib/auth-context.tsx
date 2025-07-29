@@ -63,21 +63,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const loginWithSSO = async (provider: string): Promise<boolean> => {
     setIsLoading(true);
-    // Simulate SSO flow
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    // Mock SSO success
-    const ssoUser: User = {
-      id: '1',
-      name: 'John Doe',
-      email: 'admin@banani.com',
-      role: 'admin'
-    };
-    
-    setUser(ssoUser);
-    localStorage.setItem('banani_user', JSON.stringify(ssoUser));
+
+    try {
+      // For demo purposes, SSO will use the default admin credentials
+      const response = await apiClient.login('admin@banani.com', 'password');
+
+      if (response.user) {
+        const userData: User = {
+          id: response.user.id.toString(),
+          name: `${response.user.first_name} ${response.user.last_name}`,
+          email: response.user.email,
+          role: response.user.role
+        };
+
+        setUser(userData);
+        localStorage.setItem('banani_user', JSON.stringify(userData));
+        setIsLoading(false);
+        return true;
+      }
+    } catch (error) {
+      console.error('SSO login error:', error);
+    }
+
     setIsLoading(false);
-    return true;
+    return false;
   };
 
   const logout = () => {
