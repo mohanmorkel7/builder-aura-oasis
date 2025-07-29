@@ -13,6 +13,8 @@ import AddUser from '@/pages/AddUser';
 import AddClient from '@/pages/AddClient';
 import ClientDetails from '@/pages/ClientDetails';
 import NewDeployment from '@/pages/NewDeployment';
+import DeploymentDetails from '@/pages/DeploymentDetails';
+import DeploymentEdit from '@/pages/DeploymentEdit';
 import SalesDashboard from '@/pages/SalesDashboard';
 import ProductDashboard from '@/pages/ProductDashboard';
 import AlertsNotifications from '@/pages/AlertsNotifications';
