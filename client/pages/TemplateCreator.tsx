@@ -8,6 +8,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Plus,
   ArrowLeft,
   GripVertical,
@@ -28,6 +35,9 @@ interface TemplateStep {
 export default function TemplateCreator() {
   const navigate = useNavigate();
   const [templateName, setTemplateName] = useState("");
+  const [templateDescription, setTemplateDescription] = useState("");
+  const [templateType, setTemplateType] = useState<"standard" | "enterprise" | "smb">("standard");
+  const [createdBy, setCreatedBy] = useState("");
   const [steps, setSteps] = useState<TemplateStep[]>([
     {
       id: "1",
@@ -55,7 +65,13 @@ export default function TemplateCreator() {
 
   const handleSaveTemplate = () => {
     // In a real app, this would save to the backend
-    console.log("Saving template:", { templateName, steps });
+    console.log("Saving template:", {
+      templateName,
+      templateDescription,
+      templateType,
+      createdBy,
+      steps
+    });
     navigate("/admin");
   };
 
@@ -121,6 +137,45 @@ export default function TemplateCreator() {
                 placeholder="e.g., Standard Client Onboarding"
                 className="mt-1"
               />
+            </div>
+
+            <div>
+              <Label htmlFor="templateDescription">Description</Label>
+              <Textarea
+                id="templateDescription"
+                value={templateDescription}
+                onChange={(e) => setTemplateDescription(e.target.value)}
+                placeholder="Describe the purpose and scope of this template..."
+                className="mt-1"
+                rows={3}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="templateType">Template Type</Label>
+                <Select value={templateType} onValueChange={(value: "standard" | "enterprise" | "smb") => setTemplateType(value)}>
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select template type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="standard">Standard</SelectItem>
+                    <SelectItem value="enterprise">Enterprise</SelectItem>
+                    <SelectItem value="smb">Small & Medium Business</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="createdBy">Created By</Label>
+                <Input
+                  id="createdBy"
+                  value={createdBy}
+                  onChange={(e) => setCreatedBy(e.target.value)}
+                  placeholder="Your name or user ID"
+                  className="mt-1"
+                />
+              </div>
             </div>
           </CardContent>
         </Card>
