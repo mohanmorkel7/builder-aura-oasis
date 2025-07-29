@@ -4,6 +4,16 @@ import { MockDataService } from '../services/mockData';
 
 const router = Router();
 
+// Helper function to check if database is available
+async function isDatabaseAvailable() {
+  try {
+    await UserRepository.findAll();
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
 // Get all users
 router.get('/', async (req: Request, res: Response) => {
   try {
