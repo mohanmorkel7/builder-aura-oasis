@@ -387,8 +387,17 @@ export default function AdminReports() {
               <ResponsiveContainer width="100%" height={400}>
                 <BarChart data={monthlyData}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis />
+                  <XAxis
+                    dataKey="month"
+                    axisLine={true}
+                    tickLine={true}
+                    interval="preserveStartEnd"
+                  />
+                  <YAxis
+                    axisLine={true}
+                    tickLine={true}
+                    interval="preserveStartEnd"
+                  />
                   <Tooltip />
                   <Bar dataKey="users" fill="#3B82F6" />
                 </BarChart>
