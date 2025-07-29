@@ -22,6 +22,7 @@ import {
 
 export default function AddUser() {
   const navigate = useNavigate();
+  const createUserMutation = useCreateUser();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
