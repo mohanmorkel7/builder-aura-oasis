@@ -16,7 +16,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Search, Filter, Plus, Trash2 } from "lucide-react";
 
 const getTypeColor = (type: string) => {
@@ -179,7 +189,9 @@ export default function AdminPanel() {
                       <AlertDialogHeader>
                         <AlertDialogTitle>Delete Template</AlertDialogTitle>
                         <AlertDialogDescription>
-                          Are you sure you want to delete "{template.name}"? This action cannot be undone and will permanently remove the template and all its configurations.
+                          Are you sure you want to delete "{template.name}"?
+                          This action cannot be undone and will permanently
+                          remove the template and all its configurations.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
