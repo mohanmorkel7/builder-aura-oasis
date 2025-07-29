@@ -17,11 +17,18 @@ async function isDatabaseAvailable() {
 // Get all users
 router.get('/', async (req: Request, res: Response) => {
   try {
-    const users = await UserRepository.findAll();
-    res.json(users);
+    if (await isDatabaseAvailable()) {
+      const users = await UserRepository.findAll();
+      res.json(users);
+    } else {
+      const users = await MockDataService.getAllUsers();
+      res.json(users);
+    }
   } catch (error) {
     console.error('Error fetching users:', error);
-    res.status(500).json({ error: 'Failed to fetch users' });
+    // Fallback to mock data
+    const users = await MockDataService.getAllUsers();
+    res.json(users);
   }
 });
 
