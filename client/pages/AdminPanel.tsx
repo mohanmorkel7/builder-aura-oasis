@@ -21,6 +21,10 @@ const getTypeColor = (type: string) => {
 
 export default function AdminPanel() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { data: templates = [], isLoading } = useTemplates();
+  const deleteTemplateMutation = useDeleteTemplate();
+  const duplicateTemplateMutation = useDuplicateTemplate();
 
   const handleCreateTemplate = () => {
     navigate('/admin/templates/new');
@@ -35,10 +39,26 @@ export default function AdminPanel() {
     navigate(`/admin/templates/${templateId}/edit`);
   };
 
-  const handleDuplicateTemplate = (templateId: number) => {
-    // In real app, this would duplicate the template and navigate to edit
-    navigate(`/admin/templates/new?duplicate=${templateId}`);
+  const handleDuplicateTemplate = async (templateId: number) => {
+    if (user) {
+      try {
+        await duplicateTemplateMutation.mutateAsync({
+          id: templateId,
+          createdBy: parseInt(user.id)
+        });
+      } catch (error) {
+        console.error('Error duplicating template:', error);
+      }
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="p-6">
+        <div className="text-center">Loading templates...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6">
