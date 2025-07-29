@@ -84,11 +84,12 @@ export default function UserManagement() {
   };
 
   const filteredUsers = users.filter(user => {
-    const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const fullName = `${user.first_name} ${user.last_name}`;
+    const matchesSearch = fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          user.email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRole = roleFilter === 'all' || user.role === roleFilter;
     const matchesStatus = statusFilter === 'all' || user.status === statusFilter;
-    
+
     return matchesSearch && matchesRole && matchesStatus;
   });
 
@@ -98,6 +99,22 @@ export default function UserManagement() {
     pending: users.filter(u => u.status === 'pending').length,
     inactive: users.filter(u => u.status === 'inactive').length
   };
+
+  if (isLoading) {
+    return (
+      <div className="p-6">
+        <div className="text-center">Loading users...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6">
+        <div className="text-center text-red-600">Error loading users: {error.message}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6">
