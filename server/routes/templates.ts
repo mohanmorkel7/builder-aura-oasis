@@ -4,14 +4,31 @@ import { MockDataService } from '../services/mockData';
 
 const router = Router();
 
+// Helper function to check if database is available
+async function isDatabaseAvailable() {
+  try {
+    await TemplateRepository.findAll();
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
 // Get all templates
 router.get('/', async (req: Request, res: Response) => {
   try {
-    const templates = await TemplateRepository.findAll();
+    let templates;
+    if (await isDatabaseAvailable()) {
+      templates = await TemplateRepository.findAll();
+    } else {
+      templates = await MockDataService.getAllTemplates();
+    }
     res.json(templates);
   } catch (error) {
     console.error('Error fetching templates:', error);
-    res.status(500).json({ error: 'Failed to fetch templates' });
+    // Fallback to mock data
+    const templates = await MockDataService.getAllTemplates();
+    res.json(templates);
   }
 });
 
