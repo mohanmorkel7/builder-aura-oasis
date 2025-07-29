@@ -122,10 +122,7 @@ function AppRoutes() {
       <Route path="/admin/templates/:id/edit" element={
         <ProtectedRoute allowedRoles={['admin']}>
           <DashboardLayout>
-            <PlaceholderPage
-              title="Edit Template"
-              description="Modify onboarding template configuration"
-            />
+            <TemplateEdit />
           </DashboardLayout>
         </ProtectedRoute>
       } />
@@ -133,10 +130,7 @@ function AppRoutes() {
       <Route path="/admin/reports" element={
         <ProtectedRoute allowedRoles={['admin']}>
           <DashboardLayout>
-            <PlaceholderPage
-              title="System Reports"
-              description="View comprehensive system analytics and reports"
-            />
+            <AdminReports />
           </DashboardLayout>
         </ProtectedRoute>
       } />
