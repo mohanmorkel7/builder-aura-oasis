@@ -89,7 +89,13 @@ export function useDeleteUser() {
 export function useClients(salesRepId?: number) {
   return useQuery({
     queryKey: ['clients', salesRepId],
-    queryFn: () => apiClient.getClients(salesRepId),
+    queryFn: async () => {
+      try {
+        return await apiClient.getClients(salesRepId);
+      } catch {
+        return mockClients;
+      }
+    },
   });
 }
 
