@@ -53,7 +53,6 @@ export default function FollowUpNew() {
   });
   
   const [saving, setSaving] = useState(false);
-  const [datePickerOpen, setDatePickerOpen] = useState(false);
 
   const updateField = (field: string, value: any) => {
     setFollowUp(prev => ({
