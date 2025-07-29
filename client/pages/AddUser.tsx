@@ -43,11 +43,30 @@ export default function AddUser() {
     navigate('/admin/users');
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In real app, this would save to backend
-    console.log('Creating user:', formData);
-    navigate('/admin/users');
+
+    try {
+      const userData = {
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        email: formData.email,
+        phone: formData.phone || undefined,
+        password: formData.password,
+        role: formData.role as 'admin' | 'sales' | 'product',
+        department: formData.department || undefined,
+        manager_id: formData.manager ? parseInt(formData.manager) : undefined,
+        start_date: formData.startDate || undefined,
+        two_factor_enabled: formData.twoFactorAuth,
+        notes: formData.notes || undefined
+      };
+
+      await createUserMutation.mutateAsync(userData);
+      navigate('/admin/users');
+    } catch (error) {
+      console.error('Error creating user:', error);
+      // Handle error (show toast, etc.)
+    }
   };
 
   const handleInputChange = (field: string, value: any) => {
