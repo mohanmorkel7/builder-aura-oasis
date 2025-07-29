@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 import { Link, useLocation, Navigate } from "react-router-dom";
 import { useAuth, UserRole } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
