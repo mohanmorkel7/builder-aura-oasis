@@ -36,7 +36,9 @@ export default function TemplateCreator() {
   const navigate = useNavigate();
   const [templateName, setTemplateName] = useState("");
   const [templateDescription, setTemplateDescription] = useState("");
-  const [templateType, setTemplateType] = useState<"standard" | "enterprise" | "smb">("standard");
+  const [templateType, setTemplateType] = useState<
+    "standard" | "enterprise" | "smb"
+  >("standard");
   const [createdBy, setCreatedBy] = useState("");
   const [steps, setSteps] = useState<TemplateStep[]>([
     {
@@ -70,7 +72,7 @@ export default function TemplateCreator() {
       templateDescription,
       templateType,
       createdBy,
-      steps
+      steps,
     });
     navigate("/admin");
   };
@@ -154,7 +156,12 @@ export default function TemplateCreator() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="templateType">Template Type</Label>
-                <Select value={templateType} onValueChange={(value: "standard" | "enterprise" | "smb") => setTemplateType(value)}>
+                <Select
+                  value={templateType}
+                  onValueChange={(value: "standard" | "enterprise" | "smb") =>
+                    setTemplateType(value)
+                  }
+                >
                   <SelectTrigger className="mt-1">
                     <SelectValue placeholder="Select template type" />
                   </SelectTrigger>
