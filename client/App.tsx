@@ -112,10 +112,7 @@ function AppRoutes() {
       <Route path="/admin/users/:id/edit" element={
         <ProtectedRoute allowedRoles={['admin']}>
           <DashboardLayout>
-            <PlaceholderPage
-              title="Edit User"
-              description="Modify user account details and permissions"
-            />
+            <UserEdit />
           </DashboardLayout>
         </ProtectedRoute>
       } />
