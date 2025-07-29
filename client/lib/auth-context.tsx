@@ -58,7 +58,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // If API call fails (network, 401, etc.), try fallback authentication
 
-      // Fallback authentication for demo purposes
+      // Demo authentication fallback (always available when API fails)
+      console.log('Trying demo authentication...');
+
       if (password === 'password') {
         let userData: User | null = null;
 
@@ -71,12 +73,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         if (userData) {
+          console.log('Demo authentication successful:', userData.role);
           setUser(userData);
           localStorage.setItem('banani_user', JSON.stringify(userData));
           setIsLoading(false);
           return true;
         }
       }
+
+      // If demo auth also fails, provide helpful message
+      console.log('Login failed. Use: admin@banani.com / sales@banani.com / product@banani.com with password: password');
     }
 
     setIsLoading(false);
