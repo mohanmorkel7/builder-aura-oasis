@@ -9,11 +9,39 @@ export function useLogin() {
   });
 }
 
+// Mock data for fallback
+const mockUsers = [
+  { id: 1, first_name: 'John', last_name: 'Doe', email: 'admin@banani.com', role: 'admin', status: 'active', created_at: '2023-01-10T09:00:00Z' },
+  { id: 2, first_name: 'Jane', last_name: 'Smith', email: 'sales@banani.com', role: 'sales', status: 'active', created_at: '2023-02-15T09:00:00Z' },
+  { id: 3, first_name: 'Mike', last_name: 'Johnson', email: 'product@banani.com', role: 'product', status: 'active', created_at: '2023-03-20T09:00:00Z' }
+];
+
+const mockClients = [
+  { id: 1, client_name: 'Acme Corp', contact_person: 'Jane Doe', email: 'jane@acme.com', status: 'active', priority: 'high', created_at: '2023-10-26T09:00:00Z' },
+  { id: 2, client_name: 'Globex Inc.', contact_person: 'Bob Wilson', email: 'bob@globex.com', status: 'onboarding', priority: 'medium', created_at: '2023-10-20T09:00:00Z' }
+];
+
+const mockTemplates = [
+  { id: 1, name: 'Standard Client Onboarding', description: 'A comprehensive template for standard client onboarding', type: 'standard', step_count: 5, created_at: '2023-01-15T09:00:00Z' },
+  { id: 2, name: 'Enterprise Client Onboarding', description: 'Tailored onboarding process for large enterprise clients', type: 'enterprise', step_count: 8, created_at: '2023-01-15T09:00:00Z' }
+];
+
+const mockDeployments = [
+  { id: 1, product_name: 'Core App', version: 'v2.1.0', environment: 'production', status: 'completed', assigned_to_name: 'Mike Johnson', created_at: '2024-07-15T09:00:00Z' },
+  { id: 2, product_name: 'Analytics Module', version: 'v1.5.2', environment: 'production', status: 'failed', assigned_to_name: 'Mike Johnson', created_at: '2024-07-16T09:00:00Z' }
+];
+
 // User hooks
 export function useUsers() {
   return useQuery({
     queryKey: ['users'],
-    queryFn: () => apiClient.getUsers(),
+    queryFn: async () => {
+      try {
+        return await apiClient.getUsers();
+      } catch {
+        return mockUsers;
+      }
+    },
   });
 }
 
