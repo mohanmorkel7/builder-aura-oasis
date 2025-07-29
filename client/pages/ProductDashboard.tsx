@@ -205,7 +205,7 @@ export default function ProductDashboard() {
                     return (
                       <tr
                         key={deployment.id}
-                        className="hover:bg-gray-50 cursor-pointer"
+                        className="group hover:bg-gray-50 cursor-pointer"
                         onClick={() => navigate(`/product/deployment/${deployment.id}`)}
                       >
                         <td className="py-4 px-4">
