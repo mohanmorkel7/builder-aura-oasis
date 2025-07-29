@@ -4,7 +4,7 @@ import { useDeployments, useDeploymentStats } from '@/hooks/useApi';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Rocket, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
+import { Plus, Rocket, AlertTriangle, CheckCircle, Clock, Edit } from 'lucide-react';
 
 const deploymentStats = [
   { label: 'Total Deployments', value: '124', color: 'text-blue-600' },
