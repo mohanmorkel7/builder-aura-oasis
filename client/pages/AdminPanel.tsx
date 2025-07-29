@@ -91,14 +91,14 @@ export default function AdminPanel() {
 
       {/* Templates Grid */}
       <div className="grid gap-6">
-        {templates.map((template) => (
+        {templates.map((template: any) => (
           <Card key={template.id} className="hover:shadow-md transition-shadow">
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div>
                   <CardTitle className="text-lg">{template.name}</CardTitle>
                   <CardDescription className="mt-2">
-                    {template.description}
+                    {template.description || 'No description provided'}
                   </CardDescription>
                 </div>
                 <Button variant="outline" size="sm" onClick={() => handleUseTemplate(template.id)}>
@@ -110,15 +110,13 @@ export default function AdminPanel() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
                   <div className="text-sm text-gray-600">
-                    <span className="font-medium">{template.steps}</span> Steps
+                    <span className="font-medium">{template.step_count || 0}</span> Steps
                   </div>
-                  <Badge 
+                  <Badge
                     variant={template.type === 'enterprise' ? 'default' : 'secondary'}
-                    className={template.type === 'enterprise' ? 'bg-primary' : ''}
+                    className={getTypeColor(template.type)}
                   >
-                    {template.type === 'standard' && 'Standard'}
-                    {template.type === 'enterprise' && 'Enterprise'}
-                    {template.type === 'smb' && 'SMB'}
+                    {template.type.charAt(0).toUpperCase() + template.type.slice(1)}
                   </Badge>
                 </div>
                 <div className="flex items-center space-x-2">
