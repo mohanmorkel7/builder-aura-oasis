@@ -448,8 +448,17 @@ export default function AdminReports() {
               <ResponsiveContainer width="100%" height={400}>
                 <BarChart data={deploymentTrends}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="week" />
-                  <YAxis />
+                  <XAxis
+                    dataKey="week"
+                    axisLine={true}
+                    tickLine={true}
+                    interval="preserveStartEnd"
+                  />
+                  <YAxis
+                    axisLine={true}
+                    tickLine={true}
+                    interval="preserveStartEnd"
+                  />
                   <Tooltip />
                   <Bar dataKey="successful" fill="#10B981" name="Successful" />
                   <Bar dataKey="failed" fill="#EF4444" name="Failed" />
