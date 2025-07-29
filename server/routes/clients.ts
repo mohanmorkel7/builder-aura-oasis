@@ -4,26 +4,46 @@ import { MockDataService } from '../services/mockData';
 
 const router = Router();
 
+// Helper function to check if database is available
+async function isDatabaseAvailable() {
+  try {
+    await ClientRepository.findAll();
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
 // Get all clients
 router.get('/', async (req: Request, res: Response) => {
   try {
     const { salesRep } = req.query;
-    
+
     let clients;
-    if (salesRep) {
-      const salesRepId = parseInt(salesRep as string);
-      if (isNaN(salesRepId)) {
-        return res.status(400).json({ error: 'Invalid sales rep ID' });
+    if (await isDatabaseAvailable()) {
+      if (salesRep) {
+        const salesRepId = parseInt(salesRep as string);
+        if (isNaN(salesRepId)) {
+          return res.status(400).json({ error: 'Invalid sales rep ID' });
+        }
+        clients = await ClientRepository.findBySalesRep(salesRepId);
+      } else {
+        clients = await ClientRepository.findAll();
       }
-      clients = await ClientRepository.findBySalesRep(salesRepId);
     } else {
-      clients = await ClientRepository.findAll();
+      clients = await MockDataService.getAllClients();
+      if (salesRep) {
+        const salesRepId = parseInt(salesRep as string);
+        clients = clients.filter(client => client.sales_rep_id === salesRepId);
+      }
     }
-    
+
     res.json(clients);
   } catch (error) {
     console.error('Error fetching clients:', error);
-    res.status(500).json({ error: 'Failed to fetch clients' });
+    // Fallback to mock data
+    const clients = await MockDataService.getAllClients();
+    res.json(clients);
   }
 });
 
