@@ -277,8 +277,22 @@ export default function ProductDashboard() {
                         <td className="py-4 px-4">
                           <div className="flex items-center space-x-2">
                             <StatusIcon className="w-4 h-4" />
+                            <Select
+                              value={deploymentStatuses[deployment.id] || deployment.status}
+                              onValueChange={(value) => updateDeploymentStatus(deployment.id, value)}
+                            >
+                              <SelectTrigger className="w-32">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="pending">Pending</SelectItem>
+                                <SelectItem value="in_progress">In Progress</SelectItem>
+                                <SelectItem value="completed">Completed</SelectItem>
+                                <SelectItem value="failed">Failed</SelectItem>
+                              </SelectContent>
+                            </Select>
                             <Badge className={statusColor}>
-                              {deployment.status}
+                              {deploymentStatuses[deployment.id] || deployment.status}
                             </Badge>
                           </div>
                         </td>
