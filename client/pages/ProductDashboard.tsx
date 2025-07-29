@@ -98,7 +98,43 @@ export default function ProductDashboard() {
     );
   }
 
-  const recentDeployments = (deployments as any[]).slice(0, 5); // Show only recent 5
+  // Helper function to get status icon based on status
+  const getStatusIcon = (status: string) => {
+    switch (status?.toLowerCase()) {
+      case 'completed':
+      case 'success':
+        return CheckCircle;
+      case 'failed':
+      case 'error':
+        return AlertTriangle;
+      case 'pending':
+      case 'in_progress':
+        return Clock;
+      default:
+        return Rocket;
+    }
+  };
+
+  // Helper function to get status color based on status
+  const getStatusColor = (status: string) => {
+    switch (status?.toLowerCase()) {
+      case 'completed':
+      case 'success':
+        return 'bg-green-100 text-green-700';
+      case 'failed':
+      case 'error':
+        return 'bg-red-100 text-red-700';
+      case 'pending':
+      case 'in_progress':
+        return 'bg-yellow-100 text-yellow-700';
+      default:
+        return 'bg-blue-100 text-blue-700';
+    }
+  };
+
+  const recentDeploymentsData = deployments.length > 0
+    ? (deployments as any[]).slice(0, 5)
+    : recentDeployments.slice(0, 5);
 
   return (
     <div className="p-6">
@@ -121,7 +157,7 @@ export default function ProductDashboard() {
           {deploymentStats.map((stat, index) => {
             const icons = [Rocket, CheckCircle, AlertTriangle, Clock];
             const Icon = icons[index];
-            
+
             return (
               <Card key={stat.label}>
                 <CardContent className="p-6">
@@ -162,12 +198,14 @@ export default function ProductDashboard() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {recentDeployments.map((deployment) => {
-                    const StatusIcon = deployment.icon;
+                  {recentDeploymentsData.map((deployment) => {
+                    const StatusIcon = deployment.icon || getStatusIcon(deployment.status);
+                    const statusColor = deployment.statusColor || getStatusColor(deployment.status);
+
                     return (
                       <tr key={deployment.id} className="hover:bg-gray-50">
                         <td className="py-4 px-4">
-                          <div className="font-medium text-gray-900">{deployment.product}</div>
+                          <div className="font-medium text-gray-900">{deployment.product || deployment.name}</div>
                         </td>
                         <td className="py-4 px-4 text-gray-600">
                           {deployment.version}
@@ -175,16 +213,16 @@ export default function ProductDashboard() {
                         <td className="py-4 px-4">
                           <div className="flex items-center space-x-2">
                             <StatusIcon className="w-4 h-4" />
-                            <Badge className={deployment.statusColor}>
+                            <Badge className={statusColor}>
                               {deployment.status}
                             </Badge>
                           </div>
                         </td>
                         <td className="py-4 px-4 text-gray-600">
-                          {deployment.deployedBy}
+                          {deployment.deployedBy || deployment.deployed_by}
                         </td>
                         <td className="py-4 px-4 text-gray-600">
-                          {deployment.date}
+                          {deployment.date || deployment.created_at}
                         </td>
                       </tr>
                     );
