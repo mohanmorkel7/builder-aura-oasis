@@ -121,7 +121,8 @@ export default function UserDetails() {
     );
   }
 
-  const userPermissions = mockPermissions[user.role] || [];
+  const userData = user as any;
+  const userPermissions = mockPermissions[userData.role] || [];
 
   return (
     <div className="p-6 max-w-6xl mx-auto">

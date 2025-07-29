@@ -183,39 +183,39 @@ export default function ClientDetails() {
                     <div className="flex items-center space-x-2">
                       <User className="w-4 h-4 text-gray-400" />
                       <span className="font-medium text-gray-600">Contact Person:</span>
-                      <span className="text-gray-900">{client.contact_person}</span>
+                      <span className="text-gray-900">{clientData.contact_person}</span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <Mail className="w-4 h-4 text-gray-400" />
                       <span className="font-medium text-gray-600">Email:</span>
-                      <a href={`mailto:${client.email}`} className="text-blue-600 hover:underline">
-                        {client.email}
+                      <a href={`mailto:${clientData.email}`} className="text-blue-600 hover:underline">
+                        {clientData.email}
                       </a>
                     </div>
                     <div className="flex items-center space-x-2">
                       <Phone className="w-4 h-4 text-gray-400" />
                       <span className="font-medium text-gray-600">Phone:</span>
-                      <span className="text-gray-900">{client.phone || 'Not provided'}</span>
+                      <span className="text-gray-900">{clientData.phone || 'Not provided'}</span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <DollarSign className="w-4 h-4 text-gray-400" />
                       <span className="font-medium text-gray-600">Expected Value:</span>
                       <span className="text-gray-900">
-                        {client.expected_value ? `$${client.expected_value.toLocaleString()}` : 'Not specified'}
+                        {clientData.expected_value ? `$${clientData.expected_value.toLocaleString()}` : 'Not specified'}
                       </span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <Calendar className="w-4 h-4 text-gray-400" />
                       <span className="font-medium text-gray-600">Start Date:</span>
                       <span className="text-gray-900">
-                        {client.start_date ? new Date(client.start_date).toLocaleDateString() : 'Not set'}
+                        {clientData.start_date ? new Date(clientData.start_date).toLocaleDateString() : 'Not set'}
                       </span>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {client.address && (
+              {clientData.address && (
                 <>
                   <Separator />
                   <div>
@@ -224,15 +224,15 @@ export default function ClientDetails() {
                       <span className="font-medium text-gray-600">Address:</span>
                     </div>
                     <div className="pl-6 text-gray-900">
-                      <div>{client.address}</div>
-                      <div>{client.city}, {client.state} {client.zip_code}</div>
-                      <div>{client.country}</div>
+                      <div>{clientData.address}</div>
+                      <div>{clientData.city}, {clientData.state} {clientData.zip_code}</div>
+                      <div>{clientData.country}</div>
                     </div>
                   </div>
                 </>
               )}
 
-              {client.notes && (
+              {clientData.notes && (
                 <>
                   <Separator />
                   <div>
@@ -241,7 +241,7 @@ export default function ClientDetails() {
                       <span className="font-medium text-gray-600">Notes:</span>
                     </div>
                     <div className="pl-6 text-gray-900 whitespace-pre-wrap">
-                      {client.notes}
+                      {clientData.notes}
                     </div>
                   </div>
                 </>
