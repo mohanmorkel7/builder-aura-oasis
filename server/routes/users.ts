@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { UserRepository, CreateUserData, UpdateUserData } from '../models/User';
+import { MockDataService } from '../services/mockData';
 
 const router = Router();
 
