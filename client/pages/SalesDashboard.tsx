@@ -7,40 +7,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Search, Filter, Plus, Eye, Edit, Users } from 'lucide-react';
 
-const clients = [
-  {
-    id: 1,
-    name: 'Acme Corp',
-    status: 'Active',
-    lastContact: '2023-10-26',
-    nextFollowUp: '2023-11-02',
-    statusColor: 'bg-green-100 text-green-700'
-  },
-  {
-    id: 2,
-    name: 'Globex Inc.',
-    status: 'Pending',
-    lastContact: '2023-10-20',
-    nextFollowUp: '2023-10-28',
-    statusColor: 'bg-yellow-100 text-yellow-700'
-  },
-  {
-    id: 3,
-    name: 'Soylent Corp',
-    status: 'Onboarded',
-    lastContact: '2023-09-15',
-    nextFollowUp: 'N/A',
-    statusColor: 'bg-blue-100 text-blue-700'
-  },
-  {
-    id: 4,
-    name: 'Initech',
-    status: 'Active',
-    lastContact: '2023-10-25',
-    nextFollowUp: '2023-11-01',
-    statusColor: 'bg-green-100 text-green-700'
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case 'active':
+      return 'bg-green-100 text-green-700';
+    case 'onboarding':
+      return 'bg-blue-100 text-blue-700';
+    case 'completed':
+      return 'bg-purple-100 text-purple-700';
+    default:
+      return 'bg-gray-100 text-gray-700';
   }
-];
+};
 
 export default function SalesDashboard() {
   const navigate = useNavigate();
