@@ -224,7 +224,13 @@ export function useDuplicateTemplate() {
 export function useDeployments(assigneeId?: number) {
   return useQuery({
     queryKey: ['deployments', assigneeId],
-    queryFn: () => apiClient.getDeployments(assigneeId),
+    queryFn: async () => {
+      try {
+        return await apiClient.getDeployments(assigneeId);
+      } catch {
+        return mockDeployments;
+      }
+    },
   });
 }
 
