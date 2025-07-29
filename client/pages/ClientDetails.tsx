@@ -339,7 +339,7 @@ export default function ClientDetails() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {mockOnboardingProgress.map((step, index) => (
+                {onboardingSteps.map((step, index) => (
                   <div
                     key={index}
                     className="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg"
