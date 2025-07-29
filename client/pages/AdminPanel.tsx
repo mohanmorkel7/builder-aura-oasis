@@ -91,7 +91,7 @@ export default function AdminPanel() {
 
       {/* Templates Grid */}
       <div className="grid gap-6">
-        {templates.map((template: any) => (
+        {(templates as any[]).map((template: any) => (
           <Card key={template.id} className="hover:shadow-md transition-shadow">
             <CardHeader>
               <div className="flex items-start justify-between">
