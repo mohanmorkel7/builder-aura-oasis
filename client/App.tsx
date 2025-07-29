@@ -148,10 +148,7 @@ function AppRoutes() {
       <Route path="/sales/client/:id" element={
         <ProtectedRoute allowedRoles={['admin', 'sales']}>
           <DashboardLayout>
-            <PlaceholderPage 
-              title="Client Details" 
-              description="View and manage detailed client information and onboarding progress" 
-            />
+            <ClientDetails />
           </DashboardLayout>
         </ProtectedRoute>
       } />
