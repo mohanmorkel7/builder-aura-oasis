@@ -83,7 +83,7 @@ export default function UserManagement() {
     }
   };
 
-  const filteredUsers = users.filter(user => {
+  const filteredUsers = (users as User[]).filter(user => {
     const fullName = `${user.first_name} ${user.last_name}`;
     const matchesSearch = fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          user.email.toLowerCase().includes(searchTerm.toLowerCase());
