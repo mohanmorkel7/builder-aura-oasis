@@ -86,18 +86,72 @@ export default function SalesDashboard() {
       </div>
 
       {/* Search and Filters */}
-      <div className="flex items-center space-x-4 mb-6">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <Input
-            placeholder="Search clients..."
-            className="pl-10"
-          />
+      <div className="space-y-4 mb-6">
+        <div className="flex items-center space-x-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <Input
+              placeholder="Search clients by name, contact, or email..."
+              className="pl-10"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+          <Button
+            variant="outline"
+            onClick={() => setShowFilters(!showFilters)}
+            className={showFilters ? 'bg-blue-50 border-blue-200' : ''}
+          >
+            <Filter className="w-4 h-4 mr-2" />
+            Filter
+          </Button>
         </div>
-        <Button variant="outline">
-          <Filter className="w-4 h-4 mr-2" />
-          Filter
-        </Button>
+
+        {showFilters && (
+          <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+            <div className="flex items-center space-x-2">
+              <label className="text-sm font-medium text-gray-600">Status:</label>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-40">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Statuses</SelectItem>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="onboarding">Onboarding</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
+                  <SelectItem value="inactive">Inactive</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setSearchTerm('');
+                setStatusFilter('all');
+              }}
+            >
+              Clear All
+            </Button>
+          </div>
+        )}
+
+        {(searchTerm || statusFilter !== 'all') && (
+          <div className="text-sm text-gray-600">
+            Showing {filteredClients.length} of {clients.length} clients
+            {searchTerm && ` matching "${searchTerm}"`}
+            {statusFilter !== 'all' && ` with status "${statusFilter}"`}
+          </div>
+        )}
       </div>
 
       {/* Client Table */}
