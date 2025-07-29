@@ -26,6 +26,31 @@ export default function SalesDashboard() {
   const { data: clients = [], isLoading: clientsLoading } = useClients();
   const { data: stats, isLoading: statsLoading } = useClientStats();
 
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [showFilters, setShowFilters] = useState(false);
+
+  // Filter and search clients
+  const filteredClients = useMemo(() => {
+    let filtered = clients as any[];
+
+    // Apply search filter
+    if (searchTerm) {
+      filtered = filtered.filter(client =>
+        client.client_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        client.contact_person?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        client.email?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Apply status filter
+    if (statusFilter !== 'all') {
+      filtered = filtered.filter(client => client.status === statusFilter);
+    }
+
+    return filtered;
+  }, [clients, searchTerm, statusFilter]);
+
   const handleCreateClient = () => {
     navigate('/sales/new-client');
   };
