@@ -120,7 +120,7 @@ export default function ClientDetails() {
             Back to Clients
           </Button>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">{client.client_name}</h1>
+            <h1 className="text-2xl font-bold text-gray-900">{(client as any).client_name}</h1>
             <p className="text-gray-600 mt-1">Client Details & Onboarding Progress</p>
           </div>
         </div>
