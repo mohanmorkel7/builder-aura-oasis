@@ -157,8 +157,8 @@ export default function ClientDetails() {
                     </div>
                     <div className="flex items-center space-x-2">
                       <span className="font-medium text-gray-600">Status:</span>
-                      <Badge className={statusColors[client.status]}>
-                        {client.status.charAt(0).toUpperCase() + client.status.slice(1)}
+                      <Badge className={statusColors[clientData.status]}>
+                        {clientData.status.charAt(0).toUpperCase() + clientData.status.slice(1)}
                       </Badge>
                     </div>
                     <div className="flex items-center space-x-2">
