@@ -8,29 +8,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Search, Filter, Plus } from 'lucide-react';
 
-const templates = [
-  {
-    id: 1,
-    name: 'Standard Client Onboarding',
-    description: 'A comprehensive template for standard client onboarding, covering initial contact to final setup.',
-    steps: 5,
-    type: 'standard'
-  },
-  {
-    id: 2,
-    name: 'Enterprise Client Onboarding',
-    description: 'Tailored onboarding process for large enterprise clients with complex integration requirements.',
-    steps: 8,
-    type: 'enterprise'
-  },
-  {
-    id: 3,
-    name: 'SMB Onboarding Lite',
-    description: 'A streamlined onboarding template for small to medium businesses with essential steps.',
-    steps: 3,
-    type: 'smb'
+const getTypeColor = (type: string) => {
+  switch (type) {
+    case 'enterprise':
+      return 'bg-primary';
+    case 'smb':
+      return 'bg-green-100 text-green-700';
+    default:
+      return '';
   }
-];
+};
 
 export default function AdminPanel() {
   const navigate = useNavigate();
