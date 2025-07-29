@@ -209,10 +209,7 @@ function AppRoutes() {
         element={
           <ProtectedRoute allowedRoles={["admin", "sales"]}>
             <DashboardLayout>
-              <PlaceholderPage
-                title="Edit Client"
-                description="Modify client information and settings"
-              />
+              <ClientEdit />
             </DashboardLayout>
           </ProtectedRoute>
         }
