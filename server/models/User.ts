@@ -159,7 +159,7 @@ export class UserRepository {
   }
 
   static async verifyPassword(email: string, password: string): Promise<User | null> {
-    const user = await this.findByEmail(email);
+    const user: any = await this.findByEmail(email);
     if (!user || !user.password_hash) {
       return null;
     }
