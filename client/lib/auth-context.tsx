@@ -56,6 +56,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (error) {
       console.error('Login error:', error);
 
+      // If API call fails, immediately try fallback authentication
+
       // Fallback authentication for demo purposes
       if (password === 'password') {
         let userData: User | null = null;
