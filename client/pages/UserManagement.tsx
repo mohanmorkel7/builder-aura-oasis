@@ -94,10 +94,10 @@ export default function UserManagement() {
   });
 
   const stats = {
-    total: users.length,
-    active: users.filter(u => u.status === 'active').length,
-    pending: users.filter(u => u.status === 'pending').length,
-    inactive: users.filter(u => u.status === 'inactive').length
+    total: (users as User[]).length,
+    active: (users as User[]).filter(u => u.status === 'active').length,
+    pending: (users as User[]).filter(u => u.status === 'pending').length,
+    inactive: (users as User[]).filter(u => u.status === 'inactive').length
   };
 
   if (isLoading) {
