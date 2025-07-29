@@ -17,6 +17,7 @@ import DeploymentDetails from '@/pages/DeploymentDetails';
 import DeploymentEdit from '@/pages/DeploymentEdit';
 import TemplateEdit from '@/pages/TemplateEdit';
 import UserEdit from '@/pages/UserEdit';
+import FollowUpNew from '@/pages/FollowUpNew';
 import AdminReports from '@/pages/AdminReports';
 import SalesDashboard from '@/pages/SalesDashboard';
 import ProductDashboard from '@/pages/ProductDashboard';
