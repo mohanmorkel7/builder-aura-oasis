@@ -209,10 +209,7 @@ function AppRoutes() {
       <Route path="/product/deployment/new" element={
         <ProtectedRoute allowedRoles={['admin', 'product']}>
           <DashboardLayout>
-            <PlaceholderPage
-              title="New Deployment"
-              description="Create and configure a new product deployment"
-            />
+            <NewDeployment />
           </DashboardLayout>
         </ProtectedRoute>
       } />
