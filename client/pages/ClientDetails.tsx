@@ -97,6 +97,9 @@ export default function ClientDetails() {
   const navigate = useNavigate();
   const { data: client, isLoading, error } = useClient(parseInt(id || "0"));
 
+  // State for onboarding progress
+  const [onboardingSteps, setOnboardingSteps] = useState(mockOnboardingProgress);
+
   const handleBack = () => {
     navigate("/sales");
   };
