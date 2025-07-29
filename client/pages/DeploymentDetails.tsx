@@ -379,13 +379,19 @@ export default function DeploymentDetails() {
             </CardHeader>
             <CardContent>
               <div className="bg-black text-green-400 p-4 rounded-lg font-mono text-sm max-h-96 overflow-y-auto">
-                {deployment.logs.map((log: string, index: number) => (
+                {currentLogs.map((log: string, index: number) => (
                   <div key={index} className="mb-1">{log}</div>
                 ))}
-                {currentStatus === 'in_progress' && (
+                {isLive && currentStatus === 'in_progress' && (
                   <div className="animate-pulse">
                     <span className="inline-block w-2 h-4 bg-green-400 mr-1"></span>
-                    Deployment in progress...
+                    Live deployment in progress...
+                  </div>
+                )}
+                {!isLive && currentStatus === 'in_progress' && (
+                  <div className="text-yellow-400">
+                    <span className="inline-block w-2 h-4 bg-yellow-400 mr-1"></span>
+                    Deployment status: {currentStatus}
                   </div>
                 )}
               </div>
