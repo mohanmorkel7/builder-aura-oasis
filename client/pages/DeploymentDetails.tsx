@@ -68,10 +68,32 @@ export default function DeploymentDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { data: deployments = [] } = useDeployments();
-  const [currentStatus, setCurrentStatus] = useState(mockDeployment.status);
-  
+
   // Find deployment by ID or use mock data
   const deployment = deployments.find((d: any) => d.id === id) || mockDeployment;
+
+  // Real-time deployment control and status
+  const {
+    updateStatus,
+    actions,
+    isLoading,
+    progress: liveProgress
+  } = useDeploymentControl(id);
+
+  const {
+    status: liveStatus,
+    isLive,
+    progress: progressPercent,
+    currentStep,
+    steps: liveSteps,
+    logs: liveLogs
+  } = useDeploymentStatus(id || '');
+
+  // Use live data when available, fallback to deployment data
+  const currentStatus = liveStatus !== 'unknown' ? liveStatus : deployment.status;
+  const currentProgress = liveProgress?.progress || progressPercent || deployment.progress;
+  const currentSteps = liveSteps.length > 0 ? liveSteps : deployment.steps;
+  const currentLogs = liveLogs.length > 0 ? liveLogs : deployment.logs;
 
   const getStatusIcon = (status: string) => {
     switch (status) {
