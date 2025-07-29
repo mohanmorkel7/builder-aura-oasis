@@ -223,10 +223,30 @@ export default function ProductDashboard() {
                           </div>
                         </td>
                         <td className="py-4 px-4 text-gray-600">
-                          {deployment.deployedBy || deployment.deployed_by}
+                          {deployment.deployedBy || deployment.deployed_by || 'Unassigned'}
                         </td>
-                        <td className="py-4 px-4 text-gray-600">
-                          {deployment.date || deployment.created_at}
+                        <td className="py-4 px-4">
+                          <div className="flex items-center justify-between">
+                            <span className="text-gray-600">
+                              {deployment.date || deployment.created_at ?
+                                new Date(deployment.date || deployment.created_at).toLocaleDateString() :
+                                'Not set'
+                              }
+                            </span>
+                            <div className="flex items-center space-x-1">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  navigate(`/product/deployment/${deployment.id}/edit`);
+                                }}
+                                className="opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                <Edit className="w-3 h-3" />
+                              </Button>
+                            </div>
+                          </div>
                         </td>
                       </tr>
                     );
