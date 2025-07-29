@@ -366,17 +366,32 @@ export default function ClientDetails() {
                           `Due: ${new Date(step.due_date).toLocaleDateString()}`}
                       </div>
                     </div>
-                    <Badge
-                      className={
-                        step.status === "completed"
-                          ? "bg-green-100 text-green-700"
-                          : step.status === "in_progress"
-                            ? "bg-blue-100 text-blue-700"
-                            : "bg-gray-100 text-gray-700"
-                      }
-                    >
-                      {step.status.replace("_", " ")}
-                    </Badge>
+                    <div className="flex items-center space-x-2">
+                      <Select
+                        value={step.status}
+                        onValueChange={(value) => updateStepStatus(index, value)}
+                      >
+                        <SelectTrigger className="w-32">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="pending">Pending</SelectItem>
+                          <SelectItem value="in_progress">In Progress</SelectItem>
+                          <SelectItem value="completed">Completed</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Badge
+                        className={
+                          step.status === "completed"
+                            ? "bg-green-100 text-green-700"
+                            : step.status === "in_progress"
+                              ? "bg-blue-100 text-blue-700"
+                              : "bg-gray-100 text-gray-700"
+                        }
+                      >
+                        {step.status.replace("_", " ")}
+                      </Badge>
+                    </div>
                   </div>
                 ))}
               </div>
