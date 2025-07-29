@@ -135,7 +135,7 @@ export default function UserDetails() {
           </Button>
           <div>
             <h1 className="text-2xl font-bold text-gray-900">
-              {user.first_name} {user.last_name}
+              {userData.first_name} {userData.last_name}
             </h1>
             <p className="text-gray-600 mt-1">User Profile & Activity</p>
           </div>
@@ -159,19 +159,19 @@ export default function UserDetails() {
               <div className="flex items-start space-x-6 mb-6">
                 <Avatar className="w-20 h-20">
                   <AvatarFallback className="text-xl bg-primary text-white">
-                    {user.first_name[0]}{user.last_name[0]}
+                    {userData.first_name[0]}{userData.last_name[0]}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
                   <h3 className="text-xl font-semibold text-gray-900">
-                    {user.first_name} {user.last_name}
+                    {userData.first_name} {userData.last_name}
                   </h3>
                   <div className="flex items-center space-x-4 mt-2">
-                    <Badge className={roleColors[user.role]}>
-                      {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                    <Badge className={roleColors[userData.role]}>
+                      {userData.role.charAt(0).toUpperCase() + userData.role.slice(1)}
                     </Badge>
-                    <Badge className={statusColors[user.status]}>
-                      {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
+                    <Badge className={statusColors[userData.status]}>
+                      {userData.status.charAt(0).toUpperCase() + userData.status.slice(1)}
                     </Badge>
                   </div>
                 </div>
@@ -182,19 +182,19 @@ export default function UserDetails() {
                   <div className="flex items-center space-x-2">
                     <Mail className="w-4 h-4 text-gray-400" />
                     <span className="font-medium text-gray-600">Email:</span>
-                    <a href={`mailto:${user.email}`} className="text-blue-600 hover:underline">
-                      {user.email}
+                    <a href={`mailto:${userData.email}`} className="text-blue-600 hover:underline">
+                      {userData.email}
                     </a>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Phone className="w-4 h-4 text-gray-400" />
                     <span className="font-medium text-gray-600">Phone:</span>
-                    <span className="text-gray-900">{user.phone || 'Not provided'}</span>
+                    <span className="text-gray-900">{userData.phone || 'Not provided'}</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Building className="w-4 h-4 text-gray-400" />
                     <span className="font-medium text-gray-600">Department:</span>
-                    <span className="text-gray-900">{user.department || 'Not specified'}</span>
+                    <span className="text-gray-900">{userData.department || 'Not specified'}</span>
                   </div>
                 </div>
                 
@@ -203,32 +203,32 @@ export default function UserDetails() {
                     <Calendar className="w-4 h-4 text-gray-400" />
                     <span className="font-medium text-gray-600">Start Date:</span>
                     <span className="text-gray-900">
-                      {user.start_date ? new Date(user.start_date).toLocaleDateString() : 'Not set'}
+                      {userData.start_date ? new Date(userData.start_date).toLocaleDateString() : 'Not set'}
                     </span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Clock className="w-4 h-4 text-gray-400" />
                     <span className="font-medium text-gray-600">Last Login:</span>
                     <span className="text-gray-900">
-                      {user.last_login ? new Date(user.last_login).toLocaleString() : 'Never'}
+                      {userData.last_login ? new Date(userData.last_login).toLocaleString() : 'Never'}
                     </span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Shield className="w-4 h-4 text-gray-400" />
                     <span className="font-medium text-gray-600">2FA:</span>
                     <span className="text-gray-900">
-                      {user.two_factor_enabled ? 'Enabled' : 'Disabled'}
+                      {userData.two_factor_enabled ? 'Enabled' : 'Disabled'}
                     </span>
                   </div>
                 </div>
               </div>
 
-              {user.notes && (
+              {userData.notes && (
                 <>
                   <Separator className="my-6" />
                   <div>
                     <h4 className="font-medium text-gray-900 mb-2">Notes</h4>
-                    <p className="text-gray-700 whitespace-pre-wrap">{user.notes}</p>
+                    <p className="text-gray-700 whitespace-pre-wrap">{userData.notes}</p>
                   </div>
                 </>
               )}
@@ -266,7 +266,7 @@ export default function UserDetails() {
           <Card>
             <CardHeader>
               <CardTitle>Role Permissions</CardTitle>
-              <CardDescription>Access rights for {user.role} role</CardDescription>
+              <CardDescription>Access rights for {userData.role} role</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
@@ -298,7 +298,7 @@ export default function UserDetails() {
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium text-gray-600">Account Age</span>
                 <span className="text-lg font-bold text-gray-900">
-                  {user.created_at ? Math.floor((Date.now() - new Date(user.created_at).getTime()) / (1000 * 60 * 60 * 24)) : 0} days
+                  {userData.created_at ? Math.floor((Date.now() - new Date(userData.created_at).getTime()) / (1000 * 60 * 60 * 24)) : 0} days
                 </span>
               </div>
             </CardContent>
