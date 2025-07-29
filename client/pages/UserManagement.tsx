@@ -278,7 +278,7 @@ export default function UserManagement() {
                       </Select>
                     </td>
                     <td className="py-4 px-4 text-gray-600">
-                      {user.lastLogin}
+                      {user.last_login ? new Date(user.last_login).toLocaleDateString() : 'Never'}
                     </td>
                     <td className="py-4 px-4">
                       <div className="flex items-center space-x-2">
@@ -288,7 +288,7 @@ export default function UserManagement() {
                         <Button variant="ghost" size="sm" onClick={() => handleEditUser(user.id)}>
                           <Edit className="w-4 h-4" />
                         </Button>
-                        <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700">
+                        <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700" onClick={() => handleDeleteUser(user.id)}>
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
