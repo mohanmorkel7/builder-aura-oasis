@@ -169,13 +169,10 @@ function AppRoutes() {
         </ProtectedRoute>
       } />
 
-      <Route path="/sales/followup/new" element={
+      <Route path="/sales/client/:id/followup/new" element={
         <ProtectedRoute allowedRoles={['admin', 'sales']}>
           <DashboardLayout>
-            <PlaceholderPage
-              title="Schedule Follow-up"
-              description="Create a new follow-up task for client management"
-            />
+            <FollowUpNew />
           </DashboardLayout>
         </ProtectedRoute>
       } />
