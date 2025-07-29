@@ -27,6 +27,17 @@ export function createServer() {
 
   app.get("/api/demo", handleDemo);
 
+  // Test endpoint
+  app.get("/api/test", (_req, res) => {
+    res.json({ message: "Server is working!" });
+  });
+
+  // Test login endpoint
+  app.post("/api/test-login", (req, res) => {
+    const { email, password } = req.body;
+    res.json({ message: "Test login endpoint working", email, password });
+  });
+
   // Main API routes
   app.use("/api/users", usersRouter);
   app.use("/api/clients", clientsRouter);
