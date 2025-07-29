@@ -125,14 +125,31 @@ export default function DeploymentDetails() {
   };
 
   const handleStatusChange = (newStatus: string) => {
-    setCurrentStatus(newStatus);
-    // Here you would typically make an API call to update the deployment status
-    console.log(`Updating deployment ${id} status to: ${newStatus}`);
+    if (id) {
+      updateStatus(id, newStatus);
+    }
   };
 
   const handleAction = (action: string) => {
-    console.log(`Performing action: ${action} on deployment ${id}`);
-    // Here you would make API calls for deployment actions
+    switch (action) {
+      case 'pause':
+        actions.pause();
+        break;
+      case 'resume':
+        actions.resume();
+        break;
+      case 'stop':
+        actions.stop();
+        break;
+      case 'retry':
+        actions.retry();
+        break;
+      case 'rollback':
+        actions.rollback();
+        break;
+      default:
+        console.log(`Unknown action: ${action}`);
+    }
   };
 
   const StatusIcon = getStatusIcon(currentStatus);
