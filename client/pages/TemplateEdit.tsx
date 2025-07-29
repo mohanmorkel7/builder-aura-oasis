@@ -124,7 +124,16 @@ export default function TemplateEdit() {
   // Find template by ID or use mock data
   const originalTemplate = templates.find((t: any) => t.id === parseInt(id || '0')) || mockTemplate;
   
-  const [template, setTemplate] = useState(originalTemplate);
+  const [template, setTemplate] = useState({
+    ...originalTemplate,
+    settings: originalTemplate.settings || {
+      auto_assign: true,
+      send_notifications: true,
+      require_approval: true,
+      allow_parallel_steps: false,
+      default_priority: 'medium'
+    }
+  });
   const [hasChanges, setHasChanges] = useState(false);
   const [saving, setSaving] = useState(false);
 
