@@ -297,11 +297,23 @@ export default function AdminReports() {
                       axisLine={true}
                       tickLine={true}
                       interval="preserveStartEnd"
+                      tick={true}
+                      mirror={false}
+                      orientation="bottom"
+                      type="category"
+                      allowDecimals={true}
+                      allowDuplicatedCategory={true}
                     />
                     <YAxis
                       axisLine={true}
                       tickLine={true}
                       interval="preserveStartEnd"
+                      tick={true}
+                      mirror={false}
+                      orientation="left"
+                      type="number"
+                      allowDecimals={true}
+                      allowDuplicatedCategory={true}
                     />
                     <Tooltip formatter={(value) => [`$${value.toLocaleString()}`, 'Revenue']} />
                     <Line
