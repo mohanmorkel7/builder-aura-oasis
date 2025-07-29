@@ -3,7 +3,7 @@ const API_BASE_URL = '/api';
 export class ApiClient {
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = `${API_BASE_URL}${endpoint}`;
-    
+
     const config: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
@@ -13,11 +13,19 @@ export class ApiClient {
     };
 
     try {
+      console.log('Making API request to:', url, 'with config:', config);
       const response = await fetch(url, config);
-      
+      console.log('API response status:', response.status, 'ok:', response.ok);
+
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: 'Network error' }));
-        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        console.error('API error response:', errorText);
+        try {
+          const errorData = JSON.parse(errorText);
+          throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+        } catch {
+          throw new Error(`HTTP error! status: ${response.status} - ${errorText || 'Unknown error'}`);
+        }
       }
 
       // Handle no content responses
@@ -25,8 +33,11 @@ export class ApiClient {
         return {} as T;
       }
 
-      return await response.json();
+      const result = await response.json();
+      console.log('API response data:', result);
+      return result;
     } catch (error) {
+      console.error('API request failed:', error);
       if (error instanceof Error) {
         throw error;
       }
