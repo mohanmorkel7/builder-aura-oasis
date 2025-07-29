@@ -93,21 +93,21 @@ export default function SalesDashboard() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {clients.map((client) => (
+                {clients.map((client: any) => (
                   <tr key={client.id} className="hover:bg-gray-50">
                     <td className="py-4 px-4">
-                      <div className="font-medium text-gray-900">{client.name}</div>
+                      <div className="font-medium text-gray-900">{client.client_name}</div>
                     </td>
                     <td className="py-4 px-4">
-                      <Badge className={client.statusColor}>
-                        {client.status}
+                      <Badge className={getStatusColor(client.status)}>
+                        {client.status.charAt(0).toUpperCase() + client.status.slice(1)}
                       </Badge>
                     </td>
                     <td className="py-4 px-4 text-gray-600">
-                      {client.lastContact}
+                      {client.created_at ? new Date(client.created_at).toLocaleDateString() : 'N/A'}
                     </td>
                     <td className="py-4 px-4 text-gray-600">
-                      {client.nextFollowUp}
+                      {client.start_date ? new Date(client.start_date).toLocaleDateString() : 'N/A'}
                     </td>
                     <td className="py-4 px-4">
                       <div className="flex items-center space-x-2">
