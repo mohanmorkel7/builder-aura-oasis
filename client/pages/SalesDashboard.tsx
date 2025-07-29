@@ -136,7 +136,7 @@ export default function SalesDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Total Clients</p>
-                <p className="text-2xl font-bold text-gray-900">24</p>
+                <p className="text-2xl font-bold text-gray-900">{stats?.total || 0}</p>
               </div>
               <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
                 <Users className="w-6 h-6 text-blue-600" />
@@ -150,7 +150,7 @@ export default function SalesDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Active</p>
-                <p className="text-2xl font-bold text-green-600">18</p>
+                <p className="text-2xl font-bold text-green-600">{stats?.active || 0}</p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
                 <div className="w-6 h-6 bg-green-600 rounded-full"></div>
@@ -163,11 +163,11 @@ export default function SalesDashboard() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Pending</p>
-                <p className="text-2xl font-bold text-yellow-600">4</p>
+                <p className="text-sm font-medium text-gray-600">Onboarding</p>
+                <p className="text-2xl font-bold text-blue-600">{stats?.onboarding || 0}</p>
               </div>
-              <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
-                <div className="w-6 h-6 bg-yellow-600 rounded-full"></div>
+              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                <div className="w-6 h-6 bg-blue-600 rounded-full"></div>
               </div>
             </div>
           </CardContent>
@@ -177,11 +177,11 @@ export default function SalesDashboard() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">This Month</p>
-                <p className="text-2xl font-bold text-primary">+6</p>
+                <p className="text-sm font-medium text-gray-600">Completed</p>
+                <p className="text-2xl font-bold text-purple-600">{stats?.completed || 0}</p>
               </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                <Plus className="w-6 h-6 text-blue-600" />
+              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                <div className="w-6 h-6 bg-purple-600 rounded-full"></div>
               </div>
             </div>
           </CardContent>
