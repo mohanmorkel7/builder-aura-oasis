@@ -66,7 +66,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     try {
       // For demo purposes, SSO will use the default admin credentials
-      const response = await apiClient.login('admin@banani.com', 'password');
+      const response: any = await apiClient.login('admin@banani.com', 'password');
 
       if (response.user) {
         const userData: User = {
