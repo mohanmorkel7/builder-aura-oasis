@@ -151,7 +151,7 @@ export default function ClientDetails() {
                   <div className="space-y-3">
                     <div className="flex items-center space-x-2">
                       <span className="font-medium text-gray-600">Client Name:</span>
-                      <span className="text-gray-900">{client.client_name}</span>
+                      <span className="text-gray-900">{(client as any).client_name}</span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <span className="font-medium text-gray-600">Status:</span>
