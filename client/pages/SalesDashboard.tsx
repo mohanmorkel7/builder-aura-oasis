@@ -22,6 +22,8 @@ const getStatusColor = (status: string) => {
 
 export default function SalesDashboard() {
   const navigate = useNavigate();
+  const { data: clients = [], isLoading: clientsLoading } = useClients();
+  const { data: stats, isLoading: statsLoading } = useClientStats();
 
   const handleCreateClient = () => {
     navigate('/sales/new-client');
@@ -34,6 +36,14 @@ export default function SalesDashboard() {
   const handleEditClient = (clientId: number) => {
     navigate(`/sales/client/${clientId}/edit`);
   };
+
+  if (clientsLoading) {
+    return (
+      <div className="p-6">
+        <div className="text-center">Loading clients...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6">
