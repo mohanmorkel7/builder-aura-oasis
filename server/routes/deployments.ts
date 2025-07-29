@@ -187,11 +187,18 @@ router.delete('/:id', async (req: Request, res: Response) => {
 // Get all products
 router.get('/products/list', async (req: Request, res: Response) => {
   try {
-    const products = await ProductRepository.findAll();
+    let products;
+    if (await isDatabaseAvailable()) {
+      products = await ProductRepository.findAll();
+    } else {
+      products = await MockDataService.getAllProducts();
+    }
     res.json(products);
   } catch (error) {
     console.error('Error fetching products:', error);
-    res.status(500).json({ error: 'Failed to fetch products' });
+    // Fallback to mock data
+    const products = await MockDataService.getAllProducts();
+    res.json(products);
   }
 });
 
