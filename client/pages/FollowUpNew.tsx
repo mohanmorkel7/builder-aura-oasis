@@ -319,7 +319,7 @@ export default function FollowUpNew() {
             </div>
             <div className="flex items-center justify-between text-xs text-gray-500">
               <span>
-                Due: {followUp.due_date ? format(followUp.due_date, 'PPP') : 'No date set'}
+                Due: {followUp.due_date ? followUp.due_date.toLocaleDateString() : 'No date set'}
               </span>
               <span>
                 <Clock className="w-3 h-3 inline mr-1" />
