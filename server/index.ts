@@ -38,11 +38,34 @@ export function createServer() {
     res.json({ message: "Test login endpoint working", email, password });
   });
 
-  // Main API routes
-  app.use("/api/users", usersRouter);
-  app.use("/api/clients", clientsRouter);
-  app.use("/api/templates", templatesRouter);
-  app.use("/api/deployments", deploymentsRouter);
+  // Main API routes with error handling
+  try {
+    app.use("/api/users", usersRouter);
+    console.log("Users router loaded successfully");
+  } catch (error) {
+    console.error("Error loading users router:", error);
+  }
+
+  try {
+    app.use("/api/clients", clientsRouter);
+    console.log("Clients router loaded successfully");
+  } catch (error) {
+    console.error("Error loading clients router:", error);
+  }
+
+  try {
+    app.use("/api/templates", templatesRouter);
+    console.log("Templates router loaded successfully");
+  } catch (error) {
+    console.error("Error loading templates router:", error);
+  }
+
+  try {
+    app.use("/api/deployments", deploymentsRouter);
+    console.log("Deployments router loaded successfully");
+  } catch (error) {
+    console.error("Error loading deployments router:", error);
+  }
 
   return app;
 }
