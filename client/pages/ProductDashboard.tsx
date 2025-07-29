@@ -101,8 +101,21 @@ export default function ProductDashboard() {
     useDeployments();
   const { data: stats, isLoading: statsLoading } = useDeploymentStats();
 
+  // State for managing deployment status updates
+  const [deploymentStatuses, setDeploymentStatuses] = useState<{[key: string]: string}>({});
+
   const handleNewDeployment = () => {
     navigate("/product/deployment/new");
+  };
+
+  const updateDeploymentStatus = (deploymentId: string, newStatus: string) => {
+    setDeploymentStatuses(prev => ({
+      ...prev,
+      [deploymentId]: newStatus
+    }));
+
+    // Here you would typically make an API call to update the deployment status
+    console.log(`Updating deployment ${deploymentId} status to: ${newStatus}`);
   };
 
   if (deploymentsLoading) {
