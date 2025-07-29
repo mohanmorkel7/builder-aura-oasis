@@ -73,7 +73,15 @@ router.get('/:id', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Invalid client ID' });
     }
 
-    const client = await ClientRepository.findById(id);
+    let client;
+    if (await isDatabaseAvailable()) {
+      client = await ClientRepository.findById(id);
+    } else {
+      // Use mock data
+      const clients = await MockDataService.getAllClients();
+      client = clients.find(c => c.id === id);
+    }
+
     if (!client) {
       return res.status(404).json({ error: 'Client not found' });
     }
@@ -81,7 +89,18 @@ router.get('/:id', async (req: Request, res: Response) => {
     res.json(client);
   } catch (error) {
     console.error('Error fetching client:', error);
-    res.status(500).json({ error: 'Failed to fetch client' });
+    // Fallback to mock data
+    try {
+      const clients = await MockDataService.getAllClients();
+      const client = clients.find(c => c.id === id);
+      if (client) {
+        res.json(client);
+      } else {
+        res.status(404).json({ error: 'Client not found' });
+      }
+    } catch (fallbackError) {
+      res.status(500).json({ error: 'Failed to fetch client' });
+    }
   }
 });
 
