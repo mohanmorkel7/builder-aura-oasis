@@ -178,7 +178,7 @@ export default function SalesDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Completed</p>
-                <p className="text-2xl font-bold text-purple-600">{stats?.completed || 0}</p>
+                <p className="text-2xl font-bold text-purple-600">{(stats as any)?.completed || 0}</p>
               </div>
               <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
                 <div className="w-6 h-6 bg-purple-600 rounded-full"></div>
