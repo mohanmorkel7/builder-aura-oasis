@@ -16,7 +16,13 @@ export class ApiClient {
       const response = await fetch(url, config);
 
       if (!response.ok) {
-        const errorText = await response.text();
+        let errorText: string;
+        try {
+          errorText = await response.text();
+        } catch (textError) {
+          throw new Error(`HTTP error! status: ${response.status} - Unable to read response`);
+        }
+
         try {
           const errorData = JSON.parse(errorText);
           throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
@@ -30,8 +36,15 @@ export class ApiClient {
         return {} as T;
       }
 
-      return await response.json();
+      try {
+        return await response.json();
+      } catch (jsonError) {
+        throw new Error('Invalid JSON response from server');
+      }
     } catch (error) {
+      if (error instanceof TypeError && error.message.includes('body stream')) {
+        throw new Error('Network error: Please try again');
+      }
       if (error instanceof Error) {
         throw error;
       }
