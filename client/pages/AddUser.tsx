@@ -28,6 +28,7 @@ export default function AddUser() {
     lastName: '',
     email: '',
     phone: '',
+    password: 'password123', // Default password
     role: '',
     department: '',
     manager: '',
