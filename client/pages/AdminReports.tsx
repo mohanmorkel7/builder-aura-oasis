@@ -104,6 +104,21 @@ export default function AdminReports() {
   const [dateRange, setDateRange] = useState('last_30_days');
   const [reportType, setReportType] = useState('overview');
 
+  // Suppress Recharts defaultProps warnings
+  useEffect(() => {
+    const originalWarn = console.warn;
+    console.warn = (...args) => {
+      if (args[0]?.includes?.('Support for defaultProps will be removed')) {
+        return; // Suppress this specific warning
+      }
+      originalWarn.apply(console, args);
+    };
+
+    return () => {
+      console.warn = originalWarn; // Restore original console.warn
+    };
+  }, []);
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active': return 'bg-green-100 text-green-700';
