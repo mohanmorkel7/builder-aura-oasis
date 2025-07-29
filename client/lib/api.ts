@@ -13,13 +13,10 @@ export class ApiClient {
     };
 
     try {
-      console.log('Making API request to:', url, 'with config:', config);
       const response = await fetch(url, config);
-      console.log('API response status:', response.status, 'ok:', response.ok);
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('API error response:', errorText);
         try {
           const errorData = JSON.parse(errorText);
           throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
@@ -33,11 +30,8 @@ export class ApiClient {
         return {} as T;
       }
 
-      const result = await response.json();
-      console.log('API response data:', result);
-      return result;
+      return await response.json();
     } catch (error) {
-      console.error('API request failed:', error);
       if (error instanceof Error) {
         throw error;
       }
