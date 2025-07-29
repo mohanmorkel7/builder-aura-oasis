@@ -110,6 +110,8 @@ export default function ClientDetails() {
     );
   }
 
+  const clientData = client as any;
+
   return (
     <div className="p-6 max-w-6xl mx-auto">
       {/* Header */}
