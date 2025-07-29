@@ -354,6 +354,39 @@ export default function DeploymentEdit() {
                   </div>
                 </div>
               </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="deployedBy">Deployed By</Label>
+                  <Select value={deployment.deployedBy} onValueChange={(value) => updateField('deployedBy', value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select user" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(users as any[]).map((user: any) => (
+                        <SelectItem key={user.id} value={user.first_name + ' ' + user.last_name}>
+                          {user.first_name} {user.last_name} ({user.role})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="assignedTo">Assigned To</Label>
+                  <Select value={deployment.assignedTo || deployment.deployedBy} onValueChange={(value) => updateField('assignedTo', value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select assignee" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(users as any[]).filter((user: any) => user.role === 'product' || user.role === 'admin').map((user: any) => (
+                        <SelectItem key={user.id} value={user.first_name + ' ' + user.last_name}>
+                          {user.first_name} {user.last_name} ({user.role})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
