@@ -1,0 +1,150 @@
+import { Router, Request, Response } from 'express';
+import { UserRepository, CreateUserData, UpdateUserData } from '../models/User';
+
+const router = Router();
+
+// Get all users
+router.get('/', async (req: Request, res: Response) => {
+  try {
+    const users = await UserRepository.findAll();
+    res.json(users);
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({ error: 'Failed to fetch users' });
+  }
+});
+
+// Get user by ID
+router.get('/:id', async (req: Request, res: Response) => {
+  try {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ error: 'Invalid user ID' });
+    }
+
+    const user = await UserRepository.findById(id);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json(user);
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    res.status(500).json({ error: 'Failed to fetch user' });
+  }
+});
+
+// Create new user
+router.post('/', async (req: Request, res: Response) => {
+  try {
+    const userData: CreateUserData = req.body;
+    
+    // Validate required fields
+    if (!userData.first_name || !userData.last_name || !userData.email || !userData.password || !userData.role) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    // Validate role
+    if (!['admin', 'sales', 'product'].includes(userData.role)) {
+      return res.status(400).json({ error: 'Invalid role' });
+    }
+
+    // Check if email already exists
+    const existingUser = await UserRepository.findByEmail(userData.email);
+    if (existingUser) {
+      return res.status(409).json({ error: 'Email already exists' });
+    }
+
+    const user = await UserRepository.create(userData);
+    res.status(201).json(user);
+  } catch (error) {
+    console.error('Error creating user:', error);
+    res.status(500).json({ error: 'Failed to create user' });
+  }
+});
+
+// Update user
+router.put('/:id', async (req: Request, res: Response) => {
+  try {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ error: 'Invalid user ID' });
+    }
+
+    const userData: UpdateUserData = req.body;
+    
+    // Validate role if provided
+    if (userData.role && !['admin', 'sales', 'product'].includes(userData.role)) {
+      return res.status(400).json({ error: 'Invalid role' });
+    }
+
+    // Validate status if provided
+    if (userData.status && !['active', 'inactive', 'pending'].includes(userData.status)) {
+      return res.status(400).json({ error: 'Invalid status' });
+    }
+
+    // Check if email already exists (if being updated)
+    if (userData.email) {
+      const existingUser = await UserRepository.findByEmail(userData.email);
+      if (existingUser && existingUser.id !== id) {
+        return res.status(409).json({ error: 'Email already exists' });
+      }
+    }
+
+    const user = await UserRepository.update(id, userData);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json(user);
+  } catch (error) {
+    console.error('Error updating user:', error);
+    res.status(500).json({ error: 'Failed to update user' });
+  }
+});
+
+// Delete user
+router.delete('/:id', async (req: Request, res: Response) => {
+  try {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ error: 'Invalid user ID' });
+    }
+
+    const success = await UserRepository.delete(id);
+    if (!success) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.status(204).send();
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).json({ error: 'Failed to delete user' });
+  }
+});
+
+// User authentication
+router.post('/auth/login', async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+    
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password required' });
+    }
+
+    const user = await UserRepository.verifyPassword(email, password);
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    // Update last login
+    await UserRepository.updateLastLogin(user.id);
+
+    res.json({ user });
+  } catch (error) {
+    console.error('Error during login:', error);
+    res.status(500).json({ error: 'Login failed' });
+  }
+});
+
+export default router;
