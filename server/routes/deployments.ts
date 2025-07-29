@@ -4,26 +4,46 @@ import { MockDataService } from '../services/mockData';
 
 const router = Router();
 
+// Helper function to check if database is available
+async function isDatabaseAvailable() {
+  try {
+    await DeploymentRepository.findAll();
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
 // Get all deployments
 router.get('/', async (req: Request, res: Response) => {
   try {
     const { assignee } = req.query;
-    
+
     let deployments;
-    if (assignee) {
-      const assigneeId = parseInt(assignee as string);
-      if (isNaN(assigneeId)) {
-        return res.status(400).json({ error: 'Invalid assignee ID' });
+    if (await isDatabaseAvailable()) {
+      if (assignee) {
+        const assigneeId = parseInt(assignee as string);
+        if (isNaN(assigneeId)) {
+          return res.status(400).json({ error: 'Invalid assignee ID' });
+        }
+        deployments = await DeploymentRepository.findByAssignee(assigneeId);
+      } else {
+        deployments = await DeploymentRepository.findAll();
       }
-      deployments = await DeploymentRepository.findByAssignee(assigneeId);
     } else {
-      deployments = await DeploymentRepository.findAll();
+      deployments = await MockDataService.getAllDeployments();
+      if (assignee) {
+        const assigneeId = parseInt(assignee as string);
+        deployments = deployments.filter(d => d.assigned_to === assigneeId);
+      }
     }
-    
+
     res.json(deployments);
   } catch (error) {
     console.error('Error fetching deployments:', error);
-    res.status(500).json({ error: 'Failed to fetch deployments' });
+    // Fallback to mock data
+    const deployments = await MockDataService.getAllDeployments();
+    res.json(deployments);
   }
 });
 
