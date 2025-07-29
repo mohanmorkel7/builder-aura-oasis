@@ -219,30 +219,18 @@ export default function FollowUpNew() {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label>Due Date</Label>
-              <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-left font-normal"
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {followUp.due_date ? format(followUp.due_date, 'PPP') : 'Pick a date'}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={followUp.due_date}
-                    onSelect={(date) => {
-                      updateField('due_date', date);
-                      setDatePickerOpen(false);
-                    }}
-                    disabled={(date) => date < new Date()}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+              <Label htmlFor="due_date">Due Date</Label>
+              <div className="relative">
+                <CalendarIcon className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Input
+                  id="due_date"
+                  type="date"
+                  value={followUp.due_date ? followUp.due_date.toISOString().split('T')[0] : ''}
+                  onChange={(e) => updateField('due_date', e.target.value ? new Date(e.target.value) : new Date())}
+                  className="pl-10"
+                  min={new Date().toISOString().split('T')[0]}
+                />
+              </div>
             </div>
             <div>
               <Label htmlFor="duration">Estimated Duration (minutes)</Label>
