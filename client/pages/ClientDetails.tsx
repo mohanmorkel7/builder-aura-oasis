@@ -163,17 +163,17 @@ export default function ClientDetails() {
                     </div>
                     <div className="flex items-center space-x-2">
                       <span className="font-medium text-gray-600">Priority:</span>
-                      <Badge className={priorityColors[client.priority]}>
-                        {client.priority.charAt(0).toUpperCase() + client.priority.slice(1)}
+                      <Badge className={priorityColors[clientData.priority]}>
+                        {clientData.priority.charAt(0).toUpperCase() + clientData.priority.slice(1)}
                       </Badge>
                     </div>
                     <div className="flex items-center space-x-2">
                       <span className="font-medium text-gray-600">Industry:</span>
-                      <span className="text-gray-900">{client.industry || 'Not specified'}</span>
+                      <span className="text-gray-900">{clientData.industry || 'Not specified'}</span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <span className="font-medium text-gray-600">Company Size:</span>
-                      <span className="text-gray-900">{client.company_size || 'Not specified'}</span>
+                      <span className="text-gray-900">{clientData.company_size || 'Not specified'}</span>
                     </div>
                   </div>
                 </div>
