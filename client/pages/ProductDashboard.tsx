@@ -194,7 +194,7 @@ export default function ProductDashboard() {
                     <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">VERSION</th>
                     <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">STATUS</th>
                     <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">DEPLOYED BY</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">DATE</th>
+                    <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">DATE & ACTIONS</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
