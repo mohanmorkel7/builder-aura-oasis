@@ -22,61 +22,14 @@ import {
 
 interface User {
   id: number;
-  name: string;
+  first_name: string;
+  last_name: string;
   email: string;
   role: 'admin' | 'sales' | 'product';
   status: 'active' | 'inactive' | 'pending';
-  lastLogin: string;
-  joinDate: string;
+  last_login?: string;
+  created_at: string;
 }
-
-const mockUsers: User[] = [
-  {
-    id: 1,
-    name: 'John Doe',
-    email: 'admin@banani.com',
-    role: 'admin',
-    status: 'active',
-    lastLogin: '2024-01-15',
-    joinDate: '2023-01-10'
-  },
-  {
-    id: 2,
-    name: 'Jane Smith',
-    email: 'sales@banani.com',
-    role: 'sales',
-    status: 'active',
-    lastLogin: '2024-01-14',
-    joinDate: '2023-02-15'
-  },
-  {
-    id: 3,
-    name: 'Mike Johnson',
-    email: 'product@banani.com',
-    role: 'product',
-    status: 'active',
-    lastLogin: '2024-01-13',
-    joinDate: '2023-03-20'
-  },
-  {
-    id: 4,
-    name: 'Sarah Wilson',
-    email: 'sarah@banani.com',
-    role: 'sales',
-    status: 'inactive',
-    lastLogin: '2023-12-20',
-    joinDate: '2023-04-01'
-  },
-  {
-    id: 5,
-    name: 'Tom Brown',
-    email: 'tom@banani.com',
-    role: 'product',
-    status: 'pending',
-    lastLogin: 'Never',
-    joinDate: '2024-01-10'
-  }
-];
 
 const roleColors = {
   admin: 'bg-red-100 text-red-700',
