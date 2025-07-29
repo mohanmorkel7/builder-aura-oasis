@@ -1,64 +1,76 @@
-import * as React from 'react';
+import * as React from "react";
 const { useState } = React;
-import { useParams, useNavigate } from 'react-router-dom';
-import { useClient } from '@/hooks/useApi';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  ArrowLeft, 
-  Save, 
-  Calendar as CalendarIcon, 
-  User, 
-  Clock, 
+import { useParams, useNavigate } from "react-router-dom";
+import { useClient } from "@/hooks/useApi";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  ArrowLeft,
+  Save,
+  Calendar as CalendarIcon,
+  User,
+  Clock,
   AlertCircle,
-  Info
-} from 'lucide-react';
+  Info,
+} from "lucide-react";
 
 const priorityOptions = [
-  { value: 'low', label: 'Low', color: 'bg-gray-100 text-gray-700' },
-  { value: 'medium', label: 'Medium', color: 'bg-yellow-100 text-yellow-700' },
-  { value: 'high', label: 'High', color: 'bg-orange-100 text-orange-700' },
-  { value: 'urgent', label: 'Urgent', color: 'bg-red-100 text-red-700' }
+  { value: "low", label: "Low", color: "bg-gray-100 text-gray-700" },
+  { value: "medium", label: "Medium", color: "bg-yellow-100 text-yellow-700" },
+  { value: "high", label: "High", color: "bg-orange-100 text-orange-700" },
+  { value: "urgent", label: "Urgent", color: "bg-red-100 text-red-700" },
 ];
 
 const followUpTypes = [
-  { value: 'call', label: 'Phone Call' },
-  { value: 'email', label: 'Email' },
-  { value: 'meeting', label: 'Meeting' },
-  { value: 'document', label: 'Document Review' },
-  { value: 'proposal', label: 'Proposal Follow-up' },
-  { value: 'contract', label: 'Contract Discussion' },
-  { value: 'onboarding', label: 'Onboarding Task' },
-  { value: 'other', label: 'Other' }
+  { value: "call", label: "Phone Call" },
+  { value: "email", label: "Email" },
+  { value: "meeting", label: "Meeting" },
+  { value: "document", label: "Document Review" },
+  { value: "proposal", label: "Proposal Follow-up" },
+  { value: "contract", label: "Contract Discussion" },
+  { value: "onboarding", label: "Onboarding Task" },
+  { value: "other", label: "Other" },
 ];
 
 export default function FollowUpNew() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { data: client, isLoading, error } = useClient(parseInt(id || '0'));
-  
+  const { data: client, isLoading, error } = useClient(parseInt(id || "0"));
+
   const [followUp, setFollowUp] = useState({
-    type: 'call',
-    title: '',
-    description: '',
-    priority: 'medium',
+    type: "call",
+    title: "",
+    description: "",
+    priority: "medium",
     due_date: new Date(),
-    assigned_to: '',
-    notes: '',
-    estimated_duration: 30
+    assigned_to: "",
+    notes: "",
+    estimated_duration: 30,
   });
-  
+
   const [saving, setSaving] = useState(false);
 
   const updateField = (field: string, value: any) => {
-    setFollowUp(prev => ({
+    setFollowUp((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
@@ -68,17 +80,17 @@ export default function FollowUpNew() {
       // Here you would make an API call to create the follow-up
       const followUpData = {
         ...followUp,
-        client_id: parseInt(id || '0'),
+        client_id: parseInt(id || "0"),
         created_at: new Date().toISOString(),
-        status: 'pending'
+        status: "pending",
       };
-      
-      console.log('Creating follow-up:', followUpData);
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
-      
+
+      console.log("Creating follow-up:", followUpData);
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
+
       navigate(`/sales/client/${id}`);
     } catch (error) {
-      console.error('Failed to create follow-up:', error);
+      console.error("Failed to create follow-up:", error);
     } finally {
       setSaving(false);
     }
@@ -99,7 +111,9 @@ export default function FollowUpNew() {
   if (error || !client) {
     return (
       <div className="p-6">
-        <div className="text-center text-red-600">Error loading client details</div>
+        <div className="text-center text-red-600">
+          Error loading client details
+        </div>
       </div>
     );
   }
@@ -117,16 +131,20 @@ export default function FollowUpNew() {
             Back to Client
           </Button>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Schedule Follow-up</h1>
-            <p className="text-gray-600">Create a new follow-up task for {clientData.client_name}</p>
+            <h1 className="text-2xl font-bold text-gray-900">
+              Schedule Follow-up
+            </h1>
+            <p className="text-gray-600">
+              Create a new follow-up task for {clientData.client_name}
+            </p>
           </div>
         </div>
         <div className="flex items-center space-x-3">
           <Button variant="outline" onClick={handleCancel}>
             Cancel
           </Button>
-          <Button 
-            onClick={handleSave} 
+          <Button
+            onClick={handleSave}
             disabled={!isFormValid || saving}
             className="min-w-20"
           >
@@ -146,8 +164,9 @@ export default function FollowUpNew() {
       <Alert>
         <Info className="h-4 w-4" />
         <AlertDescription>
-          Creating follow-up for <strong>{clientData.client_name}</strong> 
-          {clientData.contact_person && ` (Contact: ${clientData.contact_person})`}
+          Creating follow-up for <strong>{clientData.client_name}</strong>
+          {clientData.contact_person &&
+            ` (Contact: ${clientData.contact_person})`}
           {clientData.email && ` - ${clientData.email}`}
         </AlertDescription>
       </Alert>
@@ -164,7 +183,10 @@ export default function FollowUpNew() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="type">Follow-up Type</Label>
-              <Select value={followUp.type} onValueChange={(value) => updateField('type', value)}>
+              <Select
+                value={followUp.type}
+                onValueChange={(value) => updateField("type", value)}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -179,7 +201,10 @@ export default function FollowUpNew() {
             </div>
             <div>
               <Label htmlFor="priority">Priority</Label>
-              <Select value={followUp.priority} onValueChange={(value) => updateField('priority', value)}>
+              <Select
+                value={followUp.priority}
+                onValueChange={(value) => updateField("priority", value)}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -187,7 +212,9 @@ export default function FollowUpNew() {
                   {priorityOptions.map((priority) => (
                     <SelectItem key={priority.value} value={priority.value}>
                       <div className="flex items-center space-x-2">
-                        <div className={`w-2 h-2 rounded-full ${priority.color.split(' ')[0]}`} />
+                        <div
+                          className={`w-2 h-2 rounded-full ${priority.color.split(" ")[0]}`}
+                        />
                         <span>{priority.label}</span>
                       </div>
                     </SelectItem>
@@ -202,7 +229,7 @@ export default function FollowUpNew() {
             <Input
               id="title"
               value={followUp.title}
-              onChange={(e) => updateField('title', e.target.value)}
+              onChange={(e) => updateField("title", e.target.value)}
               placeholder="e.g., Follow up on proposal discussion"
             />
           </div>
@@ -212,7 +239,7 @@ export default function FollowUpNew() {
             <Textarea
               id="description"
               value={followUp.description}
-              onChange={(e) => updateField('description', e.target.value)}
+              onChange={(e) => updateField("description", e.target.value)}
               rows={3}
               placeholder="Provide details about what needs to be discussed or completed..."
             />
@@ -226,18 +253,29 @@ export default function FollowUpNew() {
                 <Input
                   id="due_date"
                   type="date"
-                  value={followUp.due_date ? followUp.due_date.toISOString().split('T')[0] : ''}
-                  onChange={(e) => updateField('due_date', e.target.value ? new Date(e.target.value) : new Date())}
+                  value={
+                    followUp.due_date
+                      ? followUp.due_date.toISOString().split("T")[0]
+                      : ""
+                  }
+                  onChange={(e) =>
+                    updateField(
+                      "due_date",
+                      e.target.value ? new Date(e.target.value) : new Date(),
+                    )
+                  }
                   className="pl-10"
-                  min={new Date().toISOString().split('T')[0]}
+                  min={new Date().toISOString().split("T")[0]}
                 />
               </div>
             </div>
             <div>
               <Label htmlFor="duration">Estimated Duration (minutes)</Label>
-              <Select 
-                value={followUp.estimated_duration.toString()} 
-                onValueChange={(value) => updateField('estimated_duration', parseInt(value))}
+              <Select
+                value={followUp.estimated_duration.toString()}
+                onValueChange={(value) =>
+                  updateField("estimated_duration", parseInt(value))
+                }
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -261,7 +299,7 @@ export default function FollowUpNew() {
               <Input
                 id="assigned_to"
                 value={followUp.assigned_to}
-                onChange={(e) => updateField('assigned_to', e.target.value)}
+                onChange={(e) => updateField("assigned_to", e.target.value)}
                 placeholder="Enter assignee name or email"
                 className="pl-10"
               />
@@ -276,7 +314,7 @@ export default function FollowUpNew() {
             <Textarea
               id="notes"
               value={followUp.notes}
-              onChange={(e) => updateField('notes', e.target.value)}
+              onChange={(e) => updateField("notes", e.target.value)}
               rows={2}
               placeholder="Any additional context or notes for this follow-up..."
             />
@@ -286,7 +324,8 @@ export default function FollowUpNew() {
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                Please fill in all required fields (Title and Description) before saving.
+                Please fill in all required fields (Title and Description)
+                before saving.
               </AlertDescription>
             </Alert>
           )}
@@ -306,21 +345,29 @@ export default function FollowUpNew() {
             <div className="flex items-start justify-between mb-2">
               <div className="flex-1">
                 <h4 className="font-medium text-gray-900">
-                  {followUp.title || 'Follow-up Title'}
+                  {followUp.title || "Follow-up Title"}
                 </h4>
                 <p className="text-sm text-gray-600 mt-1">
-                  {followUp.description || 'Follow-up description will appear here'}
+                  {followUp.description ||
+                    "Follow-up description will appear here"}
                 </p>
               </div>
-              <div className={`px-2 py-1 rounded text-xs font-medium ${
-                priorityOptions.find(p => p.value === followUp.priority)?.color || 'bg-gray-100 text-gray-700'
-              }`}>
-                {priorityOptions.find(p => p.value === followUp.priority)?.label || 'Medium'}
+              <div
+                className={`px-2 py-1 rounded text-xs font-medium ${
+                  priorityOptions.find((p) => p.value === followUp.priority)
+                    ?.color || "bg-gray-100 text-gray-700"
+                }`}
+              >
+                {priorityOptions.find((p) => p.value === followUp.priority)
+                  ?.label || "Medium"}
               </div>
             </div>
             <div className="flex items-center justify-between text-xs text-gray-500">
               <span>
-                Due: {followUp.due_date ? followUp.due_date.toLocaleDateString() : 'No date set'}
+                Due:{" "}
+                {followUp.due_date
+                  ? followUp.due_date.toLocaleDateString()
+                  : "No date set"}
               </span>
               <span>
                 <Clock className="w-3 h-3 inline mr-1" />

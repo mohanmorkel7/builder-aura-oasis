@@ -54,8 +54,9 @@ The database schema will be automatically created when the server starts. The sc
 ## Sample Data
 
 The schema includes sample data for development:
+
 - Default admin user: admin@banani.com / password
-- Default sales user: sales@banani.com / password  
+- Default sales user: sales@banani.com / password
 - Default product user: product@banani.com / password
 - Sample templates and products
 
@@ -71,7 +72,7 @@ The schema includes sample data for development:
 All API endpoints are available at `/api/*`:
 
 - `/api/users` - User management
-- `/api/clients` - Client management  
+- `/api/clients` - Client management
 - `/api/templates` - Template management
 - `/api/deployments` - Deployment management
 

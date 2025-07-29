@@ -1,64 +1,76 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useUsers, useUpdateUser, useDeleteUser } from '@/hooks/useApi';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { 
-  Search, 
-  Filter, 
-  Plus, 
-  Eye, 
-  Edit, 
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useUsers, useUpdateUser, useDeleteUser } from "@/hooks/useApi";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Search,
+  Filter,
+  Plus,
+  Eye,
+  Edit,
   Trash2,
   Users,
   UserCheck,
   UserX,
   Shield,
-  ArrowLeft
-} from 'lucide-react';
+  ArrowLeft,
+} from "lucide-react";
 
 interface User {
   id: number;
   first_name: string;
   last_name: string;
   email: string;
-  role: 'admin' | 'sales' | 'product';
-  status: 'active' | 'inactive' | 'pending';
+  role: "admin" | "sales" | "product";
+  status: "active" | "inactive" | "pending";
   last_login?: string;
   created_at: string;
 }
 
 const roleColors = {
-  admin: 'bg-red-100 text-red-700',
-  sales: 'bg-blue-100 text-blue-700',
-  product: 'bg-green-100 text-green-700'
+  admin: "bg-red-100 text-red-700",
+  sales: "bg-blue-100 text-blue-700",
+  product: "bg-green-100 text-green-700",
 };
 
 const statusColors = {
-  active: 'bg-green-100 text-green-700',
-  inactive: 'bg-gray-100 text-gray-700',
-  pending: 'bg-yellow-100 text-yellow-700'
+  active: "bg-green-100 text-green-700",
+  inactive: "bg-gray-100 text-gray-700",
+  pending: "bg-yellow-100 text-yellow-700",
 };
 
 export default function UserManagement() {
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [roleFilter, setRoleFilter] = useState<string>('all');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [roleFilter, setRoleFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
 
   const { data: users = [], isLoading, error } = useUsers();
   const updateUserMutation = useUpdateUser();
   const deleteUserMutation = useDeleteUser();
 
   const handleBack = () => {
-    navigate('/dashboard');
+    navigate("/dashboard");
   };
 
   const handleCreateUser = () => {
-    navigate('/admin/users/new');
+    navigate("/admin/users/new");
   };
 
   const handleViewUser = (userId: number) => {
@@ -69,35 +81,43 @@ export default function UserManagement() {
     navigate(`/admin/users/${userId}/edit`);
   };
 
-  const handleChangeRole = (userId: number, newRole: 'admin' | 'sales' | 'product') => {
+  const handleChangeRole = (
+    userId: number,
+    newRole: "admin" | "sales" | "product",
+  ) => {
     updateUserMutation.mutate({ id: userId, userData: { role: newRole } });
   };
 
-  const handleChangeStatus = (userId: number, newStatus: 'active' | 'inactive' | 'pending') => {
+  const handleChangeStatus = (
+    userId: number,
+    newStatus: "active" | "inactive" | "pending",
+  ) => {
     updateUserMutation.mutate({ id: userId, userData: { status: newStatus } });
   };
 
   const handleDeleteUser = (userId: number) => {
-    if (confirm('Are you sure you want to delete this user?')) {
+    if (confirm("Are you sure you want to delete this user?")) {
       deleteUserMutation.mutate(userId);
     }
   };
 
-  const filteredUsers = (users as User[]).filter(user => {
+  const filteredUsers = (users as User[]).filter((user) => {
     const fullName = `${user.first_name} ${user.last_name}`;
-    const matchesSearch = fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesRole = roleFilter === 'all' || user.role === roleFilter;
-    const matchesStatus = statusFilter === 'all' || user.status === statusFilter;
+    const matchesSearch =
+      fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesRole = roleFilter === "all" || user.role === roleFilter;
+    const matchesStatus =
+      statusFilter === "all" || user.status === statusFilter;
 
     return matchesSearch && matchesRole && matchesStatus;
   });
 
   const stats = {
     total: (users as User[]).length,
-    active: (users as User[]).filter(u => u.status === 'active').length,
-    pending: (users as User[]).filter(u => u.status === 'pending').length,
-    inactive: (users as User[]).filter(u => u.status === 'inactive').length
+    active: (users as User[]).filter((u) => u.status === "active").length,
+    pending: (users as User[]).filter((u) => u.status === "pending").length,
+    inactive: (users as User[]).filter((u) => u.status === "inactive").length,
   };
 
   if (isLoading) {
@@ -111,7 +131,9 @@ export default function UserManagement() {
   if (error) {
     return (
       <div className="p-6">
-        <div className="text-center text-red-600">Error loading users: {error.message}</div>
+        <div className="text-center text-red-600">
+          Error loading users: {error.message}
+        </div>
       </div>
     );
   }
@@ -126,7 +148,9 @@ export default function UserManagement() {
         </Button>
         <div className="flex-1">
           <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
-          <p className="text-gray-600 mt-1">Manage user accounts, roles, and permissions</p>
+          <p className="text-gray-600 mt-1">
+            Manage user accounts, roles, and permissions
+          </p>
         </div>
         <Button onClick={handleCreateUser}>
           <Plus className="w-4 h-4 mr-2" />
@@ -141,7 +165,9 @@ export default function UserManagement() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Total Users</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {stats.total}
+                </p>
               </div>
               <Users className="w-8 h-8 text-blue-600" />
             </div>
@@ -153,7 +179,9 @@ export default function UserManagement() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Active</p>
-                <p className="text-2xl font-bold text-green-600">{stats.active}</p>
+                <p className="text-2xl font-bold text-green-600">
+                  {stats.active}
+                </p>
               </div>
               <UserCheck className="w-8 h-8 text-green-600" />
             </div>
@@ -165,7 +193,9 @@ export default function UserManagement() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Pending</p>
-                <p className="text-2xl font-bold text-yellow-600">{stats.pending}</p>
+                <p className="text-2xl font-bold text-yellow-600">
+                  {stats.pending}
+                </p>
               </div>
               <Shield className="w-8 h-8 text-yellow-600" />
             </div>
@@ -177,7 +207,9 @@ export default function UserManagement() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Inactive</p>
-                <p className="text-2xl font-bold text-gray-600">{stats.inactive}</p>
+                <p className="text-2xl font-bold text-gray-600">
+                  {stats.inactive}
+                </p>
               </div>
               <UserX className="w-8 h-8 text-gray-600" />
             </div>
@@ -196,7 +228,7 @@ export default function UserManagement() {
             className="pl-10"
           />
         </div>
-        
+
         <Select value={roleFilter} onValueChange={setRoleFilter}>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Filter by role" />
@@ -226,18 +258,30 @@ export default function UserManagement() {
       <Card>
         <CardHeader>
           <CardTitle>User Directory</CardTitle>
-          <CardDescription>Manage user accounts and permissions</CardDescription>
+          <CardDescription>
+            Manage user accounts and permissions
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-200">
-                  <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">USER</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">ROLE</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">STATUS</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">LAST LOGIN</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">ACTIONS</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
+                    USER
+                  </th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
+                    ROLE
+                  </th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
+                    STATUS
+                  </th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
+                    LAST LOGIN
+                  </th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
+                    ACTIONS
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -245,12 +289,21 @@ export default function UserManagement() {
                   <tr key={user.id} className="hover:bg-gray-50">
                     <td className="py-4 px-4">
                       <div>
-                        <div className="font-medium text-gray-900">{user.first_name} {user.last_name}</div>
-                        <div className="text-sm text-gray-500">{user.email}</div>
+                        <div className="font-medium text-gray-900">
+                          {user.first_name} {user.last_name}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {user.email}
+                        </div>
                       </div>
                     </td>
                     <td className="py-4 px-4">
-                      <Select value={user.role} onValueChange={(value) => handleChangeRole(user.id, value as any)}>
+                      <Select
+                        value={user.role}
+                        onValueChange={(value) =>
+                          handleChangeRole(user.id, value as any)
+                        }
+                      >
                         <SelectTrigger className="w-[120px]">
                           <Badge className={roleColors[user.role]}>
                             {user.role}
@@ -264,7 +317,12 @@ export default function UserManagement() {
                       </Select>
                     </td>
                     <td className="py-4 px-4">
-                      <Select value={user.status} onValueChange={(value) => handleChangeStatus(user.id, value as any)}>
+                      <Select
+                        value={user.status}
+                        onValueChange={(value) =>
+                          handleChangeStatus(user.id, value as any)
+                        }
+                      >
                         <SelectTrigger className="w-[120px]">
                           <Badge className={statusColors[user.status]}>
                             {user.status}
@@ -278,17 +336,32 @@ export default function UserManagement() {
                       </Select>
                     </td>
                     <td className="py-4 px-4 text-gray-600">
-                      {user.last_login ? new Date(user.last_login).toLocaleDateString() : 'Never'}
+                      {user.last_login
+                        ? new Date(user.last_login).toLocaleDateString()
+                        : "Never"}
                     </td>
                     <td className="py-4 px-4">
                       <div className="flex items-center space-x-2">
-                        <Button variant="ghost" size="sm" onClick={() => handleViewUser(user.id)}>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleViewUser(user.id)}
+                        >
                           <Eye className="w-4 h-4" />
                         </Button>
-                        <Button variant="ghost" size="sm" onClick={() => handleEditUser(user.id)}>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleEditUser(user.id)}
+                        >
                           <Edit className="w-4 h-4" />
                         </Button>
-                        <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700" onClick={() => handleDeleteUser(user.id)}>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-red-600 hover:text-red-700"
+                          onClick={() => handleDeleteUser(user.id)}
+                        >
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>

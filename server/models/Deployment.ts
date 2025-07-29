@@ -1,11 +1,17 @@
-import { pool } from '../database/connection';
+import { pool } from "../database/connection";
 
 export interface Deployment {
   id: number;
   product_id: number;
   version: string;
-  environment: 'development' | 'staging' | 'qa' | 'production';
-  status: 'pending' | 'scheduled' | 'in_progress' | 'completed' | 'failed' | 'cancelled';
+  environment: "development" | "staging" | "qa" | "production";
+  status:
+    | "pending"
+    | "scheduled"
+    | "in_progress"
+    | "completed"
+    | "failed"
+    | "cancelled";
   description?: string;
   assigned_to?: number;
   scheduled_date?: string;
@@ -38,7 +44,7 @@ export interface Product {
 export interface CreateDeploymentData {
   product_id: number;
   version: string;
-  environment: 'development' | 'staging' | 'qa' | 'production';
+  environment: "development" | "staging" | "qa" | "production";
   description?: string;
   assigned_to?: number;
   scheduled_date?: string;
@@ -52,8 +58,14 @@ export interface CreateDeploymentData {
 
 export interface UpdateDeploymentData {
   version?: string;
-  environment?: 'development' | 'staging' | 'qa' | 'production';
-  status?: 'pending' | 'scheduled' | 'in_progress' | 'completed' | 'failed' | 'cancelled';
+  environment?: "development" | "staging" | "qa" | "production";
+  status?:
+    | "pending"
+    | "scheduled"
+    | "in_progress"
+    | "completed"
+    | "failed"
+    | "cancelled";
   description?: string;
   assigned_to?: number;
   scheduled_date?: string;
@@ -114,7 +126,9 @@ export class DeploymentRepository {
     return result.rows;
   }
 
-  static async create(deploymentData: CreateDeploymentData): Promise<Deployment> {
+  static async create(
+    deploymentData: CreateDeploymentData,
+  ): Promise<Deployment> {
     const query = `
       INSERT INTO deployments (product_id, version, environment, description, assigned_to,
                               scheduled_date, auto_rollback, run_tests, notify_team, 
@@ -122,7 +136,7 @@ export class DeploymentRepository {
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
       RETURNING *
     `;
-    
+
     const values = [
       deploymentData.product_id,
       deploymentData.version,
@@ -135,14 +149,17 @@ export class DeploymentRepository {
       deploymentData.notify_team ?? true,
       deploymentData.require_approval ?? false,
       deploymentData.release_notes || null,
-      deploymentData.created_by
+      deploymentData.created_by,
     ];
 
     const result = await pool.query(query, values);
     return result.rows[0];
   }
 
-  static async update(id: number, deploymentData: UpdateDeploymentData): Promise<Deployment | null> {
+  static async update(
+    id: number,
+    deploymentData: UpdateDeploymentData,
+  ): Promise<Deployment | null> {
     const setClause = [];
     const values = [];
     let paramIndex = 1;
@@ -164,7 +181,7 @@ export class DeploymentRepository {
 
     const query = `
       UPDATE deployments 
-      SET ${setClause.join(', ')}
+      SET ${setClause.join(", ")}
       WHERE id = $${paramIndex}
       RETURNING *
     `;
@@ -174,17 +191,20 @@ export class DeploymentRepository {
   }
 
   static async delete(id: number): Promise<boolean> {
-    const query = 'DELETE FROM deployments WHERE id = $1';
+    const query = "DELETE FROM deployments WHERE id = $1";
     const result = await pool.query(query, [id]);
     return result.rowCount > 0;
   }
 
-  static async updateStatus(id: number, status: Deployment['status']): Promise<Deployment | null> {
+  static async updateStatus(
+    id: number,
+    status: Deployment["status"],
+  ): Promise<Deployment | null> {
     const updateData: any = { status };
-    
-    if (status === 'in_progress') {
+
+    if (status === "in_progress") {
       updateData.started_at = new Date().toISOString();
-    } else if (status === 'completed' || status === 'failed') {
+    } else if (status === "completed" || status === "failed") {
       updateData.completed_at = new Date().toISOString();
     }
 
@@ -212,13 +232,14 @@ export class DeploymentRepository {
 
 export class ProductRepository {
   static async findAll(): Promise<Product[]> {
-    const query = 'SELECT * FROM products WHERE is_active = true ORDER BY name ASC';
+    const query =
+      "SELECT * FROM products WHERE is_active = true ORDER BY name ASC";
     const result = await pool.query(query);
     return result.rows;
   }
 
   static async findById(id: number): Promise<Product | null> {
-    const query = 'SELECT * FROM products WHERE id = $1';
+    const query = "SELECT * FROM products WHERE id = $1";
     const result = await pool.query(query, [id]);
     return result.rows[0] || null;
   }

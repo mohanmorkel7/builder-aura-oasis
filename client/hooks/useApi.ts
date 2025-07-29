@@ -1,5 +1,5 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiClient } from '@/lib/api';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiClient } from "@/lib/api";
 
 // Auth hooks
 export function useLogin() {
@@ -11,30 +11,100 @@ export function useLogin() {
 
 // Mock data for fallback
 const mockUsers = [
-  { id: 1, first_name: 'John', last_name: 'Doe', email: 'admin@banani.com', role: 'admin', status: 'active', created_at: '2023-01-10T09:00:00Z' },
-  { id: 2, first_name: 'Jane', last_name: 'Smith', email: 'sales@banani.com', role: 'sales', status: 'active', created_at: '2023-02-15T09:00:00Z' },
-  { id: 3, first_name: 'Mike', last_name: 'Johnson', email: 'product@banani.com', role: 'product', status: 'active', created_at: '2023-03-20T09:00:00Z' }
+  {
+    id: 1,
+    first_name: "John",
+    last_name: "Doe",
+    email: "admin@banani.com",
+    role: "admin",
+    status: "active",
+    created_at: "2023-01-10T09:00:00Z",
+  },
+  {
+    id: 2,
+    first_name: "Jane",
+    last_name: "Smith",
+    email: "sales@banani.com",
+    role: "sales",
+    status: "active",
+    created_at: "2023-02-15T09:00:00Z",
+  },
+  {
+    id: 3,
+    first_name: "Mike",
+    last_name: "Johnson",
+    email: "product@banani.com",
+    role: "product",
+    status: "active",
+    created_at: "2023-03-20T09:00:00Z",
+  },
 ];
 
 const mockClients = [
-  { id: 1, client_name: 'Acme Corp', contact_person: 'Jane Doe', email: 'jane@acme.com', status: 'active', priority: 'high', created_at: '2023-10-26T09:00:00Z' },
-  { id: 2, client_name: 'Globex Inc.', contact_person: 'Bob Wilson', email: 'bob@globex.com', status: 'onboarding', priority: 'medium', created_at: '2023-10-20T09:00:00Z' }
+  {
+    id: 1,
+    client_name: "Acme Corp",
+    contact_person: "Jane Doe",
+    email: "jane@acme.com",
+    status: "active",
+    priority: "high",
+    created_at: "2023-10-26T09:00:00Z",
+  },
+  {
+    id: 2,
+    client_name: "Globex Inc.",
+    contact_person: "Bob Wilson",
+    email: "bob@globex.com",
+    status: "onboarding",
+    priority: "medium",
+    created_at: "2023-10-20T09:00:00Z",
+  },
 ];
 
 const mockTemplates = [
-  { id: 1, name: 'Standard Client Onboarding', description: 'A comprehensive template for standard client onboarding', type: 'standard', step_count: 5, created_at: '2023-01-15T09:00:00Z' },
-  { id: 2, name: 'Enterprise Client Onboarding', description: 'Tailored onboarding process for large enterprise clients', type: 'enterprise', step_count: 8, created_at: '2023-01-15T09:00:00Z' }
+  {
+    id: 1,
+    name: "Standard Client Onboarding",
+    description: "A comprehensive template for standard client onboarding",
+    type: "standard",
+    step_count: 5,
+    created_at: "2023-01-15T09:00:00Z",
+  },
+  {
+    id: 2,
+    name: "Enterprise Client Onboarding",
+    description: "Tailored onboarding process for large enterprise clients",
+    type: "enterprise",
+    step_count: 8,
+    created_at: "2023-01-15T09:00:00Z",
+  },
 ];
 
 const mockDeployments = [
-  { id: 1, product_name: 'Core App', version: 'v2.1.0', environment: 'production', status: 'completed', assigned_to_name: 'Mike Johnson', created_at: '2024-07-15T09:00:00Z' },
-  { id: 2, product_name: 'Analytics Module', version: 'v1.5.2', environment: 'production', status: 'failed', assigned_to_name: 'Mike Johnson', created_at: '2024-07-16T09:00:00Z' }
+  {
+    id: 1,
+    product_name: "Core App",
+    version: "v2.1.0",
+    environment: "production",
+    status: "completed",
+    assigned_to_name: "Mike Johnson",
+    created_at: "2024-07-15T09:00:00Z",
+  },
+  {
+    id: 2,
+    product_name: "Analytics Module",
+    version: "v1.5.2",
+    environment: "production",
+    status: "failed",
+    assigned_to_name: "Mike Johnson",
+    created_at: "2024-07-16T09:00:00Z",
+  },
 ];
 
 // User hooks
 export function useUsers() {
   return useQuery({
-    queryKey: ['users'],
+    queryKey: ["users"],
     queryFn: async () => {
       try {
         return await apiClient.getUsers();
@@ -47,7 +117,7 @@ export function useUsers() {
 
 export function useUser(id: number) {
   return useQuery({
-    queryKey: ['users', id],
+    queryKey: ["users", id],
     queryFn: () => apiClient.getUser(id),
     enabled: !!id,
   });
@@ -58,7 +128,7 @@ export function useCreateUser() {
   return useMutation({
     mutationFn: (userData: any) => apiClient.createUser(userData),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.invalidateQueries({ queryKey: ["users"] });
     },
   });
 }
@@ -69,8 +139,8 @@ export function useUpdateUser() {
     mutationFn: ({ id, userData }: { id: number; userData: any }) =>
       apiClient.updateUser(id, userData),
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
-      queryClient.invalidateQueries({ queryKey: ['users', id] });
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      queryClient.invalidateQueries({ queryKey: ["users", id] });
     },
   });
 }
@@ -80,7 +150,7 @@ export function useDeleteUser() {
   return useMutation({
     mutationFn: (id: number) => apiClient.deleteUser(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.invalidateQueries({ queryKey: ["users"] });
     },
   });
 }
@@ -88,7 +158,7 @@ export function useDeleteUser() {
 // Client hooks
 export function useClients(salesRepId?: number) {
   return useQuery({
-    queryKey: ['clients', salesRepId],
+    queryKey: ["clients", salesRepId],
     queryFn: async () => {
       try {
         return await apiClient.getClients(salesRepId);
@@ -101,7 +171,7 @@ export function useClients(salesRepId?: number) {
 
 export function useClient(id: number) {
   return useQuery({
-    queryKey: ['clients', id],
+    queryKey: ["clients", id],
     queryFn: () => apiClient.getClient(id),
     enabled: !!id,
   });
@@ -112,8 +182,8 @@ export function useCreateClient() {
   return useMutation({
     mutationFn: (clientData: any) => apiClient.createClient(clientData),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['clients'] });
-      queryClient.invalidateQueries({ queryKey: ['client-stats'] });
+      queryClient.invalidateQueries({ queryKey: ["clients"] });
+      queryClient.invalidateQueries({ queryKey: ["client-stats"] });
     },
   });
 }
@@ -124,9 +194,9 @@ export function useUpdateClient() {
     mutationFn: ({ id, clientData }: { id: number; clientData: any }) =>
       apiClient.updateClient(id, clientData),
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ['clients'] });
-      queryClient.invalidateQueries({ queryKey: ['clients', id] });
-      queryClient.invalidateQueries({ queryKey: ['client-stats'] });
+      queryClient.invalidateQueries({ queryKey: ["clients"] });
+      queryClient.invalidateQueries({ queryKey: ["clients", id] });
+      queryClient.invalidateQueries({ queryKey: ["client-stats"] });
     },
   });
 }
@@ -136,15 +206,15 @@ export function useDeleteClient() {
   return useMutation({
     mutationFn: (id: number) => apiClient.deleteClient(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['clients'] });
-      queryClient.invalidateQueries({ queryKey: ['client-stats'] });
+      queryClient.invalidateQueries({ queryKey: ["clients"] });
+      queryClient.invalidateQueries({ queryKey: ["client-stats"] });
     },
   });
 }
 
 export function useClientStats() {
   return useQuery({
-    queryKey: ['client-stats'],
+    queryKey: ["client-stats"],
     queryFn: async () => {
       try {
         return await apiClient.getClientStats();
@@ -158,7 +228,7 @@ export function useClientStats() {
 // Template hooks
 export function useTemplates() {
   return useQuery({
-    queryKey: ['templates'],
+    queryKey: ["templates"],
     queryFn: async () => {
       try {
         return await apiClient.getTemplates();
@@ -171,7 +241,7 @@ export function useTemplates() {
 
 export function useTemplate(id: number) {
   return useQuery({
-    queryKey: ['templates', id],
+    queryKey: ["templates", id],
     queryFn: () => apiClient.getTemplate(id),
     enabled: !!id,
   });
@@ -182,7 +252,7 @@ export function useCreateTemplate() {
   return useMutation({
     mutationFn: (templateData: any) => apiClient.createTemplate(templateData),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['templates'] });
+      queryClient.invalidateQueries({ queryKey: ["templates"] });
     },
   });
 }
@@ -193,8 +263,8 @@ export function useUpdateTemplate() {
     mutationFn: ({ id, templateData }: { id: number; templateData: any }) =>
       apiClient.updateTemplate(id, templateData),
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ['templates'] });
-      queryClient.invalidateQueries({ queryKey: ['templates', id] });
+      queryClient.invalidateQueries({ queryKey: ["templates"] });
+      queryClient.invalidateQueries({ queryKey: ["templates", id] });
     },
   });
 }
@@ -204,7 +274,7 @@ export function useDeleteTemplate() {
   return useMutation({
     mutationFn: (id: number) => apiClient.deleteTemplate(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['templates'] });
+      queryClient.invalidateQueries({ queryKey: ["templates"] });
     },
   });
 }
@@ -215,7 +285,7 @@ export function useDuplicateTemplate() {
     mutationFn: ({ id, createdBy }: { id: number; createdBy: number }) =>
       apiClient.duplicateTemplate(id, createdBy),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['templates'] });
+      queryClient.invalidateQueries({ queryKey: ["templates"] });
     },
   });
 }
@@ -223,7 +293,7 @@ export function useDuplicateTemplate() {
 // Deployment hooks
 export function useDeployments(assigneeId?: number) {
   return useQuery({
-    queryKey: ['deployments', assigneeId],
+    queryKey: ["deployments", assigneeId],
     queryFn: async () => {
       try {
         return await apiClient.getDeployments(assigneeId);
@@ -236,7 +306,7 @@ export function useDeployments(assigneeId?: number) {
 
 export function useDeployment(id: number) {
   return useQuery({
-    queryKey: ['deployments', id],
+    queryKey: ["deployments", id],
     queryFn: () => apiClient.getDeployment(id),
     enabled: !!id,
   });
@@ -245,10 +315,11 @@ export function useDeployment(id: number) {
 export function useCreateDeployment() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (deploymentData: any) => apiClient.createDeployment(deploymentData),
+    mutationFn: (deploymentData: any) =>
+      apiClient.createDeployment(deploymentData),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['deployments'] });
-      queryClient.invalidateQueries({ queryKey: ['deployment-stats'] });
+      queryClient.invalidateQueries({ queryKey: ["deployments"] });
+      queryClient.invalidateQueries({ queryKey: ["deployment-stats"] });
     },
   });
 }
@@ -259,9 +330,9 @@ export function useUpdateDeployment() {
     mutationFn: ({ id, deploymentData }: { id: number; deploymentData: any }) =>
       apiClient.updateDeployment(id, deploymentData),
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ['deployments'] });
-      queryClient.invalidateQueries({ queryKey: ['deployments', id] });
-      queryClient.invalidateQueries({ queryKey: ['deployment-stats'] });
+      queryClient.invalidateQueries({ queryKey: ["deployments"] });
+      queryClient.invalidateQueries({ queryKey: ["deployments", id] });
+      queryClient.invalidateQueries({ queryKey: ["deployment-stats"] });
     },
   });
 }
@@ -272,9 +343,9 @@ export function useUpdateDeploymentStatus() {
     mutationFn: ({ id, status }: { id: number; status: string }) =>
       apiClient.updateDeploymentStatus(id, status),
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ['deployments'] });
-      queryClient.invalidateQueries({ queryKey: ['deployments', id] });
-      queryClient.invalidateQueries({ queryKey: ['deployment-stats'] });
+      queryClient.invalidateQueries({ queryKey: ["deployments"] });
+      queryClient.invalidateQueries({ queryKey: ["deployments", id] });
+      queryClient.invalidateQueries({ queryKey: ["deployment-stats"] });
     },
   });
 }
@@ -284,15 +355,15 @@ export function useDeleteDeployment() {
   return useMutation({
     mutationFn: (id: number) => apiClient.deleteDeployment(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['deployments'] });
-      queryClient.invalidateQueries({ queryKey: ['deployment-stats'] });
+      queryClient.invalidateQueries({ queryKey: ["deployments"] });
+      queryClient.invalidateQueries({ queryKey: ["deployment-stats"] });
     },
   });
 }
 
 export function useDeploymentStats() {
   return useQuery({
-    queryKey: ['deployment-stats'],
+    queryKey: ["deployment-stats"],
     queryFn: async () => {
       try {
         return await apiClient.getDeploymentStats();
@@ -305,7 +376,7 @@ export function useDeploymentStats() {
 
 export function useProducts() {
   return useQuery({
-    queryKey: ['products'],
+    queryKey: ["products"],
     queryFn: () => apiClient.getProducts(),
   });
 }

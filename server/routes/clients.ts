@@ -1,6 +1,10 @@
-import { Router, Request, Response } from 'express';
-import { ClientRepository, CreateClientData, UpdateClientData } from '../models/Client';
-import { MockDataService } from '../services/mockData';
+import { Router, Request, Response } from "express";
+import {
+  ClientRepository,
+  CreateClientData,
+  UpdateClientData,
+} from "../models/Client";
+import { MockDataService } from "../services/mockData";
 
 const router = Router();
 
@@ -15,7 +19,7 @@ async function isDatabaseAvailable() {
 }
 
 // Get all clients
-router.get('/', async (req: Request, res: Response) => {
+router.get("/", async (req: Request, res: Response) => {
   try {
     const { salesRep } = req.query;
 
@@ -24,7 +28,7 @@ router.get('/', async (req: Request, res: Response) => {
       if (salesRep) {
         const salesRepId = parseInt(salesRep as string);
         if (isNaN(salesRepId)) {
-          return res.status(400).json({ error: 'Invalid sales rep ID' });
+          return res.status(400).json({ error: "Invalid sales rep ID" });
         }
         clients = await ClientRepository.findBySalesRep(salesRepId);
       } else {
@@ -34,13 +38,15 @@ router.get('/', async (req: Request, res: Response) => {
       clients = await MockDataService.getAllClients();
       if (salesRep) {
         const salesRepId = parseInt(salesRep as string);
-        clients = clients.filter(client => client.sales_rep_id === salesRepId);
+        clients = clients.filter(
+          (client) => client.sales_rep_id === salesRepId,
+        );
       }
     }
 
     res.json(clients);
   } catch (error) {
-    console.error('Error fetching clients:', error);
+    console.error("Error fetching clients:", error);
     // Fallback to mock data
     const clients = await MockDataService.getAllClients();
     res.json(clients);
@@ -48,7 +54,7 @@ router.get('/', async (req: Request, res: Response) => {
 });
 
 // Get client statistics
-router.get('/stats', async (req: Request, res: Response) => {
+router.get("/stats", async (req: Request, res: Response) => {
   try {
     let stats;
     if (await isDatabaseAvailable()) {
@@ -58,7 +64,7 @@ router.get('/stats', async (req: Request, res: Response) => {
     }
     res.json(stats);
   } catch (error) {
-    console.error('Error fetching client stats:', error);
+    console.error("Error fetching client stats:", error);
     // Fallback to mock data
     const stats = await MockDataService.getClientStats();
     res.json(stats);
@@ -66,11 +72,11 @@ router.get('/stats', async (req: Request, res: Response) => {
 });
 
 // Get client by ID
-router.get('/:id', async (req: Request, res: Response) => {
+router.get("/:id", async (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params.id);
     if (isNaN(id)) {
-      return res.status(400).json({ error: 'Invalid client ID' });
+      return res.status(400).json({ error: "Invalid client ID" });
     }
 
     let client;
@@ -79,103 +85,122 @@ router.get('/:id', async (req: Request, res: Response) => {
     } else {
       // Use mock data
       const clients = await MockDataService.getAllClients();
-      client = clients.find(c => c.id === id);
+      client = clients.find((c) => c.id === id);
     }
 
     if (!client) {
-      return res.status(404).json({ error: 'Client not found' });
+      return res.status(404).json({ error: "Client not found" });
     }
 
     res.json(client);
   } catch (error) {
-    console.error('Error fetching client:', error);
+    console.error("Error fetching client:", error);
     // Fallback to mock data
     try {
       const clients = await MockDataService.getAllClients();
-      const client = clients.find(c => c.id === id);
+      const client = clients.find((c) => c.id === id);
       if (client) {
         res.json(client);
       } else {
-        res.status(404).json({ error: 'Client not found' });
+        res.status(404).json({ error: "Client not found" });
       }
     } catch (fallbackError) {
-      res.status(500).json({ error: 'Failed to fetch client' });
+      res.status(500).json({ error: "Failed to fetch client" });
     }
   }
 });
 
 // Create new client
-router.post('/', async (req: Request, res: Response) => {
+router.post("/", async (req: Request, res: Response) => {
   try {
     const clientData: CreateClientData = req.body;
-    
+
     // Validate required fields
-    if (!clientData.client_name || !clientData.contact_person || !clientData.email) {
-      return res.status(400).json({ error: 'Missing required fields: client_name, contact_person, email' });
+    if (
+      !clientData.client_name ||
+      !clientData.contact_person ||
+      !clientData.email
+    ) {
+      return res
+        .status(400)
+        .json({
+          error: "Missing required fields: client_name, contact_person, email",
+        });
     }
 
     // Validate priority if provided
-    if (clientData.priority && !['low', 'medium', 'high', 'urgent'].includes(clientData.priority)) {
-      return res.status(400).json({ error: 'Invalid priority value' });
+    if (
+      clientData.priority &&
+      !["low", "medium", "high", "urgent"].includes(clientData.priority)
+    ) {
+      return res.status(400).json({ error: "Invalid priority value" });
     }
 
     const client = await ClientRepository.create(clientData);
     res.status(201).json(client);
   } catch (error) {
-    console.error('Error creating client:', error);
-    res.status(500).json({ error: 'Failed to create client' });
+    console.error("Error creating client:", error);
+    res.status(500).json({ error: "Failed to create client" });
   }
 });
 
 // Update client
-router.put('/:id', async (req: Request, res: Response) => {
+router.put("/:id", async (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params.id);
     if (isNaN(id)) {
-      return res.status(400).json({ error: 'Invalid client ID' });
+      return res.status(400).json({ error: "Invalid client ID" });
     }
 
     const clientData: UpdateClientData = req.body;
-    
+
     // Validate priority if provided
-    if (clientData.priority && !['low', 'medium', 'high', 'urgent'].includes(clientData.priority)) {
-      return res.status(400).json({ error: 'Invalid priority value' });
+    if (
+      clientData.priority &&
+      !["low", "medium", "high", "urgent"].includes(clientData.priority)
+    ) {
+      return res.status(400).json({ error: "Invalid priority value" });
     }
 
     // Validate status if provided
-    if (clientData.status && !['active', 'inactive', 'onboarding', 'completed'].includes(clientData.status)) {
-      return res.status(400).json({ error: 'Invalid status value' });
+    if (
+      clientData.status &&
+      !["active", "inactive", "onboarding", "completed"].includes(
+        clientData.status,
+      )
+    ) {
+      return res.status(400).json({ error: "Invalid status value" });
     }
 
     const client = await ClientRepository.update(id, clientData);
     if (!client) {
-      return res.status(404).json({ error: 'Client not found' });
+      return res.status(404).json({ error: "Client not found" });
     }
 
     res.json(client);
   } catch (error) {
-    console.error('Error updating client:', error);
-    res.status(500).json({ error: 'Failed to update client' });
+    console.error("Error updating client:", error);
+    res.status(500).json({ error: "Failed to update client" });
   }
 });
 
 // Delete client
-router.delete('/:id', async (req: Request, res: Response) => {
+router.delete("/:id", async (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params.id);
     if (isNaN(id)) {
-      return res.status(400).json({ error: 'Invalid client ID' });
+      return res.status(400).json({ error: "Invalid client ID" });
     }
 
     const success = await ClientRepository.delete(id);
     if (!success) {
-      return res.status(404).json({ error: 'Client not found' });
+      return res.status(404).json({ error: "Client not found" });
     }
 
     res.status(204).send();
   } catch (error) {
-    console.error('Error deleting client:', error);
-    res.status(500).json({ error: 'Failed to delete client' });
+    console.error("Error deleting client:", error);
+    res.status(500).json({ error: "Failed to delete client" });
   }
 });
 

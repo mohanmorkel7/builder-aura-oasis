@@ -1,4 +1,4 @@
-import { pool } from '../database/connection';
+import { pool } from "../database/connection";
 
 export interface Client {
   id: number;
@@ -14,8 +14,8 @@ export interface Client {
   zip_code?: string;
   country?: string;
   expected_value?: number;
-  priority: 'low' | 'medium' | 'high' | 'urgent';
-  status: 'active' | 'inactive' | 'onboarding' | 'completed';
+  priority: "low" | "medium" | "high" | "urgent";
+  status: "active" | "inactive" | "onboarding" | "completed";
   sales_rep_id?: number;
   start_date?: string;
   notes?: string;
@@ -37,7 +37,7 @@ export interface CreateClientData {
   zip_code?: string;
   country?: string;
   expected_value?: number;
-  priority?: 'low' | 'medium' | 'high' | 'urgent';
+  priority?: "low" | "medium" | "high" | "urgent";
   sales_rep_id?: number;
   start_date?: string;
   notes?: string;
@@ -56,8 +56,8 @@ export interface UpdateClientData {
   zip_code?: string;
   country?: string;
   expected_value?: number;
-  priority?: 'low' | 'medium' | 'high' | 'urgent';
-  status?: 'active' | 'inactive' | 'onboarding' | 'completed';
+  priority?: "low" | "medium" | "high" | "urgent";
+  status?: "active" | "inactive" | "onboarding" | "completed";
   sales_rep_id?: number;
   start_date?: string;
   notes?: string;
@@ -109,7 +109,7 @@ export class ClientRepository {
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
       RETURNING *
     `;
-    
+
     const values = [
       clientData.client_name,
       clientData.contact_person,
@@ -123,17 +123,20 @@ export class ClientRepository {
       clientData.zip_code || null,
       clientData.country || null,
       clientData.expected_value || null,
-      clientData.priority || 'medium',
+      clientData.priority || "medium",
       clientData.sales_rep_id || null,
       clientData.start_date || null,
-      clientData.notes || null
+      clientData.notes || null,
     ];
 
     const result = await pool.query(query, values);
     return result.rows[0];
   }
 
-  static async update(id: number, clientData: UpdateClientData): Promise<Client | null> {
+  static async update(
+    id: number,
+    clientData: UpdateClientData,
+  ): Promise<Client | null> {
     const setClause = [];
     const values = [];
     let paramIndex = 1;
@@ -155,7 +158,7 @@ export class ClientRepository {
 
     const query = `
       UPDATE clients 
-      SET ${setClause.join(', ')}
+      SET ${setClause.join(", ")}
       WHERE id = $${paramIndex}
       RETURNING *
     `;
@@ -165,7 +168,7 @@ export class ClientRepository {
   }
 
   static async delete(id: number): Promise<boolean> {
-    const query = 'DELETE FROM clients WHERE id = $1';
+    const query = "DELETE FROM clients WHERE id = $1";
     const result = await pool.query(query, [id]);
     return result.rowCount > 0;
   }

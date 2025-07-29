@@ -1,5 +1,5 @@
-import { pool } from '../database/connection';
-import bcrypt from 'bcryptjs';
+import { pool } from "../database/connection";
+import bcrypt from "bcryptjs";
 
 export interface User {
   id: number;
@@ -7,10 +7,10 @@ export interface User {
   last_name: string;
   email: string;
   phone?: string;
-  role: 'admin' | 'sales' | 'product';
+  role: "admin" | "sales" | "product";
   department?: string;
   manager_id?: number;
-  status: 'active' | 'inactive' | 'pending';
+  status: "active" | "inactive" | "pending";
   start_date?: string;
   last_login?: string;
   two_factor_enabled: boolean;
@@ -25,7 +25,7 @@ export interface CreateUserData {
   email: string;
   phone?: string;
   password: string;
-  role: 'admin' | 'sales' | 'product';
+  role: "admin" | "sales" | "product";
   department?: string;
   manager_id?: number;
   start_date?: string;
@@ -38,10 +38,10 @@ export interface UpdateUserData {
   last_name?: string;
   email?: string;
   phone?: string;
-  role?: 'admin' | 'sales' | 'product';
+  role?: "admin" | "sales" | "product";
   department?: string;
   manager_id?: number;
-  status?: 'active' | 'inactive' | 'pending';
+  status?: "active" | "inactive" | "pending";
   start_date?: string;
   two_factor_enabled?: boolean;
   notes?: string;
@@ -86,7 +86,7 @@ export class UserRepository {
 
   static async create(userData: CreateUserData): Promise<User> {
     const passwordHash = await bcrypt.hash(userData.password, 10);
-    
+
     const query = `
       INSERT INTO users (first_name, last_name, email, phone, password_hash, role, 
                         department, manager_id, start_date, two_factor_enabled, notes)
@@ -95,7 +95,7 @@ export class UserRepository {
                 manager_id, status, start_date, last_login, two_factor_enabled, 
                 notes, created_at, updated_at
     `;
-    
+
     const values = [
       userData.first_name,
       userData.last_name,
@@ -107,14 +107,17 @@ export class UserRepository {
       userData.manager_id || null,
       userData.start_date || null,
       userData.two_factor_enabled || false,
-      userData.notes || null
+      userData.notes || null,
     ];
 
     const result = await pool.query(query, values);
     return result.rows[0];
   }
 
-  static async update(id: number, userData: UpdateUserData): Promise<User | null> {
+  static async update(
+    id: number,
+    userData: UpdateUserData,
+  ): Promise<User | null> {
     const setClause = [];
     const values = [];
     let paramIndex = 1;
@@ -136,7 +139,7 @@ export class UserRepository {
 
     const query = `
       UPDATE users 
-      SET ${setClause.join(', ')}
+      SET ${setClause.join(", ")}
       WHERE id = $${paramIndex}
       RETURNING id, first_name, last_name, email, phone, role, department, 
                 manager_id, status, start_date, last_login, two_factor_enabled, 
@@ -148,17 +151,21 @@ export class UserRepository {
   }
 
   static async delete(id: number): Promise<boolean> {
-    const query = 'DELETE FROM users WHERE id = $1';
+    const query = "DELETE FROM users WHERE id = $1";
     const result = await pool.query(query, [id]);
     return result.rowCount > 0;
   }
 
   static async updateLastLogin(id: number): Promise<void> {
-    const query = 'UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = $1';
+    const query =
+      "UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = $1";
     await pool.query(query, [id]);
   }
 
-  static async verifyPassword(email: string, password: string): Promise<User | null> {
+  static async verifyPassword(
+    email: string,
+    password: string,
+  ): Promise<User | null> {
     const user: any = await this.findByEmail(email);
     if (!user || !user.password_hash) {
       return null;

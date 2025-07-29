@@ -1,20 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { DatePicker } from '@/components/ui/calendar';
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { DatePicker } from "@/components/ui/calendar";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
   ResponsiveContainer,
   LineChart,
   Line,
@@ -22,14 +34,14 @@ import {
   Pie,
   Cell,
   Area,
-  AreaChart
-} from 'recharts';
-import { 
-  Download, 
-  Filter, 
-  Users, 
-  Building, 
-  Rocket, 
+  AreaChart,
+} from "recharts";
+import {
+  Download,
+  Filter,
+  Users,
+  Building,
+  Rocket,
   DollarSign,
   TrendingUp,
   Activity,
@@ -38,8 +50,8 @@ import {
   Eye,
   CheckCircle,
   AlertTriangle,
-  Clock
-} from 'lucide-react';
+  Clock,
+} from "lucide-react";
 
 // Mock data for reports
 const systemMetrics = {
@@ -50,65 +62,115 @@ const systemMetrics = {
   userGrowth: 12.5,
   clientGrowth: 8.3,
   deploymentGrowth: 15.2,
-  revenueGrowth: 18.7
+  revenueGrowth: 18.7,
 };
 
 const monthlyData = [
-  { month: 'Jan', users: 45, clients: 12, deployments: 8, revenue: 25000 },
-  { month: 'Feb', users: 52, clients: 15, deployments: 12, revenue: 32000 },
-  { month: 'Mar', users: 48, clients: 18, deployments: 15, revenue: 28000 },
-  { month: 'Apr', users: 61, clients: 22, deployments: 18, revenue: 35000 },
-  { month: 'May', users: 55, clients: 25, deployments: 21, revenue: 42000 },
-  { month: 'Jun', users: 67, clients: 28, deployments: 19, revenue: 38000 },
+  { month: "Jan", users: 45, clients: 12, deployments: 8, revenue: 25000 },
+  { month: "Feb", users: 52, clients: 15, deployments: 12, revenue: 32000 },
+  { month: "Mar", users: 48, clients: 18, deployments: 15, revenue: 28000 },
+  { month: "Apr", users: 61, clients: 22, deployments: 18, revenue: 35000 },
+  { month: "May", users: 55, clients: 25, deployments: 21, revenue: 42000 },
+  { month: "Jun", users: 67, clients: 28, deployments: 19, revenue: 38000 },
 ];
 
 const departmentData = [
-  { name: 'Sales', value: 35, color: '#3B82F6' },
-  { name: 'Product', value: 28, color: '#10B981' },
-  { name: 'Admin', value: 22, color: '#8B5CF6' },
-  { name: 'Support', value: 15, color: '#F59E0B' }
+  { name: "Sales", value: 35, color: "#3B82F6" },
+  { name: "Product", value: 28, color: "#10B981" },
+  { name: "Admin", value: 22, color: "#8B5CF6" },
+  { name: "Support", value: 15, color: "#F59E0B" },
 ];
 
 const clientStatusData = [
-  { status: 'Active', count: 45, color: '#10B981' },
-  { status: 'Onboarding', count: 23, color: '#3B82F6' },
-  { status: 'Completed', count: 18, color: '#8B5CF6' },
-  { status: 'Inactive', count: 12, color: '#6B7280' }
+  { status: "Active", count: 45, color: "#10B981" },
+  { status: "Onboarding", count: 23, color: "#3B82F6" },
+  { status: "Completed", count: 18, color: "#8B5CF6" },
+  { status: "Inactive", count: 12, color: "#6B7280" },
 ];
 
 const deploymentTrends = [
-  { week: 'Week 1', successful: 12, failed: 2, pending: 3 },
-  { week: 'Week 2', successful: 15, failed: 1, pending: 4 },
-  { week: 'Week 3', successful: 18, failed: 3, pending: 2 },
-  { week: 'Week 4', successful: 20, failed: 1, pending: 5 },
+  { week: "Week 1", successful: 12, failed: 2, pending: 3 },
+  { week: "Week 2", successful: 15, failed: 1, pending: 4 },
+  { week: "Week 3", successful: 18, failed: 3, pending: 2 },
+  { week: "Week 4", successful: 20, failed: 1, pending: 5 },
 ];
 
 const topClients = [
-  { name: 'TechCorp Solutions', revenue: 45000, status: 'active', deployments: 12 },
-  { name: 'Global Industries', revenue: 38000, status: 'active', deployments: 8 },
-  { name: 'Innovation Labs', revenue: 32000, status: 'onboarding', deployments: 6 },
-  { name: 'Digital Ventures', revenue: 28000, status: 'active', deployments: 10 },
-  { name: 'Smart Systems', revenue: 25000, status: 'completed', deployments: 7 }
+  {
+    name: "TechCorp Solutions",
+    revenue: 45000,
+    status: "active",
+    deployments: 12,
+  },
+  {
+    name: "Global Industries",
+    revenue: 38000,
+    status: "active",
+    deployments: 8,
+  },
+  {
+    name: "Innovation Labs",
+    revenue: 32000,
+    status: "onboarding",
+    deployments: 6,
+  },
+  {
+    name: "Digital Ventures",
+    revenue: 28000,
+    status: "active",
+    deployments: 10,
+  },
+  {
+    name: "Smart Systems",
+    revenue: 25000,
+    status: "completed",
+    deployments: 7,
+  },
 ];
 
 const recentActivity = [
-  { type: 'user_created', message: 'New user John Doe created', timestamp: '2 hours ago', icon: Users },
-  { type: 'deployment_completed', message: 'Deployment "API Gateway v3.0" completed', timestamp: '4 hours ago', icon: CheckCircle },
-  { type: 'client_added', message: 'New client "TechStart Inc." added', timestamp: '6 hours ago', icon: Building },
-  { type: 'deployment_failed', message: 'Deployment "Mobile App v1.2" failed', timestamp: '8 hours ago', icon: AlertTriangle },
-  { type: 'user_login', message: 'User admin@banani.com logged in', timestamp: '1 day ago', icon: Activity }
+  {
+    type: "user_created",
+    message: "New user John Doe created",
+    timestamp: "2 hours ago",
+    icon: Users,
+  },
+  {
+    type: "deployment_completed",
+    message: 'Deployment "API Gateway v3.0" completed',
+    timestamp: "4 hours ago",
+    icon: CheckCircle,
+  },
+  {
+    type: "client_added",
+    message: 'New client "TechStart Inc." added',
+    timestamp: "6 hours ago",
+    icon: Building,
+  },
+  {
+    type: "deployment_failed",
+    message: 'Deployment "Mobile App v1.2" failed',
+    timestamp: "8 hours ago",
+    icon: AlertTriangle,
+  },
+  {
+    type: "user_login",
+    message: "User admin@banani.com logged in",
+    timestamp: "1 day ago",
+    icon: Activity,
+  },
 ];
 
 export default function AdminReports() {
   const navigate = useNavigate();
-  const [dateRange, setDateRange] = useState('last_30_days');
-  const [reportType, setReportType] = useState('overview');
+  const [dateRange, setDateRange] = useState("last_30_days");
+  const [reportType, setReportType] = useState("overview");
 
   // Suppress Recharts defaultProps warnings
   useEffect(() => {
     const originalWarn = console.warn;
     console.warn = (...args) => {
-      if (args[0]?.includes?.('Support for defaultProps will be removed')) {
+      if (args[0]?.includes?.("Support for defaultProps will be removed")) {
         return; // Suppress this specific warning
       }
       originalWarn.apply(console, args);
@@ -121,11 +183,16 @@ export default function AdminReports() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-green-100 text-green-700';
-      case 'onboarding': return 'bg-blue-100 text-blue-700';
-      case 'completed': return 'bg-purple-100 text-purple-700';
-      case 'inactive': return 'bg-gray-100 text-gray-700';
-      default: return 'bg-gray-100 text-gray-700';
+      case "active":
+        return "bg-green-100 text-green-700";
+      case "onboarding":
+        return "bg-blue-100 text-blue-700";
+      case "completed":
+        return "bg-purple-100 text-purple-700";
+      case "inactive":
+        return "bg-gray-100 text-gray-700";
+      default:
+        return "bg-gray-100 text-gray-700";
     }
   };
 
@@ -135,7 +202,7 @@ export default function AdminReports() {
       deployment_completed: CheckCircle,
       client_added: Building,
       deployment_failed: AlertTriangle,
-      user_login: Activity
+      user_login: Activity,
     };
     return icons[type as keyof typeof icons] || Activity;
   };
@@ -151,7 +218,9 @@ export default function AdminReports() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">System Reports</h1>
-          <p className="text-gray-600 mt-1">Comprehensive analytics and system reports</p>
+          <p className="text-gray-600 mt-1">
+            Comprehensive analytics and system reports
+          </p>
         </div>
         <div className="flex items-center space-x-3">
           <Select value={dateRange} onValueChange={setDateRange}>
@@ -184,8 +253,12 @@ export default function AdminReports() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Total Users</p>
-                <p className="text-3xl font-bold text-gray-900">{systemMetrics.totalUsers}</p>
-                <p className="text-sm text-green-600">+{systemMetrics.userGrowth}% from last month</p>
+                <p className="text-3xl font-bold text-gray-900">
+                  {systemMetrics.totalUsers}
+                </p>
+                <p className="text-sm text-green-600">
+                  +{systemMetrics.userGrowth}% from last month
+                </p>
               </div>
               <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
                 <Users className="w-6 h-6 text-blue-600" />
@@ -198,9 +271,15 @@ export default function AdminReports() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Active Clients</p>
-                <p className="text-3xl font-bold text-gray-900">{systemMetrics.activeClients}</p>
-                <p className="text-sm text-green-600">+{systemMetrics.clientGrowth}% from last month</p>
+                <p className="text-sm font-medium text-gray-600">
+                  Active Clients
+                </p>
+                <p className="text-3xl font-bold text-gray-900">
+                  {systemMetrics.activeClients}
+                </p>
+                <p className="text-sm text-green-600">
+                  +{systemMetrics.clientGrowth}% from last month
+                </p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
                 <Building className="w-6 h-6 text-green-600" />
@@ -213,9 +292,15 @@ export default function AdminReports() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Deployments</p>
-                <p className="text-3xl font-bold text-gray-900">{systemMetrics.totalDeployments}</p>
-                <p className="text-sm text-green-600">+{systemMetrics.deploymentGrowth}% from last month</p>
+                <p className="text-sm font-medium text-gray-600">
+                  Total Deployments
+                </p>
+                <p className="text-3xl font-bold text-gray-900">
+                  {systemMetrics.totalDeployments}
+                </p>
+                <p className="text-sm text-green-600">
+                  +{systemMetrics.deploymentGrowth}% from last month
+                </p>
               </div>
               <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
                 <Rocket className="w-6 h-6 text-purple-600" />
@@ -228,9 +313,15 @@ export default function AdminReports() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Revenue</p>
-                <p className="text-3xl font-bold text-gray-900">${systemMetrics.revenue.toLocaleString()}</p>
-                <p className="text-sm text-green-600">+{systemMetrics.revenueGrowth}% from last month</p>
+                <p className="text-sm font-medium text-gray-600">
+                  Total Revenue
+                </p>
+                <p className="text-3xl font-bold text-gray-900">
+                  ${systemMetrics.revenue.toLocaleString()}
+                </p>
+                <p className="text-sm text-green-600">
+                  +{systemMetrics.revenueGrowth}% from last month
+                </p>
               </div>
               <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
                 <DollarSign className="w-6 h-6 text-yellow-600" />
@@ -255,7 +346,9 @@ export default function AdminReports() {
             <Card>
               <CardHeader>
                 <CardTitle>Monthly Trends</CardTitle>
-                <CardDescription>User growth and activity over time</CardDescription>
+                <CardDescription>
+                  User growth and activity over time
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
@@ -330,13 +423,18 @@ export default function AdminReports() {
                       allowDecimals={true}
                       allowDuplicatedCategory={true}
                     />
-                    <Tooltip formatter={(value) => [`$${value.toLocaleString()}`, 'Revenue']} />
+                    <Tooltip
+                      formatter={(value) => [
+                        `$${value.toLocaleString()}`,
+                        "Revenue",
+                      ]}
+                    />
                     <Line
                       type="monotone"
                       dataKey="revenue"
                       stroke="#10B981"
                       strokeWidth={3}
-                      dot={{ fill: '#10B981', r: 6 }}
+                      dot={{ fill: "#10B981", r: 6 }}
                     />
                   </LineChart>
                 </ResponsiveContainer>
@@ -348,7 +446,9 @@ export default function AdminReports() {
             <Card>
               <CardHeader>
                 <CardTitle>Department Distribution</CardTitle>
-                <CardDescription>User distribution across departments</CardDescription>
+                <CardDescription>
+                  User distribution across departments
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
@@ -375,23 +475,38 @@ export default function AdminReports() {
             <Card>
               <CardHeader>
                 <CardTitle>Client Status Distribution</CardTitle>
-                <CardDescription>Current client status breakdown</CardDescription>
+                <CardDescription>
+                  Current client status breakdown
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {clientStatusData.map((item) => (
-                    <div key={item.status} className="flex items-center justify-between">
+                    <div
+                      key={item.status}
+                      className="flex items-center justify-between"
+                    >
                       <div className="flex items-center space-x-3">
-                        <div 
-                          className="w-4 h-4 rounded-full" 
+                        <div
+                          className="w-4 h-4 rounded-full"
                           style={{ backgroundColor: item.color }}
                         />
                         <span className="font-medium">{item.status}</span>
                       </div>
                       <div className="flex items-center space-x-3">
                         <span className="text-2xl font-bold">{item.count}</span>
-                        <Badge className={getStatusColor(item.status.toLowerCase())}>
-                          {Math.round((item.count / clientStatusData.reduce((sum, d) => sum + d.count, 0)) * 100)}%
+                        <Badge
+                          className={getStatusColor(item.status.toLowerCase())}
+                        >
+                          {Math.round(
+                            (item.count /
+                              clientStatusData.reduce(
+                                (sum, d) => sum + d.count,
+                                0,
+                              )) *
+                              100,
+                          )}
+                          %
                         </Badge>
                       </div>
                     </div>
@@ -406,7 +521,9 @@ export default function AdminReports() {
           <Card>
             <CardHeader>
               <CardTitle>User Analytics</CardTitle>
-              <CardDescription>Detailed user statistics and trends</CardDescription>
+              <CardDescription>
+                Detailed user statistics and trends
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
@@ -461,26 +578,37 @@ export default function AdminReports() {
           <Card>
             <CardHeader>
               <CardTitle>Top Clients by Revenue</CardTitle>
-              <CardDescription>Highest revenue generating clients</CardDescription>
+              <CardDescription>
+                Highest revenue generating clients
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {topClients.map((client, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div
+                    key={index}
+                    className="flex items-center justify-between p-4 border rounded-lg"
+                  >
                     <div className="flex items-center space-x-4">
                       <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center font-bold text-gray-600">
                         {index + 1}
                       </div>
                       <div>
-                        <h4 className="font-medium text-gray-900">{client.name}</h4>
-                        <p className="text-sm text-gray-600">{client.deployments} deployments</p>
+                        <h4 className="font-medium text-gray-900">
+                          {client.name}
+                        </h4>
+                        <p className="text-sm text-gray-600">
+                          {client.deployments} deployments
+                        </p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-4">
                       <Badge className={getStatusColor(client.status)}>
                         {client.status}
                       </Badge>
-                      <span className="font-bold text-lg">${client.revenue.toLocaleString()}</span>
+                      <span className="font-bold text-lg">
+                        ${client.revenue.toLocaleString()}
+                      </span>
                     </div>
                   </div>
                 ))}
@@ -493,7 +621,9 @@ export default function AdminReports() {
           <Card>
             <CardHeader>
               <CardTitle>Deployment Success Rate</CardTitle>
-              <CardDescription>Weekly deployment performance trends</CardDescription>
+              <CardDescription>
+                Weekly deployment performance trends
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={400}>
@@ -536,28 +666,45 @@ export default function AdminReports() {
           <Card>
             <CardHeader>
               <CardTitle>Recent System Activity</CardTitle>
-              <CardDescription>Latest system events and user actions</CardDescription>
+              <CardDescription>
+                Latest system events and user actions
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {recentActivity.map((activity, index) => {
                   const IconComponent = getActivityIcon(activity.type);
                   return (
-                    <div key={index} className="flex items-center space-x-4 p-3 border rounded-lg">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                        activity.type === 'deployment_failed' ? 'bg-red-100' :
-                        activity.type === 'deployment_completed' ? 'bg-green-100' :
-                        'bg-blue-100'
-                      }`}>
-                        <IconComponent className={`w-5 h-5 ${
-                          activity.type === 'deployment_failed' ? 'text-red-600' :
-                          activity.type === 'deployment_completed' ? 'text-green-600' :
-                          'text-blue-600'
-                        }`} />
+                    <div
+                      key={index}
+                      className="flex items-center space-x-4 p-3 border rounded-lg"
+                    >
+                      <div
+                        className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                          activity.type === "deployment_failed"
+                            ? "bg-red-100"
+                            : activity.type === "deployment_completed"
+                              ? "bg-green-100"
+                              : "bg-blue-100"
+                        }`}
+                      >
+                        <IconComponent
+                          className={`w-5 h-5 ${
+                            activity.type === "deployment_failed"
+                              ? "text-red-600"
+                              : activity.type === "deployment_completed"
+                                ? "text-green-600"
+                                : "text-blue-600"
+                          }`}
+                        />
                       </div>
                       <div className="flex-1">
-                        <p className="font-medium text-gray-900">{activity.message}</p>
-                        <p className="text-sm text-gray-600">{activity.timestamp}</p>
+                        <p className="font-medium text-gray-900">
+                          {activity.message}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          {activity.timestamp}
+                        </p>
                       </div>
                     </div>
                   );
@@ -576,19 +723,19 @@ export default function AdminReports() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Button variant="outline" onClick={() => exportReport('pdf')}>
+            <Button variant="outline" onClick={() => exportReport("pdf")}>
               <FileText className="w-4 h-4 mr-2" />
               Export PDF
             </Button>
-            <Button variant="outline" onClick={() => exportReport('excel')}>
+            <Button variant="outline" onClick={() => exportReport("excel")}>
               <FileText className="w-4 h-4 mr-2" />
               Export Excel
             </Button>
-            <Button variant="outline" onClick={() => exportReport('csv')}>
+            <Button variant="outline" onClick={() => exportReport("csv")}>
               <FileText className="w-4 h-4 mr-2" />
               Export CSV
             </Button>
-            <Button variant="outline" onClick={() => exportReport('json')}>
+            <Button variant="outline" onClick={() => exportReport("json")}>
               <FileText className="w-4 h-4 mr-2" />
               Export JSON
             </Button>

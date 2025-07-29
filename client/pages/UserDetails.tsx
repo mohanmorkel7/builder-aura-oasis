@@ -1,104 +1,110 @@
-import React from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useUser } from '@/hooks/useApi';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Separator } from '@/components/ui/separator';
-import { 
-  ArrowLeft, 
-  Edit, 
-  Mail, 
-  Phone, 
+import React from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useUser } from "@/hooks/useApi";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
+import {
+  ArrowLeft,
+  Edit,
+  Mail,
+  Phone,
   Calendar,
   Building,
   User,
   Shield,
   Activity,
   Clock,
-  CheckCircle
-} from 'lucide-react';
+  CheckCircle,
+} from "lucide-react";
 
 const roleColors = {
-  admin: 'bg-red-100 text-red-700',
-  sales: 'bg-blue-100 text-blue-700',
-  product: 'bg-green-100 text-green-700'
+  admin: "bg-red-100 text-red-700",
+  sales: "bg-blue-100 text-blue-700",
+  product: "bg-green-100 text-green-700",
 };
 
 const statusColors = {
-  active: 'bg-green-100 text-green-700',
-  inactive: 'bg-gray-100 text-gray-700',
-  pending: 'bg-yellow-100 text-yellow-700'
+  active: "bg-green-100 text-green-700",
+  inactive: "bg-gray-100 text-gray-700",
+  pending: "bg-yellow-100 text-yellow-700",
 };
 
 // Mock activity data
 const mockRecentActivity = [
   {
     id: 1,
-    action: 'Logged in to system',
-    timestamp: '2024-01-15T10:30:00Z',
-    details: 'Successful login from Chrome browser'
+    action: "Logged in to system",
+    timestamp: "2024-01-15T10:30:00Z",
+    details: "Successful login from Chrome browser",
   },
   {
     id: 2,
-    action: 'Updated client information',
-    timestamp: '2024-01-15T09:45:00Z',
-    details: 'Modified Acme Corp contact details'
+    action: "Updated client information",
+    timestamp: "2024-01-15T09:45:00Z",
+    details: "Modified Acme Corp contact details",
   },
   {
     id: 3,
-    action: 'Created new template',
-    timestamp: '2024-01-14T16:20:00Z',
-    details: 'Enterprise Onboarding Template v2.0'
+    action: "Created new template",
+    timestamp: "2024-01-14T16:20:00Z",
+    details: "Enterprise Onboarding Template v2.0",
   },
   {
     id: 4,
-    action: 'Completed deployment',
-    timestamp: '2024-01-14T14:15:00Z',
-    details: 'Core App v2.1.0 to production'
+    action: "Completed deployment",
+    timestamp: "2024-01-14T14:15:00Z",
+    details: "Core App v2.1.0 to production",
   },
   {
     id: 5,
-    action: 'Added new user',
-    timestamp: '2024-01-13T11:30:00Z',
-    details: 'Created account for Sarah Wilson'
-  }
+    action: "Added new user",
+    timestamp: "2024-01-13T11:30:00Z",
+    details: "Created account for Sarah Wilson",
+  },
 ];
 
 // Mock permissions data
 const mockPermissions = {
   admin: [
-    'User Management',
-    'Template Creation & Editing',
-    'System Configuration',
-    'Analytics & Reports',
-    'Client Management',
-    'Deployment Management'
+    "User Management",
+    "Template Creation & Editing",
+    "System Configuration",
+    "Analytics & Reports",
+    "Client Management",
+    "Deployment Management",
   ],
   sales: [
-    'Client Management',
-    'Follow-up Tracking',
-    'Template Usage',
-    'Sales Reports',
-    'Contact Management'
+    "Client Management",
+    "Follow-up Tracking",
+    "Template Usage",
+    "Sales Reports",
+    "Contact Management",
   ],
   product: [
-    'Deployment Management',
-    'Product Configuration',
-    'Release Management',
-    'System Monitoring',
-    'Development Tools'
-  ]
+    "Deployment Management",
+    "Product Configuration",
+    "Release Management",
+    "System Monitoring",
+    "Development Tools",
+  ],
 };
 
 export default function UserDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { data: user, isLoading, error } = useUser(parseInt(id || '0'));
+  const { data: user, isLoading, error } = useUser(parseInt(id || "0"));
 
   const handleBack = () => {
-    navigate('/admin/users');
+    navigate("/admin/users");
   };
 
   const handleEdit = () => {
@@ -116,7 +122,9 @@ export default function UserDetails() {
   if (error || !user) {
     return (
       <div className="p-6">
-        <div className="text-center text-red-600">Error loading user details</div>
+        <div className="text-center text-red-600">
+          Error loading user details
+        </div>
       </div>
     );
   }
@@ -153,13 +161,16 @@ export default function UserDetails() {
           <Card>
             <CardHeader>
               <CardTitle>User Profile</CardTitle>
-              <CardDescription>Basic user information and contact details</CardDescription>
+              <CardDescription>
+                Basic user information and contact details
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex items-start space-x-6 mb-6">
                 <Avatar className="w-20 h-20">
                   <AvatarFallback className="text-xl bg-primary text-white">
-                    {userData.first_name[0]}{userData.last_name[0]}
+                    {userData.first_name[0]}
+                    {userData.last_name[0]}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
@@ -168,10 +179,12 @@ export default function UserDetails() {
                   </h3>
                   <div className="flex items-center space-x-4 mt-2">
                     <Badge className={roleColors[userData.role]}>
-                      {userData.role.charAt(0).toUpperCase() + userData.role.slice(1)}
+                      {userData.role.charAt(0).toUpperCase() +
+                        userData.role.slice(1)}
                     </Badge>
                     <Badge className={statusColors[userData.status]}>
-                      {userData.status.charAt(0).toUpperCase() + userData.status.slice(1)}
+                      {userData.status.charAt(0).toUpperCase() +
+                        userData.status.slice(1)}
                     </Badge>
                   </div>
                 </div>
@@ -182,42 +195,59 @@ export default function UserDetails() {
                   <div className="flex items-center space-x-2">
                     <Mail className="w-4 h-4 text-gray-400" />
                     <span className="font-medium text-gray-600">Email:</span>
-                    <a href={`mailto:${userData.email}`} className="text-blue-600 hover:underline">
+                    <a
+                      href={`mailto:${userData.email}`}
+                      className="text-blue-600 hover:underline"
+                    >
                       {userData.email}
                     </a>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Phone className="w-4 h-4 text-gray-400" />
                     <span className="font-medium text-gray-600">Phone:</span>
-                    <span className="text-gray-900">{userData.phone || 'Not provided'}</span>
+                    <span className="text-gray-900">
+                      {userData.phone || "Not provided"}
+                    </span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Building className="w-4 h-4 text-gray-400" />
-                    <span className="font-medium text-gray-600">Department:</span>
-                    <span className="text-gray-900">{userData.department || 'Not specified'}</span>
+                    <span className="font-medium text-gray-600">
+                      Department:
+                    </span>
+                    <span className="text-gray-900">
+                      {userData.department || "Not specified"}
+                    </span>
                   </div>
                 </div>
-                
+
                 <div className="space-y-4">
                   <div className="flex items-center space-x-2">
                     <Calendar className="w-4 h-4 text-gray-400" />
-                    <span className="font-medium text-gray-600">Start Date:</span>
+                    <span className="font-medium text-gray-600">
+                      Start Date:
+                    </span>
                     <span className="text-gray-900">
-                      {userData.start_date ? new Date(userData.start_date).toLocaleDateString() : 'Not set'}
+                      {userData.start_date
+                        ? new Date(userData.start_date).toLocaleDateString()
+                        : "Not set"}
                     </span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Clock className="w-4 h-4 text-gray-400" />
-                    <span className="font-medium text-gray-600">Last Login:</span>
+                    <span className="font-medium text-gray-600">
+                      Last Login:
+                    </span>
                     <span className="text-gray-900">
-                      {userData.last_login ? new Date(userData.last_login).toLocaleString() : 'Never'}
+                      {userData.last_login
+                        ? new Date(userData.last_login).toLocaleString()
+                        : "Never"}
                     </span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Shield className="w-4 h-4 text-gray-400" />
                     <span className="font-medium text-gray-600">2FA:</span>
                     <span className="text-gray-900">
-                      {userData.two_factor_enabled ? 'Enabled' : 'Disabled'}
+                      {userData.two_factor_enabled ? "Enabled" : "Disabled"}
                     </span>
                   </div>
                 </div>
@@ -228,7 +258,9 @@ export default function UserDetails() {
                   <Separator className="my-6" />
                   <div>
                     <h4 className="font-medium text-gray-900 mb-2">Notes</h4>
-                    <p className="text-gray-700 whitespace-pre-wrap">{userData.notes}</p>
+                    <p className="text-gray-700 whitespace-pre-wrap">
+                      {userData.notes}
+                    </p>
                   </div>
                 </>
               )}
@@ -239,16 +271,25 @@ export default function UserDetails() {
           <Card>
             <CardHeader>
               <CardTitle>Recent Activity</CardTitle>
-              <CardDescription>Latest user actions and system interactions</CardDescription>
+              <CardDescription>
+                Latest user actions and system interactions
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {mockRecentActivity.map((activity) => (
-                  <div key={activity.id} className="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg">
+                  <div
+                    key={activity.id}
+                    className="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg"
+                  >
                     <div className="w-2 h-2 bg-primary rounded-full mt-2"></div>
                     <div className="flex-1">
-                      <p className="font-medium text-gray-900">{activity.action}</p>
-                      <p className="text-sm text-gray-600">{activity.details}</p>
+                      <p className="font-medium text-gray-900">
+                        {activity.action}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        {activity.details}
+                      </p>
                       <p className="text-xs text-gray-400 mt-1">
                         {new Date(activity.timestamp).toLocaleString()}
                       </p>
@@ -266,7 +307,9 @@ export default function UserDetails() {
           <Card>
             <CardHeader>
               <CardTitle>Role Permissions</CardTitle>
-              <CardDescription>Access rights for {userData.role} role</CardDescription>
+              <CardDescription>
+                Access rights for {userData.role} role
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
@@ -284,21 +327,35 @@ export default function UserDetails() {
           <Card>
             <CardHeader>
               <CardTitle>User Statistics</CardTitle>
-              <CardDescription>Activity and performance metrics</CardDescription>
+              <CardDescription>
+                Activity and performance metrics
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-600">Total Logins</span>
+                <span className="text-sm font-medium text-gray-600">
+                  Total Logins
+                </span>
                 <span className="text-lg font-bold text-gray-900">142</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-600">Actions This Month</span>
+                <span className="text-sm font-medium text-gray-600">
+                  Actions This Month
+                </span>
                 <span className="text-lg font-bold text-gray-900">28</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-600">Account Age</span>
+                <span className="text-sm font-medium text-gray-600">
+                  Account Age
+                </span>
                 <span className="text-lg font-bold text-gray-900">
-                  {userData.created_at ? Math.floor((Date.now() - new Date(userData.created_at).getTime()) / (1000 * 60 * 60 * 24)) : 0} days
+                  {userData.created_at
+                    ? Math.floor(
+                        (Date.now() - new Date(userData.created_at).getTime()) /
+                          (1000 * 60 * 60 * 24),
+                      )
+                    : 0}{" "}
+                  days
                 </span>
               </div>
             </CardContent>

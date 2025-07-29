@@ -1,10 +1,10 @@
-import { pool } from '../database/connection';
+import { pool } from "../database/connection";
 
 export interface Template {
   id: number;
   name: string;
   description?: string;
-  type: 'standard' | 'enterprise' | 'smb';
+  type: "standard" | "enterprise" | "smb";
   is_active: boolean;
   created_by: number;
   created_at: string;
@@ -29,7 +29,7 @@ export interface TemplateStep {
 export interface CreateTemplateData {
   name: string;
   description?: string;
-  type?: 'standard' | 'enterprise' | 'smb';
+  type?: "standard" | "enterprise" | "smb";
   created_by: number;
   steps: CreateTemplateStepData[];
 }
@@ -46,7 +46,7 @@ export interface CreateTemplateStepData {
 export interface UpdateTemplateData {
   name?: string;
   description?: string;
-  type?: 'standard' | 'enterprise' | 'smb';
+  type?: "standard" | "enterprise" | "smb";
   is_active?: boolean;
   steps?: CreateTemplateStepData[];
 }
@@ -76,7 +76,7 @@ export class TemplateRepository {
       LEFT JOIN users u ON t.created_by = u.id
       WHERE t.id = $1
     `;
-    
+
     const stepsQuery = `
       SELECT * FROM template_steps 
       WHERE template_id = $1 
@@ -89,7 +89,7 @@ export class TemplateRepository {
     }
 
     const stepsResult = await pool.query(stepsQuery, [id]);
-    
+
     const template = templateResult.rows[0];
     template.steps = stepsResult.rows;
     template.step_count = stepsResult.rows.length;
@@ -99,9 +99,9 @@ export class TemplateRepository {
 
   static async create(templateData: CreateTemplateData): Promise<Template> {
     const client = await pool.connect();
-    
+
     try {
-      await client.query('BEGIN');
+      await client.query("BEGIN");
 
       // Create template
       const templateQuery = `
@@ -109,12 +109,12 @@ export class TemplateRepository {
         VALUES ($1, $2, $3, $4)
         RETURNING *
       `;
-      
+
       const templateValues = [
         templateData.name,
         templateData.description || null,
-        templateData.type || 'standard',
-        templateData.created_by
+        templateData.type || "standard",
+        templateData.created_by,
       ];
 
       const templateResult = await client.query(templateQuery, templateValues);
@@ -123,43 +123,48 @@ export class TemplateRepository {
       // Create steps
       if (templateData.steps && templateData.steps.length > 0) {
         const stepQueries = templateData.steps.map((step, index) => {
-          return client.query(`
+          return client.query(
+            `
             INSERT INTO template_steps (template_id, step_order, name, description, 
                                       default_eta_days, auto_alert, email_reminder)
             VALUES ($1, $2, $3, $4, $5, $6, $7)
             RETURNING *
-          `, [
-            template.id,
-            step.step_order || index + 1,
-            step.name,
-            step.description || null,
-            step.default_eta_days,
-            step.auto_alert,
-            step.email_reminder
-          ]);
+          `,
+            [
+              template.id,
+              step.step_order || index + 1,
+              step.name,
+              step.description || null,
+              step.default_eta_days,
+              step.auto_alert,
+              step.email_reminder,
+            ],
+          );
         });
 
         const stepResults = await Promise.all(stepQueries);
-        template.steps = stepResults.map(result => result.rows[0]);
+        template.steps = stepResults.map((result) => result.rows[0]);
         template.step_count = template.steps.length;
       }
 
-      await client.query('COMMIT');
+      await client.query("COMMIT");
       return template;
-
     } catch (error) {
-      await client.query('ROLLBACK');
+      await client.query("ROLLBACK");
       throw error;
     } finally {
       client.release();
     }
   }
 
-  static async update(id: number, templateData: UpdateTemplateData): Promise<Template | null> {
+  static async update(
+    id: number,
+    templateData: UpdateTemplateData,
+  ): Promise<Template | null> {
     const client = await pool.connect();
-    
+
     try {
-      await client.query('BEGIN');
+      await client.query("BEGIN");
 
       // Update template
       const setClause = [];
@@ -167,7 +172,7 @@ export class TemplateRepository {
       let paramIndex = 1;
 
       for (const [key, value] of Object.entries(templateData)) {
-        if (key !== 'steps' && value !== undefined) {
+        if (key !== "steps" && value !== undefined) {
           setClause.push(`${key} = $${paramIndex}`);
           values.push(value);
           paramIndex++;
@@ -180,7 +185,7 @@ export class TemplateRepository {
 
         const templateQuery = `
           UPDATE onboarding_templates 
-          SET ${setClause.join(', ')}
+          SET ${setClause.join(", ")}
           WHERE id = $${paramIndex}
         `;
 
@@ -190,35 +195,40 @@ export class TemplateRepository {
       // Update steps if provided
       if (templateData.steps) {
         // Delete existing steps
-        await client.query('DELETE FROM template_steps WHERE template_id = $1', [id]);
+        await client.query(
+          "DELETE FROM template_steps WHERE template_id = $1",
+          [id],
+        );
 
         // Insert new steps
         if (templateData.steps.length > 0) {
           const stepQueries = templateData.steps.map((step, index) => {
-            return client.query(`
+            return client.query(
+              `
               INSERT INTO template_steps (template_id, step_order, name, description, 
                                         default_eta_days, auto_alert, email_reminder)
               VALUES ($1, $2, $3, $4, $5, $6, $7)
-            `, [
-              id,
-              step.step_order || index + 1,
-              step.name,
-              step.description || null,
-              step.default_eta_days,
-              step.auto_alert,
-              step.email_reminder
-            ]);
+            `,
+              [
+                id,
+                step.step_order || index + 1,
+                step.name,
+                step.description || null,
+                step.default_eta_days,
+                step.auto_alert,
+                step.email_reminder,
+              ],
+            );
           });
 
           await Promise.all(stepQueries);
         }
       }
 
-      await client.query('COMMIT');
+      await client.query("COMMIT");
       return this.findById(id);
-
     } catch (error) {
-      await client.query('ROLLBACK');
+      await client.query("ROLLBACK");
       throw error;
     } finally {
       client.release();
@@ -227,12 +237,16 @@ export class TemplateRepository {
 
   static async delete(id: number): Promise<boolean> {
     // Soft delete by setting is_active to false
-    const query = 'UPDATE onboarding_templates SET is_active = false WHERE id = $1';
+    const query =
+      "UPDATE onboarding_templates SET is_active = false WHERE id = $1";
     const result = await pool.query(query, [id]);
     return result.rowCount > 0;
   }
 
-  static async duplicate(id: number, createdBy: number): Promise<Template | null> {
+  static async duplicate(
+    id: number,
+    createdBy: number,
+  ): Promise<Template | null> {
     const originalTemplate = await this.findById(id);
     if (!originalTemplate) {
       return null;
@@ -243,14 +257,15 @@ export class TemplateRepository {
       description: originalTemplate.description,
       type: originalTemplate.type,
       created_by: createdBy,
-      steps: originalTemplate.steps?.map(step => ({
-        step_order: step.step_order,
-        name: step.name,
-        description: step.description,
-        default_eta_days: step.default_eta_days,
-        auto_alert: step.auto_alert,
-        email_reminder: step.email_reminder
-      })) || []
+      steps:
+        originalTemplate.steps?.map((step) => ({
+          step_order: step.step_order,
+          name: step.name,
+          description: step.description,
+          default_eta_days: step.default_eta_days,
+          auto_alert: step.auto_alert,
+          email_reminder: step.email_reminder,
+        })) || [],
     };
 
     return this.create(duplicateData);
