@@ -50,11 +50,22 @@ router.get('/', async (req: Request, res: Response) => {
 // Get deployment statistics
 router.get('/stats', async (req: Request, res: Response) => {
   try {
-    const stats = await DeploymentRepository.getStats();
+    let stats;
+    if (await isDatabaseAvailable()) {
+      stats = await DeploymentRepository.getStats();
+    } else {
+      stats = await MockDataService.getDeploymentStats();
+    }
     res.json(stats);
   } catch (error) {
     console.error('Error fetching deployment stats:', error);
-    res.status(500).json({ error: 'Failed to fetch deployment statistics' });
+    // Fallback to mock data
+    try {
+      const stats = await MockDataService.getDeploymentStats();
+      res.json(stats);
+    } catch (fallbackError) {
+      res.status(500).json({ error: 'Failed to fetch deployment statistics' });
+    }
   }
 });
 
