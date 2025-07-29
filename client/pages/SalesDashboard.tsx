@@ -93,7 +93,7 @@ export default function SalesDashboard() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {clients.map((client: any) => (
+                {(clients as any[]).map((client: any) => (
                   <tr key={client.id} className="hover:bg-gray-50">
                     <td className="py-4 px-4">
                       <div className="font-medium text-gray-900">{client.client_name}</div>
