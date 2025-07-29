@@ -40,7 +40,15 @@ router.get('/:id', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Invalid user ID' });
     }
 
-    const user = await UserRepository.findById(id);
+    let user;
+    if (await isDatabaseAvailable()) {
+      user = await UserRepository.findById(id);
+    } else {
+      // Use mock data
+      const users = await MockDataService.getAllUsers();
+      user = users.find(u => u.id === id);
+    }
+
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -48,7 +56,18 @@ router.get('/:id', async (req: Request, res: Response) => {
     res.json(user);
   } catch (error) {
     console.error('Error fetching user:', error);
-    res.status(500).json({ error: 'Failed to fetch user' });
+    // Fallback to mock data
+    try {
+      const users = await MockDataService.getAllUsers();
+      const user = users.find(u => u.id === id);
+      if (user) {
+        res.json(user);
+      } else {
+        res.status(404).json({ error: 'User not found' });
+      }
+    } catch (fallbackError) {
+      res.status(500).json({ error: 'Failed to fetch user' });
+    }
   }
 });
 
