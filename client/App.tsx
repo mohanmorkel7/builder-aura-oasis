@@ -99,10 +99,7 @@ function AppRoutes() {
       <Route path="/admin/users/:id" element={
         <ProtectedRoute allowedRoles={['admin']}>
           <DashboardLayout>
-            <PlaceholderPage
-              title="User Details"
-              description="View detailed user information and activity"
-            />
+            <UserDetails />
           </DashboardLayout>
         </ProtectedRoute>
       } />
