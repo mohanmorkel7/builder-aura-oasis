@@ -92,10 +92,13 @@ const statusColors = {
 
 export default function UserManagement() {
   const navigate = useNavigate();
-  const [users, setUsers] = useState<User[]>(mockUsers);
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+
+  const { data: users = [], isLoading, error } = useUsers();
+  const updateUserMutation = useUpdateUser();
+  const deleteUserMutation = useDeleteUser();
 
   const handleBack = () => {
     navigate('/dashboard');
