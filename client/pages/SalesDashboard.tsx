@@ -164,7 +164,7 @@ export default function SalesDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Onboarding</p>
-                <p className="text-2xl font-bold text-blue-600">{stats?.onboarding || 0}</p>
+                <p className="text-2xl font-bold text-blue-600">{(stats as any)?.onboarding || 0}</p>
               </div>
               <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
                 <div className="w-6 h-6 bg-blue-600 rounded-full"></div>
