@@ -98,7 +98,7 @@ export default function ProductDashboard() {
     );
   }
 
-  const recentDeployments = deployments.slice(0, 5); // Show only recent 5
+  const recentDeployments = (deployments as any[]).slice(0, 5); // Show only recent 5
 
   return (
     <div className="p-6">
