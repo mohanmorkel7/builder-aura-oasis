@@ -1,66 +1,55 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Separator } from "@/components/ui/separator";
-import {
-  ArrowLeft,
-  User,
-  Mail,
-  Phone,
-  Shield,
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useCreateUser } from '@/hooks/useApi';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Separator } from '@/components/ui/separator';
+import { 
+  ArrowLeft, 
+  User, 
+  Mail, 
+  Phone, 
+  Shield, 
   Key,
   Save,
-  Send,
-} from "lucide-react";
+  Send
+} from 'lucide-react';
 
 export default function AddUser() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    role: "",
-    department: "",
-    manager: "",
-    startDate: "",
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    role: '',
+    department: '',
+    manager: '',
+    startDate: '',
     sendWelcomeEmail: true,
     requirePasswordChange: true,
     twoFactorAuth: false,
-    notes: "",
+    notes: ''
   });
 
   const handleBack = () => {
-    navigate("/admin/users");
+    navigate('/admin/users');
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // In real app, this would save to backend
-    console.log("Creating user:", formData);
-    navigate("/admin/users");
+    console.log('Creating user:', formData);
+    navigate('/admin/users');
   };
 
   const handleInputChange = (field: string, value: any) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   return (
@@ -73,9 +62,7 @@ export default function AddUser() {
         </Button>
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Add New User</h1>
-          <p className="text-gray-600 mt-1">
-            Create a new user account and assign permissions
-          </p>
+          <p className="text-gray-600 mt-1">Create a new user account and assign permissions</p>
         </div>
       </div>
 
@@ -87,9 +74,7 @@ export default function AddUser() {
               <User className="w-5 h-5" />
               <span>Personal Information</span>
             </CardTitle>
-            <CardDescription>
-              Basic user details and contact information
-            </CardDescription>
+            <CardDescription>Basic user details and contact information</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -98,9 +83,7 @@ export default function AddUser() {
                 <Input
                   id="firstName"
                   value={formData.firstName}
-                  onChange={(e) =>
-                    handleInputChange("firstName", e.target.value)
-                  }
+                  onChange={(e) => handleInputChange('firstName', e.target.value)}
                   placeholder="Enter first name"
                   required
                 />
@@ -110,9 +93,7 @@ export default function AddUser() {
                 <Input
                   id="lastName"
                   value={formData.lastName}
-                  onChange={(e) =>
-                    handleInputChange("lastName", e.target.value)
-                  }
+                  onChange={(e) => handleInputChange('lastName', e.target.value)}
                   placeholder="Enter last name"
                   required
                 />
@@ -128,7 +109,7 @@ export default function AddUser() {
                     id="email"
                     type="email"
                     value={formData.email}
-                    onChange={(e) => handleInputChange("email", e.target.value)}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
                     placeholder="user@banani.com"
                     className="pl-10"
                     required
@@ -142,7 +123,7 @@ export default function AddUser() {
                   <Input
                     id="phone"
                     value={formData.phone}
-                    onChange={(e) => handleInputChange("phone", e.target.value)}
+                    onChange={(e) => handleInputChange('phone', e.target.value)}
                     placeholder="+1 (555) 123-4567"
                     className="pl-10"
                   />
@@ -159,47 +140,31 @@ export default function AddUser() {
               <Shield className="w-5 h-5" />
               <span>Role & Permissions</span>
             </CardTitle>
-            <CardDescription>
-              Define user access level and organizational details
-            </CardDescription>
+            <CardDescription>Define user access level and organizational details</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="role">Role *</Label>
-                <Select
-                  value={formData.role}
-                  onValueChange={(value) => handleInputChange("role", value)}
-                >
+                <Select value={formData.role} onValueChange={(value) => handleInputChange('role', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select user role" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="admin">Admin - Full access</SelectItem>
-                    <SelectItem value="sales">
-                      Sales - Client management
-                    </SelectItem>
-                    <SelectItem value="product">
-                      Product - Development tools
-                    </SelectItem>
+                    <SelectItem value="sales">Sales - Client management</SelectItem>
+                    <SelectItem value="product">Product - Development tools</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div>
                 <Label htmlFor="department">Department</Label>
-                <Select
-                  value={formData.department}
-                  onValueChange={(value) =>
-                    handleInputChange("department", value)
-                  }
-                >
+                <Select value={formData.department} onValueChange={(value) => handleInputChange('department', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select department" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="administration">
-                      Administration
-                    </SelectItem>
+                    <SelectItem value="administration">Administration</SelectItem>
                     <SelectItem value="sales">Sales & Marketing</SelectItem>
                     <SelectItem value="product">Product Development</SelectItem>
                     <SelectItem value="support">Customer Support</SelectItem>
@@ -212,21 +177,14 @@ export default function AddUser() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="manager">Reporting Manager</Label>
-                <Select
-                  value={formData.manager}
-                  onValueChange={(value) => handleInputChange("manager", value)}
-                >
+                <Select value={formData.manager} onValueChange={(value) => handleInputChange('manager', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select manager" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="john-doe">John Doe (Admin)</SelectItem>
-                    <SelectItem value="jane-smith">
-                      Jane Smith (Sales Lead)
-                    </SelectItem>
-                    <SelectItem value="mike-johnson">
-                      Mike Johnson (Product Lead)
-                    </SelectItem>
+                    <SelectItem value="jane-smith">Jane Smith (Sales Lead)</SelectItem>
+                    <SelectItem value="mike-johnson">Mike Johnson (Product Lead)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -236,9 +194,7 @@ export default function AddUser() {
                   id="startDate"
                   type="date"
                   value={formData.startDate}
-                  onChange={(e) =>
-                    handleInputChange("startDate", e.target.value)
-                  }
+                  onChange={(e) => handleInputChange('startDate', e.target.value)}
                 />
               </div>
             </div>
@@ -252,46 +208,32 @@ export default function AddUser() {
               <Key className="w-5 h-5" />
               <span>Account Settings</span>
             </CardTitle>
-            <CardDescription>
-              Configure security and notification preferences
-            </CardDescription>
+            <CardDescription>Configure security and notification preferences</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-4">
               <div className="flex items-center space-x-2">
                 <Checkbox
                   checked={formData.sendWelcomeEmail}
-                  onCheckedChange={(checked) =>
-                    handleInputChange("sendWelcomeEmail", checked)
-                  }
+                  onCheckedChange={(checked) => handleInputChange('sendWelcomeEmail', checked)}
                 />
-                <Label className="text-sm">
-                  Send welcome email with login instructions
-                </Label>
+                <Label className="text-sm">Send welcome email with login instructions</Label>
               </div>
-
+              
               <div className="flex items-center space-x-2">
                 <Checkbox
                   checked={formData.requirePasswordChange}
-                  onCheckedChange={(checked) =>
-                    handleInputChange("requirePasswordChange", checked)
-                  }
+                  onCheckedChange={(checked) => handleInputChange('requirePasswordChange', checked)}
                 />
-                <Label className="text-sm">
-                  Require password change on first login
-                </Label>
+                <Label className="text-sm">Require password change on first login</Label>
               </div>
-
+              
               <div className="flex items-center space-x-2">
                 <Checkbox
                   checked={formData.twoFactorAuth}
-                  onCheckedChange={(checked) =>
-                    handleInputChange("twoFactorAuth", checked)
-                  }
+                  onCheckedChange={(checked) => handleInputChange('twoFactorAuth', checked)}
                 />
-                <Label className="text-sm">
-                  Enable two-factor authentication
-                </Label>
+                <Label className="text-sm">Enable two-factor authentication</Label>
               </div>
             </div>
 
@@ -302,7 +244,7 @@ export default function AddUser() {
               <Textarea
                 id="notes"
                 value={formData.notes}
-                onChange={(e) => handleInputChange("notes", e.target.value)}
+                onChange={(e) => handleInputChange('notes', e.target.value)}
                 placeholder="Any additional information about this user..."
                 rows={3}
                 className="mt-1"
