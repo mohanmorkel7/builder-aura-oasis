@@ -1,0 +1,355 @@
+import React, { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useClient } from '@/hooks/useApi';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { format } from 'date-fns';
+import { 
+  ArrowLeft, 
+  Save, 
+  Calendar as CalendarIcon, 
+  User, 
+  Clock, 
+  AlertCircle,
+  Info
+} from 'lucide-react';
+
+const priorityOptions = [
+  { value: 'low', label: 'Low', color: 'bg-gray-100 text-gray-700' },
+  { value: 'medium', label: 'Medium', color: 'bg-yellow-100 text-yellow-700' },
+  { value: 'high', label: 'High', color: 'bg-orange-100 text-orange-700' },
+  { value: 'urgent', label: 'Urgent', color: 'bg-red-100 text-red-700' }
+];
+
+const followUpTypes = [
+  { value: 'call', label: 'Phone Call' },
+  { value: 'email', label: 'Email' },
+  { value: 'meeting', label: 'Meeting' },
+  { value: 'document', label: 'Document Review' },
+  { value: 'proposal', label: 'Proposal Follow-up' },
+  { value: 'contract', label: 'Contract Discussion' },
+  { value: 'onboarding', label: 'Onboarding Task' },
+  { value: 'other', label: 'Other' }
+];
+
+export default function FollowUpNew() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { data: client, isLoading, error } = useClient(parseInt(id || '0'));
+  
+  const [followUp, setFollowUp] = useState({
+    type: 'call',
+    title: '',
+    description: '',
+    priority: 'medium',
+    due_date: new Date(),
+    assigned_to: '',
+    notes: '',
+    estimated_duration: 30
+  });
+  
+  const [saving, setSaving] = useState(false);
+  const [datePickerOpen, setDatePickerOpen] = useState(false);
+
+  const updateField = (field: string, value: any) => {
+    setFollowUp(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      // Here you would make an API call to create the follow-up
+      const followUpData = {
+        ...followUp,
+        client_id: parseInt(id || '0'),
+        created_at: new Date().toISOString(),
+        status: 'pending'
+      };
+      
+      console.log('Creating follow-up:', followUpData);
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+      
+      navigate(`/sales/client/${id}`);
+    } catch (error) {
+      console.error('Failed to create follow-up:', error);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleCancel = () => {
+    navigate(`/sales/client/${id}`);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="p-6">
+        <div className="text-center">Loading client details...</div>
+      </div>
+    );
+  }
+
+  if (error || !client) {
+    return (
+      <div className="p-6">
+        <div className="text-center text-red-600">Error loading client details</div>
+      </div>
+    );
+  }
+
+  const clientData = client as any;
+  const isFormValid = followUp.title.trim() && followUp.description.trim();
+
+  return (
+    <div className="p-6 max-w-4xl mx-auto space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-4">
+          <Button variant="ghost" onClick={handleCancel}>
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Client
+          </Button>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Schedule Follow-up</h1>
+            <p className="text-gray-600">Create a new follow-up task for {clientData.client_name}</p>
+          </div>
+        </div>
+        <div className="flex items-center space-x-3">
+          <Button variant="outline" onClick={handleCancel}>
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleSave} 
+            disabled={!isFormValid || saving}
+            className="min-w-20"
+          >
+            {saving ? (
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <>
+                <Save className="w-4 h-4 mr-2" />
+                Save Follow-up
+              </>
+            )}
+          </Button>
+        </div>
+      </div>
+
+      {/* Client Info */}
+      <Alert>
+        <Info className="h-4 w-4" />
+        <AlertDescription>
+          Creating follow-up for <strong>{clientData.client_name}</strong> 
+          {clientData.contact_person && ` (Contact: ${clientData.contact_person})`}
+          {clientData.email && ` - ${clientData.email}`}
+        </AlertDescription>
+      </Alert>
+
+      {/* Form */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Follow-up Details</CardTitle>
+          <CardDescription>
+            Provide details about the follow-up task you want to schedule
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="type">Follow-up Type</Label>
+              <Select value={followUp.type} onValueChange={(value) => updateField('type', value)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {followUpTypes.map((type) => (
+                    <SelectItem key={type.value} value={type.value}>
+                      {type.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="priority">Priority</Label>
+              <Select value={followUp.priority} onValueChange={(value) => updateField('priority', value)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {priorityOptions.map((priority) => (
+                    <SelectItem key={priority.value} value={priority.value}>
+                      <div className="flex items-center space-x-2">
+                        <div className={`w-2 h-2 rounded-full ${priority.color.split(' ')[0]}`} />
+                        <span>{priority.label}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div>
+            <Label htmlFor="title">Follow-up Title *</Label>
+            <Input
+              id="title"
+              value={followUp.title}
+              onChange={(e) => updateField('title', e.target.value)}
+              placeholder="e.g., Follow up on proposal discussion"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="description">Description *</Label>
+            <Textarea
+              id="description"
+              value={followUp.description}
+              onChange={(e) => updateField('description', e.target.value)}
+              rows={3}
+              placeholder="Provide details about what needs to be discussed or completed..."
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>Due Date</Label>
+              <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-left font-normal"
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {followUp.due_date ? format(followUp.due_date, 'PPP') : 'Pick a date'}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={followUp.due_date}
+                    onSelect={(date) => {
+                      updateField('due_date', date);
+                      setDatePickerOpen(false);
+                    }}
+                    disabled={(date) => date < new Date()}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+            <div>
+              <Label htmlFor="duration">Estimated Duration (minutes)</Label>
+              <Select 
+                value={followUp.estimated_duration.toString()} 
+                onValueChange={(value) => updateField('estimated_duration', parseInt(value))}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="15">15 minutes</SelectItem>
+                  <SelectItem value="30">30 minutes</SelectItem>
+                  <SelectItem value="45">45 minutes</SelectItem>
+                  <SelectItem value="60">1 hour</SelectItem>
+                  <SelectItem value="90">1.5 hours</SelectItem>
+                  <SelectItem value="120">2 hours</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div>
+            <Label htmlFor="assigned_to">Assigned To</Label>
+            <div className="relative">
+              <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+              <Input
+                id="assigned_to"
+                value={followUp.assigned_to}
+                onChange={(e) => updateField('assigned_to', e.target.value)}
+                placeholder="Enter assignee name or email"
+                className="pl-10"
+              />
+            </div>
+            <p className="text-sm text-gray-600 mt-1">
+              Leave empty to assign to yourself
+            </p>
+          </div>
+
+          <div>
+            <Label htmlFor="notes">Additional Notes</Label>
+            <Textarea
+              id="notes"
+              value={followUp.notes}
+              onChange={(e) => updateField('notes', e.target.value)}
+              rows={2}
+              placeholder="Any additional context or notes for this follow-up..."
+            />
+          </div>
+
+          {!isFormValid && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                Please fill in all required fields (Title and Description) before saving.
+              </AlertDescription>
+            </Alert>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Preview */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Follow-up Preview</CardTitle>
+          <CardDescription>
+            Review how this follow-up will appear in the task list
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="p-4 border rounded-lg bg-gray-50">
+            <div className="flex items-start justify-between mb-2">
+              <div className="flex-1">
+                <h4 className="font-medium text-gray-900">
+                  {followUp.title || 'Follow-up Title'}
+                </h4>
+                <p className="text-sm text-gray-600 mt-1">
+                  {followUp.description || 'Follow-up description will appear here'}
+                </p>
+              </div>
+              <div className={`px-2 py-1 rounded text-xs font-medium ${
+                priorityOptions.find(p => p.value === followUp.priority)?.color || 'bg-gray-100 text-gray-700'
+              }`}>
+                {priorityOptions.find(p => p.value === followUp.priority)?.label || 'Medium'}
+              </div>
+            </div>
+            <div className="flex items-center justify-between text-xs text-gray-500">
+              <span>
+                Due: {followUp.due_date ? format(followUp.due_date, 'PPP') : 'No date set'}
+              </span>
+              <span>
+                <Clock className="w-3 h-3 inline mr-1" />
+                {followUp.estimated_duration}min
+              </span>
+            </div>
+            {followUp.assigned_to && (
+              <p className="text-xs text-gray-500 mt-1">
+                Assigned to: {followUp.assigned_to}
+              </p>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
