@@ -36,24 +36,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Mock authentication - in real app, this would be an API call
-    const mockUsers: User[] = [
-      { id: '1', name: 'John Doe', email: 'admin@banani.com', role: 'admin' },
-      { id: '2', name: 'Jane Smith', email: 'sales@banani.com', role: 'sales' },
-      { id: '3', name: 'Mike Johnson', email: 'product@banani.com', role: 'product' },
-    ];
 
-    const foundUser = mockUsers.find(u => u.email === email);
-    if (foundUser && password === 'password') {
-      setUser(foundUser);
-      localStorage.setItem('banani_user', JSON.stringify(foundUser));
-      setIsLoading(false);
-      return true;
+    try {
+      const response = await apiClient.login(email, password);
+
+      if (response.user) {
+        const userData: User = {
+          id: response.user.id.toString(),
+          name: `${response.user.first_name} ${response.user.last_name}`,
+          email: response.user.email,
+          role: response.user.role
+        };
+
+        setUser(userData);
+        localStorage.setItem('banani_user', JSON.stringify(userData));
+        setIsLoading(false);
+        return true;
+      }
+    } catch (error) {
+      console.error('Login error:', error);
     }
-    
+
     setIsLoading(false);
     return false;
   };
