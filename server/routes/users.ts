@@ -145,23 +145,38 @@ router.delete('/:id', async (req: Request, res: Response) => {
 router.post('/auth/login', async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
-    
+
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password required' });
     }
 
-    const user = await UserRepository.verifyPassword(email, password);
+    let user;
+    if (await isDatabaseAvailable()) {
+      user = await UserRepository.verifyPassword(email, password);
+      if (user) {
+        await UserRepository.updateLastLogin(user.id);
+      }
+    } else {
+      user = await MockDataService.verifyPassword(email, password);
+    }
+
     if (!user) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    // Update last login
-    await UserRepository.updateLastLogin(user.id);
-
     res.json({ user });
   } catch (error) {
     console.error('Error during login:', error);
-    res.status(500).json({ error: 'Login failed' });
+    // Fallback to mock data
+    try {
+      const user = await MockDataService.verifyPassword(req.body.email, req.body.password);
+      if (!user) {
+        return res.status(401).json({ error: 'Invalid credentials' });
+      }
+      res.json({ user });
+    } catch (fallbackError) {
+      res.status(500).json({ error: 'Login failed' });
+    }
   }
 });
 
