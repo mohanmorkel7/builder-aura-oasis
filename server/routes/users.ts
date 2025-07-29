@@ -56,7 +56,7 @@ router.get('/:id', async (req: Request, res: Response) => {
 router.post('/', async (req: Request, res: Response) => {
   try {
     const userData: CreateUserData = req.body;
-    
+
     // Validate required fields
     if (!userData.first_name || !userData.last_name || !userData.email || !userData.password || !userData.role) {
       return res.status(400).json({ error: 'Missing required fields' });
@@ -67,13 +67,23 @@ router.post('/', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Invalid role' });
     }
 
-    // Check if email already exists
-    const existingUser = await UserRepository.findByEmail(userData.email);
-    if (existingUser) {
-      return res.status(409).json({ error: 'Email already exists' });
+    let user;
+    if (await isDatabaseAvailable()) {
+      // Check if email already exists
+      const existingUser = await UserRepository.findByEmail(userData.email);
+      if (existingUser) {
+        return res.status(409).json({ error: 'Email already exists' });
+      }
+      user = await UserRepository.create(userData);
+    } else {
+      // Check if email already exists in mock data
+      const existingUser = await MockDataService.findUserByEmail(userData.email);
+      if (existingUser) {
+        return res.status(409).json({ error: 'Email already exists' });
+      }
+      user = await MockDataService.createUser(userData);
     }
 
-    const user = await UserRepository.create(userData);
     res.status(201).json(user);
   } catch (error) {
     console.error('Error creating user:', error);
