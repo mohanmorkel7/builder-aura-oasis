@@ -48,6 +48,7 @@ import {
   Eye,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
+import { useStepChats, useCreateStepChat } from "@/hooks/useApi";
 
 interface EnhancedStepItemProps {
   step: any;
