@@ -7,6 +7,7 @@ import usersRouter from "./routes/users";
 import clientsRouter from "./routes/clients";
 import templatesRouter from "./routes/templates";
 import deploymentsRouter from "./routes/deployments";
+import onboardingRouter from "./routes/onboarding";
 
 export function createServer() {
   const app = express();
