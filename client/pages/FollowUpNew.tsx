@@ -98,7 +98,7 @@ export default function FollowUpNew() {
 
       // Navigate back based on context
       if (isLeadFollowUp) {
-        navigate(`/sales/leads`);
+        navigate(`/leads`);
       } else {
         navigate(`/sales/client/${id}`);
       }
