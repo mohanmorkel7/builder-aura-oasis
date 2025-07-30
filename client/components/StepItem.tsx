@@ -192,7 +192,7 @@ export function StepItem({
                   <div>
                     <input
                       type="file"
-                      id={`file-upload-${step.id}`}
+                      id={`file-upload-${stepId}`}
                       className="hidden"
                       onChange={handleFileUpload}
                       multiple
@@ -200,7 +200,7 @@ export function StepItem({
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => document.getElementById(`file-upload-${step.id}`)?.click()}
+                      onClick={() => document.getElementById(`file-upload-${stepId}`)?.click()}
                     >
                       <Upload className="w-4 h-4 mr-2" />
                       Upload
