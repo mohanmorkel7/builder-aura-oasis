@@ -244,11 +244,6 @@ export function EnhancedStepItem({
                   {step.name}
                 </span>
                 <div className="flex items-center space-x-2">
-                  {documents.length > 0 && (
-                    <Badge variant="outline" className="text-xs">
-                      {documents.length} doc{documents.length !== 1 ? 's' : ''}
-                    </Badge>
-                  )}
                   {!chatLoading && chatMessages.length > 0 && (
                     <Badge variant="outline" className="text-xs">
                       {chatMessages.length} message{chatMessages.length !== 1 ? 's' : ''}
