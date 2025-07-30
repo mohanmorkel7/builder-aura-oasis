@@ -103,6 +103,17 @@ const priorityLevels = [
   { value: "low", label: "Low" },
 ];
 
+const currencyOptions = [
+  { value: "INR", label: "INR" },
+  { value: "USD", label: "USD" },
+  { value: "Dubai", label: "Dubai" },
+];
+
+const unitOptions = [
+  { value: "paisa", label: "Paisa" },
+  { value: "cents", label: "Cents" },
+];
+
 export default function CreateLead() {
   const navigate = useNavigate();
   const { user } = useAuth();
