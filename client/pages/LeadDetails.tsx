@@ -413,70 +413,28 @@ export default function LeadDetails() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {leadSteps.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">
-                    <Target className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No pipeline steps yet</h3>
-                    <p className="text-gray-600 mb-4">
-                      Create custom steps to track your sales process for this lead
-                    </p>
-                    <Button onClick={() => setNewStepDialog(true)}>
-                      <Plus className="w-4 h-4 mr-2" />
-                      Add First Step
-                    </Button>
-                  </div>
-                ) : (
-                  leadSteps.map((step: any, index: number) => (
-                    <div key={step.id} className="border rounded-lg p-4">
-                      <div className="flex items-center space-x-4">
-                        <div className="flex-shrink-0">
-                          {step.status === "completed" ? (
-                            <CheckCircle className="w-6 h-6 text-green-600" />
-                          ) : step.status === "in-progress" ? (
-                            <Clock className="w-6 h-6 text-blue-600" />
-                          ) : (
-                            <div className="w-6 h-6 border-2 border-gray-300 rounded-full" />
-                          )}
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-2">
-                            <span className="font-medium text-gray-900">
-                              {step.name}
-                            </span>
-                            <Badge variant="outline" className="text-xs">
-                              Step {step.step_order}
-                            </Badge>
-                          </div>
-                          <div className="text-sm text-gray-600 mt-1">
-                            {step.description}
-                          </div>
-                          <div className="text-sm text-gray-600">
-                            {step.status === "completed" &&
-                              step.completed_date &&
-                              `Completed on ${new Date(step.completed_date).toLocaleDateString()}`}
-                            {step.status !== "completed" &&
-                              step.due_date &&
-                              `Due: ${new Date(step.due_date).toLocaleDateString()}`}
-                          </div>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Select value={step.status} onValueChange={() => {}}>
-                            <SelectTrigger className="w-32">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="pending">Pending</SelectItem>
-                              <SelectItem value="in-progress">In Progress</SelectItem>
-                              <SelectItem value="completed">Completed</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
+              {leadSteps.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  <Target className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No pipeline steps yet</h3>
+                  <p className="text-gray-600 mb-4">
+                    Create custom steps to track your sales process for this lead
+                  </p>
+                  <Button onClick={() => setNewStepDialog(true)}>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add First Step
+                  </Button>
+                </div>
+              ) : (
+                <DraggableStepsList
+                  steps={leadSteps}
+                  expandedSteps={expandedSteps}
+                  onToggleExpansion={handleToggleExpansion}
+                  onUpdateStatus={handleUpdateStatus}
+                  onDeleteStep={handleDeleteStep}
+                  onReorderSteps={handleReorderSteps}
+                />
+              )}
             </CardContent>
           </Card>
         </div>
