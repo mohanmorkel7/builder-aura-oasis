@@ -418,13 +418,7 @@ export function EnhancedStepItem({
                   <div className="border-t pt-4">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center space-x-2">
-                        <Button
-                          size="sm"
-                          variant={isRichTextMode ? "default" : "outline"}
-                          onClick={() => setIsRichTextMode(!isRichTextMode)}
-                        >
-                          {isRichTextMode ? "Rich Text" : "Plain Text"}
-                        </Button>
+                        <span className="text-sm text-gray-600 font-medium">Rich Text Editor</span>
                         <Button
                           size="sm"
                           variant="outline"
@@ -435,29 +429,14 @@ export function EnhancedStepItem({
                       </div>
                     </div>
 
-                    {isRichTextMode ? (
-                      <div className="mb-2">
-                        <RichTextEditor
-                          value={newMessage}
-                          onChange={setNewMessage}
-                          placeholder="Type your message with rich formatting..."
-                          className="min-h-[100px]"
-                        />
-                      </div>
-                    ) : (
-                      <Input
-                        placeholder="Type your message..."
+                    <div className="mb-2">
+                      <RichTextEditor
                         value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" && !e.shiftKey) {
-                            e.preventDefault();
-                            handleSendMessage();
-                          }
-                        }}
-                        className="mb-2"
+                        onChange={setNewMessage}
+                        placeholder="Type your message with rich formatting..."
+                        className="min-h-[100px]"
                       />
-                    )}
+                    </div>
 
                     <div className="flex justify-end">
                       <Button
