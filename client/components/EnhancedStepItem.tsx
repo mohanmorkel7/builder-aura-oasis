@@ -70,15 +70,7 @@ interface ChatMessage {
   attachments?: any[];
 }
 
-interface DocumentFile {
-  id: number;
-  name: string;
-  file_path: string;
-  file_size: number;
-  file_type: string;
-  uploaded_by: string;
-  uploaded_at: string;
-}
+
 
 export function EnhancedStepItem({
   step,
