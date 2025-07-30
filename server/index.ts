@@ -76,5 +76,12 @@ export function createServer() {
     console.error("Error loading onboarding router:", error);
   }
 
+  try {
+    app.use("/api/leads", leadsRouter);
+    console.log("Leads router loaded successfully");
+  } catch (error) {
+    console.error("Error loading leads router:", error);
+  }
+
   return app;
 }
