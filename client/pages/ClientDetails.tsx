@@ -1,6 +1,17 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useClient } from "@/hooks/useApi";
+import {
+  useClient,
+  useClientOnboardingSteps,
+  useCreateOnboardingStep,
+  useUpdateOnboardingStep,
+  useDeleteOnboardingStep,
+  useStepDocuments,
+  useUploadStepDocument,
+  useStepComments,
+  useCreateStepComment
+} from "@/hooks/useApi";
+import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -106,137 +117,25 @@ const mockFollowUps = [
   },
 ];
 
-// Enhanced onboarding progress with documents and comments
-const mockOnboardingProgress = [
-  {
-    id: 1,
-    name: "Initial Contact",
-    description: "Make first contact with client and gather basic requirements",
-    status: "completed",
-    completed_date: "2024-06-15",
-    due_date: "2024-06-15",
-    estimated_days: 1,
-    documents: [
-      {
-        id: 1,
-        name: "Initial_Requirements.pdf",
-        uploaded_at: "2024-06-15",
-        uploaded_by: "Jane Smith",
-        size: "2.3 MB",
-        type: "application/pdf"
-      }
-    ],
-    comments: [
-      {
-        id: 1,
-        user: "Jane Smith",
-        timestamp: "2024-06-15 14:30",
-        message: "Client is very responsive. Initial requirements documented.",
-        type: "note"
-      }
-    ]
-  },
-  {
-    id: 2,
-    name: "Proposal Sent",
-    description: "Prepare and send detailed proposal to client",
-    status: "completed",
-    completed_date: "2024-06-20",
-    due_date: "2024-06-20",
-    estimated_days: 3,
-    documents: [
-      {
-        id: 2,
-        name: "Project_Proposal_v2.docx",
-        uploaded_at: "2024-06-20",
-        uploaded_by: "John Doe",
-        size: "1.8 MB",
-        type: "application/msword"
-      }
-    ],
-    comments: [
-      {
-        id: 2,
-        user: "John Doe",
-        timestamp: "2024-06-20 10:15",
-        message: "Proposal sent with detailed timeline and pricing structure.",
-        type: "update"
-      }
-    ]
-  },
-  {
-    id: 3,
-    name: "Document Collection",
-    description: "Collect all necessary documents from client",
-    status: "in_progress",
-    due_date: "2024-07-15",
-    estimated_days: 5,
-    documents: [
-      {
-        id: 3,
-        name: "Tax_Documents.pdf",
-        uploaded_at: "2024-07-01",
-        uploaded_by: "Client Portal",
-        size: "5.2 MB",
-        type: "application/pdf"
-      }
-    ],
-    comments: [
-      {
-        id: 3,
-        user: "Jane Smith",
-        timestamp: "2024-07-01 09:00",
-        message: "Still waiting for incorporation documents. Following up today.",
-        type: "note"
-      },
-      {
-        id: 4,
-        user: "System",
-        timestamp: "2024-07-01 15:22",
-        message: "Document uploaded via client portal",
-        type: "system"
-      }
-    ]
-  },
-  {
-    id: 4,
-    name: "Contract Signing",
-    description: "Review and sign final contract",
-    status: "pending",
-    due_date: "2024-07-25",
-    estimated_days: 2,
-    documents: [],
-    comments: []
-  },
-  {
-    id: 5,
-    name: "Onboarding Call",
-    description: "Schedule and conduct onboarding call",
-    status: "pending",
-    due_date: "2024-08-01",
-    estimated_days: 1,
-    documents: [],
-    comments: []
-  },
-  {
-    id: 6,
-    name: "Deployment",
-    description: "Deploy and configure client systems",
-    status: "pending",
-    due_date: "2024-08-10",
-    estimated_days: 7,
-    documents: [],
-    comments: []
-  },
-];
+
 
 export default function ClientDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { data: client, isLoading, error } = useClient(parseInt(id || "0"));
+  const { user } = useAuth();
+  const clientId = parseInt(id || "0");
 
-  // State for onboarding progress
-  const [onboardingSteps, setOnboardingSteps] = useState(mockOnboardingProgress);
+  const { data: client, isLoading, error } = useClient(clientId);
+  const { data: onboardingSteps = [], isLoading: stepsLoading } = useClientOnboardingSteps(clientId);
+
+  // Mutations
+  const createStepMutation = useCreateOnboardingStep();
+  const updateStepMutation = useUpdateOnboardingStep();
+  const deleteStepMutation = useDeleteOnboardingStep();
+  const uploadDocumentMutation = useUploadStepDocument();
+  const createCommentMutation = useCreateStepComment();
+
+  // UI State
   const [expandedSteps, setExpandedSteps] = useState<number[]>([]);
   const [newStepDialog, setNewStepDialog] = useState(false);
   const [newStep, setNewStep] = useState({
@@ -246,6 +145,8 @@ export default function ClientDetails() {
     due_date: ""
   });
   const [newComment, setNewComment] = useState<{[key: number]: string}>({});
+  const [stepDocuments, setStepDocuments] = useState<{[key: number]: any[]}>({});
+  const [stepComments, setStepComments] = useState<{[key: number]: any[]}>({});
 
   const handleBack = () => {
     navigate("/sales");
@@ -259,25 +160,16 @@ export default function ClientDetails() {
     navigate(`/sales/client/${id}/followup/new`);
   };
 
-  const updateStepStatus = (stepIndex: number, newStatus: string) => {
-    setOnboardingSteps((prev) =>
-      prev.map((step, index) => {
-        if (index === stepIndex) {
-          return {
-            ...step,
-            status: newStatus,
-            completed_date:
-              newStatus === "completed"
-                ? new Date().toISOString().split("T")[0]
-                : step.completed_date,
-          };
-        }
-        return step;
-      }),
-    );
-
-    // Here you would typically make an API call to save the status
-    console.log(`Updated step ${stepIndex} to status: ${newStatus}`);
+  const updateStepStatus = async (stepId: number, newStatus: string) => {
+    try {
+      const updateData: any = { status: newStatus };
+      if (newStatus === "completed") {
+        updateData.completed_date = new Date().toISOString().split("T")[0];
+      }
+      await updateStepMutation.mutateAsync({ stepId, stepData: updateData });
+    } catch (error) {
+      console.error("Failed to update step status:", error);
+    }
   };
 
   const toggleStepExpansion = (stepId: number) => {
@@ -288,75 +180,76 @@ export default function ClientDetails() {
     );
   };
 
-  const handleAddStep = () => {
+  const handleAddStep = async () => {
     if (newStep.name.trim() && newStep.description.trim()) {
-      const step = {
-        id: Date.now(),
-        ...newStep,
-        status: "pending" as const,
-        documents: [],
-        comments: []
-      };
-      setOnboardingSteps(prev => [...prev, step]);
-      setNewStep({ name: "", description: "", estimated_days: 1, due_date: "" });
-      setNewStepDialog(false);
+      try {
+        await createStepMutation.mutateAsync({
+          clientId,
+          stepData: newStep
+        });
+        setNewStep({ name: "", description: "", estimated_days: 1, due_date: "" });
+        setNewStepDialog(false);
+      } catch (error) {
+        console.error("Failed to create step:", error);
+      }
     }
   };
 
-  const handleDeleteStep = (stepId: number) => {
-    setOnboardingSteps(prev => prev.filter(step => step.id !== stepId));
+  const handleDeleteStep = async (stepId: number) => {
+    try {
+      await deleteStepMutation.mutateAsync(stepId);
+    } catch (error) {
+      console.error("Failed to delete step:", error);
+    }
   };
 
-  const handleAddComment = (stepId: number) => {
+  const handleAddComment = async (stepId: number) => {
     const comment = newComment[stepId]?.trim();
-    if (!comment) return;
+    if (!comment || !user) return;
 
-    const newCommentObj = {
-      id: Date.now(),
-      user: "Current User", // Would come from auth context
-      timestamp: new Date().toLocaleString(),
-      message: comment,
-      type: "note" as const
-    };
-
-    setOnboardingSteps(prev => 
-      prev.map(step => 
-        step.id === stepId 
-          ? { ...step, comments: [...step.comments, newCommentObj] }
-          : step
-      )
-    );
-
-    setNewComment(prev => ({ ...prev, [stepId]: "" }));
+    try {
+      await createCommentMutation.mutateAsync({
+        stepId,
+        commentData: {
+          message: comment,
+          user_name: `${user.first_name} ${user.last_name}`,
+          user_id: parseInt(user.id),
+          comment_type: "note"
+        }
+      });
+      setNewComment(prev => ({ ...prev, [stepId]: "" }));
+    } catch (error) {
+      console.error("Failed to add comment:", error);
+    }
   };
 
-  const handleFileUpload = (stepId: number, event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (stepId: number, event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
-    if (!files || files.length === 0) return;
+    if (!files || files.length === 0 || !user) return;
 
     const file = files[0];
-    const newDocument = {
-      id: Date.now(),
-      name: file.name,
-      uploaded_at: new Date().toISOString().split("T")[0],
-      uploaded_by: "Current User", // Would come from auth context
-      size: `${(file.size / 1024 / 1024).toFixed(1)} MB`,
-      type: file.type
-    };
 
-    setOnboardingSteps(prev => 
-      prev.map(step => 
-        step.id === stepId 
-          ? { ...step, documents: [...step.documents, newDocument] }
-          : step
-      )
-    );
+    try {
+      // In a real implementation, you'd upload the file to a server/cloud storage
+      // For now, we'll simulate the file upload
+      const documentData = {
+        name: file.name,
+        file_path: `/uploads/${file.name}`,
+        file_size: file.size,
+        file_type: file.type,
+        uploaded_by: `${user.first_name} ${user.last_name}`
+      };
 
-    // Reset input
-    event.target.value = "";
+      await uploadDocumentMutation.mutateAsync({ stepId, documentData });
+
+      // Reset input
+      event.target.value = "";
+    } catch (error) {
+      console.error("Failed to upload document:", error);
+    }
   };
 
-  if (isLoading) {
+  if (isLoading || stepsLoading) {
     return (
       <div className="p-6">
         <div className="text-center">Loading client details...</div>
