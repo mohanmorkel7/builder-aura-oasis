@@ -1,6 +1,6 @@
 import * as React from "react";
 const { useState } = React;
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useClient } from "@/hooks/useApi";
 import { Button } from "@/components/ui/button";
 import {
