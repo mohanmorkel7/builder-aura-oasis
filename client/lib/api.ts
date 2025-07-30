@@ -222,6 +222,72 @@ export class ApiClient {
   async getProducts() {
     return this.request("/deployments/products/list");
   }
+
+  // Onboarding methods
+  async getClientOnboardingSteps(clientId: number) {
+    return this.request(`/onboarding/clients/${clientId}/steps`);
+  }
+
+  async createOnboardingStep(clientId: number, stepData: any) {
+    return this.request(`/onboarding/clients/${clientId}/steps`, {
+      method: "POST",
+      body: JSON.stringify(stepData),
+    });
+  }
+
+  async updateOnboardingStep(stepId: number, stepData: any) {
+    return this.request(`/onboarding/steps/${stepId}`, {
+      method: "PUT",
+      body: JSON.stringify(stepData),
+    });
+  }
+
+  async deleteOnboardingStep(stepId: number) {
+    return this.request(`/onboarding/steps/${stepId}`, {
+      method: "DELETE",
+    });
+  }
+
+  async reorderOnboardingSteps(clientId: number, stepOrders: { id: number; order: number }[]) {
+    return this.request(`/onboarding/clients/${clientId}/steps/reorder`, {
+      method: "PUT",
+      body: JSON.stringify({ stepOrders }),
+    });
+  }
+
+  async getStepDocuments(stepId: number) {
+    return this.request(`/onboarding/steps/${stepId}/documents`);
+  }
+
+  async uploadStepDocument(stepId: number, documentData: any) {
+    return this.request(`/onboarding/steps/${stepId}/documents`, {
+      method: "POST",
+      body: JSON.stringify(documentData),
+    });
+  }
+
+  async deleteStepDocument(documentId: number) {
+    return this.request(`/onboarding/documents/${documentId}`, {
+      method: "DELETE",
+    });
+  }
+
+  async getStepComments(stepId: number) {
+    return this.request(`/onboarding/steps/${stepId}/comments`);
+  }
+
+  async createStepComment(stepId: number, commentData: any) {
+    return this.request(`/onboarding/steps/${stepId}/comments`, {
+      method: "POST",
+      body: JSON.stringify(commentData),
+    });
+  }
+
+  async deleteStepComment(commentId: number) {
+    return this.request(`/onboarding/comments/${commentId}`, {
+      method: "DELETE",
+    });
+  }
 }
 
 export const apiClient = new ApiClient();
