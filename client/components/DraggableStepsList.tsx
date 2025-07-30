@@ -35,7 +35,6 @@ export function DraggableStepsList({
   steps,
   expandedSteps,
   onToggleExpansion,
-  onUpdateStatus,
   onDeleteStep,
   onReorderSteps,
 }: DraggableStepsListProps) {
