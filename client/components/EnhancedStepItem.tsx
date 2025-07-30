@@ -437,12 +437,21 @@ export function EnhancedStepItem({
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center space-x-2">
                         <span className="text-sm text-gray-600 font-medium">Rich Text Editor</span>
+                        <input
+                          ref={fileInputRef}
+                          type="file"
+                          className="hidden"
+                          onChange={handleFileUpload}
+                          multiple
+                        />
                         <Button
                           size="sm"
                           variant="outline"
                           onClick={() => fileInputRef.current?.click()}
+                          title="Upload documents"
                         >
-                          <Paperclip className="w-4 h-4" />
+                          <Upload className="w-4 h-4 mr-1" />
+                          Upload
                         </Button>
                       </div>
                     </div>
