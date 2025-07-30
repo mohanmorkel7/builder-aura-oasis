@@ -161,6 +161,12 @@ export interface UpdateLeadData {
 
   // Commercials
   commercials?: string[];
+  commercial_pricing?: Array<{
+    solution: string;
+    value: number;
+    unit: "paisa" | "cents";
+    currency: "INR" | "USD" | "Dubai";
+  }>;
 
   // Client Information
   client_name?: string;
