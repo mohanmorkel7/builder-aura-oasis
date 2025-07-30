@@ -68,6 +68,40 @@ const companySizes = [
   { value: "1000+", label: "1000+ employees" },
 ];
 
+const solutionsOptions = [
+  "CardToken",
+  "MylapaySecure",
+  "FRM",
+  "Switch-Cards",
+  "Clearing-Base II",
+  "Optimizer-Cards",
+  "Switch-UPI",
+  "Optimizer-UPI",
+  "Chargeback",
+  "NetworkConnectivity",
+  "Orchestration"
+];
+
+const commercialsOptions = [
+  "CardToken",
+  "MylapaySecure",
+  "FRM",
+  "Switch-Cards",
+  "Clearing-Base II",
+  "Optimizer-Cards",
+  "Switch-UPI",
+  "Optimizer-UPI",
+  "Chargeback",
+  "NetworkConnectivity",
+  "Orchestration"
+];
+
+const priorityLevels = [
+  { value: "high", label: "High" },
+  { value: "medium", label: "Medium" },
+  { value: "low", label: "Low" },
+];
+
 export default function CreateLead() {
   const navigate = useNavigate();
   const { user } = useAuth();
