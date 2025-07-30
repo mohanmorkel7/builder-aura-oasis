@@ -138,6 +138,19 @@ export default function LeadEdit() {
         project_budget: lead.project_budget?.toString() || "",
         project_timeline: lead.project_timeline || "",
         project_requirements: lead.project_requirements || "",
+
+        // Enhanced Project Info
+        solutions: lead.solutions || [],
+        priority_level: lead.priority_level || "",
+        start_date: lead.start_date || "",
+        targeted_end_date: lead.targeted_end_date || "",
+        expected_daily_txn_volume: lead.expected_daily_txn_volume?.toString() || "",
+        project_value: lead.project_value?.toString() || "",
+        spoc: lead.spoc || "",
+
+        // Commercials
+        commercials: lead.commercials || [],
+
         client_name: lead.client_name || "",
         contact_person: lead.contact_person || "",
         email: lead.email || "",
