@@ -127,6 +127,65 @@ CREATE TABLE IF NOT EXISTS deployments (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Leads table
+CREATE TABLE IF NOT EXISTS leads (
+    id SERIAL PRIMARY KEY,
+    lead_id VARCHAR(50) UNIQUE NOT NULL,
+
+    -- Lead Source Information
+    lead_source VARCHAR(50) NOT NULL CHECK (lead_source IN ('email', 'social-media', 'phone', 'website', 'referral', 'cold-call', 'event', 'other')),
+    lead_source_value TEXT,
+
+    -- Project Information
+    project_title VARCHAR(500),
+    project_description TEXT,
+    project_budget DECIMAL(15,2),
+    project_timeline VARCHAR(200),
+    project_requirements TEXT,
+
+    -- Enhanced Project Information
+    solutions JSONB DEFAULT '[]'::jsonb,
+    priority_level VARCHAR(20) DEFAULT 'medium' CHECK (priority_level IN ('high', 'medium', 'low')),
+    start_date DATE,
+    targeted_end_date DATE,
+    expected_daily_txn_volume INTEGER,
+    project_value DECIMAL(15,2),
+    spoc VARCHAR(255),
+
+    -- Commercials
+    commercials JSONB DEFAULT '[]'::jsonb,
+    commercial_pricing JSONB DEFAULT '[]'::jsonb,
+
+    -- Client Information
+    client_name VARCHAR(255) NOT NULL,
+    client_type VARCHAR(50) CHECK (client_type IN ('individual', 'business', 'enterprise', 'startup', 'government', 'nonprofit')),
+    company VARCHAR(255),
+    company_location VARCHAR(500),
+    category VARCHAR(100) CHECK (category IN ('fintech', 'ecommerce', 'healthcare', 'education', 'retail', 'manufacturing', 'technology', 'finance', 'consulting', 'other')),
+    country VARCHAR(100) CHECK (country IN ('india', 'usa', 'uae', 'uk', 'singapore', 'canada', 'australia', 'other')),
+    contact_person VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    phone VARCHAR(20),
+    industry VARCHAR(100),
+    company_size VARCHAR(50) CHECK (company_size IN ('1-10', '11-50', '51-200', '201-500', '501-1000', '1000+')),
+
+    -- Contact Information (JSONB array for multiple contacts)
+    contacts JSONB DEFAULT '[]'::jsonb,
+
+    -- Additional Information
+    status VARCHAR(20) DEFAULT 'in-progress' CHECK (status IN ('in-progress', 'won', 'lost', 'completed')),
+    priority VARCHAR(20) DEFAULT 'medium' CHECK (priority IN ('low', 'medium', 'high', 'urgent')),
+    expected_close_date DATE,
+    probability INTEGER DEFAULT 50 CHECK (probability >= 0 AND probability <= 100),
+    notes TEXT,
+
+    -- Metadata
+    created_by INTEGER REFERENCES users(id),
+    assigned_to INTEGER REFERENCES users(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Follow-ups table
 CREATE TABLE IF NOT EXISTS follow_ups (
     id SERIAL PRIMARY KEY,
