@@ -412,15 +412,17 @@ export function EnhancedStepItem({
                               <span className="text-xs text-gray-500">
                                 {new Date(message.created_at).toLocaleString()}
                               </span>
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={() => handleFollowUp(message.id)}
-                                className="text-blue-600 hover:text-blue-700"
-                              >
-                                <Reply className="w-3 h-3 mr-1" />
-                                Follow-up
-                              </Button>
+                              {message.message_type !== 'system' && (
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => handleFollowUp(message.id)}
+                                  className="text-blue-600 hover:text-blue-700"
+                                >
+                                  <Reply className="w-3 h-3 mr-1" />
+                                  Follow-up
+                                </Button>
+                              )}
                             </div>
                           </div>
                           <div className="text-sm text-gray-700">
