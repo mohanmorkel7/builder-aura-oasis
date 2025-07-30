@@ -80,7 +80,7 @@ export function StepItem({
         uploaded_by: `${user.first_name} ${user.last_name}`
       };
 
-      await uploadDocumentMutation.mutateAsync({ stepId: step.id, documentData });
+      await uploadDocumentMutation.mutateAsync({ stepId: stepId, documentData });
       event.target.value = "";
     } catch (error) {
       console.error("Failed to upload document:", error);
