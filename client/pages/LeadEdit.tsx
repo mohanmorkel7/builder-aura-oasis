@@ -249,6 +249,35 @@ export default function LeadEdit() {
     setHasChanges(true);
   };
 
+  const updateContact = (index: number, field: string, value: string) => {
+    const newContacts = [...leadData.contacts];
+    newContacts[index] = { ...newContacts[index], [field]: value };
+    setLeadData(prev => ({ ...prev, contacts: newContacts }));
+    setHasChanges(true);
+  };
+
+  const addContact = () => {
+    setLeadData(prev => ({
+      ...prev,
+      contacts: [...prev.contacts, {
+        contact_name: "",
+        designation: "",
+        phone: "",
+        email: "",
+        linkedin: "",
+      }]
+    }));
+    setHasChanges(true);
+  };
+
+  const removeContact = (index: number) => {
+    if (leadData.contacts.length > 1) {
+      const newContacts = leadData.contacts.filter((_, i) => i !== index);
+      setLeadData(prev => ({ ...prev, contacts: newContacts }));
+      setHasChanges(true);
+    }
+  };
+
   const handleSave = async () => {
     setSaving(true);
     try {
