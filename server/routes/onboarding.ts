@@ -267,22 +267,27 @@ router.get("/steps/:stepId/comments", async (req: Request, res: Response) => {
     }
 
     let comments;
-    if (await isDatabaseAvailable()) {
-      comments = await OnboardingCommentRepository.findByStepId(stepId);
-    } else {
-      // Use mock data
+    try {
+      if (await isDatabaseAvailable()) {
+        comments = await OnboardingCommentRepository.findByStepId(stepId);
+      } else {
+        comments = await MockDataService.getStepComments(stepId);
+      }
+    } catch (dbError) {
+      console.log("Database error, using mock data:", dbError.message);
       comments = await MockDataService.getStepComments(stepId);
     }
 
     res.json(comments);
   } catch (error) {
     console.error("Error fetching step comments:", error);
-    // Fallback to mock data
+    // Always return mock data as last resort
     try {
       const comments = await MockDataService.getStepComments(parseInt(req.params.stepId));
       res.json(comments);
     } catch (fallbackError) {
-      res.status(500).json({ error: "Failed to fetch step comments" });
+      console.error("Mock data fallback failed:", fallbackError);
+      res.json([]); // Return empty array as absolute fallback
     }
   }
 });
