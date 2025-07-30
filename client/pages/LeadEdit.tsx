@@ -121,8 +121,9 @@ export default function LeadEdit() {
   const [leadData, setLeadData] = useState({
     // Lead Source & Status
     lead_source: "",
+    lead_source_value: "",
     status: "",
-    
+
     // Project Information
     project_title: "",
     project_description: "",
