@@ -24,6 +24,12 @@ export interface Lead {
 
   // Commercials
   commercials?: string[]; // CardToken, MylapaySecure, FRM, Switch-Cards, etc.
+  commercial_pricing?: Array<{
+    solution: string;
+    value: number;
+    unit: "paisa" | "cents";
+    currency: "INR" | "USD" | "Dubai";
+  }>;
 
   // Client Information
   client_name: string;
