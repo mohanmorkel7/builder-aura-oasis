@@ -22,6 +22,7 @@ import { EnhancedStepItem } from "./EnhancedStepItem";
 import { useReorderLeadSteps } from "@/hooks/useApi";
 
 interface DraggableStepsListProps {
+  leadId: number;
   steps: any[];
   expandedSteps: Set<number>;
   onToggleExpansion: (stepId: number) => void;
@@ -31,6 +32,7 @@ interface DraggableStepsListProps {
 }
 
 export function DraggableStepsList({
+  leadId,
   steps,
   expandedSteps,
   onToggleExpansion,
@@ -40,6 +42,7 @@ export function DraggableStepsList({
 }: DraggableStepsListProps) {
   const [activeId, setActiveId] = useState<string | number | null>(null);
   const [items, setItems] = useState(steps);
+  const reorderMutation = useReorderLeadSteps();
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
