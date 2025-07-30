@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useLead, useLeadSteps } from "@/hooks/useApi";
 import { useAuth } from "@/lib/auth-context";
+import { DraggableStepsList } from "@/components/DraggableStepsList";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -97,6 +98,7 @@ export default function LeadDetails() {
   const { data: leadSteps = [], isLoading: stepsLoading } = useLeadSteps(leadId);
 
   const [newStepDialog, setNewStepDialog] = useState(false);
+  const [expandedSteps, setExpandedSteps] = useState(new Set<number>());
   const [newStep, setNewStep] = useState({
     name: "",
     description: "",
@@ -119,6 +121,33 @@ export default function LeadDetails() {
       setNewStep({ name: "", description: "", estimated_days: 1, due_date: "" });
       setNewStepDialog(false);
     }
+  };
+
+  const handleToggleExpansion = (stepId: number) => {
+    setExpandedSteps(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(stepId)) {
+        newSet.delete(stepId);
+      } else {
+        newSet.add(stepId);
+      }
+      return newSet;
+    });
+  };
+
+  const handleUpdateStatus = (stepId: number, status: string) => {
+    // TODO: Implement status update
+    console.log("Updating step status:", stepId, status);
+  };
+
+  const handleDeleteStep = (stepId: number) => {
+    // TODO: Implement step deletion
+    console.log("Deleting step:", stepId);
+  };
+
+  const handleReorderSteps = (reorderedSteps: any[]) => {
+    // TODO: Implement step reordering API call
+    console.log("Reordering steps:", reorderedSteps);
   };
 
   if (isLoading || stepsLoading) {
