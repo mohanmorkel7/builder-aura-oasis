@@ -112,24 +112,32 @@ export function EnhancedStepItem({
     return null;
   }
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
-    if (!files || files.length === 0) return;
+    if (!files || files.length === 0 || !user) return;
 
-    Array.from(files).forEach((file) => {
-      const newDoc: DocumentFile = {
-        id: Date.now() + Math.random(),
-        name: file.name,
-        file_path: `/uploads/${file.name}`,
-        file_size: file.size,
-        file_type: file.type,
-        uploaded_by: `${user?.first_name} ${user?.last_name}`,
-        uploaded_at: new Date().toISOString(),
-      };
-      setDocuments(prev => [...prev, newDoc]);
-    });
+    // Create a chat message with file attachments
+    const attachments = Array.from(files).map(file => ({
+      file_name: file.name,
+      file_size: file.size,
+      file_type: file.type,
+    }));
 
-    event.target.value = "";
+    const chatData = {
+      user_id: parseInt(user.id),
+      user_name: `${user.first_name} ${user.last_name}`,
+      message: `📎 Uploaded ${files.length} file${files.length > 1 ? 's' : ''}: ${Array.from(files).map(f => f.name).join(', ')}`,
+      message_type: "file" as const,
+      is_rich_text: false,
+      attachments,
+    };
+
+    try {
+      await createChatMutation.mutateAsync({ stepId: step.id, chatData });
+      event.target.value = "";
+    } catch (error) {
+      console.error("Failed to upload files:", error);
+    }
   };
 
   const handleSendMessage = async () => {
