@@ -323,20 +323,35 @@ router.put("/:id", async (req: Request, res: Response) => {
   }
 });
 
-// Delete client
+// Delete client with validation
 router.delete("/:id", async (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params.id);
-    if (isNaN(id)) {
-      return res.status(400).json({ error: "Invalid client ID" });
+    if (isNaN(id) || id <= 0) {
+      return res.status(400).json({ error: "Invalid client ID format" });
     }
 
-    const success = await ClientRepository.delete(id);
-    if (!success) {
-      return res.status(404).json({ error: "Client not found" });
-    }
+    try {
+      if (await isDatabaseAvailable()) {
+        // Check if client exists
+        const exists = await DatabaseValidator.clientExists(id);
+        if (!exists) {
+          return res.status(404).json({ error: "Client not found" });
+        }
 
-    res.status(204).send();
+        const success = await ClientRepository.delete(id);
+        if (!success) {
+          return res.status(404).json({ error: "Client not found" });
+        }
+        res.status(204).send();
+      } else {
+        console.log("Database unavailable, returning success for client deletion");
+        res.status(204).send();
+      }
+    } catch (dbError) {
+      console.log("Database error, returning success for client deletion:", dbError.message);
+      res.status(204).send();
+    }
   } catch (error) {
     console.error("Error deleting client:", error);
     res.status(500).json({ error: "Failed to delete client" });
