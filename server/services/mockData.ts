@@ -786,4 +786,270 @@ export class MockDataService {
 
     return comments.filter(comment => comment.step_id === stepId);
   }
+
+  // Lead mock data
+  static async getAllLeads(salesRepId?: number) {
+    const leads = [
+      {
+        id: 1,
+        lead_id: "#001",
+        lead_source: "email",
+        status: "in-progress",
+        project_title: "E-commerce Platform Development",
+        project_description: "Build a modern e-commerce platform with advanced features",
+        project_budget: 75000,
+        project_timeline: "6 months",
+        project_requirements: "React, Node.js, PostgreSQL, Payment integration",
+        client_name: "TechCorp Solutions",
+        contact_person: "Sarah Johnson",
+        email: "sarah@techcorp.com",
+        phone: "+1 (555) 123-4567",
+        company: "TechCorp Solutions",
+        industry: "technology",
+        company_size: "51-200",
+        priority: "high",
+        expected_close_date: "2024-08-15",
+        probability: 75,
+        sales_rep_id: 2,
+        created_by: 2,
+        notes: "Very interested client, follow up regularly",
+        created_at: "2024-01-15T09:00:00Z",
+        updated_at: "2024-01-20T14:30:00Z",
+        sales_rep_name: "Jane Smith",
+        creator_name: "Jane Smith"
+      },
+      {
+        id: 2,
+        lead_id: "#002",
+        lead_source: "social-media",
+        status: "won",
+        project_title: "Mobile App for Healthcare",
+        project_description: "Patient management mobile application",
+        project_budget: 45000,
+        project_timeline: "4 months",
+        project_requirements: "React Native, Firebase, HIPAA compliance",
+        client_name: "HealthFirst Clinic",
+        contact_person: "Dr. Michael Brown",
+        email: "michael@healthfirst.com",
+        phone: "+1 (555) 234-5678",
+        company: "HealthFirst Clinic",
+        industry: "healthcare",
+        company_size: "11-50",
+        priority: "medium",
+        expected_close_date: "2024-07-30",
+        probability: 100,
+        sales_rep_id: 2,
+        created_by: 1,
+        notes: "Successfully closed deal, project starting next month",
+        created_at: "2024-01-10T10:00:00Z",
+        updated_at: "2024-02-01T16:45:00Z",
+        sales_rep_name: "Jane Smith",
+        creator_name: "John Doe"
+      },
+      {
+        id: 3,
+        lead_id: "#003",
+        lead_source: "referral",
+        status: "lost",
+        project_title: "CRM System Integration",
+        project_description: "Integrate existing CRM with third-party tools",
+        project_budget: 25000,
+        project_timeline: "3 months",
+        project_requirements: "API integration, data migration, training",
+        client_name: "Global Sales Inc",
+        contact_person: "Lisa Chen",
+        email: "lisa@globalsales.com",
+        phone: "+1 (555) 345-6789",
+        company: "Global Sales Inc",
+        industry: "sales",
+        company_size: "201-500",
+        priority: "low",
+        expected_close_date: "2024-06-30",
+        probability: 0,
+        sales_rep_id: 2,
+        created_by: 2,
+        notes: "Lost to competitor due to pricing",
+        created_at: "2024-01-05T11:00:00Z",
+        updated_at: "2024-01-25T09:15:00Z",
+        sales_rep_name: "Jane Smith",
+        creator_name: "Jane Smith"
+      },
+      {
+        id: 4,
+        lead_id: "#004",
+        lead_source: "website",
+        status: "completed",
+        project_title: "Analytics Dashboard",
+        project_description: "Real-time analytics dashboard for business intelligence",
+        project_budget: 55000,
+        project_timeline: "5 months",
+        project_requirements: "React, D3.js, real-time data processing",
+        client_name: "DataViz Pro",
+        contact_person: "Robert Taylor",
+        email: "robert@datavizpro.com",
+        phone: "+1 (555) 456-7890",
+        company: "DataViz Pro",
+        industry: "analytics",
+        company_size: "1-10",
+        priority: "medium",
+        expected_close_date: "2024-05-15",
+        probability: 100,
+        sales_rep_id: 2,
+        created_by: 1,
+        notes: "Project completed successfully, client very satisfied",
+        created_at: "2023-12-20T08:00:00Z",
+        updated_at: "2024-05-15T17:30:00Z",
+        sales_rep_name: "Jane Smith",
+        creator_name: "John Doe"
+      }
+    ];
+
+    return salesRepId ? leads.filter(lead => lead.sales_rep_id === salesRepId) : leads;
+  }
+
+  static async getLeadById(id: number) {
+    const leads = await this.getAllLeads();
+    return leads.find(lead => lead.id === id) || null;
+  }
+
+  static async getLeadStats(salesRepId?: number) {
+    const leads = await this.getAllLeads(salesRepId);
+    return {
+      total: leads.length,
+      in_progress: leads.filter(l => l.status === "in-progress").length,
+      won: leads.filter(l => l.status === "won").length,
+      lost: leads.filter(l => l.status === "lost").length,
+      completed: leads.filter(l => l.status === "completed").length
+    };
+  }
+
+  static async getLeadSteps(leadId: number) {
+    return [
+      {
+        id: 1,
+        lead_id: leadId,
+        name: "Initial Contact & Discovery",
+        description: "First contact with prospect to understand their needs",
+        status: "completed",
+        step_order: 1,
+        due_date: "2024-01-16",
+        completed_date: "2024-01-16",
+        estimated_days: 1,
+        created_at: "2024-01-15T09:00:00Z",
+        updated_at: "2024-01-16T10:30:00Z"
+      },
+      {
+        id: 2,
+        lead_id: leadId,
+        name: "Needs Assessment & Demo",
+        description: "Detailed needs assessment and product demonstration",
+        status: "completed",
+        step_order: 2,
+        due_date: "2024-01-20",
+        completed_date: "2024-01-20",
+        estimated_days: 3,
+        created_at: "2024-01-15T09:00:00Z",
+        updated_at: "2024-01-20T15:45:00Z"
+      },
+      {
+        id: 3,
+        lead_id: leadId,
+        name: "Proposal Preparation",
+        description: "Prepare detailed proposal based on requirements",
+        status: "in-progress",
+        step_order: 3,
+        due_date: "2024-01-25",
+        completed_date: null,
+        estimated_days: 4,
+        created_at: "2024-01-15T09:00:00Z",
+        updated_at: "2024-01-21T09:00:00Z"
+      },
+      {
+        id: 4,
+        lead_id: leadId,
+        name: "Proposal Review & Negotiation",
+        description: "Present proposal and handle negotiations",
+        status: "pending",
+        step_order: 4,
+        due_date: "2024-02-01",
+        completed_date: null,
+        estimated_days: 5,
+        created_at: "2024-01-15T09:00:00Z",
+        updated_at: "2024-01-15T09:00:00Z"
+      },
+      {
+        id: 5,
+        lead_id: leadId,
+        name: "Contract Finalization",
+        description: "Finalize contract terms and get signatures",
+        status: "pending",
+        step_order: 5,
+        due_date: "2024-02-10",
+        completed_date: null,
+        estimated_days: 3,
+        created_at: "2024-01-15T09:00:00Z",
+        updated_at: "2024-01-15T09:00:00Z"
+      }
+    ];
+  }
+
+  static async getStepChats(stepId: number) {
+    const chats = [
+      {
+        id: 1,
+        step_id: 1,
+        user_id: 2,
+        user_name: "Jane Smith",
+        message: "Had a great initial call with the client. They're very interested in our e-commerce solution.",
+        message_type: "text",
+        is_rich_text: false,
+        created_at: "2024-01-16T10:30:00Z",
+        attachments: []
+      },
+      {
+        id: 2,
+        step_id: 1,
+        user_id: 2,
+        user_name: "Jane Smith",
+        message: "Client requirements documented and shared with the team.",
+        message_type: "file",
+        is_rich_text: false,
+        created_at: "2024-01-16T14:15:00Z",
+        attachments: [
+          {
+            id: 1,
+            file_name: "client_requirements.pdf",
+            file_path: "/uploads/client_requirements.pdf",
+            file_size: 1024576,
+            file_type: "application/pdf",
+            uploaded_at: "2024-01-16T14:15:00Z"
+          }
+        ]
+      },
+      {
+        id: 3,
+        step_id: 2,
+        user_id: 1,
+        user_name: "John Doe",
+        message: "<p><strong>Demo went excellent!</strong> Client was particularly impressed with:</p><ul><li>Real-time inventory management</li><li>Advanced reporting features</li><li>Mobile-responsive design</li></ul><p><em>Next steps: Prepare detailed proposal</em></p>",
+        message_type: "text",
+        is_rich_text: true,
+        created_at: "2024-01-20T15:45:00Z",
+        attachments: []
+      },
+      {
+        id: 4,
+        step_id: 3,
+        user_id: 2,
+        user_name: "Jane Smith",
+        message: "Working on the proposal. Need technical specifications from the development team.",
+        message_type: "text",
+        is_rich_text: false,
+        created_at: "2024-01-21T09:00:00Z",
+        attachments: []
+      }
+    ];
+
+    return chats.filter(chat => chat.step_id === stepId);
+  }
 }
