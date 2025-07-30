@@ -58,6 +58,11 @@ export function DraggableStepsList({
     setItems(steps);
   }, [steps]);
 
+  const handleUpdateStatus = (stepId: number, status: string) => {
+    const stepData = { status };
+    updateStepMutation.mutate({ stepId, stepData });
+  };
+
   function handleDragStart(event: any) {
     const { active } = event;
     setActiveId(active.id);
