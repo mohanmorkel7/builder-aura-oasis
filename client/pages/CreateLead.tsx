@@ -263,6 +263,32 @@ export default function CreateLead() {
     setLeadData(prev => ({ ...prev, commercial_pricing: newPricing }));
   };
 
+  const updateContact = (index: number, field: string, value: string) => {
+    const newContacts = [...leadData.contacts];
+    newContacts[index] = { ...newContacts[index], [field]: value };
+    setLeadData(prev => ({ ...prev, contacts: newContacts }));
+  };
+
+  const addContact = () => {
+    setLeadData(prev => ({
+      ...prev,
+      contacts: [...prev.contacts, {
+        contact_name: "",
+        designation: "",
+        phone: "",
+        email: "",
+        linkedin: "",
+      }]
+    }));
+  };
+
+  const removeContact = (index: number) => {
+    if (leadData.contacts.length > 1) {
+      const newContacts = leadData.contacts.filter((_, i) => i !== index);
+      setLeadData(prev => ({ ...prev, contacts: newContacts }));
+    }
+  };
+
   const validateForm = () => {
     const newErrors: string[] = [];
 
