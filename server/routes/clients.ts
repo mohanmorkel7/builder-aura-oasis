@@ -5,15 +5,16 @@ import {
   UpdateClientData,
 } from "../models/Client";
 import { MockDataService } from "../services/mockData";
+import { DatabaseValidator, ValidationSchemas } from "../utils/validation";
 
 const router = Router();
 
-// Helper function to check if database is available
+// Enhanced helper function with better error handling
 async function isDatabaseAvailable() {
   try {
-    await ClientRepository.findAll();
-    return true;
+    return await DatabaseValidator.isDatabaseAvailable();
   } catch (error) {
+    console.log("Database availability check failed:", error.message);
     return false;
   }
 }
