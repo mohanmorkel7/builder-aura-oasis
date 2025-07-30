@@ -441,7 +441,7 @@ export function useStepDocuments(stepId: number) {
   return useQuery({
     queryKey: ["step-documents", stepId],
     queryFn: () => apiClient.getStepDocuments(stepId),
-    enabled: !!stepId,
+    enabled: !!stepId && stepId > 0,
   });
 }
 
