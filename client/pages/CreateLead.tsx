@@ -193,6 +193,8 @@ export default function CreateLead() {
       const submitData = {
         ...leadData,
         project_budget: leadData.project_budget ? parseFloat(leadData.project_budget) : undefined,
+        project_value: leadData.project_value ? parseFloat(leadData.project_value) : undefined,
+        expected_daily_txn_volume: leadData.expected_daily_txn_volume ? parseInt(leadData.expected_daily_txn_volume) : undefined,
         probability: parseInt(leadData.probability),
         created_by: parseInt(user?.id || "1"),
       };
