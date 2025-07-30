@@ -129,8 +129,6 @@ export default function ClientDetails() {
   const createStepMutation = useCreateOnboardingStep();
   const updateStepMutation = useUpdateOnboardingStep();
   const deleteStepMutation = useDeleteOnboardingStep();
-  const uploadDocumentMutation = useUploadStepDocument();
-  const createCommentMutation = useCreateStepComment();
 
   // UI State
   const [expandedSteps, setExpandedSteps] = useState<number[]>([]);
@@ -141,9 +139,6 @@ export default function ClientDetails() {
     estimated_days: 1,
     due_date: ""
   });
-  const [newComment, setNewComment] = useState<{[key: number]: string}>({});
-  const [stepDocuments, setStepDocuments] = useState<{[key: number]: any[]}>({});
-  const [stepComments, setStepComments] = useState<{[key: number]: any[]}>({});
 
   const handleBack = () => {
     navigate("/sales");
