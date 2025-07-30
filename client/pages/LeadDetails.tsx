@@ -107,11 +107,11 @@ export default function LeadDetails() {
   });
 
   const handleBack = () => {
-    navigate("/sales/leads");
+    navigate("/leads");
   };
 
   const handleEdit = () => {
-    navigate(`/sales/leads/${id}/edit`);
+    navigate(`/leads/${id}/edit`);
   };
 
   const handleAddStep = () => {
