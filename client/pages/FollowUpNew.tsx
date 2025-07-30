@@ -179,14 +179,23 @@ export default function FollowUpNew() {
         </div>
       </div>
 
-      {/* Client Info */}
+      {/* Context Info */}
       <Alert>
         <Info className="h-4 w-4" />
         <AlertDescription>
-          Creating follow-up for <strong>{clientData.client_name}</strong>
-          {clientData.contact_person &&
-            ` (Contact: ${clientData.contact_person})`}
-          {clientData.email && ` - ${clientData.email}`}
+          {isLeadFollowUp ? (
+            <>
+              Creating follow-up for lead step: <strong>{leadContext?.stepName}</strong>
+              {leadContext?.messageId && ` (Message #${leadContext.messageId})`}
+            </>
+          ) : (
+            <>
+              Creating follow-up for <strong>{clientData?.client_name}</strong>
+              {clientData?.contact_person &&
+                ` (Contact: ${clientData.contact_person})`}
+              {clientData?.email && ` - ${clientData.email}`}
+            </>
+          )}
         </AlertDescription>
       </Alert>
 
