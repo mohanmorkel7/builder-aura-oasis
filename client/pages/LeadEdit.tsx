@@ -266,6 +266,7 @@ export default function LeadEdit() {
 
         // Commercials
         commercials: lead.commercials || [],
+        commercial_pricing: lead.commercial_pricing || [],
 
         // Contacts
         contacts: lead.contacts || [{
