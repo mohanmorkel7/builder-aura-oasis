@@ -68,5 +68,12 @@ export function createServer() {
     console.error("Error loading deployments router:", error);
   }
 
+  try {
+    app.use("/api/onboarding", onboardingRouter);
+    console.log("Onboarding router loaded successfully");
+  } catch (error) {
+    console.error("Error loading onboarding router:", error);
+  }
+
   return app;
 }
