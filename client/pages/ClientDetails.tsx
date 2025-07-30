@@ -585,7 +585,7 @@ export default function ClientDetails() {
                         <div className="flex items-center space-x-2">
                           <Select
                             value={step.status}
-                            onValueChange={(value) => updateStepStatus(index, value)}
+                            onValueChange={(value) => updateStepStatus(step.id, value)}
                           >
                             <SelectTrigger className="w-32">
                               <SelectValue />
