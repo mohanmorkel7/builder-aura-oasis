@@ -5,14 +5,26 @@ export interface Lead {
   lead_id: string; // #001, #002, etc.
   lead_source: "email" | "social-media" | "phone" | "website" | "referral" | "cold-call" | "event" | "other";
   status: "in-progress" | "won" | "lost" | "completed";
-  
+
   // Project Information
   project_title?: string;
   project_description?: string;
   project_budget?: number;
   project_timeline?: string;
   project_requirements?: string;
-  
+
+  // Enhanced Project Info
+  solutions?: string[]; // CardToken, MylapaySecure, FRM, etc.
+  priority_level?: "high" | "medium" | "low";
+  start_date?: string; // expected or confirmed
+  targeted_end_date?: string;
+  expected_daily_txn_volume?: number;
+  project_value?: number; // expected revenue or deal size
+  spoc?: string; // Single Point of Contact
+
+  // Commercials
+  commercials?: string[]; // CardToken, MylapaySecure, FRM, Switch-Cards, etc.
+
   // Client Information
   client_name: string;
   contact_person: string;
