@@ -94,19 +94,30 @@ router.get("/stats", async (req: Request, res: Response) => {
   }
 });
 
-// Get client by ID
+// Get client by ID with enhanced validation
 router.get("/:id", async (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params.id);
-    if (isNaN(id)) {
-      return res.status(400).json({ error: "Invalid client ID" });
+    if (isNaN(id) || id <= 0) {
+      return res.status(400).json({ error: "Invalid client ID format" });
     }
 
     let client;
-    if (await isDatabaseAvailable()) {
-      client = await ClientRepository.findById(id);
-    } else {
-      // Use mock data
+    try {
+      if (await isDatabaseAvailable()) {
+        // First check if client exists
+        const exists = await DatabaseValidator.clientExists(id);
+        if (!exists) {
+          return res.status(404).json({ error: "Client not found" });
+        }
+
+        client = await ClientRepository.findById(id);
+      } else {
+        const clients = await MockDataService.getAllClients();
+        client = clients.find((c) => c.id === id);
+      }
+    } catch (dbError) {
+      console.log("Database error, using mock data:", dbError.message);
       const clients = await MockDataService.getAllClients();
       client = clients.find((c) => c.id === id);
     }
@@ -118,16 +129,16 @@ router.get("/:id", async (req: Request, res: Response) => {
     res.json(client);
   } catch (error) {
     console.error("Error fetching client:", error);
-    // Fallback to mock data
     try {
       const clients = await MockDataService.getAllClients();
-      const client = clients.find((c) => c.id === id);
+      const client = clients.find((c) => c.id === parseInt(req.params.id));
       if (client) {
         res.json(client);
       } else {
         res.status(404).json({ error: "Client not found" });
       }
     } catch (fallbackError) {
+      console.error("Mock data fallback failed:", fallbackError);
       res.status(500).json({ error: "Failed to fetch client" });
     }
   }
