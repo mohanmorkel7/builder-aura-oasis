@@ -288,6 +288,91 @@ export class ApiClient {
       method: "DELETE",
     });
   }
+
+  // Lead methods
+  async getLeads(salesRepId?: number) {
+    const params = salesRepId ? `?salesRep=${salesRepId}` : "";
+    return this.request(`/leads${params}`);
+  }
+
+  async getLead(id: number) {
+    return this.request(`/leads/${id}`);
+  }
+
+  async createLead(leadData: any) {
+    return this.request("/leads", {
+      method: "POST",
+      body: JSON.stringify(leadData),
+    });
+  }
+
+  async updateLead(id: number, leadData: any) {
+    return this.request(`/leads/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(leadData),
+    });
+  }
+
+  async deleteLead(id: number) {
+    return this.request(`/leads/${id}`, {
+      method: "DELETE",
+    });
+  }
+
+  async getLeadStats(salesRepId?: number) {
+    const params = salesRepId ? `?salesRep=${salesRepId}` : "";
+    return this.request(`/leads/stats${params}`);
+  }
+
+  // Lead steps methods
+  async getLeadSteps(leadId: number) {
+    return this.request(`/leads/${leadId}/steps`);
+  }
+
+  async createLeadStep(leadId: number, stepData: any) {
+    return this.request(`/leads/${leadId}/steps`, {
+      method: "POST",
+      body: JSON.stringify(stepData),
+    });
+  }
+
+  async updateLeadStep(stepId: number, stepData: any) {
+    return this.request(`/leads/steps/${stepId}`, {
+      method: "PUT",
+      body: JSON.stringify(stepData),
+    });
+  }
+
+  async deleteLeadStep(stepId: number) {
+    return this.request(`/leads/steps/${stepId}`, {
+      method: "DELETE",
+    });
+  }
+
+  async reorderLeadSteps(leadId: number, stepOrders: { id: number; order: number }[]) {
+    return this.request(`/leads/${leadId}/steps/reorder`, {
+      method: "PUT",
+      body: JSON.stringify({ stepOrders }),
+    });
+  }
+
+  // Lead chat methods
+  async getStepChats(stepId: number) {
+    return this.request(`/leads/steps/${stepId}/chats`);
+  }
+
+  async createStepChat(stepId: number, chatData: any) {
+    return this.request(`/leads/steps/${stepId}/chats`, {
+      method: "POST",
+      body: JSON.stringify(chatData),
+    });
+  }
+
+  async deleteStepChat(chatId: number) {
+    return this.request(`/leads/chats/${chatId}`, {
+      method: "DELETE",
+    });
+  }
 }
 
 export const apiClient = new ApiClient();
