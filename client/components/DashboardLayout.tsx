@@ -12,6 +12,7 @@ import {
   Bell,
   LogOut,
   Grid3X3,
+  Target,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
