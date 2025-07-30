@@ -115,12 +115,23 @@ export default function LeadDetails() {
     navigate(`/leads/${id}/edit`);
   };
 
-  const handleAddStep = () => {
+  const handleAddStep = async () => {
     if (newStep.name.trim() && newStep.description.trim()) {
-      // TODO: Implement step creation
-      console.log("Creating step:", newStep);
-      setNewStep({ name: "", description: "", estimated_days: 1, due_date: "" });
-      setNewStepDialog(false);
+      try {
+        const stepData = {
+          leadId,
+          name: newStep.name,
+          description: newStep.description,
+          estimated_days: newStep.estimated_days,
+          due_date: newStep.due_date || undefined,
+        };
+
+        await createStepMutation.mutateAsync(stepData);
+        setNewStep({ name: "", description: "", estimated_days: 1, due_date: "" });
+        setNewStepDialog(false);
+      } catch (error) {
+        console.error("Failed to create step:", error);
+      }
     }
   };
 
