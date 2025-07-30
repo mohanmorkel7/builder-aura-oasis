@@ -94,7 +94,19 @@ export default function LeadEdit() {
     project_budget: "",
     project_timeline: "",
     project_requirements: "",
-    
+
+    // Enhanced Project Info
+    solutions: [] as string[],
+    priority_level: "",
+    start_date: "",
+    targeted_end_date: "",
+    expected_daily_txn_volume: "",
+    project_value: "",
+    spoc: "",
+
+    // Commercials
+    commercials: [] as string[],
+
     // Client Information
     client_name: "",
     contact_person: "",
