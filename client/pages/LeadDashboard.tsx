@@ -85,11 +85,11 @@ export default function LeadDashboard() {
   const [sourceFilter, setSourceFilter] = useState<string>("all");
 
   const handleCreateLead = () => {
-    navigate("/sales/leads/new");
+    navigate("/leads/new");
   };
 
   const handleLeadClick = (leadId: number) => {
-    navigate(`/sales/leads/${leadId}`);
+    navigate(`/leads/${leadId}`);
   };
 
   // Filter leads based on search and filters
