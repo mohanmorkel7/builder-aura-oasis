@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useLead, useLeadSteps } from "@/hooks/useApi";
+import { useLead, useLeadSteps, useCreateLeadStep } from "@/hooks/useApi";
 import { useAuth } from "@/lib/auth-context";
 import { DraggableStepsList } from "@/components/DraggableStepsList";
 import { Button } from "@/components/ui/button";
