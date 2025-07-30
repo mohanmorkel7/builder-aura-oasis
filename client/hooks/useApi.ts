@@ -470,7 +470,7 @@ export function useStepComments(stepId: number) {
   return useQuery({
     queryKey: ["step-comments", stepId],
     queryFn: () => apiClient.getStepComments(stepId),
-    enabled: !!stepId,
+    enabled: !!stepId && stepId > 0,
   });
 }
 
