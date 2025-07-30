@@ -175,7 +175,7 @@ export function EnhancedStepItem({
       await createChatMutation.mutateAsync({ stepId: step.id, chatData: followUpData });
 
       // Navigate to follow-up screen with message and step context
-      navigate(`/sales/follow-up`, {
+      navigate(`/follow-up`, {
         state: {
           messageId,
           stepId: step.id,
