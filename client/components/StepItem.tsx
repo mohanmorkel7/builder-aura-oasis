@@ -160,7 +160,7 @@ export function StepItem({
           <div className="flex items-center space-x-2">
             <Select
               value={step.status}
-              onValueChange={(value) => onUpdateStatus(step.id, value)}
+              onValueChange={(value) => onUpdateStatus(stepId, value)}
             >
               <SelectTrigger className="w-32">
                 <SelectValue />
