@@ -19,38 +19,60 @@ async function isDatabaseAvailable() {
   }
 }
 
-// Get all clients
+// Get all clients with enhanced validation
 router.get("/", async (req: Request, res: Response) => {
   try {
     const { salesRep } = req.query;
+    let salesRepId: number | undefined;
+
+    // Validate salesRep parameter
+    if (salesRep) {
+      salesRepId = parseInt(salesRep as string);
+      if (isNaN(salesRepId) || salesRepId <= 0) {
+        return res.status(400).json({ error: "Invalid sales rep ID format" });
+      }
+
+      // Check if sales rep exists (only if database is available)
+      if (await isDatabaseAvailable()) {
+        const userExists = await DatabaseValidator.userExists(salesRepId);
+        if (!userExists) {
+          return res.status(404).json({ error: "Sales representative not found" });
+        }
+      }
+    }
 
     let clients;
-    if (await isDatabaseAvailable()) {
-      if (salesRep) {
-        const salesRepId = parseInt(salesRep as string);
-        if (isNaN(salesRepId)) {
-          return res.status(400).json({ error: "Invalid sales rep ID" });
+    try {
+      if (await isDatabaseAvailable()) {
+        if (salesRepId) {
+          clients = await ClientRepository.findBySalesRep(salesRepId);
+        } else {
+          clients = await ClientRepository.findAll();
         }
-        clients = await ClientRepository.findBySalesRep(salesRepId);
       } else {
-        clients = await ClientRepository.findAll();
+        clients = await MockDataService.getAllClients();
+        if (salesRepId) {
+          clients = clients.filter((client) => client.sales_rep_id === salesRepId);
+        }
       }
-    } else {
+    } catch (dbError) {
+      console.log("Database error, using mock data:", dbError.message);
       clients = await MockDataService.getAllClients();
-      if (salesRep) {
-        const salesRepId = parseInt(salesRep as string);
-        clients = clients.filter(
-          (client) => client.sales_rep_id === salesRepId,
-        );
+      if (salesRepId) {
+        clients = clients.filter((client) => client.sales_rep_id === salesRepId);
       }
     }
 
     res.json(clients);
   } catch (error) {
     console.error("Error fetching clients:", error);
-    // Fallback to mock data
-    const clients = await MockDataService.getAllClients();
-    res.json(clients);
+    try {
+      const clients = await MockDataService.getAllClients();
+      res.json(clients);
+    } catch (fallbackError) {
+      console.error("Mock data fallback failed:", fallbackError);
+      res.status(500).json({ error: "Failed to fetch clients" });
+    }
   }
 });
 
