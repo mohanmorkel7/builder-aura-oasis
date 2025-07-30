@@ -117,7 +117,19 @@ export default function CreateLead() {
     project_budget: "",
     project_timeline: "",
     project_requirements: "",
-    
+
+    // Enhanced Project Info
+    solutions: [] as string[],
+    priority_level: "medium",
+    start_date: new Date().toISOString().split('T')[0], // Current date
+    targeted_end_date: "",
+    expected_daily_txn_volume: "",
+    project_value: "",
+    spoc: "",
+
+    // Commercials
+    commercials: [] as string[],
+
     // Client Information
     client_name: "",
     contact_person: "",
