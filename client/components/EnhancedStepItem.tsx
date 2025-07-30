@@ -396,8 +396,12 @@ export function EnhancedStepItem({
                             : 'bg-white'
                         }`}
                       >
-                        <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
-                          {message.user_name.charAt(0)}
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium ${
+                          message.message_type === 'system'
+                            ? 'bg-orange-500'
+                            : 'bg-blue-500'
+                        }`}>
+                          {message.message_type === 'system' ? '🔔' : message.user_name.charAt(0)}
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center justify-between mb-1">
