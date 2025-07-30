@@ -100,8 +100,15 @@ export function EnhancedStepItem({
   };
 
   // Fetch real chat data from API
-  const { data: chatMessages = [], isLoading: chatLoading } = useStepChats(step.id);
+  const { data: chatMessages = [], isLoading: chatLoading, error: chatError } = useStepChats(step.id);
   const createChatMutation = useCreateStepChat();
+
+  // Debug logging
+  React.useEffect(() => {
+    if (chatError) {
+      console.error("Chat loading error for step", step.id, ":", chatError);
+    }
+  }, [chatError, step.id]);
 
 
 
