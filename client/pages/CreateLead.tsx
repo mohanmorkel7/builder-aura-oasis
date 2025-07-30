@@ -122,6 +122,39 @@ const unitOptions = [
   { value: "cents", label: "Cents" },
 ];
 
+const clientTypes = [
+  { value: "individual", label: "Individual" },
+  { value: "business", label: "Business" },
+  { value: "enterprise", label: "Enterprise" },
+  { value: "startup", label: "Startup" },
+  { value: "government", label: "Government" },
+  { value: "nonprofit", label: "Non-Profit" },
+];
+
+const categories = [
+  { value: "fintech", label: "FinTech" },
+  { value: "ecommerce", label: "E-commerce" },
+  { value: "healthcare", label: "Healthcare" },
+  { value: "education", label: "Education" },
+  { value: "retail", label: "Retail" },
+  { value: "manufacturing", label: "Manufacturing" },
+  { value: "technology", label: "Technology" },
+  { value: "finance", label: "Finance" },
+  { value: "consulting", label: "Consulting" },
+  { value: "other", label: "Other" },
+];
+
+const countries = [
+  { value: "india", label: "India" },
+  { value: "usa", label: "United States" },
+  { value: "uae", label: "United Arab Emirates" },
+  { value: "uk", label: "United Kingdom" },
+  { value: "singapore", label: "Singapore" },
+  { value: "canada", label: "Canada" },
+  { value: "australia", label: "Australia" },
+  { value: "other", label: "Other" },
+];
+
 export default function CreateLead() {
   const navigate = useNavigate();
   const { user } = useAuth();
