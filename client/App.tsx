@@ -252,6 +252,17 @@ function AppRoutes() {
       />
 
       <Route
+        path="/sales/leads/:id"
+        element={
+          <ProtectedRoute allowedRoles={["admin", "sales"]}>
+            <DashboardLayout>
+              <LeadDetails />
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
         path="/sales/reports"
         element={
           <ProtectedRoute allowedRoles={["admin", "sales"]}>
