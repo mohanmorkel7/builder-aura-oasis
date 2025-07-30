@@ -43,6 +43,7 @@ export function DraggableStepsList({
   const [activeId, setActiveId] = useState<string | number | null>(null);
   const [items, setItems] = useState(steps);
   const reorderMutation = useReorderLeadSteps();
+  const updateStepMutation = useUpdateLeadStep();
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
