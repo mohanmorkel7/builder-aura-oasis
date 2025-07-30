@@ -348,8 +348,22 @@ export const ValidationSchemas = {
   },
   
   lead: {
-    required: ['client_name', 'contact_person', 'email', 'lead_source'],
-    optional: ['lead_source_value', 'project_title', 'project_description', 'project_budget', 'project_timeline', 'project_requirements', 'solutions', 'priority_level', 'start_date', 'targeted_end_date', 'expected_daily_txn_volume', 'project_value', 'spoc', 'commercials', 'commercial_pricing', 'client_type', 'company', 'company_location', 'category', 'country', 'phone', 'industry', 'company_size', 'contacts', 'status', 'priority', 'expected_close_date', 'probability', 'notes', 'assigned_to'],
+    required: ['client_name', 'contact_person', 'email', 'lead_source', 'created_by'],
+    optional: [
+      'lead_id', 'lead_source_value', 'status',
+      // Project Information
+      'project_title', 'project_description', 'project_budget', 'project_timeline', 'project_requirements',
+      // Enhanced Project Info
+      'solutions', 'priority_level', 'start_date', 'targeted_end_date', 'expected_daily_txn_volume', 'project_value', 'spoc',
+      // Commercials
+      'commercials', 'commercial_pricing',
+      // Client Information
+      'client_type', 'company', 'company_location', 'category', 'country', 'phone', 'industry', 'company_size',
+      // Contact Information
+      'contacts',
+      // Additional Information
+      'priority', 'expected_close_date', 'probability', 'notes', 'assigned_to'
+    ],
     enums: {
       lead_source: ['email', 'social-media', 'phone', 'website', 'referral', 'cold-call', 'event', 'other'],
       status: ['in-progress', 'won', 'lost', 'completed'],
