@@ -343,10 +343,12 @@ export function EnhancedStepItem({
                           </div>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <Button size="sm" variant="ghost">
-                            <Eye className="w-4 h-4" />
-                          </Button>
-                          <Button size="sm" variant="ghost">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleDocumentDownload(doc)}
+                            title="Download document"
+                          >
                             <Download className="w-4 h-4" />
                           </Button>
                         </div>
