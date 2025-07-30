@@ -174,7 +174,7 @@ export function StepItem({
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => onDeleteStep(step.id)}
+              onClick={() => onDeleteStep(stepId)}
               className="text-red-600 hover:text-red-700"
             >
               <Trash2 className="w-4 h-4" />
