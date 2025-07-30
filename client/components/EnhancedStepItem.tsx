@@ -166,7 +166,7 @@ export function EnhancedStepItem({
       user_name: `${user.first_name} ${user.last_name}`,
       message: newMessage,
       message_type: "text" as const,
-      is_rich_text: isRichTextMode,
+      is_rich_text: true,
     };
 
     try {
