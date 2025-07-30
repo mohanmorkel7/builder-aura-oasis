@@ -166,28 +166,7 @@ export default function AdminReports() {
   const [dateRange, setDateRange] = useState("last_30_days");
   const [reportType, setReportType] = useState("overview");
 
-  // Suppress Recharts defaultProps warnings
-  useEffect(() => {
-    const originalWarn = console.warn;
-    console.warn = (...args) => {
-      const message = args[0];
-      // Suppress defaultProps warnings from recharts components
-      if (
-        typeof message === 'string' &&
-        (message.includes('Support for defaultProps will be removed') ||
-         message.includes('defaultProps will be removed') ||
-         (message.includes('XAxis') && message.includes('defaultProps')) ||
-         (message.includes('YAxis') && message.includes('defaultProps')))
-      ) {
-        return; // Suppress recharts defaultProps warnings
-      }
-      originalWarn.apply(console, args);
-    };
 
-    return () => {
-      console.warn = originalWarn; // Restore original console.warn
-    };
-  }, []);
 
   const getStatusColor = (status: string) => {
     switch (status) {
