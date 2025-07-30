@@ -119,7 +119,6 @@ export default function LeadDetails() {
     if (newStep.name.trim() && newStep.description.trim()) {
       try {
         const stepData = {
-          leadId,
           name: newStep.name,
           description: newStep.description,
           estimated_days: newStep.estimated_days,
