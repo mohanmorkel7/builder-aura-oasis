@@ -242,7 +242,7 @@ function AppRoutes() {
       />
 
       <Route
-        path="/sales/leads"
+        path="/leads"
         element={
           <ProtectedRoute allowedRoles={["admin", "sales"]}>
             <DashboardLayout>
@@ -253,7 +253,7 @@ function AppRoutes() {
       />
 
       <Route
-        path="/sales/leads/new"
+        path="/leads/new"
         element={
           <ProtectedRoute allowedRoles={["admin", "sales"]}>
             <DashboardLayout>
@@ -264,7 +264,7 @@ function AppRoutes() {
       />
 
       <Route
-        path="/sales/leads/:id"
+        path="/leads/:id"
         element={
           <ProtectedRoute allowedRoles={["admin", "sales"]}>
             <DashboardLayout>
@@ -275,7 +275,7 @@ function AppRoutes() {
       />
 
       <Route
-        path="/sales/leads/:id/edit"
+        path="/leads/:id/edit"
         element={
           <ProtectedRoute allowedRoles={["admin", "sales"]}>
             <DashboardLayout>
