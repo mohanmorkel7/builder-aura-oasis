@@ -494,3 +494,155 @@ export function useDeleteStepComment() {
     },
   });
 }
+
+// Lead hooks
+export function useLeads(salesRepId?: number) {
+  return useQuery({
+    queryKey: ["leads", salesRepId],
+    queryFn: async () => {
+      try {
+        return await apiClient.getLeads(salesRepId);
+      } catch {
+        return [];
+      }
+    },
+  });
+}
+
+export function useLead(id: number) {
+  return useQuery({
+    queryKey: ["leads", id],
+    queryFn: () => apiClient.getLead(id),
+    enabled: !!id,
+  });
+}
+
+export function useCreateLead() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (leadData: any) => apiClient.createLead(leadData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["leads"] });
+      queryClient.invalidateQueries({ queryKey: ["lead-stats"] });
+    },
+  });
+}
+
+export function useUpdateLead() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, leadData }: { id: number; leadData: any }) =>
+      apiClient.updateLead(id, leadData),
+    onSuccess: (_, { id }) => {
+      queryClient.invalidateQueries({ queryKey: ["leads"] });
+      queryClient.invalidateQueries({ queryKey: ["leads", id] });
+      queryClient.invalidateQueries({ queryKey: ["lead-stats"] });
+    },
+  });
+}
+
+export function useDeleteLead() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => apiClient.deleteLead(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["leads"] });
+      queryClient.invalidateQueries({ queryKey: ["lead-stats"] });
+    },
+  });
+}
+
+export function useLeadStats(salesRepId?: number) {
+  return useQuery({
+    queryKey: ["lead-stats", salesRepId],
+    queryFn: async () => {
+      try {
+        return await apiClient.getLeadStats(salesRepId);
+      } catch {
+        return { total: 0, in_progress: 0, won: 0, lost: 0, completed: 0 };
+      }
+    },
+  });
+}
+
+// Lead steps hooks
+export function useLeadSteps(leadId: number) {
+  return useQuery({
+    queryKey: ["lead-steps", leadId],
+    queryFn: () => apiClient.getLeadSteps(leadId),
+    enabled: !!leadId && leadId > 0,
+  });
+}
+
+export function useCreateLeadStep() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ leadId, stepData }: { leadId: number; stepData: any }) =>
+      apiClient.createLeadStep(leadId, stepData),
+    onSuccess: (_, { leadId }) => {
+      queryClient.invalidateQueries({ queryKey: ["lead-steps", leadId] });
+    },
+  });
+}
+
+export function useUpdateLeadStep() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ stepId, stepData }: { stepId: number; stepData: any }) =>
+      apiClient.updateLeadStep(stepId, stepData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["lead-steps"] });
+    },
+  });
+}
+
+export function useDeleteLeadStep() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (stepId: number) => apiClient.deleteLeadStep(stepId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["lead-steps"] });
+    },
+  });
+}
+
+export function useReorderLeadSteps() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ leadId, stepOrders }: { leadId: number; stepOrders: { id: number; order: number }[] }) =>
+      apiClient.reorderLeadSteps(leadId, stepOrders),
+    onSuccess: (_, { leadId }) => {
+      queryClient.invalidateQueries({ queryKey: ["lead-steps", leadId] });
+    },
+  });
+}
+
+// Lead chat hooks
+export function useStepChats(stepId: number) {
+  return useQuery({
+    queryKey: ["step-chats", stepId],
+    queryFn: () => apiClient.getStepChats(stepId),
+    enabled: !!stepId && stepId > 0,
+  });
+}
+
+export function useCreateStepChat() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ stepId, chatData }: { stepId: number; chatData: any }) =>
+      apiClient.createStepChat(stepId, chatData),
+    onSuccess: (_, { stepId }) => {
+      queryClient.invalidateQueries({ queryKey: ["step-chats", stepId] });
+    },
+  });
+}
+
+export function useDeleteStepChat() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (chatId: number) => apiClient.deleteStepChat(chatId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["step-chats"] });
+    },
+  });
+}
