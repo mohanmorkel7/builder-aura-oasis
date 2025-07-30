@@ -2,30 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Import React Quill styles */
-@import 'react-quill/dist/quill.snow.css';
-
-/* React Quill Editor Styles */
-.ql-editor {
-  min-height: 80px;
-  font-size: 14px;
-  line-height: 1.5;
-}
-
-.ql-toolbar {
-  border-top: 1px solid #ccc;
-  border-left: 1px solid #ccc;
-  border-right: 1px solid #ccc;
-  border-bottom: none;
-}
-
-.ql-container {
-  border-bottom: 1px solid #ccc;
-  border-left: 1px solid #ccc;
-  border-right: 1px solid #ccc;
-  border-top: none;
-}
-
 @layer base {
   /**
    * Tailwind CSS theme
