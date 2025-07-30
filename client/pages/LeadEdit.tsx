@@ -141,6 +141,12 @@ export default function LeadEdit() {
 
     // Commercials
     commercials: [] as string[],
+    commercial_pricing: [] as Array<{
+      solution: string;
+      value: number;
+      unit: "paisa" | "cents";
+      currency: "INR" | "USD" | "Dubai";
+    }>,
 
     // Client Information
     client_name: "",
