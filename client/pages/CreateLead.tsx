@@ -48,6 +48,7 @@ import {
   Globe,
   Award,
   Zap,
+  Plus,
 } from "lucide-react";
 
 const leadSources = [
