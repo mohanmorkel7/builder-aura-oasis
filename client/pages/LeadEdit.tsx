@@ -213,6 +213,15 @@ export default function LeadEdit() {
         // Commercials
         commercials: lead.commercials || [],
 
+        // Contacts
+        contacts: lead.contacts || [{
+          contact_name: "",
+          designation: "",
+          phone: "",
+          email: "",
+          linkedin: "",
+        }],
+
         client_name: lead.client_name || "",
         client_type: lead.client_type || "",
         company: lead.company || "",
