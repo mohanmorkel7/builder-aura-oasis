@@ -242,7 +242,7 @@ export function EnhancedStepItem({
                       {documents.length} doc{documents.length !== 1 ? 's' : ''}
                     </Badge>
                   )}
-                  {chatMessages.length > 0 && (
+                  {!chatLoading && chatMessages.length > 0 && (
                     <Badge variant="outline" className="text-xs">
                       {chatMessages.length} message{chatMessages.length !== 1 ? 's' : ''}
                     </Badge>
