@@ -180,27 +180,41 @@ export function EnhancedStepItem({
   };
 
   const handleFollowUp = async (messageId: number) => {
-    // For now, create a system message indicating follow-up was created
-    // In a real app, this would navigate to a follow-up screen and then create the notification
-
     if (!user) return;
 
-    const followUpData = {
-      user_id: parseInt(user.id),
-      user_name: `${user.first_name} ${user.last_name}`,
-      message: `📋 Follow-up created for message #${messageId} | Assigned to: ${user.first_name} ${user.last_name} | Time: ${new Date().toLocaleString()}`,
-      message_type: "system" as const,
-      is_rich_text: false,
-    };
-
     try {
+      // Create a system message indicating follow-up was created
+      const followUpData = {
+        user_id: parseInt(user.id),
+        user_name: `${user.first_name} ${user.last_name}`,
+        message: `📋 Follow-up created for message #${messageId} | Assigned to: ${user.first_name} ${user.last_name} | Time: ${new Date().toLocaleString()}`,
+        message_type: "system" as const,
+        is_rich_text: false,
+      };
+
       await createChatMutation.mutateAsync({ stepId: step.id, chatData: followUpData });
+
+      // Navigate to follow-up screen with message and step context
+      navigate(`/sales/follow-up`, {
+        state: {
+          messageId,
+          stepId: step.id,
+          stepName: step.name,
+          fromChat: true
+        }
+      });
     } catch (error) {
       console.error("Failed to create follow-up notification:", error);
+      // Still navigate even if notification fails
+      navigate(`/sales/follow-up`, {
+        state: {
+          messageId,
+          stepId: step.id,
+          stepName: step.name,
+          fromChat: true
+        }
+      });
     }
-
-    // This would typically also navigate to follow-up screen
-    console.log("Navigate to follow-up screen for message:", messageId);
   };
 
   const handleDocumentDownload = (document: DocumentFile) => {
