@@ -125,12 +125,17 @@ export default function LeadDetails() {
           due_date: newStep.due_date || undefined,
         };
 
-        await createStepMutation.mutateAsync({ leadId, stepData });
+        console.log("Creating step with data:", { leadId, stepData });
+        const result = await createStepMutation.mutateAsync({ leadId, stepData });
+        console.log("Step creation result:", result);
+
         setNewStep({ name: "", description: "", estimated_days: 1, due_date: "" });
         setNewStepDialog(false);
       } catch (error) {
         console.error("Failed to create step:", error);
       }
+    } else {
+      console.warn("Step validation failed - missing name or description");
     }
   };
 
