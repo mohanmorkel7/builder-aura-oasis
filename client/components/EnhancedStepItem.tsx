@@ -323,7 +323,17 @@ export function EnhancedStepItem({
                 <CardContent className="space-y-4">
                   {/* Chat Messages */}
                   <div className="space-y-3 max-h-96 overflow-y-auto">
-                    {chatMessages.map((message) => (
+                    {chatLoading && (
+                      <div className="text-center py-4 text-gray-500">
+                        Loading messages...
+                      </div>
+                    )}
+                    {chatError && (
+                      <div className="text-center py-4 text-red-500">
+                        Error loading messages: {chatError.message}
+                      </div>
+                    )}
+                    {!chatLoading && !chatError && chatMessages.map((message) => (
                       <div
                         key={message.id}
                         className={`flex space-x-3 p-3 rounded border ${
