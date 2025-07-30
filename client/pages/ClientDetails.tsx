@@ -5,11 +5,7 @@ import {
   useClientOnboardingSteps,
   useCreateOnboardingStep,
   useUpdateOnboardingStep,
-  useDeleteOnboardingStep,
-  useStepDocuments,
-  useUploadStepDocument,
-  useStepComments,
-  useCreateStepComment
+  useDeleteOnboardingStep
 } from "@/hooks/useApi";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
