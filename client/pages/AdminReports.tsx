@@ -354,29 +354,8 @@ export default function AdminReports() {
                 <ResponsiveContainer width="100%" height={300}>
                   <AreaChart data={monthlyData}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis
-                      dataKey="month"
-                      axisLine={true}
-                      tickLine={true}
-                      interval="preserveStartEnd"
-                      tick={true}
-                      mirror={false}
-                      orientation="bottom"
-                      type="category"
-                      allowDecimals={true}
-                      allowDuplicatedCategory={true}
-                    />
-                    <YAxis
-                      axisLine={true}
-                      tickLine={true}
-                      interval="preserveStartEnd"
-                      tick={true}
-                      mirror={false}
-                      orientation="left"
-                      type="number"
-                      allowDecimals={true}
-                      allowDuplicatedCategory={true}
-                    />
+                    <XAxis dataKey="month" />
+                    <YAxis />
                     <Tooltip />
                     <Area
                       type="monotone"
