@@ -776,9 +776,40 @@ export default function CreateLead() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <Label htmlFor="company">Company Name</Label>
+                  <Label htmlFor="client_name_client">Name *</Label>
+                  <div className="relative mt-1">
+                    <Building className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Input
+                      id="client_name_client"
+                      value={leadData.client_name}
+                      onChange={(e) => updateField("client_name", e.target.value)}
+                      className="pl-10"
+                      placeholder="Client/Company name"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="client_type">Type *</Label>
+                  <Select
+                    value={leadData.client_type}
+                    onValueChange={(value) => updateField("client_type", value)}
+                  >
+                    <SelectTrigger className="mt-1">
+                      <SelectValue placeholder="Select client type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {clientTypes.map((type) => (
+                        <SelectItem key={type.value} value={type.value}>
+                          {type.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="company">Company</Label>
                   <div className="relative mt-1">
                     <Building className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                     <Input
@@ -786,10 +817,62 @@ export default function CreateLead() {
                       value={leadData.company}
                       onChange={(e) => updateField("company", e.target.value)}
                       className="pl-10"
-                      placeholder="Company name if different from client name"
+                      placeholder="Company name"
                     />
                   </div>
                 </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <Label htmlFor="company_location">Company Location</Label>
+                  <Input
+                    id="company_location"
+                    value={leadData.company_location}
+                    onChange={(e) => updateField("company_location", e.target.value)}
+                    className="mt-1"
+                    placeholder="City, State"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="category">Category *</Label>
+                  <Select
+                    value={leadData.category}
+                    onValueChange={(value) => updateField("category", value)}
+                  >
+                    <SelectTrigger className="mt-1">
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map((category) => (
+                        <SelectItem key={category.value} value={category.value}>
+                          {category.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="country">Country *</Label>
+                  <Select
+                    value={leadData.country}
+                    onValueChange={(value) => updateField("country", value)}
+                  >
+                    <SelectTrigger className="mt-1">
+                      <SelectValue placeholder="Select country" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {countries.map((country) => (
+                        <SelectItem key={country.value} value={country.value}>
+                          {country.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="industry">Industry</Label>
                   <Input
@@ -799,6 +882,24 @@ export default function CreateLead() {
                     className="mt-1"
                     placeholder="e.g., Technology, Healthcare, Finance"
                   />
+                </div>
+                <div>
+                  <Label htmlFor="company_size">Company Size</Label>
+                  <Select
+                    value={leadData.company_size}
+                    onValueChange={(value) => updateField("company_size", value)}
+                  >
+                    <SelectTrigger className="mt-1">
+                      <SelectValue placeholder="Select company size" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {companySizes.map((size) => (
+                        <SelectItem key={size.value} value={size.value}>
+                          {size.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
