@@ -93,7 +93,7 @@ export function StepItem({
 
     try {
       await createCommentMutation.mutateAsync({
-        stepId: step.id,
+        stepId: stepId,
         commentData: {
           message: comment,
           user_name: `${user.first_name} ${user.last_name}`,
