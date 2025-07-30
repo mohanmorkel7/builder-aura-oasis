@@ -438,13 +438,11 @@ export function EnhancedStepItem({
 
                     {isRichTextMode ? (
                       <div className="mb-2">
-                        <ReactQuill
-                          theme="snow"
+                        <RichTextEditor
                           value={newMessage}
                           onChange={setNewMessage}
-                          modules={quillModules}
                           placeholder="Type your message with rich formatting..."
-                          style={{ minHeight: "100px" }}
+                          className="min-h-[100px]"
                         />
                       </div>
                     ) : (
