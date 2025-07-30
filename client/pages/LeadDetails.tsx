@@ -125,7 +125,7 @@ export default function LeadDetails() {
           due_date: newStep.due_date || undefined,
         };
 
-        await createStepMutation.mutateAsync(stepData);
+        await createStepMutation.mutateAsync({ leadId, stepData });
         setNewStep({ name: "", description: "", estimated_days: 1, due_date: "" });
         setNewStepDialog(false);
       } catch (error) {
