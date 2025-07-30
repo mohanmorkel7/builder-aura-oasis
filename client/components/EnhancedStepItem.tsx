@@ -116,24 +116,31 @@ export function EnhancedStepItem({
     const files = event.target.files;
     if (!files || files.length === 0 || !user) return;
 
-    // Create a chat message with file attachments
+    // Create a chat message with file attachments and current text
     const attachments = Array.from(files).map(file => ({
       file_name: file.name,
       file_size: file.size,
       file_type: file.type,
     }));
 
+    const fileNames = Array.from(files).map(f => f.name).join(', ');
+    const currentText = newMessage.trim();
+    const messageText = currentText
+      ? `${currentText}\n\n📎 Attached: ${fileNames}`
+      : `📎 Uploaded ${files.length} file${files.length > 1 ? 's' : ''}: ${fileNames}`;
+
     const chatData = {
       user_id: parseInt(user.id),
       user_name: `${user.first_name} ${user.last_name}`,
-      message: `📎 Uploaded ${files.length} file${files.length > 1 ? 's' : ''}: ${Array.from(files).map(f => f.name).join(', ')}`,
-      message_type: "file" as const,
-      is_rich_text: false,
+      message: messageText,
+      message_type: "text" as const,
+      is_rich_text: !!currentText, // Use rich text if there was existing text
       attachments,
     };
 
     try {
       await createChatMutation.mutateAsync({ stepId: step.id, chatData });
+      setNewMessage(""); // Clear the message input after successful upload
       event.target.value = "";
     } catch (error) {
       console.error("Failed to upload files:", error);
