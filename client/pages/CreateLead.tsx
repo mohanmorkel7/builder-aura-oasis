@@ -249,7 +249,7 @@ export default function CreateLead() {
       };
 
       await createLeadMutation.mutateAsync(submitData);
-      navigate("/sales/leads");
+      navigate("/leads");
     } catch (error) {
       console.error("Failed to create lead:", error);
       setErrors(["Failed to create lead. Please try again."]);
