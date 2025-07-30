@@ -622,4 +622,168 @@ export class MockDataService {
       pending: this.deployments.filter((d) => d.status === "pending").length,
     };
   }
+
+  // Onboarding mock data
+  static async getClientOnboardingSteps(clientId: number) {
+    return [
+      {
+        id: 1,
+        client_id: clientId,
+        name: "Initial Contact",
+        description: "Make first contact with client and gather basic requirements",
+        status: "completed",
+        step_order: 1,
+        due_date: "2024-06-15",
+        completed_date: "2024-06-15",
+        estimated_days: 1,
+        created_at: "2024-06-10T09:00:00Z",
+        updated_at: "2024-06-15T15:30:00Z"
+      },
+      {
+        id: 2,
+        client_id: clientId,
+        name: "Proposal Sent",
+        description: "Prepare and send detailed proposal to client",
+        status: "completed",
+        step_order: 2,
+        due_date: "2024-06-20",
+        completed_date: "2024-06-20",
+        estimated_days: 3,
+        created_at: "2024-06-10T09:00:00Z",
+        updated_at: "2024-06-20T10:15:00Z"
+      },
+      {
+        id: 3,
+        client_id: clientId,
+        name: "Document Collection",
+        description: "Collect all necessary documents from client",
+        status: "in_progress",
+        step_order: 3,
+        due_date: "2024-07-15",
+        completed_date: null,
+        estimated_days: 5,
+        created_at: "2024-06-10T09:00:00Z",
+        updated_at: "2024-07-01T09:00:00Z"
+      },
+      {
+        id: 4,
+        client_id: clientId,
+        name: "Contract Signing",
+        description: "Review and sign final contract",
+        status: "pending",
+        step_order: 4,
+        due_date: "2024-07-25",
+        completed_date: null,
+        estimated_days: 2,
+        created_at: "2024-06-10T09:00:00Z",
+        updated_at: "2024-06-10T09:00:00Z"
+      },
+      {
+        id: 5,
+        client_id: clientId,
+        name: "Onboarding Call",
+        description: "Schedule and conduct onboarding call",
+        status: "pending",
+        step_order: 5,
+        due_date: "2024-08-01",
+        completed_date: null,
+        estimated_days: 1,
+        created_at: "2024-06-10T09:00:00Z",
+        updated_at: "2024-06-10T09:00:00Z"
+      },
+      {
+        id: 6,
+        client_id: clientId,
+        name: "Deployment",
+        description: "Deploy and configure client systems",
+        status: "pending",
+        step_order: 6,
+        due_date: "2024-08-10",
+        completed_date: null,
+        estimated_days: 7,
+        created_at: "2024-06-10T09:00:00Z",
+        updated_at: "2024-06-10T09:00:00Z"
+      }
+    ];
+  }
+
+  static async getStepDocuments(stepId: number) {
+    const documents = [
+      {
+        id: 1,
+        step_id: 1,
+        name: "Initial_Requirements.pdf",
+        file_path: "/uploads/initial_requirements.pdf",
+        file_size: 2417664, // 2.3 MB
+        file_type: "application/pdf",
+        uploaded_by: "Jane Smith",
+        uploaded_at: "2024-06-15T14:30:00Z"
+      },
+      {
+        id: 2,
+        step_id: 2,
+        name: "Project_Proposal_v2.docx",
+        file_path: "/uploads/project_proposal_v2.docx",
+        file_size: 1887437, // 1.8 MB
+        file_type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        uploaded_by: "John Doe",
+        uploaded_at: "2024-06-20T10:15:00Z"
+      },
+      {
+        id: 3,
+        step_id: 3,
+        name: "Tax_Documents.pdf",
+        file_path: "/uploads/tax_documents.pdf",
+        file_size: 5452595, // 5.2 MB
+        file_type: "application/pdf",
+        uploaded_by: "Client Portal",
+        uploaded_at: "2024-07-01T15:22:00Z"
+      }
+    ];
+
+    return documents.filter(doc => doc.step_id === stepId);
+  }
+
+  static async getStepComments(stepId: number) {
+    const comments = [
+      {
+        id: 1,
+        step_id: 1,
+        user_id: 2,
+        user_name: "Jane Smith",
+        message: "Client is very responsive. Initial requirements documented.",
+        comment_type: "note",
+        created_at: "2024-06-15T14:30:00Z"
+      },
+      {
+        id: 2,
+        step_id: 2,
+        user_id: 1,
+        user_name: "John Doe",
+        message: "Proposal sent with detailed timeline and pricing structure.",
+        comment_type: "update",
+        created_at: "2024-06-20T10:15:00Z"
+      },
+      {
+        id: 3,
+        step_id: 3,
+        user_id: 2,
+        user_name: "Jane Smith",
+        message: "Still waiting for incorporation documents. Following up today.",
+        comment_type: "note",
+        created_at: "2024-07-01T09:00:00Z"
+      },
+      {
+        id: 4,
+        step_id: 3,
+        user_id: null,
+        user_name: "System",
+        message: "Document uploaded via client portal",
+        comment_type: "system",
+        created_at: "2024-07-01T15:22:00Z"
+      }
+    ];
+
+    return comments.filter(comment => comment.step_id === stepId);
+  }
 }
