@@ -34,22 +34,27 @@ router.get("/clients/:clientId/steps", async (req: Request, res: Response) => {
     }
 
     let steps;
-    if (await isDatabaseAvailable()) {
-      steps = await OnboardingStepRepository.findByClientId(clientId);
-    } else {
-      // Use mock data
+    try {
+      if (await isDatabaseAvailable()) {
+        steps = await OnboardingStepRepository.findByClientId(clientId);
+      } else {
+        steps = await MockDataService.getClientOnboardingSteps(clientId);
+      }
+    } catch (dbError) {
+      console.log("Database error, using mock data:", dbError.message);
       steps = await MockDataService.getClientOnboardingSteps(clientId);
     }
 
     res.json(steps);
   } catch (error) {
     console.error("Error fetching onboarding steps:", error);
-    // Fallback to mock data
+    // Always return mock data as last resort
     try {
       const steps = await MockDataService.getClientOnboardingSteps(parseInt(req.params.clientId));
       res.json(steps);
     } catch (fallbackError) {
-      res.status(500).json({ error: "Failed to fetch onboarding steps" });
+      console.error("Mock data fallback failed:", fallbackError);
+      res.json([]); // Return empty array as absolute fallback
     }
   }
 });
