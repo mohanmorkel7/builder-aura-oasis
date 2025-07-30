@@ -407,10 +407,35 @@ export function EnhancedStepItem({
                           {message.attachments && message.attachments.length > 0 && (
                             <div className="mt-2 space-y-1">
                               {message.attachments.map((attachment, index) => (
-                                <div key={index} className="flex items-center space-x-2 text-xs text-blue-600">
-                                  <Paperclip className="w-3 h-3" />
-                                  <span>{attachment.file_name}</span>
+                                <div key={index} className="flex items-center space-x-2 text-xs">
+                                  <Paperclip className="w-3 h-3 text-blue-600" />
+                                  <span
+                                    className="text-blue-600 hover:text-blue-800 cursor-pointer underline"
+                                    onClick={() => {
+                                      const link = document.createElement('a');
+                                      link.href = `/uploads/${attachment.file_name}`;
+                                      link.download = attachment.file_name;
+                                      link.target = '_blank';
+                                      link.click();
+                                    }}
+                                  >
+                                    {attachment.file_name}
+                                  </span>
                                   <span className="text-gray-500">({formatFileSize(attachment.file_size)})</span>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    className="h-auto p-1"
+                                    onClick={() => {
+                                      const link = document.createElement('a');
+                                      link.href = `/uploads/${attachment.file_name}`;
+                                      link.download = attachment.file_name;
+                                      link.target = '_blank';
+                                      link.click();
+                                    }}
+                                  >
+                                    <Download className="w-3 h-3" />
+                                  </Button>
                                 </div>
                               ))}
                             </div>
