@@ -86,7 +86,9 @@ export default function FollowUpNew() {
       // Here you would make an API call to create the follow-up
       const followUpData = {
         ...followUp,
-        client_id: parseInt(id || "0"),
+        client_id: !isLeadFollowUp ? parseInt(id || "0") : undefined,
+        lead_id: isLeadFollowUp ? leadContext?.stepId : undefined,
+        message_id: isLeadFollowUp ? leadContext?.messageId : undefined,
         created_at: new Date().toISOString(),
         status: "pending",
       };
@@ -94,7 +96,12 @@ export default function FollowUpNew() {
       console.log("Creating follow-up:", followUpData);
       await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
 
-      navigate(`/sales/client/${id}`);
+      // Navigate back based on context
+      if (isLeadFollowUp) {
+        navigate(`/sales/leads`);
+      } else {
+        navigate(`/sales/client/${id}`);
+      }
     } catch (error) {
       console.error("Failed to create follow-up:", error);
     } finally {
