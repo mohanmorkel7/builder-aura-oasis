@@ -132,7 +132,6 @@ export function EnhancedStepItem({
   ]);
 
   const [newMessage, setNewMessage] = useState("");
-  const [isRichTextMode, setIsRichTextMode] = useState(false);
 
   // Don't render if step is invalid
   if (!step || !step.id) {
