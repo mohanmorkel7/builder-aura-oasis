@@ -37,16 +37,18 @@ import {
   Building,
   Mail,
   Phone,
+  MapPin,
   Calendar,
   DollarSign,
   User,
   Info,
+  Briefcase,
   Target,
   Users,
   Globe,
   Award,
   Zap,
-  Briefcase,
+  Plus,
 } from "lucide-react";
 
 const leadSources = [
