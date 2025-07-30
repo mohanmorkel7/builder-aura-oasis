@@ -380,3 +380,117 @@ export function useProducts() {
     queryFn: () => apiClient.getProducts(),
   });
 }
+
+// Onboarding hooks
+export function useClientOnboardingSteps(clientId: number) {
+  return useQuery({
+    queryKey: ["onboarding-steps", clientId],
+    queryFn: () => apiClient.getClientOnboardingSteps(clientId),
+    enabled: !!clientId,
+  });
+}
+
+export function useCreateOnboardingStep() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ clientId, stepData }: { clientId: number; stepData: any }) =>
+      apiClient.createOnboardingStep(clientId, stepData),
+    onSuccess: (_, { clientId }) => {
+      queryClient.invalidateQueries({ queryKey: ["onboarding-steps", clientId] });
+    },
+  });
+}
+
+export function useUpdateOnboardingStep() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ stepId, stepData }: { stepId: number; stepData: any }) =>
+      apiClient.updateOnboardingStep(stepId, stepData),
+    onSuccess: (data: any) => {
+      if (data && data.client_id) {
+        queryClient.invalidateQueries({ queryKey: ["onboarding-steps", data.client_id] });
+      }
+      // Also invalidate the general query
+      queryClient.invalidateQueries({ queryKey: ["onboarding-steps"] });
+    },
+  });
+}
+
+export function useDeleteOnboardingStep() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (stepId: number) => apiClient.deleteOnboardingStep(stepId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["onboarding-steps"] });
+    },
+  });
+}
+
+export function useReorderOnboardingSteps() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ clientId, stepOrders }: { clientId: number; stepOrders: { id: number; order: number }[] }) =>
+      apiClient.reorderOnboardingSteps(clientId, stepOrders),
+    onSuccess: (_, { clientId }) => {
+      queryClient.invalidateQueries({ queryKey: ["onboarding-steps", clientId] });
+    },
+  });
+}
+
+export function useStepDocuments(stepId: number) {
+  return useQuery({
+    queryKey: ["step-documents", stepId],
+    queryFn: () => apiClient.getStepDocuments(stepId),
+    enabled: !!stepId,
+  });
+}
+
+export function useUploadStepDocument() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ stepId, documentData }: { stepId: number; documentData: any }) =>
+      apiClient.uploadStepDocument(stepId, documentData),
+    onSuccess: (_, { stepId }) => {
+      queryClient.invalidateQueries({ queryKey: ["step-documents", stepId] });
+    },
+  });
+}
+
+export function useDeleteStepDocument() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (documentId: number) => apiClient.deleteStepDocument(documentId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["step-documents"] });
+    },
+  });
+}
+
+export function useStepComments(stepId: number) {
+  return useQuery({
+    queryKey: ["step-comments", stepId],
+    queryFn: () => apiClient.getStepComments(stepId),
+    enabled: !!stepId,
+  });
+}
+
+export function useCreateStepComment() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ stepId, commentData }: { stepId: number; commentData: any }) =>
+      apiClient.createStepComment(stepId, commentData),
+    onSuccess: (_, { stepId }) => {
+      queryClient.invalidateQueries({ queryKey: ["step-comments", stepId] });
+    },
+  });
+}
+
+export function useDeleteStepComment() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (commentId: number) => apiClient.deleteStepComment(commentId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["step-comments"] });
+    },
+  });
+}
