@@ -197,14 +197,7 @@ export function EnhancedStepItem({
     }
   };
 
-  const handleDocumentDownload = (document: DocumentFile) => {
-    // Create a download link for the document
-    const link = document.createElement('a');
-    link.href = document.file_path;
-    link.download = document.name;
-    link.target = '_blank';
-    link.click();
-  };
+
 
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return '0 Bytes';
