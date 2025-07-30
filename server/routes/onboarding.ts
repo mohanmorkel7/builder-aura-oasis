@@ -15,9 +15,12 @@ const router = Router();
 // Helper function to check if database is available
 async function isDatabaseAvailable() {
   try {
-    await OnboardingStepRepository.findByClientId(1);
+    // Try a simple database query to test connection
+    const { pool } = require("../database/connection");
+    await pool.query("SELECT 1");
     return true;
   } catch (error) {
+    console.log("Database not available, falling back to mock data");
     return false;
   }
 }
