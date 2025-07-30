@@ -193,6 +193,7 @@ export default function LeadEdit() {
       const lead = originalLead as any;
       setLeadData({
         lead_source: lead.lead_source || "",
+        lead_source_value: lead.lead_source_value || "",
         status: lead.status || "",
         project_title: lead.project_title || "",
         project_description: lead.project_description || "",
