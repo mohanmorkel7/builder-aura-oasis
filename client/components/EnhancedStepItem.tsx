@@ -106,37 +106,11 @@ export function EnhancedStepItem({
     opacity: isDragging ? 0.5 : 1,
   };
 
-  // Mock data for now - these would come from API
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
-    {
-      id: 1,
-      user_name: "Sarah Johnson",
-      user_id: 1,
-      message: "Initial discovery call scheduled for next week. Client seems very interested in our proposal.",
-      is_rich_text: false,
-      message_type: "text",
-      created_at: "2024-01-15T10:30:00Z",
-      attachments: [],
-    },
-    {
-      id: 2,
-      user_name: "Mike Chen",
-      user_id: 2,
-      message: "<p>Meeting notes attached. Key requirements:</p><ul><li><strong>Budget:</strong> $50k-75k</li><li><strong>Timeline:</strong> Q2 2024</li><li><strong>Decision makers:</strong> CTO and Finance Director</li></ul>",
-      is_rich_text: true,
-      message_type: "text",
-      created_at: "2024-01-15T14:45:00Z",
-      attachments: [
-        {
-          id: 1,
-          file_name: "meeting-notes-jan15.pdf",
-          file_size: 245760,
-          file_type: "application/pdf",
-        }
-      ],
-    },
-  ]);
+  // Fetch real chat data from API
+  const { data: chatMessages = [], isLoading: chatLoading } = useStepChats(step.id);
+  const createChatMutation = useCreateStepChat();
 
+  // Mock documents for now - this would be replaced with real document API
   const [documents, setDocuments] = useState<DocumentFile[]>([
     {
       id: 1,
