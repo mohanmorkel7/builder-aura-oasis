@@ -130,6 +130,7 @@ export default function CreateLead() {
   const [leadData, setLeadData] = useState({
     // Lead Source
     lead_source: "",
+    lead_source_value: "", // Dynamic field based on lead source selection
     
     // Project Information
     project_title: "",
