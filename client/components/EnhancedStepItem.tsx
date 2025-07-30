@@ -89,6 +89,7 @@ export function EnhancedStepItem({
   isDragOverlay = false,
 }: EnhancedStepItemProps) {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const {
