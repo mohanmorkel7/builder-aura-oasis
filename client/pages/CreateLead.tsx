@@ -551,6 +551,33 @@ export default function CreateLead() {
           </Card>
         </TabsContent>
 
+        {/* Commercials Tab */}
+        <TabsContent value="commercials" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Commercials</CardTitle>
+              <CardDescription>
+                Select the commercial products and services relevant to this lead
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div>
+                <Label htmlFor="commercials">Commercial Solutions</Label>
+                <MultiSelect
+                  options={commercialsOptions}
+                  value={leadData.commercials}
+                  onChange={(value) => updateField("commercials", value)}
+                  placeholder="Select commercial solutions..."
+                  className="mt-1"
+                />
+                <p className="text-sm text-gray-500 mt-2">
+                  Select all commercial products that apply to this lead opportunity
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         {/* Client Information Tab */}
         <TabsContent value="client" className="space-y-6">
           <Card>
