@@ -119,10 +119,10 @@ export default function LeadDetails() {
     if (newStep.name.trim() && newStep.description.trim()) {
       try {
         const stepData = {
-          name: newStep.name,
-          description: newStep.description,
+          name: newStep.name.trim(),
+          description: newStep.description.trim(),
           estimated_days: newStep.estimated_days,
-          due_date: newStep.due_date || undefined,
+          due_date: newStep.due_date.trim() || undefined,
         };
 
         console.log("Creating step with data:", { leadId, stepData });
