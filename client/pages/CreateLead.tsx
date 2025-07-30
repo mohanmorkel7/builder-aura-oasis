@@ -159,10 +159,14 @@ export default function CreateLead() {
 
     // Client Information
     client_name: "",
+    client_type: "",
+    company: "",
+    company_location: "",
+    category: "",
+    country: "",
     contact_person: "",
     email: "",
     phone: "",
-    company: "",
     industry: "",
     company_size: "",
     
