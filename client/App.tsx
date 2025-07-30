@@ -26,6 +26,7 @@ import AlertsNotifications from "@/pages/AlertsNotifications";
 import PlaceholderPage from "@/pages/PlaceholderPage";
 import LeadDashboard from "@/pages/LeadDashboard";
 import CreateLead from "@/pages/CreateLead";
+import LeadDetails from "@/pages/LeadDetails";
 import NotFound from "@/pages/NotFound";
 
 // Protected Route Component
