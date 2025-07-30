@@ -364,6 +364,8 @@ export default function LeadEdit() {
       const updateData = {
         ...leadData,
         project_budget: leadData.project_budget ? parseFloat(leadData.project_budget) : undefined,
+        project_value: leadData.project_value ? parseFloat(leadData.project_value) : undefined,
+        expected_daily_txn_volume: leadData.expected_daily_txn_volume ? parseInt(leadData.expected_daily_txn_volume) : undefined,
         probability: leadData.probability ? parseInt(leadData.probability) : undefined,
       };
 
