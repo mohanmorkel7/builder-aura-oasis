@@ -19,7 +19,7 @@ import {
   restrictToParentElement,
 } from "@dnd-kit/modifiers";
 import { EnhancedStepItem } from "./EnhancedStepItem";
-import { useReorderLeadSteps } from "@/hooks/useApi";
+import { useReorderLeadSteps, useUpdateLeadStep } from "@/hooks/useApi";
 
 interface DraggableStepsListProps {
   leadId: number;
