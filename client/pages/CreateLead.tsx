@@ -613,17 +613,79 @@ export default function CreateLead() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div>
-                <Label htmlFor="commercials">Commercial Solutions</Label>
-                <MultiSelect
-                  options={commercialsOptions}
-                  value={leadData.commercials}
-                  onChange={(value) => updateField("commercials", value)}
-                  placeholder="Select commercial solutions..."
-                  className="mt-1"
-                />
-                <p className="text-sm text-gray-500 mt-2">
-                  Select all commercial products that apply to this lead opportunity
+                <p className="text-sm text-gray-600 mb-4">
+                  Pricing for solutions selected in the Project Details tab. Values will auto-populate when you select solutions in the Project tab.
                 </p>
+
+                {(!leadData.solutions || leadData.solutions.length === 0) ? (
+                  <div className="text-center py-8 text-gray-500">
+                    <p>No solutions selected in Project Details tab.</p>
+                    <p className="text-sm">Go to Project Details tab and select solutions to configure pricing.</p>
+                  </div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Solution Name</TableHead>
+                        <TableHead>Value</TableHead>
+                        <TableHead>Unit</TableHead>
+                        <TableHead>Currency</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {(leadData.commercial_pricing || []).map((pricing, index) => (
+                        <TableRow key={pricing.solution}>
+                          <TableCell className="font-medium">
+                            {pricing.solution}
+                          </TableCell>
+                          <TableCell>
+                            <Input
+                              type="number"
+                              value={pricing.value}
+                              onChange={(e) => updateCommercialPricing(index, "value", parseFloat(e.target.value) || 0)}
+                              placeholder="0"
+                              className="w-20"
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <Select
+                              value={pricing.unit}
+                              onValueChange={(value) => updateCommercialPricing(index, "unit", value)}
+                            >
+                              <SelectTrigger className="w-24">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {unitOptions.map((unit) => (
+                                  <SelectItem key={unit.value} value={unit.value}>
+                                    {unit.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </TableCell>
+                          <TableCell>
+                            <Select
+                              value={pricing.currency}
+                              onValueChange={(value) => updateCommercialPricing(index, "currency", value)}
+                            >
+                              <SelectTrigger className="w-20">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {currencyOptions.map((currency) => (
+                                  <SelectItem key={currency.value} value={currency.value}>
+                                    {currency.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
               </div>
             </CardContent>
           </Card>
