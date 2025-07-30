@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import React Quill styles */
+@import 'react-quill/dist/quill.snow.css';
+
 /* React Quill Editor Styles */
 .ql-editor {
   min-height: 80px;
