@@ -14,14 +14,12 @@ import { DatabaseValidator, ValidationSchemas } from "../utils/validation";
 
 const router = Router();
 
-// Helper function to check if database is available
+// Enhanced helper function with better error handling
 async function isDatabaseAvailable() {
   try {
-    const { pool } = require("../database/connection");
-    await pool.query("SELECT 1");
-    return true;
+    return await DatabaseValidator.isDatabaseAvailable();
   } catch (error) {
-    console.log("Database not available, falling back to mock data");
+    console.log("Database availability check failed:", error.message);
     return false;
   }
 }
