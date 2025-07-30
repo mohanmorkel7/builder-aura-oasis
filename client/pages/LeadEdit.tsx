@@ -96,7 +96,7 @@ const solutionsOptions = [
   "Optimizer-UPI",
   "Chargeback",
   "NetworkConnectivity",
-  "Orchestration"
+  "Orchestration",
 ];
 
 const commercialsOptions = [
@@ -110,7 +110,7 @@ const commercialsOptions = [
   "Optimizer-UPI",
   "Chargeback",
   "NetworkConnectivity",
-  "Orchestration"
+  "Orchestration",
 ];
 
 const priorityLevels = [
@@ -168,7 +168,7 @@ export default function LeadEdit() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const leadId = parseInt(id || "0");
-  
+
   const { data: originalLead, isLoading, error } = useLead(leadId);
   const updateLeadMutation = useUpdateLead();
 
@@ -215,15 +215,17 @@ export default function LeadEdit() {
     phone: "",
     industry: "",
     company_size: "",
-    
+
     // Contact Information
-    contacts: [{
-      contact_name: "",
-      designation: "",
-      phone: "",
-      email: "",
-      linkedin: "",
-    }] as Array<{
+    contacts: [
+      {
+        contact_name: "",
+        designation: "",
+        phone: "",
+        email: "",
+        linkedin: "",
+      },
+    ] as Array<{
       contact_name: string;
       designation: string;
       phone: string;
@@ -260,7 +262,8 @@ export default function LeadEdit() {
         priority_level: lead.priority_level || "",
         start_date: lead.start_date || "",
         targeted_end_date: lead.targeted_end_date || "",
-        expected_daily_txn_volume: lead.expected_daily_txn_volume?.toString() || "",
+        expected_daily_txn_volume:
+          lead.expected_daily_txn_volume?.toString() || "",
         project_value: lead.project_value?.toString() || "",
         spoc: lead.spoc || "",
 
@@ -269,13 +272,15 @@ export default function LeadEdit() {
         commercial_pricing: lead.commercial_pricing || [],
 
         // Contacts
-        contacts: lead.contacts || [{
-          contact_name: "",
-          designation: "",
-          phone: "",
-          email: "",
-          linkedin: "",
-        }],
+        contacts: lead.contacts || [
+          {
+            contact_name: "",
+            designation: "",
+            phone: "",
+            email: "",
+            linkedin: "",
+          },
+        ],
 
         client_name: lead.client_name || "",
         client_type: lead.client_type || "",
@@ -307,13 +312,15 @@ export default function LeadEdit() {
       const existingPricing = leadData.commercial_pricing || [];
       const newPricing = value.map((solution: string) => {
         // Keep existing pricing if solution was already selected
-        const existing = existingPricing.find(p => p.solution === solution);
-        return existing || {
-          solution,
-          value: 0,
-          unit: "paisa" as const,
-          currency: "INR" as const
-        };
+        const existing = existingPricing.find((p) => p.solution === solution);
+        return (
+          existing || {
+            solution,
+            value: 0,
+            unit: "paisa" as const,
+            currency: "INR" as const,
+          }
+        );
       });
       newData.commercial_pricing = newPricing;
     }
@@ -322,30 +329,37 @@ export default function LeadEdit() {
     setHasChanges(true);
   };
 
-  const updateCommercialPricing = (index: number, field: string, value: any) => {
+  const updateCommercialPricing = (
+    index: number,
+    field: string,
+    value: any,
+  ) => {
     const newPricing = [...(leadData.commercial_pricing || [])];
     newPricing[index] = { ...newPricing[index], [field]: value };
-    setLeadData(prev => ({ ...prev, commercial_pricing: newPricing }));
+    setLeadData((prev) => ({ ...prev, commercial_pricing: newPricing }));
     setHasChanges(true);
   };
 
   const updateContact = (index: number, field: string, value: string) => {
     const newContacts = [...leadData.contacts];
     newContacts[index] = { ...newContacts[index], [field]: value };
-    setLeadData(prev => ({ ...prev, contacts: newContacts }));
+    setLeadData((prev) => ({ ...prev, contacts: newContacts }));
     setHasChanges(true);
   };
 
   const addContact = () => {
-    setLeadData(prev => ({
+    setLeadData((prev) => ({
       ...prev,
-      contacts: [...prev.contacts, {
-        contact_name: "",
-        designation: "",
-        phone: "",
-        email: "",
-        linkedin: "",
-      }]
+      contacts: [
+        ...prev.contacts,
+        {
+          contact_name: "",
+          designation: "",
+          phone: "",
+          email: "",
+          linkedin: "",
+        },
+      ],
     }));
     setHasChanges(true);
   };
@@ -353,7 +367,7 @@ export default function LeadEdit() {
   const removeContact = (index: number) => {
     if (leadData.contacts.length > 1) {
       const newContacts = leadData.contacts.filter((_, i) => i !== index);
-      setLeadData(prev => ({ ...prev, contacts: newContacts }));
+      setLeadData((prev) => ({ ...prev, contacts: newContacts }));
       setHasChanges(true);
     }
   };
@@ -363,13 +377,24 @@ export default function LeadEdit() {
     try {
       const updateData = {
         ...leadData,
-        project_budget: leadData.project_budget ? parseFloat(leadData.project_budget) : undefined,
-        project_value: leadData.project_value ? parseFloat(leadData.project_value) : undefined,
-        expected_daily_txn_volume: leadData.expected_daily_txn_volume ? parseInt(leadData.expected_daily_txn_volume) : undefined,
-        probability: leadData.probability ? parseInt(leadData.probability) : undefined,
+        project_budget: leadData.project_budget
+          ? parseFloat(leadData.project_budget)
+          : undefined,
+        project_value: leadData.project_value
+          ? parseFloat(leadData.project_value)
+          : undefined,
+        expected_daily_txn_volume: leadData.expected_daily_txn_volume
+          ? parseInt(leadData.expected_daily_txn_volume)
+          : undefined,
+        probability: leadData.probability
+          ? parseInt(leadData.probability)
+          : undefined,
       };
 
-      await updateLeadMutation.mutateAsync({ id: leadId, leadData: updateData });
+      await updateLeadMutation.mutateAsync({
+        id: leadId,
+        leadData: updateData,
+      });
       setHasChanges(false);
       navigate(`/leads/${id}`);
     } catch (error) {
@@ -452,7 +477,8 @@ export default function LeadEdit() {
         <Alert>
           <Info className="h-4 w-4" />
           <AlertDescription>
-            Please fill in all required fields: Client Name, Contact Person, Email, and Lead Source.
+            Please fill in all required fields: Client Name, Contact Person,
+            Email, and Lead Source.
           </AlertDescription>
         </Alert>
       )}
@@ -529,31 +555,49 @@ export default function LeadEdit() {
                   <Label htmlFor="lead_source_value">
                     {leadData.lead_source === "email" && "Email Address"}
                     {leadData.lead_source === "phone" && "Phone Number"}
-                    {leadData.lead_source === "social-media" && "Social Media Profile/Link"}
+                    {leadData.lead_source === "social-media" &&
+                      "Social Media Profile/Link"}
                     {leadData.lead_source === "website" && "Website URL"}
-                    {leadData.lead_source === "referral" && "Referral Source/Contact"}
-                    {leadData.lead_source === "cold-call" && "Phone Number Called"}
+                    {leadData.lead_source === "referral" &&
+                      "Referral Source/Contact"}
+                    {leadData.lead_source === "cold-call" &&
+                      "Phone Number Called"}
                     {leadData.lead_source === "event" && "Event Name/Details"}
                     {leadData.lead_source === "other" && "Source Details"}
                   </Label>
                   <div className="relative mt-1">
-                    {leadData.lead_source === "email" && <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />}
-                    {leadData.lead_source === "phone" && <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />}
-                    {leadData.lead_source === "website" && <Globe className="absolute left-3 top-3 h-4 w-4 text-gray-400" />}
+                    {leadData.lead_source === "email" && (
+                      <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    )}
+                    {leadData.lead_source === "phone" && (
+                      <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    )}
+                    {leadData.lead_source === "website" && (
+                      <Globe className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    )}
                     <Input
                       id="lead_source_value"
                       value={leadData.lead_source_value}
-                      onChange={(e) => updateField("lead_source_value", e.target.value)}
+                      onChange={(e) =>
+                        updateField("lead_source_value", e.target.value)
+                      }
                       className="pl-10"
                       placeholder={
-                        leadData.lead_source === "email" ? "contact@company.com" :
-                        leadData.lead_source === "phone" ? "+1 (555) 000-0000" :
-                        leadData.lead_source === "social-media" ? "LinkedIn profile or social media link" :
-                        leadData.lead_source === "website" ? "https://company.com" :
-                        leadData.lead_source === "referral" ? "Name of person who referred" :
-                        leadData.lead_source === "cold-call" ? "+1 (555) 000-0000" :
-                        leadData.lead_source === "event" ? "Conference name or event details" :
-                        "Describe the source"
+                        leadData.lead_source === "email"
+                          ? "contact@company.com"
+                          : leadData.lead_source === "phone"
+                            ? "+1 (555) 000-0000"
+                            : leadData.lead_source === "social-media"
+                              ? "LinkedIn profile or social media link"
+                              : leadData.lead_source === "website"
+                                ? "https://company.com"
+                                : leadData.lead_source === "referral"
+                                  ? "Name of person who referred"
+                                  : leadData.lead_source === "cold-call"
+                                    ? "+1 (555) 000-0000"
+                                    : leadData.lead_source === "event"
+                                      ? "Conference name or event details"
+                                      : "Describe the source"
                       }
                     />
                   </div>
@@ -568,7 +612,9 @@ export default function LeadEdit() {
                     <Input
                       id="client_name"
                       value={leadData.client_name}
-                      onChange={(e) => updateField("client_name", e.target.value)}
+                      onChange={(e) =>
+                        updateField("client_name", e.target.value)
+                      }
                       className="pl-10"
                       placeholder="Enter client or company name"
                     />
@@ -581,7 +627,9 @@ export default function LeadEdit() {
                     <Input
                       id="contact_person"
                       value={leadData.contact_person}
-                      onChange={(e) => updateField("contact_person", e.target.value)}
+                      onChange={(e) =>
+                        updateField("contact_person", e.target.value)
+                      }
                       className="pl-10"
                       placeholder="Primary contact name"
                     />
@@ -639,7 +687,9 @@ export default function LeadEdit() {
                   <Input
                     id="project_title"
                     value={leadData.project_title}
-                    onChange={(e) => updateField("project_title", e.target.value)}
+                    onChange={(e) =>
+                      updateField("project_title", e.target.value)
+                    }
                     className="pl-10"
                     placeholder="e.g., E-commerce Platform Development"
                   />
@@ -651,7 +701,9 @@ export default function LeadEdit() {
                 <Textarea
                   id="project_description"
                   value={leadData.project_description}
-                  onChange={(e) => updateField("project_description", e.target.value)}
+                  onChange={(e) =>
+                    updateField("project_description", e.target.value)
+                  }
                   className="mt-1"
                   rows={4}
                   placeholder="Describe what the client wants to achieve..."
@@ -667,7 +719,9 @@ export default function LeadEdit() {
                       id="project_budget"
                       type="number"
                       value={leadData.project_budget}
-                      onChange={(e) => updateField("project_budget", e.target.value)}
+                      onChange={(e) =>
+                        updateField("project_budget", e.target.value)
+                      }
                       className="pl-10"
                       placeholder="0"
                     />
@@ -680,7 +734,9 @@ export default function LeadEdit() {
                     <Input
                       id="project_timeline"
                       value={leadData.project_timeline}
-                      onChange={(e) => updateField("project_timeline", e.target.value)}
+                      onChange={(e) =>
+                        updateField("project_timeline", e.target.value)
+                      }
                       className="pl-10"
                       placeholder="e.g., 3-6 months"
                     />
@@ -689,11 +745,15 @@ export default function LeadEdit() {
               </div>
 
               <div>
-                <Label htmlFor="project_requirements">Technical Requirements</Label>
+                <Label htmlFor="project_requirements">
+                  Technical Requirements
+                </Label>
                 <Textarea
                   id="project_requirements"
                   value={leadData.project_requirements}
-                  onChange={(e) => updateField("project_requirements", e.target.value)}
+                  onChange={(e) =>
+                    updateField("project_requirements", e.target.value)
+                  }
                   className="mt-1"
                   rows={3}
                   placeholder="List any specific technologies, integrations, or requirements..."
@@ -702,7 +762,9 @@ export default function LeadEdit() {
 
               {/* Enhanced Project Info */}
               <div className="border-t pt-6 space-y-6">
-                <h4 className="text-lg font-medium text-gray-900">Enhanced Project Information</h4>
+                <h4 className="text-lg font-medium text-gray-900">
+                  Enhanced Project Information
+                </h4>
 
                 <div>
                   <Label htmlFor="solutions">Solutions (Multiselect)</Label>
@@ -720,14 +782,19 @@ export default function LeadEdit() {
                     <Label htmlFor="priority_level">Priority Level</Label>
                     <Select
                       value={leadData.priority_level}
-                      onValueChange={(value) => updateField("priority_level", value)}
+                      onValueChange={(value) =>
+                        updateField("priority_level", value)
+                      }
                     >
                       <SelectTrigger className="mt-1">
                         <SelectValue placeholder="Select priority level" />
                       </SelectTrigger>
                       <SelectContent>
                         {priorityLevels.map((priority) => (
-                          <SelectItem key={priority.value} value={priority.value}>
+                          <SelectItem
+                            key={priority.value}
+                            value={priority.value}
+                          >
                             {priority.label}
                           </SelectItem>
                         ))}
@@ -748,12 +815,16 @@ export default function LeadEdit() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="start_date">Start Date (Expected or Confirmed)</Label>
+                    <Label htmlFor="start_date">
+                      Start Date (Expected or Confirmed)
+                    </Label>
                     <Input
                       id="start_date"
                       type="date"
                       value={leadData.start_date}
-                      onChange={(e) => updateField("start_date", e.target.value)}
+                      onChange={(e) =>
+                        updateField("start_date", e.target.value)
+                      }
                       className="mt-1"
                     />
                   </div>
@@ -763,7 +834,9 @@ export default function LeadEdit() {
                       id="targeted_end_date"
                       type="date"
                       value={leadData.targeted_end_date}
-                      onChange={(e) => updateField("targeted_end_date", e.target.value)}
+                      onChange={(e) =>
+                        updateField("targeted_end_date", e.target.value)
+                      }
                       className="mt-1"
                     />
                   </div>
@@ -771,25 +844,33 @@ export default function LeadEdit() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="expected_daily_txn_volume">Expected Daily Txn Volume</Label>
+                    <Label htmlFor="expected_daily_txn_volume">
+                      Expected Daily Txn Volume
+                    </Label>
                     <Input
                       id="expected_daily_txn_volume"
                       type="number"
                       value={leadData.expected_daily_txn_volume}
-                      onChange={(e) => updateField("expected_daily_txn_volume", e.target.value)}
+                      onChange={(e) =>
+                        updateField("expected_daily_txn_volume", e.target.value)
+                      }
                       className="mt-1"
                       placeholder="Number of daily transactions"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="project_value">Project Value (Expected Revenue)</Label>
+                    <Label htmlFor="project_value">
+                      Project Value (Expected Revenue)
+                    </Label>
                     <div className="relative mt-1">
                       <DollarSign className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                       <Input
                         id="project_value"
                         type="number"
                         value={leadData.project_value}
-                        onChange={(e) => updateField("project_value", e.target.value)}
+                        onChange={(e) =>
+                          updateField("project_value", e.target.value)
+                        }
                         className="pl-10"
                         placeholder="Expected deal size"
                       />
@@ -807,19 +888,25 @@ export default function LeadEdit() {
             <CardHeader>
               <CardTitle>Commercials</CardTitle>
               <CardDescription>
-                Select the commercial products and services relevant to this lead
+                Select the commercial products and services relevant to this
+                lead
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div>
                 <p className="text-sm text-gray-600 mb-4">
-                  Pricing for solutions selected in the Project Details tab. Values will auto-populate when you select solutions in the Project tab.
+                  Pricing for solutions selected in the Project Details tab.
+                  Values will auto-populate when you select solutions in the
+                  Project tab.
                 </p>
 
-                {(!leadData.solutions || leadData.solutions.length === 0) ? (
+                {!leadData.solutions || leadData.solutions.length === 0 ? (
                   <div className="text-center py-8 text-gray-500">
                     <p>No solutions selected in Project Details tab.</p>
-                    <p className="text-sm">Go to Project Details tab and select solutions to configure pricing.</p>
+                    <p className="text-sm">
+                      Go to Project Details tab and select solutions to
+                      configure pricing.
+                    </p>
                   </div>
                 ) : (
                   <Table>
@@ -832,56 +919,78 @@ export default function LeadEdit() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {(leadData.commercial_pricing || []).map((pricing, index) => (
-                        <TableRow key={pricing.solution}>
-                          <TableCell className="font-medium">
-                            {pricing.solution}
-                          </TableCell>
-                          <TableCell>
-                            <Input
-                              type="number"
-                              value={pricing.value}
-                              onChange={(e) => updateCommercialPricing(index, "value", parseFloat(e.target.value) || 0)}
-                              placeholder="0"
-                              className="w-20"
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <Select
-                              value={pricing.unit}
-                              onValueChange={(value) => updateCommercialPricing(index, "unit", value)}
-                            >
-                              <SelectTrigger className="w-24">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {unitOptions.map((unit) => (
-                                  <SelectItem key={unit.value} value={unit.value}>
-                                    {unit.label}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </TableCell>
-                          <TableCell>
-                            <Select
-                              value={pricing.currency}
-                              onValueChange={(value) => updateCommercialPricing(index, "currency", value)}
-                            >
-                              <SelectTrigger className="w-20">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {currencyOptions.map((currency) => (
-                                  <SelectItem key={currency.value} value={currency.value}>
-                                    {currency.label}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                      {(leadData.commercial_pricing || []).map(
+                        (pricing, index) => (
+                          <TableRow key={pricing.solution}>
+                            <TableCell className="font-medium">
+                              {pricing.solution}
+                            </TableCell>
+                            <TableCell>
+                              <Input
+                                type="number"
+                                value={pricing.value}
+                                onChange={(e) =>
+                                  updateCommercialPricing(
+                                    index,
+                                    "value",
+                                    parseFloat(e.target.value) || 0,
+                                  )
+                                }
+                                placeholder="0"
+                                className="w-20"
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <Select
+                                value={pricing.unit}
+                                onValueChange={(value) =>
+                                  updateCommercialPricing(index, "unit", value)
+                                }
+                              >
+                                <SelectTrigger className="w-24">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {unitOptions.map((unit) => (
+                                    <SelectItem
+                                      key={unit.value}
+                                      value={unit.value}
+                                    >
+                                      {unit.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </TableCell>
+                            <TableCell>
+                              <Select
+                                value={pricing.currency}
+                                onValueChange={(value) =>
+                                  updateCommercialPricing(
+                                    index,
+                                    "currency",
+                                    value,
+                                  )
+                                }
+                              >
+                                <SelectTrigger className="w-20">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {currencyOptions.map((currency) => (
+                                    <SelectItem
+                                      key={currency.value}
+                                      value={currency.value}
+                                    >
+                                      {currency.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </TableCell>
+                          </TableRow>
+                        ),
+                      )}
                     </TableBody>
                   </Table>
                 )}
@@ -908,7 +1017,9 @@ export default function LeadEdit() {
                     <Input
                       id="client_name_client"
                       value={leadData.client_name}
-                      onChange={(e) => updateField("client_name", e.target.value)}
+                      onChange={(e) =>
+                        updateField("client_name", e.target.value)
+                      }
                       className="pl-10"
                       placeholder="Client/Company name"
                     />
@@ -953,7 +1064,9 @@ export default function LeadEdit() {
                   <Input
                     id="company_location"
                     value={leadData.company_location}
-                    onChange={(e) => updateField("company_location", e.target.value)}
+                    onChange={(e) =>
+                      updateField("company_location", e.target.value)
+                    }
                     className="mt-1"
                     placeholder="City, State"
                   />
@@ -1011,7 +1124,9 @@ export default function LeadEdit() {
                   <Label htmlFor="company_size">Company Size</Label>
                   <Select
                     value={leadData.company_size}
-                    onValueChange={(value) => updateField("company_size", value)}
+                    onValueChange={(value) =>
+                      updateField("company_size", value)
+                    }
                   >
                     <SelectTrigger className="mt-1">
                       <SelectValue placeholder="Select company size" />
@@ -1036,14 +1151,17 @@ export default function LeadEdit() {
             <CardHeader>
               <CardTitle>Contact Information</CardTitle>
               <CardDescription>
-                Add contact details. You can add multiple contacts for this lead.
+                Add contact details. You can add multiple contacts for this
+                lead.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               {leadData.contacts.map((contact, index) => (
                 <div key={index} className="border rounded-lg p-4 space-y-4">
                   <div className="flex items-center justify-between">
-                    <h4 className="font-medium text-gray-900">Contact #{index + 1}</h4>
+                    <h4 className="font-medium text-gray-900">
+                      Contact #{index + 1}
+                    </h4>
                     {leadData.contacts.length > 1 && (
                       <Button
                         type="button"
@@ -1059,24 +1177,32 @@ export default function LeadEdit() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor={`contact_name_${index}`}>Contact Name *</Label>
+                      <Label htmlFor={`contact_name_${index}`}>
+                        Contact Name *
+                      </Label>
                       <div className="relative mt-1">
                         <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                         <Input
                           id={`contact_name_${index}`}
                           value={contact.contact_name}
-                          onChange={(e) => updateContact(index, "contact_name", e.target.value)}
+                          onChange={(e) =>
+                            updateContact(index, "contact_name", e.target.value)
+                          }
                           className="pl-10"
                           placeholder="Full name"
                         />
                       </div>
                     </div>
                     <div>
-                      <Label htmlFor={`designation_${index}`}>Designation / Role</Label>
+                      <Label htmlFor={`designation_${index}`}>
+                        Designation / Role
+                      </Label>
                       <Input
                         id={`designation_${index}`}
                         value={contact.designation}
-                        onChange={(e) => updateContact(index, "designation", e.target.value)}
+                        onChange={(e) =>
+                          updateContact(index, "designation", e.target.value)
+                        }
                         className="mt-1"
                         placeholder="e.g., CEO, CTO, Manager"
                       />
@@ -1091,7 +1217,9 @@ export default function LeadEdit() {
                         <Input
                           id={`phone_${index}`}
                           value={contact.phone}
-                          onChange={(e) => updateContact(index, "phone", e.target.value)}
+                          onChange={(e) =>
+                            updateContact(index, "phone", e.target.value)
+                          }
                           className="pl-10"
                           placeholder="+1 (555) 000-0000"
                         />
@@ -1105,7 +1233,9 @@ export default function LeadEdit() {
                           id={`email_${index}`}
                           type="email"
                           value={contact.email}
-                          onChange={(e) => updateContact(index, "email", e.target.value)}
+                          onChange={(e) =>
+                            updateContact(index, "email", e.target.value)
+                          }
                           className="pl-10"
                           placeholder="contact@company.com"
                         />
@@ -1114,11 +1244,15 @@ export default function LeadEdit() {
                   </div>
 
                   <div>
-                    <Label htmlFor={`linkedin_${index}`}>LinkedIn or Other Contact Links</Label>
+                    <Label htmlFor={`linkedin_${index}`}>
+                      LinkedIn or Other Contact Links
+                    </Label>
                     <Input
                       id={`linkedin_${index}`}
                       value={contact.linkedin}
-                      onChange={(e) => updateContact(index, "linkedin", e.target.value)}
+                      onChange={(e) =>
+                        updateContact(index, "linkedin", e.target.value)
+                      }
                       className="mt-1"
                       placeholder="https://linkedin.com/in/username or other social links"
                     />
@@ -1163,7 +1297,9 @@ export default function LeadEdit() {
                       {priorities.map((priority) => (
                         <SelectItem key={priority.value} value={priority.value}>
                           <div className="flex items-center space-x-2">
-                            <div className={`w-2 h-2 rounded-full ${priority.color.split(' ')[0]}`} />
+                            <div
+                              className={`w-2 h-2 rounded-full ${priority.color.split(" ")[0]}`}
+                            />
                             <span>{priority.label}</span>
                           </div>
                         </SelectItem>
@@ -1172,16 +1308,20 @@ export default function LeadEdit() {
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="expected_close_date">Expected Close Date</Label>
+                  <Label htmlFor="expected_close_date">
+                    Expected Close Date
+                  </Label>
                   <div className="relative mt-1">
                     <Calendar className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                     <Input
                       id="expected_close_date"
                       type="date"
                       value={leadData.expected_close_date}
-                      onChange={(e) => updateField("expected_close_date", e.target.value)}
+                      onChange={(e) =>
+                        updateField("expected_close_date", e.target.value)
+                      }
                       className="pl-10"
-                      min={new Date().toISOString().split('T')[0]}
+                      min={new Date().toISOString().split("T")[0]}
                     />
                   </div>
                 </div>

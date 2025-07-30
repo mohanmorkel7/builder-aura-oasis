@@ -36,7 +36,9 @@ router.get("/", async (req: Request, res: Response) => {
       if (await isDatabaseAvailable()) {
         const userExists = await DatabaseValidator.userExists(salesRepId);
         if (!userExists) {
-          return res.status(404).json({ error: "Sales representative not found" });
+          return res
+            .status(404)
+            .json({ error: "Sales representative not found" });
         }
       }
     }
@@ -52,14 +54,18 @@ router.get("/", async (req: Request, res: Response) => {
       } else {
         clients = await MockDataService.getAllClients();
         if (salesRepId) {
-          clients = clients.filter((client) => client.sales_rep_id === salesRepId);
+          clients = clients.filter(
+            (client) => client.sales_rep_id === salesRepId,
+          );
         }
       }
     } catch (dbError) {
       console.log("Database error, using mock data:", dbError.message);
       clients = await MockDataService.getAllClients();
       if (salesRepId) {
-        clients = clients.filter((client) => client.sales_rep_id === salesRepId);
+        clients = clients.filter(
+          (client) => client.sales_rep_id === salesRepId,
+        );
       }
     }
 
@@ -152,13 +158,13 @@ router.post("/", async (req: Request, res: Response) => {
     // Validate required fields
     const validation = DatabaseValidator.validateRequiredFields(
       clientData,
-      ValidationSchemas.client.required
+      ValidationSchemas.client.required,
     );
 
     if (!validation.isValid) {
       return res.status(400).json({
         error: "Missing required fields",
-        missingFields: validation.missingFields
+        missingFields: validation.missingFields,
       });
     }
 
@@ -173,32 +179,44 @@ router.post("/", async (req: Request, res: Response) => {
     }
 
     // Validate enum values if provided
-    if (clientData.priority && !ValidationSchemas.client.enums.priority.includes(clientData.priority)) {
+    if (
+      clientData.priority &&
+      !ValidationSchemas.client.enums.priority.includes(clientData.priority)
+    ) {
       return res.status(400).json({
         error: "Invalid priority value",
-        validOptions: ValidationSchemas.client.enums.priority
+        validOptions: ValidationSchemas.client.enums.priority,
       });
     }
 
-    if (clientData.status && !ValidationSchemas.client.enums.status.includes(clientData.status)) {
+    if (
+      clientData.status &&
+      !ValidationSchemas.client.enums.status.includes(clientData.status)
+    ) {
       return res.status(400).json({
         error: "Invalid status value",
-        validOptions: ValidationSchemas.client.enums.status
+        validOptions: ValidationSchemas.client.enums.status,
       });
     }
 
     // Validate expected_value if provided
     if (clientData.expected_value !== undefined) {
       if (!DatabaseValidator.isValidNumber(clientData.expected_value, 0)) {
-        return res.status(400).json({ error: "Expected value must be a positive number" });
+        return res
+          .status(400)
+          .json({ error: "Expected value must be a positive number" });
       }
     }
 
     // Validate sales rep exists if provided
-    if (clientData.sales_rep_id && await isDatabaseAvailable()) {
-      const userExists = await DatabaseValidator.userExists(clientData.sales_rep_id);
+    if (clientData.sales_rep_id && (await isDatabaseAvailable())) {
+      const userExists = await DatabaseValidator.userExists(
+        clientData.sales_rep_id,
+      );
       if (!userExists) {
-        return res.status(400).json({ error: "Sales representative not found" });
+        return res
+          .status(400)
+          .json({ error: "Sales representative not found" });
       }
     }
 
@@ -210,23 +228,26 @@ router.post("/", async (req: Request, res: Response) => {
         const mockClient = {
           id: Date.now(),
           ...clientData,
-          status: clientData.status || "active" as const,
-          priority: clientData.priority || "medium" as const,
+          status: clientData.status || ("active" as const),
+          priority: clientData.priority || ("medium" as const),
           created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         };
         console.log("Database unavailable, returning mock client response");
         res.status(201).json(mockClient);
       }
     } catch (dbError) {
-      console.log("Database error, returning mock client response:", dbError.message);
+      console.log(
+        "Database error, returning mock client response:",
+        dbError.message,
+      );
       const mockClient = {
         id: Date.now(),
         ...clientData,
-        status: clientData.status || "active" as const,
-        priority: clientData.priority || "medium" as const,
+        status: clientData.status || ("active" as const),
+        priority: clientData.priority || ("medium" as const),
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       };
       res.status(201).json(mockClient);
     }
@@ -257,32 +278,44 @@ router.put("/:id", async (req: Request, res: Response) => {
     }
 
     // Validate enum values if provided
-    if (clientData.priority && !ValidationSchemas.client.enums.priority.includes(clientData.priority)) {
+    if (
+      clientData.priority &&
+      !ValidationSchemas.client.enums.priority.includes(clientData.priority)
+    ) {
       return res.status(400).json({
         error: "Invalid priority value",
-        validOptions: ValidationSchemas.client.enums.priority
+        validOptions: ValidationSchemas.client.enums.priority,
       });
     }
 
-    if (clientData.status && !ValidationSchemas.client.enums.status.includes(clientData.status)) {
+    if (
+      clientData.status &&
+      !ValidationSchemas.client.enums.status.includes(clientData.status)
+    ) {
       return res.status(400).json({
         error: "Invalid status value",
-        validOptions: ValidationSchemas.client.enums.status
+        validOptions: ValidationSchemas.client.enums.status,
       });
     }
 
     // Validate expected_value if provided
     if (clientData.expected_value !== undefined) {
       if (!DatabaseValidator.isValidNumber(clientData.expected_value, 0)) {
-        return res.status(400).json({ error: "Expected value must be a positive number" });
+        return res
+          .status(400)
+          .json({ error: "Expected value must be a positive number" });
       }
     }
 
     // Validate sales rep exists if provided
-    if (clientData.sales_rep_id && await isDatabaseAvailable()) {
-      const userExists = await DatabaseValidator.userExists(clientData.sales_rep_id);
+    if (clientData.sales_rep_id && (await isDatabaseAvailable())) {
+      const userExists = await DatabaseValidator.userExists(
+        clientData.sales_rep_id,
+      );
       if (!userExists) {
-        return res.status(400).json({ error: "Sales representative not found" });
+        return res
+          .status(400)
+          .json({ error: "Sales representative not found" });
       }
     }
 
@@ -303,17 +336,22 @@ router.put("/:id", async (req: Request, res: Response) => {
         const mockClient = {
           id: id,
           ...clientData,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         };
-        console.log("Database unavailable, returning mock client update response");
+        console.log(
+          "Database unavailable, returning mock client update response",
+        );
         res.json(mockClient);
       }
     } catch (dbError) {
-      console.log("Database error, returning mock client update response:", dbError.message);
+      console.log(
+        "Database error, returning mock client update response:",
+        dbError.message,
+      );
       const mockClient = {
         id: id,
         ...clientData,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       };
       res.json(mockClient);
     }
@@ -345,11 +383,16 @@ router.delete("/:id", async (req: Request, res: Response) => {
         }
         res.status(204).send();
       } else {
-        console.log("Database unavailable, returning success for client deletion");
+        console.log(
+          "Database unavailable, returning success for client deletion",
+        );
         res.status(204).send();
       }
     } catch (dbError) {
-      console.log("Database error, returning success for client deletion:", dbError.message);
+      console.log(
+        "Database error, returning success for client deletion:",
+        dbError.message,
+      );
       res.status(204).send();
     }
   } catch (error) {

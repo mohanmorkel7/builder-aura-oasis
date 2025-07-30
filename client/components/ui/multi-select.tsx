@@ -28,14 +28,14 @@ export function MultiSelect({
 
   const handleToggle = (option: string) => {
     if (value.includes(option)) {
-      onChange(value.filter(item => item !== option));
+      onChange(value.filter((item) => item !== option));
     } else {
       onChange([...value, option]);
     }
   };
 
   const handleRemove = (option: string) => {
-    onChange(value.filter(item => item !== option));
+    onChange(value.filter((item) => item !== option));
   };
 
   return (

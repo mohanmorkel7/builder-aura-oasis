@@ -396,7 +396,9 @@ export function useCreateOnboardingStep() {
     mutationFn: ({ clientId, stepData }: { clientId: number; stepData: any }) =>
       apiClient.createOnboardingStep(clientId, stepData),
     onSuccess: (_, { clientId }) => {
-      queryClient.invalidateQueries({ queryKey: ["onboarding-steps", clientId] });
+      queryClient.invalidateQueries({
+        queryKey: ["onboarding-steps", clientId],
+      });
     },
   });
 }
@@ -408,7 +410,9 @@ export function useUpdateOnboardingStep() {
       apiClient.updateOnboardingStep(stepId, stepData),
     onSuccess: (data: any) => {
       if (data && data.client_id) {
-        queryClient.invalidateQueries({ queryKey: ["onboarding-steps", data.client_id] });
+        queryClient.invalidateQueries({
+          queryKey: ["onboarding-steps", data.client_id],
+        });
       }
       // Also invalidate the general query
       queryClient.invalidateQueries({ queryKey: ["onboarding-steps"] });
@@ -429,10 +433,17 @@ export function useDeleteOnboardingStep() {
 export function useReorderOnboardingSteps() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ clientId, stepOrders }: { clientId: number; stepOrders: { id: number; order: number }[] }) =>
-      apiClient.reorderOnboardingSteps(clientId, stepOrders),
+    mutationFn: ({
+      clientId,
+      stepOrders,
+    }: {
+      clientId: number;
+      stepOrders: { id: number; order: number }[];
+    }) => apiClient.reorderOnboardingSteps(clientId, stepOrders),
     onSuccess: (_, { clientId }) => {
-      queryClient.invalidateQueries({ queryKey: ["onboarding-steps", clientId] });
+      queryClient.invalidateQueries({
+        queryKey: ["onboarding-steps", clientId],
+      });
     },
   });
 }
@@ -448,8 +459,13 @@ export function useStepDocuments(stepId: number) {
 export function useUploadStepDocument() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ stepId, documentData }: { stepId: number; documentData: any }) =>
-      apiClient.uploadStepDocument(stepId, documentData),
+    mutationFn: ({
+      stepId,
+      documentData,
+    }: {
+      stepId: number;
+      documentData: any;
+    }) => apiClient.uploadStepDocument(stepId, documentData),
     onSuccess: (_, { stepId }) => {
       queryClient.invalidateQueries({ queryKey: ["step-documents", stepId] });
     },
@@ -459,7 +475,8 @@ export function useUploadStepDocument() {
 export function useDeleteStepDocument() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (documentId: number) => apiClient.deleteStepDocument(documentId),
+    mutationFn: (documentId: number) =>
+      apiClient.deleteStepDocument(documentId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["step-documents"] });
     },
@@ -477,8 +494,13 @@ export function useStepComments(stepId: number) {
 export function useCreateStepComment() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ stepId, commentData }: { stepId: number; commentData: any }) =>
-      apiClient.createStepComment(stepId, commentData),
+    mutationFn: ({
+      stepId,
+      commentData,
+    }: {
+      stepId: number;
+      commentData: any;
+    }) => apiClient.createStepComment(stepId, commentData),
     onSuccess: (_, { stepId }) => {
       queryClient.invalidateQueries({ queryKey: ["step-comments", stepId] });
     },
@@ -609,8 +631,13 @@ export function useDeleteLeadStep() {
 export function useReorderLeadSteps() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ leadId, stepOrders }: { leadId: number; stepOrders: { id: number; order: number }[] }) =>
-      apiClient.reorderLeadSteps(leadId, stepOrders),
+    mutationFn: ({
+      leadId,
+      stepOrders,
+    }: {
+      leadId: number;
+      stepOrders: { id: number; order: number }[];
+    }) => apiClient.reorderLeadSteps(leadId, stepOrders),
     onSuccess: (_, { leadId }) => {
       queryClient.invalidateQueries({ queryKey: ["lead-steps", leadId] });
     },

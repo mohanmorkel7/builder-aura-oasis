@@ -166,8 +166,6 @@ export default function AdminReports() {
   const [dateRange, setDateRange] = useState("last_30_days");
   const [reportType, setReportType] = useState("overview");
 
-
-
   const getStatusColor = (status: string) => {
     switch (status) {
       case "active":

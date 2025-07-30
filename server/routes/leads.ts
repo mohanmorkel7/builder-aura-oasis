@@ -125,13 +125,13 @@ router.post("/", async (req: Request, res: Response) => {
     // Validate required fields
     const validation = DatabaseValidator.validateRequiredFields(
       leadData,
-      ValidationSchemas.lead.required
+      ValidationSchemas.lead.required,
     );
 
     if (!validation.isValid) {
       return res.status(400).json({
         error: "Missing required fields",
-        missingFields: validation.missingFields
+        missingFields: validation.missingFields,
       });
     }
 
@@ -146,75 +146,104 @@ router.post("/", async (req: Request, res: Response) => {
     }
 
     // Validate enum values
-    if (!ValidationSchemas.lead.enums.lead_source.includes(leadData.lead_source)) {
+    if (
+      !ValidationSchemas.lead.enums.lead_source.includes(leadData.lead_source)
+    ) {
       return res.status(400).json({
         error: "Invalid lead source",
-        validOptions: ValidationSchemas.lead.enums.lead_source
+        validOptions: ValidationSchemas.lead.enums.lead_source,
       });
     }
 
-    if (leadData.status && !ValidationSchemas.lead.enums.status.includes(leadData.status)) {
+    if (
+      leadData.status &&
+      !ValidationSchemas.lead.enums.status.includes(leadData.status)
+    ) {
       return res.status(400).json({
         error: "Invalid status",
-        validOptions: ValidationSchemas.lead.enums.status
+        validOptions: ValidationSchemas.lead.enums.status,
       });
     }
 
-    if (leadData.priority && !ValidationSchemas.lead.enums.priority.includes(leadData.priority)) {
+    if (
+      leadData.priority &&
+      !ValidationSchemas.lead.enums.priority.includes(leadData.priority)
+    ) {
       return res.status(400).json({
         error: "Invalid priority",
-        validOptions: ValidationSchemas.lead.enums.priority
+        validOptions: ValidationSchemas.lead.enums.priority,
       });
     }
 
     // Validate numeric fields
     if (leadData.probability !== undefined) {
       if (!DatabaseValidator.isValidNumber(leadData.probability, 0, 100)) {
-        return res.status(400).json({ error: "Probability must be between 0 and 100" });
+        return res
+          .status(400)
+          .json({ error: "Probability must be between 0 and 100" });
       }
     }
 
     if (leadData.project_budget !== undefined) {
       if (!DatabaseValidator.isValidNumber(leadData.project_budget, 0)) {
-        return res.status(400).json({ error: "Project budget must be a positive number" });
+        return res
+          .status(400)
+          .json({ error: "Project budget must be a positive number" });
       }
     }
 
     if (leadData.project_value !== undefined) {
       if (!DatabaseValidator.isValidNumber(leadData.project_value, 0)) {
-        return res.status(400).json({ error: "Project value must be a positive number" });
+        return res
+          .status(400)
+          .json({ error: "Project value must be a positive number" });
       }
     }
 
     if (leadData.expected_daily_txn_volume !== undefined) {
-      if (!DatabaseValidator.isValidNumber(leadData.expected_daily_txn_volume, 0)) {
-        return res.status(400).json({ error: "Expected daily transaction volume must be a positive number" });
+      if (
+        !DatabaseValidator.isValidNumber(leadData.expected_daily_txn_volume, 0)
+      ) {
+        return res
+          .status(400)
+          .json({
+            error:
+              "Expected daily transaction volume must be a positive number",
+          });
       }
     }
 
     // Validate dates
     if (leadData.expected_close_date) {
       if (!DatabaseValidator.isValidFutureDate(leadData.expected_close_date)) {
-        return res.status(400).json({ error: "Expected close date must be in the future" });
+        return res
+          .status(400)
+          .json({ error: "Expected close date must be in the future" });
       }
     }
 
     if (leadData.targeted_end_date) {
       if (!DatabaseValidator.isValidFutureDate(leadData.targeted_end_date)) {
-        return res.status(400).json({ error: "Targeted end date must be in the future" });
+        return res
+          .status(400)
+          .json({ error: "Targeted end date must be in the future" });
       }
     }
 
     // Validate assigned user exists (if provided and database available)
-    if (leadData.created_by && await isDatabaseAvailable()) {
-      const userExists = await DatabaseValidator.userExists(leadData.created_by);
+    if (leadData.created_by && (await isDatabaseAvailable())) {
+      const userExists = await DatabaseValidator.userExists(
+        leadData.created_by,
+      );
       if (!userExists) {
         return res.status(400).json({ error: "Creating user not found" });
       }
     }
 
-    if (leadData.assigned_to && await isDatabaseAvailable()) {
-      const userExists = await DatabaseValidator.userExists(leadData.assigned_to);
+    if (leadData.assigned_to && (await isDatabaseAvailable())) {
+      const userExists = await DatabaseValidator.userExists(
+        leadData.assigned_to,
+      );
       if (!userExists) {
         return res.status(400).json({ error: "Assigned user not found" });
       }
@@ -226,7 +255,7 @@ router.post("/", async (req: Request, res: Response) => {
         const contact = leadData.contacts[i];
         if (contact.email && !DatabaseValidator.isValidEmail(contact.email)) {
           return res.status(400).json({
-            error: `Invalid email format for contact ${i + 1}`
+            error: `Invalid email format for contact ${i + 1}`,
           });
         }
       }
@@ -239,7 +268,9 @@ router.post("/", async (req: Request, res: Response) => {
           leadData.lead_id = await DatabaseValidator.generateUniqueLeadId();
         } else {
           // Check if custom lead ID is already taken
-          const isTaken = await DatabaseValidator.isLeadIdTaken(leadData.lead_id);
+          const isTaken = await DatabaseValidator.isLeadIdTaken(
+            leadData.lead_id,
+          );
           if (isTaken) {
             return res.status(409).json({ error: "Lead ID already exists" });
           }
@@ -250,28 +281,34 @@ router.post("/", async (req: Request, res: Response) => {
       } else {
         const mockLead = {
           id: Date.now(),
-          lead_id: leadData.lead_id || await DatabaseValidator.generateUniqueLeadId(),
+          lead_id:
+            leadData.lead_id ||
+            (await DatabaseValidator.generateUniqueLeadId()),
           ...leadData,
-          status: leadData.status || "in-progress" as const,
-          priority: leadData.priority || "medium" as const,
+          status: leadData.status || ("in-progress" as const),
+          priority: leadData.priority || ("medium" as const),
           probability: leadData.probability || 50,
           created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         };
         console.log("Database unavailable, returning mock lead response");
         res.status(201).json(mockLead);
       }
     } catch (dbError) {
-      console.log("Database error, returning mock lead response:", dbError.message);
+      console.log(
+        "Database error, returning mock lead response:",
+        dbError.message,
+      );
       const mockLead = {
         id: Date.now(),
-        lead_id: leadData.lead_id || await DatabaseValidator.generateUniqueLeadId(),
+        lead_id:
+          leadData.lead_id || (await DatabaseValidator.generateUniqueLeadId()),
         ...leadData,
-        status: leadData.status || "in-progress" as const,
-        priority: leadData.priority || "medium" as const,
+        status: leadData.status || ("in-progress" as const),
+        priority: leadData.priority || ("medium" as const),
         probability: leadData.probability || 50,
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       };
       res.status(201).json(mockLead);
     }
@@ -292,7 +329,10 @@ router.put("/:id", async (req: Request, res: Response) => {
     const leadData: UpdateLeadData = req.body;
 
     // Validate status if provided
-    if (leadData.status && !["in-progress", "won", "lost", "completed"].includes(leadData.status)) {
+    if (
+      leadData.status &&
+      !["in-progress", "won", "lost", "completed"].includes(leadData.status)
+    ) {
       return res.status(400).json({ error: "Invalid status value" });
     }
 
@@ -306,20 +346,25 @@ router.put("/:id", async (req: Request, res: Response) => {
       } else {
         const mockLead = {
           id: id,
-          lead_id: `#${id.toString().padStart(3, '0')}`,
+          lead_id: `#${id.toString().padStart(3, "0")}`,
           ...leadData,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         };
-        console.log("Database unavailable, returning mock lead update response");
+        console.log(
+          "Database unavailable, returning mock lead update response",
+        );
         res.json(mockLead);
       }
     } catch (dbError) {
-      console.log("Database error, returning mock lead update response:", dbError.message);
+      console.log(
+        "Database error, returning mock lead update response:",
+        dbError.message,
+      );
       const mockLead = {
         id: id,
-        lead_id: `#${id.toString().padStart(3, '0')}`,
+        lead_id: `#${id.toString().padStart(3, "0")}`,
         ...leadData,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       };
       res.json(mockLead);
     }
@@ -345,11 +390,16 @@ router.delete("/:id", async (req: Request, res: Response) => {
         }
         res.status(204).send();
       } else {
-        console.log("Database unavailable, returning success for lead deletion");
+        console.log(
+          "Database unavailable, returning success for lead deletion",
+        );
         res.status(204).send();
       }
     } catch (dbError) {
-      console.log("Database error, returning success for lead deletion:", dbError.message);
+      console.log(
+        "Database error, returning success for lead deletion:",
+        dbError.message,
+      );
       res.status(204).send();
     }
   } catch (error) {
@@ -382,7 +432,9 @@ router.get("/:leadId/steps", async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error fetching lead steps:", error);
     try {
-      const steps = await MockDataService.getLeadSteps(parseInt(req.params.leadId));
+      const steps = await MockDataService.getLeadSteps(
+        parseInt(req.params.leadId),
+      );
       res.json(steps);
     } catch (fallbackError) {
       console.error("Mock data fallback failed:", fallbackError);
@@ -427,13 +479,16 @@ router.post("/:leadId/steps", async (req: Request, res: Response) => {
           completed_date: null,
           estimated_days: stepData.estimated_days,
           created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         };
         console.log("Database unavailable, returning mock step response");
         res.status(201).json(mockStep);
       }
     } catch (dbError) {
-      console.log("Database error, returning mock step response:", dbError.message);
+      console.log(
+        "Database error, returning mock step response:",
+        dbError.message,
+      );
       const mockStep = {
         id: Date.now(),
         lead_id: leadId,
@@ -445,7 +500,7 @@ router.post("/:leadId/steps", async (req: Request, res: Response) => {
         completed_date: null,
         estimated_days: stepData.estimated_days,
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       };
       res.status(201).json(mockStep);
     }
@@ -484,13 +539,18 @@ router.put("/steps/:id", async (req: Request, res: Response) => {
           completed_date: stepData.completed_date || null,
           estimated_days: stepData.estimated_days || 1,
           created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         };
-        console.log("Database unavailable, returning mock step update response");
+        console.log(
+          "Database unavailable, returning mock step update response",
+        );
         res.json(mockStep);
       }
     } catch (dbError) {
-      console.log("Database error, returning mock step update response:", dbError.message);
+      console.log(
+        "Database error, returning mock step update response:",
+        dbError.message,
+      );
       const mockStep = {
         id: id,
         lead_id: 1,
@@ -502,7 +562,7 @@ router.put("/steps/:id", async (req: Request, res: Response) => {
         completed_date: stepData.completed_date || null,
         estimated_days: stepData.estimated_days || 1,
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       };
       res.json(mockStep);
     }
@@ -528,11 +588,16 @@ router.delete("/steps/:id", async (req: Request, res: Response) => {
         }
         res.status(204).send();
       } else {
-        console.log("Database unavailable, returning success for step deletion");
+        console.log(
+          "Database unavailable, returning success for step deletion",
+        );
         res.status(204).send();
       }
     } catch (dbError) {
-      console.log("Database error, returning success for step deletion:", dbError.message);
+      console.log(
+        "Database error, returning success for step deletion:",
+        dbError.message,
+      );
       res.status(204).send();
     }
   } catch (error) {
@@ -559,11 +624,16 @@ router.put("/:leadId/steps/reorder", async (req: Request, res: Response) => {
         await LeadStepRepository.reorderSteps(leadId, stepOrders);
         res.json({ message: "Steps reordered successfully" });
       } else {
-        console.log("Database unavailable, returning success for step reordering");
+        console.log(
+          "Database unavailable, returning success for step reordering",
+        );
         res.json({ message: "Steps reordered successfully" });
       }
     } catch (dbError) {
-      console.log("Database error, returning success for step reordering:", dbError.message);
+      console.log(
+        "Database error, returning success for step reordering:",
+        dbError.message,
+      );
       res.json({ message: "Steps reordered successfully" });
     }
   } catch (error) {
@@ -596,7 +666,9 @@ router.get("/steps/:stepId/chats", async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error fetching step chats:", error);
     try {
-      const chats = await MockDataService.getStepChats(parseInt(req.params.stepId));
+      const chats = await MockDataService.getStepChats(
+        parseInt(req.params.stepId),
+      );
       res.json(chats);
     } catch (fallbackError) {
       console.error("Mock data fallback failed:", fallbackError);
@@ -639,13 +711,16 @@ router.post("/steps/:stepId/chats", async (req: Request, res: Response) => {
           message_type: chatData.message_type || "text",
           is_rich_text: chatData.is_rich_text || false,
           created_at: new Date().toISOString(),
-          attachments: chatData.attachments || []
+          attachments: chatData.attachments || [],
         };
         console.log("Database unavailable, returning mock chat response");
         res.status(201).json(mockChat);
       }
     } catch (dbError) {
-      console.log("Database error, returning mock chat response:", dbError.message);
+      console.log(
+        "Database error, returning mock chat response:",
+        dbError.message,
+      );
       const mockChat = {
         id: Date.now(),
         step_id: stepId,
@@ -655,7 +730,7 @@ router.post("/steps/:stepId/chats", async (req: Request, res: Response) => {
         message_type: chatData.message_type || "text",
         is_rich_text: chatData.is_rich_text || false,
         created_at: new Date().toISOString(),
-        attachments: chatData.attachments || []
+        attachments: chatData.attachments || [],
       };
       res.status(201).json(mockChat);
     }
@@ -681,11 +756,16 @@ router.delete("/chats/:id", async (req: Request, res: Response) => {
         }
         res.status(204).send();
       } else {
-        console.log("Database unavailable, returning success for chat deletion");
+        console.log(
+          "Database unavailable, returning success for chat deletion",
+        );
         res.status(204).send();
       }
     } catch (dbError) {
-      console.log("Database error, returning success for chat deletion:", dbError.message);
+      console.log(
+        "Database error, returning success for chat deletion:",
+        dbError.message,
+      );
       res.status(204).send();
     }
   } catch (error) {

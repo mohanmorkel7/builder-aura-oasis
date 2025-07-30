@@ -58,7 +58,11 @@ export default function FollowUpNew() {
   const isLeadFollowUp = location.state?.fromChat;
   const leadContext = location.state;
 
-  const { data: client, isLoading, error } = useClient(!isLeadFollowUp ? parseInt(id || "0") : 0);
+  const {
+    data: client,
+    isLoading,
+    error,
+  } = useClient(!isLeadFollowUp ? parseInt(id || "0") : 0);
 
   const [followUp, setFollowUp] = useState({
     type: "call",
@@ -145,7 +149,7 @@ export default function FollowUpNew() {
         <div className="flex items-center space-x-4">
           <Button variant="ghost" onClick={handleCancel}>
             <ArrowLeft className="w-4 h-4 mr-2" />
-            {isLeadFollowUp ? 'Back to Leads' : 'Back to Client'}
+            {isLeadFollowUp ? "Back to Leads" : "Back to Client"}
           </Button>
           <div>
             <h1 className="text-2xl font-bold text-gray-900">
@@ -153,8 +157,8 @@ export default function FollowUpNew() {
             </h1>
             <p className="text-gray-600">
               {isLeadFollowUp
-                ? `Create a follow-up task for step: ${leadContext?.stepName || 'Lead Step'}`
-                : `Create a new follow-up task for ${clientData?.client_name || 'Client'}`}
+                ? `Create a follow-up task for step: ${leadContext?.stepName || "Lead Step"}`
+                : `Create a new follow-up task for ${clientData?.client_name || "Client"}`}
             </p>
           </div>
         </div>
@@ -185,7 +189,8 @@ export default function FollowUpNew() {
         <AlertDescription>
           {isLeadFollowUp ? (
             <>
-              Creating follow-up for lead step: <strong>{leadContext?.stepName}</strong>
+              Creating follow-up for lead step:{" "}
+              <strong>{leadContext?.stepName}</strong>
               {leadContext?.messageId && ` (Message #${leadContext.messageId})`}
             </>
           ) : (

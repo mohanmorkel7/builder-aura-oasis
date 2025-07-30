@@ -51,7 +51,7 @@ export function DraggableStepsList({
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   );
 
   React.useEffect(() => {
@@ -98,7 +98,9 @@ export function DraggableStepsList({
     setActiveId(null);
   }
 
-  const activeStep = activeId ? items.find((item) => item.id === activeId) : null;
+  const activeStep = activeId
+    ? items.find((item) => item.id === activeId)
+    : null;
 
   return (
     <DndContext
@@ -108,7 +110,10 @@ export function DraggableStepsList({
       onDragEnd={handleDragEnd}
       modifiers={[restrictToVerticalAxis, restrictToParentElement]}
     >
-      <SortableContext items={items.map(item => item.id)} strategy={verticalListSortingStrategy}>
+      <SortableContext
+        items={items.map((item) => item.id)}
+        strategy={verticalListSortingStrategy}
+      >
         <div className="space-y-4">
           {items.map((step) => (
             <EnhancedStepItem

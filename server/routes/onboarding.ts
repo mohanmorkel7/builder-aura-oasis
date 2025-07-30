@@ -50,7 +50,9 @@ router.get("/clients/:clientId/steps", async (req: Request, res: Response) => {
     console.error("Error fetching onboarding steps:", error);
     // Always return mock data as last resort
     try {
-      const steps = await MockDataService.getClientOnboardingSteps(parseInt(req.params.clientId));
+      const steps = await MockDataService.getClientOnboardingSteps(
+        parseInt(req.params.clientId),
+      );
       res.json(steps);
     } catch (fallbackError) {
       console.error("Mock data fallback failed:", fallbackError);
@@ -74,14 +76,14 @@ router.post("/clients/:clientId/steps", async (req: Request, res: Response) => {
 
     // Validate required fields
     if (!stepData.name || !stepData.estimated_days) {
-      return res.status(400).json({ 
-        error: "Missing required fields: name, estimated_days" 
+      return res.status(400).json({
+        error: "Missing required fields: name, estimated_days",
       });
     }
 
     if (stepData.estimated_days < 1) {
       return res.status(400).json({
-        error: "Estimated days must be at least 1"
+        error: "Estimated days must be at least 1",
       });
     }
 
@@ -103,13 +105,16 @@ router.post("/clients/:clientId/steps", async (req: Request, res: Response) => {
           completed_date: null,
           estimated_days: stepData.estimated_days,
           created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         };
         console.log("Database unavailable, returning mock step response");
         res.status(201).json(mockStep);
       }
     } catch (dbError) {
-      console.log("Database error, returning mock step response:", dbError.message);
+      console.log(
+        "Database error, returning mock step response:",
+        dbError.message,
+      );
       // Create a mock response when database operation fails
       const mockStep = {
         id: Date.now(),
@@ -122,7 +127,7 @@ router.post("/clients/:clientId/steps", async (req: Request, res: Response) => {
         completed_date: null,
         estimated_days: stepData.estimated_days,
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       };
       res.status(201).json(mockStep);
     }
@@ -143,13 +148,18 @@ router.put("/steps/:id", async (req: Request, res: Response) => {
     const stepData: UpdateStepData = req.body;
 
     // Validate status if provided
-    if (stepData.status && !["pending", "in_progress", "completed"].includes(stepData.status)) {
+    if (
+      stepData.status &&
+      !["pending", "in_progress", "completed"].includes(stepData.status)
+    ) {
       return res.status(400).json({ error: "Invalid status value" });
     }
 
     // Validate estimated_days if provided
     if (stepData.estimated_days !== undefined && stepData.estimated_days < 1) {
-      return res.status(400).json({ error: "Estimated days must be at least 1" });
+      return res
+        .status(400)
+        .json({ error: "Estimated days must be at least 1" });
     }
 
     // Try to update step, fall back to mock response if database unavailable
@@ -173,13 +183,18 @@ router.put("/steps/:id", async (req: Request, res: Response) => {
           completed_date: stepData.completed_date || null,
           estimated_days: stepData.estimated_days || 1,
           created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         };
-        console.log("Database unavailable, returning mock step update response");
+        console.log(
+          "Database unavailable, returning mock step update response",
+        );
         res.json(mockStep);
       }
     } catch (dbError) {
-      console.log("Database error, returning mock step update response:", dbError.message);
+      console.log(
+        "Database error, returning mock step update response:",
+        dbError.message,
+      );
       // Create a mock response when database operation fails
       const mockStep = {
         id: id,
@@ -192,7 +207,7 @@ router.put("/steps/:id", async (req: Request, res: Response) => {
         completed_date: stepData.completed_date || null,
         estimated_days: stepData.estimated_days || 1,
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       };
       res.json(mockStep);
     }
@@ -223,34 +238,42 @@ router.delete("/steps/:id", async (req: Request, res: Response) => {
 });
 
 // Reorder steps for a client
-router.put("/clients/:clientId/steps/reorder", async (req: Request, res: Response) => {
-  try {
-    const clientId = parseInt(req.params.clientId);
-    if (isNaN(clientId)) {
-      return res.status(400).json({ error: "Invalid client ID" });
-    }
-
-    const { stepOrders } = req.body;
-    if (!Array.isArray(stepOrders)) {
-      return res.status(400).json({ error: "stepOrders must be an array" });
-    }
-
-    // Validate step orders
-    for (const item of stepOrders) {
-      if (!item.id || !item.order || typeof item.id !== "number" || typeof item.order !== "number") {
-        return res.status(400).json({ 
-          error: "Each item must have id and order as numbers" 
-        });
+router.put(
+  "/clients/:clientId/steps/reorder",
+  async (req: Request, res: Response) => {
+    try {
+      const clientId = parseInt(req.params.clientId);
+      if (isNaN(clientId)) {
+        return res.status(400).json({ error: "Invalid client ID" });
       }
-    }
 
-    await OnboardingStepRepository.reorderSteps(clientId, stepOrders);
-    res.json({ message: "Steps reordered successfully" });
-  } catch (error) {
-    console.error("Error reordering steps:", error);
-    res.status(500).json({ error: "Failed to reorder steps" });
-  }
-});
+      const { stepOrders } = req.body;
+      if (!Array.isArray(stepOrders)) {
+        return res.status(400).json({ error: "stepOrders must be an array" });
+      }
+
+      // Validate step orders
+      for (const item of stepOrders) {
+        if (
+          !item.id ||
+          !item.order ||
+          typeof item.id !== "number" ||
+          typeof item.order !== "number"
+        ) {
+          return res.status(400).json({
+            error: "Each item must have id and order as numbers",
+          });
+        }
+      }
+
+      await OnboardingStepRepository.reorderSteps(clientId, stepOrders);
+      res.json({ message: "Steps reordered successfully" });
+    } catch (error) {
+      console.error("Error reordering steps:", error);
+      res.status(500).json({ error: "Failed to reorder steps" });
+    }
+  },
+);
 
 // Get documents for a step
 router.get("/steps/:stepId/documents", async (req: Request, res: Response) => {
@@ -277,7 +300,9 @@ router.get("/steps/:stepId/documents", async (req: Request, res: Response) => {
     console.error("Error fetching step documents:", error);
     // Always return mock data as last resort
     try {
-      const documents = await MockDataService.getStepDocuments(parseInt(req.params.stepId));
+      const documents = await MockDataService.getStepDocuments(
+        parseInt(req.params.stepId),
+      );
       res.json(documents);
     } catch (fallbackError) {
       console.error("Mock data fallback failed:", fallbackError);
@@ -301,8 +326,8 @@ router.post("/steps/:stepId/documents", async (req: Request, res: Response) => {
 
     // Validate required fields
     if (!docData.name || !docData.file_path || !docData.uploaded_by) {
-      return res.status(400).json({ 
-        error: "Missing required fields: name, file_path, uploaded_by" 
+      return res.status(400).json({
+        error: "Missing required fields: name, file_path, uploaded_by",
       });
     }
 
@@ -321,13 +346,16 @@ router.post("/steps/:stepId/documents", async (req: Request, res: Response) => {
           file_size: docData.file_size,
           file_type: docData.file_type,
           uploaded_by: docData.uploaded_by,
-          uploaded_at: new Date().toISOString()
+          uploaded_at: new Date().toISOString(),
         };
         console.log("Database unavailable, returning mock document response");
         res.status(201).json(mockDocument);
       }
     } catch (dbError) {
-      console.log("Database error, returning mock document response:", dbError.message);
+      console.log(
+        "Database error, returning mock document response:",
+        dbError.message,
+      );
       // Create a mock response when database operation fails
       const mockDocument = {
         id: Date.now(),
@@ -337,7 +365,7 @@ router.post("/steps/:stepId/documents", async (req: Request, res: Response) => {
         file_size: docData.file_size,
         file_type: docData.file_type,
         uploaded_by: docData.uploaded_by,
-        uploaded_at: new Date().toISOString()
+        uploaded_at: new Date().toISOString(),
       };
       res.status(201).json(mockDocument);
     }
@@ -392,7 +420,9 @@ router.get("/steps/:stepId/comments", async (req: Request, res: Response) => {
     console.error("Error fetching step comments:", error);
     // Always return mock data as last resort
     try {
-      const comments = await MockDataService.getStepComments(parseInt(req.params.stepId));
+      const comments = await MockDataService.getStepComments(
+        parseInt(req.params.stepId),
+      );
       res.json(comments);
     } catch (fallbackError) {
       console.error("Mock data fallback failed:", fallbackError);
@@ -416,13 +446,16 @@ router.post("/steps/:stepId/comments", async (req: Request, res: Response) => {
 
     // Validate required fields
     if (!commentData.message || !commentData.user_name) {
-      return res.status(400).json({ 
-        error: "Missing required fields: message, user_name" 
+      return res.status(400).json({
+        error: "Missing required fields: message, user_name",
       });
     }
 
     // Validate comment type if provided
-    if (commentData.comment_type && !["note", "update", "system"].includes(commentData.comment_type)) {
+    if (
+      commentData.comment_type &&
+      !["note", "update", "system"].includes(commentData.comment_type)
+    ) {
       return res.status(400).json({ error: "Invalid comment type" });
     }
 
@@ -440,13 +473,16 @@ router.post("/steps/:stepId/comments", async (req: Request, res: Response) => {
           user_name: commentData.user_name,
           message: commentData.message,
           comment_type: commentData.comment_type || "note",
-          created_at: new Date().toISOString()
+          created_at: new Date().toISOString(),
         };
         console.log("Database unavailable, returning mock comment response");
         res.status(201).json(mockComment);
       }
     } catch (dbError) {
-      console.log("Database error, returning mock comment response:", dbError.message);
+      console.log(
+        "Database error, returning mock comment response:",
+        dbError.message,
+      );
       // Create a mock response when database operation fails
       const mockComment = {
         id: Date.now(),
@@ -455,7 +491,7 @@ router.post("/steps/:stepId/comments", async (req: Request, res: Response) => {
         user_name: commentData.user_name,
         message: commentData.message,
         comment_type: commentData.comment_type || "note",
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
       };
       res.status(201).json(mockComment);
     }

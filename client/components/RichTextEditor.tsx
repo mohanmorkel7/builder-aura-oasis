@@ -9,7 +9,12 @@ interface RichTextEditorProps {
   className?: string;
 }
 
-export function RichTextEditor({ value, onChange, placeholder, className }: RichTextEditorProps) {
+export function RichTextEditor({
+  value,
+  onChange,
+  placeholder,
+  className,
+}: RichTextEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null);
   const [isEditorFocused, setIsEditorFocused] = useState(false);
 
@@ -28,8 +33,8 @@ export function RichTextEditor({ value, onChange, placeholder, className }: Rich
 
   const handlePaste = (e: React.ClipboardEvent) => {
     e.preventDefault();
-    const text = e.clipboardData.getData('text/plain');
-    document.execCommand('insertText', false, text);
+    const text = e.clipboardData.getData("text/plain");
+    document.execCommand("insertText", false, text);
     handleInput();
   };
 
@@ -47,7 +52,7 @@ export function RichTextEditor({ value, onChange, placeholder, className }: Rich
           type="button"
           variant="ghost"
           size="sm"
-          onClick={() => execCommand('bold')}
+          onClick={() => execCommand("bold")}
           className="h-8 w-8 p-0"
         >
           <Bold className="h-4 w-4" />
@@ -56,7 +61,7 @@ export function RichTextEditor({ value, onChange, placeholder, className }: Rich
           type="button"
           variant="ghost"
           size="sm"
-          onClick={() => execCommand('italic')}
+          onClick={() => execCommand("italic")}
           className="h-8 w-8 p-0"
         >
           <Italic className="h-4 w-4" />
@@ -65,7 +70,7 @@ export function RichTextEditor({ value, onChange, placeholder, className }: Rich
           type="button"
           variant="ghost"
           size="sm"
-          onClick={() => execCommand('insertUnorderedList')}
+          onClick={() => execCommand("insertUnorderedList")}
           className="h-8 w-8 p-0"
         >
           <List className="h-4 w-4" />
@@ -75,8 +80,8 @@ export function RichTextEditor({ value, onChange, placeholder, className }: Rich
           variant="ghost"
           size="sm"
           onClick={() => {
-            const url = prompt('Enter URL:');
-            if (url) execCommand('createLink', url);
+            const url = prompt("Enter URL:");
+            if (url) execCommand("createLink", url);
           }}
           className="h-8 w-8 p-0"
         >
@@ -93,9 +98,9 @@ export function RichTextEditor({ value, onChange, placeholder, className }: Rich
         onFocus={() => setIsEditorFocused(true)}
         onBlur={() => setIsEditorFocused(false)}
         className={`min-h-[80px] p-3 outline-none text-sm leading-relaxed ${
-          !value && !isEditorFocused ? 'text-gray-500' : ''
+          !value && !isEditorFocused ? "text-gray-500" : ""
         }`}
-        style={{ wordBreak: 'break-word' }}
+        style={{ wordBreak: "break-word" }}
         suppressContentEditableWarning={true}
       />
 

@@ -93,9 +93,10 @@ export default function LeadDetails() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const leadId = parseInt(id || "0");
-  
+
   const { data: lead, isLoading, error } = useLead(leadId);
-  const { data: leadSteps = [], isLoading: stepsLoading } = useLeadSteps(leadId);
+  const { data: leadSteps = [], isLoading: stepsLoading } =
+    useLeadSteps(leadId);
   const createStepMutation = useCreateLeadStep();
 
   const [newStepDialog, setNewStepDialog] = useState(false);
@@ -104,7 +105,7 @@ export default function LeadDetails() {
     name: "",
     description: "",
     estimated_days: 1,
-    due_date: ""
+    due_date: "",
   });
 
   const handleBack = () => {
@@ -126,10 +127,18 @@ export default function LeadDetails() {
         };
 
         console.log("Creating step with data:", { leadId, stepData });
-        const result = await createStepMutation.mutateAsync({ leadId, stepData });
+        const result = await createStepMutation.mutateAsync({
+          leadId,
+          stepData,
+        });
         console.log("Step creation result:", result);
 
-        setNewStep({ name: "", description: "", estimated_days: 1, due_date: "" });
+        setNewStep({
+          name: "",
+          description: "",
+          estimated_days: 1,
+          due_date: "",
+        });
         setNewStepDialog(false);
       } catch (error) {
         console.error("Failed to create step:", error);
@@ -140,7 +149,7 @@ export default function LeadDetails() {
   };
 
   const handleToggleExpansion = (stepId: number) => {
-    setExpandedSteps(prev => {
+    setExpandedSteps((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(stepId)) {
         newSet.delete(stepId);
@@ -150,8 +159,6 @@ export default function LeadDetails() {
       return newSet;
     });
   };
-
-
 
   const handleDeleteStep = (stepId: number) => {
     // TODO: Implement step deletion
@@ -182,7 +189,8 @@ export default function LeadDetails() {
   }
 
   const leadData = lead as any;
-  const SourceIcon = sourceIcons[leadData.lead_source as keyof typeof sourceIcons] || Zap;
+  const SourceIcon =
+    sourceIcons[leadData.lead_source as keyof typeof sourceIcons] || Zap;
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
@@ -199,7 +207,11 @@ export default function LeadDetails() {
                 {leadData.client_name}
               </h1>
               <Badge className="text-xs">{leadData.lead_id}</Badge>
-              <Badge className={statusColors[leadData.status as keyof typeof statusColors]}>
+              <Badge
+                className={
+                  statusColors[leadData.status as keyof typeof statusColors]
+                }
+              >
                 {leadData.status.replace("-", " ")}
               </Badge>
             </div>
@@ -232,29 +244,55 @@ export default function LeadDetails() {
                 <div>
                   <div className="space-y-3">
                     <div className="flex items-center space-x-2">
-                      <span className="font-medium text-gray-600">Lead Source:</span>
+                      <span className="font-medium text-gray-600">
+                        Lead Source:
+                      </span>
                       <div className="flex items-center space-x-2">
-                        <div className={`p-1 rounded ${sourceColors[leadData.lead_source as keyof typeof sourceColors]}`}>
+                        <div
+                          className={`p-1 rounded ${sourceColors[leadData.lead_source as keyof typeof sourceColors]}`}
+                        >
                           <SourceIcon className="w-3 h-3" />
                         </div>
-                        <span className="capitalize">{leadData.lead_source.replace("-", " ")}</span>
+                        <span className="capitalize">
+                          {leadData.lead_source.replace("-", " ")}
+                        </span>
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
                       <span className="font-medium text-gray-600">Status:</span>
-                      <Badge className={statusColors[leadData.status as keyof typeof statusColors]}>
-                        {leadData.status.charAt(0).toUpperCase() + leadData.status.slice(1).replace("-", " ")}
+                      <Badge
+                        className={
+                          statusColors[
+                            leadData.status as keyof typeof statusColors
+                          ]
+                        }
+                      >
+                        {leadData.status.charAt(0).toUpperCase() +
+                          leadData.status.slice(1).replace("-", " ")}
                       </Badge>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <span className="font-medium text-gray-600">Priority:</span>
-                      <Badge className={priorityColors[leadData.priority as keyof typeof priorityColors]}>
-                        {leadData.priority.charAt(0).toUpperCase() + leadData.priority.slice(1)}
+                      <span className="font-medium text-gray-600">
+                        Priority:
+                      </span>
+                      <Badge
+                        className={
+                          priorityColors[
+                            leadData.priority as keyof typeof priorityColors
+                          ]
+                        }
+                      >
+                        {leadData.priority.charAt(0).toUpperCase() +
+                          leadData.priority.slice(1)}
                       </Badge>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <span className="font-medium text-gray-600">Probability:</span>
-                      <span className="text-gray-900">{leadData.probability || 50}%</span>
+                      <span className="font-medium text-gray-600">
+                        Probability:
+                      </span>
+                      <span className="text-gray-900">
+                        {leadData.probability || 50}%
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -263,25 +301,38 @@ export default function LeadDetails() {
                   <div className="space-y-3">
                     <div className="flex items-center space-x-2">
                       <User className="w-4 h-4 text-gray-400" />
-                      <span className="font-medium text-gray-600">Contact Person:</span>
-                      <span className="text-gray-900">{leadData.contact_person}</span>
+                      <span className="font-medium text-gray-600">
+                        Contact Person:
+                      </span>
+                      <span className="text-gray-900">
+                        {leadData.contact_person}
+                      </span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <Mail className="w-4 h-4 text-gray-400" />
                       <span className="font-medium text-gray-600">Email:</span>
-                      <a href={`mailto:${leadData.email}`} className="text-blue-600 hover:underline">
+                      <a
+                        href={`mailto:${leadData.email}`}
+                        className="text-blue-600 hover:underline"
+                      >
                         {leadData.email}
                       </a>
                     </div>
                     <div className="flex items-center space-x-2">
                       <Phone className="w-4 h-4 text-gray-400" />
                       <span className="font-medium text-gray-600">Phone:</span>
-                      <span className="text-gray-900">{leadData.phone || "Not provided"}</span>
+                      <span className="text-gray-900">
+                        {leadData.phone || "Not provided"}
+                      </span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <Building className="w-4 h-4 text-gray-400" />
-                      <span className="font-medium text-gray-600">Company:</span>
-                      <span className="text-gray-900">{leadData.company || leadData.client_name}</span>
+                      <span className="font-medium text-gray-600">
+                        Company:
+                      </span>
+                      <span className="text-gray-900">
+                        {leadData.company || leadData.client_name}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -291,23 +342,35 @@ export default function LeadDetails() {
                 <>
                   <Separator />
                   <div>
-                    <h4 className="font-medium text-gray-900 mb-2">Project Information</h4>
+                    <h4 className="font-medium text-gray-900 mb-2">
+                      Project Information
+                    </h4>
                     <div className="space-y-2">
                       <div>
-                        <span className="font-medium text-gray-600">Title: </span>
-                        <span className="text-gray-900">{leadData.project_title}</span>
+                        <span className="font-medium text-gray-600">
+                          Title:{" "}
+                        </span>
+                        <span className="text-gray-900">
+                          {leadData.project_title}
+                        </span>
                       </div>
                       {leadData.project_description && (
                         <div>
-                          <span className="font-medium text-gray-600">Description: </span>
-                          <span className="text-gray-900">{leadData.project_description}</span>
+                          <span className="font-medium text-gray-600">
+                            Description:{" "}
+                          </span>
+                          <span className="text-gray-900">
+                            {leadData.project_description}
+                          </span>
                         </div>
                       )}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
                         {leadData.project_budget && (
                           <div className="flex items-center space-x-2">
                             <DollarSign className="w-4 h-4 text-gray-400" />
-                            <span className="font-medium text-gray-600">Budget:</span>
+                            <span className="font-medium text-gray-600">
+                              Budget:
+                            </span>
                             <span className="text-green-600 font-semibold">
                               ${leadData.project_budget.toLocaleString()}
                             </span>
@@ -316,15 +379,23 @@ export default function LeadDetails() {
                         {leadData.project_timeline && (
                           <div className="flex items-center space-x-2">
                             <Calendar className="w-4 h-4 text-gray-400" />
-                            <span className="font-medium text-gray-600">Timeline:</span>
-                            <span className="text-gray-900">{leadData.project_timeline}</span>
+                            <span className="font-medium text-gray-600">
+                              Timeline:
+                            </span>
+                            <span className="text-gray-900">
+                              {leadData.project_timeline}
+                            </span>
                           </div>
                         )}
                       </div>
                       {leadData.project_requirements && (
                         <div className="mt-3">
-                          <span className="font-medium text-gray-600">Requirements: </span>
-                          <span className="text-gray-900">{leadData.project_requirements}</span>
+                          <span className="font-medium text-gray-600">
+                            Requirements:{" "}
+                          </span>
+                          <span className="text-gray-900">
+                            {leadData.project_requirements}
+                          </span>
                         </div>
                       )}
                     </div>
@@ -379,7 +450,12 @@ export default function LeadDetails() {
                         <Input
                           id="stepName"
                           value={newStep.name}
-                          onChange={(e) => setNewStep(prev => ({ ...prev, name: e.target.value }))}
+                          onChange={(e) =>
+                            setNewStep((prev) => ({
+                              ...prev,
+                              name: e.target.value,
+                            }))
+                          }
                           placeholder="e.g., Technical Demo"
                         />
                       </div>
@@ -388,7 +464,12 @@ export default function LeadDetails() {
                         <Textarea
                           id="stepDescription"
                           value={newStep.description}
-                          onChange={(e) => setNewStep(prev => ({ ...prev, description: e.target.value }))}
+                          onChange={(e) =>
+                            setNewStep((prev) => ({
+                              ...prev,
+                              description: e.target.value,
+                            }))
+                          }
                           placeholder="Describe what needs to be done in this step"
                           rows={3}
                         />
@@ -401,7 +482,12 @@ export default function LeadDetails() {
                             type="number"
                             min="1"
                             value={newStep.estimated_days}
-                            onChange={(e) => setNewStep(prev => ({ ...prev, estimated_days: parseInt(e.target.value) || 1 }))}
+                            onChange={(e) =>
+                              setNewStep((prev) => ({
+                                ...prev,
+                                estimated_days: parseInt(e.target.value) || 1,
+                              }))
+                            }
                           />
                         </div>
                         <div>
@@ -410,13 +496,21 @@ export default function LeadDetails() {
                             id="dueDate"
                             type="date"
                             value={newStep.due_date}
-                            onChange={(e) => setNewStep(prev => ({ ...prev, due_date: e.target.value }))}
+                            onChange={(e) =>
+                              setNewStep((prev) => ({
+                                ...prev,
+                                due_date: e.target.value,
+                              }))
+                            }
                           />
                         </div>
                       </div>
                     </div>
                     <DialogFooter>
-                      <Button variant="outline" onClick={() => setNewStepDialog(false)}>
+                      <Button
+                        variant="outline"
+                        onClick={() => setNewStepDialog(false)}
+                      >
                         Cancel
                       </Button>
                       <Button onClick={handleAddStep}>Add Step</Button>
@@ -429,9 +523,12 @@ export default function LeadDetails() {
               {leadSteps.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">
                   <Target className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No pipeline steps yet</h3>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    No pipeline steps yet
+                  </h3>
                   <p className="text-gray-600 mb-4">
-                    Create custom steps to track your sales process for this lead
+                    Create custom steps to track your sales process for this
+                    lead
                   </p>
                   <Button onClick={() => setNewStepDialog(true)}>
                     <Plus className="w-4 h-4 mr-2" />
@@ -469,27 +566,35 @@ export default function LeadDetails() {
                   {leadData.probability}% probability
                 </div>
               </div>
-              
+
               <Separator />
-              
+
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Industry:</span>
-                  <span className="text-gray-900">{leadData.industry || "Not specified"}</span>
+                  <span className="text-gray-900">
+                    {leadData.industry || "Not specified"}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Company Size:</span>
-                  <span className="text-gray-900">{leadData.company_size || "Not specified"}</span>
+                  <span className="text-gray-900">
+                    {leadData.company_size || "Not specified"}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Sales Rep:</span>
-                  <span className="text-gray-900">{leadData.sales_rep_name || "Not assigned"}</span>
+                  <span className="text-gray-900">
+                    {leadData.sales_rep_name || "Not assigned"}
+                  </span>
                 </div>
                 {leadData.expected_close_date && (
                   <div className="flex justify-between">
                     <span className="text-gray-600">Expected Close:</span>
                     <span className="text-gray-900">
-                      {new Date(leadData.expected_close_date).toLocaleDateString()}
+                      {new Date(
+                        leadData.expected_close_date,
+                      ).toLocaleDateString()}
                     </span>
                   </div>
                 )}

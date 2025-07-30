@@ -3,11 +3,19 @@ import { pool } from "../database/connection";
 export interface Lead {
   id: number;
   lead_id: string; // #001, #002, etc.
-  
+
   // Lead Source Information
-  lead_source: "email" | "social-media" | "phone" | "website" | "referral" | "cold-call" | "event" | "other";
+  lead_source:
+    | "email"
+    | "social-media"
+    | "phone"
+    | "website"
+    | "referral"
+    | "cold-call"
+    | "event"
+    | "other";
   lead_source_value?: string;
-  
+
   // Status
   status: "in-progress" | "won" | "lost" | "completed";
 
@@ -38,17 +46,41 @@ export interface Lead {
 
   // Client Information
   client_name: string;
-  client_type?: "individual" | "business" | "enterprise" | "startup" | "government" | "nonprofit";
+  client_type?:
+    | "individual"
+    | "business"
+    | "enterprise"
+    | "startup"
+    | "government"
+    | "nonprofit";
   company?: string;
   company_location?: string;
-  category?: "fintech" | "ecommerce" | "healthcare" | "education" | "retail" | "manufacturing" | "technology" | "finance" | "consulting" | "other";
-  country?: "india" | "usa" | "uae" | "uk" | "singapore" | "canada" | "australia" | "other";
+  category?:
+    | "fintech"
+    | "ecommerce"
+    | "healthcare"
+    | "education"
+    | "retail"
+    | "manufacturing"
+    | "technology"
+    | "finance"
+    | "consulting"
+    | "other";
+  country?:
+    | "india"
+    | "usa"
+    | "uae"
+    | "uk"
+    | "singapore"
+    | "canada"
+    | "australia"
+    | "other";
   contact_person: string;
   email: string;
   phone?: string;
   industry?: string;
   company_size?: "1-10" | "11-50" | "51-200" | "201-500" | "501-1000" | "1000+";
-  
+
   // Contact Information (multiple contacts)
   contacts?: Array<{
     contact_name: string;
@@ -57,19 +89,19 @@ export interface Lead {
     email: string;
     linkedin: string;
   }>;
-  
+
   // Additional Information
   priority: "low" | "medium" | "high" | "urgent";
   expected_close_date?: string;
   probability?: number; // 0-100%
   notes?: string;
-  
+
   // Metadata
   created_by: number;
   assigned_to?: number;
   created_at: string;
   updated_at: string;
-  
+
   // Relations
   sales_rep_name?: string;
   creator_name?: string;
@@ -99,7 +131,7 @@ export interface LeadChat {
   message_type: "text" | "file" | "system";
   is_rich_text: boolean;
   created_at: string;
-  
+
   // File attachments
   attachments?: LeadChatAttachment[];
 }
@@ -116,9 +148,17 @@ export interface LeadChatAttachment {
 
 export interface CreateLeadData {
   lead_id?: string; // Optional, will be auto-generated if not provided
-  lead_source: "email" | "social-media" | "phone" | "website" | "referral" | "cold-call" | "event" | "other";
+  lead_source:
+    | "email"
+    | "social-media"
+    | "phone"
+    | "website"
+    | "referral"
+    | "cold-call"
+    | "event"
+    | "other";
   lead_source_value?: string;
-  
+
   // Project Information
   project_title?: string;
   project_description?: string;
@@ -146,11 +186,35 @@ export interface CreateLeadData {
 
   // Client Information
   client_name: string;
-  client_type?: "individual" | "business" | "enterprise" | "startup" | "government" | "nonprofit";
+  client_type?:
+    | "individual"
+    | "business"
+    | "enterprise"
+    | "startup"
+    | "government"
+    | "nonprofit";
   company?: string;
   company_location?: string;
-  category?: "fintech" | "ecommerce" | "healthcare" | "education" | "retail" | "manufacturing" | "technology" | "finance" | "consulting" | "other";
-  country?: "india" | "usa" | "uae" | "uk" | "singapore" | "canada" | "australia" | "other";
+  category?:
+    | "fintech"
+    | "ecommerce"
+    | "healthcare"
+    | "education"
+    | "retail"
+    | "manufacturing"
+    | "technology"
+    | "finance"
+    | "consulting"
+    | "other";
+  country?:
+    | "india"
+    | "usa"
+    | "uae"
+    | "uk"
+    | "singapore"
+    | "canada"
+    | "australia"
+    | "other";
   contact_person: string;
   email: string;
   phone?: string;
@@ -171,17 +235,25 @@ export interface CreateLeadData {
   expected_close_date?: string;
   probability?: number;
   notes?: string;
-  
+
   // Metadata
   created_by: number;
   assigned_to?: number;
 }
 
 export interface UpdateLeadData {
-  lead_source?: "email" | "social-media" | "phone" | "website" | "referral" | "cold-call" | "event" | "other";
+  lead_source?:
+    | "email"
+    | "social-media"
+    | "phone"
+    | "website"
+    | "referral"
+    | "cold-call"
+    | "event"
+    | "other";
   lead_source_value?: string;
   status?: "in-progress" | "won" | "lost" | "completed";
-  
+
   // Project Information
   project_title?: string;
   project_description?: string;
@@ -209,11 +281,35 @@ export interface UpdateLeadData {
 
   // Client Information
   client_name?: string;
-  client_type?: "individual" | "business" | "enterprise" | "startup" | "government" | "nonprofit";
+  client_type?:
+    | "individual"
+    | "business"
+    | "enterprise"
+    | "startup"
+    | "government"
+    | "nonprofit";
   company?: string;
   company_location?: string;
-  category?: "fintech" | "ecommerce" | "healthcare" | "education" | "retail" | "manufacturing" | "technology" | "finance" | "consulting" | "other";
-  country?: "india" | "usa" | "uae" | "uk" | "singapore" | "canada" | "australia" | "other";
+  category?:
+    | "fintech"
+    | "ecommerce"
+    | "healthcare"
+    | "education"
+    | "retail"
+    | "manufacturing"
+    | "technology"
+    | "finance"
+    | "consulting"
+    | "other";
+  country?:
+    | "india"
+    | "usa"
+    | "uae"
+    | "uk"
+    | "singapore"
+    | "canada"
+    | "australia"
+    | "other";
   contact_person?: string;
   email?: string;
   phone?: string;
@@ -234,7 +330,7 @@ export interface UpdateLeadData {
   expected_close_date?: string;
   probability?: number;
   notes?: string;
-  
+
   // Metadata
   assigned_to?: number;
 }
@@ -284,10 +380,10 @@ export class LeadRepository {
       FROM leads l
       LEFT JOIN users u ON l.assigned_to = u.id
       LEFT JOIN users c ON l.created_by = c.id
-      ${salesRepId ? 'WHERE l.assigned_to = $1' : ''}
+      ${salesRepId ? "WHERE l.assigned_to = $1" : ""}
       ORDER BY l.created_at DESC
     `;
-    
+
     const values = salesRepId ? [salesRepId] : [];
     const result = await pool.query(query, values);
     return result.rows;
@@ -303,7 +399,7 @@ export class LeadRepository {
       LEFT JOIN users c ON l.created_by = c.id
       WHERE l.id = $1
     `;
-    
+
     const result = await pool.query(query, [id]);
     return result.rows.length > 0 ? result.rows[0] : null;
   }
@@ -312,9 +408,11 @@ export class LeadRepository {
     // Generate lead ID if not provided
     let leadId = leadData.lead_id;
     if (!leadId) {
-      const countResult = await pool.query("SELECT COUNT(*) as count FROM leads");
+      const countResult = await pool.query(
+        "SELECT COUNT(*) as count FROM leads",
+      );
       const count = parseInt(countResult.rows[0].count) + 1;
-      leadId = `#${count.toString().padStart(4, '0')}`;
+      leadId = `#${count.toString().padStart(4, "0")}`;
     }
 
     const query = `
@@ -336,55 +434,63 @@ export class LeadRepository {
     `;
 
     const values = [
-      leadId,                                           // $1
-      leadData.lead_source,                            // $2
-      leadData.lead_source_value || null,             // $3
-      leadData.project_title || null,                 // $4
-      leadData.project_description || null,           // $5
-      leadData.project_budget || null,                // $6
-      leadData.project_timeline || null,              // $7
-      leadData.project_requirements || null,          // $8
-      JSON.stringify(leadData.solutions || []),       // $9
-      leadData.priority_level || "medium",            // $10
-      leadData.start_date || null,                    // $11
-      leadData.targeted_end_date || null,             // $12
-      leadData.expected_daily_txn_volume || null,     // $13
-      leadData.project_value || null,                 // $14
-      leadData.spoc || null,                          // $15
-      JSON.stringify(leadData.commercials || []),     // $16
+      leadId, // $1
+      leadData.lead_source, // $2
+      leadData.lead_source_value || null, // $3
+      leadData.project_title || null, // $4
+      leadData.project_description || null, // $5
+      leadData.project_budget || null, // $6
+      leadData.project_timeline || null, // $7
+      leadData.project_requirements || null, // $8
+      JSON.stringify(leadData.solutions || []), // $9
+      leadData.priority_level || "medium", // $10
+      leadData.start_date || null, // $11
+      leadData.targeted_end_date || null, // $12
+      leadData.expected_daily_txn_volume || null, // $13
+      leadData.project_value || null, // $14
+      leadData.spoc || null, // $15
+      JSON.stringify(leadData.commercials || []), // $16
       JSON.stringify(leadData.commercial_pricing || []), // $17
-      leadData.client_name,                           // $18
-      leadData.client_type || null,                   // $19
-      leadData.company || null,                       // $20
-      leadData.company_location || null,              // $21
-      leadData.category || null,                      // $22
-      leadData.country || null,                       // $23
-      leadData.contact_person,                        // $24
-      leadData.email,                                 // $25
-      leadData.phone || null,                         // $26
-      leadData.industry || null,                      // $27
-      leadData.company_size || null,                  // $28
-      JSON.stringify(leadData.contacts || []),        // $29
-      leadData.priority || "medium",                  // $30
-      leadData.expected_close_date || null,           // $31
-      leadData.probability || 50,                     // $32
-      leadData.notes || null,                         // $33
-      leadData.created_by,                            // $34
-      leadData.assigned_to || null,                   // $35
+      leadData.client_name, // $18
+      leadData.client_type || null, // $19
+      leadData.company || null, // $20
+      leadData.company_location || null, // $21
+      leadData.category || null, // $22
+      leadData.country || null, // $23
+      leadData.contact_person, // $24
+      leadData.email, // $25
+      leadData.phone || null, // $26
+      leadData.industry || null, // $27
+      leadData.company_size || null, // $28
+      JSON.stringify(leadData.contacts || []), // $29
+      leadData.priority || "medium", // $30
+      leadData.expected_close_date || null, // $31
+      leadData.probability || 50, // $32
+      leadData.notes || null, // $33
+      leadData.created_by, // $34
+      leadData.assigned_to || null, // $35
     ];
 
     const result = await pool.query(query, values);
     return result.rows[0];
   }
 
-  static async update(id: number, leadData: UpdateLeadData): Promise<Lead | null> {
+  static async update(
+    id: number,
+    leadData: UpdateLeadData,
+  ): Promise<Lead | null> {
     const setClause = [];
     const values = [];
     let paramIndex = 1;
 
     for (const [key, value] of Object.entries(leadData)) {
       if (value !== undefined) {
-        if (key === 'solutions' || key === 'commercials' || key === 'commercial_pricing' || key === 'contacts') {
+        if (
+          key === "solutions" ||
+          key === "commercials" ||
+          key === "commercial_pricing" ||
+          key === "contacts"
+        ) {
           // Handle JSON fields
           setClause.push(`${key} = $${paramIndex}`);
           values.push(JSON.stringify(value));
@@ -429,9 +535,9 @@ export class LeadRepository {
         COUNT(*) FILTER (WHERE status = 'lost') as lost,
         COUNT(*) FILTER (WHERE status = 'completed') as completed
       FROM leads
-      ${salesRepId ? 'WHERE assigned_to = $1' : ''}
+      ${salesRepId ? "WHERE assigned_to = $1" : ""}
     `;
-    
+
     const values = salesRepId ? [salesRepId] : [];
     const result = await pool.query(query, values);
     return result.rows[0];
@@ -486,14 +592,21 @@ export class LeadStepRepository {
     return result.rows[0];
   }
 
-  static async update(id: number, stepData: UpdateLeadStepData): Promise<LeadStep | null> {
+  static async update(
+    id: number,
+    stepData: UpdateLeadStepData,
+  ): Promise<LeadStep | null> {
     const setClause = [];
     const values = [];
     let paramIndex = 1;
 
     for (const [key, value] of Object.entries(stepData)) {
       if (value !== undefined) {
-        if (key === 'completed_date' && stepData.status === 'completed' && !value) {
+        if (
+          key === "completed_date" &&
+          stepData.status === "completed" &&
+          !value
+        ) {
           // Auto-set completed_date when status is set to completed
           setClause.push(`${key} = CURRENT_TIMESTAMP`);
         } else {
@@ -528,18 +641,21 @@ export class LeadStepRepository {
     return result.rowCount > 0;
   }
 
-  static async reorderSteps(leadId: number, stepOrders: { id: number; order: number }[]): Promise<void> {
+  static async reorderSteps(
+    leadId: number,
+    stepOrders: { id: number; order: number }[],
+  ): Promise<void> {
     const client = await pool.connect();
     try {
       await client.query("BEGIN");
-      
+
       for (const { id, order } of stepOrders) {
         await client.query(
           "UPDATE lead_steps SET step_order = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 AND lead_id = $3",
-          [order, id, leadId]
+          [order, id, leadId],
         );
       }
-      
+
       await client.query("COMMIT");
     } catch (error) {
       await client.query("ROLLBACK");

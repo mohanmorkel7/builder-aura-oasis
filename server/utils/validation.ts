@@ -2,7 +2,6 @@ import { pool } from "../database/connection";
 
 // Database validation utilities
 export class DatabaseValidator {
-  
   /**
    * Check if database is available and connected
    */
@@ -23,7 +22,7 @@ export class DatabaseValidator {
     try {
       const result = await pool.query(
         "SELECT id FROM users WHERE id = $1 AND status != 'inactive'",
-        [userId]
+        [userId],
       );
       return result.rows.length > 0;
     } catch (error) {
@@ -37,10 +36,9 @@ export class DatabaseValidator {
    */
   static async clientExists(clientId: number): Promise<boolean> {
     try {
-      const result = await pool.query(
-        "SELECT id FROM clients WHERE id = $1",
-        [clientId]
-      );
+      const result = await pool.query("SELECT id FROM clients WHERE id = $1", [
+        clientId,
+      ]);
       return result.rows.length > 0;
     } catch (error) {
       console.error("Error checking client existence:", error);
@@ -53,10 +51,9 @@ export class DatabaseValidator {
    */
   static async leadExists(leadId: number): Promise<boolean> {
     try {
-      const result = await pool.query(
-        "SELECT id FROM leads WHERE id = $1",
-        [leadId]
-      );
+      const result = await pool.query("SELECT id FROM leads WHERE id = $1", [
+        leadId,
+      ]);
       return result.rows.length > 0;
     } catch (error) {
       console.error("Error checking lead existence:", error);
@@ -71,7 +68,7 @@ export class DatabaseValidator {
     try {
       const result = await pool.query(
         "SELECT id FROM lead_steps WHERE id = $1",
-        [stepId]
+        [stepId],
       );
       return result.rows.length > 0;
     } catch (error) {
@@ -87,7 +84,7 @@ export class DatabaseValidator {
     try {
       const result = await pool.query(
         "SELECT id FROM onboarding_step_instances WHERE id = $1",
-        [stepId]
+        [stepId],
       );
       return result.rows.length > 0;
     } catch (error) {
@@ -103,7 +100,7 @@ export class DatabaseValidator {
     try {
       const result = await pool.query(
         "SELECT id FROM products WHERE id = $1 AND is_active = true",
-        [productId]
+        [productId],
       );
       return result.rows.length > 0;
     } catch (error) {
@@ -119,7 +116,7 @@ export class DatabaseValidator {
     try {
       const result = await pool.query(
         "SELECT id FROM onboarding_templates WHERE id = $1 AND is_active = true",
-        [templateId]
+        [templateId],
       );
       return result.rows.length > 0;
     } catch (error) {
@@ -135,7 +132,7 @@ export class DatabaseValidator {
     try {
       const result = await pool.query(
         "SELECT id FROM deployments WHERE id = $1",
-        [deploymentId]
+        [deploymentId],
       );
       return result.rows.length > 0;
     } catch (error) {
@@ -147,16 +144,19 @@ export class DatabaseValidator {
   /**
    * Check if email is already taken by another user
    */
-  static async isEmailTaken(email: string, excludeUserId?: number): Promise<boolean> {
+  static async isEmailTaken(
+    email: string,
+    excludeUserId?: number,
+  ): Promise<boolean> {
     try {
       let query = "SELECT id FROM users WHERE email = $1";
       const params: any[] = [email];
-      
+
       if (excludeUserId) {
         query += " AND id != $2";
         params.push(excludeUserId);
       }
-      
+
       const result = await pool.query(query, params);
       return result.rows.length > 0;
     } catch (error) {
@@ -168,16 +168,19 @@ export class DatabaseValidator {
   /**
    * Check if a lead ID is already taken
    */
-  static async isLeadIdTaken(leadId: string, excludeId?: number): Promise<boolean> {
+  static async isLeadIdTaken(
+    leadId: string,
+    excludeId?: number,
+  ): Promise<boolean> {
     try {
       let query = "SELECT id FROM leads WHERE lead_id = $1";
       const params: any[] = [leadId];
-      
+
       if (excludeId) {
         query += " AND id != $2";
         params.push(excludeId);
       }
-      
+
       const result = await pool.query(query, params);
       return result.rows.length > 0;
     } catch (error) {
@@ -189,34 +192,41 @@ export class DatabaseValidator {
   /**
    * Check if user has permission to access a resource
    */
-  static async userHasPermission(userId: number, resourceType: string, resourceId?: number): Promise<boolean> {
+  static async userHasPermission(
+    userId: number,
+    resourceType: string,
+    resourceId?: number,
+  ): Promise<boolean> {
     try {
       const userResult = await pool.query(
         "SELECT role FROM users WHERE id = $1 AND status = 'active'",
-        [userId]
+        [userId],
       );
-      
+
       if (userResult.rows.length === 0) {
         return false;
       }
-      
+
       const userRole = userResult.rows[0].role;
-      
+
       // Admin has access to everything
-      if (userRole === 'admin') {
+      if (userRole === "admin") {
         return true;
       }
-      
+
       // Sales users can access leads and clients
-      if (userRole === 'sales' && ['lead', 'client'].includes(resourceType)) {
+      if (userRole === "sales" && ["lead", "client"].includes(resourceType)) {
         return true;
       }
-      
+
       // Product users can access deployments and products
-      if (userRole === 'product' && ['deployment', 'product', 'template'].includes(resourceType)) {
+      if (
+        userRole === "product" &&
+        ["deployment", "product", "template"].includes(resourceType)
+      ) {
         return true;
       }
-      
+
       return false;
     } catch (error) {
       console.error("Error checking user permissions:", error);
@@ -227,18 +237,24 @@ export class DatabaseValidator {
   /**
    * Validate and sanitize input data
    */
-  static validateRequiredFields(data: any, requiredFields: string[]): { isValid: boolean; missingFields: string[] } {
+  static validateRequiredFields(
+    data: any,
+    requiredFields: string[],
+  ): { isValid: boolean; missingFields: string[] } {
     const missingFields: string[] = [];
-    
+
     for (const field of requiredFields) {
-      if (!data[field] || (typeof data[field] === 'string' && data[field].trim() === '')) {
+      if (
+        !data[field] ||
+        (typeof data[field] === "string" && data[field].trim() === "")
+      ) {
         missingFields.push(field);
       }
     }
-    
+
     return {
       isValid: missingFields.length === 0,
-      missingFields
+      missingFields,
     };
   }
 
@@ -255,7 +271,7 @@ export class DatabaseValidator {
    */
   static isValidPhone(phone: string): boolean {
     const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
-    return phoneRegex.test(phone.replace(/[\s\-\(\)]/g, ''));
+    return phoneRegex.test(phone.replace(/[\s\-\(\)]/g, ""));
   }
 
   /**
@@ -286,7 +302,11 @@ export class DatabaseValidator {
   /**
    * Validate string length
    */
-  static isValidLength(str: string, minLength?: number, maxLength?: number): boolean {
+  static isValidLength(
+    str: string,
+    minLength?: number,
+    maxLength?: number,
+  ): boolean {
     if (minLength !== undefined && str.length < minLength) return false;
     if (maxLength !== undefined && str.length > maxLength) return false;
     return true;
@@ -298,10 +318,10 @@ export class DatabaseValidator {
   static sanitizeHtml(html: string): string {
     // Basic HTML sanitization - in production, use a proper library like DOMPurify
     return html
-      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-      .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
-      .replace(/javascript:/gi, '')
-      .replace(/on\w+=/gi, '');
+      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
+      .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, "")
+      .replace(/javascript:/gi, "")
+      .replace(/on\w+=/gi, "");
   }
 
   /**
@@ -310,18 +330,21 @@ export class DatabaseValidator {
   static async generateUniqueLeadId(): Promise<string> {
     let attempts = 0;
     const maxAttempts = 10;
-    
+
     while (attempts < maxAttempts) {
-      const leadId = `#${Math.floor(Math.random() * 9999) + 1}`.padStart(5, '0');
-      
+      const leadId = `#${Math.floor(Math.random() * 9999) + 1}`.padStart(
+        5,
+        "0",
+      );
+
       const isTaken = await this.isLeadIdTaken(leadId);
       if (!isTaken) {
         return leadId;
       }
-      
+
       attempts++;
     }
-    
+
     // Fallback to timestamp-based ID
     return `#${Date.now().toString().slice(-6)}`;
   }
@@ -330,74 +353,186 @@ export class DatabaseValidator {
 // Input validation schemas
 export const ValidationSchemas = {
   user: {
-    required: ['first_name', 'last_name', 'email', 'password', 'role'],
-    optional: ['phone', 'department', 'manager_id', 'status', 'start_date', 'notes'],
-    enums: {
-      role: ['admin', 'sales', 'product'],
-      status: ['active', 'inactive', 'pending']
-    }
-  },
-  
-  client: {
-    required: ['client_name', 'contact_person', 'email'],
-    optional: ['phone', 'company_size', 'industry', 'address', 'city', 'state', 'zip_code', 'country', 'expected_value', 'priority', 'status', 'sales_rep_id', 'start_date', 'notes'],
-    enums: {
-      priority: ['low', 'medium', 'high', 'urgent'],
-      status: ['active', 'inactive', 'onboarding', 'completed']
-    }
-  },
-  
-  lead: {
-    required: ['client_name', 'contact_person', 'email', 'lead_source', 'created_by'],
+    required: ["first_name", "last_name", "email", "password", "role"],
     optional: [
-      'lead_id', 'lead_source_value', 'status',
-      // Project Information
-      'project_title', 'project_description', 'project_budget', 'project_timeline', 'project_requirements',
-      // Enhanced Project Info
-      'solutions', 'priority_level', 'start_date', 'targeted_end_date', 'expected_daily_txn_volume', 'project_value', 'spoc',
-      // Commercials
-      'commercials', 'commercial_pricing',
-      // Client Information
-      'client_type', 'company', 'company_location', 'category', 'country', 'phone', 'industry', 'company_size',
-      // Contact Information
-      'contacts',
-      // Additional Information
-      'priority', 'expected_close_date', 'probability', 'notes', 'assigned_to'
+      "phone",
+      "department",
+      "manager_id",
+      "status",
+      "start_date",
+      "notes",
     ],
     enums: {
-      lead_source: ['email', 'social-media', 'phone', 'website', 'referral', 'cold-call', 'event', 'other'],
-      status: ['in-progress', 'won', 'lost', 'completed'],
-      priority: ['low', 'medium', 'high', 'urgent'],
-      priority_level: ['high', 'medium', 'low'],
-      client_type: ['individual', 'business', 'enterprise', 'startup', 'government', 'nonprofit'],
-      category: ['fintech', 'ecommerce', 'healthcare', 'education', 'retail', 'manufacturing', 'technology', 'finance', 'consulting', 'other'],
-      country: ['india', 'usa', 'uae', 'uk', 'singapore', 'canada', 'australia', 'other'],
-      company_size: ['1-10', '11-50', '51-200', '201-500', '501-1000', '1000+']
-    }
+      role: ["admin", "sales", "product"],
+      status: ["active", "inactive", "pending"],
+    },
   },
-  
+
+  client: {
+    required: ["client_name", "contact_person", "email"],
+    optional: [
+      "phone",
+      "company_size",
+      "industry",
+      "address",
+      "city",
+      "state",
+      "zip_code",
+      "country",
+      "expected_value",
+      "priority",
+      "status",
+      "sales_rep_id",
+      "start_date",
+      "notes",
+    ],
+    enums: {
+      priority: ["low", "medium", "high", "urgent"],
+      status: ["active", "inactive", "onboarding", "completed"],
+    },
+  },
+
+  lead: {
+    required: [
+      "client_name",
+      "contact_person",
+      "email",
+      "lead_source",
+      "created_by",
+    ],
+    optional: [
+      "lead_id",
+      "lead_source_value",
+      "status",
+      // Project Information
+      "project_title",
+      "project_description",
+      "project_budget",
+      "project_timeline",
+      "project_requirements",
+      // Enhanced Project Info
+      "solutions",
+      "priority_level",
+      "start_date",
+      "targeted_end_date",
+      "expected_daily_txn_volume",
+      "project_value",
+      "spoc",
+      // Commercials
+      "commercials",
+      "commercial_pricing",
+      // Client Information
+      "client_type",
+      "company",
+      "company_location",
+      "category",
+      "country",
+      "phone",
+      "industry",
+      "company_size",
+      // Contact Information
+      "contacts",
+      // Additional Information
+      "priority",
+      "expected_close_date",
+      "probability",
+      "notes",
+      "assigned_to",
+    ],
+    enums: {
+      lead_source: [
+        "email",
+        "social-media",
+        "phone",
+        "website",
+        "referral",
+        "cold-call",
+        "event",
+        "other",
+      ],
+      status: ["in-progress", "won", "lost", "completed"],
+      priority: ["low", "medium", "high", "urgent"],
+      priority_level: ["high", "medium", "low"],
+      client_type: [
+        "individual",
+        "business",
+        "enterprise",
+        "startup",
+        "government",
+        "nonprofit",
+      ],
+      category: [
+        "fintech",
+        "ecommerce",
+        "healthcare",
+        "education",
+        "retail",
+        "manufacturing",
+        "technology",
+        "finance",
+        "consulting",
+        "other",
+      ],
+      country: [
+        "india",
+        "usa",
+        "uae",
+        "uk",
+        "singapore",
+        "canada",
+        "australia",
+        "other",
+      ],
+      company_size: ["1-10", "11-50", "51-200", "201-500", "501-1000", "1000+"],
+    },
+  },
+
   leadStep: {
-    required: ['name', 'estimated_days'],
-    optional: ['description', 'status', 'step_order', 'due_date', 'completed_date', 'assigned_to'],
+    required: ["name", "estimated_days"],
+    optional: [
+      "description",
+      "status",
+      "step_order",
+      "due_date",
+      "completed_date",
+      "assigned_to",
+    ],
     enums: {
-      status: ['pending', 'in_progress', 'completed', 'cancelled']
-    }
+      status: ["pending", "in_progress", "completed", "cancelled"],
+    },
   },
-  
+
   deployment: {
-    required: ['product_id', 'version', 'environment', 'created_by'],
-    optional: ['status', 'description', 'assigned_to', 'scheduled_date', 'auto_rollback', 'run_tests', 'notify_team', 'require_approval', 'release_notes'],
+    required: ["product_id", "version", "environment", "created_by"],
+    optional: [
+      "status",
+      "description",
+      "assigned_to",
+      "scheduled_date",
+      "auto_rollback",
+      "run_tests",
+      "notify_team",
+      "require_approval",
+      "release_notes",
+    ],
     enums: {
-      environment: ['development', 'staging', 'qa', 'production'],
-      status: ['pending', 'scheduled', 'in_progress', 'completed', 'failed', 'cancelled']
-    }
+      environment: ["development", "staging", "qa", "production"],
+      status: [
+        "pending",
+        "scheduled",
+        "in_progress",
+        "completed",
+        "failed",
+        "cancelled",
+      ],
+    },
   },
-  
+
   template: {
-    required: ['name', 'created_by'],
-    optional: ['description', 'type', 'is_active', 'steps'],
+    required: ["name", "created_by"],
+    optional: ["description", "type", "is_active", "steps"],
     enums: {
-      type: ['standard', 'enterprise', 'smb']
-    }
-  }
+      type: ["standard", "enterprise", "smb"],
+    },
+  },
 };

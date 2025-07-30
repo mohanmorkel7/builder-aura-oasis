@@ -248,7 +248,10 @@ export class ApiClient {
     });
   }
 
-  async reorderOnboardingSteps(clientId: number, stepOrders: { id: number; order: number }[]) {
+  async reorderOnboardingSteps(
+    clientId: number,
+    stepOrders: { id: number; order: number }[],
+  ) {
     return this.request(`/onboarding/clients/${clientId}/steps/reorder`, {
       method: "PUT",
       body: JSON.stringify({ stepOrders }),
@@ -349,7 +352,10 @@ export class ApiClient {
     });
   }
 
-  async reorderLeadSteps(leadId: number, stepOrders: { id: number; order: number }[]) {
+  async reorderLeadSteps(
+    leadId: number,
+    stepOrders: { id: number; order: number }[],
+  ) {
     return this.request(`/leads/${leadId}/steps/reorder`, {
       method: "PUT",
       body: JSON.stringify({ stepOrders }),

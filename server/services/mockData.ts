@@ -630,14 +630,15 @@ export class MockDataService {
         id: 1,
         client_id: clientId,
         name: "Initial Contact",
-        description: "Make first contact with client and gather basic requirements",
+        description:
+          "Make first contact with client and gather basic requirements",
         status: "completed",
         step_order: 1,
         due_date: "2024-06-15",
         completed_date: "2024-06-15",
         estimated_days: 1,
         created_at: "2024-06-10T09:00:00Z",
-        updated_at: "2024-06-15T15:30:00Z"
+        updated_at: "2024-06-15T15:30:00Z",
       },
       {
         id: 2,
@@ -650,7 +651,7 @@ export class MockDataService {
         completed_date: "2024-06-20",
         estimated_days: 3,
         created_at: "2024-06-10T09:00:00Z",
-        updated_at: "2024-06-20T10:15:00Z"
+        updated_at: "2024-06-20T10:15:00Z",
       },
       {
         id: 3,
@@ -663,7 +664,7 @@ export class MockDataService {
         completed_date: null,
         estimated_days: 5,
         created_at: "2024-06-10T09:00:00Z",
-        updated_at: "2024-07-01T09:00:00Z"
+        updated_at: "2024-07-01T09:00:00Z",
       },
       {
         id: 4,
@@ -676,7 +677,7 @@ export class MockDataService {
         completed_date: null,
         estimated_days: 2,
         created_at: "2024-06-10T09:00:00Z",
-        updated_at: "2024-06-10T09:00:00Z"
+        updated_at: "2024-06-10T09:00:00Z",
       },
       {
         id: 5,
@@ -689,7 +690,7 @@ export class MockDataService {
         completed_date: null,
         estimated_days: 1,
         created_at: "2024-06-10T09:00:00Z",
-        updated_at: "2024-06-10T09:00:00Z"
+        updated_at: "2024-06-10T09:00:00Z",
       },
       {
         id: 6,
@@ -702,8 +703,8 @@ export class MockDataService {
         completed_date: null,
         estimated_days: 7,
         created_at: "2024-06-10T09:00:00Z",
-        updated_at: "2024-06-10T09:00:00Z"
-      }
+        updated_at: "2024-06-10T09:00:00Z",
+      },
     ];
   }
 
@@ -717,7 +718,7 @@ export class MockDataService {
         file_size: 2417664, // 2.3 MB
         file_type: "application/pdf",
         uploaded_by: "Jane Smith",
-        uploaded_at: "2024-06-15T14:30:00Z"
+        uploaded_at: "2024-06-15T14:30:00Z",
       },
       {
         id: 2,
@@ -725,9 +726,10 @@ export class MockDataService {
         name: "Project_Proposal_v2.docx",
         file_path: "/uploads/project_proposal_v2.docx",
         file_size: 1887437, // 1.8 MB
-        file_type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        file_type:
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         uploaded_by: "John Doe",
-        uploaded_at: "2024-06-20T10:15:00Z"
+        uploaded_at: "2024-06-20T10:15:00Z",
       },
       {
         id: 3,
@@ -737,11 +739,11 @@ export class MockDataService {
         file_size: 5452595, // 5.2 MB
         file_type: "application/pdf",
         uploaded_by: "Client Portal",
-        uploaded_at: "2024-07-01T15:22:00Z"
-      }
+        uploaded_at: "2024-07-01T15:22:00Z",
+      },
     ];
 
-    return documents.filter(doc => doc.step_id === stepId);
+    return documents.filter((doc) => doc.step_id === stepId);
   }
 
   static async getStepComments(stepId: number) {
@@ -753,7 +755,7 @@ export class MockDataService {
         user_name: "Jane Smith",
         message: "Client is very responsive. Initial requirements documented.",
         comment_type: "note",
-        created_at: "2024-06-15T14:30:00Z"
+        created_at: "2024-06-15T14:30:00Z",
       },
       {
         id: 2,
@@ -762,16 +764,17 @@ export class MockDataService {
         user_name: "John Doe",
         message: "Proposal sent with detailed timeline and pricing structure.",
         comment_type: "update",
-        created_at: "2024-06-20T10:15:00Z"
+        created_at: "2024-06-20T10:15:00Z",
       },
       {
         id: 3,
         step_id: 3,
         user_id: 2,
         user_name: "Jane Smith",
-        message: "Still waiting for incorporation documents. Following up today.",
+        message:
+          "Still waiting for incorporation documents. Following up today.",
         comment_type: "note",
-        created_at: "2024-07-01T09:00:00Z"
+        created_at: "2024-07-01T09:00:00Z",
       },
       {
         id: 4,
@@ -780,11 +783,11 @@ export class MockDataService {
         user_name: "System",
         message: "Document uploaded via client portal",
         comment_type: "system",
-        created_at: "2024-07-01T15:22:00Z"
-      }
+        created_at: "2024-07-01T15:22:00Z",
+      },
     ];
 
-    return comments.filter(comment => comment.step_id === stepId);
+    return comments.filter((comment) => comment.step_id === stepId);
   }
 
   // Lead mock data
@@ -796,7 +799,8 @@ export class MockDataService {
         lead_source: "email",
         status: "in-progress",
         project_title: "E-commerce Platform Development",
-        project_description: "Build a modern e-commerce platform with advanced features",
+        project_description:
+          "Build a modern e-commerce platform with advanced features",
         project_budget: 75000,
         project_timeline: "6 months",
         project_requirements: "React, Node.js, PostgreSQL, Payment integration",
@@ -816,7 +820,7 @@ export class MockDataService {
         created_at: "2024-01-15T09:00:00Z",
         updated_at: "2024-01-20T14:30:00Z",
         sales_rep_name: "Jane Smith",
-        creator_name: "Jane Smith"
+        creator_name: "Jane Smith",
       },
       {
         id: 2,
@@ -844,7 +848,7 @@ export class MockDataService {
         created_at: "2024-01-10T10:00:00Z",
         updated_at: "2024-02-01T16:45:00Z",
         sales_rep_name: "Jane Smith",
-        creator_name: "John Doe"
+        creator_name: "John Doe",
       },
       {
         id: 3,
@@ -872,7 +876,7 @@ export class MockDataService {
         created_at: "2024-01-05T11:00:00Z",
         updated_at: "2024-01-25T09:15:00Z",
         sales_rep_name: "Jane Smith",
-        creator_name: "Jane Smith"
+        creator_name: "Jane Smith",
       },
       {
         id: 4,
@@ -880,7 +884,8 @@ export class MockDataService {
         lead_source: "website",
         status: "completed",
         project_title: "Analytics Dashboard",
-        project_description: "Real-time analytics dashboard for business intelligence",
+        project_description:
+          "Real-time analytics dashboard for business intelligence",
         project_budget: 55000,
         project_timeline: "5 months",
         project_requirements: "React, D3.js, real-time data processing",
@@ -900,26 +905,28 @@ export class MockDataService {
         created_at: "2023-12-20T08:00:00Z",
         updated_at: "2024-05-15T17:30:00Z",
         sales_rep_name: "Jane Smith",
-        creator_name: "John Doe"
-      }
+        creator_name: "John Doe",
+      },
     ];
 
-    return salesRepId ? leads.filter(lead => lead.sales_rep_id === salesRepId) : leads;
+    return salesRepId
+      ? leads.filter((lead) => lead.sales_rep_id === salesRepId)
+      : leads;
   }
 
   static async getLeadById(id: number) {
     const leads = await this.getAllLeads();
-    return leads.find(lead => lead.id === id) || null;
+    return leads.find((lead) => lead.id === id) || null;
   }
 
   static async getLeadStats(salesRepId?: number) {
     const leads = await this.getAllLeads(salesRepId);
     return {
       total: leads.length,
-      in_progress: leads.filter(l => l.status === "in-progress").length,
-      won: leads.filter(l => l.status === "won").length,
-      lost: leads.filter(l => l.status === "lost").length,
-      completed: leads.filter(l => l.status === "completed").length
+      in_progress: leads.filter((l) => l.status === "in-progress").length,
+      won: leads.filter((l) => l.status === "won").length,
+      lost: leads.filter((l) => l.status === "lost").length,
+      completed: leads.filter((l) => l.status === "completed").length,
     };
   }
 
@@ -936,7 +943,7 @@ export class MockDataService {
         completed_date: "2024-01-16",
         estimated_days: 1,
         created_at: "2024-01-15T09:00:00Z",
-        updated_at: "2024-01-16T10:30:00Z"
+        updated_at: "2024-01-16T10:30:00Z",
       },
       {
         id: 2,
@@ -949,7 +956,7 @@ export class MockDataService {
         completed_date: "2024-01-20",
         estimated_days: 3,
         created_at: "2024-01-15T09:00:00Z",
-        updated_at: "2024-01-20T15:45:00Z"
+        updated_at: "2024-01-20T15:45:00Z",
       },
       {
         id: 3,
@@ -962,7 +969,7 @@ export class MockDataService {
         completed_date: null,
         estimated_days: 4,
         created_at: "2024-01-15T09:00:00Z",
-        updated_at: "2024-01-21T09:00:00Z"
+        updated_at: "2024-01-21T09:00:00Z",
       },
       {
         id: 4,
@@ -975,7 +982,7 @@ export class MockDataService {
         completed_date: null,
         estimated_days: 5,
         created_at: "2024-01-15T09:00:00Z",
-        updated_at: "2024-01-15T09:00:00Z"
+        updated_at: "2024-01-15T09:00:00Z",
       },
       {
         id: 5,
@@ -988,8 +995,8 @@ export class MockDataService {
         completed_date: null,
         estimated_days: 3,
         created_at: "2024-01-15T09:00:00Z",
-        updated_at: "2024-01-15T09:00:00Z"
-      }
+        updated_at: "2024-01-15T09:00:00Z",
+      },
     ];
   }
 
@@ -1000,11 +1007,12 @@ export class MockDataService {
         step_id: 1,
         user_id: 2,
         user_name: "Jane Smith",
-        message: "Had a great initial call with the client. They're very interested in our e-commerce solution.",
+        message:
+          "Had a great initial call with the client. They're very interested in our e-commerce solution.",
         message_type: "text",
         is_rich_text: false,
         created_at: "2024-01-16T10:30:00Z",
-        attachments: []
+        attachments: [],
       },
       {
         id: 2,
@@ -1022,34 +1030,36 @@ export class MockDataService {
             file_path: "/uploads/client_requirements.pdf",
             file_size: 1024576,
             file_type: "application/pdf",
-            uploaded_at: "2024-01-16T14:15:00Z"
-          }
-        ]
+            uploaded_at: "2024-01-16T14:15:00Z",
+          },
+        ],
       },
       {
         id: 3,
         step_id: 2,
         user_id: 1,
         user_name: "John Doe",
-        message: "<p><strong>Demo went excellent!</strong> Client was particularly impressed with:</p><ul><li>Real-time inventory management</li><li>Advanced reporting features</li><li>Mobile-responsive design</li></ul><p><em>Next steps: Prepare detailed proposal</em></p>",
+        message:
+          "<p><strong>Demo went excellent!</strong> Client was particularly impressed with:</p><ul><li>Real-time inventory management</li><li>Advanced reporting features</li><li>Mobile-responsive design</li></ul><p><em>Next steps: Prepare detailed proposal</em></p>",
         message_type: "text",
         is_rich_text: true,
         created_at: "2024-01-20T15:45:00Z",
-        attachments: []
+        attachments: [],
       },
       {
         id: 4,
         step_id: 3,
         user_id: 2,
         user_name: "Jane Smith",
-        message: "Working on the proposal. Need technical specifications from the development team.",
+        message:
+          "Working on the proposal. Need technical specifications from the development team.",
         message_type: "text",
         is_rich_text: false,
         created_at: "2024-01-21T09:00:00Z",
-        attachments: []
-      }
+        attachments: [],
+      },
     ];
 
-    return chats.filter(chat => chat.step_id === stepId);
+    return chats.filter((chat) => chat.step_id === stepId);
   }
 }

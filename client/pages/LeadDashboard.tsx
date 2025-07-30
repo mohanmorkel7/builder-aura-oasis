@@ -78,7 +78,9 @@ export default function LeadDashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { data: leads = [], isLoading: leadsLoading } = useLeads();
-  const { data: stats = { total: 0, in_progress: 0, won: 0, lost: 0, completed: 0 } } = useLeadStats();
+  const {
+    data: stats = { total: 0, in_progress: 0, won: 0, lost: 0, completed: 0 },
+  } = useLeadStats();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -94,15 +96,17 @@ export default function LeadDashboard() {
 
   // Filter leads based on search and filters
   const filteredLeads = leads.filter((lead: any) => {
-    const matchesSearch = 
+    const matchesSearch =
       lead.client_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       lead.contact_person?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       lead.lead_id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       lead.project_title?.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesStatus = statusFilter === "all" || lead.status === statusFilter;
-    const matchesSource = sourceFilter === "all" || lead.lead_source === sourceFilter;
-    
+
+    const matchesStatus =
+      statusFilter === "all" || lead.status === statusFilter;
+    const matchesSource =
+      sourceFilter === "all" || lead.lead_source === sourceFilter;
+
     return matchesSearch && matchesStatus && matchesSource;
   });
 
@@ -124,7 +128,10 @@ export default function LeadDashboard() {
             Manage your sales pipeline and track lead progress
           </p>
         </div>
-        <Button onClick={handleCreateLead} className="bg-blue-600 hover:bg-blue-700">
+        <Button
+          onClick={handleCreateLead}
+          className="bg-blue-600 hover:bg-blue-700"
+        >
           <Plus className="w-4 h-4 mr-2" />
           Create Lead
         </Button>
@@ -137,7 +144,9 @@ export default function LeadDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-blue-600 text-sm font-medium">Total Leads</p>
-                <p className="text-2xl font-bold text-blue-900">{stats.total}</p>
+                <p className="text-2xl font-bold text-blue-900">
+                  {stats.total}
+                </p>
               </div>
               <div className="bg-blue-200 p-3 rounded-full">
                 <Target className="w-6 h-6 text-blue-600" />
@@ -150,8 +159,12 @@ export default function LeadDashboard() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-orange-600 text-sm font-medium">In Progress</p>
-                <p className="text-2xl font-bold text-orange-900">{stats.in_progress}</p>
+                <p className="text-orange-600 text-sm font-medium">
+                  In Progress
+                </p>
+                <p className="text-2xl font-bold text-orange-900">
+                  {stats.in_progress}
+                </p>
               </div>
               <div className="bg-orange-200 p-3 rounded-full">
                 <Clock className="w-6 h-6 text-orange-600" />
@@ -193,7 +206,9 @@ export default function LeadDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-purple-600 text-sm font-medium">Completed</p>
-                <p className="text-2xl font-bold text-purple-900">{stats.completed}</p>
+                <p className="text-2xl font-bold text-purple-900">
+                  {stats.completed}
+                </p>
               </div>
               <div className="bg-purple-200 p-3 rounded-full">
                 <CheckCircle className="w-6 h-6 text-purple-600" />
@@ -258,7 +273,9 @@ export default function LeadDashboard() {
               <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Target className="w-8 h-8 text-gray-400" />
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No leads found</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                No leads found
+              </h3>
               <p className="text-gray-600 mb-4">
                 {searchTerm || statusFilter !== "all" || sourceFilter !== "all"
                   ? "Try adjusting your search criteria"
@@ -272,11 +289,12 @@ export default function LeadDashboard() {
           </Card>
         ) : (
           filteredLeads.map((lead: any) => {
-            const SourceIcon = sourceIcons[lead.lead_source as keyof typeof sourceIcons] || Zap;
-            
+            const SourceIcon =
+              sourceIcons[lead.lead_source as keyof typeof sourceIcons] || Zap;
+
             return (
-              <Card 
-                key={lead.id} 
+              <Card
+                key={lead.id}
                 className="hover:shadow-md transition-shadow cursor-pointer"
                 onClick={() => handleLeadClick(lead.id)}
               >
@@ -287,23 +305,37 @@ export default function LeadDashboard() {
                         <h3 className="text-lg font-semibold text-gray-900">
                           {lead.client_name}
                         </h3>
-                        <Badge className="text-xs">
-                          {lead.lead_id}
-                        </Badge>
-                        <Badge className={statusColors[lead.status as keyof typeof statusColors]}>
+                        <Badge className="text-xs">{lead.lead_id}</Badge>
+                        <Badge
+                          className={
+                            statusColors[
+                              lead.status as keyof typeof statusColors
+                            ]
+                          }
+                        >
                           {lead.status.replace("-", " ")}
                         </Badge>
-                        <Badge className={priorityColors[lead.priority as keyof typeof priorityColors]}>
+                        <Badge
+                          className={
+                            priorityColors[
+                              lead.priority as keyof typeof priorityColors
+                            ]
+                          }
+                        >
                           {lead.priority}
                         </Badge>
                       </div>
-                      
+
                       <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
                         <span className="flex items-center space-x-1">
-                          <div className={`p-1 rounded ${sourceColors[lead.lead_source as keyof typeof sourceColors]}`}>
+                          <div
+                            className={`p-1 rounded ${sourceColors[lead.lead_source as keyof typeof sourceColors]}`}
+                          >
                             <SourceIcon className="w-3 h-3" />
                           </div>
-                          <span className="capitalize">{lead.lead_source.replace("-", " ")}</span>
+                          <span className="capitalize">
+                            {lead.lead_source.replace("-", " ")}
+                          </span>
                         </span>
                         <span>•</span>
                         <span>{lead.contact_person}</span>
@@ -319,7 +351,9 @@ export default function LeadDashboard() {
 
                       {lead.project_title && (
                         <div className="mb-3">
-                          <h4 className="font-medium text-gray-900 mb-1">{lead.project_title}</h4>
+                          <h4 className="font-medium text-gray-900 mb-1">
+                            {lead.project_title}
+                          </h4>
                           {lead.project_description && (
                             <p className="text-sm text-gray-600 line-clamp-2">
                               {lead.project_description}
@@ -337,7 +371,10 @@ export default function LeadDashboard() {
                       )}
                       {lead.expected_close_date && (
                         <div className="text-sm text-gray-500">
-                          Expected: {new Date(lead.expected_close_date).toLocaleDateString()}
+                          Expected:{" "}
+                          {new Date(
+                            lead.expected_close_date,
+                          ).toLocaleDateString()}
                         </div>
                       )}
                     </div>
@@ -345,12 +382,8 @@ export default function LeadDashboard() {
 
                   <div className="flex items-center justify-between text-sm text-gray-500">
                     <div className="flex items-center space-x-4">
-                      {lead.company && (
-                        <span>Company: {lead.company}</span>
-                      )}
-                      {lead.industry && (
-                        <span>Industry: {lead.industry}</span>
-                      )}
+                      {lead.company && <span>Company: {lead.company}</span>}
+                      {lead.industry && <span>Industry: {lead.industry}</span>}
                       {lead.sales_rep_name && (
                         <span>Rep: {lead.sales_rep_name}</span>
                       )}
