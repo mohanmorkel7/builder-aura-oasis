@@ -96,6 +96,7 @@ export default function LeadDetails() {
   
   const { data: lead, isLoading, error } = useLead(leadId);
   const { data: leadSteps = [], isLoading: stepsLoading } = useLeadSteps(leadId);
+  const createStepMutation = useCreateLeadStep();
 
   const [newStepDialog, setNewStepDialog] = useState(false);
   const [expandedSteps, setExpandedSteps] = useState(new Set<number>());
