@@ -8,6 +8,7 @@ import clientsRouter from "./routes/clients";
 import templatesRouter from "./routes/templates";
 import deploymentsRouter from "./routes/deployments";
 import onboardingRouter from "./routes/onboarding";
+import leadsRouter from "./routes/leads";
 
 export function createServer() {
   const app = express();
