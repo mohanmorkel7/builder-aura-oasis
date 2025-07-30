@@ -3,7 +3,12 @@ import { pool } from "../database/connection";
 export interface Lead {
   id: number;
   lead_id: string; // #001, #002, etc.
+  
+  // Lead Source Information
   lead_source: "email" | "social-media" | "phone" | "website" | "referral" | "cold-call" | "event" | "other";
+  lead_source_value?: string;
+  
+  // Status
   status: "in-progress" | "won" | "lost" | "completed";
 
   // Project Information
@@ -33,21 +38,35 @@ export interface Lead {
 
   // Client Information
   client_name: string;
+  client_type?: "individual" | "business" | "enterprise" | "startup" | "government" | "nonprofit";
+  company?: string;
+  company_location?: string;
+  category?: "fintech" | "ecommerce" | "healthcare" | "education" | "retail" | "manufacturing" | "technology" | "finance" | "consulting" | "other";
+  country?: "india" | "usa" | "uae" | "uk" | "singapore" | "canada" | "australia" | "other";
   contact_person: string;
   email: string;
   phone?: string;
-  company?: string;
   industry?: string;
-  company_size?: string;
+  company_size?: "1-10" | "11-50" | "51-200" | "201-500" | "501-1000" | "1000+";
   
-  // Additional fields
+  // Contact Information (multiple contacts)
+  contacts?: Array<{
+    contact_name: string;
+    designation: string;
+    phone: string;
+    email: string;
+    linkedin: string;
+  }>;
+  
+  // Additional Information
   priority: "low" | "medium" | "high" | "urgent";
   expected_close_date?: string;
   probability?: number; // 0-100%
-  sales_rep_id?: number;
-  created_by: number;
   notes?: string;
   
+  // Metadata
+  created_by: number;
+  assigned_to?: number;
   created_at: string;
   updated_at: string;
   
@@ -61,11 +80,12 @@ export interface LeadStep {
   lead_id: number;
   name: string;
   description?: string;
-  status: "pending" | "in_progress" | "completed";
+  status: "pending" | "in_progress" | "completed" | "cancelled";
   step_order: number;
   due_date?: string;
   completed_date?: string;
   estimated_days: number;
+  assigned_to?: number;
   created_at: string;
   updated_at: string;
 }
@@ -95,7 +115,9 @@ export interface LeadChatAttachment {
 }
 
 export interface CreateLeadData {
+  lead_id?: string; // Optional, will be auto-generated if not provided
   lead_source: "email" | "social-media" | "phone" | "website" | "referral" | "cold-call" | "event" | "other";
+  lead_source_value?: string;
   
   // Project Information
   project_title?: string;
@@ -124,23 +146,40 @@ export interface CreateLeadData {
 
   // Client Information
   client_name: string;
+  client_type?: "individual" | "business" | "enterprise" | "startup" | "government" | "nonprofit";
+  company?: string;
+  company_location?: string;
+  category?: "fintech" | "ecommerce" | "healthcare" | "education" | "retail" | "manufacturing" | "technology" | "finance" | "consulting" | "other";
+  country?: "india" | "usa" | "uae" | "uk" | "singapore" | "canada" | "australia" | "other";
   contact_person: string;
   email: string;
   phone?: string;
-  company?: string;
   industry?: string;
-  company_size?: string;
+  company_size?: "1-10" | "11-50" | "51-200" | "201-500" | "501-1000" | "1000+";
 
+  // Contact Information
+  contacts?: Array<{
+    contact_name: string;
+    designation: string;
+    phone: string;
+    email: string;
+    linkedin: string;
+  }>;
+
+  // Additional Information
   priority?: "low" | "medium" | "high" | "urgent";
   expected_close_date?: string;
   probability?: number;
-  sales_rep_id?: number;
-  created_by: number;
   notes?: string;
+  
+  // Metadata
+  created_by: number;
+  assigned_to?: number;
 }
 
 export interface UpdateLeadData {
   lead_source?: "email" | "social-media" | "phone" | "website" | "referral" | "cold-call" | "event" | "other";
+  lead_source_value?: string;
   status?: "in-progress" | "won" | "lost" | "completed";
   
   // Project Information
@@ -170,18 +209,34 @@ export interface UpdateLeadData {
 
   // Client Information
   client_name?: string;
+  client_type?: "individual" | "business" | "enterprise" | "startup" | "government" | "nonprofit";
+  company?: string;
+  company_location?: string;
+  category?: "fintech" | "ecommerce" | "healthcare" | "education" | "retail" | "manufacturing" | "technology" | "finance" | "consulting" | "other";
+  country?: "india" | "usa" | "uae" | "uk" | "singapore" | "canada" | "australia" | "other";
   contact_person?: string;
   email?: string;
   phone?: string;
-  company?: string;
   industry?: string;
-  company_size?: string;
+  company_size?: "1-10" | "11-50" | "51-200" | "201-500" | "501-1000" | "1000+";
 
+  // Contact Information
+  contacts?: Array<{
+    contact_name: string;
+    designation: string;
+    phone: string;
+    email: string;
+    linkedin: string;
+  }>;
+
+  // Additional Information
   priority?: "low" | "medium" | "high" | "urgent";
   expected_close_date?: string;
   probability?: number;
-  sales_rep_id?: number;
   notes?: string;
+  
+  // Metadata
+  assigned_to?: number;
 }
 
 export interface CreateLeadStepData {
@@ -191,16 +246,18 @@ export interface CreateLeadStepData {
   due_date?: string;
   estimated_days: number;
   step_order?: number;
+  assigned_to?: number;
 }
 
 export interface UpdateLeadStepData {
   name?: string;
   description?: string;
-  status?: "pending" | "in_progress" | "completed";
+  status?: "pending" | "in_progress" | "completed" | "cancelled";
   due_date?: string;
   completed_date?: string;
   estimated_days?: number;
   step_order?: number;
+  assigned_to?: number;
 }
 
 export interface CreateLeadChatData {
@@ -225,9 +282,9 @@ export class LeadRepository {
              CONCAT(u.first_name, ' ', u.last_name) as sales_rep_name,
              CONCAT(c.first_name, ' ', c.last_name) as creator_name
       FROM leads l
-      LEFT JOIN users u ON l.sales_rep_id = u.id
+      LEFT JOIN users u ON l.assigned_to = u.id
       LEFT JOIN users c ON l.created_by = c.id
-      ${salesRepId ? 'WHERE l.sales_rep_id = $1' : ''}
+      ${salesRepId ? 'WHERE l.assigned_to = $1' : ''}
       ORDER BY l.created_at DESC
     `;
     
@@ -242,7 +299,7 @@ export class LeadRepository {
              CONCAT(u.first_name, ' ', u.last_name) as sales_rep_name,
              CONCAT(c.first_name, ' ', c.last_name) as creator_name
       FROM leads l
-      LEFT JOIN users u ON l.sales_rep_id = u.id
+      LEFT JOIN users u ON l.assigned_to = u.id
       LEFT JOIN users c ON l.created_by = c.id
       WHERE l.id = $1
     `;
@@ -252,43 +309,68 @@ export class LeadRepository {
   }
 
   static async create(leadData: CreateLeadData): Promise<Lead> {
-    // Generate lead ID
-    const countResult = await pool.query("SELECT COUNT(*) as count FROM leads");
-    const count = parseInt(countResult.rows[0].count) + 1;
-    const leadId = `#${count.toString().padStart(3, '0')}`;
+    // Generate lead ID if not provided
+    let leadId = leadData.lead_id;
+    if (!leadId) {
+      const countResult = await pool.query("SELECT COUNT(*) as count FROM leads");
+      const count = parseInt(countResult.rows[0].count) + 1;
+      leadId = `#${count.toString().padStart(4, '0')}`;
+    }
 
     const query = `
       INSERT INTO leads (
-        lead_id, lead_source, client_name, contact_person, email, phone, company, 
-        industry, company_size, project_title, project_description, project_budget,
-        project_timeline, project_requirements, priority, expected_close_date, 
-        probability, sales_rep_id, created_by, notes
+        lead_id, lead_source, lead_source_value, project_title, project_description, 
+        project_budget, project_timeline, project_requirements, solutions, priority_level,
+        start_date, targeted_end_date, expected_daily_txn_volume, project_value, spoc,
+        commercials, commercial_pricing, client_name, client_type, company, 
+        company_location, category, country, contact_person, email, phone, 
+        industry, company_size, contacts, priority, expected_close_date, 
+        probability, notes, created_by, assigned_to
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20)
+      VALUES (
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, 
+        $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, 
+        $29, $30, $31, $32, $33, $34, $35
+      )
       RETURNING *
     `;
 
     const values = [
-      leadId,
-      leadData.lead_source,
-      leadData.client_name,
-      leadData.contact_person,
-      leadData.email,
-      leadData.phone || null,
-      leadData.company || null,
-      leadData.industry || null,
-      leadData.company_size || null,
-      leadData.project_title || null,
-      leadData.project_description || null,
-      leadData.project_budget || null,
-      leadData.project_timeline || null,
-      leadData.project_requirements || null,
-      leadData.priority || "medium",
-      leadData.expected_close_date || null,
-      leadData.probability || 50,
-      leadData.sales_rep_id || null,
-      leadData.created_by,
-      leadData.notes || null,
+      leadId,                                           // $1
+      leadData.lead_source,                            // $2
+      leadData.lead_source_value || null,             // $3
+      leadData.project_title || null,                 // $4
+      leadData.project_description || null,           // $5
+      leadData.project_budget || null,                // $6
+      leadData.project_timeline || null,              // $7
+      leadData.project_requirements || null,          // $8
+      JSON.stringify(leadData.solutions || []),       // $9
+      leadData.priority_level || "medium",            // $10
+      leadData.start_date || null,                    // $11
+      leadData.targeted_end_date || null,             // $12
+      leadData.expected_daily_txn_volume || null,     // $13
+      leadData.project_value || null,                 // $14
+      leadData.spoc || null,                          // $15
+      JSON.stringify(leadData.commercials || []),     // $16
+      JSON.stringify(leadData.commercial_pricing || []), // $17
+      leadData.client_name,                           // $18
+      leadData.client_type || null,                   // $19
+      leadData.company || null,                       // $20
+      leadData.company_location || null,              // $21
+      leadData.category || null,                      // $22
+      leadData.country || null,                       // $23
+      leadData.contact_person,                        // $24
+      leadData.email,                                 // $25
+      leadData.phone || null,                         // $26
+      leadData.industry || null,                      // $27
+      leadData.company_size || null,                  // $28
+      JSON.stringify(leadData.contacts || []),        // $29
+      leadData.priority || "medium",                  // $30
+      leadData.expected_close_date || null,           // $31
+      leadData.probability || 50,                     // $32
+      leadData.notes || null,                         // $33
+      leadData.created_by,                            // $34
+      leadData.assigned_to || null,                   // $35
     ];
 
     const result = await pool.query(query, values);
@@ -302,8 +384,14 @@ export class LeadRepository {
 
     for (const [key, value] of Object.entries(leadData)) {
       if (value !== undefined) {
-        setClause.push(`${key} = $${paramIndex}`);
-        values.push(value);
+        if (key === 'solutions' || key === 'commercials' || key === 'commercial_pricing' || key === 'contacts') {
+          // Handle JSON fields
+          setClause.push(`${key} = $${paramIndex}`);
+          values.push(JSON.stringify(value));
+        } else {
+          setClause.push(`${key} = $${paramIndex}`);
+          values.push(value);
+        }
         paramIndex++;
       }
     }
@@ -341,7 +429,7 @@ export class LeadRepository {
         COUNT(*) FILTER (WHERE status = 'lost') as lost,
         COUNT(*) FILTER (WHERE status = 'completed') as completed
       FROM leads
-      ${salesRepId ? 'WHERE sales_rep_id = $1' : ''}
+      ${salesRepId ? 'WHERE assigned_to = $1' : ''}
     `;
     
     const values = salesRepId ? [salesRepId] : [];
@@ -353,9 +441,12 @@ export class LeadRepository {
 export class LeadStepRepository {
   static async findByLeadId(leadId: number): Promise<LeadStep[]> {
     const query = `
-      SELECT * FROM lead_steps 
-      WHERE lead_id = $1 
-      ORDER BY step_order ASC, created_at ASC
+      SELECT ls.*, 
+             CONCAT(u.first_name, ' ', u.last_name) as assigned_user_name
+      FROM lead_steps ls
+      LEFT JOIN users u ON ls.assigned_to = u.id
+      WHERE ls.lead_id = $1 
+      ORDER BY ls.step_order ASC, ls.created_at ASC
     `;
     const result = await pool.query(query, [leadId]);
     return result.rows;
@@ -376,8 +467,8 @@ export class LeadStepRepository {
 
     const query = `
       INSERT INTO lead_steps 
-      (lead_id, name, description, due_date, estimated_days, step_order)
-      VALUES ($1, $2, $3, $4, $5, $6)
+      (lead_id, name, description, due_date, estimated_days, step_order, assigned_to)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
       RETURNING *
     `;
 
@@ -388,6 +479,7 @@ export class LeadStepRepository {
       stepData.due_date || null,
       stepData.estimated_days,
       stepOrder,
+      stepData.assigned_to || null,
     ];
 
     const result = await pool.query(query, values);
@@ -401,9 +493,14 @@ export class LeadStepRepository {
 
     for (const [key, value] of Object.entries(stepData)) {
       if (value !== undefined) {
-        setClause.push(`${key} = $${paramIndex}`);
-        values.push(value);
-        paramIndex++;
+        if (key === 'completed_date' && stepData.status === 'completed' && !value) {
+          // Auto-set completed_date when status is set to completed
+          setClause.push(`${key} = CURRENT_TIMESTAMP`);
+        } else {
+          setClause.push(`${key} = $${paramIndex}`);
+          values.push(value);
+          paramIndex++;
+        }
       }
     }
 
@@ -438,7 +535,7 @@ export class LeadStepRepository {
       
       for (const { id, order } of stepOrders) {
         await client.query(
-          "UPDATE lead_steps SET step_order = $1 WHERE id = $2 AND lead_id = $3",
+          "UPDATE lead_steps SET step_order = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 AND lead_id = $3",
           [order, id, leadId]
         );
       }
@@ -462,21 +559,9 @@ export class LeadStepRepository {
 export class LeadChatRepository {
   static async findByStepId(stepId: number): Promise<LeadChat[]> {
     const query = `
-      SELECT lc.*, 
-             json_agg(
-               json_build_object(
-                 'id', lca.id,
-                 'file_name', lca.file_name,
-                 'file_path', lca.file_path,
-                 'file_size', lca.file_size,
-                 'file_type', lca.file_type,
-                 'uploaded_at', lca.uploaded_at
-               )
-             ) FILTER (WHERE lca.id IS NOT NULL) as attachments
+      SELECT lc.*
       FROM lead_chats lc
-      LEFT JOIN lead_chat_attachments lca ON lc.id = lca.chat_id
       WHERE lc.step_id = $1
-      GROUP BY lc.id
       ORDER BY lc.created_at ASC
     `;
     const result = await pool.query(query, [stepId]);
@@ -484,55 +569,25 @@ export class LeadChatRepository {
   }
 
   static async create(chatData: CreateLeadChatData): Promise<LeadChat> {
-    const client = await pool.connect();
-    
-    try {
-      await client.query("BEGIN");
+    const query = `
+      INSERT INTO lead_chats 
+      (step_id, user_id, user_name, message, message_type, is_rich_text, attachments)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      RETURNING *
+    `;
 
-      // Create chat message
-      const chatQuery = `
-        INSERT INTO lead_chats 
-        (step_id, user_id, user_name, message, message_type, is_rich_text)
-        VALUES ($1, $2, $3, $4, $5, $6)
-        RETURNING *
-      `;
+    const values = [
+      chatData.step_id,
+      chatData.user_id || null,
+      chatData.user_name,
+      chatData.message,
+      chatData.message_type || "text",
+      chatData.is_rich_text || false,
+      JSON.stringify(chatData.attachments || []),
+    ];
 
-      const chatValues = [
-        chatData.step_id,
-        chatData.user_id || null,
-        chatData.user_name,
-        chatData.message,
-        chatData.message_type || "text",
-        chatData.is_rich_text || false,
-      ];
-
-      const chatResult = await client.query(chatQuery, chatValues);
-      const chat = chatResult.rows[0];
-
-      // Create attachments if provided
-      if (chatData.attachments && chatData.attachments.length > 0) {
-        const attachmentPromises = chatData.attachments.map(attachment => {
-          return client.query(
-            `INSERT INTO lead_chat_attachments 
-             (chat_id, file_name, file_path, file_size, file_type)
-             VALUES ($1, $2, $3, $4, $5)`,
-            [chat.id, attachment.file_name, attachment.file_path, attachment.file_size, attachment.file_type]
-          );
-        });
-        
-        await Promise.all(attachmentPromises);
-      }
-
-      await client.query("COMMIT");
-      
-      // Return with attachments
-      return this.findById(chat.id);
-    } catch (error) {
-      await client.query("ROLLBACK");
-      throw error;
-    } finally {
-      client.release();
-    }
+    const result = await pool.query(query, values);
+    return result.rows[0];
   }
 
   static async delete(id: number): Promise<boolean> {
@@ -543,21 +598,9 @@ export class LeadChatRepository {
 
   private static async findById(id: number): Promise<LeadChat> {
     const query = `
-      SELECT lc.*, 
-             json_agg(
-               json_build_object(
-                 'id', lca.id,
-                 'file_name', lca.file_name,
-                 'file_path', lca.file_path,
-                 'file_size', lca.file_size,
-                 'file_type', lca.file_type,
-                 'uploaded_at', lca.uploaded_at
-               )
-             ) FILTER (WHERE lca.id IS NOT NULL) as attachments
+      SELECT lc.*
       FROM lead_chats lc
-      LEFT JOIN lead_chat_attachments lca ON lc.id = lca.chat_id
       WHERE lc.id = $1
-      GROUP BY lc.id
     `;
     const result = await pool.query(query, [id]);
     return result.rows[0];
