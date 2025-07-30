@@ -168,14 +168,38 @@ export default function CreateLead() {
   const [errors, setErrors] = useState<string[]>([]);
 
   const updateField = (field: string, value: any) => {
-    setLeadData((prev) => ({
-      ...prev,
+    const newData = {
+      ...leadData,
       [field]: value,
-    }));
+    };
+
+    // If solutions are updated, sync with commercial_pricing
+    if (field === "solutions") {
+      const existingPricing = leadData.commercial_pricing || [];
+      const newPricing = value.map((solution: string) => {
+        // Keep existing pricing if solution was already selected
+        const existing = existingPricing.find(p => p.solution === solution);
+        return existing || {
+          solution,
+          value: 0,
+          unit: "paisa" as const,
+          currency: "INR" as const
+        };
+      });
+      newData.commercial_pricing = newPricing;
+    }
+
+    setLeadData(newData);
     // Clear errors when user starts typing
     if (errors.length > 0) {
       setErrors([]);
     }
+  };
+
+  const updateCommercialPricing = (index: number, field: string, value: any) => {
+    const newPricing = [...(leadData.commercial_pricing || [])];
+    newPricing[index] = { ...newPricing[index], [field]: value };
+    setLeadData(prev => ({ ...prev, commercial_pricing: newPricing }));
   };
 
   const validateForm = () => {
