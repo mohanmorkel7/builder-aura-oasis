@@ -967,6 +967,115 @@ export default function CreateLead() {
           </Card>
         </TabsContent>
 
+        {/* Contact Info Tab */}
+        <TabsContent value="contact" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Contact Information</CardTitle>
+              <CardDescription>
+                Add contact details. You can add multiple contacts for this lead.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {leadData.contacts.map((contact, index) => (
+                <div key={index} className="border rounded-lg p-4 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-medium text-gray-900">Contact #{index + 1}</h4>
+                    {leadData.contacts.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => removeContact(index)}
+                        className="text-red-600 hover:text-red-700"
+                      >
+                        Remove
+                      </Button>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor={`contact_name_${index}`}>Contact Name *</Label>
+                      <div className="relative mt-1">
+                        <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                        <Input
+                          id={`contact_name_${index}`}
+                          value={contact.contact_name}
+                          onChange={(e) => updateContact(index, "contact_name", e.target.value)}
+                          className="pl-10"
+                          placeholder="Full name"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <Label htmlFor={`designation_${index}`}>Designation / Role</Label>
+                      <Input
+                        id={`designation_${index}`}
+                        value={contact.designation}
+                        onChange={(e) => updateContact(index, "designation", e.target.value)}
+                        className="mt-1"
+                        placeholder="e.g., CEO, CTO, Manager"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor={`phone_${index}`}>Phone Number</Label>
+                      <div className="relative mt-1">
+                        <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                        <Input
+                          id={`phone_${index}`}
+                          value={contact.phone}
+                          onChange={(e) => updateContact(index, "phone", e.target.value)}
+                          className="pl-10"
+                          placeholder="+1 (555) 000-0000"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <Label htmlFor={`email_${index}`}>Email Address</Label>
+                      <div className="relative mt-1">
+                        <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                        <Input
+                          id={`email_${index}`}
+                          type="email"
+                          value={contact.email}
+                          onChange={(e) => updateContact(index, "email", e.target.value)}
+                          className="pl-10"
+                          placeholder="contact@company.com"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor={`linkedin_${index}`}>LinkedIn or Other Contact Links</Label>
+                    <Input
+                      id={`linkedin_${index}`}
+                      value={contact.linkedin}
+                      onChange={(e) => updateContact(index, "linkedin", e.target.value)}
+                      className="mt-1"
+                      placeholder="https://linkedin.com/in/username or other social links"
+                    />
+                  </div>
+                </div>
+              ))}
+
+              <Button
+                type="button"
+                variant="outline"
+                onClick={addContact}
+                className="w-full"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Add Another Contact
+              </Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         {/* Additional Information Tab */}
         <TabsContent value="additional" className="space-y-6">
           <Card>
