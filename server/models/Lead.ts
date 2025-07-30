@@ -97,7 +97,19 @@ export interface CreateLeadData {
   project_budget?: number;
   project_timeline?: string;
   project_requirements?: string;
-  
+
+  // Enhanced Project Info
+  solutions?: string[];
+  priority_level?: "high" | "medium" | "low";
+  start_date?: string;
+  targeted_end_date?: string;
+  expected_daily_txn_volume?: number;
+  project_value?: number;
+  spoc?: string;
+
+  // Commercials
+  commercials?: string[];
+
   // Client Information
   client_name: string;
   contact_person: string;
@@ -106,7 +118,7 @@ export interface CreateLeadData {
   company?: string;
   industry?: string;
   company_size?: string;
-  
+
   priority?: "low" | "medium" | "high" | "urgent";
   expected_close_date?: string;
   probability?: number;
