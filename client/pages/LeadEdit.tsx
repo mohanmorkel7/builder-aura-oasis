@@ -699,6 +699,193 @@ export default function LeadEdit() {
                   placeholder="List any specific technologies, integrations, or requirements..."
                 />
               </div>
+
+              {/* Enhanced Project Info */}
+              <div className="border-t pt-6 space-y-6">
+                <h4 className="text-lg font-medium text-gray-900">Enhanced Project Information</h4>
+
+                <div>
+                  <Label htmlFor="solutions">Solutions (Multiselect)</Label>
+                  <MultiSelect
+                    options={solutionsOptions}
+                    value={leadData.solutions}
+                    onChange={(value) => updateField("solutions", value)}
+                    placeholder="Select solutions..."
+                    className="mt-1"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="priority_level">Priority Level</Label>
+                    <Select
+                      value={leadData.priority_level}
+                      onValueChange={(value) => updateField("priority_level", value)}
+                    >
+                      <SelectTrigger className="mt-1">
+                        <SelectValue placeholder="Select priority level" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {priorityLevels.map((priority) => (
+                          <SelectItem key={priority.value} value={priority.value}>
+                            {priority.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="spoc">SPOC (Single Point of Contact)</Label>
+                    <Input
+                      id="spoc"
+                      value={leadData.spoc}
+                      onChange={(e) => updateField("spoc", e.target.value)}
+                      className="mt-1"
+                      placeholder="Main contact person for the project"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="start_date">Start Date (Expected or Confirmed)</Label>
+                    <Input
+                      id="start_date"
+                      type="date"
+                      value={leadData.start_date}
+                      onChange={(e) => updateField("start_date", e.target.value)}
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="targeted_end_date">Targeted End Date</Label>
+                    <Input
+                      id="targeted_end_date"
+                      type="date"
+                      value={leadData.targeted_end_date}
+                      onChange={(e) => updateField("targeted_end_date", e.target.value)}
+                      className="mt-1"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="expected_daily_txn_volume">Expected Daily Txn Volume</Label>
+                    <Input
+                      id="expected_daily_txn_volume"
+                      type="number"
+                      value={leadData.expected_daily_txn_volume}
+                      onChange={(e) => updateField("expected_daily_txn_volume", e.target.value)}
+                      className="mt-1"
+                      placeholder="Number of daily transactions"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="project_value">Project Value (Expected Revenue)</Label>
+                    <div className="relative mt-1">
+                      <DollarSign className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      <Input
+                        id="project_value"
+                        type="number"
+                        value={leadData.project_value}
+                        onChange={(e) => updateField("project_value", e.target.value)}
+                        className="pl-10"
+                        placeholder="Expected deal size"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Commercials Tab */}
+        <TabsContent value="commercials" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Commercials</CardTitle>
+              <CardDescription>
+                Select the commercial products and services relevant to this lead
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div>
+                <p className="text-sm text-gray-600 mb-4">
+                  Pricing for solutions selected in the Project Details tab. Values will auto-populate when you select solutions in the Project tab.
+                </p>
+
+                {(!leadData.solutions || leadData.solutions.length === 0) ? (
+                  <div className="text-center py-8 text-gray-500">
+                    <p>No solutions selected in Project Details tab.</p>
+                    <p className="text-sm">Go to Project Details tab and select solutions to configure pricing.</p>
+                  </div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Solution Name</TableHead>
+                        <TableHead>Value</TableHead>
+                        <TableHead>Unit</TableHead>
+                        <TableHead>Currency</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {(leadData.commercial_pricing || []).map((pricing, index) => (
+                        <TableRow key={pricing.solution}>
+                          <TableCell className="font-medium">
+                            {pricing.solution}
+                          </TableCell>
+                          <TableCell>
+                            <Input
+                              type="number"
+                              value={pricing.value}
+                              onChange={(e) => updateCommercialPricing(index, "value", parseFloat(e.target.value) || 0)}
+                              placeholder="0"
+                              className="w-20"
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <Select
+                              value={pricing.unit}
+                              onValueChange={(value) => updateCommercialPricing(index, "unit", value)}
+                            >
+                              <SelectTrigger className="w-24">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {unitOptions.map((unit) => (
+                                  <SelectItem key={unit.value} value={unit.value}>
+                                    {unit.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </TableCell>
+                          <TableCell>
+                            <Select
+                              value={pricing.currency}
+                              onValueChange={(value) => updateCommercialPricing(index, "currency", value)}
+                            >
+                              <SelectTrigger className="w-20">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {currencyOptions.map((currency) => (
+                                  <SelectItem key={currency.value} value={currency.value}>
+                                    {currency.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
