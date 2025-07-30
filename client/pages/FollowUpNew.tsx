@@ -52,7 +52,13 @@ const followUpTypes = [
 export default function FollowUpNew() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { data: client, isLoading, error } = useClient(parseInt(id || "0"));
+  const location = useLocation();
+
+  // Check if this is a lead follow-up from chat
+  const isLeadFollowUp = location.state?.fromChat;
+  const leadContext = location.state;
+
+  const { data: client, isLoading, error } = useClient(!isLeadFollowUp ? parseInt(id || "0") : 0);
 
   const [followUp, setFollowUp] = useState({
     type: "call",
