@@ -226,7 +226,7 @@ export default function LeadEdit() {
 
       await updateLeadMutation.mutateAsync({ id: leadId, leadData: updateData });
       setHasChanges(false);
-      navigate(`/sales/leads/${id}`);
+      navigate(`/leads/${id}`);
     } catch (error) {
       console.error("Failed to save lead:", error);
     } finally {
