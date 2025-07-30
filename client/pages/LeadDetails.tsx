@@ -428,7 +428,6 @@ export default function LeadDetails() {
                   steps={leadSteps}
                   expandedSteps={expandedSteps}
                   onToggleExpansion={handleToggleExpansion}
-                  onUpdateStatus={handleUpdateStatus}
                   onDeleteStep={handleDeleteStep}
                   onReorderSteps={handleReorderSteps}
                 />
