@@ -43,6 +43,12 @@ const navigationItems: NavigationItem[] = [
     roles: ["admin", "sales"],
   },
   {
+    name: "Leads",
+    href: "/sales/leads",
+    icon: Target,
+    roles: ["admin", "sales"],
+  },
+  {
     name: "Product Team",
     href: "/product",
     icon: Grid3X3,
