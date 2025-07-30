@@ -58,7 +58,8 @@ export default function FollowUpNew() {
   const isLeadFollowUp = location.state?.fromChat;
   const leadContext = location.state;
 
-  const { data: client, isLoading, error } = useClient(!isLeadFollowUp ? parseInt(id || "0") : 0);
+  const clientId = !isLeadFollowUp ? parseInt(id || "0") : null;
+  const { data: client, isLoading, error } = useClient(clientId || 0, { enabled: !!clientId });
 
   const [followUp, setFollowUp] = useState({
     type: "call",
