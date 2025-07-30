@@ -72,7 +72,7 @@ export function DraggableStepsList({
       const newIndex = items.findIndex((item) => item.id === over.id);
 
       const newItems = arrayMove(items, oldIndex, newIndex);
-      
+
       // Update step orders
       const updatedItems = newItems.map((item, index) => ({
         ...item,
@@ -81,6 +81,14 @@ export function DraggableStepsList({
 
       setItems(updatedItems);
       onReorderSteps(updatedItems);
+
+      // Call API to persist the new order
+      const stepOrders = updatedItems.map((item, index) => ({
+        id: item.id,
+        order: index + 1,
+      }));
+
+      reorderMutation.mutate({ leadId, stepOrders });
     }
 
     setActiveId(null);
