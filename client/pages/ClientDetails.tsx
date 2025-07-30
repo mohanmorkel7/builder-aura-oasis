@@ -70,6 +70,7 @@ import {
   Settings,
   Trash2,
 } from "lucide-react";
+import { StepItem } from "@/components/StepItem";
 
 const statusColors = {
   active: "bg-green-100 text-green-700",
