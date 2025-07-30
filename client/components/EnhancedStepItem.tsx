@@ -160,22 +160,23 @@ export function EnhancedStepItem({
     event.target.value = "";
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!newMessage.trim() || !user) return;
 
-    const message: ChatMessage = {
-      id: Date.now(),
-      user_name: `${user.first_name} ${user.last_name}`,
+    const chatData = {
       user_id: parseInt(user.id),
+      user_name: `${user.first_name} ${user.last_name}`,
       message: newMessage,
+      message_type: "text" as const,
       is_rich_text: isRichTextMode,
-      message_type: "text",
-      created_at: new Date().toISOString(),
-      attachments: [],
     };
 
-    setChatMessages(prev => [...prev, message]);
-    setNewMessage("");
+    try {
+      await createChatMutation.mutateAsync({ stepId: step.id, chatData });
+      setNewMessage("");
+    } catch (error) {
+      console.error("Failed to send message:", error);
+    }
   };
 
   const handleFollowUp = (messageId: number) => {
