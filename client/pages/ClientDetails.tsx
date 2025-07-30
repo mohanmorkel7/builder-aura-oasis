@@ -11,6 +11,9 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -18,6 +21,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import {
   ArrowLeft,
   Edit,
@@ -32,6 +49,15 @@ import {
   CheckCircle,
   Clock,
   AlertTriangle,
+  Upload,
+  MessageCircle,
+  Plus,
+  ChevronDown,
+  ChevronRight,
+  Download,
+  Send,
+  Settings,
+  Trash2,
 } from "lucide-react";
 
 const statusColors = {
@@ -80,22 +106,128 @@ const mockFollowUps = [
   },
 ];
 
-// Mock onboarding progress
+// Enhanced onboarding progress with documents and comments
 const mockOnboardingProgress = [
   {
+    id: 1,
     name: "Initial Contact",
+    description: "Make first contact with client and gather basic requirements",
     status: "completed",
     completed_date: "2024-06-15",
+    due_date: "2024-06-15",
+    estimated_days: 1,
+    documents: [
+      {
+        id: 1,
+        name: "Initial_Requirements.pdf",
+        uploaded_at: "2024-06-15",
+        uploaded_by: "Jane Smith",
+        size: "2.3 MB",
+        type: "application/pdf"
+      }
+    ],
+    comments: [
+      {
+        id: 1,
+        user: "Jane Smith",
+        timestamp: "2024-06-15 14:30",
+        message: "Client is very responsive. Initial requirements documented.",
+        type: "note"
+      }
+    ]
   },
-  { name: "Proposal Sent", status: "completed", completed_date: "2024-06-20" },
   {
+    id: 2,
+    name: "Proposal Sent",
+    description: "Prepare and send detailed proposal to client",
+    status: "completed",
+    completed_date: "2024-06-20",
+    due_date: "2024-06-20",
+    estimated_days: 3,
+    documents: [
+      {
+        id: 2,
+        name: "Project_Proposal_v2.docx",
+        uploaded_at: "2024-06-20",
+        uploaded_by: "John Doe",
+        size: "1.8 MB",
+        type: "application/msword"
+      }
+    ],
+    comments: [
+      {
+        id: 2,
+        user: "John Doe",
+        timestamp: "2024-06-20 10:15",
+        message: "Proposal sent with detailed timeline and pricing structure.",
+        type: "update"
+      }
+    ]
+  },
+  {
+    id: 3,
     name: "Document Collection",
+    description: "Collect all necessary documents from client",
     status: "in_progress",
     due_date: "2024-07-15",
+    estimated_days: 5,
+    documents: [
+      {
+        id: 3,
+        name: "Tax_Documents.pdf",
+        uploaded_at: "2024-07-01",
+        uploaded_by: "Client Portal",
+        size: "5.2 MB",
+        type: "application/pdf"
+      }
+    ],
+    comments: [
+      {
+        id: 3,
+        user: "Jane Smith",
+        timestamp: "2024-07-01 09:00",
+        message: "Still waiting for incorporation documents. Following up today.",
+        type: "note"
+      },
+      {
+        id: 4,
+        user: "System",
+        timestamp: "2024-07-01 15:22",
+        message: "Document uploaded via client portal",
+        type: "system"
+      }
+    ]
   },
-  { name: "Contract Signing", status: "pending", due_date: "2024-07-25" },
-  { name: "Onboarding Call", status: "pending", due_date: "2024-08-01" },
-  { name: "Deployment", status: "pending", due_date: "2024-08-10" },
+  {
+    id: 4,
+    name: "Contract Signing",
+    description: "Review and sign final contract",
+    status: "pending",
+    due_date: "2024-07-25",
+    estimated_days: 2,
+    documents: [],
+    comments: []
+  },
+  {
+    id: 5,
+    name: "Onboarding Call",
+    description: "Schedule and conduct onboarding call",
+    status: "pending",
+    due_date: "2024-08-01",
+    estimated_days: 1,
+    documents: [],
+    comments: []
+  },
+  {
+    id: 6,
+    name: "Deployment",
+    description: "Deploy and configure client systems",
+    status: "pending",
+    due_date: "2024-08-10",
+    estimated_days: 7,
+    documents: [],
+    comments: []
+  },
 ];
 
 export default function ClientDetails() {
@@ -104,9 +236,16 @@ export default function ClientDetails() {
   const { data: client, isLoading, error } = useClient(parseInt(id || "0"));
 
   // State for onboarding progress
-  const [onboardingSteps, setOnboardingSteps] = useState(
-    mockOnboardingProgress,
-  );
+  const [onboardingSteps, setOnboardingSteps] = useState(mockOnboardingProgress);
+  const [expandedSteps, setExpandedSteps] = useState<number[]>([]);
+  const [newStepDialog, setNewStepDialog] = useState(false);
+  const [newStep, setNewStep] = useState({
+    name: "",
+    description: "",
+    estimated_days: 1,
+    due_date: ""
+  });
+  const [newComment, setNewComment] = useState<{[key: number]: string}>({});
 
   const handleBack = () => {
     navigate("/sales");
@@ -141,6 +280,82 @@ export default function ClientDetails() {
     console.log(`Updated step ${stepIndex} to status: ${newStatus}`);
   };
 
+  const toggleStepExpansion = (stepId: number) => {
+    setExpandedSteps(prev => 
+      prev.includes(stepId) 
+        ? prev.filter(id => id !== stepId)
+        : [...prev, stepId]
+    );
+  };
+
+  const handleAddStep = () => {
+    if (newStep.name.trim() && newStep.description.trim()) {
+      const step = {
+        id: Date.now(),
+        ...newStep,
+        status: "pending" as const,
+        documents: [],
+        comments: []
+      };
+      setOnboardingSteps(prev => [...prev, step]);
+      setNewStep({ name: "", description: "", estimated_days: 1, due_date: "" });
+      setNewStepDialog(false);
+    }
+  };
+
+  const handleDeleteStep = (stepId: number) => {
+    setOnboardingSteps(prev => prev.filter(step => step.id !== stepId));
+  };
+
+  const handleAddComment = (stepId: number) => {
+    const comment = newComment[stepId]?.trim();
+    if (!comment) return;
+
+    const newCommentObj = {
+      id: Date.now(),
+      user: "Current User", // Would come from auth context
+      timestamp: new Date().toLocaleString(),
+      message: comment,
+      type: "note" as const
+    };
+
+    setOnboardingSteps(prev => 
+      prev.map(step => 
+        step.id === stepId 
+          ? { ...step, comments: [...step.comments, newCommentObj] }
+          : step
+      )
+    );
+
+    setNewComment(prev => ({ ...prev, [stepId]: "" }));
+  };
+
+  const handleFileUpload = (stepId: number, event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    const file = files[0];
+    const newDocument = {
+      id: Date.now(),
+      name: file.name,
+      uploaded_at: new Date().toISOString().split("T")[0],
+      uploaded_by: "Current User", // Would come from auth context
+      size: `${(file.size / 1024 / 1024).toFixed(1)} MB`,
+      type: file.type
+    };
+
+    setOnboardingSteps(prev => 
+      prev.map(step => 
+        step.id === stepId 
+          ? { ...step, documents: [...step.documents, newDocument] }
+          : step
+      )
+    );
+
+    // Reset input
+    event.target.value = "";
+  };
+
   if (isLoading) {
     return (
       <div className="p-6">
@@ -162,7 +377,7 @@ export default function ClientDetails() {
   const clientData = client as any;
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
+    <div className="p-6 max-w-7xl mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-4">
@@ -175,7 +390,7 @@ export default function ClientDetails() {
               {clientData.client_name}
             </h1>
             <p className="text-gray-600 mt-1">
-              Client Details & Onboarding Progress
+              Client Details & Custom Onboarding Workflow
             </p>
           </div>
         </div>
@@ -191,9 +406,9 @@ export default function ClientDetails() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Left Column - Client Information */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-3 space-y-6">
           {/* Client Overview */}
           <Card>
             <CardHeader>
@@ -342,73 +557,277 @@ export default function ClientDetails() {
             </CardContent>
           </Card>
 
-          {/* Onboarding Progress */}
+          {/* Custom Onboarding Workflow */}
           <Card>
             <CardHeader>
-              <CardTitle>Onboarding Progress</CardTitle>
-              <CardDescription>
-                Track the client onboarding workflow
-              </CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Custom Onboarding Workflow</CardTitle>
+                  <CardDescription>
+                    Manage client-specific onboarding steps, documents, and communication
+                  </CardDescription>
+                </div>
+                <Dialog open={newStepDialog} onOpenChange={setNewStepDialog}>
+                  <DialogTrigger asChild>
+                    <Button size="sm">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Step
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Add New Onboarding Step</DialogTitle>
+                      <DialogDescription>
+                        Create a custom step for this client's onboarding process
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="stepName">Step Name</Label>
+                        <Input
+                          id="stepName"
+                          value={newStep.name}
+                          onChange={(e) => setNewStep(prev => ({ ...prev, name: e.target.value }))}
+                          placeholder="e.g., Technical Setup"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="stepDescription">Description</Label>
+                        <Textarea
+                          id="stepDescription"
+                          value={newStep.description}
+                          onChange={(e) => setNewStep(prev => ({ ...prev, description: e.target.value }))}
+                          placeholder="Describe what needs to be done in this step"
+                          rows={3}
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="estimatedDays">Estimated Days</Label>
+                          <Input
+                            id="estimatedDays"
+                            type="number"
+                            min="1"
+                            value={newStep.estimated_days}
+                            onChange={(e) => setNewStep(prev => ({ ...prev, estimated_days: parseInt(e.target.value) || 1 }))}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="dueDate">Due Date</Label>
+                          <Input
+                            id="dueDate"
+                            type="date"
+                            value={newStep.due_date}
+                            onChange={(e) => setNewStep(prev => ({ ...prev, due_date: e.target.value }))}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button variant="outline" onClick={() => setNewStepDialog(false)}>
+                        Cancel
+                      </Button>
+                      <Button onClick={handleAddStep}>Add Step</Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </div>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {onboardingSteps.map((step, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg"
-                  >
-                    <div className="flex-shrink-0">
-                      {step.status === "completed" ? (
-                        <CheckCircle className="w-6 h-6 text-green-600" />
-                      ) : step.status === "in_progress" ? (
-                        <Clock className="w-6 h-6 text-blue-600" />
-                      ) : (
-                        <div className="w-6 h-6 border-2 border-gray-300 rounded-full" />
-                      )}
-                    </div>
-                    <div className="flex-1">
-                      <div className="font-medium text-gray-900">
-                        {step.name}
+                  <div key={step.id} className="border rounded-lg">
+                    <Collapsible
+                      open={expandedSteps.includes(step.id)}
+                      onOpenChange={() => toggleStepExpansion(step.id)}
+                    >
+                      <div className="flex items-center space-x-4 p-4">
+                        <div className="flex-shrink-0">
+                          {step.status === "completed" ? (
+                            <CheckCircle className="w-6 h-6 text-green-600" />
+                          ) : step.status === "in_progress" ? (
+                            <Clock className="w-6 h-6 text-blue-600" />
+                          ) : (
+                            <div className="w-6 h-6 border-2 border-gray-300 rounded-full" />
+                          )}
+                        </div>
+                        <CollapsibleTrigger className="flex-1 flex items-center justify-between text-left">
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-2">
+                              <span className="font-medium text-gray-900">
+                                {step.name}
+                              </span>
+                              <div className="flex items-center space-x-2">
+                                {step.documents.length > 0 && (
+                                  <Badge variant="outline" className="text-xs">
+                                    {step.documents.length} doc{step.documents.length !== 1 ? 's' : ''}
+                                  </Badge>
+                                )}
+                                {step.comments.length > 0 && (
+                                  <Badge variant="outline" className="text-xs">
+                                    {step.comments.length} comment{step.comments.length !== 1 ? 's' : ''}
+                                  </Badge>
+                                )}
+                              </div>
+                            </div>
+                            <div className="text-sm text-gray-600 mt-1">
+                              {step.description}
+                            </div>
+                            <div className="text-sm text-gray-600">
+                              {step.status === "completed" &&
+                                step.completed_date &&
+                                `Completed on ${new Date(step.completed_date).toLocaleDateString()}`}
+                              {step.status !== "completed" &&
+                                step.due_date &&
+                                `Due: ${new Date(step.due_date).toLocaleDateString()}`}
+                            </div>
+                          </div>
+                          {expandedSteps.includes(step.id) ? (
+                            <ChevronDown className="w-4 h-4" />
+                          ) : (
+                            <ChevronRight className="w-4 h-4" />
+                          )}
+                        </CollapsibleTrigger>
+                        <div className="flex items-center space-x-2">
+                          <Select
+                            value={step.status}
+                            onValueChange={(value) => updateStepStatus(index, value)}
+                          >
+                            <SelectTrigger className="w-32">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="pending">Pending</SelectItem>
+                              <SelectItem value="in_progress">In Progress</SelectItem>
+                              <SelectItem value="completed">Completed</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDeleteStep(step.id)}
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
                       </div>
-                      <div className="text-sm text-gray-600">
-                        {step.status === "completed" &&
-                          step.completed_date &&
-                          `Completed on ${new Date(step.completed_date).toLocaleDateString()}`}
-                        {step.status !== "completed" &&
-                          step.due_date &&
-                          `Due: ${new Date(step.due_date).toLocaleDateString()}`}
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Select
-                        value={step.status}
-                        onValueChange={(value) =>
-                          updateStepStatus(index, value)
-                        }
-                      >
-                        <SelectTrigger className="w-32">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="pending">Pending</SelectItem>
-                          <SelectItem value="in_progress">
-                            In Progress
-                          </SelectItem>
-                          <SelectItem value="completed">Completed</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <Badge
-                        className={
-                          step.status === "completed"
-                            ? "bg-green-100 text-green-700"
-                            : step.status === "in_progress"
-                              ? "bg-blue-100 text-blue-700"
-                              : "bg-gray-100 text-gray-700"
-                        }
-                      >
-                        {step.status.replace("_", " ")}
-                      </Badge>
-                    </div>
+
+                      <CollapsibleContent>
+                        <div className="px-4 pb-4 border-t bg-gray-50">
+                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-4">
+                            {/* Documents Section */}
+                            <div>
+                              <div className="flex items-center justify-between mb-3">
+                                <h4 className="font-medium text-gray-900">Documents</h4>
+                                <div>
+                                  <input
+                                    type="file"
+                                    id={`file-upload-${step.id}`}
+                                    className="hidden"
+                                    onChange={(e) => handleFileUpload(step.id, e)}
+                                    multiple
+                                  />
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => document.getElementById(`file-upload-${step.id}`)?.click()}
+                                  >
+                                    <Upload className="w-4 h-4 mr-2" />
+                                    Upload
+                                  </Button>
+                                </div>
+                              </div>
+                              <div className="space-y-2">
+                                {step.documents.length === 0 ? (
+                                  <p className="text-sm text-gray-500 text-center py-4">
+                                    No documents uploaded yet
+                                  </p>
+                                ) : (
+                                  step.documents.map((doc) => (
+                                    <div
+                                      key={doc.id}
+                                      className="flex items-center justify-between p-2 bg-white rounded border"
+                                    >
+                                      <div className="flex items-center space-x-2">
+                                        <FileText className="w-4 h-4 text-gray-400" />
+                                        <div>
+                                          <div className="text-sm font-medium text-gray-900">
+                                            {doc.name}
+                                          </div>
+                                          <div className="text-xs text-gray-500">
+                                            {doc.size} • {doc.uploaded_by} • {doc.uploaded_at}
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <Button size="sm" variant="ghost">
+                                        <Download className="w-4 h-4" />
+                                      </Button>
+                                    </div>
+                                  ))
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Comments Section */}
+                            <div>
+                              <div className="flex items-center justify-between mb-3">
+                                <h4 className="font-medium text-gray-900">Comments</h4>
+                                <MessageCircle className="w-4 h-4 text-gray-400" />
+                              </div>
+                              <div className="space-y-3">
+                                {step.comments.map((comment) => (
+                                  <div
+                                    key={comment.id}
+                                    className="p-3 bg-white rounded border"
+                                  >
+                                    <div className="flex items-center justify-between mb-1">
+                                      <span className="text-sm font-medium text-gray-900">
+                                        {comment.user}
+                                      </span>
+                                      <span className="text-xs text-gray-500">
+                                        {comment.timestamp}
+                                      </span>
+                                    </div>
+                                    <p className="text-sm text-gray-700">{comment.message}</p>
+                                    {comment.type === "system" && (
+                                      <Badge variant="outline" className="text-xs mt-1">
+                                        System
+                                      </Badge>
+                                    )}
+                                  </div>
+                                ))}
+                                {step.comments.length === 0 && (
+                                  <p className="text-sm text-gray-500 text-center py-4">
+                                    No comments yet
+                                  </p>
+                                )}
+                                <div className="flex space-x-2">
+                                  <Input
+                                    placeholder="Add a comment..."
+                                    value={newComment[step.id] || ""}
+                                    onChange={(e) => setNewComment(prev => ({ ...prev, [step.id]: e.target.value }))}
+                                    onKeyDown={(e) => {
+                                      if (e.key === "Enter" && !e.shiftKey) {
+                                        e.preventDefault();
+                                        handleAddComment(step.id);
+                                      }
+                                    }}
+                                  />
+                                  <Button
+                                    size="sm"
+                                    onClick={() => handleAddComment(step.id)}
+                                    disabled={!newComment[step.id]?.trim()}
+                                  >
+                                    <Send className="w-4 h-4" />
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </CollapsibleContent>
+                    </Collapsible>
                   </div>
                 ))}
               </div>
@@ -489,6 +908,11 @@ export default function ClientDetails() {
               <Button className="w-full justify-start" variant="outline">
                 <Building className="w-4 h-4 mr-2" />
                 View Company Profile
+              </Button>
+              <Separator />
+              <Button className="w-full justify-start" variant="outline">
+                <Settings className="w-4 h-4 mr-2" />
+                Workflow Settings
               </Button>
             </CardContent>
           </Card>
