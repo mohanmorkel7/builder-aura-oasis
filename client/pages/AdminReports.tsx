@@ -170,8 +170,16 @@ export default function AdminReports() {
   useEffect(() => {
     const originalWarn = console.warn;
     console.warn = (...args) => {
-      if (args[0]?.includes?.("Support for defaultProps will be removed")) {
-        return; // Suppress this specific warning
+      const message = args[0];
+      // Suppress defaultProps warnings from recharts components
+      if (
+        typeof message === 'string' &&
+        (message.includes('Support for defaultProps will be removed') ||
+         message.includes('defaultProps will be removed') ||
+         (message.includes('XAxis') && message.includes('defaultProps')) ||
+         (message.includes('YAxis') && message.includes('defaultProps')))
+      ) {
+        return; // Suppress recharts defaultProps warnings
       }
       originalWarn.apply(console, args);
     };
