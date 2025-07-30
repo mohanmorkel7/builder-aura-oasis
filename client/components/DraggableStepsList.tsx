@@ -116,7 +116,7 @@ export function DraggableStepsList({
               step={step}
               isExpanded={expandedSteps.has(step.id)}
               onToggleExpansion={() => onToggleExpansion(step.id)}
-              onUpdateStatus={onUpdateStatus}
+              onUpdateStatus={handleUpdateStatus}
               onDeleteStep={onDeleteStep}
             />
           ))}
