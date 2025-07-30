@@ -520,16 +520,24 @@ export default function ClientDetails() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {onboardingSteps.map((step) => (
-                  <StepItem
-                    key={step.id || `temp-${Math.random()}`}
-                    step={step}
-                    isExpanded={expandedSteps.includes(step.id)}
-                    onToggleExpansion={() => toggleStepExpansion(step.id)}
-                    onUpdateStatus={updateStepStatus}
-                    onDeleteStep={handleDeleteStep}
-                  />
-                ))}
+                {Array.isArray(onboardingSteps) && onboardingSteps.length > 0 ? (
+                  onboardingSteps.map((step) => (
+                    step ? (
+                      <StepItem
+                        key={step.id || `temp-${Math.random()}`}
+                        step={step}
+                        isExpanded={expandedSteps.includes(step.id)}
+                        onToggleExpansion={() => toggleStepExpansion(step.id)}
+                        onUpdateStatus={updateStepStatus}
+                        onDeleteStep={handleDeleteStep}
+                      />
+                    ) : null
+                  ))
+                ) : (
+                  <div className="text-center py-8 text-gray-500">
+                    <p>No onboarding steps found. Add a step to get started.</p>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
