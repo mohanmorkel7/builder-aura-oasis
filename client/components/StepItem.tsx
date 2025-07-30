@@ -50,10 +50,18 @@ export function StepItem({
   onDeleteStep,
 }: StepItemProps) {
   const { user } = useAuth();
-  const { data: documents = [] } = useStepDocuments(step.id);
-  const { data: comments = [] } = useStepComments(step.id);
+
+  // Safety check: only fetch data if step.id exists
+  const stepId = step?.id;
+  const { data: documents = [], isLoading: documentsLoading } = useStepDocuments(stepId || 0);
+  const { data: comments = [], isLoading: commentsLoading } = useStepComments(stepId || 0);
   const uploadDocumentMutation = useUploadStepDocument();
   const createCommentMutation = useCreateStepComment();
+
+  // Don't render if step is invalid
+  if (!step || !stepId) {
+    return null;
+  }
 
   const [newComment, setNewComment] = useState("");
 
