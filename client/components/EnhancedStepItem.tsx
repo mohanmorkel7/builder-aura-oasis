@@ -186,7 +186,7 @@ export function EnhancedStepItem({
     } catch (error) {
       console.error("Failed to create follow-up notification:", error);
       // Still navigate even if notification fails
-      navigate(`/sales/follow-up`, {
+      navigate(`/follow-up`, {
         state: {
           messageId,
           stepId: step.id,
