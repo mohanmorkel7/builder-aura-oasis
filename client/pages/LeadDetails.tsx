@@ -427,6 +427,7 @@ export default function LeadDetails() {
                 </div>
               ) : (
                 <DraggableStepsList
+                  leadId={leadId}
                   steps={leadSteps}
                   expandedSteps={expandedSteps}
                   onToggleExpansion={handleToggleExpansion}
