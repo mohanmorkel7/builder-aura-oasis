@@ -135,10 +135,7 @@ export default function LeadDetails() {
     });
   };
 
-  const handleUpdateStatus = (stepId: number, status: string) => {
-    // TODO: Implement status update
-    console.log("Updating step status:", stepId, status);
-  };
+
 
   const handleDeleteStep = (stepId: number) => {
     // TODO: Implement step deletion
