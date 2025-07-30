@@ -117,34 +117,144 @@ router.get("/:id", async (req: Request, res: Response) => {
   }
 });
 
-// Create new lead
+// Create new lead with comprehensive validation
 router.post("/", async (req: Request, res: Response) => {
   try {
     const leadData: CreateLeadData = req.body;
 
     // Validate required fields
-    if (!leadData.client_name || !leadData.contact_person || !leadData.email || !leadData.lead_source) {
+    const validation = DatabaseValidator.validateRequiredFields(
+      leadData,
+      ValidationSchemas.lead.required
+    );
+
+    if (!validation.isValid) {
       return res.status(400).json({
-        error: "Missing required fields: client_name, contact_person, email, lead_source",
+        error: "Missing required fields",
+        missingFields: validation.missingFields
       });
     }
 
-    // Validate lead source
-    const validSources = ["email", "social-media", "phone", "website", "referral", "cold-call", "event", "other"];
-    if (!validSources.includes(leadData.lead_source)) {
-      return res.status(400).json({ error: "Invalid lead source" });
+    // Validate email format
+    if (!DatabaseValidator.isValidEmail(leadData.email)) {
+      return res.status(400).json({ error: "Invalid email format" });
+    }
+
+    // Validate phone format if provided
+    if (leadData.phone && !DatabaseValidator.isValidPhone(leadData.phone)) {
+      return res.status(400).json({ error: "Invalid phone number format" });
+    }
+
+    // Validate enum values
+    if (!ValidationSchemas.lead.enums.lead_source.includes(leadData.lead_source)) {
+      return res.status(400).json({
+        error: "Invalid lead source",
+        validOptions: ValidationSchemas.lead.enums.lead_source
+      });
+    }
+
+    if (leadData.status && !ValidationSchemas.lead.enums.status.includes(leadData.status)) {
+      return res.status(400).json({
+        error: "Invalid status",
+        validOptions: ValidationSchemas.lead.enums.status
+      });
+    }
+
+    if (leadData.priority && !ValidationSchemas.lead.enums.priority.includes(leadData.priority)) {
+      return res.status(400).json({
+        error: "Invalid priority",
+        validOptions: ValidationSchemas.lead.enums.priority
+      });
+    }
+
+    // Validate numeric fields
+    if (leadData.probability !== undefined) {
+      if (!DatabaseValidator.isValidNumber(leadData.probability, 0, 100)) {
+        return res.status(400).json({ error: "Probability must be between 0 and 100" });
+      }
+    }
+
+    if (leadData.project_budget !== undefined) {
+      if (!DatabaseValidator.isValidNumber(leadData.project_budget, 0)) {
+        return res.status(400).json({ error: "Project budget must be a positive number" });
+      }
+    }
+
+    if (leadData.project_value !== undefined) {
+      if (!DatabaseValidator.isValidNumber(leadData.project_value, 0)) {
+        return res.status(400).json({ error: "Project value must be a positive number" });
+      }
+    }
+
+    if (leadData.expected_daily_txn_volume !== undefined) {
+      if (!DatabaseValidator.isValidNumber(leadData.expected_daily_txn_volume, 0)) {
+        return res.status(400).json({ error: "Expected daily transaction volume must be a positive number" });
+      }
+    }
+
+    // Validate dates
+    if (leadData.expected_close_date) {
+      if (!DatabaseValidator.isValidFutureDate(leadData.expected_close_date)) {
+        return res.status(400).json({ error: "Expected close date must be in the future" });
+      }
+    }
+
+    if (leadData.targeted_end_date) {
+      if (!DatabaseValidator.isValidFutureDate(leadData.targeted_end_date)) {
+        return res.status(400).json({ error: "Targeted end date must be in the future" });
+      }
+    }
+
+    // Validate assigned user exists (if provided and database available)
+    if (leadData.created_by && await isDatabaseAvailable()) {
+      const userExists = await DatabaseValidator.userExists(leadData.created_by);
+      if (!userExists) {
+        return res.status(400).json({ error: "Creating user not found" });
+      }
+    }
+
+    if (leadData.assigned_to && await isDatabaseAvailable()) {
+      const userExists = await DatabaseValidator.userExists(leadData.assigned_to);
+      if (!userExists) {
+        return res.status(400).json({ error: "Assigned user not found" });
+      }
+    }
+
+    // Validate contact information if provided
+    if (leadData.contacts && Array.isArray(leadData.contacts)) {
+      for (let i = 0; i < leadData.contacts.length; i++) {
+        const contact = leadData.contacts[i];
+        if (contact.email && !DatabaseValidator.isValidEmail(contact.email)) {
+          return res.status(400).json({
+            error: `Invalid email format for contact ${i + 1}`
+          });
+        }
+      }
     }
 
     try {
       if (await isDatabaseAvailable()) {
+        // Generate unique lead ID if not provided
+        if (!leadData.lead_id) {
+          leadData.lead_id = await DatabaseValidator.generateUniqueLeadId();
+        } else {
+          // Check if custom lead ID is already taken
+          const isTaken = await DatabaseValidator.isLeadIdTaken(leadData.lead_id);
+          if (isTaken) {
+            return res.status(409).json({ error: "Lead ID already exists" });
+          }
+        }
+
         const lead = await LeadRepository.create(leadData);
         res.status(201).json(lead);
       } else {
         const mockLead = {
           id: Date.now(),
-          lead_id: `#${Math.floor(Math.random() * 999) + 1}`.padStart(4, '0'),
+          lead_id: leadData.lead_id || await DatabaseValidator.generateUniqueLeadId(),
           ...leadData,
-          status: "in-progress" as const,
+          status: leadData.status || "in-progress" as const,
+          priority: leadData.priority || "medium" as const,
+          probability: leadData.probability || 50,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         };
@@ -155,9 +265,11 @@ router.post("/", async (req: Request, res: Response) => {
       console.log("Database error, returning mock lead response:", dbError.message);
       const mockLead = {
         id: Date.now(),
-        lead_id: `#${Math.floor(Math.random() * 999) + 1}`.padStart(4, '0'),
+        lead_id: leadData.lead_id || await DatabaseValidator.generateUniqueLeadId(),
         ...leadData,
-        status: "in-progress" as const,
+        status: leadData.status || "in-progress" as const,
+        priority: leadData.priority || "medium" as const,
+        probability: leadData.probability || 50,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       };
