@@ -17,8 +17,8 @@ export async function initializeDatabase() {
   try {
     const client = await pool.connect();
 
-    // Read and execute schema
-    const schemaPath = path.join(__dirname, "schema.sql");
+    // Read and execute complete schema
+    const schemaPath = path.join(__dirname, "complete-schema.sql");
     const schema = fs.readFileSync(schemaPath, "utf8");
 
     await client.query(schema);
