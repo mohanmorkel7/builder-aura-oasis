@@ -235,7 +235,7 @@ export default function LeadEdit() {
   };
 
   const handleCancel = () => {
-    navigate(`/sales/leads/${id}`);
+    navigate(`/leads/${id}`);
   };
 
   if (isLoading) {
