@@ -259,7 +259,7 @@ export default function CreateLead() {
   };
 
   const handleCancel = () => {
-    navigate("/sales/leads");
+    navigate("/leads");
   };
 
   const isFormValid = leadData.client_name.trim() && leadData.contact_person.trim() && 
