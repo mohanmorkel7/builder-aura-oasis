@@ -103,27 +103,7 @@ export function EnhancedStepItem({
   const { data: chatMessages = [], isLoading: chatLoading } = useStepChats(step.id);
   const createChatMutation = useCreateStepChat();
 
-  // Mock documents for now - this would be replaced with real document API
-  const [documents, setDocuments] = useState<DocumentFile[]>([
-    {
-      id: 1,
-      name: "proposal-draft-v2.pdf",
-      file_path: "/uploads/proposal-draft-v2.pdf",
-      file_size: 1048576,
-      file_type: "application/pdf",
-      uploaded_by: "Sarah Johnson",
-      uploaded_at: "2024-01-15T09:00:00Z",
-    },
-    {
-      id: 2,
-      name: "technical-requirements.docx",
-      file_path: "/uploads/technical-requirements.docx",
-      file_size: 524288,
-      file_type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      uploaded_by: "Mike Chen",
-      uploaded_at: "2024-01-15T11:15:00Z",
-    },
-  ]);
+
 
   const [newMessage, setNewMessage] = useState("");
 
