@@ -162,6 +162,21 @@ export default function LeadEdit() {
     industry: "",
     company_size: "",
     
+    // Contact Information
+    contacts: [{
+      contact_name: "",
+      designation: "",
+      phone: "",
+      email: "",
+      linkedin: "",
+    }] as Array<{
+      contact_name: string;
+      designation: string;
+      phone: string;
+      email: string;
+      linkedin: string;
+    }>,
+
     // Additional Information
     priority: "",
     expected_close_date: "",
