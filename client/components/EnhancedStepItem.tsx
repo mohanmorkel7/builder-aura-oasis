@@ -390,7 +390,11 @@ export function EnhancedStepItem({
                     {chatMessages.map((message) => (
                       <div
                         key={message.id}
-                        className="flex space-x-3 p-3 bg-white rounded border"
+                        className={`flex space-x-3 p-3 rounded border ${
+                          message.message_type === 'system'
+                            ? 'bg-blue-50 border-blue-200'
+                            : 'bg-white'
+                        }`}
                       >
                         <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
                           {message.user_name.charAt(0)}
