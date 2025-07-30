@@ -192,14 +192,7 @@ export function EnhancedStepItem({
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  const quillModules = {
-    toolbar: [
-      ['bold', 'italic', 'underline'],
-      ['link'],
-      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-      ['clean']
-    ],
-  };
+
 
   return (
     <div
