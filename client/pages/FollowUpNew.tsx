@@ -111,7 +111,7 @@ export default function FollowUpNew() {
 
   const handleCancel = () => {
     if (isLeadFollowUp) {
-      navigate(`/sales/leads`);
+      navigate(`/leads`);
     } else {
       navigate(`/sales/client/${id}`);
     }
