@@ -26,7 +26,6 @@ interface DraggableStepsListProps {
   steps: any[];
   expandedSteps: Set<number>;
   onToggleExpansion: (stepId: number) => void;
-  onUpdateStatus: (stepId: number, status: string) => void;
   onDeleteStep: (stepId: number) => void;
   onReorderSteps: (steps: any[]) => void;
 }
