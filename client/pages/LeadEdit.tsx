@@ -169,8 +169,6 @@ export default function LeadEdit() {
     // Project Information
     project_title: "",
     project_description: "",
-    project_budget: "",
-    project_timeline: "",
     project_requirements: "",
 
     // Enhanced Project Info
