@@ -94,6 +94,7 @@ export default function LeadDashboard() {
   const {
     data: stats = { total: 0, in_progress: 0, won: 0, lost: 0, completed: 0 },
   } = useLeadStats();
+  const deleteLead = useDeleteLead();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
