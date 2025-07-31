@@ -407,17 +407,15 @@ export function EnhancedStepItem({
                                           size="sm"
                                           variant="outline"
                                           className="h-8 px-3 text-xs"
-                                          onClick={() => {
-                                            // Create a proper download link that requests the actual file
-                                            // Instead of linking directly which causes index.html to download
-                                            fetch(`/api/files/download/${attachment.file_name}`)
-                                              .then(response => {
-                                                if (response.ok) {
-                                                  return response.blob();
-                                                }
-                                                throw new Error('File not found');
-                                              })
-                                              .then(blob => {
+                                          onClick={async () => {
+                                            try {
+                                              console.log(`Attempting to download: ${attachment.file_name}`);
+
+                                              // First try the API endpoint
+                                              const response = await fetch(`/api/files/download/${attachment.file_name}`);
+
+                                              if (response.ok) {
+                                                const blob = await response.blob();
                                                 const url = window.URL.createObjectURL(blob);
                                                 const link = document.createElement('a');
                                                 link.href = url;
@@ -426,16 +424,43 @@ export function EnhancedStepItem({
                                                 link.click();
                                                 document.body.removeChild(link);
                                                 window.URL.revokeObjectURL(url);
-                                              })
-                                              .catch(error => {
-                                                console.error('Download failed:', error);
-                                                // Fallback to direct link
+                                                console.log(`Successfully downloaded: ${attachment.file_name}`);
+                                                return;
+                                              }
+
+                                              // If API fails, try direct file access
+                                              console.log(`API download failed (${response.status}), trying direct access...`);
+
+                                              const directResponse = await fetch(`/uploads/${attachment.file_name}`);
+                                              if (directResponse.ok) {
+                                                const blob = await directResponse.blob();
+                                                const url = window.URL.createObjectURL(blob);
                                                 const link = document.createElement('a');
-                                                link.href = `/uploads/${attachment.file_name}`;
+                                                link.href = url;
                                                 link.download = attachment.file_name;
-                                                link.target = '_blank';
+                                                document.body.appendChild(link);
                                                 link.click();
-                                              });
+                                                document.body.removeChild(link);
+                                                window.URL.revokeObjectURL(url);
+                                                console.log(`Successfully downloaded via direct access: ${attachment.file_name}`);
+                                                return;
+                                              }
+
+                                              // If both fail, show user-friendly error
+                                              throw new Error(`File '${attachment.file_name}' not found on server`);
+
+                                            } catch (error) {
+                                              console.error('Download failed:', error);
+
+                                              // Show user-friendly error message
+                                              alert(`Download failed: ${error.message || 'File not found'}\n\nThe file may have been moved or deleted.`);
+
+                                              // As a last resort, try to open the file in a new tab
+                                              const fallbackLink = document.createElement('a');
+                                              fallbackLink.href = `/uploads/${attachment.file_name}`;
+                                              fallbackLink.target = '_blank';
+                                              fallbackLink.click();
+                                            }
                                           }}
                                         >
                                           <Download className="w-3 h-3 mr-1" />
