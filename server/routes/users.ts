@@ -228,17 +228,33 @@ router.post("/auth/login", async (req: Request, res: Response) => {
     res.json({ user });
   } catch (error) {
     console.error("Error during login:", error);
-    // Fallback to mock data
+    // Fallback to mock data and demo credentials
     try {
-      const user = await MockDataService.verifyPassword(
+      let user = await MockDataService.verifyPassword(
         req.body.email,
         req.body.password,
       );
+
+      // If mock data fails, try demo credentials
+      if (!user && req.body.password === "password") {
+        const email = req.body.email;
+        if (email === "admin@banani.com") {
+          user = { id: 1, first_name: "John", last_name: "Doe", email, role: "admin" };
+        } else if (email === "sales@banani.com") {
+          user = { id: 2, first_name: "Jane", last_name: "Smith", email, role: "sales" };
+        } else if (email === "product@banani.com") {
+          user = { id: 3, first_name: "Mike", last_name: "Johnson", email, role: "product" };
+        }
+      }
+
       if (!user) {
         return res.status(401).json({ error: "Invalid credentials" });
       }
+
+      console.log("Fallback login successful for:", req.body.email);
       res.json({ user });
     } catch (fallbackError) {
+      console.error("Fallback login error:", fallbackError);
       res.status(500).json({ error: "Login failed" });
     }
   }
