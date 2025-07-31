@@ -101,6 +101,68 @@ const mockDeployments = [
   },
 ];
 
+const mockLeads = [
+  {
+    id: 1,
+    lead_id: "#001",
+    client_name: "Acme Corporation",
+    company: "Acme Corp",
+    lead_source: "email",
+    lead_source_value: "contact@acme.com",
+    status: "in-progress",
+    project_title: "E-commerce Platform",
+    project_description: "Building a new e-commerce platform",
+    priority: "high",
+    assigned_to: 1,
+    created_at: "2023-10-26T09:00:00Z",
+    updated_at: "2023-10-26T09:00:00Z",
+    solutions: ["CardToken", "Switch-Cards"],
+    contacts: [
+      {
+        contact_name: "John Smith",
+        designation: "CTO",
+        email: "john@acme.com",
+        phone: "+1-555-0123",
+        linkedin: "https://linkedin.com/in/johnsmith"
+      }
+    ],
+    commercial_pricing: [
+      {
+        solution: "CardToken",
+        value: 10,
+        unit: "paisa",
+        currency: "INR"
+      }
+    ]
+  },
+  {
+    id: 2,
+    lead_id: "#002",
+    client_name: "TechStart Inc",
+    company: "TechStart Inc",
+    lead_source: "website",
+    lead_source_value: "https://techstart.com",
+    status: "won",
+    project_title: "Payment Gateway Integration",
+    project_description: "Integrate payment gateway for mobile app",
+    priority: "medium",
+    assigned_to: 2,
+    created_at: "2023-10-25T09:00:00Z",
+    updated_at: "2023-10-25T09:00:00Z",
+    solutions: ["Switch-UPI", "FRM"],
+    contacts: [
+      {
+        contact_name: "Sarah Wilson",
+        designation: "Product Manager",
+        email: "sarah@techstart.com",
+        phone: "+1-555-0456",
+        linkedin: ""
+      }
+    ],
+    commercial_pricing: []
+  }
+];
+
 // User hooks
 export function useUsers() {
   return useQuery({
