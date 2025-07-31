@@ -131,25 +131,13 @@ const unitOptions = [
 ];
 
 const clientTypes = [
-  { value: "individual", label: "Individual" },
-  { value: "business", label: "Business" },
-  { value: "enterprise", label: "Enterprise" },
-  { value: "startup", label: "Startup" },
-  { value: "government", label: "Government" },
-  { value: "nonprofit", label: "Non-Profit" },
+  { value: "new", label: "New" },
+  { value: "existing", label: "Existing" },
 ];
 
 const categories = [
-  { value: "fintech", label: "FinTech" },
-  { value: "ecommerce", label: "E-commerce" },
-  { value: "healthcare", label: "Healthcare" },
-  { value: "education", label: "Education" },
-  { value: "retail", label: "Retail" },
-  { value: "manufacturing", label: "Manufacturing" },
-  { value: "technology", label: "Technology" },
-  { value: "finance", label: "Finance" },
-  { value: "consulting", label: "Consulting" },
-  { value: "other", label: "Other" },
+  { value: "aggregator", label: "Aggregator" },
+  { value: "banks", label: "Banks" },
 ];
 
 const countries = [
