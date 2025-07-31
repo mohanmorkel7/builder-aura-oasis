@@ -472,13 +472,14 @@ export function EnhancedStepItem({
                                           className="h-8 px-3 text-xs"
                                           onClick={async () => {
                                             try {
+                                              const fileToDownload = attachment.server_filename || attachment.file_name;
                                               console.log(
-                                                `Attempting to download: ${attachment.file_name}`,
+                                                `Attempting to download: ${fileToDownload}`,
                                               );
 
                                               // First try the API endpoint
                                               const response = await fetch(
-                                                `/api/files/download/${attachment.file_name}`,
+                                                `/api/files/download/${fileToDownload}`,
                                               );
 
                                               if (response.ok) {
@@ -492,7 +493,7 @@ export function EnhancedStepItem({
                                                   document.createElement("a");
                                                 link.href = url;
                                                 link.download =
-                                                  attachment.file_name;
+                                                  attachment.file_name; // Use original name for download
                                                 document.body.appendChild(link);
                                                 link.click();
                                                 document.body.removeChild(link);
@@ -510,7 +511,7 @@ export function EnhancedStepItem({
 
                                               const directResponse =
                                                 await fetch(
-                                                  `/uploads/${attachment.file_name}`,
+                                                  `/uploads/${fileToDownload}`,
                                                 );
                                               if (directResponse.ok) {
                                                 const blob =
@@ -523,7 +524,7 @@ export function EnhancedStepItem({
                                                   document.createElement("a");
                                                 link.href = url;
                                                 link.download =
-                                                  attachment.file_name;
+                                                  attachment.file_name; // Use original name for download
                                                 document.body.appendChild(link);
                                                 link.click();
                                                 document.body.removeChild(link);
@@ -552,7 +553,7 @@ export function EnhancedStepItem({
                                               // As a last resort, try to open the file in a new tab
                                               const fallbackLink =
                                                 document.createElement("a");
-                                              fallbackLink.href = `/uploads/${attachment.file_name}`;
+                                              fallbackLink.href = `/uploads/${fileToDownload}`;
                                               fallbackLink.target = "_blank";
                                               fallbackLink.click();
                                             }
