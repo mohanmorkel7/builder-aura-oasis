@@ -135,10 +135,6 @@ router.post("/", async (req: Request, res: Response) => {
       });
     }
 
-
-
-
-
     // Validate enum values
     if (
       !ValidationSchemas.lead.enums.lead_source.includes(leadData.lead_source)
@@ -198,12 +194,9 @@ router.post("/", async (req: Request, res: Response) => {
       if (
         !DatabaseValidator.isValidNumber(leadData.expected_daily_txn_volume, 0)
       ) {
-        return res
-          .status(400)
-          .json({
-            error:
-              "Expected daily transaction volume must be a positive number",
-          });
+        return res.status(400).json({
+          error: "Expected daily transaction volume must be a positive number",
+        });
       }
     }
 
