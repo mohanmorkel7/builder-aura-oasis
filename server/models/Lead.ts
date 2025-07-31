@@ -45,26 +45,10 @@ export interface Lead {
 
   // Client Information
   client_name: string;
-  client_type?:
-    | "individual"
-    | "business"
-    | "enterprise"
-    | "startup"
-    | "government"
-    | "nonprofit";
+  client_type?: "new" | "existing";
   company?: string;
   company_location?: string;
-  category?:
-    | "fintech"
-    | "ecommerce"
-    | "healthcare"
-    | "education"
-    | "retail"
-    | "manufacturing"
-    | "technology"
-    | "finance"
-    | "consulting"
-    | "other";
+  category?: "aggregator" | "banks";
   country?:
     | "india"
     | "usa"
@@ -179,26 +163,10 @@ export interface CreateLeadData {
 
   // Client Information
   client_name: string;
-  client_type?:
-    | "individual"
-    | "business"
-    | "enterprise"
-    | "startup"
-    | "government"
-    | "nonprofit";
+  client_type?: "new" | "existing";
   company?: string;
   company_location?: string;
-  category?:
-    | "fintech"
-    | "ecommerce"
-    | "healthcare"
-    | "education"
-    | "retail"
-    | "manufacturing"
-    | "technology"
-    | "finance"
-    | "consulting"
-    | "other";
+  category?: "aggregator" | "banks";
   country?:
     | "india"
     | "usa"
@@ -267,26 +235,10 @@ export interface UpdateLeadData {
 
   // Client Information
   client_name?: string;
-  client_type?:
-    | "individual"
-    | "business"
-    | "enterprise"
-    | "startup"
-    | "government"
-    | "nonprofit";
+  client_type?: "new" | "existing";
   company?: string;
   company_location?: string;
-  category?:
-    | "fintech"
-    | "ecommerce"
-    | "healthcare"
-    | "education"
-    | "retail"
-    | "manufacturing"
-    | "technology"
-    | "finance"
-    | "consulting"
-    | "other";
+  category?: "aggregator" | "banks";
   country?:
     | "india"
     | "usa"
