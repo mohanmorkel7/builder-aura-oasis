@@ -157,8 +157,24 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     item.roles.includes(user.role),
   );
 
-  const notifications = getMockNotifications(user.name);
+  const [notifications, setNotifications] = React.useState<Notification[]>([]);
   const unreadCount = notifications.filter((n) => !n.read).length;
+
+  // Fetch real notifications on component mount
+  React.useEffect(() => {
+    const fetchNotifications = async () => {
+      if (user) {
+        const realNotifications = await getNotificationsFromFollowUps(user.id, user.name);
+        setNotifications(realNotifications);
+      }
+    };
+
+    fetchNotifications();
+
+    // Refresh notifications every 30 seconds
+    const interval = setInterval(fetchNotifications, 30000);
+    return () => clearInterval(interval);
+  }, [user]);
 
   const handleNotificationClick = (notification: Notification) => {
     // Mark as read (in a real app, this would make an API call)
