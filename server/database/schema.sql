@@ -223,6 +223,10 @@ CREATE INDEX IF NOT EXISTS idx_deployments_status ON deployments(status);
 CREATE INDEX IF NOT EXISTS idx_deployments_environment ON deployments(environment);
 CREATE INDEX IF NOT EXISTS idx_onboarding_client ON client_onboarding(client_id);
 CREATE INDEX IF NOT EXISTS idx_template_steps_template ON template_steps(template_id);
+CREATE INDEX IF NOT EXISTS idx_follow_ups_client_id ON follow_ups(client_id);
+CREATE INDEX IF NOT EXISTS idx_follow_ups_lead_id ON follow_ups(lead_id);
+CREATE INDEX IF NOT EXISTS idx_follow_ups_status ON follow_ups(status);
+CREATE INDEX IF NOT EXISTS idx_follow_ups_assigned_to ON follow_ups(assigned_to);
 CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id);
 
 -- Insert default admin user (password: 'password')
