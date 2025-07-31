@@ -48,9 +48,21 @@ import {
 } from "lucide-react";
 
 const statusOptions = [
-  { value: "pending", label: "Pending", color: "bg-yellow-100 text-yellow-700" },
-  { value: "in_progress", label: "In Progress", color: "bg-blue-100 text-blue-700" },
-  { value: "completed", label: "Completed", color: "bg-green-100 text-green-700" },
+  {
+    value: "pending",
+    label: "Pending",
+    color: "bg-yellow-100 text-yellow-700",
+  },
+  {
+    value: "in_progress",
+    label: "In Progress",
+    color: "bg-blue-100 text-blue-700",
+  },
+  {
+    value: "completed",
+    label: "Completed",
+    color: "bg-green-100 text-green-700",
+  },
   { value: "cancelled", label: "Cancelled", color: "bg-red-100 text-red-700" },
 ];
 
@@ -71,8 +83,13 @@ export default function PipelineSettings() {
   const { user } = useAuth();
   const leadId = parseInt(id || "0");
 
-  const { data: lead, isLoading: leadLoading, error: leadError } = useLead(leadId);
-  const { data: leadSteps = [], isLoading: stepsLoading } = useLeadSteps(leadId);
+  const {
+    data: lead,
+    isLoading: leadLoading,
+    error: leadError,
+  } = useLead(leadId);
+  const { data: leadSteps = [], isLoading: stepsLoading } =
+    useLeadSteps(leadId);
   const leadData = location.state?.leadData || lead;
 
   const [pipelineSettings, setPipelineSettings] = useState({
@@ -114,12 +131,12 @@ export default function PipelineSettings() {
     setSaving(true);
     try {
       // Here you would typically save the pipeline settings to a backend
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       navigate(`/leads/${id}`, {
-        state: { 
-          message: "Pipeline settings updated successfully" 
-        }
+        state: {
+          message: "Pipeline settings updated successfully",
+        },
       });
     } catch (error) {
       console.error("Failed to save pipeline settings:", error);
@@ -175,7 +192,9 @@ export default function PipelineSettings() {
             Back to Lead Details
           </Button>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Pipeline Settings</h1>
+            <h1 className="text-2xl font-bold text-gray-900">
+              Pipeline Settings
+            </h1>
             <p className="text-gray-600">
               Configure sales pipeline for {leadData.client_name}
             </p>
@@ -185,11 +204,7 @@ export default function PipelineSettings() {
           <Button variant="outline" onClick={handleCancel}>
             Cancel
           </Button>
-          <Button
-            onClick={handleSave}
-            disabled={saving}
-            className="min-w-20"
-          >
+          <Button onClick={handleSave} disabled={saving} className="min-w-20">
             {saving ? (
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : (
@@ -206,9 +221,13 @@ export default function PipelineSettings() {
       <Alert>
         <Info className="h-4 w-4" />
         <AlertDescription>
-          Configuring pipeline settings for <strong>{leadData.client_name}</strong>
+          Configuring pipeline settings for{" "}
+          <strong>{leadData.client_name}</strong>
           {leadData.project_title && (
-            <> - <strong>{leadData.project_title}</strong></>
+            <>
+              {" "}
+              - <strong>{leadData.project_title}</strong>
+            </>
           )}
         </AlertDescription>
       </Alert>
@@ -231,12 +250,15 @@ export default function PipelineSettings() {
                     <div className="space-y-0.5">
                       <Label>Auto-Progress Steps</Label>
                       <p className="text-sm text-gray-500">
-                        Automatically move to next step when current is completed
+                        Automatically move to next step when current is
+                        completed
                       </p>
                     </div>
                     <Switch
                       checked={pipelineSettings.autoProgressSteps}
-                      onCheckedChange={(checked) => updateSetting("autoProgressSteps", checked)}
+                      onCheckedChange={(checked) =>
+                        updateSetting("autoProgressSteps", checked)
+                      }
                     />
                   </div>
 
@@ -249,7 +271,9 @@ export default function PipelineSettings() {
                     </div>
                     <Switch
                       checked={pipelineSettings.requireApproval}
-                      onCheckedChange={(checked) => updateSetting("requireApproval", checked)}
+                      onCheckedChange={(checked) =>
+                        updateSetting("requireApproval", checked)
+                      }
                     />
                   </div>
 
@@ -262,7 +286,9 @@ export default function PipelineSettings() {
                     </div>
                     <Switch
                       checked={pipelineSettings.emailNotifications}
-                      onCheckedChange={(checked) => updateSetting("emailNotifications", checked)}
+                      onCheckedChange={(checked) =>
+                        updateSetting("emailNotifications", checked)
+                      }
                     />
                   </div>
 
@@ -275,34 +301,50 @@ export default function PipelineSettings() {
                     </div>
                     <Switch
                       checked={pipelineSettings.slackIntegration}
-                      onCheckedChange={(checked) => updateSetting("slackIntegration", checked)}
+                      onCheckedChange={(checked) =>
+                        updateSetting("slackIntegration", checked)
+                      }
                     />
                   </div>
                 </div>
 
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="defaultDuration">Default Step Duration (days)</Label>
+                    <Label htmlFor="defaultDuration">
+                      Default Step Duration (days)
+                    </Label>
                     <Input
                       id="defaultDuration"
                       type="number"
                       min="1"
                       max="30"
                       value={pipelineSettings.defaultStepDuration}
-                      onChange={(e) => updateSetting("defaultStepDuration", parseInt(e.target.value))}
+                      onChange={(e) =>
+                        updateSetting(
+                          "defaultStepDuration",
+                          parseInt(e.target.value),
+                        )
+                      }
                       className="mt-1"
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="escalationThreshold">Escalation Threshold (days)</Label>
+                    <Label htmlFor="escalationThreshold">
+                      Escalation Threshold (days)
+                    </Label>
                     <Input
                       id="escalationThreshold"
                       type="number"
                       min="1"
                       max="30"
                       value={pipelineSettings.escalationThreshold}
-                      onChange={(e) => updateSetting("escalationThreshold", parseInt(e.target.value))}
+                      onChange={(e) =>
+                        updateSetting(
+                          "escalationThreshold",
+                          parseInt(e.target.value),
+                        )
+                      }
                       className="mt-1"
                     />
                     <p className="text-sm text-gray-500 mt-1">
@@ -358,15 +400,17 @@ export default function PipelineSettings() {
                           <div>
                             <p className="font-medium">{step.name}</p>
                             {step.description && (
-                              <p className="text-sm text-gray-500">{step.description}</p>
+                              <p className="text-sm text-gray-500">
+                                {step.description}
+                              </p>
                             )}
                           </div>
                         </TableCell>
                         <TableCell>
                           <Badge
                             className={
-                              statusOptions.find((s) => s.value === step.status)?.color ||
-                              "bg-gray-100 text-gray-700"
+                              statusOptions.find((s) => s.value === step.status)
+                                ?.color || "bg-gray-100 text-gray-700"
                             }
                           >
                             {step.status.replace("_", " ")}
@@ -374,9 +418,12 @@ export default function PipelineSettings() {
                         </TableCell>
                         <TableCell>
                           {step.due_date ? (
-                            new Date(step.due_date).toLocaleDateString("en-IN", {
-                              timeZone: "Asia/Kolkata",
-                            })
+                            new Date(step.due_date).toLocaleDateString(
+                              "en-IN",
+                              {
+                                timeZone: "Asia/Kolkata",
+                              },
+                            )
                           ) : (
                             <span className="text-gray-400">Not set</span>
                           )}
@@ -472,21 +519,27 @@ export default function PipelineSettings() {
                     type="number"
                     min="1"
                     value={newStep.estimated_days}
-                    onChange={(e) => updateNewStep("estimated_days", parseInt(e.target.value))}
+                    onChange={(e) =>
+                      updateNewStep("estimated_days", parseInt(e.target.value))
+                    }
                     className="mt-1"
                   />
                 </div>
                 <div className="flex items-center space-x-2 mt-6">
                   <Switch
                     checked={newStep.auto_alert}
-                    onCheckedChange={(checked) => updateNewStep("auto_alert", checked)}
+                    onCheckedChange={(checked) =>
+                      updateNewStep("auto_alert", checked)
+                    }
                   />
                   <Label>Auto Alert</Label>
                 </div>
                 <div className="flex items-center space-x-2 mt-6">
                   <Switch
                     checked={newStep.email_reminder}
-                    onCheckedChange={(checked) => updateNewStep("email_reminder", checked)}
+                    onCheckedChange={(checked) =>
+                      updateNewStep("email_reminder", checked)
+                    }
                   />
                   <Label>Email Reminder</Label>
                 </div>
@@ -512,12 +565,18 @@ export default function PipelineSettings() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4 text-center">
                 <div className="p-3 bg-blue-50 rounded-lg">
-                  <div className="text-2xl font-bold text-blue-600">{leadSteps.length}</div>
+                  <div className="text-2xl font-bold text-blue-600">
+                    {leadSteps.length}
+                  </div>
                   <div className="text-sm text-blue-600">Total Steps</div>
                 </div>
                 <div className="p-3 bg-green-50 rounded-lg">
                   <div className="text-2xl font-bold text-green-600">
-                    {leadSteps.filter((step: any) => step.status === "completed").length}
+                    {
+                      leadSteps.filter(
+                        (step: any) => step.status === "completed",
+                      ).length
+                    }
                   </div>
                   <div className="text-sm text-green-600">Completed</div>
                 </div>
@@ -529,11 +588,14 @@ export default function PipelineSettings() {
                   <span>
                     {leadSteps.length > 0
                       ? Math.round(
-                          (leadSteps.filter((step: any) => step.status === "completed").length /
+                          (leadSteps.filter(
+                            (step: any) => step.status === "completed",
+                          ).length /
                             leadSteps.length) *
-                            100
+                            100,
                         )
-                      : 0}%
+                      : 0}
+                    %
                   </span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
@@ -542,7 +604,9 @@ export default function PipelineSettings() {
                     style={{
                       width: `${
                         leadSteps.length > 0
-                          ? (leadSteps.filter((step: any) => step.status === "completed").length /
+                          ? (leadSteps.filter(
+                              (step: any) => step.status === "completed",
+                            ).length /
                               leadSteps.length) *
                             100
                           : 0
@@ -560,15 +624,27 @@ export default function PipelineSettings() {
               <CardTitle>Quick Actions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <Button className="w-full justify-start" variant="outline" size="sm">
+              <Button
+                className="w-full justify-start"
+                variant="outline"
+                size="sm"
+              >
                 <Target className="w-4 h-4 mr-2" />
                 Reset Pipeline
               </Button>
-              <Button className="w-full justify-start" variant="outline" size="sm">
+              <Button
+                className="w-full justify-start"
+                variant="outline"
+                size="sm"
+              >
                 <Users className="w-4 h-4 mr-2" />
                 Assign All Steps
               </Button>
-              <Button className="w-full justify-start" variant="outline" size="sm">
+              <Button
+                className="w-full justify-start"
+                variant="outline"
+                size="sm"
+              >
                 <Settings className="w-4 h-4 mr-2" />
                 Export Configuration
               </Button>

@@ -87,13 +87,13 @@ export default function ProposalNew() {
     try {
       // Here you would typically save the proposal to a backend
       // For now, we'll simulate a save operation
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       // Navigate back to lead details
       navigate(`/leads/${id}`, {
-        state: { 
-          message: "Proposal created successfully and ready for review" 
-        }
+        state: {
+          message: "Proposal created successfully and ready for review",
+        },
       });
     } catch (error) {
       console.error("Failed to create proposal:", error);
@@ -124,7 +124,10 @@ export default function ProposalNew() {
     );
   }
 
-  const isFormValid = proposalData.title.trim() && proposalData.proposalType && proposalData.estimatedValue;
+  const isFormValid =
+    proposalData.title.trim() &&
+    proposalData.proposalType &&
+    proposalData.estimatedValue;
 
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">
@@ -136,7 +139,9 @@ export default function ProposalNew() {
             Back to Lead Details
           </Button>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Create Proposal</h1>
+            <h1 className="text-2xl font-bold text-gray-900">
+              Create Proposal
+            </h1>
             <p className="text-gray-600">
               Generate a detailed proposal for {leadData.client_name}
             </p>
@@ -169,7 +174,10 @@ export default function ProposalNew() {
         <AlertDescription>
           Creating proposal for <strong>{leadData.client_name}</strong>
           {leadData.project_title && (
-            <> - <strong>{leadData.project_title}</strong></>
+            <>
+              {" "}
+              - <strong>{leadData.project_title}</strong>
+            </>
           )}
           {leadData.contacts && leadData.contacts.length > 0 && (
             <> (Contact: {leadData.contacts[0].contact_name})</>
@@ -182,7 +190,8 @@ export default function ProposalNew() {
         <Alert>
           <Info className="h-4 w-4" />
           <AlertDescription>
-            Please fill in all required fields: Title, Proposal Type, and Estimated Value.
+            Please fill in all required fields: Title, Proposal Type, and
+            Estimated Value.
           </AlertDescription>
         </Alert>
       )}
@@ -205,7 +214,7 @@ export default function ProposalNew() {
                   id="title"
                   value={proposalData.title}
                   onChange={(e) => updateField("title", e.target.value)}
-                  placeholder={`${leadData.project_title || 'Custom Solution'} - Proposal`}
+                  placeholder={`${leadData.project_title || "Custom Solution"} - Proposal`}
                   className="mt-1"
                 />
               </div>
@@ -227,7 +236,9 @@ export default function ProposalNew() {
                   <Label htmlFor="proposalType">Proposal Type *</Label>
                   <Select
                     value={proposalData.proposalType}
-                    onValueChange={(value) => updateField("proposalType", value)}
+                    onValueChange={(value) =>
+                      updateField("proposalType", value)
+                    }
                   >
                     <SelectTrigger className="mt-1">
                       <SelectValue placeholder="Select proposal type" />
@@ -245,14 +256,19 @@ export default function ProposalNew() {
                   <Label htmlFor="deliveryTimeframe">Delivery Timeframe</Label>
                   <Select
                     value={proposalData.deliveryTimeframe}
-                    onValueChange={(value) => updateField("deliveryTimeframe", value)}
+                    onValueChange={(value) =>
+                      updateField("deliveryTimeframe", value)
+                    }
                   >
                     <SelectTrigger className="mt-1">
                       <SelectValue placeholder="Select timeframe" />
                     </SelectTrigger>
                     <SelectContent>
                       {deliveryTimeframes.map((timeframe) => (
-                        <SelectItem key={timeframe.value} value={timeframe.value}>
+                        <SelectItem
+                          key={timeframe.value}
+                          value={timeframe.value}
+                        >
                           {timeframe.label}
                         </SelectItem>
                       ))}
@@ -312,7 +328,9 @@ export default function ProposalNew() {
                 <Textarea
                   id="termsConditions"
                   value={proposalData.termsConditions}
-                  onChange={(e) => updateField("termsConditions", e.target.value)}
+                  onChange={(e) =>
+                    updateField("termsConditions", e.target.value)
+                  }
                   rows={4}
                   placeholder="Payment terms, project milestones, acceptance criteria..."
                   className="mt-1"
@@ -332,14 +350,18 @@ export default function ProposalNew() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="estimatedValue">Estimated Value (USD) *</Label>
+                  <Label htmlFor="estimatedValue">
+                    Estimated Value (USD) *
+                  </Label>
                   <div className="relative mt-1">
                     <DollarSign className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                     <Input
                       id="estimatedValue"
                       type="number"
                       value={proposalData.estimatedValue}
-                      onChange={(e) => updateField("estimatedValue", e.target.value)}
+                      onChange={(e) =>
+                        updateField("estimatedValue", e.target.value)
+                      }
                       className="pl-10"
                       placeholder="50000"
                     />
@@ -374,20 +396,26 @@ export default function ProposalNew() {
                 <div className="flex items-center space-x-2">
                   <Building className="w-4 h-4 text-gray-400" />
                   <span className="text-sm text-gray-600">Client:</span>
-                  <span className="text-sm font-medium">{leadData.client_name}</span>
+                  <span className="text-sm font-medium">
+                    {leadData.client_name}
+                  </span>
                 </div>
-                
+
                 {leadData.contacts && leadData.contacts.length > 0 && (
                   <>
                     <div className="flex items-center space-x-2">
                       <Mail className="w-4 h-4 text-gray-400" />
                       <span className="text-sm text-gray-600">Email:</span>
-                      <span className="text-sm">{leadData.contacts[0].email}</span>
+                      <span className="text-sm">
+                        {leadData.contacts[0].email}
+                      </span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <Phone className="w-4 h-4 text-gray-400" />
                       <span className="text-sm text-gray-600">Phone:</span>
-                      <span className="text-sm">{leadData.contacts[0].phone || "Not provided"}</span>
+                      <span className="text-sm">
+                        {leadData.contacts[0].phone || "Not provided"}
+                      </span>
                     </div>
                   </>
                 )}
@@ -403,9 +431,13 @@ export default function ProposalNew() {
                 {leadData.expected_close_date && (
                   <div className="flex items-center space-x-2">
                     <Calendar className="w-4 h-4 text-gray-400" />
-                    <span className="text-sm text-gray-600">Expected Close:</span>
+                    <span className="text-sm text-gray-600">
+                      Expected Close:
+                    </span>
                     <span className="text-sm">
-                      {new Date(leadData.expected_close_date).toLocaleDateString("en-IN", {
+                      {new Date(
+                        leadData.expected_close_date,
+                      ).toLocaleDateString("en-IN", {
                         timeZone: "Asia/Kolkata",
                       })}
                     </span>
@@ -421,15 +453,27 @@ export default function ProposalNew() {
               <CardTitle>Actions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <Button className="w-full justify-start" variant="outline" size="sm">
+              <Button
+                className="w-full justify-start"
+                variant="outline"
+                size="sm"
+              >
                 <FileText className="w-4 h-4 mr-2" />
                 Generate PDF
               </Button>
-              <Button className="w-full justify-start" variant="outline" size="sm">
+              <Button
+                className="w-full justify-start"
+                variant="outline"
+                size="sm"
+              >
                 <Mail className="w-4 h-4 mr-2" />
                 Email to Client
               </Button>
-              <Button className="w-full justify-start" variant="outline" size="sm">
+              <Button
+                className="w-full justify-start"
+                variant="outline"
+                size="sm"
+              >
                 <Save className="w-4 h-4 mr-2" />
                 Save as Template
               </Button>

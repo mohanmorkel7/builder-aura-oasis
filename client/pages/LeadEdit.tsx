@@ -245,8 +245,10 @@ export default function LeadEdit() {
         // Enhanced Project Info
         solutions: lead.solutions || [],
         priority_level: lead.priority_level || "",
-        start_date: lead.start_date ? lead.start_date.split('T')[0] : "",
-        targeted_end_date: lead.targeted_end_date ? lead.targeted_end_date.split('T')[0] : "",
+        start_date: lead.start_date ? lead.start_date.split("T")[0] : "",
+        targeted_end_date: lead.targeted_end_date
+          ? lead.targeted_end_date.split("T")[0]
+          : "",
         expected_daily_txn_volume:
           lead.expected_daily_txn_volume?.toString() || "",
         project_value: lead.project_value?.toString() || "",
@@ -275,7 +277,9 @@ export default function LeadEdit() {
         country: lead.country || "",
 
         priority: lead.priority || "",
-        expected_close_date: lead.expected_close_date ? lead.expected_close_date.split('T')[0] : "",
+        expected_close_date: lead.expected_close_date
+          ? lead.expected_close_date.split("T")[0]
+          : "",
         probability: lead.probability?.toString() || "",
         notes: lead.notes || "",
         assigned_to: lead.assigned_to || undefined,
@@ -392,7 +396,10 @@ export default function LeadEdit() {
     if (user && !canEditLead && !canEditAssignments && canViewOnly) {
       // Product users can only view
       navigate(`/leads/${id}`, {
-        state: { message: "You don't have permission to edit leads. Redirected to view mode." }
+        state: {
+          message:
+            "You don't have permission to edit leads. Redirected to view mode.",
+        },
       });
     }
   }, [user, canEditLead, canEditAssignments, canViewOnly, navigate, id]);
@@ -442,7 +449,11 @@ export default function LeadEdit() {
           </Button>
           <Button
             onClick={handleSave}
-            disabled={(!canEditLead && !canEditAssignments) || saving || (canEditLead && !isFormValid)}
+            disabled={
+              (!canEditLead && !canEditAssignments) ||
+              saving ||
+              (canEditLead && !isFormValid)
+            }
             className="min-w-20"
           >
             {saving ? (
@@ -466,8 +477,7 @@ export default function LeadEdit() {
               ? "As a Sales user, you can only edit assignment and status information."
               : user?.role === "product"
                 ? "As a Product user, you have view-only access to leads."
-                : "You have limited editing permissions for this lead."
-            }
+                : "You have limited editing permissions for this lead."}
           </AlertDescription>
         </Alert>
       )}
@@ -482,13 +492,26 @@ export default function LeadEdit() {
       )}
 
       {/* Form Tabs */}
-      <Tabs defaultValue={canEditLead ? "basic" : "additional"} className="space-y-6">
+      <Tabs
+        defaultValue={canEditLead ? "basic" : "additional"}
+        className="space-y-6"
+      >
         <TabsList className="grid w-full grid-cols-6">
-          <TabsTrigger value="basic" disabled={!canEditLead}>Lead Info</TabsTrigger>
-          <TabsTrigger value="project" disabled={!canEditLead}>Project Details</TabsTrigger>
-          <TabsTrigger value="commercials" disabled={!canEditLead}>Commercials</TabsTrigger>
-          <TabsTrigger value="client" disabled={!canEditLead}>Client Info</TabsTrigger>
-          <TabsTrigger value="contact" disabled={!canEditLead}>Contact Info</TabsTrigger>
+          <TabsTrigger value="basic" disabled={!canEditLead}>
+            Lead Info
+          </TabsTrigger>
+          <TabsTrigger value="project" disabled={!canEditLead}>
+            Project Details
+          </TabsTrigger>
+          <TabsTrigger value="commercials" disabled={!canEditLead}>
+            Commercials
+          </TabsTrigger>
+          <TabsTrigger value="client" disabled={!canEditLead}>
+            Client Info
+          </TabsTrigger>
+          <TabsTrigger value="contact" disabled={!canEditLead}>
+            Contact Info
+          </TabsTrigger>
           <TabsTrigger value="additional">Additional</TabsTrigger>
         </TabsList>
 
@@ -1149,8 +1172,7 @@ export default function LeadEdit() {
               <CardDescription>
                 {canEditLead
                   ? "Priority, timeline, and additional notes about this lead"
-                  : "Update lead status, assignment, and sales information"
-                }
+                  : "Update lead status, assignment, and sales information"}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -1180,7 +1202,9 @@ export default function LeadEdit() {
                     <Input
                       id="assigned_to"
                       value={leadData.assigned_to?.toString() || ""}
-                      onChange={(e) => updateField("assigned_to", parseInt(e.target.value))}
+                      onChange={(e) =>
+                        updateField("assigned_to", parseInt(e.target.value))
+                      }
                       className="mt-1"
                       placeholder="User ID"
                     />

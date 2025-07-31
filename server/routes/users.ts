@@ -209,11 +209,29 @@ router.post("/auth/login", async (req: Request, res: Response) => {
         let demoUser = null;
 
         if (email === "admin@banani.com") {
-          demoUser = { id: 1, first_name: "John", last_name: "Doe", email, role: "admin" };
+          demoUser = {
+            id: 1,
+            first_name: "John",
+            last_name: "Doe",
+            email,
+            role: "admin",
+          };
         } else if (email === "sales@banani.com") {
-          demoUser = { id: 2, first_name: "Jane", last_name: "Smith", email, role: "sales" };
+          demoUser = {
+            id: 2,
+            first_name: "Jane",
+            last_name: "Smith",
+            email,
+            role: "sales",
+          };
         } else if (email === "product@banani.com") {
-          demoUser = { id: 3, first_name: "Mike", last_name: "Johnson", email, role: "product" };
+          demoUser = {
+            id: 3,
+            first_name: "Mike",
+            last_name: "Johnson",
+            email,
+            role: "product",
+          };
         }
 
         if (demoUser) {
@@ -239,11 +257,29 @@ router.post("/auth/login", async (req: Request, res: Response) => {
       if (!user && req.body.password === "password") {
         const email = req.body.email;
         if (email === "admin@banani.com") {
-          user = { id: 1, first_name: "John", last_name: "Doe", email, role: "admin" };
+          user = {
+            id: 1,
+            first_name: "John",
+            last_name: "Doe",
+            email,
+            role: "admin",
+          };
         } else if (email === "sales@banani.com") {
-          user = { id: 2, first_name: "Jane", last_name: "Smith", email, role: "sales" };
+          user = {
+            id: 2,
+            first_name: "Jane",
+            last_name: "Smith",
+            email,
+            role: "sales",
+          };
         } else if (email === "product@banani.com") {
-          user = { id: 3, first_name: "Mike", last_name: "Johnson", email, role: "product" };
+          user = {
+            id: 3,
+            first_name: "Mike",
+            last_name: "Johnson",
+            email,
+            role: "product",
+          };
         }
       }
 

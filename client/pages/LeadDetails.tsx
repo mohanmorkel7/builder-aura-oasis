@@ -258,19 +258,33 @@ export default function LeadDetails() {
                             {leadData.lead_source.replace("-", " ")}
                           </span>
                           {leadData.lead_source_value && (
-                            <span className="text-sm text-blue-600 hover:underline cursor-pointer"
-                                  title={leadData.lead_source_value}>
+                            <span
+                              className="text-sm text-blue-600 hover:underline cursor-pointer"
+                              title={leadData.lead_source_value}
+                            >
                               {leadData.lead_source === "email" ? (
-                                <a href={`mailto:${leadData.lead_source_value}`}>
+                                <a
+                                  href={`mailto:${leadData.lead_source_value}`}
+                                >
                                   {leadData.lead_source_value}
                                 </a>
-                              ) : leadData.lead_source === "phone" || leadData.lead_source === "cold-call" ? (
+                              ) : leadData.lead_source === "phone" ||
+                                leadData.lead_source === "cold-call" ? (
                                 <a href={`tel:${leadData.lead_source_value}`}>
                                   {leadData.lead_source_value}
                                 </a>
                               ) : leadData.lead_source === "website" ? (
-                                <a href={leadData.lead_source_value.startsWith('http') ? leadData.lead_source_value : `https://${leadData.lead_source_value}`}
-                                   target="_blank" rel="noopener noreferrer">
+                                <a
+                                  href={
+                                    leadData.lead_source_value.startsWith(
+                                      "http",
+                                    )
+                                      ? leadData.lead_source_value
+                                      : `https://${leadData.lead_source_value}`
+                                  }
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
                                   {leadData.lead_source_value}
                                 </a>
                               ) : (
@@ -600,17 +614,28 @@ export default function LeadDetails() {
               <CardTitle>Quick Actions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              {leadData.contacts && leadData.contacts.length > 0 && leadData.contacts[0].email ? (
+              {leadData.contacts &&
+              leadData.contacts.length > 0 &&
+              leadData.contacts[0].email ? (
                 <Button
                   className="w-full justify-start"
                   variant="outline"
-                  onClick={() => window.open(`mailto:${leadData.contacts[0].email}?subject=Follow-up: ${leadData.project_title || leadData.client_name}&body=Hi ${leadData.contacts[0].contact_name},%0D%0A%0D%0AI wanted to follow up on our discussion regarding ${leadData.project_title || 'your project'}...`, '_blank')}
+                  onClick={() =>
+                    window.open(
+                      `mailto:${leadData.contacts[0].email}?subject=Follow-up: ${leadData.project_title || leadData.client_name}&body=Hi ${leadData.contacts[0].contact_name},%0D%0A%0D%0AI wanted to follow up on our discussion regarding ${leadData.project_title || "your project"}...`,
+                      "_blank",
+                    )
+                  }
                 >
                   <Mail className="w-4 h-4 mr-2" />
                   Send Email
                 </Button>
               ) : (
-                <Button className="w-full justify-start" variant="outline" disabled>
+                <Button
+                  className="w-full justify-start"
+                  variant="outline"
+                  disabled
+                >
                   <Mail className="w-4 h-4 mr-2" />
                   Send Email (No email available)
                 </Button>
@@ -619,31 +644,41 @@ export default function LeadDetails() {
               <Button
                 className="w-full justify-start"
                 variant="outline"
-                onClick={() => navigate(`/leads/${id}/follow-up`, {
-                  state: {
-                    fromQuickAction: true,
-                    leadId: id,
-                    stepName: 'Quick Action',
-                    messageId: null,
-                    createSystemMessage: false
-                  }
-                })}
+                onClick={() =>
+                  navigate(`/leads/${id}/follow-up`, {
+                    state: {
+                      fromQuickAction: true,
+                      leadId: id,
+                      stepName: "Quick Action",
+                      messageId: null,
+                      createSystemMessage: false,
+                    },
+                  })
+                }
               >
                 <Calendar className="w-4 h-4 mr-2" />
                 Schedule Follow-up
               </Button>
 
-              {leadData.contacts && leadData.contacts.length > 0 && leadData.contacts[0].phone ? (
+              {leadData.contacts &&
+              leadData.contacts.length > 0 &&
+              leadData.contacts[0].phone ? (
                 <Button
                   className="w-full justify-start"
                   variant="outline"
-                  onClick={() => window.open(`tel:${leadData.contacts[0].phone}`, '_self')}
+                  onClick={() =>
+                    window.open(`tel:${leadData.contacts[0].phone}`, "_self")
+                  }
                 >
                   <Phone className="w-4 h-4 mr-2" />
                   Call {leadData.contacts[0].contact_name}
                 </Button>
               ) : (
-                <Button className="w-full justify-start" variant="outline" disabled>
+                <Button
+                  className="w-full justify-start"
+                  variant="outline"
+                  disabled
+                >
                   <Phone className="w-4 h-4 mr-2" />
                   Make Call (No phone available)
                 </Button>
@@ -652,11 +687,13 @@ export default function LeadDetails() {
               <Button
                 className="w-full justify-start"
                 variant="outline"
-                onClick={() => navigate(`/leads/${id}/proposal`, {
-                  state: {
-                    leadData: leadData
-                  }
-                })}
+                onClick={() =>
+                  navigate(`/leads/${id}/proposal`, {
+                    state: {
+                      leadData: leadData,
+                    },
+                  })
+                }
               >
                 <Target className="w-4 h-4 mr-2" />
                 Create Proposal
@@ -667,11 +704,13 @@ export default function LeadDetails() {
               <Button
                 className="w-full justify-start"
                 variant="outline"
-                onClick={() => navigate(`/leads/${id}/pipeline-settings`, {
-                  state: {
-                    leadData: leadData
-                  }
-                })}
+                onClick={() =>
+                  navigate(`/leads/${id}/pipeline-settings`, {
+                    state: {
+                      leadData: leadData,
+                    },
+                  })
+                }
               >
                 <Settings className="w-4 h-4 mr-2" />
                 Pipeline Settings

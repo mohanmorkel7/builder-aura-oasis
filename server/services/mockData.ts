@@ -814,8 +814,8 @@ export class MockDataService {
             email: "sarah@techcorp.com",
             phone: "+1 (555) 123-4567",
             designation: "CTO",
-            linkedin: "https://linkedin.com/in/sarah-johnson"
-          }
+            linkedin: "https://linkedin.com/in/sarah-johnson",
+          },
         ],
         priority: "high",
         expected_close_date: "2024-08-15",
@@ -848,8 +848,8 @@ export class MockDataService {
             email: "michael@healthfirst.com",
             phone: "+1 (555) 234-5678",
             designation: "Chief Medical Officer",
-            linkedin: "https://linkedin.com/in/dr-michael-brown"
-          }
+            linkedin: "https://linkedin.com/in/dr-michael-brown",
+          },
         ],
         priority: "medium",
         expected_close_date: "2024-07-30",
@@ -882,8 +882,8 @@ export class MockDataService {
             email: "lisa@globalsales.com",
             phone: "+1 (555) 345-6789",
             designation: "VP Sales",
-            linkedin: "https://linkedin.com/in/lisa-chen-vp"
-          }
+            linkedin: "https://linkedin.com/in/lisa-chen-vp",
+          },
         ],
         priority: "low",
         expected_close_date: "2024-06-30",
@@ -917,8 +917,8 @@ export class MockDataService {
             email: "robert@datavizpro.com",
             phone: "+1 (555) 456-7890",
             designation: "CEO",
-            linkedin: "https://linkedin.com/in/robert-taylor-ceo"
-          }
+            linkedin: "https://linkedin.com/in/robert-taylor-ceo",
+          },
         ],
         priority: "medium",
         expected_close_date: "2024-05-15",
