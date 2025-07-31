@@ -485,9 +485,11 @@ export default function FollowUpTracker() {
                           <StatusIcon className="w-3 h-3 mr-1" />
                           {followUp.status.replace("_", " ")}
                         </Badge>
-                        <Badge className={priorityColors[followUp.priority]}>
-                          {followUp.priority}
-                        </Badge>
+                        {followUp.priority && (
+                          <Badge className={priorityColors[followUp.priority]}>
+                            {followUp.priority}
+                          </Badge>
+                        )}
                       </div>
 
                       <div className="bg-gray-50 p-3 rounded-lg mb-3 border-l-4 border-blue-200">
