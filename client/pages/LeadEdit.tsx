@@ -234,7 +234,7 @@ export default function LeadEdit() {
   // Update state when lead data is loaded
   React.useEffect(() => {
     if (originalLead) {
-      const lead = originalLead as any;
+      const lead = originalLead;
       setLeadData({
         lead_source: lead.lead_source || "",
         lead_source_value: lead.lead_source_value || "",
