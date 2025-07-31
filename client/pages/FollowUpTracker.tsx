@@ -457,7 +457,7 @@ export default function FollowUpTracker() {
                 key={followUp.id}
                 className={`hover:shadow-md transition-shadow border-l-4 ${
                   isAssignedToMe
-                    ? isOverdue
+                    ? isFollowUpOverdue
                       ? "border-l-red-500 bg-red-50"
                       : "border-l-blue-500 bg-blue-50"
                     : "border-l-gray-300"
