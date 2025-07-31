@@ -242,10 +242,10 @@ export function EnhancedStepItem({
               <div className="flex items-center space-x-2">
                 <span className="font-medium text-gray-900">{step.name}</span>
                 <div className="flex items-center space-x-2">
-                  {!chatLoading && chatMessages.length > 0 && (
+                  {!chatLoading && sortedMessages.length > 0 && (
                     <Badge variant="outline" className="text-xs">
-                      {chatMessages.length} message
-                      {chatMessages.length !== 1 ? "s" : ""}
+                      {sortedMessages.length} message
+                      {sortedMessages.length !== 1 ? "s" : ""}
                     </Badge>
                   )}
                 </div>
