@@ -534,11 +534,6 @@ export default function LeadDetails() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="text-center">
-                {leadData.project_budget && (
-                  <div className="text-2xl font-bold text-green-600 mb-2">
-                    ${leadData.project_budget.toLocaleString()}
-                  </div>
-                )}
                 <div className="text-sm text-gray-500">
                   {leadData.probability}% probability
                 </div>
