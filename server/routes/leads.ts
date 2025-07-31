@@ -135,10 +135,7 @@ router.post("/", async (req: Request, res: Response) => {
       });
     }
 
-    // Validate email format
-    if (!DatabaseValidator.isValidEmail(leadData.email)) {
-      return res.status(400).json({ error: "Invalid email format" });
-    }
+
 
     // Validate phone format if provided
     if (leadData.phone && !DatabaseValidator.isValidPhone(leadData.phone)) {
