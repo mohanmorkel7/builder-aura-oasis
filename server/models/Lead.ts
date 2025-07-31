@@ -438,36 +438,29 @@ export class LeadRepository {
       leadData.lead_source_value || null, // $3
       leadData.project_title || null, // $4
       leadData.project_description || null, // $5
-      leadData.project_budget || null, // $6
-      leadData.project_timeline || null, // $7
-      leadData.project_requirements || null, // $8
-      JSON.stringify(leadData.solutions || []), // $9
-      leadData.priority_level || "medium", // $10
-      leadData.start_date || null, // $11
-      leadData.targeted_end_date || null, // $12
-      leadData.expected_daily_txn_volume || null, // $13
-      leadData.project_value || null, // $14
-      leadData.spoc || null, // $15
-      JSON.stringify(leadData.commercials || []), // $16
-      JSON.stringify(leadData.commercial_pricing || []), // $17
-      leadData.client_name, // $18
-      leadData.client_type || null, // $19
-      leadData.company || null, // $20
-      leadData.company_location || null, // $21
-      leadData.category || null, // $22
-      leadData.country || null, // $23
-      leadData.contact_person, // $24
-      leadData.email, // $25
-      leadData.phone || null, // $26
-      leadData.industry || null, // $27
-      leadData.company_size || null, // $28
-      JSON.stringify(leadData.contacts || []), // $29
-      leadData.priority || "medium", // $30
-      leadData.expected_close_date || null, // $31
-      leadData.probability || 50, // $32
-      leadData.notes || null, // $33
-      leadData.created_by, // $34
-      leadData.assigned_to || null, // $35
+      leadData.project_requirements || null, // $6
+      JSON.stringify(leadData.solutions || []), // $7
+      leadData.priority_level || "medium", // $8
+      leadData.start_date || null, // $9
+      leadData.targeted_end_date || null, // $10
+      leadData.expected_daily_txn_volume || null, // $11
+      leadData.project_value || null, // $12
+      leadData.spoc || null, // $13
+      JSON.stringify(leadData.commercials || []), // $14
+      JSON.stringify(leadData.commercial_pricing || []), // $15
+      leadData.client_name, // $16
+      leadData.client_type || null, // $17
+      leadData.company || null, // $18
+      leadData.company_location || null, // $19
+      leadData.category || null, // $20
+      leadData.country || null, // $21
+      JSON.stringify(leadData.contacts || []), // $22
+      leadData.priority || "medium", // $23
+      leadData.expected_close_date || null, // $24
+      leadData.probability || 50, // $25
+      leadData.notes || null, // $26
+      leadData.created_by, // $27
+      leadData.assigned_to || null, // $28
     ];
 
     const result = await pool.query(query, values);
