@@ -263,20 +263,22 @@ export default function FollowUpTracker() {
 
   // Filter follow-ups based on search and filters
   const filteredFollowUps = followUps.filter((followUp) => {
+    if (!followUp) return false;
+
+    const searchLower = searchTerm.toLowerCase();
     const matchesSearch =
-      followUp.lead_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      followUp.step_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      followUp.assigned_to.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      followUp.assigned_by.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      followUp.original_message
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      followUp.id.toString().includes(searchTerm);
+      (followUp.lead_name || followUp.lead_client_name || "").toLowerCase().includes(searchLower) ||
+      (followUp.step_name || "").toLowerCase().includes(searchLower) ||
+      (followUp.assigned_user_name || "").toLowerCase().includes(searchLower) ||
+      (followUp.created_by_name || "").toLowerCase().includes(searchLower) ||
+      (followUp.title || "").toLowerCase().includes(searchLower) ||
+      (followUp.description || "").toLowerCase().includes(searchLower) ||
+      (followUp.id || "").toString().includes(searchTerm);
 
     const matchesStatus =
       statusFilter === "all" || followUp.status === statusFilter;
     const matchesAssignee =
-      assigneeFilter === "all" || followUp.assigned_to === assigneeFilter;
+      assigneeFilter === "all" || followUp.assigned_user_name === assigneeFilter;
 
     return matchesSearch && matchesStatus && matchesAssignee;
   });
