@@ -311,9 +311,9 @@ export function EnhancedStepItem({
                       </CardDescription>
                     </div>
                     <div className="flex items-center space-x-1">
-                      {chatMessages.length > 0 && (
+                      {sortedMessages.length > 0 && (
                         <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
-                          {chatMessages.length} messages
+                          {sortedMessages.length} messages
                         </span>
                       )}
                     </div>
