@@ -440,12 +440,7 @@ export default function LeadDashboard() {
                     <div className="text-right flex flex-col items-end space-y-2">
                       {lead.expected_close_date && (
                         <div className="text-sm text-gray-500">
-                          Expected:{" "}
-                          {new Date(
-                            lead.expected_close_date,
-                          ).toLocaleDateString("en-IN", {
-                            timeZone: "Asia/Kolkata",
-                          })}
+                          Expected: {formatToIST(lead.expected_close_date)}
                         </div>
                       )}
                       <AlertDialog>
