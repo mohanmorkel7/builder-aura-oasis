@@ -480,13 +480,13 @@ export default function LeadEdit() {
       )}
 
       {/* Form Tabs */}
-      <Tabs defaultValue="basic" className="space-y-6">
+      <Tabs defaultValue={canEditLead ? "basic" : "additional"} className="space-y-6">
         <TabsList className="grid w-full grid-cols-6">
-          <TabsTrigger value="basic">Lead Info</TabsTrigger>
-          <TabsTrigger value="project">Project Details</TabsTrigger>
-          <TabsTrigger value="commercials">Commercials</TabsTrigger>
-          <TabsTrigger value="client">Client Info</TabsTrigger>
-          <TabsTrigger value="contact">Contact Info</TabsTrigger>
+          <TabsTrigger value="basic" disabled={!canEditLead}>Lead Info</TabsTrigger>
+          <TabsTrigger value="project" disabled={!canEditLead}>Project Details</TabsTrigger>
+          <TabsTrigger value="commercials" disabled={!canEditLead}>Commercials</TabsTrigger>
+          <TabsTrigger value="client" disabled={!canEditLead}>Client Info</TabsTrigger>
+          <TabsTrigger value="contact" disabled={!canEditLead}>Contact Info</TabsTrigger>
           <TabsTrigger value="additional">Additional</TabsTrigger>
         </TabsList>
 
