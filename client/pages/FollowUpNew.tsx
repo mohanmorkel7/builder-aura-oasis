@@ -93,18 +93,18 @@ export default function FollowUpNew() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      // Here you would make an API call to create the follow-up
+      // Create the follow-up using the API
       const followUpData = {
         ...followUp,
         client_id: !isLeadFollowUp ? parseInt(id || "0") : undefined,
         lead_id: isLeadFollowUp ? leadContext?.stepId : undefined,
         message_id: isLeadFollowUp ? leadContext?.messageId : undefined,
-        created_at: new Date().toISOString(),
-        status: "pending",
+        created_by: parseInt(user?.id || "0"),
+        follow_up_type: followUp.type,
       };
 
       console.log("Creating follow-up:", followUpData);
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
+      await createFollowUpMutation.mutateAsync(followUpData);
 
       // Create system message for lead follow-up with assigned user info
       console.log("Checking system message creation conditions:");
