@@ -87,5 +87,12 @@ export function createServer() {
     console.error("Error loading leads router:", error);
   }
 
+  try {
+    app.use("/api/follow-ups", followUpsRouter);
+    console.log("Follow-ups router loaded successfully");
+  } catch (error) {
+    console.error("Error loading follow-ups router:", error);
+  }
+
   return app;
 }
