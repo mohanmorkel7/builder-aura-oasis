@@ -455,7 +455,21 @@ export default function LeadEdit() {
         </div>
       </div>
 
-      {/* Form Validation Alert */}
+      {/* Access Control and Form Validation Alerts */}
+      {!canEditLead && (
+        <Alert>
+          <Info className="h-4 w-4" />
+          <AlertDescription>
+            {user?.role === "sales"
+              ? "As a Sales user, you can only edit assignment and status information."
+              : user?.role === "product"
+                ? "As a Product user, you have view-only access to leads."
+                : "You have limited editing permissions for this lead."
+            }
+          </AlertDescription>
+        </Alert>
+      )}
+
       {!isFormValid && (
         <Alert>
           <Info className="h-4 w-4" />
