@@ -1050,10 +1050,10 @@ export class MockDataService {
         attachments: [
           {
             id: 1,
-            file_name: "client_requirements.pdf",
-            file_path: "/uploads/client_requirements.pdf",
-            file_size: 1024576,
-            file_type: "application/pdf",
+            file_name: "client_requirements.txt",
+            file_path: "/uploads/client_requirements.txt",
+            file_size: 2048,
+            file_type: "text/plain",
             uploaded_at: "2024-01-16T14:15:00Z",
           },
         ],
