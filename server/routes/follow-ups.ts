@@ -314,11 +314,12 @@ router.get("/", async (req: Request, res: Response) => {
           client_id: 1,
           lead_id: 1,
           title: "Technical Specifications Review",
-          description: "Review technical specifications for TechCorp integration",
+          description:
+            "Review technical specifications for TechCorp integration",
           status: "pending",
           follow_up_type: "technical",
           assigned_to: 3, // Mike Johnson
-          created_by: 2,  // Jane Smith
+          created_by: 2, // Jane Smith
           due_date: "2024-01-25",
           created_at: "2024-01-16T14:15:00+05:30",
           updated_at: "2024-01-16T14:15:00+05:30",
@@ -326,7 +327,7 @@ router.get("/", async (req: Request, res: Response) => {
           created_by_name: "Jane Smith",
           client_name: "TechCorp Solutions",
           lead_client_name: "TechCorp Solutions",
-          lead_project_title: "E-commerce Platform Development"
+          lead_project_title: "E-commerce Platform Development",
         },
         {
           id: 14,
@@ -337,7 +338,7 @@ router.get("/", async (req: Request, res: Response) => {
           status: "in_progress",
           follow_up_type: "document",
           assigned_to: 1, // John Doe
-          created_by: 2,  // Jane Smith
+          created_by: 2, // Jane Smith
           due_date: "2024-01-24",
           created_at: "2024-01-21T09:00:00+05:30",
           updated_at: "2024-01-21T09:00:00+05:30",
@@ -345,18 +346,19 @@ router.get("/", async (req: Request, res: Response) => {
           created_by_name: "Jane Smith",
           client_name: "TechCorp Solutions",
           lead_client_name: "TechCorp Solutions",
-          lead_project_title: "E-commerce Platform Development"
+          lead_project_title: "E-commerce Platform Development",
         },
         {
           id: 15,
           client_id: 2,
           lead_id: 2,
           title: "Timeline Assessment",
-          description: "Assess timeline impact for additional reporting features",
+          description:
+            "Assess timeline impact for additional reporting features",
           status: "completed",
           follow_up_type: "meeting",
           assigned_to: 3, // Mike Johnson
-          created_by: 1,  // John Doe
+          created_by: 1, // John Doe
           due_date: "2024-01-20",
           completed_at: "2024-01-19T16:45:00+05:30",
           created_at: "2024-01-18T11:30:00+05:30",
@@ -365,18 +367,19 @@ router.get("/", async (req: Request, res: Response) => {
           created_by_name: "John Doe",
           client_name: "RetailMax Inc",
           lead_client_name: "RetailMax Inc",
-          lead_project_title: "Mobile App Development"
+          lead_project_title: "Mobile App Development",
         },
         {
           id: 16,
           client_id: 3,
           lead_id: 3,
           title: "Banking Compliance Review",
-          description: "Review banking regulations for data handling compliance",
+          description:
+            "Review banking regulations for data handling compliance",
           status: "overdue",
           follow_up_type: "compliance",
           assigned_to: 2, // Jane Smith
-          created_by: 3,  // Mike Johnson
+          created_by: 3, // Mike Johnson
           due_date: "2024-01-22",
           created_at: "2024-01-20T14:20:00+05:30",
           updated_at: "2024-01-20T14:20:00+05:30",
@@ -384,28 +387,34 @@ router.get("/", async (req: Request, res: Response) => {
           created_by_name: "Mike Johnson",
           client_name: "FinanceFirst Bank",
           lead_client_name: "FinanceFirst Bank",
-          lead_project_title: "Data Analytics Dashboard"
-        }
+          lead_project_title: "Data Analytics Dashboard",
+        },
       ];
 
       // Apply role-based filtering to mock data
       if (userRole === "sales" && userId) {
         const userIdNum = parseInt(userId as string);
-        mockFollowUps = mockFollowUps.filter(f => f.assigned_to === userIdNum || f.created_by === userIdNum);
+        mockFollowUps = mockFollowUps.filter(
+          (f) => f.assigned_to === userIdNum || f.created_by === userIdNum,
+        );
       } else if (userRole === "product" && userId) {
         const userIdNum = parseInt(userId as string);
-        mockFollowUps = mockFollowUps.filter(f => f.assigned_to === userIdNum || f.created_by === userIdNum);
+        mockFollowUps = mockFollowUps.filter(
+          (f) => f.assigned_to === userIdNum || f.created_by === userIdNum,
+        );
       }
 
       // Apply status filtering
       if (status) {
-        mockFollowUps = mockFollowUps.filter(f => f.status === status);
+        mockFollowUps = mockFollowUps.filter((f) => f.status === status);
       }
 
       // Apply assigned to filtering
       if (assigned_to) {
         const assignedToNum = parseInt(assigned_to as string);
-        mockFollowUps = mockFollowUps.filter(f => f.assigned_to === assignedToNum);
+        mockFollowUps = mockFollowUps.filter(
+          (f) => f.assigned_to === assignedToNum,
+        );
       }
 
       res.json(mockFollowUps);

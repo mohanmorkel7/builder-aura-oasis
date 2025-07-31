@@ -94,9 +94,14 @@ interface Notification {
 }
 
 // Get real notifications based on follow-ups data
-const getNotificationsFromFollowUps = async (userId: string, userName: string): Promise<Notification[]> => {
+const getNotificationsFromFollowUps = async (
+  userId: string,
+  userName: string,
+): Promise<Notification[]> => {
   try {
-    const response = await fetch(`/api/follow-ups?userId=${userId}&userRole=all`);
+    const response = await fetch(
+      `/api/follow-ups?userId=${userId}&userRole=all`,
+    );
     const followUps = await response.json();
 
     const notifications: Notification[] = [];
@@ -104,7 +109,10 @@ const getNotificationsFromFollowUps = async (userId: string, userName: string): 
 
     followUps.forEach((followUp: any) => {
       // Check if user is assigned to this follow-up
-      if (followUp.assigned_user_name === userName && followUp.status === 'pending') {
+      if (
+        followUp.assigned_user_name === userName &&
+        followUp.status === "pending"
+      ) {
         notifications.push({
           id: followUp.id,
           type: "follow_up_assigned",
@@ -117,10 +125,12 @@ const getNotificationsFromFollowUps = async (userId: string, userName: string): 
       }
 
       // Check if follow-up is overdue
-      if (followUp.assigned_user_name === userName &&
-          followUp.status !== 'completed' &&
-          followUp.due_date &&
-          new Date(followUp.due_date) < currentDate) {
+      if (
+        followUp.assigned_user_name === userName &&
+        followUp.status !== "completed" &&
+        followUp.due_date &&
+        new Date(followUp.due_date) < currentDate
+      ) {
         notifications.push({
           id: followUp.id + 1000, // Offset to avoid ID conflicts
           type: "follow_up_overdue",
@@ -133,7 +143,10 @@ const getNotificationsFromFollowUps = async (userId: string, userName: string): 
       }
     });
 
-    return notifications.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    return notifications.sort(
+      (a, b) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+    );
   } catch (error) {
     console.error("Failed to fetch notifications:", error);
     return [];
@@ -164,7 +177,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   React.useEffect(() => {
     const fetchNotifications = async () => {
       if (user) {
-        const realNotifications = await getNotificationsFromFollowUps(user.id, user.name);
+        const realNotifications = await getNotificationsFromFollowUps(
+          user.id,
+          user.name,
+        );
         setNotifications(realNotifications);
       }
     };

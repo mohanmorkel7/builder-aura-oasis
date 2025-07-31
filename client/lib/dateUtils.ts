@@ -7,10 +7,10 @@ export const IST_TIMEZONE = "Asia/Kolkata";
  */
 export const formatToIST = (
   date: string | Date,
-  options: Intl.DateTimeFormatOptions = {}
+  options: Intl.DateTimeFormatOptions = {},
 ): string => {
   const dateObj = typeof date === "string" ? new Date(date) : date;
-  
+
   const defaultOptions: Intl.DateTimeFormatOptions = {
     timeZone: IST_TIMEZONE,
     year: "numeric",
@@ -27,14 +27,14 @@ export const formatToIST = (
  */
 export const formatToISTDateTime = (
   date: string | Date,
-  options: Intl.DateTimeFormatOptions = {}
+  options: Intl.DateTimeFormatOptions = {},
 ): string => {
   const dateObj = typeof date === "string" ? new Date(date) : date;
-  
+
   const defaultOptions: Intl.DateTimeFormatOptions = {
     timeZone: IST_TIMEZONE,
     year: "numeric",
-    month: "short", 
+    month: "short",
     day: "numeric",
     hour: "2-digit",
     minute: "2-digit",
@@ -49,11 +49,13 @@ export const formatToISTDateTime = (
  */
 export const formatToISTDateOnly = (date: string | Date): string => {
   const dateObj = typeof date === "string" ? new Date(date) : date;
-  
+
   // Convert to IST and extract date part
-  const istDate = new Date(dateObj.toLocaleString("en-US", { timeZone: IST_TIMEZONE }));
-  
-  return istDate.toISOString().split('T')[0];
+  const istDate = new Date(
+    dateObj.toLocaleString("en-US", { timeZone: IST_TIMEZONE }),
+  );
+
+  return istDate.toISOString().split("T")[0];
 };
 
 /**
@@ -69,7 +71,7 @@ export const getCurrentISTTimestamp = (): string => {
 export const isOverdue = (dueDate: string | Date): boolean => {
   const dueDateObj = typeof dueDate === "string" ? new Date(dueDate) : dueDate;
   const currentIST = new Date(getCurrentISTTimestamp());
-  
+
   return dueDateObj < currentIST;
 };
 
@@ -79,16 +81,18 @@ export const isOverdue = (dueDate: string | Date): boolean => {
 export const getRelativeTimeIST = (date: string | Date): string => {
   const dateObj = typeof date === "string" ? new Date(date) : date;
   const currentIST = new Date(getCurrentISTTimestamp());
-  
+
   const diffMs = currentIST.getTime() - dateObj.getTime();
   const diffMinutes = Math.floor(diffMs / (1000 * 60));
   const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
   if (diffMinutes < 1) return "just now";
-  if (diffMinutes < 60) return `${diffMinutes} minute${diffMinutes !== 1 ? 's' : ''} ago`;
-  if (diffHours < 24) return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
-  if (diffDays < 7) return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
-  
+  if (diffMinutes < 60)
+    return `${diffMinutes} minute${diffMinutes !== 1 ? "s" : ""} ago`;
+  if (diffHours < 24)
+    return `${diffHours} hour${diffHours !== 1 ? "s" : ""} ago`;
+  if (diffDays < 7) return `${diffDays} day${diffDays !== 1 ? "s" : ""} ago`;
+
   return formatToIST(dateObj);
 };

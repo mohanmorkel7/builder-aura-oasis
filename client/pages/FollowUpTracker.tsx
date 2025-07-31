@@ -187,7 +187,7 @@ export default function FollowUpTracker() {
           ...f,
           created_at: new Date(f.created_at).toISOString(),
           updated_at: new Date(f.updated_at).toISOString(),
-          due_date: f.due_date || new Date().toISOString().split('T')[0],
+          due_date: f.due_date || new Date().toISOString().split("T")[0],
         }));
 
         setFollowUps(formattedFollowUps);
@@ -229,7 +229,8 @@ export default function FollowUpTracker() {
 
   const handleUpdateStatus = async (followUpId: number, newStatus: string) => {
     try {
-      const completedAt = newStatus === "completed" ? new Date().toISOString() : null;
+      const completedAt =
+        newStatus === "completed" ? new Date().toISOString() : null;
 
       const response = await fetch(`/api/follow-ups/${followUpId}`, {
         method: "PATCH",
@@ -244,12 +245,12 @@ export default function FollowUpTracker() {
 
       if (response.ok) {
         // Update local state
-        setFollowUps(prevFollowUps =>
-          prevFollowUps.map(f =>
+        setFollowUps((prevFollowUps) =>
+          prevFollowUps.map((f) =>
             f.id === followUpId
               ? { ...f, status: newStatus as any, completed_at: completedAt }
-              : f
-          )
+              : f,
+          ),
         );
         console.log(`Follow-up ${followUpId} status updated to ${newStatus}`);
       } else {
@@ -267,7 +268,9 @@ export default function FollowUpTracker() {
 
     const searchLower = searchTerm.toLowerCase();
     const matchesSearch =
-      (followUp.lead_name || followUp.lead_client_name || "").toLowerCase().includes(searchLower) ||
+      (followUp.lead_name || followUp.lead_client_name || "")
+        .toLowerCase()
+        .includes(searchLower) ||
       (followUp.step_name || "").toLowerCase().includes(searchLower) ||
       (followUp.assigned_user_name || "").toLowerCase().includes(searchLower) ||
       (followUp.created_by_name || "").toLowerCase().includes(searchLower) ||
@@ -278,7 +281,8 @@ export default function FollowUpTracker() {
     const matchesStatus =
       statusFilter === "all" || followUp.status === statusFilter;
     const matchesAssignee =
-      assigneeFilter === "all" || followUp.assigned_user_name === assigneeFilter;
+      assigneeFilter === "all" ||
+      followUp.assigned_user_name === assigneeFilter;
 
     return matchesSearch && matchesStatus && matchesAssignee;
   });
@@ -334,10 +338,7 @@ export default function FollowUpTracker() {
               <div>
                 <p className="text-blue-600 text-sm font-medium">In Progress</p>
                 <p className="text-2xl font-bold text-blue-900">
-                  {
-                    followUps.filter((f) => f.status === "in_progress")
-                      .length
-                  }
+                  {followUps.filter((f) => f.status === "in_progress").length}
                 </p>
               </div>
               <AlertCircle className="w-8 h-8 text-blue-600" />
@@ -450,8 +451,11 @@ export default function FollowUpTracker() {
         ) : (
           filteredFollowUps.map((followUp) => {
             const StatusIcon = statusIcons[followUp.status] || Clock;
-            const isFollowUpOverdue = followUp.status === "overdue" ||
-              (followUp.status !== "completed" && followUp.due_date && isOverdue(followUp.due_date));
+            const isFollowUpOverdue =
+              followUp.status === "overdue" ||
+              (followUp.status !== "completed" &&
+                followUp.due_date &&
+                isOverdue(followUp.due_date));
             const isAssignedToMe = followUp.assigned_user_name === user?.name;
 
             return (
@@ -479,9 +483,17 @@ export default function FollowUpTracker() {
                           #{followUp.id}
                         </Badge>
                         <h3 className="text-lg font-semibold text-gray-900">
-                          {followUp.lead_client_name || followUp.client_name || "Unknown Lead"} • {followUp.title || "Follow-up"}
+                          {followUp.lead_client_name ||
+                            followUp.client_name ||
+                            "Unknown Lead"}{" "}
+                          • {followUp.title || "Follow-up"}
                         </h3>
-                        <Badge className={statusColors[followUp.status] || "bg-gray-100 text-gray-700"}>
+                        <Badge
+                          className={
+                            statusColors[followUp.status] ||
+                            "bg-gray-100 text-gray-700"
+                          }
+                        >
                           <StatusIcon className="w-3 h-3 mr-1" />
                           {(followUp.status || "unknown").replace("_", " ")}
                         </Badge>
@@ -494,7 +506,11 @@ export default function FollowUpTracker() {
 
                       <div className="bg-gray-50 p-3 rounded-lg mb-3 border-l-4 border-blue-200">
                         <p className="text-sm text-gray-700 italic">
-                          "{followUp.description || followUp.title || "No description available"}"
+                          "
+                          {followUp.description ||
+                            followUp.title ||
+                            "No description available"}
+                          "
                         </p>
                       </div>
 
@@ -502,22 +518,30 @@ export default function FollowUpTracker() {
                         <span className="flex items-center space-x-1">
                           <User className="w-4 h-4" />
                           <span>
-                            Assigned to: <strong>{followUp.assigned_user_name || "Unassigned"}</strong>
+                            Assigned to:{" "}
+                            <strong>
+                              {followUp.assigned_user_name || "Unassigned"}
+                            </strong>
                           </span>
                         </span>
                         <span className="flex items-center space-x-1">
                           <User className="w-4 h-4" />
-                          <span>By: {followUp.created_by_name || "Unknown"}</span>
+                          <span>
+                            By: {followUp.created_by_name || "Unknown"}
+                          </span>
                         </span>
                         {followUp.due_date && (
                           <span className="flex items-center space-x-1">
                             <Calendar className="w-4 h-4" />
                             <span
                               className={
-                                isFollowUpOverdue ? "text-red-600 font-medium" : ""
+                                isFollowUpOverdue
+                                  ? "text-red-600 font-medium"
+                                  : ""
                               }
                             >
-                              Due: {formatToISTDateTime(followUp.due_date, {
+                              Due:{" "}
+                              {formatToISTDateTime(followUp.due_date, {
                                 day: "numeric",
                                 month: "short",
                                 hour: "2-digit",
@@ -535,9 +559,7 @@ export default function FollowUpTracker() {
                       )}
 
                       <div className="flex items-center space-x-4 text-xs text-gray-500">
-                        <span>
-                          Created: {formatToIST(followUp.created_at)}
-                        </span>
+                        <span>Created: {formatToIST(followUp.created_at)}</span>
                         {followUp.completed_at && (
                           <span>
                             Completed: {formatToIST(followUp.completed_at)}

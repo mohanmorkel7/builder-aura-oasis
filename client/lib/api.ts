@@ -411,12 +411,18 @@ export class ApiClient {
   }
 
   // Follow-up methods
-  async getAllFollowUps(params?: { userId?: string; userRole?: string; status?: string; assigned_to?: string }) {
+  async getAllFollowUps(params?: {
+    userId?: string;
+    userRole?: string;
+    status?: string;
+    assigned_to?: string;
+  }) {
     const searchParams = new URLSearchParams();
     if (params?.userId) searchParams.append("userId", params.userId);
     if (params?.userRole) searchParams.append("userRole", params.userRole);
     if (params?.status) searchParams.append("status", params.status);
-    if (params?.assigned_to) searchParams.append("assigned_to", params.assigned_to);
+    if (params?.assigned_to)
+      searchParams.append("assigned_to", params.assigned_to);
 
     const queryString = searchParams.toString();
     return this.request(`/follow-ups${queryString ? `?${queryString}` : ""}`);

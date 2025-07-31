@@ -123,17 +123,17 @@ const mockLeads = [
         designation: "CTO",
         email: "john@acme.com",
         phone: "+1-555-0123",
-        linkedin: "https://linkedin.com/in/johnsmith"
-      }
+        linkedin: "https://linkedin.com/in/johnsmith",
+      },
     ],
     commercial_pricing: [
       {
         solution: "CardToken",
         value: 10,
         unit: "paisa",
-        currency: "INR"
-      }
-    ]
+        currency: "INR",
+      },
+    ],
   },
   {
     id: 2,
@@ -156,11 +156,11 @@ const mockLeads = [
         designation: "Product Manager",
         email: "sarah@techstart.com",
         phone: "+1-555-0456",
-        linkedin: ""
-      }
+        linkedin: "",
+      },
     ],
-    commercial_pricing: []
-  }
+    commercial_pricing: [],
+  },
 ];
 
 // User hooks
@@ -600,7 +600,7 @@ export function useLead(id: number) {
       try {
         return await apiClient.getLead(id);
       } catch {
-        return mockLeads.find(lead => lead.id === id) || null;
+        return mockLeads.find((lead) => lead.id === id) || null;
       }
     },
     enabled: !!id,

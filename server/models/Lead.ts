@@ -453,7 +453,10 @@ export class LeadRepository {
             FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE CASCADE;
       `);
     } catch (migrationError) {
-      console.log("Foreign key migration already applied or failed:", migrationError.message);
+      console.log(
+        "Foreign key migration already applied or failed:",
+        migrationError.message,
+      );
     }
 
     // Now delete the lead - cascading deletes should handle follow-ups

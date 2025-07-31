@@ -388,7 +388,7 @@ export default function LeadEdit() {
       setSaveError(
         error instanceof Error
           ? error.message
-          : "Failed to save lead. Please try again."
+          : "Failed to save lead. Please try again.",
       );
     } finally {
       setSaving(false);
@@ -501,9 +501,7 @@ export default function LeadEdit() {
 
       {saveError && (
         <Alert variant="destructive">
-          <AlertDescription>
-            {saveError}
-          </AlertDescription>
+          <AlertDescription>{saveError}</AlertDescription>
         </Alert>
       )}
 

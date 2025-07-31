@@ -491,9 +491,7 @@ export default function LeadDashboard() {
                         <span>Sales Rep: {lead.sales_rep_name}</span>
                       )}
                     </div>
-                    <div>
-                      Created: {formatToIST(lead.created_at)}
-                    </div>
+                    <div>Created: {formatToIST(lead.created_at)}</div>
                   </div>
                 </CardContent>
               </Card>
