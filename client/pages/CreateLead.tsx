@@ -421,7 +421,7 @@ export default function CreateLead() {
       {/* Form Tabs */}
       <Tabs defaultValue="basic" className="space-y-6">
         <TabsList className="grid w-full grid-cols-6">
-          <TabsTrigger value="basic">Basic Info</TabsTrigger>
+          <TabsTrigger value="basic">Lead Info</TabsTrigger>
           <TabsTrigger value="project">Project Details</TabsTrigger>
           <TabsTrigger value="commercials">Commercials</TabsTrigger>
           <TabsTrigger value="client">Client Info</TabsTrigger>
@@ -429,13 +429,13 @@ export default function CreateLead() {
           <TabsTrigger value="additional">Additional</TabsTrigger>
         </TabsList>
 
-        {/* Basic Information Tab */}
+        {/* Lead Information Tab */}
         <TabsContent value="basic" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Basic Lead Information</CardTitle>
+              <CardTitle>Lead Information</CardTitle>
               <CardDescription>
-                Essential information about the lead source and initial contact
+                Essential information about the lead source
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -520,69 +520,7 @@ export default function CreateLead() {
                 </div>
               )}
 
-              {/* Contact Information */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="client_name">Client/Company Name *</Label>
-                  <div className="relative mt-1">
-                    <Building className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input
-                      id="client_name"
-                      value={leadData.client_name}
-                      onChange={(e) =>
-                        updateField("client_name", e.target.value)
-                      }
-                      className="pl-10"
-                      placeholder="Enter client or company name"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <Label htmlFor="contact_person">Contact Person *</Label>
-                  <div className="relative mt-1">
-                    <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input
-                      id="contact_person"
-                      value={leadData.contact_person}
-                      onChange={(e) =>
-                        updateField("contact_person", e.target.value)
-                      }
-                      className="pl-10"
-                      placeholder="Primary contact name"
-                    />
-                  </div>
-                </div>
-              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="email">Email Address *</Label>
-                  <div className="relative mt-1">
-                    <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input
-                      id="email"
-                      type="email"
-                      value={leadData.email}
-                      onChange={(e) => updateField("email", e.target.value)}
-                      className="pl-10"
-                      placeholder="contact@company.com"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <Label htmlFor="phone">Phone Number</Label>
-                  <div className="relative mt-1">
-                    <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input
-                      id="phone"
-                      value={leadData.phone}
-                      onChange={(e) => updateField("phone", e.target.value)}
-                      className="pl-10"
-                      placeholder="+1 (555) 000-0000"
-                    />
-                  </div>
-                </div>
-              </div>
             </CardContent>
           </Card>
         </TabsContent>
