@@ -228,13 +228,7 @@ router.post("/", async (req: Request, res: Response) => {
       }
     }
 
-    if (leadData.project_budget !== undefined) {
-      if (!DatabaseValidator.isValidNumber(leadData.project_budget, 0)) {
-        return res
-          .status(400)
-          .json({ error: "Project budget must be a positive number" });
-      }
-    }
+
 
     if (leadData.project_value !== undefined) {
       if (!DatabaseValidator.isValidNumber(leadData.project_value, 0)) {
