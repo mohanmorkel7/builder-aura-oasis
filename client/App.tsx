@@ -310,6 +310,17 @@ function AppRoutes() {
       />
 
       <Route
+        path="/leads/:id/pipeline-settings"
+        element={
+          <ProtectedRoute allowedRoles={["admin", "sales"]}>
+            <DashboardLayout>
+              <PipelineSettings />
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
         path="/sales/reports"
         element={
           <ProtectedRoute allowedRoles={["admin", "sales"]}>
