@@ -95,5 +95,12 @@ export function createServer() {
     console.error("Error loading follow-ups router:", error);
   }
 
+  try {
+    app.use("/api/files", filesRouter);
+    console.log("Files router loaded successfully");
+  } catch (error) {
+    console.error("Error loading files router:", error);
+  }
+
   return app;
 }
