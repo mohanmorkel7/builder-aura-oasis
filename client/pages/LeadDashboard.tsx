@@ -98,8 +98,11 @@ export default function LeadDashboard() {
   const filteredLeads = leads.filter((lead: any) => {
     const matchesSearch =
       lead.client_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      lead.contact_person?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       lead.lead_id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (lead.contacts && lead.contacts.some((contact: any) =>
+        contact.contact_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        contact.email?.toLowerCase().includes(searchTerm.toLowerCase())
+      )) ||
       lead.project_title?.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesStatus =
