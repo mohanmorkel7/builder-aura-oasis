@@ -419,7 +419,7 @@ export default function FollowUpNew() {
             </div>
             {followUp.assigned_to && (
               <p className="text-xs text-gray-500 mt-1">
-                Assigned to: {followUp.assigned_to}
+                Assigned to: {users.find((user: any) => user.id.toString() === followUp.assigned_to)?.first_name} {users.find((user: any) => user.id.toString() === followUp.assigned_to)?.last_name}
               </p>
             )}
           </div>
