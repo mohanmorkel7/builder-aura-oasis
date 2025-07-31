@@ -50,6 +50,7 @@ import {
   Trash2,
   MoreVertical,
 } from "lucide-react";
+import { formatToIST } from "@/lib/dateUtils";
 
 const statusColors = {
   "in-progress": "bg-blue-100 text-blue-700",
