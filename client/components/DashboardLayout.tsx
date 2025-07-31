@@ -151,6 +151,7 @@ interface DashboardLayoutProps {
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const { user, logout } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   if (!user) {
     return <Navigate to="/login" replace />;
@@ -159,6 +160,17 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const allowedNavItems = navigationItems.filter((item) =>
     item.roles.includes(user.role),
   );
+
+  const notifications = getMockNotifications(user.name);
+  const unreadCount = notifications.filter(n => !n.read).length;
+
+  const handleNotificationClick = (notification: Notification) => {
+    // Mark as read (in a real app, this would make an API call)
+    notification.read = true;
+
+    // Navigate to the follow-up tracker with the specific ID
+    navigate(`/follow-ups?id=${notification.follow_up_id}`);
+  };
 
   return (
     <div className="flex h-screen bg-gray-50">
