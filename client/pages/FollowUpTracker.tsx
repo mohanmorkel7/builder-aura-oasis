@@ -448,10 +448,8 @@ export default function FollowUpTracker() {
         ) : (
           filteredFollowUps.map((followUp) => {
             const StatusIcon = statusIcons[followUp.status];
-            const isOverdue =
-              followUp.status === "overdue" ||
-              (followUp.status !== "completed" &&
-                new Date(followUp.due_date) < new Date());
+            const isFollowUpOverdue = followUp.status === "overdue" ||
+              (followUp.status !== "completed" && isOverdue(followUp.due_date));
             const isAssignedToMe = followUp.assigned_to === user?.name;
 
             return (
