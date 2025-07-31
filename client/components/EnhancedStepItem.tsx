@@ -291,12 +291,26 @@ export function EnhancedStepItem({
           <div className="border-t bg-gray-50">
             <div className="p-4">
               {/* Chat Section */}
-              <Card>
-                <CardHeader className="pb-4">
-                  <CardTitle className="text-base">Team Chat</CardTitle>
-                  <CardDescription>
-                    Communicate with your team about this step
-                  </CardDescription>
+              <Card className="border-0 shadow-lg">
+                <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 pb-4 rounded-t-lg">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                        Team Chat
+                      </CardTitle>
+                      <CardDescription className="text-gray-600">
+                        Real-time collaboration for this step
+                      </CardDescription>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      {chatMessages.length > 0 && (
+                        <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
+                          {chatMessages.length} messages
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {/* Chat Messages */}
