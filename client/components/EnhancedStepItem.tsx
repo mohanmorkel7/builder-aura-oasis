@@ -353,6 +353,8 @@ export function EnhancedStepItem({
                           className={`flex space-x-3 p-3 rounded border ${
                             message.message_type === "system"
                               ? "bg-blue-50 border-blue-200"
+                              : message.user_id === parseInt(user.id)
+                              ? "bg-green-50 border-green-200"
                               : "bg-white"
                           }`}
                         >
