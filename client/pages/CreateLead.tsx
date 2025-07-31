@@ -157,8 +157,6 @@ export default function CreateLead() {
     // Project Information
     project_title: "",
     project_description: "",
-    project_budget: "",
-    project_timeline: "",
     project_requirements: "",
 
     // Enhanced Project Info
