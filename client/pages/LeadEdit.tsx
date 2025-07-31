@@ -170,6 +170,7 @@ export default function LeadEdit() {
     lead_source: "",
     lead_source_value: "",
     status: "",
+    assigned_to: undefined as number | undefined,
 
     // Project Information
     project_title: "",
