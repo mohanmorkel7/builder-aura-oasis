@@ -29,7 +29,9 @@ router.get("/download/:filename", async (req: Request, res: Response) => {
     
     // Get file stats for proper headers
     const stats = fs.statSync(filePath);
-    
+
+    console.log(`Serving file: ${sanitizedFilename} (${stats.size} bytes)`);
+
     // Set appropriate headers
     res.setHeader('Content-Disposition', `attachment; filename="${sanitizedFilename}"`);
     res.setHeader('Content-Type', 'application/octet-stream');
