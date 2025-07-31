@@ -108,6 +108,15 @@ export default function LeadDashboard() {
     navigate(`/leads/${leadId}`);
   };
 
+  const handleDeleteLead = async (leadId: number, leadName: string) => {
+    try {
+      await deleteLead.mutateAsync(leadId);
+      console.log(`Lead ${leadName} deleted successfully`);
+    } catch (error) {
+      console.error("Failed to delete lead:", error);
+    }
+  };
+
   // Filter leads based on search and filters
   const filteredLeads = leads.filter((lead: any) => {
     const matchesSearch =
