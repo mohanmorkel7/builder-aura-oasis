@@ -329,18 +329,26 @@ export default function FollowUpNew() {
 
           <div>
             <Label htmlFor="assigned_to">Assigned To</Label>
-            <div className="relative">
-              <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-              <Input
-                id="assigned_to"
-                value={followUp.assigned_to}
-                onChange={(e) => updateField("assigned_to", e.target.value)}
-                placeholder="Enter assignee name or email"
-                className="pl-10"
-              />
-            </div>
+            <Select
+              value={followUp.assigned_to}
+              onValueChange={(value) => updateField("assigned_to", value)}
+            >
+              <SelectTrigger className="mt-1">
+                <SelectValue placeholder="Select user to assign" />
+              </SelectTrigger>
+              <SelectContent>
+                {users.map((user: any) => (
+                  <SelectItem key={user.id} value={user.id.toString()}>
+                    <div className="flex items-center space-x-2">
+                      <User className="w-4 h-4" />
+                      <span>{user.first_name} {user.last_name} ({user.role})</span>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <p className="text-sm text-gray-600 mt-1">
-              Leave empty to assign to yourself
+              Select a user to assign this follow-up to
             </p>
           </div>
 
