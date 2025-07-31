@@ -253,9 +253,32 @@ export default function LeadDetails() {
                         >
                           <SourceIcon className="w-3 h-3" />
                         </div>
-                        <span className="capitalize">
-                          {leadData.lead_source.replace("-", " ")}
-                        </span>
+                        <div className="flex flex-col">
+                          <span className="capitalize">
+                            {leadData.lead_source.replace("-", " ")}
+                          </span>
+                          {leadData.lead_source_value && (
+                            <span className="text-sm text-blue-600 hover:underline cursor-pointer"
+                                  title={leadData.lead_source_value}>
+                              {leadData.lead_source === "email" ? (
+                                <a href={`mailto:${leadData.lead_source_value}`}>
+                                  {leadData.lead_source_value}
+                                </a>
+                              ) : leadData.lead_source === "phone" || leadData.lead_source === "cold-call" ? (
+                                <a href={`tel:${leadData.lead_source_value}`}>
+                                  {leadData.lead_source_value}
+                                </a>
+                              ) : leadData.lead_source === "website" ? (
+                                <a href={leadData.lead_source_value.startsWith('http') ? leadData.lead_source_value : `https://${leadData.lead_source_value}`}
+                                   target="_blank" rel="noopener noreferrer">
+                                  {leadData.lead_source_value}
+                                </a>
+                              ) : (
+                                leadData.lead_source_value
+                              )}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
