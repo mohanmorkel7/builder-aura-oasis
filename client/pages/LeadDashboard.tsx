@@ -337,10 +337,14 @@ export default function LeadDashboard() {
                             {lead.lead_source.replace("-", " ")}
                           </span>
                         </span>
-                        <span>•</span>
-                        <span>{lead.contact_person}</span>
-                        <span>•</span>
-                        <span>{lead.email}</span>
+                        {lead.contacts && lead.contacts.length > 0 && (
+                          <>
+                            <span>•</span>
+                            <span>{lead.contacts[0].contact_name}</span>
+                            <span>•</span>
+                            <span>{lead.contacts[0].email}</span>
+                          </>
+                        )}
                         {lead.probability && (
                           <>
                             <span>•</span>
