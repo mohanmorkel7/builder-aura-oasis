@@ -142,7 +142,7 @@ export function EnhancedStepItem({
 
     const chatData = {
       user_id: parseInt(user.id),
-      user_name: `${user.first_name} ${user.last_name}`,
+      user_name: user.name,
       message: messageText,
       message_type: "text" as const,
       is_rich_text: !!currentText, // Use rich text if there was existing text
@@ -163,7 +163,7 @@ export function EnhancedStepItem({
 
     const chatData = {
       user_id: parseInt(user.id),
-      user_name: `${user.first_name} ${user.last_name}`,
+      user_name: user.name,
       message: newMessage,
       message_type: "text" as const,
       is_rich_text: true,
@@ -184,7 +184,7 @@ export function EnhancedStepItem({
       // Create a system message indicating follow-up was created
       const followUpData = {
         user_id: parseInt(user.id),
-        user_name: `${user.first_name} ${user.last_name}`,
+        user_name: user.name,
         message: `📋 Follow-up created for message #${messageId} | Assigned to: ${user.first_name} ${user.last_name} | Time: ${new Date().toLocaleString()}`,
         message_type: "system" as const,
         is_rich_text: false,
