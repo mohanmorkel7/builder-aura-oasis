@@ -334,8 +334,6 @@ export default function CreateLead() {
 
   const isFormValid =
     leadData.client_name.trim() &&
-    leadData.contact_person.trim() &&
-    leadData.email.trim() &&
     leadData.lead_source;
 
   return (
