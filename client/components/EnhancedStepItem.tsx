@@ -50,6 +50,7 @@ import {
 import { useAuth } from "@/lib/auth-context";
 import { useStepChats, useCreateStepChat } from "@/hooks/useApi";
 import { apiClient } from "@/lib/api";
+import { formatToISTDateTime } from "@/lib/dateUtils";
 
 interface EnhancedStepItemProps {
   step: any;
