@@ -226,9 +226,38 @@ export default function FollowUpTracker() {
     });
   };
 
-  const handleUpdateStatus = (followUpId: number, newStatus: string) => {
-    // In a real app, this would make an API call
-    console.log(`Updating follow-up ${followUpId} status to ${newStatus}`);
+  const handleUpdateStatus = async (followUpId: number, newStatus: string) => {
+    try {
+      const completedAt = newStatus === "completed" ? new Date().toISOString() : null;
+
+      const response = await fetch(`/api/follow-ups/${followUpId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          status: newStatus,
+          completed_at: completedAt,
+        }),
+      });
+
+      if (response.ok) {
+        // Update local state
+        setFollowUps(prevFollowUps =>
+          prevFollowUps.map(f =>
+            f.id === followUpId
+              ? { ...f, status: newStatus as any, completed_at: completedAt }
+              : f
+          )
+        );
+        console.log(`Follow-up ${followUpId} status updated to ${newStatus}`);
+      } else {
+        throw new Error("Failed to update status");
+      }
+    } catch (error) {
+      console.error("Failed to update follow-up status:", error);
+      alert("Failed to update status. Please try again.");
+    }
   };
 
   // Filter follow-ups based on search and filters
