@@ -340,9 +340,32 @@ export default function LeadDashboard() {
                           >
                             <SourceIcon className="w-3 h-3" />
                           </div>
-                          <span className="capitalize">
-                            {lead.lead_source.replace("-", " ")}
-                          </span>
+                          <div className="flex flex-col">
+                            <span className="capitalize">
+                              {lead.lead_source.replace("-", " ")}
+                            </span>
+                            {lead.lead_source_value && (
+                              <span className="text-xs text-blue-600 hover:underline cursor-pointer"
+                                    title={lead.lead_source_value}>
+                                {lead.lead_source === "email" ? (
+                                  <a href={`mailto:${lead.lead_source_value}`}>
+                                    {lead.lead_source_value.length > 20 ? `${lead.lead_source_value.substring(0, 20)}...` : lead.lead_source_value}
+                                  </a>
+                                ) : lead.lead_source === "phone" || lead.lead_source === "cold-call" ? (
+                                  <a href={`tel:${lead.lead_source_value}`}>
+                                    {lead.lead_source_value}
+                                  </a>
+                                ) : lead.lead_source === "website" ? (
+                                  <a href={lead.lead_source_value.startsWith('http') ? lead.lead_source_value : `https://${lead.lead_source_value}`}
+                                     target="_blank" rel="noopener noreferrer">
+                                    {lead.lead_source_value.length > 20 ? `${lead.lead_source_value.substring(0, 20)}...` : lead.lead_source_value}
+                                  </a>
+                                ) : (
+                                  lead.lead_source_value.length > 20 ? `${lead.lead_source_value.substring(0, 20)}...` : lead.lead_source_value
+                                )}
+                              </span>
+                            )}
+                          </div>
                         </span>
                         {lead.contacts && lead.contacts.length > 0 && (
                           <>
