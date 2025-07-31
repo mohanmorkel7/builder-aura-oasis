@@ -121,6 +121,19 @@ export function EnhancedStepItem({
 
   const [newMessage, setNewMessage] = useState("");
 
+  // Function to highlight mentions in messages
+  const highlightMentions = (messageText: string) => {
+    if (!user) return messageText;
+
+    // Look for mentions of current user (case insensitive)
+    const userNamePattern = new RegExp(`@${user.name}`, 'gi');
+    const highlightedText = messageText.replace(userNamePattern,
+      `<span class="bg-red-100 text-red-700 px-1 rounded font-medium">@${user.name}</span>`
+    );
+
+    return highlightedText;
+  };
+
   // Don't render if step is invalid
   if (!step || !step.id) {
     return null;
