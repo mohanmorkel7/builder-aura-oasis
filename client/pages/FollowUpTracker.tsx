@@ -415,7 +415,18 @@ export default function FollowUpTracker() {
 
       {/* Follow-ups List */}
       <div className="grid gap-4">
-        {filteredFollowUps.length === 0 ? (
+        {loading ? (
+          <Card>
+            <CardContent className="p-12 text-center">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <MessageCircle className="w-8 h-8 text-gray-400 animate-pulse" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                Loading follow-ups...
+              </h3>
+            </CardContent>
+          </Card>
+        ) : filteredFollowUps.length === 0 ? (
           <Card>
             <CardContent className="p-12 text-center">
               <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
