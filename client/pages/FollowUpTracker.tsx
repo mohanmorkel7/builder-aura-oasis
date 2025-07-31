@@ -481,9 +481,9 @@ export default function FollowUpTracker() {
                         <h3 className="text-lg font-semibold text-gray-900">
                           {followUp.lead_client_name || followUp.client_name || "Unknown Lead"} • {followUp.title || "Follow-up"}
                         </h3>
-                        <Badge className={statusColors[followUp.status]}>
+                        <Badge className={statusColors[followUp.status] || "bg-gray-100 text-gray-700"}>
                           <StatusIcon className="w-3 h-3 mr-1" />
-                          {followUp.status.replace("_", " ")}
+                          {(followUp.status || "unknown").replace("_", " ")}
                         </Badge>
                         {followUp.priority && (
                           <Badge className={priorityColors[followUp.priority]}>
