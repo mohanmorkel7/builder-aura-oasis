@@ -517,7 +517,7 @@ export function EnhancedStepItem({
                       ))}
                     {!chatLoading &&
                       !chatError &&
-                      chatMessages.length === 0 && (
+                      sortedMessages.length === 0 && (
                         <p className="text-sm text-gray-500 text-center py-8">
                           No messages yet. Start the conversation!
                         </p>
