@@ -414,9 +414,9 @@ export default function LeadDashboard() {
                   <div className="flex items-center justify-between text-sm text-gray-500">
                     <div className="flex items-center space-x-4">
                       {lead.company && <span>Company: {lead.company}</span>}
-                      {lead.industry && <span>Industry: {lead.industry}</span>}
+                      {lead.category && <span>Category: {lead.category}</span>}
                       {lead.sales_rep_name && (
-                        <span>Rep: {lead.sales_rep_name}</span>
+                        <span>Sales Rep: {lead.sales_rep_name}</span>
                       )}
                     </div>
                     <div>
