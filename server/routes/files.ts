@@ -5,6 +5,37 @@ import fs from "fs";
 
 const router = Router();
 
+// Configure multer for file uploads
+const uploadsDir = path.join(process.cwd(), "public", "uploads");
+
+// Ensure uploads directory exists
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadsDir);
+  },
+  filename: (req, file, cb) => {
+    // Generate unique filename with timestamp
+    const timestamp = Date.now();
+    const sanitizedName = file.originalname.replace(/[^a-zA-Z0-9.-]/g, '_');
+    cb(null, `${timestamp}_${sanitizedName}`);
+  },
+});
+
+const upload = multer({
+  storage,
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    // Allow all file types for now, but could be restricted
+    cb(null, true);
+  },
+});
+
 // Download file by filename
 router.get("/download/:filename", async (req: Request, res: Response) => {
   try {
