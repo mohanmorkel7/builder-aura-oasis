@@ -587,7 +587,7 @@ export function useLeads(salesRepId?: number) {
       try {
         return await apiClient.getLeads(salesRepId);
       } catch {
-        return [];
+        return mockLeads;
       }
     },
   });
