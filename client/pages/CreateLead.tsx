@@ -920,57 +920,7 @@ export default function CreateLead() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="industry">Industry</Label>
-                  <Input
-                    id="industry"
-                    value={leadData.industry}
-                    onChange={(e) => updateField("industry", e.target.value)}
-                    className="mt-1"
-                    placeholder="e.g., Technology, Healthcare, Finance"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="company_size">Company Size</Label>
-                  <Select
-                    value={leadData.company_size}
-                    onValueChange={(value) =>
-                      updateField("company_size", value)
-                    }
-                  >
-                    <SelectTrigger className="mt-1">
-                      <SelectValue placeholder="Select company size" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {companySizes.map((size) => (
-                        <SelectItem key={size.value} value={size.value}>
-                          {size.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
 
-              <div>
-                <Label htmlFor="company_size">Company Size</Label>
-                <Select
-                  value={leadData.company_size}
-                  onValueChange={(value) => updateField("company_size", value)}
-                >
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Select company size" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {companySizes.map((size) => (
-                      <SelectItem key={size.value} value={size.value}>
-                        {size.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
             </CardContent>
           </Card>
         </TabsContent>
