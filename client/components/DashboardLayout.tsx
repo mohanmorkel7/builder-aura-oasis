@@ -13,6 +13,7 @@ import {
   LogOut,
   Grid3X3,
   Target,
+  FileText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
