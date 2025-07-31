@@ -52,7 +52,7 @@ const navigationItems: NavigationItem[] = [
   {
     name: "Proposals",
     href: "/proposals",
-    icon: Grid3X3,
+    icon: FileText,
     roles: ["admin", "sales", "product"],
   },
   {
