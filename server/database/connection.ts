@@ -10,6 +10,8 @@ const pool = new Pool({
     process.env.NODE_ENV === "production"
       ? { rejectUnauthorized: false }
       : false,
+  // Set timezone to IST for all connections
+  options: "-c timezone=Asia/Kolkata",
 });
 
 // Initialize database
