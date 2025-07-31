@@ -239,8 +239,6 @@ export default function LeadEdit() {
         status: lead.status || "",
         project_title: lead.project_title || "",
         project_description: lead.project_description || "",
-        project_budget: lead.project_budget?.toString() || "",
-        project_timeline: lead.project_timeline || "",
         project_requirements: lead.project_requirements || "",
 
         // Enhanced Project Info
