@@ -628,6 +628,9 @@ export function useUpdateLead() {
       queryClient.invalidateQueries({ queryKey: ["leads", id] });
       queryClient.invalidateQueries({ queryKey: ["lead-stats"] });
     },
+    onError: (error) => {
+      console.error("Lead update failed:", error);
+    },
   });
 }
 
