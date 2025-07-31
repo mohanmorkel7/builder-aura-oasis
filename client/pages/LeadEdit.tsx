@@ -239,8 +239,8 @@ export default function LeadEdit() {
         // Enhanced Project Info
         solutions: lead.solutions || [],
         priority_level: lead.priority_level || "",
-        start_date: lead.start_date || "",
-        targeted_end_date: lead.targeted_end_date || "",
+        start_date: lead.start_date ? lead.start_date.split('T')[0] : "",
+        targeted_end_date: lead.targeted_end_date ? lead.targeted_end_date.split('T')[0] : "",
         expected_daily_txn_volume:
           lead.expected_daily_txn_volume?.toString() || "",
         project_value: lead.project_value?.toString() || "",
