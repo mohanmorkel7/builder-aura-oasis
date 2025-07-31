@@ -448,8 +448,7 @@ export default function LeadEdit() {
         <Alert>
           <Info className="h-4 w-4" />
           <AlertDescription>
-            Please fill in all required fields: Client Name, Contact Person,
-            Email, and Lead Source.
+            Please fill in all required fields: Client Name and Lead Source.
           </AlertDescription>
         </Alert>
       )}
