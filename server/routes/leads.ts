@@ -137,10 +137,7 @@ router.post("/", async (req: Request, res: Response) => {
 
 
 
-    // Validate phone format if provided
-    if (leadData.phone && !DatabaseValidator.isValidPhone(leadData.phone)) {
-      return res.status(400).json({ error: "Invalid phone number format" });
-    }
+
 
     // Validate enum values
     if (
