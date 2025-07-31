@@ -185,7 +185,7 @@ export function EnhancedStepItem({
       const followUpData = {
         user_id: parseInt(user.id),
         user_name: user.name,
-        message: `📋 Follow-up created for message #${messageId} | Assigned to: ${user.first_name} ${user.last_name} | Time: ${new Date().toLocaleString()}`,
+        message: `📋 Follow-up created for message #${messageId} | Assigned to: ${user.name} | Time: ${new Date().toLocaleString()}`,
         message_type: "system" as const,
         is_rich_text: false,
       };
