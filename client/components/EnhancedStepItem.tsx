@@ -160,36 +160,50 @@ export function EnhancedStepItem({
     const files = event.target.files;
     if (!files || files.length === 0 || !user) return;
 
-    // Create a chat message with file attachments and current text
-    const attachments = Array.from(files).map((file) => ({
-      file_name: file.name,
-      file_size: file.size,
-      file_type: file.type,
-    }));
-
-    const fileNames = Array.from(files)
-      .map((f) => f.name)
-      .join(", ");
-    const currentText = newMessage.trim();
-    const messageText = currentText
-      ? `${currentText}\n\n📎 Attached: ${fileNames}`
-      : `📎 Uploaded ${files.length} file${files.length > 1 ? "s" : ""}: ${fileNames}`;
-
-    const chatData = {
-      user_id: parseInt(user.id),
-      user_name: user.name,
-      message: messageText,
-      message_type: "text" as const,
-      is_rich_text: !!currentText, // Use rich text if there was existing text
-      attachments,
-    };
-
     try {
+      // First, upload the actual files to the server
+      console.log("Uploading files to server...");
+      const uploadResult = await apiClient.uploadFiles(files);
+
+      if (!uploadResult.success) {
+        throw new Error("File upload failed");
+      }
+
+      console.log("Files uploaded successfully:", uploadResult.files);
+
+      // Create attachments array with the uploaded file information
+      const attachments = uploadResult.files.map((file: any) => ({
+        file_name: file.originalName,
+        file_path: file.path,
+        file_size: file.size,
+        file_type: file.mimetype,
+        server_filename: file.filename,
+      }));
+
+      const fileNames = uploadResult.files.map((f: any) => f.originalName).join(", ");
+      const currentText = newMessage.trim();
+      const messageText = currentText
+        ? `${currentText}\n\n📎 Attached: ${fileNames}`
+        : `📎 Uploaded ${files.length} file${files.length > 1 ? "s" : ""}: ${fileNames}`;
+
+      const chatData = {
+        user_id: parseInt(user.id),
+        user_name: user.name,
+        message: messageText,
+        message_type: "text" as const,
+        is_rich_text: !!currentText,
+        attachments,
+      };
+
+      // Create the chat message with the file attachments
       await createChatMutation.mutateAsync({ stepId: step.id, chatData });
-      setNewMessage(""); // Clear the message input after successful upload
+      setNewMessage("");
       event.target.value = "";
+
+      console.log("Chat message with attachments created successfully");
     } catch (error) {
       console.error("Failed to upload files:", error);
+      alert("Failed to upload files. Please try again.");
     }
   };
 
