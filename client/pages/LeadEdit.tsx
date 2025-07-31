@@ -269,7 +269,7 @@ export default function LeadEdit() {
         country: lead.country || "",
 
         priority: lead.priority || "",
-        expected_close_date: lead.expected_close_date || "",
+        expected_close_date: lead.expected_close_date ? lead.expected_close_date.split('T')[0] : "",
         probability: lead.probability?.toString() || "",
         notes: lead.notes || "",
       });
