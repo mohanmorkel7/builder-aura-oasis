@@ -396,7 +396,7 @@ export default function LeadDashboard() {
                       )}
                     </div>
                     <div>
-                      Created: {new Date(lead.created_at).toLocaleDateString()}
+                      Created: {new Date(lead.created_at).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}
                     </div>
                   </div>
                 </CardContent>
