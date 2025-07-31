@@ -361,15 +361,7 @@ router.put("/:id", async (req: Request, res: Response) => {
 
     const leadData: UpdateLeadData = req.body;
 
-    // Validate email format if provided
-    if (leadData.email && !DatabaseValidator.isValidEmail(leadData.email)) {
-      return res.status(400).json({ error: "Invalid email format" });
-    }
 
-    // Validate phone format if provided
-    if (leadData.phone && !DatabaseValidator.isValidPhone(leadData.phone)) {
-      return res.status(400).json({ error: "Invalid phone number format" });
-    }
 
     // Validate enum values if provided
     if (
