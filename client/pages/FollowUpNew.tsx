@@ -64,6 +64,8 @@ export default function FollowUpNew() {
     error,
   } = useClient(!isLeadFollowUp ? parseInt(id || "0") : 0);
 
+  const { data: users = [] } = useUsers();
+
   const [followUp, setFollowUp] = useState({
     type: "call",
     title: "",
