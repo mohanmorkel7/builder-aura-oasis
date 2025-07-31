@@ -160,6 +160,11 @@ export default function LeadEdit() {
   const { data: originalLead, isLoading, error } = useLead(leadId);
   const updateLeadMutation = useUpdateLead();
 
+  // Check if user has edit permissions
+  const canEditLead = user?.role === "admin";
+  const canEditAssignments = user?.role === "admin" || user?.role === "sales";
+  const canViewOnly = user?.role === "product";
+
   const [leadData, setLeadData] = useState({
     // Lead Source & Status
     lead_source: "",
