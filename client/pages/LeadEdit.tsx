@@ -1176,27 +1176,10 @@ export default function LeadEdit() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Status and Assignment - Available to Sales users */}
+              {/* Assignment - Available to Sales users */}
               {canEditAssignments && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="status">Lead Status</Label>
-                    <Select
-                      value={leadData.status}
-                      onValueChange={(value) => updateField("status", value)}
-                    >
-                      <SelectTrigger className="mt-1">
-                        <SelectValue placeholder="Select status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {statuses.map((status) => (
-                          <SelectItem key={status.value} value={status.value}>
-                            {status.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  {/* Removed duplicate status field - it's already in the main form */}
                   <div>
                     <Label htmlFor="assigned_to">Assigned To</Label>
                     <Input
