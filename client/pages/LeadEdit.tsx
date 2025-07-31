@@ -499,6 +499,14 @@ export default function LeadEdit() {
         </Alert>
       )}
 
+      {saveError && (
+        <Alert variant="destructive">
+          <AlertDescription>
+            {saveError}
+          </AlertDescription>
+        </Alert>
+      )}
+
       {/* Form Tabs */}
       <Tabs
         defaultValue={canEditLead ? "basic" : "additional"}
