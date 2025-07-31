@@ -381,7 +381,7 @@ export default function LeadDashboard() {
                           Expected:{" "}
                           {new Date(
                             lead.expected_close_date,
-                          ).toLocaleDateString()}
+                          ).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}
                         </div>
                       )}
                     </div>
