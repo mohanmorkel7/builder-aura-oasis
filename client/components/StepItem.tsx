@@ -255,7 +255,7 @@ export function StepItem({
                           {comment.user_name}
                         </span>
                         <span className="text-xs text-gray-500">
-                          {new Date(comment.created_at).toLocaleString()}
+                          {new Date(comment.created_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
                         </span>
                       </div>
                       <p className="text-sm text-gray-700">{comment.message}</p>
