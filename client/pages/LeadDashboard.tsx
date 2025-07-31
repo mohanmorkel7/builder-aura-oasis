@@ -436,7 +436,7 @@ export default function LeadDashboard() {
                       )}
                     </div>
 
-                    <div className="text-right">
+                    <div className="text-right flex flex-col items-end space-y-2">
                       {lead.expected_close_date && (
                         <div className="text-sm text-gray-500">
                           Expected:{" "}
@@ -447,6 +447,36 @@ export default function LeadDashboard() {
                           })}
                         </div>
                       )}
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <Trash2 className="w-3 h-3 mr-1" />
+                            Delete
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Delete Lead</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Are you sure you want to delete "{lead.client_name}"? This action cannot be undone.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleDeleteLead(lead.id, lead.client_name)}
+                              className="bg-red-600 hover:bg-red-700"
+                            >
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   </div>
 
