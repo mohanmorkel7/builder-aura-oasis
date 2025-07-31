@@ -558,7 +558,7 @@ export default function LeadDetails() {
                     <span className="text-gray-900">
                       {new Date(
                         leadData.expected_close_date,
-                      ).toLocaleDateString()}
+                      ).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}
                     </span>
                   </div>
                 )}
