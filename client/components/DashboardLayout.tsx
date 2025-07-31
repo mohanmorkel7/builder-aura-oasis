@@ -213,6 +213,103 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           })}
         </nav>
 
+        {/* Notifications */}
+        <div className="p-4 border-t border-gray-200">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full relative"
+              >
+                <Bell className="w-4 h-4 mr-2" />
+                Notifications
+                {unreadCount > 0 && (
+                  <Badge
+                    className="absolute -top-2 -right-2 bg-red-500 text-white text-xs min-w-[20px] h-5 flex items-center justify-center rounded-full"
+                  >
+                    {unreadCount}
+                  </Badge>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80 p-0" align="end">
+              <div className="p-4 border-b">
+                <h3 className="font-medium text-gray-900">Notifications</h3>
+                <p className="text-xs text-gray-500">
+                  {unreadCount} unread notifications
+                </p>
+              </div>
+              <div className="max-h-80 overflow-y-auto">
+                {notifications.length === 0 ? (
+                  <div className="p-4 text-center text-gray-500">
+                    <Bell className="w-8 h-8 mx-auto mb-2 text-gray-300" />
+                    <p className="text-sm">No notifications</p>
+                  </div>
+                ) : (
+                  notifications.map((notification) => (
+                    <div
+                      key={notification.id}
+                      className={`p-3 border-b hover:bg-gray-50 cursor-pointer transition-colors ${
+                        !notification.read ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
+                      }`}
+                      onClick={() => handleNotificationClick(notification)}
+                    >
+                      <div className="flex items-start space-x-3">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                          notification.type === 'follow_up_assigned' ? 'bg-blue-100' :
+                          notification.type === 'follow_up_mentioned' ? 'bg-red-100' :
+                          'bg-yellow-100'
+                        }`}>
+                          {notification.type === 'follow_up_assigned' ? (
+                            <MessageCircle className="w-4 h-4 text-blue-600" />
+                          ) : notification.type === 'follow_up_mentioned' ? (
+                            <Bell className="w-4 h-4 text-red-600" />
+                          ) : (
+                            <AlertCircle className="w-4 h-4 text-yellow-600" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900">
+                            {notification.title}
+                          </p>
+                          <p className="text-xs text-gray-600 line-clamp-2">
+                            {notification.message}
+                          </p>
+                          <p className="text-xs text-gray-400 mt-1">
+                            {new Date(notification.created_at).toLocaleDateString("en-IN", {
+                              timeZone: "Asia/Kolkata",
+                              month: "short",
+                              day: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit"
+                            })}
+                          </p>
+                        </div>
+                        {!notification.read && (
+                          <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-2"></div>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+              {notifications.length > 0 && (
+                <div className="p-3 border-t bg-gray-50">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full text-xs"
+                    onClick={() => navigate('/follow-ups')}
+                  >
+                    View All Follow-ups
+                  </Button>
+                </div>
+              )}
+            </PopoverContent>
+          </Popover>
+        </div>
+
         {/* User Profile */}
         <div className="p-4 border-t border-gray-200">
           <div className="flex items-center space-x-3 mb-3">
