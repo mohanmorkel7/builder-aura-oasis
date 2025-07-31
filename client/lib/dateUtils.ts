@@ -1,0 +1,94 @@
+// Utility functions for handling IST (India Standard Time) formatting
+
+export const IST_TIMEZONE = "Asia/Kolkata";
+
+/**
+ * Formats a date to IST timezone with various options
+ */
+export const formatToIST = (
+  date: string | Date,
+  options: Intl.DateTimeFormatOptions = {}
+): string => {
+  const dateObj = typeof date === "string" ? new Date(date) : date;
+  
+  const defaultOptions: Intl.DateTimeFormatOptions = {
+    timeZone: IST_TIMEZONE,
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    ...options,
+  };
+
+  return dateObj.toLocaleDateString("en-IN", defaultOptions);
+};
+
+/**
+ * Formats a date to IST with time included
+ */
+export const formatToISTDateTime = (
+  date: string | Date,
+  options: Intl.DateTimeFormatOptions = {}
+): string => {
+  const dateObj = typeof date === "string" ? new Date(date) : date;
+  
+  const defaultOptions: Intl.DateTimeFormatOptions = {
+    timeZone: IST_TIMEZONE,
+    year: "numeric",
+    month: "short", 
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    ...options,
+  };
+
+  return dateObj.toLocaleString("en-IN", defaultOptions);
+};
+
+/**
+ * Formats a date to just the date part in IST (YYYY-MM-DD format)
+ */
+export const formatToISTDateOnly = (date: string | Date): string => {
+  const dateObj = typeof date === "string" ? new Date(date) : date;
+  
+  // Convert to IST and extract date part
+  const istDate = new Date(dateObj.toLocaleString("en-US", { timeZone: IST_TIMEZONE }));
+  
+  return istDate.toISOString().split('T')[0];
+};
+
+/**
+ * Gets current IST timestamp
+ */
+export const getCurrentISTTimestamp = (): string => {
+  return new Date().toLocaleString("en-US", { timeZone: IST_TIMEZONE });
+};
+
+/**
+ * Checks if a date is overdue (past current IST time)
+ */
+export const isOverdue = (dueDate: string | Date): boolean => {
+  const dueDateObj = typeof dueDate === "string" ? new Date(dueDate) : dueDate;
+  const currentIST = new Date(getCurrentISTTimestamp());
+  
+  return dueDateObj < currentIST;
+};
+
+/**
+ * Gets relative time in IST (e.g., "2 hours ago", "in 3 days")
+ */
+export const getRelativeTimeIST = (date: string | Date): string => {
+  const dateObj = typeof date === "string" ? new Date(date) : date;
+  const currentIST = new Date(getCurrentISTTimestamp());
+  
+  const diffMs = currentIST.getTime() - dateObj.getTime();
+  const diffMinutes = Math.floor(diffMs / (1000 * 60));
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  if (diffMinutes < 1) return "just now";
+  if (diffMinutes < 60) return `${diffMinutes} minute${diffMinutes !== 1 ? 's' : ''} ago`;
+  if (diffHours < 24) return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
+  if (diffDays < 7) return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
+  
+  return formatToIST(dateObj);
+};
