@@ -385,6 +385,16 @@ export default function LeadEdit() {
     navigate(`/leads/${id}`);
   };
 
+  // Redirect non-admin users with limited access
+  React.useEffect(() => {
+    if (user && !canEditLead && !canEditAssignments && canViewOnly) {
+      // Product users can only view
+      navigate(`/leads/${id}`, {
+        state: { message: "You don't have permission to edit leads. Redirected to view mode." }
+      });
+    }
+  }, [user, canEditLead, canEditAssignments, canViewOnly, navigate, id]);
+
   if (isLoading) {
     return (
       <div className="p-6">
