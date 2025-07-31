@@ -371,48 +371,61 @@ export function EnhancedStepItem({
                             </div>
                             {message.attachments &&
                               message.attachments.length > 0 && (
-                                <div className="mt-2 space-y-1">
+                                <div className="mt-3 space-y-2">
                                   {message.attachments.map(
                                     (attachment, index) => (
                                       <div
                                         key={index}
-                                        className="flex items-center space-x-2 text-xs"
+                                        className="flex items-center space-x-3 p-2 bg-gray-50 rounded-lg border"
                                       >
-                                        <Paperclip className="w-3 h-3 text-blue-600" />
-                                        <span
-                                          className="text-blue-600 hover:text-blue-800 cursor-pointer underline"
-                                          onClick={() => {
-                                            const link =
-                                              document.createElement("a");
-                                            link.href = `/uploads/${attachment.file_name}`;
-                                            link.download =
-                                              attachment.file_name;
-                                            link.target = "_blank";
-                                            link.click();
-                                          }}
-                                        >
-                                          {attachment.file_name}
-                                        </span>
-                                        <span className="text-gray-500">
-                                          (
-                                          {formatFileSize(attachment.file_size)}
-                                          )
-                                        </span>
+                                        <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                          <Paperclip className="w-4 h-4 text-blue-600" />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                          <p className="text-sm font-medium text-gray-900 truncate">
+                                            {attachment.file_name}
+                                          </p>
+                                          <p className="text-xs text-gray-500">
+                                            {formatFileSize(attachment.file_size)}
+                                          </p>
+                                        </div>
                                         <Button
                                           size="sm"
-                                          variant="ghost"
-                                          className="h-auto p-1"
+                                          variant="outline"
+                                          className="h-8 px-3 text-xs"
                                           onClick={() => {
-                                            const link =
-                                              document.createElement("a");
-                                            link.href = `/uploads/${attachment.file_name}`;
-                                            link.download =
-                                              attachment.file_name;
-                                            link.target = "_blank";
-                                            link.click();
+                                            // Create a proper download link that requests the actual file
+                                            // Instead of linking directly which causes index.html to download
+                                            fetch(`/api/files/download/${attachment.file_name}`)
+                                              .then(response => {
+                                                if (response.ok) {
+                                                  return response.blob();
+                                                }
+                                                throw new Error('File not found');
+                                              })
+                                              .then(blob => {
+                                                const url = window.URL.createObjectURL(blob);
+                                                const link = document.createElement('a');
+                                                link.href = url;
+                                                link.download = attachment.file_name;
+                                                document.body.appendChild(link);
+                                                link.click();
+                                                document.body.removeChild(link);
+                                                window.URL.revokeObjectURL(url);
+                                              })
+                                              .catch(error => {
+                                                console.error('Download failed:', error);
+                                                // Fallback to direct link
+                                                const link = document.createElement('a');
+                                                link.href = `/uploads/${attachment.file_name}`;
+                                                link.download = attachment.file_name;
+                                                link.target = '_blank';
+                                                link.click();
+                                              });
                                           }}
                                         >
-                                          <Download className="w-3 h-3" />
+                                          <Download className="w-3 h-3 mr-1" />
+                                          Download
                                         </Button>
                                       </div>
                                     ),
