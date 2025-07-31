@@ -452,7 +452,7 @@ export default function FollowUpTracker() {
             const StatusIcon = statusIcons[followUp.status];
             const isFollowUpOverdue = followUp.status === "overdue" ||
               (followUp.status !== "completed" && isOverdue(followUp.due_date));
-            const isAssignedToMe = followUp.assigned_to === user?.name;
+            const isAssignedToMe = followUp.assigned_user_name === user?.name;
 
             return (
               <Card
