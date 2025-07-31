@@ -18,7 +18,13 @@ router.get("/download/:filename", async (req: Request, res: Response) => {
     
     // Check if file exists
     if (!fs.existsSync(filePath)) {
-      return res.status(404).json({ error: "File not found" });
+      console.log(`File not found: ${filePath}`);
+      console.log(`Available files in uploads:`, fs.readdirSync(uploadsDir));
+      return res.status(404).json({
+        error: "File not found",
+        requested: sanitizedFilename,
+        path: filePath
+      });
     }
     
     // Get file stats for proper headers
