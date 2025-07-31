@@ -73,16 +73,11 @@ CREATE TABLE IF NOT EXISTS leads (
     
     -- Client Information
     client_name VARCHAR(255) NOT NULL,
-    client_type VARCHAR(50) CHECK (client_type IN ('individual', 'business', 'enterprise', 'startup', 'government', 'nonprofit')),
+    client_type VARCHAR(50) CHECK (client_type IN ('new', 'existing')),
     company VARCHAR(255),
     company_location VARCHAR(500),
-    category VARCHAR(100) CHECK (category IN ('fintech', 'ecommerce', 'healthcare', 'education', 'retail', 'manufacturing', 'technology', 'finance', 'consulting', 'other')),
+    category VARCHAR(100) CHECK (category IN ('aggregator', 'banks')),
     country VARCHAR(100) CHECK (country IN ('india', 'usa', 'uae', 'uk', 'singapore', 'canada', 'australia', 'other')),
-    contact_person VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL,
-    phone VARCHAR(20),
-    industry VARCHAR(100),
-    company_size VARCHAR(50) CHECK (company_size IN ('1-10', '11-50', '51-200', '201-500', '501-1000', '1000+')),
     
     -- Contact Information (JSONB array for multiple contacts)
     contacts JSONB DEFAULT '[]'::jsonb,
