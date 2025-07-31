@@ -509,20 +509,15 @@ export default function FollowUpTracker() {
                           <Calendar className="w-4 h-4" />
                           <span
                             className={
-                              isOverdue ? "text-red-600 font-medium" : ""
+                              isFollowUpOverdue ? "text-red-600 font-medium" : ""
                             }
                           >
-                            Due:{" "}
-                            {new Date(followUp.due_date).toLocaleDateString(
-                              "en-IN",
-                              {
-                                timeZone: "Asia/Kolkata",
-                                day: "numeric",
-                                month: "short",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              },
-                            )}
+                            Due: {formatToISTDateTime(followUp.due_date, {
+                              day: "numeric",
+                              month: "short",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
                           </span>
                         </span>
                       </div>
