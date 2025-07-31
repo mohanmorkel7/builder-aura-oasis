@@ -268,11 +268,7 @@ export default function LeadEdit() {
         company_location: lead.company_location || "",
         category: lead.category || "",
         country: lead.country || "",
-        contact_person: lead.contact_person || "",
-        email: lead.email || "",
-        phone: lead.phone || "",
-        industry: lead.industry || "",
-        company_size: lead.company_size || "",
+
         priority: lead.priority || "",
         expected_close_date: lead.expected_close_date || "",
         probability: lead.probability?.toString() || "",
