@@ -261,7 +261,7 @@ export default function FollowUpTracker() {
   };
 
   // Filter follow-ups based on search and filters
-  const filteredFollowUps = mockFollowUps.filter((followUp) => {
+  const filteredFollowUps = followUps.filter((followUp) => {
     const matchesSearch =
       followUp.lead_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       followUp.step_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
