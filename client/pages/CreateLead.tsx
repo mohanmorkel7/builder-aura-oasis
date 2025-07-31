@@ -288,14 +288,6 @@ export default function CreateLead() {
     if (!leadData.client_name.trim()) {
       newErrors.push("Client name is required");
     }
-    if (!leadData.contact_person.trim()) {
-      newErrors.push("Contact person is required");
-    }
-    if (!leadData.email.trim()) {
-      newErrors.push("Email is required");
-    } else if (!/\S+@\S+\.\S+/.test(leadData.email)) {
-      newErrors.push("Email format is invalid");
-    }
     if (!leadData.lead_source) {
       newErrors.push("Lead source is required");
     }
