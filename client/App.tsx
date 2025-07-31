@@ -300,6 +300,26 @@ function AppRoutes() {
       />
 
       <Route
+        path="/proposals"
+        element={
+          <ProtectedRoute allowedRoles={["admin", "sales", "product"]}>
+            <DashboardLayout>
+              <ProposalList />
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/proposals/new"
+        element={
+          <ProtectedRoute allowedRoles={["admin", "sales"]}>
+            <DashboardLayout>
+              <ProposalNew />
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/leads/:id/proposal"
         element={
           <ProtectedRoute allowedRoles={["admin", "sales"]}>
