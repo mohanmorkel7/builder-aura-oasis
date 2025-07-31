@@ -121,17 +121,28 @@ export function EnhancedStepItem({
 
   const [newMessage, setNewMessage] = useState("");
 
-  // Function to highlight mentions in messages
-  const highlightMentions = (messageText: string) => {
+  // Function to highlight mentions and make follow-up IDs clickable
+  const processMessageContent = (messageText: string) => {
     if (!user) return messageText;
+
+    let processedText = messageText;
 
     // Look for mentions of current user (case insensitive)
     const userNamePattern = new RegExp(`@${user.name}`, 'gi');
-    const highlightedText = messageText.replace(userNamePattern,
+    processedText = processedText.replace(userNamePattern,
       `<span class="bg-red-100 text-red-700 px-1 rounded font-medium">@${user.name}</span>`
     );
 
-    return highlightedText;
+    // Make follow-up IDs clickable (#13, #14, etc.)
+    const followUpPattern = /#(\d+)/g;
+    processedText = processedText.replace(followUpPattern,
+      `<span class="follow-up-link bg-blue-100 text-blue-700 px-2 py-1 rounded font-medium cursor-pointer hover:bg-blue-200"
+        data-follow-up-id="$1"
+        onclick="window.location.href='/follow-ups?id=$1'"
+      >#$1</span>`
+    );
+
+    return processedText;
   };
 
   // Don't render if step is invalid
