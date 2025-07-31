@@ -93,58 +93,51 @@ interface Notification {
   read: boolean;
 }
 
-// Mock notifications for the current user
-const getMockNotifications = (userName: string): Notification[] => {
-  if (userName === "Jane Smith") {
-    return [
-      {
-        id: 1,
-        type: "follow_up_assigned",
-        title: "New Follow-up Assigned",
-        message:
-          "You have been assigned follow-up #16 for FinanceFirst Bank compliance review",
-        follow_up_id: 16,
-        created_at: "2024-01-20T14:20:00Z",
-        read: false,
-      },
-      {
-        id: 2,
-        type: "follow_up_mentioned",
-        title: "You were mentioned",
-        message:
-          "Mike Johnson mentioned you in follow-up #15 regarding RetailMax reporting features",
-        follow_up_id: 15,
-        created_at: "2024-01-19T10:30:00Z",
-        read: false,
-      },
-    ];
-  }
+// Get real notifications based on follow-ups data
+const getNotificationsFromFollowUps = async (userId: string, userName: string): Promise<Notification[]> => {
+  try {
+    const response = await fetch(`/api/follow-ups?userId=${userId}&userRole=all`);
+    const followUps = await response.json();
 
-  if (userName === "Mike Johnson") {
-    return [
-      {
-        id: 3,
-        type: "follow_up_assigned",
-        title: "New Follow-up Assigned",
-        message:
-          "You have been assigned follow-up #13 for TechCorp technical specifications review",
-        follow_up_id: 13,
-        created_at: "2024-01-16T14:15:00Z",
-        read: false,
-      },
-      {
-        id: 4,
-        type: "follow_up_overdue",
-        title: "Follow-up Overdue",
-        message: "Follow-up #15 for RetailMax timeline assessment is overdue",
-        follow_up_id: 15,
-        created_at: "2024-01-21T09:00:00Z",
-        read: true,
-      },
-    ];
-  }
+    const notifications: Notification[] = [];
+    const currentDate = new Date();
 
-  return [];
+    followUps.forEach((followUp: any) => {
+      // Check if user is assigned to this follow-up
+      if (followUp.assigned_user_name === userName && followUp.status === 'pending') {
+        notifications.push({
+          id: followUp.id,
+          type: "follow_up_assigned",
+          title: "Follow-up Assigned",
+          message: `You have been assigned: ${followUp.title}`,
+          follow_up_id: followUp.id,
+          created_at: followUp.created_at,
+          read: false,
+        });
+      }
+
+      // Check if follow-up is overdue
+      if (followUp.assigned_user_name === userName &&
+          followUp.status !== 'completed' &&
+          followUp.due_date &&
+          new Date(followUp.due_date) < currentDate) {
+        notifications.push({
+          id: followUp.id + 1000, // Offset to avoid ID conflicts
+          type: "follow_up_overdue",
+          title: "Follow-up Overdue",
+          message: `Overdue: ${followUp.title}`,
+          follow_up_id: followUp.id,
+          created_at: followUp.updated_at,
+          read: false,
+        });
+      }
+    });
+
+    return notifications.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+  } catch (error) {
+    console.error("Failed to fetch notifications:", error);
+    return [];
+  }
 };
 
 interface DashboardLayoutProps {
