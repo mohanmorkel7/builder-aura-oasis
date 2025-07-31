@@ -83,6 +83,67 @@ const navigationItems: NavigationItem[] = [
   },
 ];
 
+interface Notification {
+  id: number;
+  type: "follow_up_assigned" | "follow_up_mentioned" | "follow_up_overdue";
+  title: string;
+  message: string;
+  follow_up_id: number;
+  created_at: string;
+  read: boolean;
+}
+
+// Mock notifications for the current user
+const getMockNotifications = (userName: string): Notification[] => {
+  if (userName === "Jane Smith") {
+    return [
+      {
+        id: 1,
+        type: "follow_up_assigned",
+        title: "New Follow-up Assigned",
+        message: "You have been assigned follow-up #16 for FinanceFirst Bank compliance review",
+        follow_up_id: 16,
+        created_at: "2024-01-20T14:20:00Z",
+        read: false,
+      },
+      {
+        id: 2,
+        type: "follow_up_mentioned",
+        title: "You were mentioned",
+        message: "Mike Johnson mentioned you in follow-up #15 regarding RetailMax reporting features",
+        follow_up_id: 15,
+        created_at: "2024-01-19T10:30:00Z",
+        read: false,
+      }
+    ];
+  }
+
+  if (userName === "Mike Johnson") {
+    return [
+      {
+        id: 3,
+        type: "follow_up_assigned",
+        title: "New Follow-up Assigned",
+        message: "You have been assigned follow-up #13 for TechCorp technical specifications review",
+        follow_up_id: 13,
+        created_at: "2024-01-16T14:15:00Z",
+        read: false,
+      },
+      {
+        id: 4,
+        type: "follow_up_overdue",
+        title: "Follow-up Overdue",
+        message: "Follow-up #15 for RetailMax timeline assessment is overdue",
+        follow_up_id: 15,
+        created_at: "2024-01-21T09:00:00Z",
+        read: true,
+      }
+    ];
+  }
+
+  return [];
+};
+
 interface DashboardLayoutProps {
   children: React.ReactNode;
 }
