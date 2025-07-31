@@ -1,0 +1,126 @@
+import { Router, Request, Response } from "express";
+import { pool } from "../database/connection";
+
+const router = Router();
+
+// Create a new follow-up
+router.post("/", async (req: Request, res: Response) => {
+  try {
+    const {
+      client_id,
+      lead_id,
+      title,
+      description,
+      due_date,
+      follow_up_type = "general",
+      assigned_to,
+      created_by,
+      message_id,
+    } = req.body;
+
+    const query = `
+      INSERT INTO follow_ups (
+        client_id, lead_id, title, description, due_date, 
+        follow_up_type, assigned_to, created_by
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      RETURNING *
+    `;
+
+    const values = [
+      client_id || null,
+      lead_id || null,
+      title,
+      description || null,
+      due_date || null,
+      follow_up_type,
+      assigned_to || null,
+      created_by,
+    ];
+
+    const result = await pool.query(query, values);
+    const followUp = result.rows[0];
+
+    res.status(201).json(followUp);
+  } catch (error) {
+    console.error("Error creating follow-up:", error);
+    res.status(500).json({ error: "Failed to create follow-up" });
+  }
+});
+
+// Get follow-ups for a client
+router.get("/client/:clientId", async (req: Request, res: Response) => {
+  try {
+    const clientId = parseInt(req.params.clientId);
+
+    const query = `
+      SELECT f.*, 
+             CONCAT(u.first_name, ' ', u.last_name) as assigned_user_name,
+             CONCAT(c.first_name, ' ', c.last_name) as created_by_name
+      FROM follow_ups f
+      LEFT JOIN users u ON f.assigned_to = u.id
+      LEFT JOIN users c ON f.created_by = c.id
+      WHERE f.client_id = $1
+      ORDER BY f.created_at DESC
+    `;
+
+    const result = await pool.query(query, [clientId]);
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Error fetching follow-ups:", error);
+    res.status(500).json({ error: "Failed to fetch follow-ups" });
+  }
+});
+
+// Get follow-ups for a lead
+router.get("/lead/:leadId", async (req: Request, res: Response) => {
+  try {
+    const leadId = parseInt(req.params.leadId);
+
+    const query = `
+      SELECT f.*, 
+             CONCAT(u.first_name, ' ', u.last_name) as assigned_user_name,
+             CONCAT(c.first_name, ' ', c.last_name) as created_by_name
+      FROM follow_ups f
+      LEFT JOIN users u ON f.assigned_to = u.id
+      LEFT JOIN users c ON f.created_by = c.id
+      WHERE f.lead_id = $1
+      ORDER BY f.created_at DESC
+    `;
+
+    const result = await pool.query(query, [leadId]);
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Error fetching follow-ups:", error);
+    res.status(500).json({ error: "Failed to fetch follow-ups" });
+  }
+});
+
+// Update follow-up status
+router.patch("/:id", async (req: Request, res: Response) => {
+  try {
+    const followUpId = parseInt(req.params.id);
+    const { status, completed_at } = req.body;
+
+    const query = `
+      UPDATE follow_ups 
+      SET status = $1, completed_at = $2, updated_at = CURRENT_TIMESTAMP
+      WHERE id = $3
+      RETURNING *
+    `;
+
+    const values = [status, completed_at || null, followUpId];
+    const result = await pool.query(query, values);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Follow-up not found" });
+    }
+
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error("Error updating follow-up:", error);
+    res.status(500).json({ error: "Failed to update follow-up" });
+  }
+});
+
+export default router;
