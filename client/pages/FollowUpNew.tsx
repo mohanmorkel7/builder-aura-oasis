@@ -105,6 +105,29 @@ export default function FollowUpNew() {
       console.log("Creating follow-up:", followUpData);
       await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
 
+      // Create system message for lead follow-up with assigned user info
+      if (isLeadFollowUp && leadContext?.createSystemMessage && user) {
+        const assignedUser = users.find((u: any) => u.id.toString() === followUp.assigned_to);
+        const assignedUserName = assignedUser ? `${assignedUser.first_name} ${assignedUser.last_name}` : "Unassigned";
+
+        const systemMessageData = {
+          user_id: parseInt(user.id),
+          user_name: user.name,
+          message: `📋 Follow-up created for message #${leadContext.messageId} | Assigned to: ${assignedUserName} | Time: ${new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}`,
+          message_type: "system" as const,
+          is_rich_text: false,
+        };
+
+        try {
+          await createChatMutation.mutateAsync({
+            stepId: leadContext.stepId,
+            chatData: systemMessageData,
+          });
+        } catch (chatError) {
+          console.error("Failed to create system message:", chatError);
+        }
+      }
+
       // Navigate back based on context
       if (isLeadFollowUp) {
         navigate(`/leads`);
