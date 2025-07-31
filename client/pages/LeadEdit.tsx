@@ -278,6 +278,7 @@ export default function LeadEdit() {
         expected_close_date: lead.expected_close_date ? lead.expected_close_date.split('T')[0] : "",
         probability: lead.probability?.toString() || "",
         notes: lead.notes || "",
+        assigned_to: lead.assigned_to || undefined,
       });
     }
   }, [originalLead]);
