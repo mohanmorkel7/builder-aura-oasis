@@ -600,24 +600,79 @@ export default function LeadDetails() {
               <CardTitle>Quick Actions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <Button className="w-full justify-start" variant="outline">
-                <Mail className="w-4 h-4 mr-2" />
-                Send Email
-              </Button>
-              <Button className="w-full justify-start" variant="outline">
+              {leadData.contacts && leadData.contacts.length > 0 && leadData.contacts[0].email ? (
+                <Button
+                  className="w-full justify-start"
+                  variant="outline"
+                  onClick={() => window.open(`mailto:${leadData.contacts[0].email}?subject=Follow-up: ${leadData.project_title || leadData.client_name}&body=Hi ${leadData.contacts[0].contact_name},%0D%0A%0D%0AI wanted to follow up on our discussion regarding ${leadData.project_title || 'your project'}...`, '_blank')}
+                >
+                  <Mail className="w-4 h-4 mr-2" />
+                  Send Email
+                </Button>
+              ) : (
+                <Button className="w-full justify-start" variant="outline" disabled>
+                  <Mail className="w-4 h-4 mr-2" />
+                  Send Email (No email available)
+                </Button>
+              )}
+
+              <Button
+                className="w-full justify-start"
+                variant="outline"
+                onClick={() => navigate(`/leads/${id}/follow-up`, {
+                  state: {
+                    fromQuickAction: true,
+                    leadId: id,
+                    stepName: 'Quick Action',
+                    messageId: null,
+                    createSystemMessage: false
+                  }
+                })}
+              >
                 <Calendar className="w-4 h-4 mr-2" />
-                Schedule Meeting
+                Schedule Follow-up
               </Button>
-              <Button className="w-full justify-start" variant="outline">
-                <Phone className="w-4 h-4 mr-2" />
-                Make Call
-              </Button>
-              <Button className="w-full justify-start" variant="outline">
+
+              {leadData.contacts && leadData.contacts.length > 0 && leadData.contacts[0].phone ? (
+                <Button
+                  className="w-full justify-start"
+                  variant="outline"
+                  onClick={() => window.open(`tel:${leadData.contacts[0].phone}`, '_self')}
+                >
+                  <Phone className="w-4 h-4 mr-2" />
+                  Call {leadData.contacts[0].contact_name}
+                </Button>
+              ) : (
+                <Button className="w-full justify-start" variant="outline" disabled>
+                  <Phone className="w-4 h-4 mr-2" />
+                  Make Call (No phone available)
+                </Button>
+              )}
+
+              <Button
+                className="w-full justify-start"
+                variant="outline"
+                onClick={() => navigate(`/leads/${id}/proposal`, {
+                  state: {
+                    leadData: leadData
+                  }
+                })}
+              >
                 <Target className="w-4 h-4 mr-2" />
                 Create Proposal
               </Button>
+
               <Separator />
-              <Button className="w-full justify-start" variant="outline">
+
+              <Button
+                className="w-full justify-start"
+                variant="outline"
+                onClick={() => navigate(`/leads/${id}/pipeline-settings`, {
+                  state: {
+                    leadData: leadData
+                  }
+                })}
+              >
                 <Settings className="w-4 h-4 mr-2" />
                 Pipeline Settings
               </Button>
