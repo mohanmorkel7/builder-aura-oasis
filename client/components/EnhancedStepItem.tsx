@@ -354,7 +354,7 @@ export function EnhancedStepItem({
                             }`}
                           >
                             {message.message_type === "system"
-                              ? "����"
+                              ? "🔔"
                               : message.user_name.charAt(0)}
                           </div>
                           <div className="flex-1">
@@ -366,7 +366,7 @@ export function EnhancedStepItem({
                                 <span className="text-xs text-gray-500">
                                   {new Date(
                                     message.created_at,
-                                  ).toLocaleString()}
+                                  ).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
                                 </span>
                                 {message.message_type !== "system" && (
                                   <Button
