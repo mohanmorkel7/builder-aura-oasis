@@ -20,7 +20,7 @@ const storage = multer.diskStorage({
   filename: (req, file, cb) => {
     // Generate unique filename with timestamp
     const timestamp = Date.now();
-    const sanitizedName = file.originalname.replace(/[^a-zA-Z0-9.-]/g, '_');
+    const sanitizedName = file.originalname.replace(/[^a-zA-Z0-9.-]/g, "_");
     cb(null, `${timestamp}_${sanitizedName}`);
   },
 });
@@ -37,32 +37,39 @@ const upload = multer({
 });
 
 // Upload files endpoint
-router.post("/upload", upload.array("files", 5), async (req: Request, res: Response) => {
-  try {
-    if (!req.files || !Array.isArray(req.files) || req.files.length === 0) {
-      return res.status(400).json({ error: "No files uploaded" });
+router.post(
+  "/upload",
+  upload.array("files", 5),
+  async (req: Request, res: Response) => {
+    try {
+      if (!req.files || !Array.isArray(req.files) || req.files.length === 0) {
+        return res.status(400).json({ error: "No files uploaded" });
+      }
+
+      const uploadedFiles = req.files.map((file) => ({
+        originalName: file.originalname,
+        filename: file.filename,
+        size: file.size,
+        mimetype: file.mimetype,
+        path: `/uploads/${file.filename}`,
+      }));
+
+      console.log(
+        `Successfully uploaded ${uploadedFiles.length} files:`,
+        uploadedFiles.map((f) => f.filename),
+      );
+
+      res.json({
+        success: true,
+        files: uploadedFiles,
+        message: `Successfully uploaded ${uploadedFiles.length} file(s)`,
+      });
+    } catch (error) {
+      console.error("Error uploading files:", error);
+      res.status(500).json({ error: "Failed to upload files" });
     }
-
-    const uploadedFiles = req.files.map((file) => ({
-      originalName: file.originalname,
-      filename: file.filename,
-      size: file.size,
-      mimetype: file.mimetype,
-      path: `/uploads/${file.filename}`,
-    }));
-
-    console.log(`Successfully uploaded ${uploadedFiles.length} files:`, uploadedFiles.map(f => f.filename));
-
-    res.json({
-      success: true,
-      files: uploadedFiles,
-      message: `Successfully uploaded ${uploadedFiles.length} file(s)`,
-    });
-  } catch (error) {
-    console.error("Error uploading files:", error);
-    res.status(500).json({ error: "Failed to upload files" });
-  }
-});
+  },
+);
 
 // Download file by filename
 router.get("/download/:filename", async (req: Request, res: Response) => {

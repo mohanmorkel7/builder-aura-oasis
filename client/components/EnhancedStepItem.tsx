@@ -180,7 +180,9 @@ export function EnhancedStepItem({
         server_filename: file.filename,
       }));
 
-      const fileNames = uploadResult.files.map((f: any) => f.originalName).join(", ");
+      const fileNames = uploadResult.files
+        .map((f: any) => f.originalName)
+        .join(", ");
       const currentText = newMessage.trim();
       const messageText = currentText
         ? `${currentText}\n\n📎 Attached: ${fileNames}`
@@ -472,7 +474,9 @@ export function EnhancedStepItem({
                                           className="h-8 px-3 text-xs"
                                           onClick={async () => {
                                             try {
-                                              const fileToDownload = attachment.server_filename || attachment.file_name;
+                                              const fileToDownload =
+                                                attachment.server_filename ||
+                                                attachment.file_name;
                                               console.log(
                                                 `Attempting to download: ${fileToDownload}`,
                                               );
