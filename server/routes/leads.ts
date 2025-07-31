@@ -334,12 +334,10 @@ router.put("/:id", async (req: Request, res: Response) => {
         "Database error, returning mock lead update response:",
         dbError.message,
       );
-      const mockLead = {
-        id: id,
-        lead_id: `#${id.toString().padStart(3, "0")}`,
-        ...leadData,
-        updated_at: new Date().toISOString(),
-      };
+      const mockLead = await MockDataService.updateLead(id, leadData);
+      if (!mockLead) {
+        return res.status(404).json({ error: "Lead not found" });
+      }
       res.json(mockLead);
     }
   } catch (error) {
