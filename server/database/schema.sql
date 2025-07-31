@@ -183,12 +183,15 @@ CREATE TABLE IF NOT EXISTS leads (
 CREATE TABLE IF NOT EXISTS follow_ups (
     id SERIAL PRIMARY KEY,
     client_id INTEGER REFERENCES clients(id),
+    lead_id INTEGER REFERENCES leads(id),
     title VARCHAR(255) NOT NULL,
     description TEXT,
     due_date DATE,
     status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'completed', 'overdue')),
+    follow_up_type VARCHAR(50) DEFAULT 'general' CHECK (follow_up_type IN ('call', 'email', 'meeting', 'document', 'proposal', 'contract', 'onboarding', 'general', 'sales', 'support', 'other')),
     assigned_to INTEGER REFERENCES users(id),
     created_by INTEGER REFERENCES users(id),
+    message_id INTEGER,
     completed_at TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
