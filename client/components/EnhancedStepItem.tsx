@@ -105,6 +105,13 @@ export function EnhancedStepItem({
   } = useStepChats(step.id);
   const createChatMutation = useCreateStepChat();
 
+  // Sort messages by created_at in descending order (latest first)
+  const sortedMessages = React.useMemo(() => {
+    return [...chatMessages].sort((a, b) =>
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
+  }, [chatMessages]);
+
   // Debug logging
   React.useEffect(() => {
     if (chatError) {
