@@ -107,8 +107,9 @@ export function EnhancedStepItem({
 
   // Sort messages by created_at in descending order (latest first)
   const sortedMessages = React.useMemo(() => {
-    return [...chatMessages].sort((a, b) =>
-      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    return [...chatMessages].sort(
+      (a, b) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
     );
   }, [chatMessages]);
 
@@ -128,18 +129,20 @@ export function EnhancedStepItem({
     let processedText = messageText;
 
     // Look for mentions of current user (case insensitive)
-    const userNamePattern = new RegExp(`@${user.name}`, 'gi');
-    processedText = processedText.replace(userNamePattern,
-      `<span class="bg-red-100 text-red-700 px-1 rounded font-medium">@${user.name}</span>`
+    const userNamePattern = new RegExp(`@${user.name}`, "gi");
+    processedText = processedText.replace(
+      userNamePattern,
+      `<span class="bg-red-100 text-red-700 px-1 rounded font-medium">@${user.name}</span>`,
     );
 
     // Make follow-up IDs clickable (#13, #14, etc.)
     const followUpPattern = /#(\d+)/g;
-    processedText = processedText.replace(followUpPattern,
+    processedText = processedText.replace(
+      followUpPattern,
       `<span class="follow-up-link bg-blue-100 text-blue-700 px-2 py-1 rounded font-medium cursor-pointer hover:bg-blue-200"
         data-follow-up-id="$1"
         onclick="window.location.href='/follow-ups?id=$1'"
-      >#$1</span>`
+      >#$1</span>`,
     );
 
     return processedText;
@@ -365,8 +368,8 @@ export function EnhancedStepItem({
                             message.message_type === "system"
                               ? "bg-blue-50 border-blue-200"
                               : message.user_id === parseInt(user.id)
-                              ? "bg-green-50 border-green-200"
-                              : "bg-white"
+                                ? "bg-green-50 border-green-200"
+                                : "bg-white"
                           }`}
                         >
                           <div
@@ -383,7 +386,9 @@ export function EnhancedStepItem({
                           <div className="flex-1">
                             <div className="flex items-center justify-between mb-1">
                               <span className="text-sm font-medium text-gray-900">
-                                {message.user_id === parseInt(user.id) ? "Me" : message.user_name}
+                                {message.user_id === parseInt(user.id)
+                                  ? "Me"
+                                  : message.user_name}
                               </span>
                               <div className="flex items-center space-x-2">
                                 <span className="text-xs text-gray-500">
@@ -409,13 +414,17 @@ export function EnhancedStepItem({
                               {message.is_rich_text ? (
                                 <div
                                   dangerouslySetInnerHTML={{
-                                    __html: processMessageContent(message.message),
+                                    __html: processMessageContent(
+                                      message.message,
+                                    ),
                                   }}
                                 />
                               ) : (
                                 <div
                                   dangerouslySetInnerHTML={{
-                                    __html: processMessageContent(message.message),
+                                    __html: processMessageContent(
+                                      message.message,
+                                    ),
                                   }}
                                 />
                               )}

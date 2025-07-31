@@ -68,7 +68,8 @@ const mockProposals: Proposal[] = [
     created_at: "2024-01-15T10:30:00Z",
     updated_at: "2024-01-16T14:20:00Z",
     created_by: "Jane Smith",
-    description: "Complete e-commerce platform with inventory management, payment processing, and analytics dashboard.",
+    description:
+      "Complete e-commerce platform with inventory management, payment processing, and analytics dashboard.",
     valid_until: "2024-02-15T23:59:59Z",
     content: `
       <h1>E-commerce Platform Development Proposal</h1>
@@ -91,7 +92,7 @@ const mockProposals: Proposal[] = [
       <h2>Investment</h2>
       <p>Total project cost: $75,000</p>
       <p>Payment schedule: 30% upfront, 40% at milestone completion, 30% on final delivery</p>
-    `
+    `,
   },
   {
     id: 2,
@@ -103,7 +104,8 @@ const mockProposals: Proposal[] = [
     created_at: "2024-01-10T09:15:00Z",
     updated_at: "2024-01-18T16:45:00Z",
     created_by: "Mike Johnson",
-    description: "Cross-platform mobile application for customer engagement and loyalty programs.",
+    description:
+      "Cross-platform mobile application for customer engagement and loyalty programs.",
     valid_until: "2024-02-10T23:59:59Z",
     content: `
       <h1>Mobile App Development Proposal</h1>
@@ -124,7 +126,7 @@ const mockProposals: Proposal[] = [
       
       <h2>Investment</h2>
       <p>Total project cost: $45,000</p>
-    `
+    `,
   },
   {
     id: 3,
@@ -136,7 +138,8 @@ const mockProposals: Proposal[] = [
     created_at: "2024-01-20T11:00:00Z",
     updated_at: "2024-01-22T13:30:00Z",
     created_by: "John Doe",
-    description: "Real-time data analytics dashboard for financial reporting and compliance.",
+    description:
+      "Real-time data analytics dashboard for financial reporting and compliance.",
     valid_until: "2024-02-20T23:59:59Z",
     content: `
       <h1>Data Analytics Dashboard Proposal</h1>
@@ -157,8 +160,8 @@ const mockProposals: Proposal[] = [
       
       <h2>Investment</h2>
       <p>Total project cost: $32,000</p>
-    `
-  }
+    `,
+  },
 ];
 
 const statusColors = {
@@ -180,10 +183,12 @@ const statusIcons = {
 export default function ProposalList() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  
+
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [selectedProposal, setSelectedProposal] = useState<Proposal | null>(null);
+  const [selectedProposal, setSelectedProposal] = useState<Proposal | null>(
+    null,
+  );
 
   const handleCreateProposal = () => {
     navigate("/proposals/new");
@@ -197,7 +202,8 @@ export default function ProposalList() {
       proposal.lead_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
       proposal.created_by.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesStatus = statusFilter === "all" || proposal.status === statusFilter;
+    const matchesStatus =
+      statusFilter === "all" || proposal.status === statusFilter;
 
     return matchesSearch && matchesStatus;
   });
@@ -235,11 +241,11 @@ export default function ProposalList() {
       </html>
     `;
 
-    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const blob = new Blob([htmlContent], { type: "text/html" });
     const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = url;
-    link.download = `${proposal.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_proposal.html`;
+    link.download = `${proposal.title.replace(/[^a-z0-9]/gi, "_").toLowerCase()}_proposal.html`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -272,7 +278,9 @@ export default function ProposalList() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-blue-600 text-sm font-medium">Total</p>
-                <p className="text-2xl font-bold text-blue-900">{mockProposals.length}</p>
+                <p className="text-2xl font-bold text-blue-900">
+                  {mockProposals.length}
+                </p>
               </div>
               <FileText className="w-8 h-8 text-blue-600" />
             </div>
@@ -285,7 +293,7 @@ export default function ProposalList() {
               <div>
                 <p className="text-yellow-600 text-sm font-medium">Draft</p>
                 <p className="text-2xl font-bold text-yellow-900">
-                  {mockProposals.filter(p => p.status === 'draft').length}
+                  {mockProposals.filter((p) => p.status === "draft").length}
                 </p>
               </div>
               <FileText className="w-8 h-8 text-yellow-600" />
@@ -299,7 +307,7 @@ export default function ProposalList() {
               <div>
                 <p className="text-orange-600 text-sm font-medium">Sent</p>
                 <p className="text-2xl font-bold text-orange-900">
-                  {mockProposals.filter(p => p.status === 'sent').length}
+                  {mockProposals.filter((p) => p.status === "sent").length}
                 </p>
               </div>
               <Clock className="w-8 h-8 text-orange-600" />
@@ -313,7 +321,7 @@ export default function ProposalList() {
               <div>
                 <p className="text-green-600 text-sm font-medium">Approved</p>
                 <p className="text-2xl font-bold text-green-900">
-                  {mockProposals.filter(p => p.status === 'approved').length}
+                  {mockProposals.filter((p) => p.status === "approved").length}
                 </p>
               </div>
               <CheckCircle className="w-8 h-8 text-green-600" />
@@ -325,9 +333,14 @@ export default function ProposalList() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-purple-600 text-sm font-medium">Total Value</p>
+                <p className="text-purple-600 text-sm font-medium">
+                  Total Value
+                </p>
                 <p className="text-lg font-bold text-purple-900">
-                  ${mockProposals.reduce((sum, p) => sum + p.value, 0).toLocaleString()}
+                  $
+                  {mockProposals
+                    .reduce((sum, p) => sum + p.value, 0)
+                    .toLocaleString()}
                 </p>
               </div>
               <DollarSign className="w-8 h-8 text-purple-600" />
@@ -406,9 +419,7 @@ export default function ProposalList() {
                         <h3 className="text-lg font-semibold text-gray-900">
                           {proposal.title}
                         </h3>
-                        <Badge
-                          className={statusColors[proposal.status]}
-                        >
+                        <Badge className={statusColors[proposal.status]}>
                           <StatusIcon className="w-3 h-3 mr-1" />
                           {proposal.status.replace("_", " ")}
                         </Badge>
@@ -439,14 +450,22 @@ export default function ProposalList() {
 
                       <div className="flex items-center space-x-4 text-xs text-gray-500">
                         <span>
-                          Created: {new Date(proposal.created_at).toLocaleDateString("en-IN", {
-                            timeZone: "Asia/Kolkata",
-                          })}
+                          Created:{" "}
+                          {new Date(proposal.created_at).toLocaleDateString(
+                            "en-IN",
+                            {
+                              timeZone: "Asia/Kolkata",
+                            },
+                          )}
                         </span>
                         <span>
-                          Valid until: {new Date(proposal.valid_until).toLocaleDateString("en-IN", {
-                            timeZone: "Asia/Kolkata",
-                          })}
+                          Valid until:{" "}
+                          {new Date(proposal.valid_until).toLocaleDateString(
+                            "en-IN",
+                            {
+                              timeZone: "Asia/Kolkata",
+                            },
+                          )}
                         </span>
                       </div>
                     </div>
@@ -467,12 +486,15 @@ export default function ProposalList() {
                           <DialogHeader>
                             <DialogTitle>{proposal.title}</DialogTitle>
                             <DialogDescription>
-                              {proposal.client_name} • {proposal.lead_id} • ${proposal.value.toLocaleString()}
+                              {proposal.client_name} • {proposal.lead_id} • $
+                              {proposal.value.toLocaleString()}
                             </DialogDescription>
                           </DialogHeader>
-                          <div 
+                          <div
                             className="prose max-w-none mt-4"
-                            dangerouslySetInnerHTML={{ __html: proposal.content }}
+                            dangerouslySetInnerHTML={{
+                              __html: proposal.content,
+                            }}
                           />
                         </DialogContent>
                       </Dialog>

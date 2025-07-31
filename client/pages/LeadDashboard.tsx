@@ -461,17 +461,22 @@ export default function LeadDashboard() {
                             Delete
                           </Button>
                         </AlertDialogTrigger>
-                        <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+                        <AlertDialogContent
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           <AlertDialogHeader>
                             <AlertDialogTitle>Delete Lead</AlertDialogTitle>
                             <AlertDialogDescription>
-                              Are you sure you want to delete "{lead.client_name}"? This action cannot be undone.
+                              Are you sure you want to delete "
+                              {lead.client_name}"? This action cannot be undone.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
                             <AlertDialogAction
-                              onClick={() => handleDeleteLead(lead.id, lead.client_name)}
+                              onClick={() =>
+                                handleDeleteLead(lead.id, lead.client_name)
+                              }
                               className="bg-red-600 hover:bg-red-700"
                             >
                               Delete

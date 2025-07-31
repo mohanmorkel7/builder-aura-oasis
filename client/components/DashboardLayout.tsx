@@ -101,7 +101,8 @@ const getMockNotifications = (userName: string): Notification[] => {
         id: 1,
         type: "follow_up_assigned",
         title: "New Follow-up Assigned",
-        message: "You have been assigned follow-up #16 for FinanceFirst Bank compliance review",
+        message:
+          "You have been assigned follow-up #16 for FinanceFirst Bank compliance review",
         follow_up_id: 16,
         created_at: "2024-01-20T14:20:00Z",
         read: false,
@@ -110,11 +111,12 @@ const getMockNotifications = (userName: string): Notification[] => {
         id: 2,
         type: "follow_up_mentioned",
         title: "You were mentioned",
-        message: "Mike Johnson mentioned you in follow-up #15 regarding RetailMax reporting features",
+        message:
+          "Mike Johnson mentioned you in follow-up #15 regarding RetailMax reporting features",
         follow_up_id: 15,
         created_at: "2024-01-19T10:30:00Z",
         read: false,
-      }
+      },
     ];
   }
 
@@ -124,7 +126,8 @@ const getMockNotifications = (userName: string): Notification[] => {
         id: 3,
         type: "follow_up_assigned",
         title: "New Follow-up Assigned",
-        message: "You have been assigned follow-up #13 for TechCorp technical specifications review",
+        message:
+          "You have been assigned follow-up #13 for TechCorp technical specifications review",
         follow_up_id: 13,
         created_at: "2024-01-16T14:15:00Z",
         read: false,
@@ -137,7 +140,7 @@ const getMockNotifications = (userName: string): Notification[] => {
         follow_up_id: 15,
         created_at: "2024-01-21T09:00:00Z",
         read: true,
-      }
+      },
     ];
   }
 
@@ -162,7 +165,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   );
 
   const notifications = getMockNotifications(user.name);
-  const unreadCount = notifications.filter(n => !n.read).length;
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
   const handleNotificationClick = (notification: Notification) => {
     // Mark as read (in a real app, this would make an API call)
@@ -217,17 +220,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         <div className="p-4 border-t border-gray-200">
           <Popover>
             <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full relative"
-              >
+              <Button variant="outline" size="sm" className="w-full relative">
                 <Bell className="w-4 h-4 mr-2" />
                 Notifications
                 {unreadCount > 0 && (
-                  <Badge
-                    className="absolute -top-2 -right-2 bg-red-500 text-white text-xs min-w-[20px] h-5 flex items-center justify-center rounded-full"
-                  >
+                  <Badge className="absolute -top-2 -right-2 bg-red-500 text-white text-xs min-w-[20px] h-5 flex items-center justify-center rounded-full">
                     {unreadCount}
                   </Badge>
                 )}
@@ -251,19 +248,25 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                     <div
                       key={notification.id}
                       className={`p-3 border-b hover:bg-gray-50 cursor-pointer transition-colors ${
-                        !notification.read ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
+                        !notification.read
+                          ? "bg-blue-50 border-l-4 border-l-blue-500"
+                          : ""
                       }`}
                       onClick={() => handleNotificationClick(notification)}
                     >
                       <div className="flex items-start space-x-3">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                          notification.type === 'follow_up_assigned' ? 'bg-blue-100' :
-                          notification.type === 'follow_up_mentioned' ? 'bg-red-100' :
-                          'bg-yellow-100'
-                        }`}>
-                          {notification.type === 'follow_up_assigned' ? (
+                        <div
+                          className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                            notification.type === "follow_up_assigned"
+                              ? "bg-blue-100"
+                              : notification.type === "follow_up_mentioned"
+                                ? "bg-red-100"
+                                : "bg-yellow-100"
+                          }`}
+                        >
+                          {notification.type === "follow_up_assigned" ? (
                             <MessageCircle className="w-4 h-4 text-blue-600" />
-                          ) : notification.type === 'follow_up_mentioned' ? (
+                          ) : notification.type === "follow_up_mentioned" ? (
                             <Bell className="w-4 h-4 text-red-600" />
                           ) : (
                             <AlertCircle className="w-4 h-4 text-yellow-600" />
@@ -277,12 +280,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                             {notification.message}
                           </p>
                           <p className="text-xs text-gray-400 mt-1">
-                            {new Date(notification.created_at).toLocaleDateString("en-IN", {
+                            {new Date(
+                              notification.created_at,
+                            ).toLocaleDateString("en-IN", {
                               timeZone: "Asia/Kolkata",
                               month: "short",
                               day: "numeric",
                               hour: "2-digit",
-                              minute: "2-digit"
+                              minute: "2-digit",
                             })}
                           </p>
                         </div>
@@ -300,7 +305,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                     variant="ghost"
                     size="sm"
                     className="w-full text-xs"
-                    onClick={() => navigate('/follow-ups')}
+                    onClick={() => navigate("/follow-ups")}
                   >
                     View All Follow-ups
                   </Button>
