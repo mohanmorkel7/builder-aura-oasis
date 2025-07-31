@@ -30,30 +30,67 @@ router.post("/", async (req: Request, res: Response) => {
     } = req.body;
 
     if (await isDatabaseAvailable()) {
-      const query = `
-        INSERT INTO follow_ups (
-          client_id, lead_id, title, description, due_date,
-          follow_up_type, assigned_to, created_by
-        )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-        RETURNING *
-      `;
+      try {
+        // First try to insert with the full schema including follow_up_type and lead_id
+        const query = `
+          INSERT INTO follow_ups (
+            client_id, lead_id, title, description, due_date,
+            follow_up_type, assigned_to, created_by, message_id
+          )
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+          RETURNING *
+        `;
 
-      const values = [
-        client_id || null,
-        lead_id || null,
-        title,
-        description || null,
-        due_date || null,
-        follow_up_type,
-        assigned_to || null,
-        created_by,
-      ];
+        const values = [
+          client_id || null,
+          lead_id || null,
+          title,
+          description || null,
+          due_date || null,
+          follow_up_type,
+          assigned_to || null,
+          created_by,
+          message_id || null,
+        ];
 
-      const result = await pool.query(query, values);
-      const followUp = result.rows[0];
+        const result = await pool.query(query, values);
+        const followUp = result.rows[0];
 
-      res.status(201).json(followUp);
+        res.status(201).json(followUp);
+      } catch (dbError) {
+        console.error("Database insertion error:", dbError.message);
+        // If database error (like missing column), run migration and fall back to mock
+        if (dbError.message.includes('follow_up_type') || dbError.message.includes('lead_id') || dbError.message.includes('message_id')) {
+          console.log("Attempting to run migration...");
+          try {
+            // Try to add missing columns
+            await pool.query(`
+              ALTER TABLE follow_ups
+              ADD COLUMN IF NOT EXISTS lead_id INTEGER REFERENCES leads(id),
+              ADD COLUMN IF NOT EXISTS message_id INTEGER,
+              ADD COLUMN IF NOT EXISTS follow_up_type VARCHAR(50) DEFAULT 'general'
+            `);
+
+            // Drop and recreate constraint
+            await pool.query(`
+              ALTER TABLE follow_ups DROP CONSTRAINT IF EXISTS follow_ups_follow_up_type_check;
+              ALTER TABLE follow_ups
+              ADD CONSTRAINT follow_ups_follow_up_type_check
+              CHECK (follow_up_type IN ('call', 'email', 'meeting', 'document', 'proposal', 'contract', 'onboarding', 'general', 'sales', 'support', 'other'))
+            `);
+
+            console.log("Migration completed, retrying insert...");
+            // Retry the insert
+            const retryResult = await pool.query(query, values);
+            return res.status(201).json(retryResult.rows[0]);
+          } catch (migrationError) {
+            console.error("Migration failed:", migrationError.message);
+          }
+        }
+
+        // Fallback to mock response
+        throw dbError;
+      }
     } else {
       // Return mock follow-up when database is unavailable
       const mockFollowUp = {
