@@ -371,11 +371,7 @@ export default function LeadDashboard() {
                     </div>
 
                     <div className="text-right">
-                      {lead.project_budget && (
-                        <div className="text-lg font-semibold text-green-600 mb-1">
-                          ${lead.project_budget?.toLocaleString()}
-                        </div>
-                      )}
+
                       {lead.expected_close_date && (
                         <div className="text-sm text-gray-500">
                           Expected:{" "}
