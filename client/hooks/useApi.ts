@@ -673,3 +673,30 @@ export function useDeleteStepChat() {
     },
   });
 }
+
+// Follow-up hooks
+export function useCreateFollowUp() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (followUpData: any) => apiClient.createFollowUp(followUpData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["follow-ups"] });
+    },
+  });
+}
+
+export function useClientFollowUps(clientId: number) {
+  return useQuery({
+    queryKey: ["follow-ups", "client", clientId],
+    queryFn: () => apiClient.getClientFollowUps(clientId),
+    enabled: !!clientId && clientId > 0,
+  });
+}
+
+export function useLeadFollowUps(leadId: number) {
+  return useQuery({
+    queryKey: ["follow-ups", "lead", leadId],
+    queryFn: () => apiClient.getLeadFollowUps(leadId),
+    enabled: !!leadId && leadId > 0,
+  });
+}
