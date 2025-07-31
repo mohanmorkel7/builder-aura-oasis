@@ -229,6 +229,7 @@ export default function LeadEdit() {
 
   const [hasChanges, setHasChanges] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   // Update state when lead data is loaded
   React.useEffect(() => {
