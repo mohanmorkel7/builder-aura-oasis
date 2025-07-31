@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useLeads, useLeadStats } from "@/hooks/useApi";
+import { useLeads, useLeadStats, useDeleteLead } from "@/hooks/useApi";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,6 +20,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
   Search,
   Filter,
   Plus,
@@ -36,6 +47,8 @@ import {
   Users,
   Building,
   Zap,
+  Trash2,
+  MoreVertical,
 } from "lucide-react";
 
 const statusColors = {
