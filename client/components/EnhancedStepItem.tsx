@@ -180,42 +180,17 @@ export function EnhancedStepItem({
   const handleFollowUp = async (messageId: number) => {
     if (!user) return;
 
-    try {
-      // Create a system message indicating follow-up was created
-      const followUpData = {
-        user_id: parseInt(user.id),
-        user_name: user.name,
-        message: `📋 Follow-up created for message #${messageId} | Created by: ${user.name} | Time: ${new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}`,
-        message_type: "system" as const,
-        is_rich_text: false,
-      };
-
-      await createChatMutation.mutateAsync({
+    // Navigate to follow-up screen with message and step context
+    // The system message will be created after the follow-up is saved with assignment info
+    navigate(`/follow-up`, {
+      state: {
+        messageId,
         stepId: step.id,
-        chatData: followUpData,
-      });
-
-      // Navigate to follow-up screen with message and step context
-      navigate(`/follow-up`, {
-        state: {
-          messageId,
-          stepId: step.id,
-          stepName: step.name,
-          fromChat: true,
-        },
-      });
-    } catch (error) {
-      console.error("Failed to create follow-up notification:", error);
-      // Still navigate even if notification fails
-      navigate(`/follow-up`, {
-        state: {
-          messageId,
-          stepId: step.id,
-          stepName: step.name,
-          fromChat: true,
-        },
-      });
-    }
+        stepName: step.name,
+        fromChat: true,
+        createSystemMessage: true, // Flag to indicate system message should be created
+      },
+    });
   };
 
   const formatFileSize = (bytes: number) => {
