@@ -299,32 +299,36 @@ export default function LeadDetails() {
 
                 <div>
                   <div className="space-y-3">
-                    <div className="flex items-center space-x-2">
-                      <User className="w-4 h-4 text-gray-400" />
-                      <span className="font-medium text-gray-600">
-                        Contact Person:
-                      </span>
-                      <span className="text-gray-900">
-                        {leadData.contact_person}
-                      </span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Mail className="w-4 h-4 text-gray-400" />
-                      <span className="font-medium text-gray-600">Email:</span>
-                      <a
-                        href={`mailto:${leadData.email}`}
-                        className="text-blue-600 hover:underline"
-                      >
-                        {leadData.email}
-                      </a>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Phone className="w-4 h-4 text-gray-400" />
-                      <span className="font-medium text-gray-600">Phone:</span>
-                      <span className="text-gray-900">
-                        {leadData.phone || "Not provided"}
-                      </span>
-                    </div>
+                    {leadData.contacts && leadData.contacts.length > 0 && (
+                      <>
+                        <div className="flex items-center space-x-2">
+                          <User className="w-4 h-4 text-gray-400" />
+                          <span className="font-medium text-gray-600">
+                            Contact Person:
+                          </span>
+                          <span className="text-gray-900">
+                            {leadData.contacts[0].contact_name}
+                          </span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Mail className="w-4 h-4 text-gray-400" />
+                          <span className="font-medium text-gray-600">Email:</span>
+                          <a
+                            href={`mailto:${leadData.contacts[0].email}`}
+                            className="text-blue-600 hover:underline"
+                          >
+                            {leadData.contacts[0].email}
+                          </a>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Phone className="w-4 h-4 text-gray-400" />
+                          <span className="font-medium text-gray-600">Phone:</span>
+                          <span className="text-gray-900">
+                            {leadData.contacts[0].phone || "Not provided"}
+                          </span>
+                        </div>
+                      </>
+                    )}
                     <div className="flex items-center space-x-2">
                       <Building className="w-4 h-4 text-gray-400" />
                       <span className="font-medium text-gray-600">
