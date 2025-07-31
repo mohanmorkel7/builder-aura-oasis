@@ -145,10 +145,10 @@ export function StepItem({
               <div className="text-sm text-gray-600">
                 {step.status === "completed" &&
                   step.completed_date &&
-                  `Completed on ${new Date(step.completed_date).toLocaleDateString()}`}
+                  `Completed on ${new Date(step.completed_date).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}`}
                 {step.status !== "completed" &&
                   step.due_date &&
-                  `Due: ${new Date(step.due_date).toLocaleDateString()}`}
+                  `Due: ${new Date(step.due_date).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}`}
               </div>
             </div>
             {isExpanded ? (
