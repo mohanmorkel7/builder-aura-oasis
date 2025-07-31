@@ -168,17 +168,52 @@ export default function FollowUpTracker() {
   const [followUps, setFollowUps] = useState<FollowUp[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Fetch follow-ups data from API
+  useEffect(() => {
+    const fetchFollowUps = async () => {
+      try {
+        setLoading(true);
+        const params = new URLSearchParams({
+          userId: user?.id || "",
+          userRole: user?.role || "",
+        });
+
+        const response = await fetch(`/api/follow-ups?${params.toString()}`);
+        const data = await response.json();
+
+        // Convert to expected format and ensure IST timestamps
+        const formattedFollowUps = data.map((f: any) => ({
+          ...f,
+          created_at: new Date(f.created_at).toISOString(),
+          updated_at: new Date(f.updated_at).toISOString(),
+          due_date: f.due_date || new Date().toISOString().split('T')[0],
+        }));
+
+        setFollowUps(formattedFollowUps);
+      } catch (error) {
+        console.error("Failed to fetch follow-ups:", error);
+        setFollowUps([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user) {
+      fetchFollowUps();
+    }
+  }, [user]);
+
   // Check if we came here to view a specific follow-up ID
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const followUpId = params.get("id");
-    if (followUpId) {
-      const followUp = mockFollowUps.find((f) => f.id === parseInt(followUpId));
+    if (followUpId && followUps.length > 0) {
+      const followUp = followUps.find((f) => f.id === parseInt(followUpId));
       if (followUp) {
         setSelectedFollowUp(followUp);
       }
     }
-  }, [location.search]);
+  }, [location.search, followUps]);
 
   const handleNavigateToMessage = (followUp: FollowUp) => {
     // Navigate to the lead details page and scroll to the specific message
