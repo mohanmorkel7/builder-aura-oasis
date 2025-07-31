@@ -459,11 +459,11 @@ export function EnhancedStepItem({
                   </div>
 
                   {/* Rich Text Editor */}
-                  <div className="border-t pt-4">
-                    <div className="flex items-center justify-between mb-2">
+                  <div className="border-t bg-white p-4">
+                    <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center space-x-2">
-                        <span className="text-sm text-gray-600 font-medium">
-                          Rich Text Editor
+                        <span className="text-sm text-gray-700 font-medium">
+                          💬 Compose Message
                         </span>
                         <input
                           ref={fileInputRef}
@@ -477,30 +477,35 @@ export function EnhancedStepItem({
                           variant="outline"
                           onClick={() => fileInputRef.current?.click()}
                           title="Upload documents"
+                          className="h-8 px-3 text-xs"
                         >
-                          <Upload className="w-4 h-4 mr-1" />
-                          Upload
+                          <Upload className="w-3 h-3 mr-1" />
+                          Attach
                         </Button>
                       </div>
                     </div>
 
-                    <div className="mb-2">
+                    <div className="mb-3">
                       <RichTextEditor
                         value={newMessage}
                         onChange={setNewMessage}
                         placeholder="Type your message with rich formatting..."
-                        className="min-h-[100px]"
+                        className="min-h-[80px] border-gray-200"
                       />
                     </div>
 
-                    <div className="flex justify-end">
+                    <div className="flex justify-between items-center">
+                      <div className="text-xs text-gray-500">
+                        Press Ctrl+Enter to send
+                      </div>
                       <Button
                         size="sm"
                         onClick={handleSendMessage}
                         disabled={!newMessage.trim()}
+                        className="bg-blue-500 hover:bg-blue-600 text-white px-4"
                       >
                         <Send className="w-4 h-4 mr-2" />
-                        Send
+                        Send Message
                       </Button>
                     </div>
                   </div>
