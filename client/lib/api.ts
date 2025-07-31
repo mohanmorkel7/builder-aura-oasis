@@ -380,6 +380,36 @@ export class ApiClient {
     });
   }
 
+  // File upload method
+  async uploadFiles(files: FileList) {
+    const formData = new FormData();
+
+    Array.from(files).forEach((file) => {
+      formData.append("files", file);
+    });
+
+    const url = `${API_BASE_URL}/files/upload`;
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        body: formData,
+        // Don't set Content-Type header, let browser set it with boundary
+      });
+
+      if (!response.ok) {
+        throw new Error(`Upload failed: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error("An unexpected error occurred during upload");
+    }
+  }
+
   // Follow-up methods
   async createFollowUp(followUpData: any) {
     return this.request("/follow-ups", {
