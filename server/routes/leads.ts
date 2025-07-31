@@ -283,7 +283,7 @@ router.post("/", async (req: Request, res: Response) => {
       const mockLead = {
         id: Date.now(),
         lead_id:
-          leadData.lead_id || (await DatabaseValidator.generateUniqueLeadId()),
+          leadData.lead_id || `#${Date.now().toString().slice(-4)}`,
         ...leadData,
         status: leadData.status || ("in-progress" as const),
         priority: leadData.priority || ("medium" as const),
