@@ -334,7 +334,7 @@ export function EnhancedStepItem({
                     )}
                     {!chatLoading &&
                       !chatError &&
-                      chatMessages.map((message) => (
+                      sortedMessages.map((message) => (
                         <div
                           key={message.id}
                           className={`flex space-x-3 p-3 rounded border ${
