@@ -107,8 +107,12 @@ export default function FollowUpNew() {
 
       // Create system message for lead follow-up with assigned user info
       if (isLeadFollowUp && leadContext?.createSystemMessage && user) {
-        const assignedUser = users.find((u: any) => u.id.toString() === followUp.assigned_to);
-        const assignedUserName = assignedUser ? `${assignedUser.first_name} ${assignedUser.last_name}` : "Unassigned";
+        const assignedUser = users.find(
+          (u: any) => u.id.toString() === followUp.assigned_to,
+        );
+        const assignedUserName = assignedUser
+          ? `${assignedUser.first_name} ${assignedUser.last_name}`
+          : "Unassigned";
 
         const systemMessageData = {
           user_id: parseInt(user.id),
