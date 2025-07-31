@@ -509,21 +509,23 @@ export default function FollowUpTracker() {
                           <User className="w-4 h-4" />
                           <span>By: {followUp.created_by_name || "Unknown"}</span>
                         </span>
-                        <span className="flex items-center space-x-1">
-                          <Calendar className="w-4 h-4" />
-                          <span
-                            className={
-                              isFollowUpOverdue ? "text-red-600 font-medium" : ""
-                            }
-                          >
-                            Due: {formatToISTDateTime(followUp.due_date, {
-                              day: "numeric",
-                              month: "short",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
+                        {followUp.due_date && (
+                          <span className="flex items-center space-x-1">
+                            <Calendar className="w-4 h-4" />
+                            <span
+                              className={
+                                isFollowUpOverdue ? "text-red-600 font-medium" : ""
+                              }
+                            >
+                              Due: {formatToISTDateTime(followUp.due_date, {
+                                day: "numeric",
+                                month: "short",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </span>
                           </span>
-                        </span>
+                        )}
                       </div>
 
                       {followUp.notes && (
