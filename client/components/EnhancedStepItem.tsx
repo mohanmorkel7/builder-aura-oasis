@@ -186,6 +186,7 @@ export function EnhancedStepItem({
       state: {
         messageId,
         stepId: step.id,
+        leadId: step.lead_id,
         stepName: step.name,
         fromChat: true,
         createSystemMessage: true, // Flag to indicate system message should be created
