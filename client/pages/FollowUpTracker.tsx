@@ -284,10 +284,10 @@ export default function FollowUpTracker() {
   });
 
   const myFollowUps = filteredFollowUps.filter(
-    (f) => f.assigned_to === user?.name,
+    (f) => f.assigned_user_name === user?.name,
   );
   const assignedByMe = filteredFollowUps.filter(
-    (f) => f.assigned_by === user?.name,
+    (f) => f.created_by_name === user?.name,
   );
 
   return (
