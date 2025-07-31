@@ -1,32 +1,32 @@
 // Test script for follow-up creation
-const { pool } = require('../database/connection');
+const { pool } = require("../database/connection");
 
 async function testFollowUpCreation() {
   try {
-    console.log('Testing follow-up creation...');
-    
+    console.log("Testing follow-up creation...");
+
     // Test data matching what the frontend sends
     const testFollowUp = {
       client_id: null,
       lead_id: 1,
       title: "Test Follow-up",
-      description: "Test description", 
+      description: "Test description",
       due_date: "2025-07-31",
       follow_up_type: "call", // This was causing the constraint violation
       assigned_to: 3,
       created_by: 38,
-      message_id: 10
+      message_id: 10,
     };
-    
+
     // First check if database is available
     try {
       await pool.query("SELECT 1");
-      console.log('Database is available');
+      console.log("Database is available");
     } catch (error) {
-      console.log('Database not available:', error.message);
+      console.log("Database not available:", error.message);
       return;
     }
-    
+
     // Try to create the follow-up
     const query = `
       INSERT INTO follow_ups (
@@ -50,24 +50,28 @@ async function testFollowUpCreation() {
     ];
 
     const result = await pool.query(query, values);
-    console.log('Follow-up created successfully:', result.rows[0]);
-    
+    console.log("Follow-up created successfully:", result.rows[0]);
+
     // Clean up - delete the test record
-    await pool.query('DELETE FROM follow_ups WHERE id = $1', [result.rows[0].id]);
-    console.log('Test record cleaned up');
-    
+    await pool.query("DELETE FROM follow_ups WHERE id = $1", [
+      result.rows[0].id,
+    ]);
+    console.log("Test record cleaned up");
   } catch (error) {
-    console.error('Test failed:', error.message);
-    
+    console.error("Test failed:", error.message);
+
     // If it's a constraint violation, that's our target error
-    if (error.message.includes('follow_ups_follow_up_type_check')) {
-      console.log('❌ Still getting constraint violation for follow_up_type');
-      console.log('Need to run migration to fix database schema');
-    } else if (error.message.includes('column') && error.message.includes('does not exist')) {
-      console.log('❌ Column missing in database');
-      console.log('Need to run migration to add missing columns');
+    if (error.message.includes("follow_ups_follow_up_type_check")) {
+      console.log("❌ Still getting constraint violation for follow_up_type");
+      console.log("Need to run migration to fix database schema");
+    } else if (
+      error.message.includes("column") &&
+      error.message.includes("does not exist")
+    ) {
+      console.log("❌ Column missing in database");
+      console.log("Need to run migration to add missing columns");
     } else {
-      console.log('❌ Other error:', error.message);
+      console.log("❌ Other error:", error.message);
     }
   } finally {
     await pool.end();

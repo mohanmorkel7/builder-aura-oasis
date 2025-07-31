@@ -60,7 +60,11 @@ router.post("/", async (req: Request, res: Response) => {
       } catch (dbError) {
         console.error("Database insertion error:", dbError.message);
         // If database error (like missing column), run migration and fall back to mock
-        if (dbError.message.includes('follow_up_type') || dbError.message.includes('lead_id') || dbError.message.includes('message_id')) {
+        if (
+          dbError.message.includes("follow_up_type") ||
+          dbError.message.includes("lead_id") ||
+          dbError.message.includes("message_id")
+        ) {
           console.log("Attempting to run migration...");
           try {
             // Try to add missing columns
