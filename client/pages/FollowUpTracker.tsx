@@ -500,12 +500,12 @@ export default function FollowUpTracker() {
                         <span className="flex items-center space-x-1">
                           <User className="w-4 h-4" />
                           <span>
-                            Assigned to: <strong>{followUp.assigned_to}</strong>
+                            Assigned to: <strong>{followUp.assigned_user_name || "Unassigned"}</strong>
                           </span>
                         </span>
                         <span className="flex items-center space-x-1">
                           <User className="w-4 h-4" />
-                          <span>By: {followUp.assigned_by}</span>
+                          <span>By: {followUp.created_by_name || "Unknown"}</span>
                         </span>
                         <span className="flex items-center space-x-1">
                           <Calendar className="w-4 h-4" />
