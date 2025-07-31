@@ -3,6 +3,17 @@ import { pool } from "../database/connection";
 
 const router = Router();
 
+// Enhanced helper function with better error handling
+async function isDatabaseAvailable() {
+  try {
+    await pool.query("SELECT 1");
+    return true;
+  } catch (error) {
+    console.log("Database not available:", error.message);
+    return false;
+  }
+}
+
 // Create a new follow-up
 router.post("/", async (req: Request, res: Response) => {
   try {
