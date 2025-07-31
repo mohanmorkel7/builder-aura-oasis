@@ -943,6 +943,23 @@ export class MockDataService {
     return leads.find((lead) => lead.id === id) || null;
   }
 
+  static async updateLead(id: number, leadData: any) {
+    // For mock data, just return the updated lead with new data
+    const existingLead = await this.getLeadById(id);
+    if (!existingLead) {
+      return null;
+    }
+
+    const updatedLead = {
+      ...existingLead,
+      ...leadData,
+      id: id,
+      updated_at: new Date().toISOString(),
+    };
+
+    return updatedLead;
+  }
+
   static async getLeadStats(salesRepId?: number) {
     const leads = await this.getAllLeads(salesRepId);
     return {
