@@ -28,6 +28,7 @@ import LeadDashboard from "@/pages/LeadDashboard";
 import CreateLead from "@/pages/CreateLead";
 import LeadDetails from "@/pages/LeadDetails";
 import LeadEdit from "@/pages/LeadEdit";
+import ProposalNew from "@/pages/ProposalNew";
 import NotFound from "@/pages/NotFound";
 
 // Protected Route Component
