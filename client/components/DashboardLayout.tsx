@@ -14,6 +14,7 @@ import {
   Grid3X3,
   Target,
   FileText,
+  MessageCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
