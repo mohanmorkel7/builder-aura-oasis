@@ -104,22 +104,29 @@ router.get("/client/:clientId", async (req: Request, res: Response) => {
   try {
     const clientId = parseInt(req.params.clientId);
 
-    const query = `
-      SELECT f.*, 
-             CONCAT(u.first_name, ' ', u.last_name) as assigned_user_name,
-             CONCAT(c.first_name, ' ', c.last_name) as created_by_name
-      FROM follow_ups f
-      LEFT JOIN users u ON f.assigned_to = u.id
-      LEFT JOIN users c ON f.created_by = c.id
-      WHERE f.client_id = $1
-      ORDER BY f.created_at DESC
-    `;
+    if (await isDatabaseAvailable()) {
+      const query = `
+        SELECT f.*,
+               CONCAT(u.first_name, ' ', u.last_name) as assigned_user_name,
+               CONCAT(c.first_name, ' ', c.last_name) as created_by_name
+        FROM follow_ups f
+        LEFT JOIN users u ON f.assigned_to = u.id
+        LEFT JOIN users c ON f.created_by = c.id
+        WHERE f.client_id = $1
+        ORDER BY f.created_at DESC
+      `;
 
-    const result = await pool.query(query, [clientId]);
-    res.json(result.rows);
+      const result = await pool.query(query, [clientId]);
+      res.json(result.rows);
+    } else {
+      // Return empty array when database is unavailable
+      console.log("Database unavailable, returning empty follow-ups array");
+      res.json([]);
+    }
   } catch (error) {
     console.error("Error fetching follow-ups:", error);
-    res.status(500).json({ error: "Failed to fetch follow-ups" });
+    // Return empty array on error
+    res.json([]);
   }
 });
 
