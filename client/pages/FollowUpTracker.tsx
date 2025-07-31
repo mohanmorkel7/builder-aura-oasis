@@ -492,7 +492,7 @@ export default function FollowUpTracker() {
 
                       <div className="bg-gray-50 p-3 rounded-lg mb-3 border-l-4 border-blue-200">
                         <p className="text-sm text-gray-700 italic">
-                          "{followUp.original_message}"
+                          "{followUp.description || followUp.title || "No description available"}"
                         </p>
                       </div>
 
