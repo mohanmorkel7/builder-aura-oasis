@@ -361,6 +361,8 @@ export default function LeadEdit() {
 
   const handleSave = async () => {
     setSaving(true);
+    setSaveError(null);
+
     try {
       const updateData = {
         ...leadData,
@@ -383,6 +385,11 @@ export default function LeadEdit() {
       navigate(`/leads/${id}`);
     } catch (error) {
       console.error("Failed to save lead:", error);
+      setSaveError(
+        error instanceof Error
+          ? error.message
+          : "Failed to save lead. Please try again."
+      );
     } finally {
       setSaving(false);
     }
