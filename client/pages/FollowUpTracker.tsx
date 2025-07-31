@@ -40,6 +40,7 @@ import {
   Reply,
   Target,
 } from "lucide-react";
+import { formatToIST, formatToISTDateTime, isOverdue } from "@/lib/dateUtils";
 
 interface FollowUp {
   id: number;
