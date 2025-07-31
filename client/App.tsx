@@ -29,6 +29,7 @@ import CreateLead from "@/pages/CreateLead";
 import LeadDetails from "@/pages/LeadDetails";
 import LeadEdit from "@/pages/LeadEdit";
 import ProposalNew from "@/pages/ProposalNew";
+import PipelineSettings from "@/pages/PipelineSettings";
 import NotFound from "@/pages/NotFound";
 
 // Protected Route Component
