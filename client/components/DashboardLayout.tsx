@@ -1,9 +1,15 @@
 import * as React from "react";
-import { Link, useLocation, Navigate } from "react-router-dom";
+import { Link, useLocation, Navigate, useNavigate } from "react-router-dom";
 import { useAuth, UserRole } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Settings,
   BarChart3,
@@ -15,6 +21,7 @@ import {
   Target,
   FileText,
   MessageCircle,
+  AlertCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
