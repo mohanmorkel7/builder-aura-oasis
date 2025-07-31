@@ -228,8 +228,6 @@ router.post("/", async (req: Request, res: Response) => {
       }
     }
 
-
-
     if (leadData.project_value !== undefined) {
       if (!DatabaseValidator.isValidNumber(leadData.project_value, 0)) {
         return res
@@ -307,9 +305,7 @@ router.post("/", async (req: Request, res: Response) => {
       } else {
         const mockLead = {
           id: Date.now(),
-          lead_id:
-            leadData.lead_id ||
-            `#${Date.now().toString().slice(-4)}`,
+          lead_id: leadData.lead_id || `#${Date.now().toString().slice(-4)}`,
           ...leadData,
           status: leadData.status || ("in-progress" as const),
           created_at: new Date().toISOString(),
