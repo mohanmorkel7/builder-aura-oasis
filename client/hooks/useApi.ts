@@ -596,7 +596,13 @@ export function useLeads(salesRepId?: number) {
 export function useLead(id: number) {
   return useQuery({
     queryKey: ["leads", id],
-    queryFn: () => apiClient.getLead(id),
+    queryFn: async () => {
+      try {
+        return await apiClient.getLead(id);
+      } catch {
+        return mockLeads.find(lead => lead.id === id) || null;
+      }
+    },
     enabled: !!id,
   });
 }
