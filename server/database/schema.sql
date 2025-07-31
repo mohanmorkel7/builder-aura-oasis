@@ -139,8 +139,6 @@ CREATE TABLE IF NOT EXISTS leads (
     -- Project Information
     project_title VARCHAR(500),
     project_description TEXT,
-    project_budget DECIMAL(15,2),
-    project_timeline VARCHAR(200),
     project_requirements TEXT,
 
     -- Enhanced Project Information
