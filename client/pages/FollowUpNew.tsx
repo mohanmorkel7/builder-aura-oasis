@@ -106,6 +106,12 @@ export default function FollowUpNew() {
       await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
 
       // Create system message for lead follow-up with assigned user info
+      console.log("Checking system message creation conditions:");
+      console.log("isLeadFollowUp:", isLeadFollowUp);
+      console.log("leadContext?.createSystemMessage:", leadContext?.createSystemMessage);
+      console.log("user:", user);
+      console.log("leadContext:", leadContext);
+
       if (isLeadFollowUp && leadContext?.createSystemMessage && user) {
         console.log("Creating system message with followUp data:", followUp);
         console.log("Available users:", users);
