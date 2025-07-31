@@ -312,7 +312,9 @@ export default function LeadDetails() {
                         </div>
                         <div className="flex items-center space-x-2">
                           <Mail className="w-4 h-4 text-gray-400" />
-                          <span className="font-medium text-gray-600">Email:</span>
+                          <span className="font-medium text-gray-600">
+                            Email:
+                          </span>
                           <a
                             href={`mailto:${leadData.contacts[0].email}`}
                             className="text-blue-600 hover:underline"
@@ -322,7 +324,9 @@ export default function LeadDetails() {
                         </div>
                         <div className="flex items-center space-x-2">
                           <Phone className="w-4 h-4 text-gray-400" />
-                          <span className="font-medium text-gray-600">Phone:</span>
+                          <span className="font-medium text-gray-600">
+                            Phone:
+                          </span>
                           <span className="text-gray-900">
                             {leadData.contacts[0].phone || "Not provided"}
                           </span>
@@ -558,7 +562,9 @@ export default function LeadDetails() {
                     <span className="text-gray-900">
                       {new Date(
                         leadData.expected_close_date,
-                      ).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}
+                      ).toLocaleDateString("en-IN", {
+                        timeZone: "Asia/Kolkata",
+                      })}
                     </span>
                   </div>
                 )}

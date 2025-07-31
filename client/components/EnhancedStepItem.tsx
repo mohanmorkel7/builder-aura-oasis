@@ -185,7 +185,7 @@ export function EnhancedStepItem({
       const followUpData = {
         user_id: parseInt(user.id),
         user_name: user.name,
-        message: `📋 Follow-up created for message #${messageId} | Created by: ${user.name} | Time: ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}`,
+        message: `📋 Follow-up created for message #${messageId} | Created by: ${user.name} | Time: ${new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}`,
         message_type: "system" as const,
         is_rich_text: false,
       };
@@ -273,10 +273,10 @@ export function EnhancedStepItem({
               <div className="text-sm text-gray-600">
                 {step.status === "completed" &&
                   step.completed_date &&
-                  `Completed on ${new Date(step.completed_date).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}`}
+                  `Completed on ${new Date(step.completed_date).toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" })}`}
                 {step.status !== "completed" &&
                   step.due_date &&
-                  `Due: ${new Date(step.due_date).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}`}
+                  `Due: ${new Date(step.due_date).toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" })}`}
               </div>
             </div>
             {isExpanded ? (
@@ -364,9 +364,10 @@ export function EnhancedStepItem({
                               </span>
                               <div className="flex items-center space-x-2">
                                 <span className="text-xs text-gray-500">
-                                  {new Date(
-                                    message.created_at,
-                                  ).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
+                                  {new Date(message.created_at).toLocaleString(
+                                    "en-IN",
+                                    { timeZone: "Asia/Kolkata" },
+                                  )}
                                 </span>
                                 {message.message_type !== "system" && (
                                   <Button

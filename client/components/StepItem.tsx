@@ -53,8 +53,11 @@ export function StepItem({
 
   // Safety check: only fetch data if step.id exists
   const stepId = step?.id;
-  const { data: documents = [], isLoading: documentsLoading } = useStepDocuments(stepId || 0);
-  const { data: comments = [], isLoading: commentsLoading } = useStepComments(stepId || 0);
+  const { data: documents = [], isLoading: documentsLoading } =
+    useStepDocuments(stepId || 0);
+  const { data: comments = [], isLoading: commentsLoading } = useStepComments(
+    stepId || 0,
+  );
   const uploadDocumentMutation = useUploadStepDocument();
   const createCommentMutation = useCreateStepComment();
 
@@ -65,22 +68,27 @@ export function StepItem({
 
   const [newComment, setNewComment] = useState("");
 
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const files = event.target.files;
     if (!files || files.length === 0 || !user) return;
 
     const file = files[0];
-    
+
     try {
       const documentData = {
         name: file.name,
         file_path: `/uploads/${file.name}`,
         file_size: file.size,
         file_type: file.type,
-        uploaded_by: `${user.first_name} ${user.last_name}`
+        uploaded_by: `${user.first_name} ${user.last_name}`,
       };
 
-      await uploadDocumentMutation.mutateAsync({ stepId: stepId, documentData });
+      await uploadDocumentMutation.mutateAsync({
+        stepId: stepId,
+        documentData,
+      });
       event.target.value = "";
     } catch (error) {
       console.error("Failed to upload document:", error);
@@ -98,8 +106,8 @@ export function StepItem({
           message: comment,
           user_name: `${user.first_name} ${user.last_name}`,
           user_id: parseInt(user.id),
-          comment_type: "note"
-        }
+          comment_type: "note",
+        },
       });
       setNewComment("");
     } catch (error) {
@@ -123,18 +131,17 @@ export function StepItem({
           <CollapsibleTrigger className="flex-1 flex items-center justify-between text-left">
             <div className="flex-1">
               <div className="flex items-center space-x-2">
-                <span className="font-medium text-gray-900">
-                  {step.name}
-                </span>
+                <span className="font-medium text-gray-900">{step.name}</span>
                 <div className="flex items-center space-x-2">
                   {documents.length > 0 && (
                     <Badge variant="outline" className="text-xs">
-                      {documents.length} doc{documents.length !== 1 ? 's' : ''}
+                      {documents.length} doc{documents.length !== 1 ? "s" : ""}
                     </Badge>
                   )}
                   {comments.length > 0 && (
                     <Badge variant="outline" className="text-xs">
-                      {comments.length} comment{comments.length !== 1 ? 's' : ''}
+                      {comments.length} comment
+                      {comments.length !== 1 ? "s" : ""}
                     </Badge>
                   )}
                 </div>
@@ -145,10 +152,10 @@ export function StepItem({
               <div className="text-sm text-gray-600">
                 {step.status === "completed" &&
                   step.completed_date &&
-                  `Completed on ${new Date(step.completed_date).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}`}
+                  `Completed on ${new Date(step.completed_date).toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" })}`}
                 {step.status !== "completed" &&
                   step.due_date &&
-                  `Due: ${new Date(step.due_date).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}`}
+                  `Due: ${new Date(step.due_date).toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" })}`}
               </div>
             </div>
             {isExpanded ? (
@@ -200,7 +207,11 @@ export function StepItem({
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => document.getElementById(`file-upload-${stepId}`)?.click()}
+                      onClick={() =>
+                        document
+                          .getElementById(`file-upload-${stepId}`)
+                          ?.click()
+                      }
                     >
                       <Upload className="w-4 h-4 mr-2" />
                       Upload
@@ -225,7 +236,13 @@ export function StepItem({
                               {doc.name}
                             </div>
                             <div className="text-xs text-gray-500">
-                              {Math.round(doc.file_size / 1024 / 1024 * 10) / 10} MB • {doc.uploaded_by} • {new Date(doc.uploaded_at).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}
+                              {Math.round((doc.file_size / 1024 / 1024) * 10) /
+                                10}{" "}
+                              MB • {doc.uploaded_by} •{" "}
+                              {new Date(doc.uploaded_at).toLocaleDateString(
+                                "en-IN",
+                                { timeZone: "Asia/Kolkata" },
+                              )}
                             </div>
                           </div>
                         </div>
@@ -255,7 +272,10 @@ export function StepItem({
                           {comment.user_name}
                         </span>
                         <span className="text-xs text-gray-500">
-                          {new Date(comment.created_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
+                          {new Date(comment.created_at).toLocaleString(
+                            "en-IN",
+                            { timeZone: "Asia/Kolkata" },
+                          )}
                         </span>
                       </div>
                       <p className="text-sm text-gray-700">{comment.message}</p>

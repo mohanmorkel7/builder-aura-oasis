@@ -99,10 +99,14 @@ export default function LeadDashboard() {
     const matchesSearch =
       lead.client_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       lead.lead_id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (lead.contacts && lead.contacts.some((contact: any) =>
-        contact.contact_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        contact.email?.toLowerCase().includes(searchTerm.toLowerCase())
-      )) ||
+      (lead.contacts &&
+        lead.contacts.some(
+          (contact: any) =>
+            contact.contact_name
+              ?.toLowerCase()
+              .includes(searchTerm.toLowerCase()) ||
+            contact.email?.toLowerCase().includes(searchTerm.toLowerCase()),
+        )) ||
       lead.project_title?.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesStatus =
@@ -371,13 +375,14 @@ export default function LeadDashboard() {
                     </div>
 
                     <div className="text-right">
-
                       {lead.expected_close_date && (
                         <div className="text-sm text-gray-500">
                           Expected:{" "}
                           {new Date(
                             lead.expected_close_date,
-                          ).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}
+                          ).toLocaleDateString("en-IN", {
+                            timeZone: "Asia/Kolkata",
+                          })}
                         </div>
                       )}
                     </div>
@@ -392,7 +397,10 @@ export default function LeadDashboard() {
                       )}
                     </div>
                     <div>
-                      Created: {new Date(lead.created_at).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}
+                      Created:{" "}
+                      {new Date(lead.created_at).toLocaleDateString("en-IN", {
+                        timeZone: "Asia/Kolkata",
+                      })}
                     </div>
                   </div>
                 </CardContent>
