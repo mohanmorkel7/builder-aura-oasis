@@ -66,6 +66,8 @@ export default function FollowUpNew() {
   } = useClient(!isLeadFollowUp ? parseInt(id || "0") : 0);
 
   const { data: users = [] } = useUsers();
+  const { user } = useAuth();
+  const createChatMutation = useCreateLeadChat();
 
   const [followUp, setFollowUp] = useState({
     type: "call",
