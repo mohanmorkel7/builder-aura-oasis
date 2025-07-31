@@ -364,30 +364,7 @@ export default function LeadDetails() {
                           </span>
                         </div>
                       )}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
-                        {leadData.project_budget && (
-                          <div className="flex items-center space-x-2">
-                            <DollarSign className="w-4 h-4 text-gray-400" />
-                            <span className="font-medium text-gray-600">
-                              Budget:
-                            </span>
-                            <span className="text-green-600 font-semibold">
-                              ${leadData.project_budget.toLocaleString()}
-                            </span>
-                          </div>
-                        )}
-                        {leadData.project_timeline && (
-                          <div className="flex items-center space-x-2">
-                            <Calendar className="w-4 h-4 text-gray-400" />
-                            <span className="font-medium text-gray-600">
-                              Timeline:
-                            </span>
-                            <span className="text-gray-900">
-                              {leadData.project_timeline}
-                            </span>
-                          </div>
-                        )}
-                      </div>
+
                       {leadData.project_requirements && (
                         <div className="mt-3">
                           <span className="font-medium text-gray-600">
