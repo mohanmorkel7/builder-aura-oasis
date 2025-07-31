@@ -68,6 +68,7 @@ export default function FollowUpNew() {
   const { data: users = [] } = useUsers();
   const { user } = useAuth();
   const createChatMutation = useCreateStepChat();
+  const createFollowUpMutation = useCreateFollowUp();
 
   const [followUp, setFollowUp] = useState({
     type: "call",
