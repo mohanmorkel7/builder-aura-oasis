@@ -479,7 +479,7 @@ export default function FollowUpTracker() {
                           #{followUp.id}
                         </Badge>
                         <h3 className="text-lg font-semibold text-gray-900">
-                          {followUp.lead_name} • {followUp.step_name}
+                          {followUp.lead_client_name || followUp.client_name || "Unknown Lead"} • {followUp.title || "Follow-up"}
                         </h3>
                         <Badge className={statusColors[followUp.status]}>
                           <StatusIcon className="w-3 h-3 mr-1" />
