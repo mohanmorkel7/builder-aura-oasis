@@ -565,39 +565,7 @@ export default function CreateLead() {
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="project_budget">Project Budget</Label>
-                  <div className="relative mt-1">
-                    <DollarSign className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input
-                      id="project_budget"
-                      type="number"
-                      value={leadData.project_budget}
-                      onChange={(e) =>
-                        updateField("project_budget", e.target.value)
-                      }
-                      className="pl-10"
-                      placeholder="0"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <Label htmlFor="project_timeline">Project Timeline</Label>
-                  <div className="relative mt-1">
-                    <Calendar className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input
-                      id="project_timeline"
-                      value={leadData.project_timeline}
-                      onChange={(e) =>
-                        updateField("project_timeline", e.target.value)
-                      }
-                      className="pl-10"
-                      placeholder="e.g., 3-6 months"
-                    />
-                  </div>
-                </div>
-              </div>
+
 
               <div>
                 <Label htmlFor="project_requirements">
