@@ -196,11 +196,7 @@ export default function LeadEdit() {
     company_location: "",
     category: "",
     country: "",
-    contact_person: "",
-    email: "",
-    phone: "",
-    industry: "",
-    company_size: "",
+
 
     // Contact Information
     contacts: [
