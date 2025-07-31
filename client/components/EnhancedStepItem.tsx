@@ -357,7 +357,7 @@ export function EnhancedStepItem({
                           <div className="flex-1">
                             <div className="flex items-center justify-between mb-1">
                               <span className="text-sm font-medium text-gray-900">
-                                {message.user_name}
+                                {message.user_id === parseInt(user.id) ? "Me" : message.user_name}
                               </span>
                               <div className="flex items-center space-x-2">
                                 <span className="text-xs text-gray-500">
