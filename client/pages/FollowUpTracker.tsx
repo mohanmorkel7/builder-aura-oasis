@@ -530,23 +530,11 @@ export default function FollowUpTracker() {
 
                       <div className="flex items-center space-x-4 text-xs text-gray-500">
                         <span>
-                          Created:{" "}
-                          {new Date(followUp.created_at).toLocaleDateString(
-                            "en-IN",
-                            {
-                              timeZone: "Asia/Kolkata",
-                            },
-                          )}
+                          Created: {formatToIST(followUp.created_at)}
                         </span>
                         {followUp.completed_at && (
                           <span>
-                            Completed:{" "}
-                            {new Date(followUp.completed_at).toLocaleDateString(
-                              "en-IN",
-                              {
-                                timeZone: "Asia/Kolkata",
-                              },
-                            )}
+                            Completed: {formatToIST(followUp.completed_at)}
                           </span>
                         )}
                       </div>
