@@ -107,12 +107,20 @@ export default function FollowUpNew() {
 
       // Create system message for lead follow-up with assigned user info
       if (isLeadFollowUp && leadContext?.createSystemMessage && user) {
+        console.log("Creating system message with followUp data:", followUp);
+        console.log("Available users:", users);
+        console.log("Looking for assigned_to:", followUp.assigned_to);
+
         const assignedUser = users.find(
           (u: any) => u.id.toString() === followUp.assigned_to,
         );
+        console.log("Found assigned user:", assignedUser);
+
         const assignedUserName = assignedUser
           ? `${assignedUser.first_name} ${assignedUser.last_name}`
           : "Unassigned";
+
+        console.log("Assigned user name:", assignedUserName);
 
         const systemMessageData = {
           user_id: parseInt(user.id),
@@ -121,6 +129,8 @@ export default function FollowUpNew() {
           message_type: "system" as const,
           is_rich_text: false,
         };
+
+        console.log("System message data:", systemMessageData);
 
         try {
           await createChatMutation.mutateAsync({
