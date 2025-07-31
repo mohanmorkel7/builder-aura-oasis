@@ -9,6 +9,7 @@ import templatesRouter from "./routes/templates";
 import deploymentsRouter from "./routes/deployments";
 import onboardingRouter from "./routes/onboarding";
 import leadsRouter from "./routes/leads";
+import followUpsRouter from "./routes/follow-ups";
 
 export function createServer() {
   const app = express();
