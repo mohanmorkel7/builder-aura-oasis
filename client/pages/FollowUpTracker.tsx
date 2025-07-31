@@ -165,6 +165,8 @@ export default function FollowUpTracker() {
   const [selectedFollowUp, setSelectedFollowUp] = useState<FollowUp | null>(
     null,
   );
+  const [followUps, setFollowUps] = useState<FollowUp[]>([]);
+  const [loading, setLoading] = useState(true);
 
   // Check if we came here to view a specific follow-up ID
   useEffect(() => {
