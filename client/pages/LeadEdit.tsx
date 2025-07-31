@@ -1145,16 +1145,55 @@ export default function LeadEdit() {
             <CardHeader>
               <CardTitle>Additional Information</CardTitle>
               <CardDescription>
-                Priority, timeline, and additional notes about this lead
+                {canEditLead
+                  ? "Priority, timeline, and additional notes about this lead"
+                  : "Update lead status, assignment, and sales information"
+                }
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
+              {/* Status and Assignment - Available to Sales users */}
+              {canEditAssignments && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="status">Lead Status</Label>
+                    <Select
+                      value={leadData.status}
+                      onValueChange={(value) => updateField("status", value)}
+                    >
+                      <SelectTrigger className="mt-1">
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {statuses.map((status) => (
+                          <SelectItem key={status.value} value={status.value}>
+                            {status.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="assigned_to">Assigned To</Label>
+                    <Input
+                      id="assigned_to"
+                      value={leadData.assigned_to?.toString() || ""}
+                      onChange={(e) => updateField("assigned_to", parseInt(e.target.value))}
+                      className="mt-1"
+                      placeholder="User ID"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Full access fields for admin users */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <Label htmlFor="priority">Priority Level</Label>
                   <Select
                     value={leadData.priority}
                     onValueChange={(value) => updateField("priority", value)}
+                    disabled={!canEditLead}
                   >
                     <SelectTrigger className="mt-1">
                       <SelectValue placeholder="Select priority" />
@@ -1188,6 +1227,7 @@ export default function LeadEdit() {
                       }
                       className="pl-10"
                       min={new Date().toISOString().split("T")[0]}
+                      disabled={!canEditAssignments}
                     />
                   </div>
                 </div>
@@ -1202,6 +1242,7 @@ export default function LeadEdit() {
                     onChange={(e) => updateField("probability", e.target.value)}
                     className="mt-1"
                     placeholder="50"
+                    disabled={!canEditAssignments}
                   />
                 </div>
               </div>
@@ -1215,6 +1256,7 @@ export default function LeadEdit() {
                   className="mt-1"
                   rows={4}
                   placeholder="Any additional notes about this lead..."
+                  disabled={!canEditAssignments}
                 />
               </div>
             </CardContent>
