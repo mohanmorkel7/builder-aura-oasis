@@ -10,6 +10,7 @@ import deploymentsRouter from "./routes/deployments";
 import onboardingRouter from "./routes/onboarding";
 import leadsRouter from "./routes/leads";
 import followUpsRouter from "./routes/follow-ups";
+import filesRouter from "./routes/files";
 
 export function createServer() {
   const app = express();
