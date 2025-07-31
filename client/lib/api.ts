@@ -379,6 +379,29 @@ export class ApiClient {
       method: "DELETE",
     });
   }
+
+  // Follow-up methods
+  async createFollowUp(followUpData: any) {
+    return this.request("/follow-ups", {
+      method: "POST",
+      body: JSON.stringify(followUpData),
+    });
+  }
+
+  async getClientFollowUps(clientId: number) {
+    return this.request(`/follow-ups/client/${clientId}`);
+  }
+
+  async getLeadFollowUps(leadId: number) {
+    return this.request(`/follow-ups/lead/${leadId}`);
+  }
+
+  async updateFollowUpStatus(followUpId: number, statusData: any) {
+    return this.request(`/follow-ups/${followUpId}`, {
+      method: "PATCH",
+      body: JSON.stringify(statusData),
+    });
+  }
 }
 
 export const apiClient = new ApiClient();
