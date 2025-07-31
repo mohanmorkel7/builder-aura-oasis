@@ -332,9 +332,7 @@ export default function CreateLead() {
     navigate("/leads");
   };
 
-  const isFormValid =
-    leadData.client_name.trim() &&
-    leadData.lead_source;
+  const isFormValid = leadData.client_name.trim() && leadData.lead_source;
 
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">
@@ -490,8 +488,6 @@ export default function CreateLead() {
                   </div>
                 </div>
               )}
-
-
             </CardContent>
           </Card>
         </TabsContent>
@@ -535,8 +531,6 @@ export default function CreateLead() {
                   placeholder="Describe what the client wants to achieve..."
                 />
               </div>
-
-
 
               <div>
                 <Label htmlFor="project_requirements">
@@ -902,8 +896,6 @@ export default function CreateLead() {
                   </Select>
                 </div>
               </div>
-
-
             </CardContent>
           </Card>
         </TabsContent>

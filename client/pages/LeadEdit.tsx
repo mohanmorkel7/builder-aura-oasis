@@ -197,7 +197,6 @@ export default function LeadEdit() {
     category: "",
     country: "",
 
-
     // Contact Information
     contacts: [
       {
@@ -399,9 +398,7 @@ export default function LeadEdit() {
     );
   }
 
-  const isFormValid =
-    leadData.client_name.trim() &&
-    leadData.lead_source;
+  const isFormValid = leadData.client_name.trim() && leadData.lead_source;
 
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">
@@ -573,8 +570,6 @@ export default function LeadEdit() {
                   </div>
                 </div>
               )}
-
-
             </CardContent>
           </Card>
         </TabsContent>
@@ -618,8 +613,6 @@ export default function LeadEdit() {
                   placeholder="Describe what the client wants to achieve..."
                 />
               </div>
-
-
 
               <div>
                 <Label htmlFor="project_requirements">
@@ -985,8 +978,6 @@ export default function LeadEdit() {
                   </Select>
                 </div>
               </div>
-
-
             </CardContent>
           </Card>
         </TabsContent>

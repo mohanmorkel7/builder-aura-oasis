@@ -341,7 +341,9 @@ export default function FollowUpNew() {
                   <SelectItem key={user.id} value={user.id.toString()}>
                     <div className="flex items-center space-x-2">
                       <User className="w-4 h-4" />
-                      <span>{user.first_name} {user.last_name} ({user.role})</span>
+                      <span>
+                        {user.first_name} {user.last_name} ({user.role})
+                      </span>
                     </div>
                   </SelectItem>
                 ))}
@@ -419,7 +421,17 @@ export default function FollowUpNew() {
             </div>
             {followUp.assigned_to && (
               <p className="text-xs text-gray-500 mt-1">
-                Assigned to: {users.find((user: any) => user.id.toString() === followUp.assigned_to)?.first_name} {users.find((user: any) => user.id.toString() === followUp.assigned_to)?.last_name}
+                Assigned to:{" "}
+                {
+                  users.find(
+                    (user: any) => user.id.toString() === followUp.assigned_to,
+                  )?.first_name
+                }{" "}
+                {
+                  users.find(
+                    (user: any) => user.id.toString() === followUp.assigned_to,
+                  )?.last_name
+                }
               </p>
             )}
           </div>

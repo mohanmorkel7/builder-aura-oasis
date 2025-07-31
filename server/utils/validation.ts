@@ -393,11 +393,7 @@ export const ValidationSchemas = {
   },
 
   lead: {
-    required: [
-      "client_name",
-      "lead_source",
-      "created_by",
-    ],
+    required: ["client_name", "lead_source", "created_by"],
     optional: [
       "lead_id",
       "lead_source_value",
@@ -446,14 +442,8 @@ export const ValidationSchemas = {
       status: ["in-progress", "won", "lost", "completed"],
       priority: ["low", "medium", "high", "urgent"],
       priority_level: ["high", "medium", "low"],
-      client_type: [
-        "new",
-        "existing",
-      ],
-      category: [
-        "aggregator",
-        "banks",
-      ],
+      client_type: ["new", "existing"],
+      category: ["aggregator", "banks"],
       country: [
         "india",
         "usa",
