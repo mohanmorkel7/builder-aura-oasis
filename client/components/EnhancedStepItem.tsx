@@ -409,13 +409,13 @@ export function EnhancedStepItem({
                               {message.is_rich_text ? (
                                 <div
                                   dangerouslySetInnerHTML={{
-                                    __html: highlightMentions(message.message),
+                                    __html: processMessageContent(message.message),
                                   }}
                                 />
                               ) : (
                                 <div
                                   dangerouslySetInnerHTML={{
-                                    __html: highlightMentions(message.message),
+                                    __html: processMessageContent(message.message),
                                   }}
                                 />
                               )}
