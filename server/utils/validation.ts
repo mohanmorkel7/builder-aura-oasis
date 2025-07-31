@@ -395,8 +395,6 @@ export const ValidationSchemas = {
   lead: {
     required: [
       "client_name",
-      "contact_person",
-      "email",
       "lead_source",
       "created_by",
     ],
@@ -407,8 +405,6 @@ export const ValidationSchemas = {
       // Project Information
       "project_title",
       "project_description",
-      "project_budget",
-      "project_timeline",
       "project_requirements",
       // Enhanced Project Info
       "solutions",
@@ -427,9 +423,6 @@ export const ValidationSchemas = {
       "company_location",
       "category",
       "country",
-      "phone",
-      "industry",
-      "company_size",
       // Contact Information
       "contacts",
       // Additional Information
