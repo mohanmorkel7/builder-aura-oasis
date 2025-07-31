@@ -442,7 +442,7 @@ export default function LeadEdit() {
           </Button>
           <Button
             onClick={handleSave}
-            disabled={!isFormValid || saving}
+            disabled={(!canEditLead && !canEditAssignments) || saving || (canEditLead && !isFormValid)}
             className="min-w-20"
           >
             {saving ? (
@@ -450,7 +450,7 @@ export default function LeadEdit() {
             ) : (
               <>
                 <Save className="w-4 h-4 mr-2" />
-                Save
+                {canEditLead ? "Save" : "Update"}
               </>
             )}
           </Button>
