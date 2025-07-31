@@ -543,18 +543,6 @@ export default function LeadDetails() {
 
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Industry:</span>
-                  <span className="text-gray-900">
-                    {leadData.industry || "Not specified"}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Company Size:</span>
-                  <span className="text-gray-900">
-                    {leadData.company_size || "Not specified"}
-                  </span>
-                </div>
-                <div className="flex justify-between">
                   <span className="text-gray-600">Sales Rep:</span>
                   <span className="text-gray-900">
                     {leadData.sales_rep_name || "Not assigned"}
