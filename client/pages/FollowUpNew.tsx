@@ -97,7 +97,7 @@ export default function FollowUpNew() {
       const followUpData = {
         ...followUp,
         client_id: !isLeadFollowUp ? parseInt(id || "0") : undefined,
-        lead_id: isLeadFollowUp ? leadContext?.stepId : undefined,
+        lead_id: isLeadFollowUp ? leadContext?.leadId : undefined,
         message_id: isLeadFollowUp ? leadContext?.messageId : undefined,
         created_by: parseInt(user?.id || "0"),
         follow_up_type: followUp.type,
