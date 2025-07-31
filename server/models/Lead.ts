@@ -22,8 +22,7 @@ export interface Lead {
   // Project Information
   project_title?: string;
   project_description?: string;
-  project_budget?: number;
-  project_timeline?: string;
+
   project_requirements?: string;
 
   // Enhanced Project Info
@@ -162,8 +161,7 @@ export interface CreateLeadData {
   // Project Information
   project_title?: string;
   project_description?: string;
-  project_budget?: number;
-  project_timeline?: string;
+
   project_requirements?: string;
 
   // Enhanced Project Info
@@ -257,8 +255,7 @@ export interface UpdateLeadData {
   // Project Information
   project_title?: string;
   project_description?: string;
-  project_budget?: number;
-  project_timeline?: string;
+
   project_requirements?: string;
 
   // Enhanced Project Info
