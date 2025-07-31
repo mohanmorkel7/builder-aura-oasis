@@ -410,10 +410,7 @@ export function EnhancedStepItem({
                               </span>
                               <div className="flex items-center space-x-2">
                                 <span className="text-xs text-gray-500">
-                                  {new Date(message.created_at).toLocaleString(
-                                    "en-IN",
-                                    { timeZone: "Asia/Kolkata" },
-                                  )}
+                                  {formatToISTDateTime(message.created_at)}
                                 </span>
                                 {message.message_type !== "system" && (
                                   <Button
