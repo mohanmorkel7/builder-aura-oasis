@@ -445,6 +445,18 @@ export class LeadRepository {
   }
 
   static async delete(id: number): Promise<boolean> {
+    // First, try to apply the foreign key fix if needed
+    try {
+      await pool.query(`
+        ALTER TABLE follow_ups DROP CONSTRAINT IF EXISTS follow_ups_lead_id_fkey;
+        ALTER TABLE follow_ups ADD CONSTRAINT follow_ups_lead_id_fkey
+            FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE CASCADE;
+      `);
+    } catch (migrationError) {
+      console.log("Foreign key migration already applied or failed:", migrationError.message);
+    }
+
+    // Now delete the lead - cascading deletes should handle follow-ups
     const query = "DELETE FROM leads WHERE id = $1";
     const result = await pool.query(query, [id]);
     return result.rowCount > 0;
