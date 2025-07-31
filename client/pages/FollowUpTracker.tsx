@@ -317,7 +317,7 @@ export default function FollowUpTracker() {
               <div>
                 <p className="text-yellow-600 text-sm font-medium">Pending</p>
                 <p className="text-2xl font-bold text-yellow-900">
-                  {mockFollowUps.filter((f) => f.status === "pending").length}
+                  {followUps.filter((f) => f.status === "pending").length}
                 </p>
               </div>
               <Clock className="w-8 h-8 text-yellow-600" />
@@ -332,7 +332,7 @@ export default function FollowUpTracker() {
                 <p className="text-blue-600 text-sm font-medium">In Progress</p>
                 <p className="text-2xl font-bold text-blue-900">
                   {
-                    mockFollowUps.filter((f) => f.status === "in_progress")
+                    followUps.filter((f) => f.status === "in_progress")
                       .length
                   }
                 </p>
@@ -348,7 +348,7 @@ export default function FollowUpTracker() {
               <div>
                 <p className="text-green-600 text-sm font-medium">Completed</p>
                 <p className="text-2xl font-bold text-green-900">
-                  {mockFollowUps.filter((f) => f.status === "completed").length}
+                  {followUps.filter((f) => f.status === "completed").length}
                 </p>
               </div>
               <CheckCircle className="w-8 h-8 text-green-600" />
@@ -362,7 +362,7 @@ export default function FollowUpTracker() {
               <div>
                 <p className="text-red-600 text-sm font-medium">Overdue</p>
                 <p className="text-2xl font-bold text-red-900">
-                  {mockFollowUps.filter((f) => f.status === "overdue").length}
+                  {followUps.filter((f) => f.status === "overdue").length}
                 </p>
               </div>
               <AlertCircle className="w-8 h-8 text-red-600" />
