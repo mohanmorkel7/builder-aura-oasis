@@ -225,7 +225,7 @@ export function StepItem({
                               {doc.name}
                             </div>
                             <div className="text-xs text-gray-500">
-                              {Math.round(doc.file_size / 1024 / 1024 * 10) / 10} MB • {doc.uploaded_by} • {new Date(doc.uploaded_at).toLocaleDateString()}
+                              {Math.round(doc.file_size / 1024 / 1024 * 10) / 10} MB • {doc.uploaded_by} • {new Date(doc.uploaded_at).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}
                             </div>
                           </div>
                         </div>
