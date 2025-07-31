@@ -333,7 +333,7 @@ function AppRoutes() {
       <Route
         path="/leads/:id/proposal"
         element={
-          <ProtectedRoute allowedRoles={["admin", "sales"]}>
+          <ProtectedRoute allowedRoles={["admin", "sales", "product"]}>
             <DashboardLayout>
               <ProposalNew />
             </DashboardLayout>
