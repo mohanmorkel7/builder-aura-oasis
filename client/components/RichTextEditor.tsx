@@ -45,7 +45,7 @@ export function RichTextEditor({
   }, [value]);
 
   return (
-    <div className={`border rounded-md ${className}`}>
+    <div className={`relative border rounded-md ${className}`}>
       {/* Toolbar */}
       <div className="flex items-center space-x-1 p-2 border-b bg-gray-50">
         <Button
@@ -89,27 +89,29 @@ export function RichTextEditor({
         </Button>
       </div>
 
-      {/* Editor */}
-      <div
-        ref={editorRef}
-        contentEditable
-        onInput={handleInput}
-        onPaste={handlePaste}
-        onFocus={() => setIsEditorFocused(true)}
-        onBlur={() => setIsEditorFocused(false)}
-        className={`min-h-[80px] p-3 outline-none text-sm leading-relaxed ${
-          !value && !isEditorFocused ? "text-gray-500" : ""
-        }`}
-        style={{ wordBreak: "break-word" }}
-        suppressContentEditableWarning={true}
-      />
+      {/* Editor Container */}
+      <div className="relative">
+        <div
+          ref={editorRef}
+          contentEditable
+          onInput={handleInput}
+          onPaste={handlePaste}
+          onFocus={() => setIsEditorFocused(true)}
+          onBlur={() => setIsEditorFocused(false)}
+          className={`min-h-[80px] p-3 outline-none text-sm leading-relaxed ${
+            !value && !isEditorFocused ? "text-gray-500" : ""
+          }`}
+          style={{ wordBreak: "break-word" }}
+          suppressContentEditableWarning={true}
+        />
 
-      {/* Placeholder */}
-      {!value && !isEditorFocused && (
-        <div className="absolute inset-0 top-12 left-3 text-gray-500 text-sm pointer-events-none">
-          {placeholder}
-        </div>
-      )}
+        {/* Placeholder */}
+        {!value && !isEditorFocused && (
+          <div className="absolute top-3 left-3 text-gray-500 text-sm pointer-events-none">
+            {placeholder}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
