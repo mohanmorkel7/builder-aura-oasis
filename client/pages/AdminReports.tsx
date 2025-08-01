@@ -77,12 +77,18 @@ const monthlyData = [
   { month: "Jun", users: 67, clients: 28, deployments: 19, revenue: 38000 },
 ];
 
-const departmentData = [
-  { name: "Sales", value: 35, color: "#3B82F6" },
-  { name: "Product", value: 28, color: "#10B981" },
-  { name: "Admin", value: 22, color: "#8B5CF6" },
-  { name: "Support", value: 15, color: "#F59E0B" },
-];
+const getDepartmentData = (users: any[]) => {
+  const roleCounts = users.reduce((acc: any, user: any) => {
+    acc[user.role] = (acc[user.role] || 0) + 1;
+    return acc;
+  }, {});
+
+  return [
+    { name: "Admin", value: roleCounts.admin || 0, color: "#8B5CF6" },
+    { name: "Sales", value: roleCounts.sales || 0, color: "#3B82F6" },
+    { name: "Product", value: roleCounts.product || 0, color: "#10B981" },
+  ];
+};
 
 const clientStatusData = [
   { status: "Active", count: 45, color: "#10B981" },
