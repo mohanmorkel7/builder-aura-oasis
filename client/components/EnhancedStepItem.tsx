@@ -108,13 +108,20 @@ export function EnhancedStepItem({
   } = useStepChats(step.id);
   const createChatMutation = useCreateStepChat();
 
-  // Sort messages by created_at in descending order (latest first)
+  // Sort messages by created_at in ascending order (latest last for bottom scroll)
   const sortedMessages = React.useMemo(() => {
     return [...chatMessages].sort(
       (a, b) =>
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+        new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
     );
   }, [chatMessages]);
+
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    if (messagesContainerRef.current && sortedMessages.length > 0) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
+  }, [sortedMessages]);
 
   // Debug logging
   React.useEffect(() => {
