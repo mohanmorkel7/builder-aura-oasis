@@ -25,7 +25,7 @@ export default function Login() {
 
     const success = await login(email, password);
     if (!success) {
-      setError("Invalid email or password. Please use the demo credentials shown below.");
+      setError("Login failed. Please use the demo credentials: admin@banani.com, sales@banani.com, or product@banani.com with password 'password'");
     }
   };
 
