@@ -671,6 +671,41 @@ export default function CreateLead() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
+              {/* Total Value Summary */}
+              {leadData.commercial_pricing && leadData.commercial_pricing.length > 0 && (
+                <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                  <h3 className="text-lg font-semibold text-blue-900 mb-2">Total Commercial Value</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {Object.entries(
+                      leadData.commercial_pricing.reduce((acc: Record<string, { total: number; count: number }>, pricing) => {
+                        const key = `${pricing.currency}_${pricing.unit}`;
+                        if (!acc[key]) {
+                          acc[key] = { total: 0, count: 0 };
+                        }
+                        acc[key].total += pricing.value || 0;
+                        acc[key].count += 1;
+                        return acc;
+                      }, {})
+                    ).map(([key, data]) => {
+                      const [currency, unit] = key.split('_');
+                      return (
+                        <div key={key} className="text-center">
+                          <div className="text-2xl font-bold text-blue-800">
+                            {data.total.toLocaleString()}
+                          </div>
+                          <div className="text-sm text-blue-600">
+                            {currency} ({unit})
+                          </div>
+                          <div className="text-xs text-blue-500">
+                            {data.count} solution{data.count !== 1 ? 's' : ''}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               <div>
                 <p className="text-sm text-gray-600 mb-4">
                   Pricing for solutions selected in the Project Details tab.
