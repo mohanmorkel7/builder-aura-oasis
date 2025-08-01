@@ -194,6 +194,9 @@ export interface CreateLeadData {
   probability?: number;
   notes?: string;
 
+  // Template Reference
+  selected_template_id?: number;
+
   // Metadata
   created_by: number;
   assigned_to?: number;
