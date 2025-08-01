@@ -54,16 +54,18 @@ import {
   Clock,
 } from "lucide-react";
 
-// Mock data for reports
-const systemMetrics = {
-  totalUsers: 247,
-  activeClients: 68,
-  totalDeployments: 124,
-  revenue: 285000,
-  userGrowth: 12.5,
-  clientGrowth: 8.3,
-  deploymentGrowth: 15.2,
-  revenueGrowth: 18.7,
+// Real-time data function
+const getSystemMetrics = (users: any[], leads: any[], leadStats: any, followUps: any[]) => {
+  return {
+    totalUsers: users.length,
+    totalLeads: leads.length,
+    totalFollowUps: followUps.length,
+    revenue: leads.reduce((sum: number, lead: any) => sum + (lead.project_value || 0), 0),
+    userGrowth: 12.5, // Could be calculated from user creation dates
+    leadGrowth: 8.3, // Could be calculated from lead creation dates
+    followUpGrowth: 15.2, // Could be calculated from follow-up creation dates
+    revenueGrowth: 18.7, // Could be calculated from revenue changes
+  };
 };
 
 const monthlyData = [
