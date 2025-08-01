@@ -426,9 +426,20 @@ export class ApiClient {
         searchParams.append("assigned_to", params.assigned_to);
 
       const queryString = searchParams.toString();
-      return this.request(`/follow-ups${queryString ? `?${queryString}` : ""}`);
+      const endpoint = `/follow-ups${queryString ? `?${queryString}` : ""}`;
+
+      console.log("Fetching follow-ups from:", endpoint);
+      const result = await this.request(endpoint);
+      console.log("Follow-ups fetch successful, got", Array.isArray(result) ? result.length : 'non-array', 'items');
+      return result;
     } catch (error) {
       console.error("Failed to fetch follow-ups:", error);
+
+      // Check if it's a network error vs server error
+      if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
+        console.error("Network error - server may be unreachable");
+      }
+
       // Return empty array as fallback to prevent crashes
       return [];
     }
