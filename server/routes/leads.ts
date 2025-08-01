@@ -346,30 +346,16 @@ router.put("/:id", async (req: Request, res: Response) => {
         res.json(mockLead);
       }
     } catch (dbError) {
-      console.log(
-        "Database error during lead update, trying mock data:",
-        dbError.message,
-      );
-
-      // Check if it's a date format error
-      if (dbError.message && dbError.message.includes('invalid input syntax for type date')) {
-        console.log("Date format error detected - this should now be fixed with date sanitization");
-      }
-
-      console.log(`Attempting to update lead ${id} with mock data...`);
+      console.log("Database error, falling back to mock data:", dbError.message);
 
       const mockLead = await MockDataService.updateLead(id, leadData);
-      console.log("Mock lead update result:", mockLead ? "success" : "lead not found");
-
       if (!mockLead) {
-        console.log(`Lead ${id} not found in mock data either`);
         return res.status(404).json({
           error: "Lead not found",
-          message: `Lead with ID ${id} does not exist in mock data`,
-          availableLeadIds: [1, 2, 9] // Based on mock data
+          message: `Lead with ID ${id} does not exist`,
+          availableLeadIds: [1, 2, 9]
         });
       }
-      console.log("Returning mock lead update response");
       res.json(mockLead);
     }
   } catch (error) {
