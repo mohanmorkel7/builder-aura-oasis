@@ -99,12 +99,17 @@ const getLeadStatusData = (leadStats: any) => {
   ];
 };
 
-const deploymentTrends = [
-  { week: "Week 1", successful: 12, failed: 2, pending: 3 },
-  { week: "Week 2", successful: 15, failed: 1, pending: 4 },
-  { week: "Week 3", successful: 18, failed: 3, pending: 2 },
-  { week: "Week 4", successful: 20, failed: 1, pending: 5 },
-];
+const getFollowUpTrends = (followUps: any[]) => {
+  // Group follow-ups by week for trends
+  const statusCounts = followUps.reduce((acc: any, followUp: any) => {
+    acc[followUp.status] = (acc[followUp.status] || 0) + 1;
+    return acc;
+  }, {});
+
+  return [
+    { week: "Current", completed: statusCounts.completed || 0, in_progress: statusCounts.in_progress || 0, pending: statusCounts.pending || 0 },
+  ];
+};
 
 const topClients = [
   {
