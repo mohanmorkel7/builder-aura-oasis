@@ -163,7 +163,7 @@ export default function FollowUpNew() {
     }
   };
 
-  if (!isLeadFollowUp && isLoading) {
+  if (!isLeadFollowUp && hasClientId && isLoading) {
     return (
       <div className="p-6">
         <div className="text-center">Loading client details...</div>
@@ -171,7 +171,7 @@ export default function FollowUpNew() {
     );
   }
 
-  if (!isLeadFollowUp && (error || !client)) {
+  if (!isLeadFollowUp && hasClientId && (error || !client)) {
     return (
       <div className="p-6">
         <div className="text-center text-red-600">
