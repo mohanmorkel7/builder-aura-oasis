@@ -61,6 +61,15 @@ export default function UserEdit() {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [resetError, setResetError] = useState<string | null>(null);
 
+  // Change password state
+  const [changePasswordData, setChangePasswordData] = useState({
+    oldPassword: "",
+    newPassword: "",
+    confirmPassword: ""
+  });
+  const [changePasswordError, setChangePasswordError] = useState<string | null>(null);
+  const [changePasswordLoading, setChangePasswordLoading] = useState(false);
+
   // Update state when user data is loaded
   React.useEffect(() => {
     if (originalUser) {
