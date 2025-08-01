@@ -125,15 +125,15 @@ export default function TemplatePreviewModal({
                             </p>
                             <div className="flex items-center space-x-4 ml-11 text-xs text-gray-500">
                               {(step.estimated_days || step.default_eta_days) && (
-                                <div className="flex items-center space-x-1">
-                                  <Clock className="w-3 h-3" />
-                                  <span>{step.estimated_days || step.default_eta_days} day{(step.estimated_days || step.default_eta_days) !== 1 ? 's' : ''}</span>
+                                <div key={`time-${step.id}`} className="flex items-center space-x-1">
+                                  <Clock key={`clock-${step.id}`} className="w-3 h-3" />
+                                  <span key={`time-text-${step.id}`}>{step.estimated_days || step.default_eta_days} day{(step.estimated_days || step.default_eta_days) !== 1 ? 's' : ''}</span>
                                 </div>
                               )}
                               {step.assigned_role && (
-                                <div className="flex items-center space-x-1">
-                                  <User className="w-3 h-3" />
-                                  <span className="capitalize">{step.assigned_role}</span>
+                                <div key={`role-${step.id}`} className="flex items-center space-x-1">
+                                  <User key={`user-${step.id}`} className="w-3 h-3" />
+                                  <span key={`role-text-${step.id}`} className="capitalize">{step.assigned_role}</span>
                                 </div>
                               )}
                             </div>
