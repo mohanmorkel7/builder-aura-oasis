@@ -78,11 +78,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         if (userData) {
-          console.log("Demo authentication successful:", userData.role);
+          console.log("Client-side demo authentication successful:", userData.role);
           setUser(userData);
           localStorage.setItem("banani_user", JSON.stringify(userData));
           setIsLoading(false);
           return true;
+        } else {
+          console.log("Client-side demo authentication failed - email not recognized");
         }
       }
 
