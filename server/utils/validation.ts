@@ -459,7 +459,7 @@ export const ValidationSchemas = {
       priority: ["low", "medium", "high", "urgent"],
       priority_level: ["high", "medium", "low"],
       client_type: ["new", "existing"],
-      category: ["aggregator", "banks"],
+      category: ["aggregator", "banks", "partner"],
       country: [
         "india",
         "usa",
