@@ -144,6 +144,56 @@ export default function UserEdit() {
     }
   };
 
+  const changePassword = async () => {
+    setChangePasswordError(null);
+
+    if (!changePasswordData.oldPassword || !changePasswordData.newPassword || !changePasswordData.confirmPassword) {
+      setChangePasswordError("All fields are required");
+      return;
+    }
+
+    if (changePasswordData.newPassword !== changePasswordData.confirmPassword) {
+      setChangePasswordError("New password and confirm password do not match");
+      return;
+    }
+
+    if (changePasswordData.newPassword.length < 6) {
+      setChangePasswordError("New password must be at least 6 characters long");
+      return;
+    }
+
+    setChangePasswordLoading(true);
+    try {
+      const response = await fetch(`/api/users/${userId}/change-password`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          oldPassword: changePasswordData.oldPassword,
+          newPassword: changePasswordData.newPassword,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to change password");
+      }
+
+      alert("Password changed successfully!");
+      setChangePasswordData({ oldPassword: "", newPassword: "", confirmPassword: "" });
+    } catch (error) {
+      console.error("Failed to change password:", error);
+      setChangePasswordError(
+        error instanceof Error
+          ? error.message
+          : "Failed to change password. Please try again.",
+      );
+    } finally {
+      setChangePasswordLoading(false);
+    }
+  };
+
   const toggleTwoFactor = () => {
     updateField("two_factor_enabled", !user.two_factor_enabled);
   };
