@@ -153,6 +153,14 @@ export default function TemplateEdit() {
   const [hasChanges, setHasChanges] = useState(false);
   const [saving, setSaving] = useState(false);
 
+  if (templateLoading) {
+    return (
+      <div className="p-6 max-w-7xl mx-auto">
+        <div className="text-center">Loading template...</div>
+      </div>
+    );
+  }
+
   const updateField = (field: string, value: any) => {
     setTemplate((prev: any) => ({
       ...prev,
