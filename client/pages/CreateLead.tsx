@@ -141,6 +141,9 @@ export default function CreateLead() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const createLeadMutation = useCreateLead();
+  const { data: templates = [] } = useTemplates();
+
+  const [selectedTemplate, setSelectedTemplate] = useState<string>("");
 
   const [leadData, setLeadData] = useState({
     // Lead Source
