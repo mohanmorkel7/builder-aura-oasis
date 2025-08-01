@@ -1,13 +1,15 @@
 import bcrypt from "bcryptjs";
 
-// Test the bcrypt hash on startup
+// Generate correct bcrypt hash for 'password'
 (async () => {
   try {
-    const testHash = "$2b$10$rOyZUjbEf8Z8gzLl5wF9YeS7YbZzI.sVGzJxJ8MG8KnYxRgQ8nO0y";
-    const testResult = await bcrypt.compare("password", testHash);
-    console.log("Bcrypt hash test result:", testResult);
+    const correctHash = await bcrypt.hash("password", 10);
+    console.log("Correct bcrypt hash for 'password':", correctHash);
+
+    const testResult = await bcrypt.compare("password", correctHash);
+    console.log("New hash verification test:", testResult);
   } catch (error) {
-    console.error("Bcrypt hash test failed:", error);
+    console.error("Bcrypt hash generation failed:", error);
   }
 })();
 
