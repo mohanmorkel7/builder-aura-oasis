@@ -87,7 +87,7 @@ export default function FollowUpNew() {
     due_date: new Date(),
     assigned_to: "",
     notes: "",
-    estimated_duration: 30,
+    estimated_duration: 0,
   });
 
   const [saving, setSaving] = useState(false);
@@ -368,6 +368,7 @@ export default function FollowUpNew() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="0">None</SelectItem>
                   <SelectItem value="15">15 minutes</SelectItem>
                   <SelectItem value="30">30 minutes</SelectItem>
                   <SelectItem value="45">45 minutes</SelectItem>
@@ -468,7 +469,7 @@ export default function FollowUpNew() {
               </span>
               <span>
                 <Clock className="w-3 h-3 inline mr-1" />
-                {followUp.estimated_duration}min
+                {followUp.estimated_duration === 0 ? "No duration" : `${followUp.estimated_duration}min`}
               </span>
             </div>
             {followUp.assigned_to && (
