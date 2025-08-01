@@ -232,6 +232,12 @@ export function EnhancedStepItem({
     try {
       await createChatMutation.mutateAsync({ stepId: step.id, chatData });
       setNewMessage("");
+      // Scroll to bottom after sending message (small delay to ensure DOM update)
+      setTimeout(() => {
+        if (messagesContainerRef.current) {
+          messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+        }
+      }, 100);
     } catch (error) {
       console.error("Failed to send message:", error);
     }
@@ -409,7 +415,7 @@ export function EnhancedStepItem({
                             }`}
                           >
                             {message.message_type === "system"
-                              ? "🔔"
+                              ? "���"
                               : message.user_name.charAt(0)}
                           </div>
                           <div className="flex-1">
