@@ -24,6 +24,11 @@ export default function Overview() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
+  // Fetch real data from APIs
+  const { data: users = [] } = useUsers();
+  const { data: leads = [] } = useLeads();
+  const { data: leadStats } = useLeadStats();
+
   const handleQuickAction = (action: string) => {
     switch (action) {
       case "create-template":
