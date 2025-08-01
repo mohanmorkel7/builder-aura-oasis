@@ -224,6 +224,7 @@ router.post("/auth/login", async (req: Request, res: Response) => {
     if (!user) {
       // Demo credentials fallback - allow hardcoded demo users
       console.log("Trying demo credentials fallback...");
+      console.log("Password check:", password === "password", "Email check:", ["admin@banani.com", "sales@banani.com", "product@banani.com"].includes(email));
       if (password === "password") {
         let demoUser = null;
 
