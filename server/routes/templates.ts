@@ -14,6 +14,7 @@ async function isDatabaseAvailable() {
     await TemplateRepository.findAll();
     return true;
   } catch (error) {
+    console.log("Database not available:", error.message);
     return false;
   }
 }
