@@ -353,6 +353,12 @@ router.put("/:id", async (req: Request, res: Response) => {
         "Database error during lead update, trying mock data:",
         dbError.message,
       );
+
+      // Check if it's a date format error
+      if (dbError.message && dbError.message.includes('invalid input syntax for type date')) {
+        console.log("Date format error detected - this should now be fixed with date sanitization");
+      }
+
       console.log(`Attempting to update lead ${id} with mock data...`);
 
       const mockLead = await MockDataService.updateLead(id, leadData);
