@@ -206,19 +206,23 @@ export function EnhancedStepItem({
   };
 
   const handleSendMessage = async () => {
-    if (!newMessage.trim() || !user) return;
+    if ((!newMessage.trim() && stagedAttachments.length === 0) || !user) return;
+
+    const messageText = newMessage.trim() || "📎 File attachment";
 
     const chatData = {
       user_id: parseInt(user.id),
       user_name: user.name,
-      message: newMessage,
+      message: messageText,
       message_type: "text" as const,
       is_rich_text: true,
+      attachments: stagedAttachments.length > 0 ? stagedAttachments : undefined,
     };
 
     try {
       await createChatMutation.mutateAsync({ stepId: step.id, chatData });
       setNewMessage("");
+      setStagedAttachments([]);
       // Scroll to bottom after sending message (small delay to ensure DOM update)
       setTimeout(() => {
         if (messagesContainerRef.current) {
