@@ -166,6 +166,31 @@ export default function LeadEdit() {
   const leadId = parseInt(id || "0");
 
   const { data: originalLead, isLoading, error } = useLead(leadId);
+
+  if (isLoading) {
+    return (
+      <div className="p-6 max-w-7xl mx-auto">
+        <div className="text-center">Loading lead data...</div>
+      </div>
+    );
+  }
+
+  if (error || !originalLead) {
+    return (
+      <div className="p-6 max-w-7xl mx-auto">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-red-600 mb-4">Lead Not Found</h1>
+          <p className="text-gray-600 mb-4">
+            The lead you're trying to edit could not be found.
+          </p>
+          <Button onClick={() => navigate("/leads")}>
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Leads
+          </Button>
+        </div>
+      </div>
+    );
+  }
   const updateLeadMutation = useUpdateLead();
   const { data: templates = [] } = useTemplates();
 
