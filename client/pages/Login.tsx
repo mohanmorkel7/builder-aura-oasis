@@ -122,10 +122,24 @@ export default function Login() {
             </div>
 
             <div className="text-sm text-gray-600 bg-blue-50 p-3 rounded-md">
-              <p className="font-medium mb-1">Demo Credentials:</p>
+              <p className="font-medium mb-2">Demo Credentials:</p>
               <p>Admin: admin@banani.com / password</p>
               <p>Sales: sales@banani.com / password</p>
               <p>Product: product@banani.com / password</p>
+
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="mt-2 w-full"
+                onClick={() => {
+                  setEmail("admin@banani.com");
+                  setPassword("password");
+                }}
+                disabled={isLoading}
+              >
+                Use Admin Demo Credentials
+              </Button>
             </div>
           </CardContent>
         </Card>
