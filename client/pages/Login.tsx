@@ -15,8 +15,8 @@ import { Loader2 } from "lucide-react";
 
 export default function Login() {
   const { login, loginWithSSO, isLoading } = useAuth();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("admin@banani.com");
+  const [password, setPassword] = useState("password");
   const [error, setError] = useState("");
 
   const handleLogin = async (e: React.FormEvent) => {
