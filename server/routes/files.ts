@@ -37,10 +37,10 @@ const upload = multer({
   },
 });
 
-// Upload files endpoint
+// Upload files endpoint - flexible to handle any field names
 router.post(
   "/upload",
-  upload.array("files", 5),
+  upload.any(),
   async (req: Request, res: Response) => {
     try {
       if (!req.files || !Array.isArray(req.files) || req.files.length === 0) {
