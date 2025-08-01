@@ -67,28 +67,28 @@ export default function TemplatePreviewModal({
             <div key="template-summary" className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <Card key="total-steps" className="text-center">
                 <CardContent className="p-4">
-                  <div className="text-2xl font-bold text-blue-600">{totalSteps}</div>
-                  <div className="text-sm text-gray-600">Total Steps</div>
+                  <div key="total-steps-value" className="text-2xl font-bold text-blue-600">{totalSteps}</div>
+                  <div key="total-steps-label" className="text-sm text-gray-600">Total Steps</div>
                 </CardContent>
               </Card>
               <Card key="required-steps" className="text-center">
                 <CardContent className="p-4">
-                  <div className="text-2xl font-bold text-green-600">{requiredSteps}</div>
-                  <div className="text-sm text-gray-600">Required Steps</div>
+                  <div key="required-steps-value" className="text-2xl font-bold text-green-600">{requiredSteps}</div>
+                  <div key="required-steps-label" className="text-sm text-gray-600">Required Steps</div>
                 </CardContent>
               </Card>
               <Card key="estimated-days" className="text-center">
                 <CardContent className="p-4">
-                  <div className="text-2xl font-bold text-purple-600">{totalEstimatedDays}</div>
-                  <div className="text-sm text-gray-600">Est. Days</div>
+                  <div key="estimated-days-value" className="text-2xl font-bold text-purple-600">{totalEstimatedDays}</div>
+                  <div key="estimated-days-label" className="text-sm text-gray-600">Est. Days</div>
                 </CardContent>
               </Card>
               <Card key="roles-count" className="text-center">
                 <CardContent className="p-4">
-                  <div className="text-2xl font-bold text-orange-600">
+                  <div key="roles-count-value" className="text-2xl font-bold text-orange-600">
                     {new Set(template.steps?.map(step => step.assigned_role)).size || 0}
                   </div>
-                  <div className="text-sm text-gray-600">Roles</div>
+                  <div key="roles-count-label" className="text-sm text-gray-600">Roles</div>
                 </CardContent>
               </Card>
             </div>,
