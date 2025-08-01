@@ -494,9 +494,6 @@ export default function LeadDetails() {
                           rows={3}
                           className={!newStep.description.trim() ? "border-red-300" : ""}
                         />
-                        {!newStep.description.trim() && (
-                          <p className="text-sm text-red-600 mt-1">Description is required</p>
-                        )}
                       </div>
                       <div>
                         <Label htmlFor="dueDate">Due Date</Label>
