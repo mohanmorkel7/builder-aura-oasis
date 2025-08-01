@@ -38,7 +38,6 @@ import {
   Mail,
   Phone,
   MapPin,
-  Calendar,
   DollarSign,
   User,
   Info,
@@ -60,13 +59,6 @@ const leadSources = [
   { value: "cold-call", label: "Cold Call", icon: Phone },
   { value: "event", label: "Event", icon: Briefcase },
   { value: "other", label: "Other", icon: Zap },
-];
-
-const priorities = [
-  { value: "low", label: "Low", color: "bg-gray-100 text-gray-700" },
-  { value: "medium", label: "Medium", color: "bg-yellow-100 text-yellow-700" },
-  { value: "high", label: "High", color: "bg-orange-100 text-orange-700" },
-  { value: "urgent", label: "Urgent", color: "bg-red-100 text-red-700" },
 ];
 
 const companySizes = [
