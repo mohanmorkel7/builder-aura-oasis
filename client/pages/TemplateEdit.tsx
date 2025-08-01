@@ -244,9 +244,10 @@ export default function TemplateEdit() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      // Here you would make an API call to update the template
-      console.log("Saving template:", template);
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
+      await updateTemplateMutation.mutateAsync({
+        id: parseInt(id || "0"),
+        templateData: template
+      });
       setHasChanges(false);
       navigate("/admin");
     } catch (error) {
