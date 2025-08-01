@@ -61,7 +61,11 @@ function ProtectedRoute({
 
 // Auth Guard Component
 function AuthGuard({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+  }
 
   if (user) {
     return <Navigate to="/dashboard" replace />;
