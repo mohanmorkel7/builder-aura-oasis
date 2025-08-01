@@ -65,12 +65,14 @@ export class ApiClient {
       console.error("API request failed:", {
         url,
         error: error.message,
-        type: error.constructor.name
+        type: error.constructor.name,
       });
 
       if (error instanceof TypeError) {
         if (error.message.includes("Failed to fetch")) {
-          throw new Error("Network error: Cannot connect to server. Please check your internet connection or try again later.");
+          throw new Error(
+            "Network error: Cannot connect to server. Please check your internet connection or try again later.",
+          );
         }
         if (error.message.includes("body stream")) {
           throw new Error("Network error: Please try again");
@@ -443,13 +445,20 @@ export class ApiClient {
 
       console.log("Fetching follow-ups from:", endpoint);
       const result = await this.request(endpoint);
-      console.log("Follow-ups fetch successful, got", Array.isArray(result) ? result.length : 'non-array', 'items');
+      console.log(
+        "Follow-ups fetch successful, got",
+        Array.isArray(result) ? result.length : "non-array",
+        "items",
+      );
       return result;
     } catch (error) {
       console.error("Failed to fetch follow-ups:", error);
 
       // Check if it's a network error vs server error
-      if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
+      if (
+        error instanceof TypeError &&
+        error.message.includes("Failed to fetch")
+      ) {
         console.error("Network error - server may be unreachable");
       }
 

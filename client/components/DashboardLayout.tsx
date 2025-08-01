@@ -100,7 +100,12 @@ const getNotificationsFromFollowUps = async (
   userName: string,
 ): Promise<Notification[]> => {
   try {
-    console.log("Fetching follow-ups for notifications, userId:", userId, "userName:", userName);
+    console.log(
+      "Fetching follow-ups for notifications, userId:",
+      userId,
+      "userName:",
+      userName,
+    );
 
     const followUps = await apiClient.getAllFollowUps({
       userId,
@@ -192,7 +197,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             user.id,
             user.name,
           );
-          console.log("Successfully fetched", realNotifications.length, "notifications");
+          console.log(
+            "Successfully fetched",
+            realNotifications.length,
+            "notifications",
+          );
           setNotifications(realNotifications);
         } catch (error) {
           console.error("Failed to fetch notifications in useEffect:", error);
