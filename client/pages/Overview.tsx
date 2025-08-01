@@ -137,29 +137,29 @@ export default function Overview() {
       case "product":
         return [
           {
-            label: "Deployments",
-            value: "124",
+            label: "Total Leads",
+            value: leads.length.toString(),
             icon: Rocket,
             color: "text-blue-600",
             bgColor: "bg-blue-100",
           },
           {
-            label: "Success Rate",
-            value: "95%",
+            label: "Completed",
+            value: (leadStats?.completed || 0).toString(),
             icon: CheckCircle,
             color: "text-green-600",
             bgColor: "bg-green-100",
           },
           {
-            label: "Failed",
-            value: "6",
+            label: "Lost Deals",
+            value: (leadStats?.lost || 0).toString(),
             icon: AlertTriangle,
             color: "text-red-600",
             bgColor: "bg-red-100",
           },
           {
-            label: "Pending",
-            value: "2",
+            label: "In Progress",
+            value: (leadStats?.in_progress || 0).toString(),
             icon: Calendar,
             color: "text-yellow-600",
             bgColor: "bg-yellow-100",
