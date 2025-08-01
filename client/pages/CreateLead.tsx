@@ -316,9 +316,12 @@ export default function CreateLead() {
           : undefined,
         probability: parseInt(leadData.probability),
         created_by: parseInt(user?.id || "1"),
+        selected_template_id: selectedTemplate && selectedTemplate !== "manual" ? parseInt(selectedTemplate) : null,
       };
 
-      await createLeadMutation.mutateAsync(submitData);
+      const result = await createLeadMutation.mutateAsync(submitData);
+      // Navigate to the created lead details page
+      navigate(`/leads/${result.id}`);
       navigate("/leads");
     } catch (error) {
       console.error("Failed to create lead:", error);
