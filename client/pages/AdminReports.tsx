@@ -455,7 +455,7 @@ export default function AdminReports() {
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Pie>
-                    <Tooltip />
+                    <Tooltip cursor={false} />
                   </PieChart>
                 </ResponsiveContainer>
               </CardContent>
