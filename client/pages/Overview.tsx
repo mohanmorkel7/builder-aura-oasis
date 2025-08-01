@@ -30,6 +30,9 @@ export default function Overview() {
   const { data: leads = [] } = useLeads();
   const { data: leadStats } = useLeadStats();
 
+  // State for follow-ups data
+  const [followUps, setFollowUps] = React.useState([]);
+
   const handleQuickAction = (action: string) => {
     switch (action) {
       case "create-template":
