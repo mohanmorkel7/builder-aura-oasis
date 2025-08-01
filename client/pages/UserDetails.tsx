@@ -183,6 +183,15 @@ export default function UserDetails() {
         </Button>
       </div>
 
+      {/* Error Display */}
+      {resetError && (
+        <Alert variant="destructive" className="mb-6">
+          <AlertDescription>
+            {resetError}
+          </AlertDescription>
+        </Alert>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column - User Information */}
         <div className="lg:col-span-2 space-y-6">
