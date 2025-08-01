@@ -241,13 +241,15 @@ export default function FollowUpNew() {
               <strong>{leadContext?.stepName}</strong>
               {leadContext?.messageId && ` (Message #${leadContext.messageId})`}
             </>
-          ) : (
+          ) : hasClientId ? (
             <>
               Creating follow-up for <strong>{clientData?.client_name}</strong>
               {clientData?.contact_person &&
                 ` (Contact: ${clientData.contact_person})`}
               {clientData?.email && ` - ${clientData.email}`}
             </>
+          ) : (
+            <>Creating a general follow-up task</>
           )}
         </AlertDescription>
       </Alert>
