@@ -131,17 +131,13 @@ export default function LeadDetails() {
       alert("Step description is required");
       return;
     }
-    if (!newStep.estimated_days || parseInt(newStep.estimated_days) < 1) {
-      alert("Estimated days must be at least 1");
-      return;
-    }
 
     try {
       const stepData = {
         name: newStep.name.trim(),
         description: newStep.description.trim(),
         due_date: newStep.due_date.trim() || undefined,
-        estimated_days: parseInt(newStep.estimated_days),
+        estimated_days: 3, // Default value to satisfy API requirement
       };
 
       console.log("Creating step with data:", { leadId, stepData });
@@ -155,7 +151,6 @@ export default function LeadDetails() {
         name: "",
         description: "",
         due_date: "",
-        estimated_days: "3",
       });
       setNewStepDialog(false);
     } catch (error) {
