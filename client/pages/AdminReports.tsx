@@ -534,7 +534,7 @@ export default function AdminReports() {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" type="category" />
                   <YAxis type="number" />
-                  <Tooltip />
+                  <Tooltip cursor={false} />
                   <Bar dataKey="users" fill="#3B82F6" />
                 </BarChart>
               </ResponsiveContainer>
