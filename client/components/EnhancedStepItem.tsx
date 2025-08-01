@@ -616,6 +616,44 @@ export function EnhancedStepItem({
                       </div>
                     </div>
 
+                    {/* Staged Attachments Display */}
+                    {stagedAttachments.length > 0 && (
+                      <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                        <div className="text-sm font-medium text-blue-800 mb-2">
+                          Files ready to send:
+                        </div>
+                        <div className="space-y-2">
+                          {stagedAttachments.map((attachment, index) => (
+                            <div
+                              key={index}
+                              className="flex items-center justify-between p-2 bg-white border rounded"
+                            >
+                              <div className="flex items-center space-x-2">
+                                <div className="w-6 h-6 bg-blue-100 rounded flex items-center justify-center">
+                                  📎
+                                </div>
+                                <span className="text-sm text-gray-700">
+                                  {attachment.file_name}
+                                </span>
+                                <span className="text-xs text-gray-500">
+                                  ({Math.round(attachment.file_size / 1024)} KB)
+                                </span>
+                              </div>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removeStagedAttachment(index)}
+                                className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                              >
+                                ×
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
                     <div className="mb-3">
                       <RichTextEditor
                         value={newMessage}
