@@ -96,8 +96,8 @@ export default function TemplatePreviewModal({
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <CheckCircle className="w-5 h-5 text-green-600" />
-                <span>Template Steps</span>
+                <CheckCircle key="title-icon" className="w-5 h-5 text-green-600" />
+                <span key="title-text">Template Steps</span>
               </CardTitle>
             </CardHeader>
             <CardContent>
