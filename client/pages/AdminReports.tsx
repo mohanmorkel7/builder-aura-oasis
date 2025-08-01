@@ -182,6 +182,35 @@ export default function AdminReports() {
   const [dateRange, setDateRange] = useState("last_30_days");
   const [reportType, setReportType] = useState("overview");
 
+  // Fetch real data from APIs
+  const { data: users = [] } = useUsers();
+  const { data: leads = [] } = useLeads();
+  const { data: leadStats } = useLeadStats();
+
+  // State for follow-ups data
+  const [followUps, setFollowUps] = useState([]);
+
+  // Fetch follow-ups data
+  useEffect(() => {
+    const fetchFollowUps = async () => {
+      try {
+        const response = await fetch('/api/follow-ups');
+        const data = await response.json();
+        setFollowUps(data);
+      } catch (error) {
+        console.error('Failed to fetch follow-ups:', error);
+      }
+    };
+
+    fetchFollowUps();
+  }, []);
+
+  // Calculate real-time data
+  const systemMetrics = getSystemMetrics(users, leads, leadStats, followUps);
+  const departmentData = getDepartmentData(users);
+  const leadStatusData = getLeadStatusData(leadStats);
+  const followUpTrends = getFollowUpTrends(followUps);
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "active":
