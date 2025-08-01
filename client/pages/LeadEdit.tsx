@@ -165,6 +165,11 @@ export default function LeadEdit() {
   const { data: templates = [] } = useTemplates();
 
   const [selectedTemplate, setSelectedTemplate] = useState<string>("");
+  const [showTemplatePreview, setShowTemplatePreview] = useState(false);
+
+  // Get selected template data
+  const selectedTemplateId = selectedTemplate && selectedTemplate !== "manual" ? parseInt(selectedTemplate) : null;
+  const { data: templateData } = useTemplate(selectedTemplateId || 0);
 
   // Check if user has edit permissions
   const canEditLead =
