@@ -22,7 +22,7 @@ export const mockUsers = [
     email: "admin@banani.com",
     phone: "+1 (555) 123-4567",
     password_hash:
-      "$2b$10$rOyZUjbEf8Z8gzLl5wF9YeS7YbZzI.sVGzJxJ8MG8KnYxRgQ8nO0y", // 'password'
+      "$2b$10$oXLUwWLLFbWsc9idoXZXHO.dGmN/vAIurZd7Ib5Br1S8aMzYPPAYO", // 'password'
     role: "admin" as const,
     department: "Administration",
     manager_id: null,
@@ -41,7 +41,7 @@ export const mockUsers = [
     email: "sales@banani.com",
     phone: "+1 (555) 234-5678",
     password_hash:
-      "$2b$10$rOyZUjbEf8Z8gzLl5wF9YeS7YbZzI.sVGzJxJ8MG8KnYxRgQ8nO0y", // 'password'
+      "$2b$10$oXLUwWLLFbWsc9idoXZXHO.dGmN/vAIurZd7Ib5Br1S8aMzYPPAYO", // 'password'
     role: "sales" as const,
     department: "Sales & Marketing",
     manager_id: 1,
@@ -60,7 +60,7 @@ export const mockUsers = [
     email: "product@banani.com",
     phone: "+1 (555) 345-6789",
     password_hash:
-      "$2b$10$rOyZUjbEf8Z8gzLl5wF9YeS7YbZzI.sVGzJxJ8MG8KnYxRgQ8nO0y", // 'password'
+      "$2b$10$oXLUwWLLFbWsc9idoXZXHO.dGmN/vAIurZd7Ib5Br1S8aMzYPPAYO", // 'password'
     role: "product" as const,
     department: "Product Development",
     manager_id: 1,
@@ -79,7 +79,7 @@ export const mockUsers = [
     email: "sarah@banani.com",
     phone: "+1 (555) 456-7890",
     password_hash:
-      "$2b$10$rOyZUjbEf8Z8gzLl5wF9YeS7YbZzI.sVGzJxJ8MG8KnYxRgQ8nO0y", // 'password'
+      "$2b$10$oXLUwWLLFbWsc9idoXZXHO.dGmN/vAIurZd7Ib5Br1S8aMzYPPAYO", // 'password'
     role: "sales" as const,
     department: "Sales & Marketing",
     manager_id: 2,
@@ -98,7 +98,7 @@ export const mockUsers = [
     email: "tom@banani.com",
     phone: "+1 (555) 567-8901",
     password_hash:
-      "$2b$10$rOyZUjbEf8Z8gzLl5wF9YeS7YbZzI.sVGzJxJ8MG8KnYxRgQ8nO0y", // 'password'
+      "$2b$10$oXLUwWLLFbWsc9idoXZXHO.dGmN/vAIurZd7Ib5Br1S8aMzYPPAYO", // 'password'
     role: "product" as const,
     department: "Product Development",
     manager_id: 3,
