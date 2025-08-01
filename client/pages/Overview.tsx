@@ -33,6 +33,21 @@ export default function Overview() {
   // State for follow-ups data
   const [followUps, setFollowUps] = React.useState([]);
 
+  // Fetch follow-ups data
+  React.useEffect(() => {
+    const fetchFollowUps = async () => {
+      try {
+        const response = await fetch('/api/follow-ups');
+        const data = await response.json();
+        setFollowUps(data);
+      } catch (error) {
+        console.error('Failed to fetch follow-ups:', error);
+      }
+    };
+
+    fetchFollowUps();
+  }, []);
+
   const handleQuickAction = (action: string) => {
     switch (action) {
       case "create-template":
