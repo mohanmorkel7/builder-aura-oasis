@@ -271,7 +271,6 @@ export default function LeadEdit() {
 
         client_name: lead.client_name || "",
         client_type: lead.client_type || "",
-        company: lead.company || "",
         company_location: lead.company_location || "",
         category: lead.category || "",
         country: lead.country || "",
