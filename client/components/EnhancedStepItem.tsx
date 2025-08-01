@@ -131,6 +131,7 @@ export function EnhancedStepItem({
   }, [chatError, step.id]);
 
   const [newMessage, setNewMessage] = useState("");
+  const [stagedAttachments, setStagedAttachments] = useState<any[]>([]);
 
   // Function to highlight mentions and make follow-up IDs clickable
   const processMessageContent = (messageText: string) => {
