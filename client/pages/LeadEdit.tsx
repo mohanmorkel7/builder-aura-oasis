@@ -1236,51 +1236,8 @@ export default function LeadEdit() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Full access fields for admin users */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <Label htmlFor="priority">Priority Level</Label>
-                  <Select
-                    value={leadData.priority}
-                    onValueChange={(value) => updateField("priority", value)}
-                    disabled={!canEditLead}
-                  >
-                    <SelectTrigger className="mt-1">
-                      <SelectValue placeholder="Select priority" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {priorities.map((priority) => (
-                        <SelectItem key={priority.value} value={priority.value}>
-                          <div className="flex items-center space-x-2">
-                            <div
-                              className={`w-2 h-2 rounded-full ${priority.color.split(" ")[0]}`}
-                            />
-                            <span>{priority.label}</span>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="expected_close_date">
-                    Expected Close Date
-                  </Label>
-                  <div className="relative mt-1">
-                    <Calendar className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input
-                      id="expected_close_date"
-                      type="date"
-                      value={leadData.expected_close_date}
-                      onChange={(e) =>
-                        updateField("expected_close_date", e.target.value)
-                      }
-                      className="pl-10"
-                      min={new Date().toISOString().split("T")[0]}
-                      disabled={!canEditAssignments}
-                    />
-                  </div>
-                </div>
+              {/* Only show probability field */}
+              <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
                 <div>
                   <Label htmlFor="probability">Probability (%)</Label>
                   <Input
