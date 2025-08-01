@@ -90,12 +90,14 @@ const getDepartmentData = (users: any[]) => {
   ];
 };
 
-const clientStatusData = [
-  { status: "Active", count: 45, color: "#10B981" },
-  { status: "Onboarding", count: 23, color: "#3B82F6" },
-  { status: "Completed", count: 18, color: "#8B5CF6" },
-  { status: "Inactive", count: 12, color: "#6B7280" },
-];
+const getLeadStatusData = (leadStats: any) => {
+  return [
+    { status: "In Progress", count: leadStats?.in_progress || 0, color: "#3B82F6" },
+    { status: "Won", count: leadStats?.won || 0, color: "#10B981" },
+    { status: "Completed", count: leadStats?.completed || 0, color: "#8B5CF6" },
+    { status: "Lost", count: leadStats?.lost || 0, color: "#EF4444" },
+  ];
+};
 
 const deploymentTrends = [
   { week: "Week 1", successful: 12, failed: 2, pending: 3 },
