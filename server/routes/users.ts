@@ -194,50 +194,6 @@ router.delete("/:id", async (req: Request, res: Response) => {
   }
 });
 
-// Test authentication flow
-router.get("/auth/test", async (req: Request, res: Response) => {
-  const testResults = {
-    mockDataTest: false,
-    demoCredentialTest: false,
-    errors: []
-  };
-
-  try {
-    // Test 1: MockDataService
-    console.log("=== Testing MockDataService ===");
-    const mockResult = await MockDataService.verifyPassword("admin@banani.com", "password");
-    testResults.mockDataTest = !!mockResult;
-    console.log("MockData result:", testResults.mockDataTest);
-
-    // Test 2: Demo credential fallback
-    console.log("=== Testing Demo Credentials ===");
-    const demoUser = {
-      id: 1,
-      first_name: "John",
-      last_name: "Doe",
-      email: "admin@banani.com",
-      role: "admin"
-    };
-    testResults.demoCredentialTest = true;
-    console.log("Demo credential test: SUCCESS");
-
-    res.json({
-      success: true,
-      tests: testResults,
-      message: "Authentication tests completed"
-    });
-
-  } catch (error) {
-    console.error("Auth test error:", error);
-    testResults.errors.push(error.message);
-    res.status(500).json({
-      success: false,
-      tests: testResults,
-      error: error.message
-    });
-  }
-});
-
 // User authentication
 router.post("/auth/login", async (req: Request, res: Response) => {
   try {
