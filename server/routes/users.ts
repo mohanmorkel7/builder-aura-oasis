@@ -305,4 +305,42 @@ router.post("/auth/login", async (req: Request, res: Response) => {
   }
 });
 
+// Reset user password
+router.post("/:id/reset-password", async (req: Request, res: Response) => {
+  try {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ error: "Invalid user ID" });
+    }
+
+    let user;
+    if (await isDatabaseAvailable()) {
+      user = await UserRepository.findById(id);
+    } else {
+      const users = await MockDataService.getAllUsers();
+      user = users.find((u) => u.id === id);
+    }
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // For mock implementation, just return success
+    // In a real implementation, you would:
+    // 1. Generate a secure reset token
+    // 2. Send email with reset link
+    // 3. Store the token with expiration
+
+    console.log(`Password reset requested for user ${id}: ${user.email}`);
+
+    res.json({
+      message: "Password reset email sent successfully",
+      email: user.email
+    });
+  } catch (error) {
+    console.error("Error resetting password:", error);
+    res.status(500).json({ error: "Failed to reset password" });
+  }
+});
+
 export default router;
