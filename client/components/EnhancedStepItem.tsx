@@ -182,7 +182,7 @@ export function EnhancedStepItem({
       console.log("Files uploaded successfully:", uploadResult.files);
 
       // Create attachments array with the uploaded file information
-      const attachments = uploadResult.files.map((file: any) => ({
+      const newAttachments = uploadResult.files.map((file: any) => ({
         file_name: file.originalName,
         file_path: file.path,
         file_size: file.size,
@@ -190,33 +190,19 @@ export function EnhancedStepItem({
         server_filename: file.filename,
       }));
 
-      const fileNames = uploadResult.files
-        .map((f: any) => f.originalName)
-        .join(", ");
-      const currentText = newMessage.trim();
-      const messageText = currentText
-        ? `${currentText}\n\n📎 Attached: ${fileNames}`
-        : `📎 Uploaded ${files.length} file${files.length > 1 ? "s" : ""}: ${fileNames}`;
-
-      const chatData = {
-        user_id: parseInt(user.id),
-        user_name: user.name,
-        message: messageText,
-        message_type: "text" as const,
-        is_rich_text: !!currentText,
-        attachments,
-      };
-
-      // Create the chat message with the file attachments
-      await createChatMutation.mutateAsync({ stepId: step.id, chatData });
-      setNewMessage("");
+      // Stage the attachments instead of immediately sending
+      setStagedAttachments(prev => [...prev, ...newAttachments]);
       event.target.value = "";
 
-      console.log("Chat message with attachments created successfully");
+      console.log("Files staged for sending:", newAttachments);
     } catch (error) {
       console.error("Failed to upload files:", error);
       alert("Failed to upload files. Please try again.");
     }
+  };
+
+  const removeStagedAttachment = (index: number) => {
+    setStagedAttachments(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleSendMessage = async () => {
