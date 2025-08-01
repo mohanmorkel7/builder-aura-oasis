@@ -647,7 +647,7 @@ export function EnhancedStepItem({
                                 onClick={() => removeStagedAttachment(index)}
                                 className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
                               >
-                                ×
+                                <X className="h-3 w-3" />
                               </Button>
                             </div>
                           ))}
