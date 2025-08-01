@@ -23,8 +23,12 @@ export default function Login() {
     e.preventDefault();
     setError("");
 
+    console.log("Attempting login with:", email);
     const success = await login(email, password);
+    console.log("Login result:", success);
+
     if (!success) {
+      console.log("Setting error message");
       setError("Invalid credentials");
     }
   };
