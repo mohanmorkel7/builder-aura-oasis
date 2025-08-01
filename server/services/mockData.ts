@@ -635,17 +635,10 @@ export class MockDataService {
   }
 
   static async verifyPassword(email: string, password: string) {
-    console.log("MockData verifyPassword called with:", { email, passwordLength: password.length });
     const user = await this.findUserByEmail(email);
-    if (!user) {
-      console.log("MockData: No user found for email:", email);
-      return null;
-    }
+    if (!user) return null;
 
-    console.log("MockData: User found, verifying password...");
     const isValid = await bcrypt.compare(password, user.password_hash);
-    console.log("MockData: Password verification result:", isValid);
-
     if (!isValid) return null;
 
     const { password_hash, ...userWithoutPassword } = user;
