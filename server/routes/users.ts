@@ -343,4 +343,59 @@ router.post("/:id/reset-password", async (req: Request, res: Response) => {
   }
 });
 
+// Change user password (requires old password verification)
+router.post("/:id/change-password", async (req: Request, res: Response) => {
+  try {
+    const id = parseInt(req.params.id);
+    const { oldPassword, newPassword } = req.body;
+
+    if (isNaN(id)) {
+      return res.status(400).json({ error: "Invalid user ID" });
+    }
+
+    if (!oldPassword || !newPassword) {
+      return res.status(400).json({ error: "Old password and new password are required" });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ error: "New password must be at least 6 characters long" });
+    }
+
+    let user;
+    if (await isDatabaseAvailable()) {
+      user = await UserRepository.findById(id);
+
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      // Verify old password
+      const isOldPasswordValid = await bcrypt.compare(oldPassword, user.password);
+      if (!isOldPasswordValid) {
+        return res.status(400).json({ error: "Current password is incorrect" });
+      }
+
+      // Hash new password and update
+      const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+      await UserRepository.update(id, { password: hashedNewPassword });
+
+      console.log(`Password changed successfully for user ${id}: ${user.email}`);
+
+      res.json({
+        message: "Password changed successfully",
+        user: { id: user.id, email: user.email }
+      });
+    } else {
+      // Mock implementation - just return success
+      res.json({
+        message: "Password changed successfully (mock mode)",
+        user: { id, email: "mock@example.com" }
+      });
+    }
+  } catch (error) {
+    console.error("Error changing password:", error);
+    res.status(500).json({ error: "Failed to change password" });
+  }
+});
+
 export default router;
