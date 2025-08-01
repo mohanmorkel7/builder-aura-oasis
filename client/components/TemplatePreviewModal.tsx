@@ -144,8 +144,8 @@ export default function TemplatePreviewModal({
                 </div>
               ) : (
                 <div className="text-center py-8 text-gray-500">
-                  <CheckCircle className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                  <p>No steps defined in this template</p>
+                  <CheckCircle key="no-steps-icon" className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                  <p key="no-steps-text">No steps defined in this template</p>
                 </div>
               )}
             </CardContent>
