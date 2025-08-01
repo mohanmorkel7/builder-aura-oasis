@@ -4,12 +4,11 @@ import App from "./App";
 import "./global.css";
 
 // Ensure Error objects never display as [object Object]
-if (!Error.prototype.toString.name?.includes('custom')) {
-  const originalToString = Error.prototype.toString;
+// Check if we've already applied our custom toString
+if (!Error.prototype.toString.toString().includes('this.message')) {
   Error.prototype.toString = function() {
     return this.message || this.name || 'Unknown error';
   };
-  (Error.prototype.toString as any).name = 'customToString';
 }
 
 // Comprehensive warning suppression for defaultProps from third-party libraries
