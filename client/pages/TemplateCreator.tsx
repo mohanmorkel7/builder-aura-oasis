@@ -96,7 +96,7 @@ export default function TemplateCreator() {
   };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
+    <div className="p-6 max-w-6xl mx-auto">
       {/* Header */}
       <div className="flex items-center space-x-4 mb-6">
         <Button variant="outline" size="sm" onClick={handleBack}>
@@ -105,10 +105,10 @@ export default function TemplateCreator() {
         </Button>
         <div>
           <h1 className="text-2xl font-bold text-gray-900">
-            Onboarding Template Creator
+            Create New Template
           </h1>
           <p className="text-gray-600 mt-1">
-            Create a new template for client onboarding workflows
+            Create a template with custom steps for your sales process
           </p>
         </div>
       </div>
@@ -121,12 +121,12 @@ export default function TemplateCreator() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label htmlFor="templateName">Template Name</Label>
+              <Label htmlFor="templateName">Template Name *</Label>
               <Input
                 id="templateName"
                 value={templateName}
                 onChange={(e) => setTemplateName(e.target.value)}
-                placeholder="e.g., Standard Client Onboarding"
+                placeholder="e.g., Enterprise Sales Process"
                 className="mt-1"
               />
             </div>
@@ -142,38 +142,6 @@ export default function TemplateCreator() {
                 rows={3}
               />
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="templateType">Template Type</Label>
-                <Select
-                  value={templateType}
-                  onValueChange={(value: "standard" | "enterprise" | "smb") =>
-                    setTemplateType(value)
-                  }
-                >
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Select template type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="standard">Standard</SelectItem>
-                    <SelectItem value="enterprise">Enterprise</SelectItem>
-                    <SelectItem value="smb">Small & Medium Business</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label htmlFor="createdBy">Created By</Label>
-                <Input
-                  id="createdBy"
-                  value={createdBy}
-                  onChange={(e) => setCreatedBy(e.target.value)}
-                  placeholder="Your name or user ID"
-                  className="mt-1"
-                />
-              </div>
-            </div>
           </CardContent>
         </Card>
 
@@ -181,101 +149,117 @@ export default function TemplateCreator() {
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle>Template Steps</CardTitle>
-              <Button onClick={handleAddStep} size="sm">
-                <Plus className="w-4 h-4 mr-2" />
-                Add New Step
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {steps.map((step, index) => (
-              <div key={step.id} className="border rounded-lg p-4 space-y-4">
-                <div className="flex items-center space-x-3">
-                  <GripVertical className="w-5 h-5 text-gray-400" />
-                  <span className="font-medium text-gray-700">
-                    Step {index + 1}:
-                  </span>
-                  <div className="flex-1">
-                    <Input
-                      value={step.name}
-                      onChange={(e) =>
-                        handleUpdateStep(step.id, "name", e.target.value)
-                      }
-                      placeholder="Step name"
-                      className="font-medium"
-                    />
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleDeleteStep(step.id)}
-                  >
-                    <Trash2 className="w-4 h-4 text-red-500" />
+              <div>
+                <CardTitle>Template Steps</CardTitle>
+                <p className="text-sm text-gray-600 mt-1">
+                  Create custom steps for this template
+                </p>
+              </div>
+              <Dialog open={newStepDialog} onOpenChange={setNewStepDialog}>
+                <DialogTrigger asChild>
+                  <Button size="sm">
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Step
                   </Button>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ml-8">
-                  <div className="md:col-span-2">
-                    <Label>Description</Label>
-                    <Textarea
-                      value={step.description}
-                      onChange={(e) =>
-                        handleUpdateStep(step.id, "description", e.target.value)
-                      }
-                      placeholder="Describe what happens in this step..."
-                      className="mt-1"
-                      rows={3}
-                    />
-                  </div>
-
-                  <div>
-                    <Label>Default ETA (Days)</Label>
-                    <Input
-                      type="number"
-                      value={step.defaultEtaDays}
-                      onChange={(e) =>
-                        handleUpdateStep(
-                          step.id,
-                          "defaultEtaDays",
-                          parseInt(e.target.value) || 0,
-                        )
-                      }
-                      className="mt-1"
-                      min="1"
-                    />
-                  </div>
-
-                  <div className="space-y-3">
-                    <Label>Follow-up Config</Label>
-                    <div className="space-y-2">
-                      <div className="flex items-center space-x-2">
-                        <Checkbox
-                          checked={step.autoAlert}
-                          onCheckedChange={(checked) =>
-                            handleUpdateStep(step.id, "autoAlert", checked)
-                          }
-                        />
-                        <label className="text-sm">Auto-alert if overdue</label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox
-                          checked={step.emailReminder}
-                          onCheckedChange={(checked) =>
-                            handleUpdateStep(step.id, "emailReminder", checked)
-                          }
-                        />
-                        <label className="text-sm">Email reminder</label>
-                      </div>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Add New Step</DialogTitle>
+                    <DialogDescription>
+                      Create a custom step for this template
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="stepName">Step Name *</Label>
+                      <Input
+                        id="stepName"
+                        value={newStep.name}
+                        onChange={(e) =>
+                          setNewStep((prev) => ({
+                            ...prev,
+                            name: e.target.value,
+                          }))
+                        }
+                        placeholder="e.g., Technical Demo"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="stepDescription">Description *</Label>
+                      <Textarea
+                        id="stepDescription"
+                        value={newStep.description}
+                        onChange={(e) =>
+                          setNewStep((prev) => ({
+                            ...prev,
+                            description: e.target.value,
+                          }))
+                        }
+                        placeholder="Describe what needs to be done in this step"
+                        rows={3}
+                      />
                     </div>
                   </div>
-                </div>
-              </div>
-            ))}
-
-            {steps.length === 0 && (
+                  <DialogFooter>
+                    <Button
+                      variant="outline"
+                      onClick={() => setNewStepDialog(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={handleAddStep}
+                      disabled={!newStep.name.trim() || !newStep.description.trim()}
+                    >
+                      Add Step
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {steps.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
-                <p>No steps added yet. Click "Add New Step" to get started.</p>
+                <Plus className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  No template steps yet
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  Create custom steps to define your sales process
+                </p>
+                <Button onClick={() => setNewStepDialog(true)}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add First Step
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {steps.map((step, index) => (
+                  <div key={step.id} className="border rounded-lg p-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-3 mb-2">
+                          <div className="flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-800 rounded-full font-semibold text-sm">
+                            {index + 1}
+                          </div>
+                          <h3 className="font-medium text-gray-900">{step.name}</h3>
+                        </div>
+                        <p className="text-sm text-gray-600 ml-11">
+                          {step.description}
+                        </p>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeleteStep(step.id)}
+                        className="text-red-600 hover:text-red-700"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </CardContent>
@@ -286,16 +270,17 @@ export default function TemplateCreator() {
           <Button variant="outline" onClick={handleBack}>
             Cancel
           </Button>
-          <div className="space-x-3">
-            <Button variant="outline">
+          <Button
+            onClick={handleSaveTemplate}
+            disabled={!templateName.trim() || steps.length === 0 || saving}
+          >
+            {saving ? (
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+            ) : (
               <Save className="w-4 h-4 mr-2" />
-              Save Draft
-            </Button>
-            <Button onClick={handleSaveTemplate}>
-              <Save className="w-4 h-4 mr-2" />
-              Save Template
-            </Button>
-          </div>
+            )}
+            {saving ? "Creating..." : "Create Template"}
+          </Button>
         </div>
       </div>
     </div>
