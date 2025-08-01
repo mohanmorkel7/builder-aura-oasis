@@ -580,12 +580,6 @@ export default function LeadDetails() {
               <Separator />
 
               <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Sales Rep:</span>
-                  <span className="text-gray-900">
-                    {leadData.sales_rep_name || "Not assigned"}
-                  </span>
-                </div>
                 {leadData.expected_close_date && (
                   <div className="flex justify-between">
                     <span className="text-gray-600">Expected Close:</span>
