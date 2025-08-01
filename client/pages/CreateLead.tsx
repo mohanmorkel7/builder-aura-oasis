@@ -796,7 +796,7 @@ export default function CreateLead() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="client_name_client">Name *</Label>
                   <div className="relative mt-1">
@@ -829,19 +829,6 @@ export default function CreateLead() {
                       ))}
                     </SelectContent>
                   </Select>
-                </div>
-                <div>
-                  <Label htmlFor="company">Company</Label>
-                  <div className="relative mt-1">
-                    <Building className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input
-                      id="company"
-                      value={leadData.company}
-                      onChange={(e) => updateField("company", e.target.value)}
-                      className="pl-10"
-                      placeholder="Company name"
-                    />
-                  </div>
                 </div>
               </div>
 
