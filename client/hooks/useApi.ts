@@ -746,6 +746,24 @@ export function useDeleteStepChat() {
 }
 
 // Follow-up hooks
+export function useFollowUps(params?: {
+  userId?: string;
+  userRole?: string;
+  status?: string;
+  assigned_to?: string;
+}) {
+  return useQuery({
+    queryKey: ["follow-ups", params],
+    queryFn: async () => {
+      try {
+        return await apiClient.getAllFollowUps(params);
+      } catch {
+        return [];
+      }
+    },
+  });
+}
+
 export function useCreateFollowUp() {
   const queryClient = useQueryClient();
   return useMutation({
