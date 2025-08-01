@@ -325,28 +325,43 @@ export class DatabaseValidator {
   }
 
   /**
-   * Generate unique lead ID
+   * Generate unique lead ID in sequential format #0001
    */
   static async generateUniqueLeadId(): Promise<string> {
-    let attempts = 0;
-    const maxAttempts = 10;
+    try {
+      if (await isDatabaseAvailable()) {
+        // Get the highest existing lead ID number from the database
+        const query = `
+          SELECT lead_id FROM leads
+          WHERE lead_id ~ '^#[0-9]+$'
+          ORDER BY CAST(SUBSTRING(lead_id FROM 2) AS INTEGER) DESC
+          LIMIT 1
+        `;
 
-    while (attempts < maxAttempts) {
-      const leadId = `#${Math.floor(Math.random() * 9999) + 1}`.padStart(
-        5,
-        "0",
-      );
+        const result = await client.query(query);
 
-      const isTaken = await this.isLeadIdTaken(leadId);
-      if (!isTaken) {
-        return leadId;
+        let nextNumber = 1;
+        if (result.rows.length > 0) {
+          const lastId = result.rows[0].lead_id;
+          const lastNumber = parseInt(lastId.substring(1));
+          nextNumber = lastNumber + 1;
+        }
+
+        // Format as #0001, #0002, etc.
+        const leadId = `#${nextNumber.toString().padStart(4, '0')}`;
+
+        // Double-check that this ID isn't already taken (unlikely but safe)
+        const isTaken = await this.isLeadIdTaken(leadId);
+        if (!isTaken) {
+          return leadId;
+        }
       }
-
-      attempts++;
+    } catch (error) {
+      console.error('Error generating sequential lead ID:', error);
     }
 
-    // Fallback to timestamp-based ID
-    return `#${Date.now().toString().slice(-6)}`;
+    // Fallback to timestamp-based ID if database is unavailable or error occurs
+    return `#${Date.now().toString().slice(-4)}`;
   }
 }
 
