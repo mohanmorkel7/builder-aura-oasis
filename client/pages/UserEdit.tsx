@@ -243,6 +243,23 @@ export default function UserEdit() {
         </CardContent>
       </Card>
 
+      {/* Error Alerts */}
+      {saveError && (
+        <Alert variant="destructive">
+          <AlertDescription>
+            {saveError}
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {resetError && (
+        <Alert variant="destructive">
+          <AlertDescription>
+            {resetError}
+          </AlertDescription>
+        </Alert>
+      )}
+
       {/* Main Content */}
       <Tabs defaultValue="profile" className="space-y-6">
         <TabsList>
