@@ -167,13 +167,7 @@ const mockLeads = [
 export function useUsers() {
   return useQuery({
     queryKey: ["users"],
-    queryFn: async () => {
-      try {
-        return await apiClient.getUsers();
-      } catch {
-        return mockUsers;
-      }
-    },
+    queryFn: () => apiClient.getUsers(),
   });
 }
 
@@ -221,13 +215,7 @@ export function useDeleteUser() {
 export function useClients(salesRepId?: number) {
   return useQuery({
     queryKey: ["clients", salesRepId],
-    queryFn: async () => {
-      try {
-        return await apiClient.getClients(salesRepId);
-      } catch {
-        return mockClients;
-      }
-    },
+    queryFn: () => apiClient.getClients(salesRepId),
   });
 }
 
@@ -277,13 +265,7 @@ export function useDeleteClient() {
 export function useClientStats() {
   return useQuery({
     queryKey: ["client-stats"],
-    queryFn: async () => {
-      try {
-        return await apiClient.getClientStats();
-      } catch {
-        return { total: 4, active: 2, onboarding: 1, completed: 1 };
-      }
-    },
+    queryFn: () => apiClient.getClientStats(),
   });
 }
 
@@ -291,13 +273,7 @@ export function useClientStats() {
 export function useTemplates() {
   return useQuery({
     queryKey: ["templates"],
-    queryFn: async () => {
-      try {
-        return await apiClient.getTemplates();
-      } catch {
-        return mockTemplates;
-      }
-    },
+    queryFn: () => apiClient.getTemplates(),
   });
 }
 
@@ -356,13 +332,7 @@ export function useDuplicateTemplate() {
 export function useDeployments(assigneeId?: number) {
   return useQuery({
     queryKey: ["deployments", assigneeId],
-    queryFn: async () => {
-      try {
-        return await apiClient.getDeployments(assigneeId);
-      } catch {
-        return mockDeployments;
-      }
-    },
+    queryFn: () => apiClient.getDeployments(assigneeId),
   });
 }
 
@@ -426,13 +396,7 @@ export function useDeleteDeployment() {
 export function useDeploymentStats() {
   return useQuery({
     queryKey: ["deployment-stats"],
-    queryFn: async () => {
-      try {
-        return await apiClient.getDeploymentStats();
-      } catch {
-        return { total: 124, completed: 118, failed: 6, pending: 2 };
-      }
-    },
+    queryFn: () => apiClient.getDeploymentStats(),
   });
 }
 
@@ -583,26 +547,14 @@ export function useDeleteStepComment() {
 export function useLeads(salesRepId?: number) {
   return useQuery({
     queryKey: ["leads", salesRepId],
-    queryFn: async () => {
-      try {
-        return await apiClient.getLeads(salesRepId);
-      } catch {
-        return mockLeads;
-      }
-    },
+    queryFn: () => apiClient.getLeads(salesRepId),
   });
 }
 
 export function useLead(id: number) {
   return useQuery({
     queryKey: ["leads", id],
-    queryFn: async () => {
-      try {
-        return await apiClient.getLead(id);
-      } catch {
-        return mockLeads.find((lead) => lead.id === id) || null;
-      }
-    },
+    queryFn: () => apiClient.getLead(id),
     enabled: !!id,
     retry: false,
   });
@@ -662,13 +614,7 @@ export function useDeleteLead() {
 export function useLeadStats(salesRepId?: number) {
   return useQuery({
     queryKey: ["lead-stats", salesRepId],
-    queryFn: async () => {
-      try {
-        return await apiClient.getLeadStats(salesRepId);
-      } catch {
-        return { total: 0, in_progress: 0, won: 0, lost: 0, completed: 0 };
-      }
-    },
+    queryFn: () => apiClient.getLeadStats(salesRepId),
   });
 }
 
@@ -768,13 +714,7 @@ export function useFollowUps(params?: {
 }) {
   return useQuery({
     queryKey: ["follow-ups", params],
-    queryFn: async () => {
-      try {
-        return await apiClient.getAllFollowUps(params);
-      } catch {
-        return [];
-      }
-    },
+    queryFn: () => apiClient.getAllFollowUps(params),
   });
 }
 
