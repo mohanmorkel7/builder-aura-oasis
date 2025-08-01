@@ -110,9 +110,29 @@ export default function UserEdit() {
     }
   };
 
-  const resetPassword = () => {
-    console.log("Resetting password for user:", id);
-    // Here you would implement password reset functionality
+  const resetPassword = async () => {
+    setResetError(null);
+    try {
+      const response = await fetch(`/api/users/${userId}/reset-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to reset password');
+      }
+
+      alert('Password reset email sent successfully!');
+    } catch (error) {
+      console.error("Failed to reset password:", error);
+      setResetError(
+        error instanceof Error
+          ? error.message
+          : "Failed to reset password. Please try again."
+      );
+    }
   };
 
   const toggleTwoFactor = () => {
