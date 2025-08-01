@@ -1106,6 +1106,53 @@ export class MockDataService {
         sales_rep_name: "Jane Smith",
         creator_name: "John Doe",
       },
+      {
+        id: 9,
+        lead_id: "#2633",
+        lead_source: "email",
+        lead_source_value: "mohan.m@mylapay.com",
+        status: "in-progress",
+        project_title: "E-commerce Platform Development1",
+        project_description: "sadasd",
+        project_requirements: "asdsadasd",
+        solutions: ["MylapaySecure", "FRM", "Switch-Cards"],
+        priority_level: "medium",
+        start_date: "2025-08-01",
+        targeted_end_date: "2025-08-21",
+        expected_daily_txn_volume: 2323,
+        project_value: 234324.00,
+        spoc: "asdasdasd",
+        commercials: [],
+        commercial_pricing: [
+          { unit: "paisa", value: 1, currency: "INR", solution: "MylapaySecure" },
+          { unit: "paisa", value: 2, currency: "INR", solution: "FRM" },
+          { unit: "paisa", value: 2, currency: "INR", solution: "Switch-Cards" }
+        ],
+        client_name: "sdasdsad",
+        client_type: "existing",
+        company_location: "sdasd",
+        category: "aggregator",
+        country: "usa",
+        contacts: [
+          {
+            email: "mohan.m@mylapay.com",
+            phone: "+919629558605",
+            linkedin: "sdfsdfsdf",
+            designation: "sdsdfsdf",
+            contact_name: "Mohan Morkel"
+          }
+        ],
+        priority: "medium",
+        expected_close_date: "",
+        probability: 50,
+        notes: "sdfsdfsdf",
+        assigned_to: 38,
+        created_by: 41,
+        created_at: "2025-08-01T19:08:05.261Z",
+        updated_at: "2025-08-01T19:08:05.261Z",
+        sales_rep_name: "Team Member",
+        creator_name: "Team Member",
+      },
     ];
 
     return salesRepId
