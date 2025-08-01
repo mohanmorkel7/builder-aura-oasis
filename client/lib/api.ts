@@ -63,12 +63,7 @@ export class ApiClient {
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      console.error("API request failed:", {
-        url,
-        error: errorMessage,
-        type: error.constructor?.name || typeof error,
-        fullError: JSON.stringify(error, Object.getOwnPropertyNames(error))
-      });
+      console.error("API request failed:", errorMessage, "URL:", url);
 
       if (error instanceof TypeError) {
         if (error.message.includes("Failed to fetch")) {
