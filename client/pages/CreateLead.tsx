@@ -544,8 +544,46 @@ export default function CreateLead() {
               {/* Enhanced Project Info */}
               <div className="border-t pt-6 space-y-6">
                 <h4 className="text-lg font-medium text-gray-900">
-                  Enhanced Project Information
+                  Template Selection
                 </h4>
+
+                <div>
+                  <Label htmlFor="template">Choose Template</Label>
+                  <div className="flex items-center space-x-2 mt-1">
+                    <Select
+                      value={selectedTemplate}
+                      onValueChange={setSelectedTemplate}
+                    >
+                      <SelectTrigger className="flex-1">
+                        <SelectValue placeholder="Select a template or use manual" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="manual">Manual (Create from scratch)</SelectItem>
+                        {templates.map((template: any) => (
+                          <SelectItem key={template.id} value={template.id.toString()}>
+                            {template.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {selectedTemplate && selectedTemplate !== "manual" && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {/* TODO: Show preview modal */}}
+                      >
+                        <Eye className="w-4 h-4" />
+                      </Button>
+                    )}
+                  </div>
+                </div>
+
+                <div className="border-t pt-6">
+                  <h4 className="text-lg font-medium text-gray-900 mb-4">
+                    Enhanced Project Information
+                  </h4>
+                </div>
 
                 <div>
                   <Label htmlFor="solutions">Solutions (Multiselect)</Label>
