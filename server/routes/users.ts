@@ -262,7 +262,10 @@ router.post("/auth/login", async (req: Request, res: Response) => {
         }
       }
 
-      return res.status(401).json({ error: "Invalid credentials" });
+      return res.status(401).json({
+        error: "Invalid credentials",
+        message: "Please use demo credentials: admin@banani.com, sales@banani.com, or product@banani.com with password 'password'"
+      });
     }
 
     res.json({ user });
