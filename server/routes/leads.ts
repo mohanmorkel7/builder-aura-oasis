@@ -322,15 +322,11 @@ router.put("/:id", async (req: Request, res: Response) => {
 
     try {
       const dbAvailable = await isDatabaseAvailable();
-      console.log(`Lead update - ID: ${id}, DB available: ${dbAvailable}`);
 
       if (dbAvailable) {
-        console.log("Attempting to update lead in database...");
-
         // First check if lead exists
         const existingLead = await LeadRepository.findById(id);
         if (!existingLead) {
-          console.log(`Lead ${id} not found in database`);
           return res.status(404).json({
             error: "Lead not found",
             message: `Lead with ID ${id} does not exist in the database`
@@ -338,10 +334,7 @@ router.put("/:id", async (req: Request, res: Response) => {
         }
 
         const lead = await LeadRepository.update(id, leadData);
-        console.log("Lead update result:", lead ? "success" : "update failed");
-
         if (!lead) {
-          console.log(`Lead ${id} update failed`);
           return res.status(500).json({ error: "Failed to update lead" });
         }
         res.json(lead);
