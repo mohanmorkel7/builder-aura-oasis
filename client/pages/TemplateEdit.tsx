@@ -55,6 +55,73 @@ interface TemplateStep {
   order_position?: number;
 }
 
+// Sortable Step Item Component
+function SortableStepItem({
+  step,
+  index,
+  onDelete
+}: {
+  step: TemplateStep;
+  index: number;
+  onDelete: (id: string) => void;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: step.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`border rounded-lg p-4 bg-white ${
+        isDragging ? "shadow-lg" : ""
+      }`}
+    >
+      <div className="flex items-start justify-between">
+        <div className="flex items-start space-x-3 flex-1">
+          <div
+            {...attributes}
+            {...listeners}
+            className="flex items-center justify-center w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded cursor-grab active:cursor-grabbing transition-colors"
+          >
+            <GripVertical className="w-4 h-4 text-gray-500" />
+          </div>
+          <div className="flex-1">
+            <div className="flex items-center space-x-3 mb-2">
+              <div className="flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-800 rounded-full font-semibold text-sm">
+                {index + 1}
+              </div>
+              <h3 className="font-medium text-gray-900">{step.name}</h3>
+            </div>
+            <p className="text-sm text-gray-600 ml-11">
+              {step.description}
+            </p>
+          </div>
+        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => onDelete(step.id)}
+          className="text-red-600 hover:text-red-700"
+        >
+          <Trash2 className="w-4 h-4" />
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 export default function TemplateEdit() {
   const { id } = useParams();
   const navigate = useNavigate();
