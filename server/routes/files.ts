@@ -32,6 +32,7 @@ const upload = multer({
   },
   fileFilter: (req, file, cb) => {
     // Allow all file types for now, but could be restricted
+    console.log('File upload - field name:', file.fieldname, 'filename:', file.originalname);
     cb(null, true);
   },
 });
