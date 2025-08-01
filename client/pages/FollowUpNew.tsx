@@ -145,8 +145,10 @@ export default function FollowUpNew() {
       // Navigate back based on context
       if (isLeadFollowUp) {
         navigate(`/leads`);
-      } else {
+      } else if (hasClientId) {
         navigate(`/sales/client/${id}`);
+      } else {
+        navigate(`/follow-ups`);
       }
     } catch (error) {
       console.error("Failed to create follow-up:", error);
