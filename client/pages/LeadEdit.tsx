@@ -1313,6 +1313,13 @@ export default function LeadEdit() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Template Preview Modal */}
+      <TemplatePreviewModal
+        isOpen={showTemplatePreview}
+        onClose={() => setShowTemplatePreview(false)}
+        template={templateData}
+      />
     </div>
   );
 }
