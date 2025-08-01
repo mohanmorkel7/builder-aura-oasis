@@ -385,7 +385,7 @@ router.post("/:id/change-password", async (req: Request, res: Response) => {
 
       // Hash new password and update
       const hashedNewPassword = await bcrypt.hash(newPassword, 10);
-      await UserRepository.update(id, { password: hashedNewPassword });
+      await UserRepository.update(id, { password_hash: hashedNewPassword });
 
       console.log(
         `Password changed successfully for user ${id}: ${user.email}`,
