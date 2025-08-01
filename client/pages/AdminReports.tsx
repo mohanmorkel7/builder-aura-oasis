@@ -599,7 +599,7 @@ export default function AdminReports() {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="week" type="category" />
                   <YAxis type="number" />
-                  <Tooltip />
+                  <Tooltip cursor={false} />
                   <Bar dataKey="successful" fill="#10B981" name="Successful" />
                   <Bar dataKey="failed" fill="#EF4444" name="Failed" />
                   <Bar dataKey="pending" fill="#F59E0B" name="Pending" />
