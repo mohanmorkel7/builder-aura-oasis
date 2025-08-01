@@ -359,8 +359,14 @@ router.put("/:id", async (req: Request, res: Response) => {
       console.log("Mock lead update result:", mockLead ? "success" : "lead not found");
 
       if (!mockLead) {
-        return res.status(404).json({ error: "Lead not found" });
+        console.log(`Lead ${id} not found in mock data either`);
+        return res.status(404).json({
+          error: "Lead not found",
+          message: `Lead with ID ${id} does not exist in mock data`,
+          availableLeadIds: [1, 2] // Based on mock data
+        });
       }
+      console.log("Returning mock lead update response");
       res.json(mockLead);
     }
   } catch (error) {
