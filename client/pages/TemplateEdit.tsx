@@ -233,6 +233,26 @@ export default function TemplateEdit() {
     setSteps(steps.filter((step) => step.id !== id));
   };
 
+  const handleDragStart = (event: any) => {
+    setActiveId(event.active.id);
+  };
+
+  const handleDragEnd = (event: any) => {
+    const { active, over } = event;
+
+    if (active.id !== over?.id) {
+      const oldIndex = steps.findIndex((item) => item.id === active.id);
+      const newIndex = steps.findIndex((item) => item.id === over.id);
+
+      const newSteps = arrayMove(steps, oldIndex, newIndex);
+      setSteps(newSteps);
+    }
+
+    setActiveId(null);
+  };
+
+  const activeStep = activeId ? steps.find((step) => step.id === activeId) : null;
+
   return (
     <div className="p-6 max-w-6xl mx-auto">
       {/* Header */}
