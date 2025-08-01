@@ -1,6 +1,7 @@
 import { Router, Request, Response } from "express";
 import { UserRepository, CreateUserData, UpdateUserData } from "../models/User";
 import { MockDataService } from "../services/mockData";
+import bcrypt from "bcryptjs";
 
 const router = Router();
 
