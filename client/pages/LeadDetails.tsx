@@ -123,7 +123,7 @@ export default function LeadDetails() {
   };
 
   const handleAddStep = async () => {
-    if (newStep.name.trim() && newStep.description.trim()) {
+    if (newStep.name.trim() && newStep.description.trim() && newStep.estimated_days) {
       try {
         const stepData = {
           name: newStep.name.trim(),
