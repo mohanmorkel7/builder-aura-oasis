@@ -74,6 +74,9 @@ export interface Lead {
   probability?: number; // 0-100%
   notes?: string;
 
+  // Template Reference
+  template_id?: number;
+
   // Metadata
   created_by: number;
   assigned_to?: number;
