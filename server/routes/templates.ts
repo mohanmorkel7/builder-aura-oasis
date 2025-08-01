@@ -79,9 +79,11 @@ router.get("/:id", async (req: Request, res: Response) => {
 router.post("/", async (req: Request, res: Response) => {
   try {
     const templateData: CreateTemplateData = req.body;
+    console.log("Creating template with data:", JSON.stringify(templateData, null, 2));
 
     // Validate required fields
     if (!templateData.name || !templateData.created_by) {
+      console.error("Validation failed: Missing required fields");
       return res
         .status(400)
         .json({ error: "Missing required fields: name, created_by" });
@@ -92,11 +94,13 @@ router.post("/", async (req: Request, res: Response) => {
       templateData.type &&
       !["standard", "enterprise", "smb"].includes(templateData.type)
     ) {
+      console.error("Validation failed: Invalid template type");
       return res.status(400).json({ error: "Invalid template type" });
     }
 
     // Validate steps
     if (!templateData.steps || templateData.steps.length === 0) {
+      console.error("Validation failed: No steps provided");
       return res
         .status(400)
         .json({ error: "Template must have at least one step" });
@@ -105,11 +109,14 @@ router.post("/", async (req: Request, res: Response) => {
     // Validate each step
     for (const step of templateData.steps) {
       if (!step.name || step.default_eta_days < 1) {
+        console.error("Validation failed: Invalid step:", step);
         return res
           .status(400)
           .json({ error: "Each step must have a name and valid ETA days" });
       }
     }
+
+    console.log("Validation passed, creating template...");
 
     let template;
     if (await isDatabaseAvailable()) {
