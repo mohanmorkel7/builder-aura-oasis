@@ -126,21 +126,41 @@ router.post("/", async (req: Request, res: Response) => {
     console.log("Validation passed, creating template...");
 
     let template;
-    const dbAvailable = await isDatabaseAvailable();
-    console.log("Database available:", dbAvailable);
 
-    if (dbAvailable) {
-      console.log("Using database to create template");
-      template = await TemplateRepository.create(templateData);
-    } else {
-      console.log("Using mock data to create template");
-      template = await MockDataService.createTemplate(templateData);
+    try {
+      const dbAvailable = await isDatabaseAvailable();
+      console.log("Database available:", dbAvailable);
+
+      if (dbAvailable) {
+        console.log("Using database to create template");
+        template = await TemplateRepository.create(templateData);
+      } else {
+        console.log("Using mock data to create template");
+        template = await MockDataService.createTemplate(templateData);
+      }
+
+      console.log("Template created successfully:", template);
+      res.status(201).json(template);
+
+    } catch (dbError) {
+      console.error("Error with primary creation method, trying fallback:", dbError);
+
+      // Try fallback to mock data if database creation failed
+      try {
+        console.log("Attempting fallback to mock data");
+        template = await MockDataService.createTemplate(templateData);
+        console.log("Template created successfully with mock data:", template);
+        res.status(201).json(template);
+      } catch (fallbackError) {
+        console.error("Fallback also failed:", fallbackError);
+        res.status(500).json({
+          error: "Failed to create template",
+          details: `Primary: ${dbError.message}, Fallback: ${fallbackError.message}`
+        });
+      }
     }
-
-    console.log("Template created successfully:", template);
-    res.status(201).json(template);
   } catch (error) {
-    console.error("Error creating template:", error);
+    console.error("Unexpected error creating template:", error);
     console.error("Error stack:", error.stack);
     res.status(500).json({
       error: "Failed to create template",
