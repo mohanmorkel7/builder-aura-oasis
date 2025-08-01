@@ -194,6 +194,25 @@ router.delete("/:id", async (req: Request, res: Response) => {
   }
 });
 
+// Test endpoint to verify demo credentials
+router.get("/auth/test-demo", async (req: Request, res: Response) => {
+  try {
+    console.log("Testing demo credentials...");
+
+    // Test MockDataService with admin credentials
+    const mockResult = await MockDataService.verifyPassword("admin@banani.com", "password");
+    console.log("MockData test result:", mockResult ? "SUCCESS" : "FAILED");
+
+    res.json({
+      mockDataTest: mockResult ? "SUCCESS" : "FAILED",
+      mockUser: mockResult
+    });
+  } catch (error) {
+    console.error("Demo test error:", error);
+    res.status(500).json({ error: "Test failed" });
+  }
+});
+
 // User authentication
 router.post("/auth/login", async (req: Request, res: Response) => {
   try {
