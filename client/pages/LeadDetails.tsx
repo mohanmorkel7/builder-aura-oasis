@@ -478,9 +478,6 @@ export default function LeadDetails() {
                           placeholder="e.g., Technical Demo"
                           className={!newStep.name.trim() ? "border-red-300" : ""}
                         />
-                        {!newStep.name.trim() && (
-                          <p className="text-sm text-red-600 mt-1">Step name is required</p>
-                        )}
                       </div>
                       <div>
                         <Label htmlFor="stepDescription">Description *</Label>
