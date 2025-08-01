@@ -216,44 +216,24 @@ export default function Overview() {
             detail: `${lead.client_name} - ${lead.status}`,
             time: formatToIST(lead.updated_at || lead.created_at),
           })),
-          {
-            action: "New client added",
-            detail: "Global Solutions Inc.",
-            time: "2 hours ago",
-          },
-          {
-            action: "Deal status updated",
-            detail: "Initech moved to closing stage",
-            time: "4 hours ago",
-          },
-          {
-            action: "Meeting scheduled",
-            detail: "Soylent Corp review call",
-            time: "5 hours ago",
-          },
+          ...recentFollowUps.map((followUp: any) => ({
+            action: "Follow-up activity",
+            detail: `${followUp.title || 'Follow-up'} - ${followUp.status}`,
+            time: formatToIST(followUp.updated_at || followUp.created_at),
+          })),
         ];
       case "product":
         return [
-          {
-            action: "Deployment completed",
-            detail: "Core App v2.1.0 to production",
-            time: "15 minutes ago",
-          },
-          {
-            action: "Release scheduled",
-            detail: "Analytics Module v1.6.0",
-            time: "1 hour ago",
-          },
-          {
-            action: "Build failed",
-            detail: "Mobile App v1.2.4 - fixing issues",
-            time: "3 hours ago",
-          },
-          {
-            action: "Feature flag enabled",
-            detail: "New dashboard widgets",
-            time: "6 hours ago",
-          },
+          ...recentLeads.map((lead: any) => ({
+            action: "Lead project update",
+            detail: `${lead.client_name} - ${lead.project_title || 'Project'}`,
+            time: formatToIST(lead.updated_at || lead.created_at),
+          })),
+          ...recentFollowUps.map((followUp: any) => ({
+            action: "Follow-up review",
+            detail: `${followUp.title || 'Follow-up'} - ${followUp.status}`,
+            time: formatToIST(followUp.updated_at || followUp.created_at),
+          })),
         ];
       default:
         return [];
