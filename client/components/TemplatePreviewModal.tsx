@@ -98,23 +98,9 @@ export default function TemplatePreviewModal({
                                 </Badge>
                               )}
                             </div>
-                            <p className="text-sm text-gray-600 ml-11 mb-3">
+                            <p className="text-sm text-gray-600 ml-11">
                               {step.description}
                             </p>
-                            <div className="flex items-center space-x-4 ml-11 text-xs text-gray-500">
-                              {(step.estimated_days || step.default_eta_days) && (
-                                <div key={`time-${step.id}`} className="flex items-center space-x-1">
-                                  <Clock key={`clock-${step.id}`} className="w-3 h-3" />
-                                  <span key={`time-text-${step.id}`}>{step.estimated_days || step.default_eta_days} day{(step.estimated_days || step.default_eta_days) !== 1 ? 's' : ''}</span>
-                                </div>
-                              )}
-                              {step.assigned_role && (
-                                <div key={`role-${step.id}`} className="flex items-center space-x-1">
-                                  <User key={`user-${step.id}`} className="w-3 h-3" />
-                                  <span key={`role-text-${step.id}`} className="capitalize">{step.assigned_role}</span>
-                                </div>
-                              )}
-                            </div>
                           </div>
                         </div>
                       </div>
