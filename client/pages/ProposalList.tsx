@@ -39,7 +39,9 @@ import {
   Clock,
   CheckCircle,
   XCircle,
+  Edit,
 } from "lucide-react";
+import ProposalPreview from "@/components/ProposalPreview";
 
 interface Proposal {
   id: number;
@@ -189,6 +191,8 @@ export default function ProposalList() {
   const [selectedProposal, setSelectedProposal] = useState<Proposal | null>(
     null,
   );
+  const [showEnhancedPreview, setShowEnhancedPreview] = useState(false);
+  const [editingProposal, setEditingProposal] = useState<Proposal | null>(null);
 
   const handleCreateProposal = () => {
     navigate("/proposals/new");
@@ -252,6 +256,43 @@ export default function ProposalList() {
     window.URL.revokeObjectURL(url);
   };
 
+  if (showEnhancedPreview) {
+    return (
+      <div className="p-6 max-w-7xl mx-auto space-y-6">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Enhanced Proposal Editor</h1>
+            <p className="text-gray-600">Professional proposal builder with advanced features</p>
+          </div>
+          <Button
+            variant="outline"
+            onClick={() => {
+              setShowEnhancedPreview(false);
+              setEditingProposal(null);
+            }}
+          >
+            Back to List
+          </Button>
+        </div>
+        <ProposalPreview
+          initialData={{
+            title: editingProposal?.title || "New Proposal",
+            clientName: editingProposal?.client_name || "",
+            leadId: editingProposal?.lead_id || "",
+            value: editingProposal?.value || 0,
+            validUntil: editingProposal?.valid_until || "",
+          }}
+          onSave={(data) => {
+            console.log("Saving proposal:", data);
+            // Here you would typically save to backend
+            setShowEnhancedPreview(false);
+            setEditingProposal(null);
+          }}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-6">
       {/* Header */}
@@ -262,13 +303,26 @@ export default function ProposalList() {
             Manage and track all client proposals
           </p>
         </div>
-        <Button
-          onClick={handleCreateProposal}
-          className="bg-blue-600 hover:bg-blue-700"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Create Proposal
-        </Button>
+        <div className="flex space-x-2">
+          <Button
+            onClick={handleCreateProposal}
+            className="bg-blue-600 hover:bg-blue-700"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Create Proposal
+          </Button>
+          <Button
+            onClick={() => {
+              setEditingProposal(null);
+              setShowEnhancedPreview(true);
+            }}
+            variant="outline"
+            className="border-blue-600 text-blue-600 hover:bg-blue-50"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Enhanced Builder
+          </Button>
+        </div>
       </div>
 
       {/* Statistics */}
@@ -479,7 +533,7 @@ export default function ProposalList() {
                             onClick={() => setSelectedProposal(proposal)}
                           >
                             <Eye className="w-3 h-3 mr-1" />
-                            Preview
+                            Quick Preview
                           </Button>
                         </DialogTrigger>
                         <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
@@ -498,6 +552,19 @@ export default function ProposalList() {
                           />
                         </DialogContent>
                       </Dialog>
+
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setEditingProposal(proposal);
+                          setShowEnhancedPreview(true);
+                        }}
+                        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                      >
+                        <Edit className="w-3 h-3 mr-1" />
+                        Enhanced Editor
+                      </Button>
 
                       <Button
                         variant="outline"
