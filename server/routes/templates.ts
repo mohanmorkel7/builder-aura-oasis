@@ -44,7 +44,15 @@ router.get("/:id", async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Invalid template ID" });
     }
 
-    const template = await TemplateRepository.findById(id);
+    let template;
+    if (await isDatabaseAvailable()) {
+      template = await TemplateRepository.findById(id);
+    } else {
+      // Fallback to mock data
+      const templates = await MockDataService.getAllTemplates();
+      template = templates.find(t => t.id === id) || null;
+    }
+
     if (!template) {
       return res.status(404).json({ error: "Template not found" });
     }
@@ -52,7 +60,18 @@ router.get("/:id", async (req: Request, res: Response) => {
     res.json(template);
   } catch (error) {
     console.error("Error fetching template:", error);
-    res.status(500).json({ error: "Failed to fetch template" });
+    // Fallback to mock data
+    try {
+      const templates = await MockDataService.getAllTemplates();
+      const template = templates.find(t => t.id === id) || null;
+      if (template) {
+        res.json(template);
+      } else {
+        res.status(404).json({ error: "Template not found" });
+      }
+    } catch (mockError) {
+      res.status(500).json({ error: "Failed to fetch template" });
+    }
   }
 });
 
