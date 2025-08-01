@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useTemplates } from "@/hooks/useApi";
+import { useTemplate, useUpdateTemplate } from "@/hooks/useApi";
 import { Button } from "@/components/ui/button";
 import {
   Card,
