@@ -66,7 +66,8 @@ export class ApiClient {
       console.error("API request failed:", {
         url,
         error: errorMessage,
-        type: error.constructor.name,
+        type: error.constructor?.name || typeof error,
+        fullError: JSON.stringify(error, Object.getOwnPropertyNames(error))
       });
 
       if (error instanceof TypeError) {
