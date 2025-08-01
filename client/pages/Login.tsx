@@ -125,14 +125,14 @@ export default function Login() {
               </Button>
             </div>
 
-            <div className="text-sm text-gray-600 bg-yellow-50 p-4 rounded-md border border-yellow-200">
-              <p className="font-bold mb-2 text-yellow-800">⚠️ USE THESE DEMO CREDENTIALS:</p>
+            <div className="text-sm text-gray-600 bg-green-50 p-4 rounded-md border border-green-200">
+              <p className="font-bold mb-2 text-green-800">✅ DEMO CREDENTIALS (Pre-filled):</p>
               <div className="space-y-1 font-mono text-xs">
-                <p className="bg-white p-2 rounded border">Admin: admin@banani.com / password</p>
+                <p className="bg-white p-2 rounded border">Admin: admin@banani.com / password (active)</p>
                 <p className="bg-white p-2 rounded border">Sales: sales@banani.com / password</p>
                 <p className="bg-white p-2 rounded border">Product: product@banani.com / password</p>
               </div>
-              <p className="text-xs text-yellow-700 mt-2 font-medium">Copy and paste these credentials exactly as shown</p>
+              <p className="text-xs text-green-700 mt-2 font-medium">Admin credentials are pre-filled above - just click "Sign in"</p>
             </div>
           </CardContent>
         </Card>
