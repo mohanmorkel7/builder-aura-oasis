@@ -64,11 +64,15 @@ export default function FollowUpNew() {
   const isLeadFollowUp = location.state?.fromChat;
   const leadContext = location.state;
 
+  // Check if we have a client ID in the route
+  const hasClientId = id && !isNaN(parseInt(id));
+  const clientId = hasClientId ? parseInt(id) : null;
+
   const {
     data: client,
     isLoading,
     error,
-  } = useClient(!isLeadFollowUp ? parseInt(id || "0") : 0);
+  } = useClient(clientId && !isLeadFollowUp ? clientId : 0);
 
   const { data: users = [] } = useUsers();
   const { user } = useAuth();
