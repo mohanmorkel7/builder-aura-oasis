@@ -412,6 +412,7 @@ export default function AdminReports() {
                     <XAxis dataKey="month" type="category" />
                     <YAxis type="number" />
                     <Tooltip
+                      cursor={false}
                       formatter={(value) => [
                         `$${value.toLocaleString()}`,
                         "Revenue",
