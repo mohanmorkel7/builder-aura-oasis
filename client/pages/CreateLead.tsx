@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useCreateLead, useTemplates } from "@/hooks/useApi";
+import { useCreateLead, useTemplates, useTemplate } from "@/hooks/useApi";
 import { useAuth } from "@/lib/auth-context";
+import TemplatePreviewModal from "@/components/TemplatePreviewModal";
 import { Button } from "@/components/ui/button";
 import {
   Card,
