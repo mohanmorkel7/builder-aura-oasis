@@ -52,15 +52,8 @@ export default function Login() {
           <CardContent className="space-y-6">
             <form onSubmit={handleLogin} className="space-y-4">
               {error && (
-                <div className="bg-red-50 text-red-700 p-4 rounded-md text-sm border border-red-200">
-                  <div className="flex items-center mb-2">
-                    <span className="text-red-500 mr-2">⚠️</span>
-                    <span className="font-semibold">Login Failed</span>
-                  </div>
-                  <p className="mb-2">{error}</p>
-                  <p className="text-xs bg-red-100 p-2 rounded">
-                    <strong>Need help?</strong> Click any demo credential below to auto-fill the correct login details.
-                  </p>
+                <div className="bg-red-50 text-red-700 p-3 rounded-md text-sm">
+                  {error}
                 </div>
               )}
 
