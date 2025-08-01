@@ -15,9 +15,11 @@ interface TemplateStep {
   id: number;
   name: string;
   description: string;
-  order_position: number;
-  is_required: boolean;
+  order_position?: number;
+  step_order?: number;
+  is_required?: boolean;
   estimated_days?: number;
+  default_eta_days?: number;
   assigned_role?: string;
 }
 
