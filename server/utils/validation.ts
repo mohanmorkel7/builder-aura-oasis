@@ -329,7 +329,7 @@ export class DatabaseValidator {
    */
   static async generateUniqueLeadId(): Promise<string> {
     try {
-      if (await isDatabaseAvailable()) {
+      if (await this.isDatabaseAvailable()) {
         // Get the highest existing lead ID number from the database
         const query = `
           SELECT lead_id FROM leads
@@ -338,7 +338,7 @@ export class DatabaseValidator {
           LIMIT 1
         `;
 
-        const result = await client.query(query);
+        const result = await pool.query(query);
 
         let nextNumber = 1;
         if (result.rows.length > 0) {
