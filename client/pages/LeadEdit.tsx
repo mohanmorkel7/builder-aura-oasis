@@ -160,6 +160,9 @@ export default function LeadEdit() {
 
   const { data: originalLead, isLoading, error } = useLead(leadId);
   const updateLeadMutation = useUpdateLead();
+  const { data: templates = [] } = useTemplates();
+
+  const [selectedTemplate, setSelectedTemplate] = useState<string>("");
 
   // Check if user has edit permissions
   const canEditLead =
