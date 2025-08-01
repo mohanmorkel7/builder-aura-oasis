@@ -1,5 +1,16 @@
 import bcrypt from "bcryptjs";
 
+// Test the bcrypt hash on startup
+(async () => {
+  try {
+    const testHash = "$2b$10$rOyZUjbEf8Z8gzLl5wF9YeS7YbZzI.sVGzJxJ8MG8KnYxRgQ8nO0y";
+    const testResult = await bcrypt.compare("password", testHash);
+    console.log("Bcrypt hash test result:", testResult);
+  } catch (error) {
+    console.error("Bcrypt hash test failed:", error);
+  }
+})();
+
 // Mock data that will be used when database is not available
 export const mockUsers = [
   {
