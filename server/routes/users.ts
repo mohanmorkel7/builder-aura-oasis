@@ -198,12 +198,6 @@ router.delete("/:id", async (req: Request, res: Response) => {
 router.post("/auth/login", async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
-    console.log("Login attempt:", { email, passwordLength: password?.length });
-
-    // Check if this is a demo credential attempt
-    const isDemoEmail = ["admin@banani.com", "sales@banani.com", "product@banani.com"].includes(email);
-    const isDemoPassword = password === "password";
-    console.log("Demo credential check:", { isDemoEmail, isDemoPassword });
 
     if (!email || !password) {
       return res.status(400).json({ error: "Email and password required" });
