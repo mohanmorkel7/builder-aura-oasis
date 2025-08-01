@@ -5,9 +5,9 @@ import "./global.css";
 
 // Ensure Error objects never display as [object Object]
 // Check if we've already applied our custom toString
-if (!Error.prototype.toString.toString().includes('this.message')) {
-  Error.prototype.toString = function() {
-    return this.message || this.name || 'Unknown error';
+if (!Error.prototype.toString.toString().includes("this.message")) {
+  Error.prototype.toString = function () {
+    return this.message || this.name || "Unknown error";
   };
 }
 
@@ -39,11 +39,15 @@ console.warn = (...args) => {
 
 console.error = (...args) => {
   // Create a string representation for filtering, but preserve original args for logging
-  const fullMessage = args.map((arg) =>
-    typeof arg === 'string' ? arg :
-    typeof arg === 'object' && arg !== null ? JSON.stringify(arg) :
-    String(arg)
-  ).join(" ");
+  const fullMessage = args
+    .map((arg) =>
+      typeof arg === "string"
+        ? arg
+        : typeof arg === "object" && arg !== null
+          ? JSON.stringify(arg)
+          : String(arg),
+    )
+    .join(" ");
 
   // Also suppress from console.error in case React uses that
   if (

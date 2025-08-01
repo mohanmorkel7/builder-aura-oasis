@@ -257,13 +257,16 @@ router.post("/auth/login", async (req: Request, res: Response) => {
           return res.json({ user: demoUser });
         } else {
           console.log("Demo login failed - email not recognized:", email);
-          console.log("Valid demo emails: admin@banani.com, sales@banani.com, product@banani.com");
+          console.log(
+            "Valid demo emails: admin@banani.com, sales@banani.com, product@banani.com",
+          );
         }
       }
 
       return res.status(401).json({
         error: "Invalid credentials",
-        message: "Please use demo credentials: admin@banani.com, sales@banani.com, or product@banani.com with password 'password'"
+        message:
+          "Please use demo credentials: admin@banani.com, sales@banani.com, or product@banani.com with password 'password'",
       });
     }
 

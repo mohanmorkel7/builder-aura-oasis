@@ -54,7 +54,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return true;
       }
     } catch (error: any) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
 
       // If API is working and rejects credentials, don't try demo fallback - show error
       if (error.message && error.message.includes("Invalid credentials")) {

@@ -62,7 +62,8 @@ export class ApiClient {
         throw new Error("Invalid JSON response from server");
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
       console.error("API request failed:", errorMessage, "URL:", url);
 
       if (error instanceof TypeError) {

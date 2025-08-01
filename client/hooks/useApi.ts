@@ -200,7 +200,7 @@ const mockLeads = [
     commercial_pricing: [
       { unit: "paisa", value: 0.5, currency: "INR", solution: "CardToken" },
       { unit: "paisa", value: 0.7, currency: "INR", solution: "MylapaySecure" },
-      { unit: "paisa", value: 1, currency: "INR", solution: "FRM" }
+      { unit: "paisa", value: 1, currency: "INR", solution: "FRM" },
     ],
     contacts: [
       {
@@ -232,8 +232,6 @@ export function useLogin() {
       apiClient.login(email, password),
   });
 }
-
-
 
 // User hooks
 export function useUsers() {
@@ -399,7 +397,9 @@ export function useCreateTemplate() {
       try {
         return await apiClient.createTemplate(templateData);
       } catch (error) {
-        console.log("API unavailable for creating template, simulating creation");
+        console.log(
+          "API unavailable for creating template, simulating creation",
+        );
         return {
           id: Date.now(),
           ...templateData,
@@ -416,11 +416,19 @@ export function useCreateTemplate() {
 export function useUpdateTemplate() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, templateData }: { id: number; templateData: any }) => {
+    mutationFn: async ({
+      id,
+      templateData,
+    }: {
+      id: number;
+      templateData: any;
+    }) => {
       try {
         return await apiClient.updateTemplate(id, templateData);
       } catch (error) {
-        console.log(`API unavailable for updating template ${id}, simulating update`);
+        console.log(
+          `API unavailable for updating template ${id}, simulating update`,
+        );
         return {
           ...templateData,
           id,
@@ -536,7 +544,13 @@ export function useDeploymentStats() {
         return await apiClient.getDeploymentStats();
       } catch (error) {
         console.log("API unavailable, using mock deployment stats");
-        return { total: 3, completed: 1, failed: 1, pending: 1, in_progress: 1 };
+        return {
+          total: 3,
+          completed: 1,
+          failed: 1,
+          pending: 1,
+          in_progress: 1,
+        };
       }
     },
   });
@@ -746,7 +760,9 @@ export function useUpdateLead() {
       try {
         return await apiClient.updateLead(id, leadData);
       } catch (error: any) {
-        console.log(`API unavailable for updating lead ${id}, simulating update`);
+        console.log(
+          `API unavailable for updating lead ${id}, simulating update`,
+        );
         // Simulate successful update for mock data
         return {
           ...leadData,
@@ -799,7 +815,9 @@ export function useLeadSteps(leadId: number) {
       try {
         return await apiClient.getLeadSteps(leadId);
       } catch (error) {
-        console.log(`API unavailable for lead steps ${leadId}, using mock data`);
+        console.log(
+          `API unavailable for lead steps ${leadId}, using mock data`,
+        );
         return [];
       }
     },
@@ -810,11 +828,19 @@ export function useLeadSteps(leadId: number) {
 export function useCreateLeadStep() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ leadId, stepData }: { leadId: number; stepData: any }) => {
+    mutationFn: async ({
+      leadId,
+      stepData,
+    }: {
+      leadId: number;
+      stepData: any;
+    }) => {
       try {
         return await apiClient.createLeadStep(leadId, stepData);
       } catch (error) {
-        console.log(`API unavailable for creating lead step, simulating creation`);
+        console.log(
+          `API unavailable for creating lead step, simulating creation`,
+        );
         return {
           id: Date.now(),
           ...stepData,
