@@ -179,11 +179,16 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   React.useEffect(() => {
     const fetchNotifications = async () => {
       if (user) {
-        const realNotifications = await getNotificationsFromFollowUps(
-          user.id,
-          user.name,
-        );
-        setNotifications(realNotifications);
+        try {
+          const realNotifications = await getNotificationsFromFollowUps(
+            user.id,
+            user.name,
+          );
+          setNotifications(realNotifications);
+        } catch (error) {
+          console.error("Failed to fetch notifications in useEffect:", error);
+          // Keep existing notifications on error
+        }
       }
     };
 
