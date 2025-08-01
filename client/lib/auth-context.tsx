@@ -55,11 +55,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setIsLoading(false);
         return true;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("API login failed:", error);
 
-      // Try demo authentication fallback only if API fails
-      console.log("API unavailable, trying demo authentication...");
+      // Only try demo authentication if this was a network error, not invalid credentials
+      if (error.message && error.message.includes("Invalid credentials")) {
+        console.log("API rejected credentials, trying demo authentication fallback...");
+      } else {
+        console.log("API unavailable (network error), trying demo authentication...");
+      }
 
       if (password === "password") {
         let userData: User | null = null;
