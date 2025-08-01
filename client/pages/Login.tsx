@@ -25,7 +25,7 @@ export default function Login() {
 
     const success = await login(email, password);
     if (!success) {
-      setError("Invalid email or password");
+      setError("Invalid email or password. Please use the demo credentials shown below.");
     }
   };
 
