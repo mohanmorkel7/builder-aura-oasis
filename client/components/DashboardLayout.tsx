@@ -187,14 +187,18 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     const fetchNotifications = async () => {
       if (user) {
         try {
+          console.log("Fetching notifications for user:", user.name);
           const realNotifications = await getNotificationsFromFollowUps(
             user.id,
             user.name,
           );
+          console.log("Successfully fetched", realNotifications.length, "notifications");
           setNotifications(realNotifications);
         } catch (error) {
           console.error("Failed to fetch notifications in useEffect:", error);
-          // Keep existing notifications on error
+
+          // Set empty array as fallback instead of keeping undefined/error state
+          setNotifications([]);
         }
       }
     };
