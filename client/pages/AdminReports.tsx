@@ -302,13 +302,13 @@ export default function AdminReports() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Active Clients
+                  Total Leads
                 </p>
                 <p className="text-3xl font-bold text-gray-900">
-                  {systemMetrics.activeClients}
+                  {systemMetrics.totalLeads}
                 </p>
                 <p className="text-sm text-green-600">
-                  +{systemMetrics.clientGrowth}% from last month
+                  +{systemMetrics.leadGrowth}% from last month
                 </p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
@@ -323,13 +323,13 @@ export default function AdminReports() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Total Deployments
+                  Total Follow-ups
                 </p>
                 <p className="text-3xl font-bold text-gray-900">
-                  {systemMetrics.totalDeployments}
+                  {systemMetrics.totalFollowUps}
                 </p>
                 <p className="text-sm text-green-600">
-                  +{systemMetrics.deploymentGrowth}% from last month
+                  +{systemMetrics.followUpGrowth}% from last month
                 </p>
               </div>
               <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
