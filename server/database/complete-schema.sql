@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS leads (
     client_type VARCHAR(50) CHECK (client_type IN ('new', 'existing')),
     company VARCHAR(255),
     company_location VARCHAR(500),
-    category VARCHAR(100) CHECK (category IN ('aggregator', 'banks')),
+    category VARCHAR(100) CHECK (category IN ('aggregator', 'banks', 'partner')),
     country VARCHAR(100) CHECK (country IN ('india', 'usa', 'uae', 'uk', 'singapore', 'canada', 'australia', 'other')),
     
     -- Contact Information (JSONB array for multiple contacts)
