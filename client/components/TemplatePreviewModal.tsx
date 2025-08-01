@@ -157,15 +157,15 @@ export default function TemplatePreviewModal({
               <CardContent className="p-4">
                 <div className="flex items-center justify-between text-sm text-gray-600">
                   {template.created_by && (
-                    <div className="flex items-center space-x-1">
-                      <User className="w-4 h-4" />
-                      <span>Created by: {template.created_by}</span>
+                    <div key="created-by" className="flex items-center space-x-1">
+                      <User key="created-by-icon" className="w-4 h-4" />
+                      <span key="created-by-text">Created by: {template.created_by}</span>
                     </div>
                   )}
                   {template.created_at && (
-                    <div className="flex items-center space-x-1">
-                      <Calendar className="w-4 h-4" />
-                      <span>Created: {new Date(template.created_at).toLocaleDateString()}</span>
+                    <div key="created-at" className="flex items-center space-x-1">
+                      <Calendar key="created-at-icon" className="w-4 h-4" />
+                      <span key="created-at-text">Created: {new Date(template.created_at).toLocaleDateString()}</span>
                     </div>
                   )}
                 </div>
