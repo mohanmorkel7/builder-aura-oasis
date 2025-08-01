@@ -38,6 +38,7 @@ export interface UpdateUserData {
   last_name?: string;
   email?: string;
   phone?: string;
+  password_hash?: string;
   role?: "admin" | "sales" | "product";
   department?: string;
   manager_id?: number;
