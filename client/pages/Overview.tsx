@@ -192,29 +192,22 @@ export default function Overview() {
   const stats = getRoleSpecificStats();
 
   const getRecentActivity = () => {
+    const recentLeads = leads.slice(0, 3);
+    const recentFollowUps = followUps.slice(0, 2);
+
     switch (user?.role) {
       case "admin":
         return [
-          {
-            action: "New user registered",
-            detail: "jane.doe@example.com",
-            time: "5 minutes ago",
-          },
-          {
-            action: "System backup completed",
-            detail: "Daily backup successful",
-            time: "1 hour ago",
-          },
-          {
-            action: "Template created",
-            detail: "Enterprise Onboarding v2.0",
-            time: "2 hours ago",
-          },
-          {
-            action: "User role updated",
-            detail: "mike.johnson promoted to Sales Lead",
-            time: "3 hours ago",
-          },
+          ...recentLeads.map((lead: any) => ({
+            action: "New lead created",
+            detail: `${lead.client_name} - ${lead.project_title || 'New project'}`,
+            time: formatToIST(lead.created_at),
+          })),
+          ...recentFollowUps.map((followUp: any) => ({
+            action: "Follow-up updated",
+            detail: `${followUp.title || 'Follow-up'} - ${followUp.status}`,
+            time: formatToIST(followUp.updated_at || followUp.created_at),
+          })),
         ];
       case "sales":
         return [
