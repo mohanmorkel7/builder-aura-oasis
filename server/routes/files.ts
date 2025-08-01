@@ -32,52 +32,55 @@ const upload = multer({
   },
   fileFilter: (req, file, cb) => {
     // Allow all file types for now, but could be restricted
-    console.log('File upload - field name:', file.fieldname, 'filename:', file.originalname);
+    console.log(
+      "File upload - field name:",
+      file.fieldname,
+      "filename:",
+      file.originalname,
+    );
     cb(null, true);
   },
 });
 
 // Upload files endpoint - flexible to handle any field names
-router.post(
-  "/upload",
-  upload.any(),
-  async (req: Request, res: Response) => {
-    try {
-      if (!req.files || !Array.isArray(req.files) || req.files.length === 0) {
-        console.log("No files received in upload request");
-        return res.status(400).json({ error: "No files uploaded" });
-      }
-
-      console.log(`Received ${req.files.length} files for upload`);
-      req.files.forEach((file, index) => {
-        console.log(`File ${index + 1}: ${file.originalname} (field: ${file.fieldname})`);
-      });
-
-      const uploadedFiles = req.files.map((file) => ({
-        originalName: file.originalname,
-        filename: file.filename,
-        size: file.size,
-        mimetype: file.mimetype,
-        path: `/uploads/${file.filename}`,
-        fieldname: file.fieldname,
-      }));
-
-      console.log(
-        `Successfully uploaded ${uploadedFiles.length} files:`,
-        uploadedFiles.map((f) => f.filename),
-      );
-
-      res.json({
-        success: true,
-        files: uploadedFiles,
-        message: `Successfully uploaded ${uploadedFiles.length} file(s)`,
-      });
-    } catch (error) {
-      console.error("Error uploading files:", error);
-      res.status(500).json({ error: "Failed to upload files" });
+router.post("/upload", upload.any(), async (req: Request, res: Response) => {
+  try {
+    if (!req.files || !Array.isArray(req.files) || req.files.length === 0) {
+      console.log("No files received in upload request");
+      return res.status(400).json({ error: "No files uploaded" });
     }
-  },
-);
+
+    console.log(`Received ${req.files.length} files for upload`);
+    req.files.forEach((file, index) => {
+      console.log(
+        `File ${index + 1}: ${file.originalname} (field: ${file.fieldname})`,
+      );
+    });
+
+    const uploadedFiles = req.files.map((file) => ({
+      originalName: file.originalname,
+      filename: file.filename,
+      size: file.size,
+      mimetype: file.mimetype,
+      path: `/uploads/${file.filename}`,
+      fieldname: file.fieldname,
+    }));
+
+    console.log(
+      `Successfully uploaded ${uploadedFiles.length} files:`,
+      uploadedFiles.map((f) => f.filename),
+    );
+
+    res.json({
+      success: true,
+      files: uploadedFiles,
+      message: `Successfully uploaded ${uploadedFiles.length} file(s)`,
+    });
+  } catch (error) {
+    console.error("Error uploading files:", error);
+    res.status(500).json({ error: "Failed to upload files" });
+  }
+});
 
 // Download file by filename
 router.get("/download/:filename", async (req: Request, res: Response) => {
