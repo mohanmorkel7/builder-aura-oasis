@@ -541,12 +541,12 @@ export default function AdminReports() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="clients" className="space-y-6">
+        <TabsContent value="leads" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Top Clients by Revenue</CardTitle>
+              <CardTitle>Top Leads by Value</CardTitle>
               <CardDescription>
-                Highest revenue generating clients
+                Highest value generating leads
               </CardDescription>
             </CardHeader>
             <CardContent>
