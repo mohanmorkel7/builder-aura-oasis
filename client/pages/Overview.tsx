@@ -106,29 +106,29 @@ export default function Overview() {
       case "sales":
         return [
           {
-            label: "Total Clients",
-            value: "24",
+            label: "Total Leads",
+            value: leads.length.toString(),
             icon: Users,
             color: "text-blue-600",
             bgColor: "bg-blue-100",
           },
           {
             label: "Active Deals",
-            value: "18",
+            value: (leadStats?.in_progress || 0).toString(),
             icon: TrendingUp,
             color: "text-green-600",
             bgColor: "bg-green-100",
           },
           {
-            label: "Follow-ups Due",
-            value: "6",
+            label: "Won Deals",
+            value: (leadStats?.won || 0).toString(),
             icon: Calendar,
             color: "text-yellow-600",
             bgColor: "bg-yellow-100",
           },
           {
-            label: "This Month",
-            value: "+12",
+            label: "Completed",
+            value: (leadStats?.completed || 0).toString(),
             icon: CheckCircle,
             color: "text-emerald-600",
             bgColor: "bg-emerald-100",
