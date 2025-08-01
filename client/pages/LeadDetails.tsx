@@ -111,6 +111,7 @@ export default function LeadDetails() {
     name: "",
     description: "",
     due_date: "",
+    estimated_days: "3",
   });
 
   const handleBack = () => {
