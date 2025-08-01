@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useUsers, useLeads, useLeadStats } from "@/hooks/useApi";
+import { useUsers, useLeads, useLeadStats, useFollowUps } from "@/hooks/useApi";
 import {
   Card,
   CardContent,
