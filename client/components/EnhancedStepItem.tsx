@@ -83,6 +83,7 @@ export function EnhancedStepItem({
   const { user } = useAuth();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   const {
     attributes,
