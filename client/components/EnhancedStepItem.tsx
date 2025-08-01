@@ -120,7 +120,8 @@ export function EnhancedStepItem({
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     if (messagesContainerRef.current && sortedMessages.length > 0) {
-      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+      messagesContainerRef.current.scrollTop =
+        messagesContainerRef.current.scrollHeight;
     }
   }, [sortedMessages]);
 
@@ -192,7 +193,7 @@ export function EnhancedStepItem({
       }));
 
       // Stage the attachments instead of immediately sending
-      setStagedAttachments(prev => [...prev, ...newAttachments]);
+      setStagedAttachments((prev) => [...prev, ...newAttachments]);
       event.target.value = "";
 
       console.log("Files staged for sending:", newAttachments);
@@ -203,7 +204,7 @@ export function EnhancedStepItem({
   };
 
   const removeStagedAttachment = (index: number) => {
-    setStagedAttachments(prev => prev.filter((_, i) => i !== index));
+    setStagedAttachments((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSendMessage = async () => {
@@ -227,7 +228,8 @@ export function EnhancedStepItem({
       // Scroll to bottom after sending message (small delay to ensure DOM update)
       setTimeout(() => {
         if (messagesContainerRef.current) {
-          messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+          messagesContainerRef.current.scrollTop =
+            messagesContainerRef.current.scrollHeight;
         }
       }, 100);
     } catch (error) {
@@ -671,7 +673,9 @@ export function EnhancedStepItem({
                       <Button
                         size="sm"
                         onClick={handleSendMessage}
-                        disabled={!newMessage.trim() && stagedAttachments.length === 0}
+                        disabled={
+                          !newMessage.trim() && stagedAttachments.length === 0
+                        }
                         className="bg-blue-500 hover:bg-blue-600 text-white px-4"
                       >
                         <Send className="w-4 h-4 mr-2" />

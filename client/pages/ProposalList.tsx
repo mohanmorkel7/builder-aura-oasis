@@ -261,8 +261,12 @@ export default function ProposalList() {
       <div className="p-6 max-w-7xl mx-auto space-y-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Enhanced Proposal Editor</h1>
-            <p className="text-gray-600">Professional proposal builder with advanced features</p>
+            <h1 className="text-2xl font-bold text-gray-900">
+              Enhanced Proposal Editor
+            </h1>
+            <p className="text-gray-600">
+              Professional proposal builder with advanced features
+            </p>
           </div>
           <Button
             variant="outline"

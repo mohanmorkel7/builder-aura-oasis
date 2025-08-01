@@ -183,12 +183,12 @@ export default function Overview() {
         return [
           ...recentLeads.map((lead: any) => ({
             action: "New lead created",
-            detail: `${lead.client_name} - ${lead.project_title || 'New project'}`,
+            detail: `${lead.client_name} - ${lead.project_title || "New project"}`,
             time: formatToIST(lead.created_at),
           })),
           ...recentFollowUps.map((followUp: any) => ({
             action: "Follow-up updated",
-            detail: `${followUp.title || 'Follow-up'} - ${followUp.status}`,
+            detail: `${followUp.title || "Follow-up"} - ${followUp.status}`,
             time: formatToIST(followUp.updated_at || followUp.created_at),
           })),
         ];
@@ -201,7 +201,7 @@ export default function Overview() {
           })),
           ...recentFollowUps.map((followUp: any) => ({
             action: "Follow-up activity",
-            detail: `${followUp.title || 'Follow-up'} - ${followUp.status}`,
+            detail: `${followUp.title || "Follow-up"} - ${followUp.status}`,
             time: formatToIST(followUp.updated_at || followUp.created_at),
           })),
         ];
@@ -209,12 +209,12 @@ export default function Overview() {
         return [
           ...recentLeads.map((lead: any) => ({
             action: "Lead project update",
-            detail: `${lead.client_name} - ${lead.project_title || 'Project'}`,
+            detail: `${lead.client_name} - ${lead.project_title || "Project"}`,
             time: formatToIST(lead.updated_at || lead.created_at),
           })),
           ...recentFollowUps.map((followUp: any) => ({
             action: "Follow-up review",
-            detail: `${followUp.title || 'Follow-up'} - ${followUp.status}`,
+            detail: `${followUp.title || "Follow-up"} - ${followUp.status}`,
             time: formatToIST(followUp.updated_at || followUp.created_at),
           })),
         ];

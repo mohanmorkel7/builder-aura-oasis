@@ -96,7 +96,13 @@ const defaultSections: ProposalSection[] = [
     tableData: {
       headers: ["Item", "Description", "Quantity", "Unit Price", "Total"],
       rows: [
-        ["Development", "Custom Software Development", "1", "$45,000", "$45,000"],
+        [
+          "Development",
+          "Custom Software Development",
+          "1",
+          "$45,000",
+          "$45,000",
+        ],
         ["Design", "UI/UX Design Services", "1", "$15,000", "$15,000"],
         ["Testing", "Quality Assurance", "1", "$8,000", "$8,000"],
         ["Deployment", "Production Deployment", "1", "$5,000", "$5,000"],
@@ -157,11 +163,14 @@ export default function ProposalPreview({
     setProposalData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const updateSection = (sectionId: string, updates: Partial<ProposalSection>) => {
+  const updateSection = (
+    sectionId: string,
+    updates: Partial<ProposalSection>,
+  ) => {
     setProposalData((prev) => ({
       ...prev,
       sections: prev.sections.map((section) =>
-        section.id === sectionId ? { ...section, ...updates } : section
+        section.id === sectionId ? { ...section, ...updates } : section,
       ),
     }));
   };
@@ -195,7 +204,10 @@ export default function ProposalPreview({
             ...section,
             tableData: {
               ...section.tableData,
-              rows: [...section.tableData.rows, new Array(section.tableData.headers.length).fill("")],
+              rows: [
+                ...section.tableData.rows,
+                new Array(section.tableData.headers.length).fill(""),
+              ],
             },
           };
         }
@@ -204,7 +216,12 @@ export default function ProposalPreview({
     }));
   };
 
-  const updateTableCell = (sectionId: string, rowIndex: number, cellIndex: number, value: string) => {
+  const updateTableCell = (
+    sectionId: string,
+    rowIndex: number,
+    cellIndex: number,
+    value: string,
+  ) => {
     setProposalData((prev) => ({
       ...prev,
       sections: prev.sections.map((section) => {
@@ -235,7 +252,10 @@ export default function ProposalPreview({
     }
   };
 
-  const handleImageUpload = (sectionId: string, event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = (
+    sectionId: string,
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
@@ -273,7 +293,9 @@ export default function ProposalPreview({
       heightLeft -= pageHeight;
     }
 
-    pdf.save(`${proposalData.title.replace(/[^a-z0-9]/gi, "_").toLowerCase()}_proposal.pdf`);
+    pdf.save(
+      `${proposalData.title.replace(/[^a-z0-9]/gi, "_").toLowerCase()}_proposal.pdf`,
+    );
   };
 
   const downloadAsWord = () => {
@@ -303,15 +325,24 @@ export default function ProposalPreview({
       </html>
     `;
 
-    const blob = new Blob([htmlContent], { type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
-    saveAs(blob, `${proposalData.title.replace(/[^a-z0-9]/gi, "_").toLowerCase()}_proposal.docx`);
+    const blob = new Blob([htmlContent], {
+      type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    });
+    saveAs(
+      blob,
+      `${proposalData.title.replace(/[^a-z0-9]/gi, "_").toLowerCase()}_proposal.docx`,
+    );
   };
 
-  const updateSignatureField = (fieldId: string, field: keyof SignatureField, value: string) => {
+  const updateSignatureField = (
+    fieldId: string,
+    field: keyof SignatureField,
+    value: string,
+  ) => {
     setProposalData((prev) => ({
       ...prev,
       signatureFields: prev.signatureFields.map((sig) =>
-        sig.id === fieldId ? { ...sig, [field]: value } : sig
+        sig.id === fieldId ? { ...sig, [field]: value } : sig,
       ),
     }));
   };
@@ -327,15 +358,33 @@ export default function ProposalPreview({
             className="mx-auto mb-4 max-w-48 max-h-24 object-contain"
           />
         )}
-        <h1 className="text-3xl font-bold text-blue-600 mb-2">{proposalData.title}</h1>
+        <h1 className="text-3xl font-bold text-blue-600 mb-2">
+          {proposalData.title}
+        </h1>
         <div className="text-gray-600 space-y-1">
-          <p className="text-lg"><strong>Client:</strong> {proposalData.clientName}</p>
-          {proposalData.leadId && <p><strong>Lead ID:</strong> {proposalData.leadId}</p>}
-          {proposalData.value > 0 && <p><strong>Project Value:</strong> ${proposalData.value.toLocaleString()}</p>}
-          {proposalData.validUntil && (
-            <p><strong>Valid Until:</strong> {new Date(proposalData.validUntil).toLocaleDateString()}</p>
+          <p className="text-lg">
+            <strong>Client:</strong> {proposalData.clientName}
+          </p>
+          {proposalData.leadId && (
+            <p>
+              <strong>Lead ID:</strong> {proposalData.leadId}
+            </p>
           )}
-          <p><strong>Date:</strong> {new Date().toLocaleDateString()}</p>
+          {proposalData.value > 0 && (
+            <p>
+              <strong>Project Value:</strong> $
+              {proposalData.value.toLocaleString()}
+            </p>
+          )}
+          {proposalData.validUntil && (
+            <p>
+              <strong>Valid Until:</strong>{" "}
+              {new Date(proposalData.validUntil).toLocaleDateString()}
+            </p>
+          )}
+          <p>
+            <strong>Date:</strong> {new Date().toLocaleDateString()}
+          </p>
         </div>
       </div>
 
@@ -362,7 +411,10 @@ export default function ProposalPreview({
                 <thead>
                   <tr className="bg-gray-50">
                     {section.tableData.headers.map((header, index) => (
-                      <th key={index} className="border border-gray-300 px-4 py-2 text-left font-semibold">
+                      <th
+                        key={index}
+                        className="border border-gray-300 px-4 py-2 text-left font-semibold"
+                      >
                         {header}
                       </th>
                     ))}
@@ -372,7 +424,10 @@ export default function ProposalPreview({
                   {section.tableData.rows.map((row, rowIndex) => (
                     <tr key={rowIndex}>
                       {row.map((cell, cellIndex) => (
-                        <td key={cellIndex} className="border border-gray-300 px-4 py-2">
+                        <td
+                          key={cellIndex}
+                          className="border border-gray-300 px-4 py-2"
+                        >
                           {cell}
                         </td>
                       ))}
@@ -398,7 +453,9 @@ export default function ProposalPreview({
       {/* Signature Section */}
       {proposalData.signatureFields.length > 0 && (
         <div className="mt-12 border-t border-gray-300 pt-8">
-          <h2 className="text-xl font-semibold text-gray-800 mb-6">Signatures</h2>
+          <h2 className="text-xl font-semibold text-gray-800 mb-6">
+            Signatures
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {proposalData.signatureFields.map((signature) => (
               <div key={signature.id} className="space-y-4">
@@ -410,19 +467,25 @@ export default function ProposalPreview({
                   </div>
                   <div>
                     <div className="border-b border-gray-400 h-8 mb-1">
-                      {signature.name && <span className="text-sm">{signature.name}</span>}
+                      {signature.name && (
+                        <span className="text-sm">{signature.name}</span>
+                      )}
                     </div>
                     <p className="text-sm text-gray-600">Name</p>
                   </div>
                   <div>
                     <div className="border-b border-gray-400 h-8 mb-1">
-                      {signature.title && <span className="text-sm">{signature.title}</span>}
+                      {signature.title && (
+                        <span className="text-sm">{signature.title}</span>
+                      )}
                     </div>
                     <p className="text-sm text-gray-600">Title</p>
                   </div>
                   <div>
                     <div className="border-b border-gray-400 h-8 mb-1">
-                      {signature.date && <span className="text-sm">{signature.date}</span>}
+                      {signature.date && (
+                        <span className="text-sm">{signature.date}</span>
+                      )}
                     </div>
                     <p className="text-sm text-gray-600">Date</p>
                   </div>
@@ -435,7 +498,10 @@ export default function ProposalPreview({
 
       {/* Footer */}
       <div className="mt-12 text-center text-sm text-gray-500 border-t border-gray-300 pt-4">
-        <p>This proposal is confidential and proprietary. Generated on {new Date().toLocaleDateString()}</p>
+        <p>
+          This proposal is confidential and proprietary. Generated on{" "}
+          {new Date().toLocaleDateString()}
+        </p>
       </div>
     </div>
   );
@@ -452,11 +518,17 @@ export default function ProposalPreview({
             <span className="text-sm text-gray-600">Preview Mode</span>
           </div>
           <div className="flex items-center space-x-2">
-            <Button onClick={downloadAsPDF} className="bg-red-600 hover:bg-red-700">
+            <Button
+              onClick={downloadAsPDF}
+              className="bg-red-600 hover:bg-red-700"
+            >
               <Download className="w-4 h-4 mr-2" />
               Download PDF
             </Button>
-            <Button onClick={downloadAsWord} className="bg-blue-600 hover:bg-blue-700">
+            <Button
+              onClick={downloadAsWord}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
               <Download className="w-4 h-4 mr-2" />
               Download Word
             </Button>
@@ -471,16 +543,16 @@ export default function ProposalPreview({
     <div className="space-y-6">
       {/* Header Actions */}
       <div className="flex items-center justify-between bg-gray-50 p-4 rounded-lg">
-        <h2 className="text-xl font-semibold text-gray-800">Proposal Builder</h2>
+        <h2 className="text-xl font-semibold text-gray-800">
+          Proposal Builder
+        </h2>
         <div className="flex items-center space-x-2">
           <Button variant="outline" onClick={() => setIsPreviewMode(true)}>
             <Eye className="w-4 h-4 mr-2" />
             Preview
           </Button>
           {onSave && (
-            <Button onClick={() => onSave(proposalData)}>
-              Save Proposal
-            </Button>
+            <Button onClick={() => onSave(proposalData)}>Save Proposal</Button>
           )}
         </div>
       </div>
@@ -489,7 +561,9 @@ export default function ProposalPreview({
       <Card>
         <CardHeader>
           <CardTitle>Basic Information</CardTitle>
-          <CardDescription>Set up the core details of your proposal</CardDescription>
+          <CardDescription>
+            Set up the core details of your proposal
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -507,7 +581,9 @@ export default function ProposalPreview({
               <Input
                 id="clientName"
                 value={proposalData.clientName}
-                onChange={(e) => updateProposalField("clientName", e.target.value)}
+                onChange={(e) =>
+                  updateProposalField("clientName", e.target.value)
+                }
                 className="mt-1"
               />
             </div>
@@ -528,7 +604,9 @@ export default function ProposalPreview({
                 id="value"
                 type="number"
                 value={proposalData.value}
-                onChange={(e) => updateProposalField("value", parseFloat(e.target.value) || 0)}
+                onChange={(e) =>
+                  updateProposalField("value", parseFloat(e.target.value) || 0)
+                }
                 className="mt-1"
               />
             </div>
@@ -538,7 +616,9 @@ export default function ProposalPreview({
                 id="validUntil"
                 type="date"
                 value={proposalData.validUntil}
-                onChange={(e) => updateProposalField("validUntil", e.target.value)}
+                onChange={(e) =>
+                  updateProposalField("validUntil", e.target.value)
+                }
                 className="mt-1"
               />
             </div>
@@ -579,7 +659,9 @@ export default function ProposalPreview({
           <div className="flex items-center justify-between">
             <div>
               <CardTitle>Proposal Sections</CardTitle>
-              <CardDescription>Build your proposal with customizable sections</CardDescription>
+              <CardDescription>
+                Build your proposal with customizable sections
+              </CardDescription>
             </div>
             <Button onClick={addSection} variant="outline">
               <Plus className="w-4 h-4 mr-2" />
@@ -594,13 +676,19 @@ export default function ProposalPreview({
                 <div className="flex items-center space-x-4 flex-1">
                   <Input
                     value={section.title}
-                    onChange={(e) => updateSection(section.id, { title: e.target.value })}
+                    onChange={(e) =>
+                      updateSection(section.id, { title: e.target.value })
+                    }
                     className="font-medium"
                     placeholder="Section title"
                   />
                   <select
                     value={section.type}
-                    onChange={(e) => updateSection(section.id, { type: e.target.value as "text" | "table" | "image" })}
+                    onChange={(e) =>
+                      updateSection(section.id, {
+                        type: e.target.value as "text" | "table" | "image",
+                      })
+                    }
                     className="px-3 py-2 border rounded-md"
                   >
                     <option value="text">Text</option>
@@ -621,7 +709,9 @@ export default function ProposalPreview({
               {section.type === "text" && (
                 <Textarea
                   value={section.content}
-                  onChange={(e) => updateSection(section.id, { content: e.target.value })}
+                  onChange={(e) =>
+                    updateSection(section.id, { content: e.target.value })
+                  }
                   rows={6}
                   placeholder="Enter section content..."
                 />
@@ -633,21 +723,28 @@ export default function ProposalPreview({
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          {section.tableData.headers.map((header, headerIndex) => (
-                            <TableHead key={headerIndex}>
-                              <Input
-                                value={header}
-                                onChange={(e) => {
-                                  const newHeaders = [...section.tableData!.headers];
-                                  newHeaders[headerIndex] = e.target.value;
-                                  updateSection(section.id, {
-                                    tableData: { ...section.tableData!, headers: newHeaders }
-                                  });
-                                }}
-                                className="font-medium"
-                              />
-                            </TableHead>
-                          ))}
+                          {section.tableData.headers.map(
+                            (header, headerIndex) => (
+                              <TableHead key={headerIndex}>
+                                <Input
+                                  value={header}
+                                  onChange={(e) => {
+                                    const newHeaders = [
+                                      ...section.tableData!.headers,
+                                    ];
+                                    newHeaders[headerIndex] = e.target.value;
+                                    updateSection(section.id, {
+                                      tableData: {
+                                        ...section.tableData!,
+                                        headers: newHeaders,
+                                      },
+                                    });
+                                  }}
+                                  className="font-medium"
+                                />
+                              </TableHead>
+                            ),
+                          )}
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -657,7 +754,14 @@ export default function ProposalPreview({
                               <TableCell key={cellIndex}>
                                 <Input
                                   value={cell}
-                                  onChange={(e) => updateTableCell(section.id, rowIndex, cellIndex, e.target.value)}
+                                  onChange={(e) =>
+                                    updateTableCell(
+                                      section.id,
+                                      rowIndex,
+                                      cellIndex,
+                                      e.target.value,
+                                    )
+                                  }
                                 />
                               </TableCell>
                             ))}
@@ -686,7 +790,8 @@ export default function ProposalPreview({
                         const input = document.createElement("input");
                         input.type = "file";
                         input.accept = "image/*";
-                        input.onchange = (e) => handleImageUpload(section.id, e as any);
+                        input.onchange = (e) =>
+                          handleImageUpload(section.id, e as any);
                         input.click();
                       }}
                     >
@@ -715,31 +820,44 @@ export default function ProposalPreview({
             <Signature className="w-5 h-5 inline mr-2" />
             Signature Fields
           </CardTitle>
-          <CardDescription>Configure signature requirements for the proposal</CardDescription>
+          <CardDescription>
+            Configure signature requirements for the proposal
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {proposalData.signatureFields.map((signature) => (
-            <div key={signature.id} className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 border rounded-lg">
+            <div
+              key={signature.id}
+              className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 border rounded-lg"
+            >
               <Input
                 placeholder="Signature label"
                 value={signature.label}
-                onChange={(e) => updateSignatureField(signature.id, "label", e.target.value)}
+                onChange={(e) =>
+                  updateSignatureField(signature.id, "label", e.target.value)
+                }
               />
               <Input
                 placeholder="Name (optional)"
                 value={signature.name}
-                onChange={(e) => updateSignatureField(signature.id, "name", e.target.value)}
+                onChange={(e) =>
+                  updateSignatureField(signature.id, "name", e.target.value)
+                }
               />
               <Input
                 placeholder="Title (optional)"
                 value={signature.title}
-                onChange={(e) => updateSignatureField(signature.id, "title", e.target.value)}
+                onChange={(e) =>
+                  updateSignatureField(signature.id, "title", e.target.value)
+                }
               />
               <Input
                 type="date"
                 placeholder="Date"
                 value={signature.date}
-                onChange={(e) => updateSignatureField(signature.id, "date", e.target.value)}
+                onChange={(e) =>
+                  updateSignatureField(signature.id, "date", e.target.value)
+                }
               />
             </div>
           ))}

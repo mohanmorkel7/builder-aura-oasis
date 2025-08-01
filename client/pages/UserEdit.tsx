@@ -103,7 +103,7 @@ export default function UserEdit() {
       setSaveError(
         error instanceof Error
           ? error.message
-          : "Failed to save user. Please try again."
+          : "Failed to save user. Please try again.",
       );
     } finally {
       setSaving(false);
@@ -114,23 +114,23 @@ export default function UserEdit() {
     setResetError(null);
     try {
       const response = await fetch(`/api/users/${userId}/reset-password`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 
       if (!response.ok) {
-        throw new Error('Failed to reset password');
+        throw new Error("Failed to reset password");
       }
 
-      alert('Password reset email sent successfully!');
+      alert("Password reset email sent successfully!");
     } catch (error) {
       console.error("Failed to reset password:", error);
       setResetError(
         error instanceof Error
           ? error.message
-          : "Failed to reset password. Please try again."
+          : "Failed to reset password. Please try again.",
       );
     }
   };
@@ -246,17 +246,13 @@ export default function UserEdit() {
       {/* Error Alerts */}
       {saveError && (
         <Alert variant="destructive">
-          <AlertDescription>
-            {saveError}
-          </AlertDescription>
+          <AlertDescription>{saveError}</AlertDescription>
         </Alert>
       )}
 
       {resetError && (
         <Alert variant="destructive">
-          <AlertDescription>
-            {resetError}
-          </AlertDescription>
+          <AlertDescription>{resetError}</AlertDescription>
         </Alert>
       )}
 

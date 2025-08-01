@@ -335,7 +335,7 @@ router.post("/:id/reset-password", async (req: Request, res: Response) => {
 
     res.json({
       message: "Password reset email sent successfully",
-      email: user.email
+      email: user.email,
     });
   } catch (error) {
     console.error("Error resetting password:", error);

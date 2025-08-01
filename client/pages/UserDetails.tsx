@@ -111,23 +111,23 @@ export default function UserDetails() {
     setResetError(null);
     try {
       const response = await fetch(`/api/users/${id}/reset-password`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 
       if (!response.ok) {
-        throw new Error('Failed to reset password');
+        throw new Error("Failed to reset password");
       }
 
-      alert('Password reset email sent successfully!');
+      alert("Password reset email sent successfully!");
     } catch (error) {
       console.error("Failed to reset password:", error);
       setResetError(
         error instanceof Error
           ? error.message
-          : "Failed to reset password. Please try again."
+          : "Failed to reset password. Please try again.",
       );
     }
   };
@@ -186,9 +186,7 @@ export default function UserDetails() {
       {/* Error Display */}
       {resetError && (
         <Alert variant="destructive" className="mb-6">
-          <AlertDescription>
-            {resetError}
-          </AlertDescription>
+          <AlertDescription>{resetError}</AlertDescription>
         </Alert>
       )}
 

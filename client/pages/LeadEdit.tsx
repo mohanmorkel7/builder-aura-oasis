@@ -161,7 +161,10 @@ export default function LeadEdit() {
   const updateLeadMutation = useUpdateLead();
 
   // Check if user has edit permissions
-  const canEditLead = user?.role === "admin" || user?.role === "sales" || user?.role === "product";
+  const canEditLead =
+    user?.role === "admin" ||
+    user?.role === "sales" ||
+    user?.role === "product";
   const canEditAssignments = user?.role === "admin" || user?.role === "sales";
   const canViewOnly = false; // All users can edit now
 
@@ -493,26 +496,13 @@ export default function LeadEdit() {
       )}
 
       {/* Form Tabs */}
-      <Tabs
-        defaultValue="basic"
-        className="space-y-6"
-      >
+      <Tabs defaultValue="basic" className="space-y-6">
         <TabsList className="grid w-full grid-cols-6">
-          <TabsTrigger value="basic">
-            Lead Info
-          </TabsTrigger>
-          <TabsTrigger value="project">
-            Project Details
-          </TabsTrigger>
-          <TabsTrigger value="commercials">
-            Commercials
-          </TabsTrigger>
-          <TabsTrigger value="client">
-            Client Info
-          </TabsTrigger>
-          <TabsTrigger value="contact">
-            Contact Info
-          </TabsTrigger>
+          <TabsTrigger value="basic">Lead Info</TabsTrigger>
+          <TabsTrigger value="project">Project Details</TabsTrigger>
+          <TabsTrigger value="commercials">Commercials</TabsTrigger>
+          <TabsTrigger value="client">Client Info</TabsTrigger>
+          <TabsTrigger value="contact">Contact Info</TabsTrigger>
           <TabsTrigger value="additional">Additional</TabsTrigger>
         </TabsList>
 
@@ -1164,8 +1154,6 @@ export default function LeadEdit() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-
-
               {/* Full access fields for admin users */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>

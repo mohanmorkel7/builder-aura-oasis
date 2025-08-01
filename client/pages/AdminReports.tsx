@@ -55,12 +55,20 @@ import {
 } from "lucide-react";
 
 // Real-time data function
-const getSystemMetrics = (users: any[], leads: any[], leadStats: any, followUps: any[]) => {
+const getSystemMetrics = (
+  users: any[],
+  leads: any[],
+  leadStats: any,
+  followUps: any[],
+) => {
   return {
     totalUsers: users.length,
     totalLeads: leads.length,
     totalFollowUps: followUps.length,
-    revenue: leads.reduce((sum: number, lead: any) => sum + (lead.project_value || 0), 0),
+    revenue: leads.reduce(
+      (sum: number, lead: any) => sum + (lead.project_value || 0),
+      0,
+    ),
     userGrowth: 12.5, // Could be calculated from user creation dates
     leadGrowth: 8.3, // Could be calculated from lead creation dates
     followUpGrowth: 15.2, // Could be calculated from follow-up creation dates
@@ -92,7 +100,11 @@ const getDepartmentData = (users: any[]) => {
 
 const getLeadStatusData = (leadStats: any) => {
   return [
-    { status: "In Progress", count: leadStats?.in_progress || 0, color: "#3B82F6" },
+    {
+      status: "In Progress",
+      count: leadStats?.in_progress || 0,
+      color: "#3B82F6",
+    },
     { status: "Won", count: leadStats?.won || 0, color: "#10B981" },
     { status: "Completed", count: leadStats?.completed || 0, color: "#8B5CF6" },
     { status: "Lost", count: leadStats?.lost || 0, color: "#EF4444" },
@@ -107,7 +119,12 @@ const getFollowUpTrends = (followUps: any[]) => {
   }, {});
 
   return [
-    { week: "Current", completed: statusCounts.completed || 0, in_progress: statusCounts.in_progress || 0, pending: statusCounts.pending || 0 },
+    {
+      week: "Current",
+      completed: statusCounts.completed || 0,
+      in_progress: statusCounts.in_progress || 0,
+      pending: statusCounts.pending || 0,
+    },
   ];
 };
 
@@ -284,9 +301,7 @@ export default function AdminReports() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Total Leads
-                </p>
+                <p className="text-sm font-medium text-gray-600">Total Leads</p>
                 <p className="text-3xl font-bold text-gray-900">
                   {systemMetrics.totalLeads}
                 </p>
@@ -447,9 +462,7 @@ export default function AdminReports() {
             <Card>
               <CardHeader>
                 <CardTitle>Lead Status Distribution</CardTitle>
-                <CardDescription>
-                  Current lead status breakdown
-                </CardDescription>
+                <CardDescription>Current lead status breakdown</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -500,15 +513,27 @@ export default function AdminReports() {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 <div className="text-center p-4 bg-blue-50 rounded-lg">
-                  <p className="text-3xl font-bold text-blue-600">{users.length}</p>
+                  <p className="text-3xl font-bold text-blue-600">
+                    {users.length}
+                  </p>
                   <p className="text-sm text-gray-600">Total Users</p>
                 </div>
                 <div className="text-center p-4 bg-green-50 rounded-lg">
-                  <p className="text-3xl font-bold text-green-600">{users.filter((u: any) => u.status === 'active').length}</p>
+                  <p className="text-3xl font-bold text-green-600">
+                    {users.filter((u: any) => u.status === "active").length}
+                  </p>
                   <p className="text-sm text-gray-600">Active Users</p>
                 </div>
                 <div className="text-center p-4 bg-purple-50 rounded-lg">
-                  <p className="text-3xl font-bold text-purple-600">{users.filter((u: any) => new Date(u.created_at) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)).length}</p>
+                  <p className="text-3xl font-bold text-purple-600">
+                    {
+                      users.filter(
+                        (u: any) =>
+                          new Date(u.created_at) >
+                          new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+                      ).length
+                    }
+                  </p>
                   <p className="text-sm text-gray-600">New This Month</p>
                 </div>
               </div>
@@ -529,9 +554,7 @@ export default function AdminReports() {
           <Card>
             <CardHeader>
               <CardTitle>Top Leads by Value</CardTitle>
-              <CardDescription>
-                Highest value generating leads
-              </CardDescription>
+              <CardDescription>Highest value generating leads</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -549,7 +572,7 @@ export default function AdminReports() {
                           {lead.client_name}
                         </h4>
                         <p className="text-sm text-gray-600">
-                          {lead.project_title || 'No project title'}
+                          {lead.project_title || "No project title"}
                         </p>
                       </div>
                     </div>
