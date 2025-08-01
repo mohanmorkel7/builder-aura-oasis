@@ -303,6 +303,7 @@ router.put("/:id", async (req: Request, res: Response) => {
     }
 
     const leadData: UpdateLeadData = req.body;
+    console.log(`Updating lead ${id} with data:`, JSON.stringify(leadData, null, 2));
 
     // Validate status if provided
     if (
