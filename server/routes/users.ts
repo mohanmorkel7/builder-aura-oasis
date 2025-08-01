@@ -368,7 +368,7 @@ router.post("/:id/change-password", async (req: Request, res: Response) => {
 
     let user;
     if (await isDatabaseAvailable()) {
-      user = await UserRepository.findById(id);
+      user = await UserRepository.findByIdWithPassword(id);
 
       if (!user) {
         return res.status(404).json({ error: "User not found" });
@@ -377,7 +377,7 @@ router.post("/:id/change-password", async (req: Request, res: Response) => {
       // Verify old password
       const isOldPasswordValid = await bcrypt.compare(
         oldPassword,
-        user.password,
+        user.password_hash,
       );
       if (!isOldPasswordValid) {
         return res.status(400).json({ error: "Current password is incorrect" });
