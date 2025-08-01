@@ -69,6 +69,9 @@ export default function TemplateCreator() {
         })),
       };
 
+      console.log("Creating template with data:", templateData);
+      console.log("User ID:", user?.id);
+
       await createTemplateMutation.mutateAsync(templateData);
       navigate("/admin");
     } catch (error) {
