@@ -31,32 +31,18 @@ interface TemplateStep {
 
 export default function TemplateCreator() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const createTemplateMutation = useCreateTemplate();
+
   const [templateName, setTemplateName] = useState("");
   const [templateDescription, setTemplateDescription] = useState("");
-  const [templateType, setTemplateType] = useState<
-    "standard" | "enterprise" | "smb"
-  >("standard");
-  const [createdBy, setCreatedBy] = useState("");
-  const [steps, setSteps] = useState<TemplateStep[]>([
-    {
-      id: "1",
-      name: "Initial Contact",
-      description:
-        "Reach out to the client to introduce the onboarding process.",
-      defaultEtaDays: 2,
-      autoAlert: true,
-      emailReminder: true,
-    },
-    {
-      id: "2",
-      name: "Document Collection",
-      description:
-        "Gather all necessary legal and financial documents from the client.",
-      defaultEtaDays: 5,
-      autoAlert: true,
-      emailReminder: true,
-    },
-  ]);
+  const [steps, setSteps] = useState<TemplateStep[]>([]);
+  const [newStepDialog, setNewStepDialog] = useState(false);
+  const [newStep, setNewStep] = useState({
+    name: "",
+    description: "",
+  });
+  const [saving, setSaving] = useState(false);
 
   const handleBack = () => {
     navigate("/admin");
