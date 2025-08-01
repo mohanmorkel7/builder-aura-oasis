@@ -195,7 +195,7 @@ export default function FollowUpNew() {
         <div className="flex items-center space-x-4">
           <Button variant="ghost" onClick={handleCancel}>
             <ArrowLeft className="w-4 h-4 mr-2" />
-            {isLeadFollowUp ? "Back to Leads" : "Back to Client"}
+            {isLeadFollowUp ? "Back to Leads" : hasClientId ? "Back to Client" : "Back to Follow-ups"}
           </Button>
           <div>
             <h1 className="text-2xl font-bold text-gray-900">
@@ -204,7 +204,9 @@ export default function FollowUpNew() {
             <p className="text-gray-600">
               {isLeadFollowUp
                 ? `Create a follow-up task for step: ${leadContext?.stepName || "Lead Step"}`
-                : `Create a new follow-up task for ${clientData?.client_name || "Client"}`}
+                : hasClientId
+                ? `Create a new follow-up task for ${clientData?.client_name || "Client"}`
+                : "Create a new follow-up task"}
             </p>
           </div>
         </div>
