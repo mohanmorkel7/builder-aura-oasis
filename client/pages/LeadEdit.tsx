@@ -49,6 +49,7 @@ import {
   Award,
   Zap,
   Plus,
+  Eye,
 } from "lucide-react";
 
 const leadSources = [
