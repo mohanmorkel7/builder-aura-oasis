@@ -157,7 +157,7 @@ export function useAuth() {
     });
 
     // During development/HMR, provide a fallback instead of throwing
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === "development") {
       console.warn("Providing fallback auth context for development");
       return {
         user: null,

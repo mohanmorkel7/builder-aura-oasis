@@ -1120,13 +1120,23 @@ export class MockDataService {
         start_date: "2025-08-01",
         targeted_end_date: "2025-08-21",
         expected_daily_txn_volume: 2323,
-        project_value: 234324.00,
+        project_value: 234324.0,
         spoc: "asdasdasd",
         commercials: [],
         commercial_pricing: [
-          { unit: "paisa", value: 1, currency: "INR", solution: "MylapaySecure" },
+          {
+            unit: "paisa",
+            value: 1,
+            currency: "INR",
+            solution: "MylapaySecure",
+          },
           { unit: "paisa", value: 2, currency: "INR", solution: "FRM" },
-          { unit: "paisa", value: 2, currency: "INR", solution: "Switch-Cards" }
+          {
+            unit: "paisa",
+            value: 2,
+            currency: "INR",
+            solution: "Switch-Cards",
+          },
         ],
         client_name: "sdasdsad",
         client_type: "existing",
@@ -1139,8 +1149,8 @@ export class MockDataService {
             phone: "+919629558605",
             linkedin: "sdfsdfsdf",
             designation: "sdsdfsdf",
-            contact_name: "Mohan Morkel"
-          }
+            contact_name: "Mohan Morkel",
+          },
         ],
         priority: "medium",
         expected_close_date: "",

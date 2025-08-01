@@ -473,11 +473,11 @@ export class LeadRepository {
 
     // Date fields that need empty string to null conversion
     const dateFields = [
-      'start_date',
-      'targeted_end_date',
-      'expected_close_date',
-      'created_at',
-      'updated_at'
+      "start_date",
+      "targeted_end_date",
+      "expected_close_date",
+      "created_at",
+      "updated_at",
     ];
 
     for (const [key, value] of Object.entries(leadData)) {

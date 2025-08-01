@@ -305,7 +305,11 @@ router.put("/:id", async (req: Request, res: Response) => {
     let leadData: UpdateLeadData = req.body;
 
     // Sanitize date fields - convert empty strings to null for PostgreSQL compatibility
-    const dateFields = ['start_date', 'targeted_end_date', 'expected_close_date'];
+    const dateFields = [
+      "start_date",
+      "targeted_end_date",
+      "expected_close_date",
+    ];
     for (const field of dateFields) {
       if (leadData[field] === "") {
         leadData[field] = null;
@@ -329,7 +333,7 @@ router.put("/:id", async (req: Request, res: Response) => {
         if (!existingLead) {
           return res.status(404).json({
             error: "Lead not found",
-            message: `Lead with ID ${id} does not exist in the database`
+            message: `Lead with ID ${id} does not exist in the database`,
           });
         }
 
@@ -346,14 +350,17 @@ router.put("/:id", async (req: Request, res: Response) => {
         res.json(mockLead);
       }
     } catch (dbError) {
-      console.log("Database error, falling back to mock data:", dbError.message);
+      console.log(
+        "Database error, falling back to mock data:",
+        dbError.message,
+      );
 
       const mockLead = await MockDataService.updateLead(id, leadData);
       if (!mockLead) {
         return res.status(404).json({
           error: "Lead not found",
           message: `Lead with ID ${id} does not exist`,
-          availableLeadIds: [1, 2, 9]
+          availableLeadIds: [1, 2, 9],
         });
       }
       res.json(mockLead);
