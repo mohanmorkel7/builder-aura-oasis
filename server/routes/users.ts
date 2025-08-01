@@ -256,6 +256,8 @@ router.post("/auth/login", async (req: Request, res: Response) => {
         if (demoUser) {
           console.log("Demo login successful for:", email);
           return res.json({ user: demoUser });
+        } else {
+          console.log("Demo login failed - email not recognized:", email);
         }
       }
 
