@@ -129,6 +129,7 @@ export default function LeadDetails() {
           name: newStep.name.trim(),
           description: newStep.description.trim(),
           due_date: newStep.due_date.trim() || undefined,
+          estimated_days: parseInt(newStep.estimated_days) || 3,
         };
 
         console.log("Creating step with data:", { leadId, stepData });
