@@ -492,7 +492,7 @@ export default function LeadDetails() {
                           }
                           placeholder="Describe what needs to be done in this step"
                           rows={3}
-                          className={!newStep.description.trim() ? "border-red-300" : ""}
+                          className=""
                         />
                       </div>
                       <div>
