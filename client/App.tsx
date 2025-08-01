@@ -115,21 +115,27 @@ function ProtectedRoute({
 
 // Auth Guard Component
 function AuthGuard({ children }: { children: React.ReactNode }) {
-  const { user, isLoading } = useAuth();
+  try {
+    const { user, isLoading } = useAuth();
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        Loading...
-      </div>
-    );
+    if (isLoading) {
+      return (
+        <div className="flex items-center justify-center min-h-screen">
+          Loading...
+        </div>
+      );
+    }
+
+    if (user) {
+      return <Navigate to="/dashboard" replace />;
+    }
+
+    return <>{children}</>;
+  } catch (error) {
+    // Handle case where AuthProvider is not available (e.g., during HMR)
+    console.error("AuthGuard AuthProvider error:", error);
+    return <>{children}</>;
   }
-
-  if (user) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
-  return <>{children}</>;
 }
 
 function AppRoutes() {
