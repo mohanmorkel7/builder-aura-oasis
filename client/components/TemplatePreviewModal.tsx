@@ -47,7 +47,7 @@ export default function TemplatePreviewModal({
 
   const totalSteps = template.steps?.length || 0;
   const requiredSteps = template.steps?.filter(step => step.is_required).length || 0;
-  const totalEstimatedDays = template.steps?.reduce((total, step) => total + (step.estimated_days || 0), 0) || 0;
+  const totalEstimatedDays = template.steps?.reduce((total, step) => total + (step.estimated_days || step.default_eta_days || 0), 0) || 0;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
