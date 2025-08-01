@@ -39,6 +39,7 @@ import {
   GripVertical,
   Reply,
   Paperclip,
+  X,
   Bold,
   Italic,
   Link,
