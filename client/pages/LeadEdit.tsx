@@ -161,9 +161,9 @@ export default function LeadEdit() {
   const updateLeadMutation = useUpdateLead();
 
   // Check if user has edit permissions
-  const canEditLead = user?.role === "admin";
+  const canEditLead = user?.role === "admin" || user?.role === "sales" || user?.role === "product";
   const canEditAssignments = user?.role === "admin" || user?.role === "sales";
-  const canViewOnly = user?.role === "product";
+  const canViewOnly = false; // All users can edit now
 
   const [leadData, setLeadData] = useState({
     // Lead Source & Status
@@ -397,18 +397,7 @@ export default function LeadEdit() {
     navigate(`/leads/${id}`);
   };
 
-  // Redirect non-admin users with limited access
-  React.useEffect(() => {
-    if (user && !canEditLead && !canEditAssignments && canViewOnly) {
-      // Product users can only view
-      navigate(`/leads/${id}`, {
-        state: {
-          message:
-            "You don't have permission to edit leads. Redirected to view mode.",
-        },
-      });
-    }
-  }, [user, canEditLead, canEditAssignments, canViewOnly, navigate, id]);
+  // No redirection needed - all roles can edit
 
   if (isLoading) {
     return (
@@ -475,15 +464,15 @@ export default function LeadEdit() {
       </div>
 
       {/* Access Control and Form Validation Alerts */}
-      {!canEditLead && (
+      {user?.role !== "admin" && (
         <Alert>
           <Info className="h-4 w-4" />
           <AlertDescription>
             {user?.role === "sales"
-              ? "As a Sales user, you can only edit assignment and status information."
+              ? "As a Sales user, you have full editing access to leads."
               : user?.role === "product"
-                ? "As a Product user, you have view-only access to leads."
-                : "You have limited editing permissions for this lead."}
+                ? "As a Product user, you have full editing access to leads."
+                : "You have editing permissions for this lead."}
           </AlertDescription>
         </Alert>
       )}
@@ -505,23 +494,23 @@ export default function LeadEdit() {
 
       {/* Form Tabs */}
       <Tabs
-        defaultValue={canEditLead ? "basic" : "additional"}
+        defaultValue="basic"
         className="space-y-6"
       >
         <TabsList className="grid w-full grid-cols-6">
-          <TabsTrigger value="basic" disabled={!canEditLead}>
+          <TabsTrigger value="basic">
             Lead Info
           </TabsTrigger>
-          <TabsTrigger value="project" disabled={!canEditLead}>
+          <TabsTrigger value="project">
             Project Details
           </TabsTrigger>
-          <TabsTrigger value="commercials" disabled={!canEditLead}>
+          <TabsTrigger value="commercials">
             Commercials
           </TabsTrigger>
-          <TabsTrigger value="client" disabled={!canEditLead}>
+          <TabsTrigger value="client">
             Client Info
           </TabsTrigger>
-          <TabsTrigger value="contact" disabled={!canEditLead}>
+          <TabsTrigger value="contact">
             Contact Info
           </TabsTrigger>
           <TabsTrigger value="additional">Additional</TabsTrigger>
