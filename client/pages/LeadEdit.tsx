@@ -198,7 +198,6 @@ export default function LeadEdit() {
     // Client Information
     client_name: "",
     client_type: "",
-    company: "",
     company_location: "",
     category: "",
     country: "",
