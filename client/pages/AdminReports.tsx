@@ -186,24 +186,7 @@ export default function AdminReports() {
   const { data: users = [] } = useUsers();
   const { data: leads = [] } = useLeads();
   const { data: leadStats } = useLeadStats();
-
-  // State for follow-ups data
-  const [followUps, setFollowUps] = useState([]);
-
-  // Fetch follow-ups data
-  useEffect(() => {
-    const fetchFollowUps = async () => {
-      try {
-        const response = await fetch('/api/follow-ups');
-        const data = await response.json();
-        setFollowUps(data);
-      } catch (error) {
-        console.error('Failed to fetch follow-ups:', error);
-      }
-    };
-
-    fetchFollowUps();
-  }, []);
+  const { data: followUps = [] } = useFollowUps();
 
   // Calculate real-time data
   const systemMetrics = getSystemMetrics(users, leads, leadStats, followUps);
