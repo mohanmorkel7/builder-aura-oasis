@@ -386,7 +386,7 @@ export default function AdminReports() {
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" type="category" />
                     <YAxis type="number" />
-                    <Tooltip />
+                    <Tooltip cursor={false} />
                     <Area
                       type="monotone"
                       dataKey="users"
