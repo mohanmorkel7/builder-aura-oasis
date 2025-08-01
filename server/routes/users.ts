@@ -223,6 +223,7 @@ router.post("/auth/login", async (req: Request, res: Response) => {
 
     if (!user) {
       // Demo credentials fallback - allow hardcoded demo users
+      console.log("Trying demo credentials fallback...");
       if (password === "password") {
         let demoUser = null;
 
