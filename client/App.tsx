@@ -26,7 +26,9 @@ class AuthErrorBoundary extends React.Component<
       return (
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-red-600 mb-4">Authentication Error</h1>
+            <h1 className="text-2xl font-bold text-red-600 mb-4">
+              Authentication Error
+            </h1>
             <p className="text-gray-600 mb-4">
               There was an issue with authentication. Please refresh the page.
             </p>
@@ -87,7 +89,11 @@ function ProtectedRoute({
   const { user, isLoading } = useAuth();
 
   if (isLoading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        Loading...
+      </div>
+    );
   }
 
   if (!user) {
@@ -106,7 +112,11 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
 
   if (isLoading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        Loading...
+      </div>
+    );
   }
 
   if (user) {

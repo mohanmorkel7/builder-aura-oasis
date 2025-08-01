@@ -149,7 +149,7 @@ export function useAuth() {
   if (context === undefined) {
     console.error("useAuth called outside of AuthProvider. Component tree:", {
       location: window.location.pathname,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
     throw new Error("useAuth must be used within an AuthProvider");
   }
