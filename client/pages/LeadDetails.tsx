@@ -123,34 +123,45 @@ export default function LeadDetails() {
   };
 
   const handleAddStep = async () => {
-    if (newStep.name.trim() && newStep.description.trim() && newStep.estimated_days) {
-      try {
-        const stepData = {
-          name: newStep.name.trim(),
-          description: newStep.description.trim(),
-          due_date: newStep.due_date.trim() || undefined,
-          estimated_days: parseInt(newStep.estimated_days) || 3,
-        };
+    // Validate required fields
+    if (!newStep.name.trim()) {
+      alert("Step name is required");
+      return;
+    }
+    if (!newStep.description.trim()) {
+      alert("Step description is required");
+      return;
+    }
+    if (!newStep.estimated_days || parseInt(newStep.estimated_days) < 1) {
+      alert("Estimated days must be at least 1");
+      return;
+    }
 
-        console.log("Creating step with data:", { leadId, stepData });
-        const result = await createStepMutation.mutateAsync({
-          leadId,
-          stepData,
-        });
-        console.log("Step creation result:", result);
+    try {
+      const stepData = {
+        name: newStep.name.trim(),
+        description: newStep.description.trim(),
+        due_date: newStep.due_date.trim() || undefined,
+        estimated_days: parseInt(newStep.estimated_days),
+      };
 
-        setNewStep({
-          name: "",
-          description: "",
-          due_date: "",
-          estimated_days: "3",
-        });
-        setNewStepDialog(false);
-      } catch (error) {
-        console.error("Failed to create step:", error);
-      }
-    } else {
-      console.warn("Step validation failed - missing name or description");
+      console.log("Creating step with data:", { leadId, stepData });
+      const result = await createStepMutation.mutateAsync({
+        leadId,
+        stepData,
+      });
+      console.log("Step creation result:", result);
+
+      setNewStep({
+        name: "",
+        description: "",
+        due_date: "",
+        estimated_days: "3",
+      });
+      setNewStepDialog(false);
+    } catch (error) {
+      console.error("Failed to create step:", error);
+      alert("Failed to create step. Please try again.");
     }
   };
 
