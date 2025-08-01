@@ -235,6 +235,17 @@ function AppRoutes() {
       />
 
       <Route
+        path="/sales/followup/new"
+        element={
+          <ProtectedRoute allowedRoles={["admin", "sales"]}>
+            <DashboardLayout>
+              <FollowUpNew />
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
         path="/follow-up"
         element={
           <ProtectedRoute allowedRoles={["admin", "sales"]}>
