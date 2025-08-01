@@ -55,36 +55,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     } catch (error) {
       console.error("API login failed:", error);
-    }
 
-    // Always try demo authentication fallback regardless of API result
-    console.log("Trying demo authentication...");
+      // Try demo authentication fallback only if API fails
+      console.log("API unavailable, trying demo authentication...");
 
-    if (password === "password") {
-      let userData: User | null = null;
+      if (password === "password") {
+        let userData: User | null = null;
 
-      if (email === "admin@banani.com") {
-        userData = { id: "1", name: "John Doe", email, role: "admin" };
-      } else if (email === "sales@banani.com") {
-        userData = { id: "2", name: "Jane Smith", email, role: "sales" };
-      } else if (email === "product@banani.com") {
-        userData = { id: "3", name: "Mike Johnson", email, role: "product" };
+        if (email === "admin@banani.com") {
+          userData = { id: "1", name: "John Doe", email, role: "admin" };
+        } else if (email === "sales@banani.com") {
+          userData = { id: "2", name: "Jane Smith", email, role: "sales" };
+        } else if (email === "product@banani.com") {
+          userData = { id: "3", name: "Mike Johnson", email, role: "product" };
+        }
+
+        if (userData) {
+          console.log("Demo authentication successful:", userData.role);
+          setUser(userData);
+          localStorage.setItem("banani_user", JSON.stringify(userData));
+          setIsLoading(false);
+          return true;
+        }
       }
 
-      if (userData) {
-        console.log("Demo authentication successful:", userData.role);
-        setUser(userData);
-        localStorage.setItem("banani_user", JSON.stringify(userData));
-        setIsLoading(false);
-        return true;
-      }
+      // If both API and demo auth fail, return false to show error
+      console.log(
+        "Login failed. Use: admin@banani.com / sales@banani.com / product@banani.com with password: password",
+      );
+
+      setIsLoading(false);
+      return false;
     }
 
-    // If demo auth also fails, provide helpful message
-    console.log(
-      "Login failed. Use: admin@banani.com / sales@banani.com / product@banani.com with password: password",
-    );
-
+    // If API response exists but doesn't contain user, it means invalid credentials
     setIsLoading(false);
     return false;
   };
