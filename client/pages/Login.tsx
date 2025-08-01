@@ -125,11 +125,14 @@ export default function Login() {
               </Button>
             </div>
 
-            <div className="text-sm text-gray-600 bg-blue-50 p-3 rounded-md">
-              <p className="font-medium mb-1">Demo Credentials:</p>
-              <p>Admin: admin@banani.com / password</p>
-              <p>Sales: sales@banani.com / password</p>
-              <p>Product: product@banani.com / password</p>
+            <div className="text-sm text-gray-600 bg-yellow-50 p-4 rounded-md border border-yellow-200">
+              <p className="font-bold mb-2 text-yellow-800">⚠️ USE THESE DEMO CREDENTIALS:</p>
+              <div className="space-y-1 font-mono text-xs">
+                <p className="bg-white p-2 rounded border">Admin: admin@banani.com / password</p>
+                <p className="bg-white p-2 rounded border">Sales: sales@banani.com / password</p>
+                <p className="bg-white p-2 rounded border">Product: product@banani.com / password</p>
+              </div>
+              <p className="text-xs text-yellow-700 mt-2 font-medium">Copy and paste these credentials exactly as shown</p>
             </div>
           </CardContent>
         </Card>
