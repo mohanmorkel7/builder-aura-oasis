@@ -150,6 +150,7 @@ const getNotificationsFromFollowUps = async (
     );
   } catch (error) {
     console.error("Failed to fetch notifications:", error);
+    // Return empty array on error to prevent UI crashes
     return [];
   }
 };
