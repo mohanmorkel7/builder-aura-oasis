@@ -111,7 +111,13 @@ router.post("/", async (req: Request, res: Response) => {
       }
     }
 
-    const template = await TemplateRepository.create(templateData);
+    let template;
+    if (await isDatabaseAvailable()) {
+      template = await TemplateRepository.create(templateData);
+    } else {
+      // Fallback to mock data (for development without database)
+      template = await MockDataService.createTemplate(templateData);
+    }
     res.status(201).json(template);
   } catch (error) {
     console.error("Error creating template:", error);
