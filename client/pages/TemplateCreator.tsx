@@ -48,40 +48,47 @@ export default function TemplateCreator() {
     navigate("/admin");
   };
 
-  const handleSaveTemplate = () => {
-    // In a real app, this would save to the backend
-    console.log("Saving template:", {
-      templateName,
-      templateDescription,
-      templateType,
-      createdBy,
-      steps,
-    });
-    navigate("/admin");
+  const handleSaveTemplate = async () => {
+    if (!templateName.trim() || steps.length === 0) {
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const templateData = {
+        name: templateName.trim(),
+        description: templateDescription.trim(),
+        created_by: parseInt(user?.id || "1"),
+        steps: steps.map((step, index) => ({
+          step_order: index + 1,
+          name: step.name.trim(),
+          description: step.description.trim(),
+          default_eta_days: 3, // Default value
+          auto_alert: false,
+          email_reminder: false,
+        })),
+      };
+
+      await createTemplateMutation.mutateAsync(templateData);
+      navigate("/admin");
+    } catch (error) {
+      console.error("Failed to create template:", error);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleAddStep = () => {
-    const newStep: TemplateStep = {
-      id: Date.now().toString(),
-      name: "",
-      description: "",
-      defaultEtaDays: 3,
-      autoAlert: false,
-      emailReminder: false,
-    };
-    setSteps([...steps, newStep]);
-  };
-
-  const handleUpdateStep = (
-    id: string,
-    field: keyof TemplateStep,
-    value: any,
-  ) => {
-    setSteps(
-      steps.map((step) =>
-        step.id === id ? { ...step, [field]: value } : step,
-      ),
-    );
+    if (newStep.name.trim() && newStep.description.trim()) {
+      const step: TemplateStep = {
+        id: Date.now().toString(),
+        name: newStep.name.trim(),
+        description: newStep.description.trim(),
+      };
+      setSteps([...steps, step]);
+      setNewStep({ name: "", description: "" });
+      setNewStepDialog(false);
+    }
   };
 
   const handleDeleteStep = (id: string) => {
