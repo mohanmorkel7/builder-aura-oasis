@@ -392,33 +392,52 @@ export default function TemplateEdit() {
                 </Button>
               </div>
             ) : (
-              <div className="space-y-4">
-                {steps.map((step, index) => (
-                  <div key={step.id} className="border rounded-lg p-4">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-3 mb-2">
-                          <div className="flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-800 rounded-full font-semibold text-sm">
-                            {index + 1}
-                          </div>
-                          <h3 className="font-medium text-gray-900">{step.name}</h3>
-                        </div>
-                        <p className="text-sm text-gray-600 ml-11">
-                          {step.description}
-                        </p>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDeleteStep(step.id)}
-                        className="text-red-600 hover:text-red-700"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragStart={handleDragStart}
+                onDragEnd={handleDragEnd}
+                modifiers={[restrictToVerticalAxis, restrictToParentElement]}
+              >
+                <SortableContext
+                  items={steps.map((step) => step.id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  <div className="space-y-4">
+                    {steps.map((step, index) => (
+                      <SortableStepItem
+                        key={step.id}
+                        step={step}
+                        index={index}
+                        onDelete={handleDeleteStep}
+                      />
+                    ))}
                   </div>
-                ))}
-              </div>
+                </SortableContext>
+
+                <DragOverlay>
+                  {activeStep ? (
+                    <div className="border rounded-lg p-4 bg-white shadow-lg">
+                      <div className="flex items-start space-x-3">
+                        <div className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded">
+                          <GripVertical className="w-4 h-4 text-gray-500" />
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-3 mb-2">
+                            <div className="flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-800 rounded-full font-semibold text-sm">
+                              {steps.findIndex(s => s.id === activeStep.id) + 1}
+                            </div>
+                            <h3 className="font-medium text-gray-900">{activeStep.name}</h3>
+                          </div>
+                          <p className="text-sm text-gray-600 ml-11">
+                            {activeStep.description}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ) : null}
+                </DragOverlay>
+              </DndContext>
             )}
           </CardContent>
         </Card>
