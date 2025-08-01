@@ -104,7 +104,7 @@ export default function TemplatePreviewModal({
               {template.steps && template.steps.length > 0 ? (
                 <div className="space-y-4">
                   {template.steps
-                    .sort((a, b) => a.order_position - b.order_position)
+                    .sort((a, b) => (a.order_position || a.step_order || 0) - (b.order_position || b.step_order || 0))
                     .map((step, index) => (
                       <div key={step.id} className="border rounded-lg p-4 space-y-3">
                         <div className="flex items-start justify-between">
