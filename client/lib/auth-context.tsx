@@ -87,7 +87,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // If both API and demo auth fail, return false to show error
       console.log(
-        "Login failed. Use: admin@banani.com / sales@banani.com / product@banani.com with password: password",
+        "Login failed. Use demo credentials: admin@banani.com, sales@banani.com, or product@banani.com with password: password",
       );
 
       setIsLoading(false);
