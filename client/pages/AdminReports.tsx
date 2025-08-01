@@ -551,7 +551,7 @@ export default function AdminReports() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {topClients.map((client, index) => (
+                {leads.slice(0, 5).map((lead: any, index: number) => (
                   <div
                     key={index}
                     className="flex items-center justify-between p-4 border rounded-lg"
@@ -562,19 +562,19 @@ export default function AdminReports() {
                       </div>
                       <div>
                         <h4 className="font-medium text-gray-900">
-                          {client.name}
+                          {lead.client_name}
                         </h4>
                         <p className="text-sm text-gray-600">
-                          {client.deployments} deployments
+                          {lead.project_title || 'No project title'}
                         </p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-4">
-                      <Badge className={getStatusColor(client.status)}>
-                        {client.status}
+                      <Badge className={getStatusColor(lead.status)}>
+                        {lead.status}
                       </Badge>
                       <span className="font-bold text-lg">
-                        ${client.revenue.toLocaleString()}
+                        ${(lead.project_value || 0).toLocaleString()}
                       </span>
                     </div>
                   </div>
