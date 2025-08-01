@@ -516,6 +516,24 @@ export default function LeadDetails() {
                         />
                       </div>
                       <div>
+                        <Label htmlFor="estimatedDays">Estimated Days *</Label>
+                        <Input
+                          id="estimatedDays"
+                          type="number"
+                          min="1"
+                          max="365"
+                          value={newStep.estimated_days}
+                          onChange={(e) =>
+                            setNewStep((prev) => ({
+                              ...prev,
+                              estimated_days: e.target.value,
+                            }))
+                          }
+                          placeholder="3"
+                          className=""
+                        />
+                      </div>
+                      <div>
                         <Label htmlFor="dueDate">Due Date</Label>
                         <Input
                           id="dueDate"
