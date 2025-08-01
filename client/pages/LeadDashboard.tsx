@@ -487,9 +487,6 @@ export default function LeadDashboard() {
                     <div className="flex items-center space-x-4">
                       {lead.company && <span>Company: {lead.company}</span>}
                       {lead.category && <span>Category: {lead.category}</span>}
-                      {lead.sales_rep_name && (
-                        <span>Sales Rep: {lead.sales_rep_name}</span>
-                      )}
                     </div>
                     <div>Created: {formatToIST(lead.created_at)}</div>
                   </div>
