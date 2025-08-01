@@ -89,6 +89,9 @@ CREATE TABLE IF NOT EXISTS leads (
     probability INTEGER DEFAULT 50 CHECK (probability >= 0 AND probability <= 100),
     notes TEXT,
     
+    -- Template Reference
+    template_id INTEGER REFERENCES onboarding_templates(id),
+
     -- Metadata
     created_by INTEGER REFERENCES users(id),
     assigned_to INTEGER REFERENCES users(id),
