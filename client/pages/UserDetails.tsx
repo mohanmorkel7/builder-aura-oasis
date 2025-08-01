@@ -399,7 +399,11 @@ export default function UserDetails() {
                 <Mail className="w-4 h-4 mr-2" />
                 Send Email
               </Button>
-              <Button className="w-full justify-start" variant="outline">
+              <Button
+                className="w-full justify-start"
+                variant="outline"
+                onClick={resetPassword}
+              >
                 <Shield className="w-4 h-4 mr-2" />
                 Reset Password
               </Button>
