@@ -205,14 +205,21 @@ router.post("/auth/login", async (req: Request, res: Response) => {
     }
 
     let user;
-    if (await isDatabaseAvailable()) {
+    const dbAvailable = await isDatabaseAvailable();
+    console.log("Database available:", dbAvailable);
+
+    if (dbAvailable) {
+      console.log("Trying database authentication...");
       user = await UserRepository.verifyPassword(email, password);
       if (user) {
         await UserRepository.updateLastLogin(user.id);
       }
     } else {
+      console.log("Trying mock data authentication...");
       user = await MockDataService.verifyPassword(email, password);
     }
+
+    console.log("User authentication result:", user ? "success" : "failed");
 
     if (!user) {
       // Demo credentials fallback - allow hardcoded demo users
