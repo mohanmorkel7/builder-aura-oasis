@@ -469,7 +469,9 @@ export default function FollowUpNew() {
               </span>
               <span>
                 <Clock className="w-3 h-3 inline mr-1" />
-                {followUp.estimated_duration === 0 ? "No duration" : `${followUp.estimated_duration}min`}
+                {followUp.estimated_duration === 0
+                  ? "No duration"
+                  : `${followUp.estimated_duration}min`}
               </span>
             </div>
             {followUp.assigned_to && (

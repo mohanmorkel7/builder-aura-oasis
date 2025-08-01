@@ -16,13 +16,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Plus,
-  ArrowLeft,
-  Trash2,
-  Save,
-  GripVertical,
-} from "lucide-react";
+import { Plus, ArrowLeft, Trash2, Save, GripVertical } from "lucide-react";
 import {
   DndContext,
   closestCenter,
@@ -38,9 +32,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import {
-  useSortable,
-} from "@dnd-kit/sortable";
+import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
   restrictToVerticalAxis,
@@ -59,7 +51,7 @@ interface TemplateStep {
 function SortableStepItem({
   step,
   index,
-  onDelete
+  onDelete,
 }: {
   step: TemplateStep;
   index: number;
@@ -104,9 +96,7 @@ function SortableStepItem({
               </div>
               <h3 className="font-medium text-gray-900">{step.name}</h3>
             </div>
-            <p className="text-sm text-gray-600 ml-11">
-              {step.description}
-            </p>
+            <p className="text-sm text-gray-600 ml-11">{step.description}</p>
           </div>
         </div>
         <Button
@@ -126,7 +116,9 @@ export default function TemplateEdit() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { data: templateData, isLoading: templateLoading } = useTemplate(parseInt(id || "0"));
+  const { data: templateData, isLoading: templateLoading } = useTemplate(
+    parseInt(id || "0"),
+  );
   const updateTemplateMutation = useUpdateTemplate();
 
   const [templateName, setTemplateName] = useState("");
@@ -156,15 +148,17 @@ export default function TemplateEdit() {
     if (templateData) {
       setTemplateName(templateData.name || "");
       setTemplateDescription(templateData.description || "");
-      
+
       // Convert template steps to local format
-      const convertedSteps = (templateData.steps || []).map((step: any, index: number) => ({
-        id: step.id?.toString() || index.toString(),
-        name: step.name || "",
-        description: step.description || "",
-        step_order: step.step_order || step.order_position || index + 1,
-      }));
-      
+      const convertedSteps = (templateData.steps || []).map(
+        (step: any, index: number) => ({
+          id: step.id?.toString() || index.toString(),
+          name: step.name || "",
+          description: step.description || "",
+          step_order: step.step_order || step.order_position || index + 1,
+        }),
+      );
+
       // Sort steps by order
       convertedSteps.sort((a, b) => (a.step_order || 0) - (b.step_order || 0));
       setSteps(convertedSteps);
@@ -206,7 +200,7 @@ export default function TemplateEdit() {
 
       await updateTemplateMutation.mutateAsync({
         id: parseInt(id || "0"),
-        templateData: templateData
+        templateData: templateData,
       });
       navigate("/admin");
     } catch (error) {
@@ -251,7 +245,9 @@ export default function TemplateEdit() {
     setActiveId(null);
   };
 
-  const activeStep = activeId ? steps.find((step) => step.id === activeId) : null;
+  const activeStep = activeId
+    ? steps.find((step) => step.id === activeId)
+    : null;
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
@@ -262,9 +258,7 @@ export default function TemplateEdit() {
           Back to Templates
         </Button>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            Edit Template
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-900">Edit Template</h1>
           <p className="text-gray-600 mt-1">
             Modify template information and steps
           </p>
@@ -367,7 +361,9 @@ export default function TemplateEdit() {
                     </Button>
                     <Button
                       onClick={handleAddStep}
-                      disabled={!newStep.name.trim() || !newStep.description.trim()}
+                      disabled={
+                        !newStep.name.trim() || !newStep.description.trim()
+                      }
                     >
                       Add Step
                     </Button>
@@ -425,9 +421,12 @@ export default function TemplateEdit() {
                         <div className="flex-1">
                           <div className="flex items-center space-x-3 mb-2">
                             <div className="flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-800 rounded-full font-semibold text-sm">
-                              {steps.findIndex(s => s.id === activeStep.id) + 1}
+                              {steps.findIndex((s) => s.id === activeStep.id) +
+                                1}
                             </div>
-                            <h3 className="font-medium text-gray-900">{activeStep.name}</h3>
+                            <h3 className="font-medium text-gray-900">
+                              {activeStep.name}
+                            </h3>
                           </div>
                           <p className="text-sm text-gray-600 ml-11">
                             {activeStep.description}

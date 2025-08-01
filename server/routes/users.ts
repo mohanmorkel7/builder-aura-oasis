@@ -355,11 +355,15 @@ router.post("/:id/change-password", async (req: Request, res: Response) => {
     }
 
     if (!oldPassword || !newPassword) {
-      return res.status(400).json({ error: "Old password and new password are required" });
+      return res
+        .status(400)
+        .json({ error: "Old password and new password are required" });
     }
 
     if (newPassword.length < 6) {
-      return res.status(400).json({ error: "New password must be at least 6 characters long" });
+      return res
+        .status(400)
+        .json({ error: "New password must be at least 6 characters long" });
     }
 
     let user;
@@ -371,7 +375,10 @@ router.post("/:id/change-password", async (req: Request, res: Response) => {
       }
 
       // Verify old password
-      const isOldPasswordValid = await bcrypt.compare(oldPassword, user.password);
+      const isOldPasswordValid = await bcrypt.compare(
+        oldPassword,
+        user.password,
+      );
       if (!isOldPasswordValid) {
         return res.status(400).json({ error: "Current password is incorrect" });
       }
@@ -380,17 +387,19 @@ router.post("/:id/change-password", async (req: Request, res: Response) => {
       const hashedNewPassword = await bcrypt.hash(newPassword, 10);
       await UserRepository.update(id, { password: hashedNewPassword });
 
-      console.log(`Password changed successfully for user ${id}: ${user.email}`);
+      console.log(
+        `Password changed successfully for user ${id}: ${user.email}`,
+      );
 
       res.json({
         message: "Password changed successfully",
-        user: { id: user.id, email: user.email }
+        user: { id: user.id, email: user.email },
       });
     } else {
       // Mock implementation - just return success
       res.json({
         message: "Password changed successfully (mock mode)",
-        user: { id, email: "mock@example.com" }
+        user: { id, email: "mock@example.com" },
       });
     }
   } catch (error) {

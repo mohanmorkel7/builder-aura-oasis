@@ -348,7 +348,7 @@ export class DatabaseValidator {
         }
 
         // Format as #0001, #0002, etc.
-        const leadId = `#${nextNumber.toString().padStart(4, '0')}`;
+        const leadId = `#${nextNumber.toString().padStart(4, "0")}`;
 
         // Double-check that this ID isn't already taken (unlikely but safe)
         const isTaken = await this.isLeadIdTaken(leadId);
@@ -357,12 +357,12 @@ export class DatabaseValidator {
         }
       }
     } catch (error) {
-      console.error('Error generating sequential lead ID:', error);
+      console.error("Error generating sequential lead ID:", error);
     }
 
     // Fallback to timestamp-based ID if database is unavailable or error occurs
     const fallbackNumber = parseInt(Date.now().toString().slice(-4));
-    return `#${fallbackNumber.toString().padStart(4, '0')}`;
+    return `#${fallbackNumber.toString().padStart(4, "0")}`;
   }
 }
 

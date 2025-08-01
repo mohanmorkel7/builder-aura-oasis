@@ -65,9 +65,11 @@ export default function UserEdit() {
   const [changePasswordData, setChangePasswordData] = useState({
     oldPassword: "",
     newPassword: "",
-    confirmPassword: ""
+    confirmPassword: "",
   });
-  const [changePasswordError, setChangePasswordError] = useState<string | null>(null);
+  const [changePasswordError, setChangePasswordError] = useState<string | null>(
+    null,
+  );
   const [changePasswordLoading, setChangePasswordLoading] = useState(false);
 
   // Update state when user data is loaded
@@ -147,7 +149,11 @@ export default function UserEdit() {
   const changePassword = async () => {
     setChangePasswordError(null);
 
-    if (!changePasswordData.oldPassword || !changePasswordData.newPassword || !changePasswordData.confirmPassword) {
+    if (
+      !changePasswordData.oldPassword ||
+      !changePasswordData.newPassword ||
+      !changePasswordData.confirmPassword
+    ) {
       setChangePasswordError("All fields are required");
       return;
     }
@@ -181,7 +187,11 @@ export default function UserEdit() {
       }
 
       alert("Password changed successfully!");
-      setChangePasswordData({ oldPassword: "", newPassword: "", confirmPassword: "" });
+      setChangePasswordData({
+        oldPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
     } catch (error) {
       console.error("Failed to change password:", error);
       setChangePasswordError(
@@ -528,9 +538,9 @@ export default function UserEdit() {
                       type="password"
                       value={changePasswordData.oldPassword}
                       onChange={(e) =>
-                        setChangePasswordData(prev => ({
+                        setChangePasswordData((prev) => ({
                           ...prev,
-                          oldPassword: e.target.value
+                          oldPassword: e.target.value,
                         }))
                       }
                       placeholder="Enter current password"
@@ -545,9 +555,9 @@ export default function UserEdit() {
                       type="password"
                       value={changePasswordData.newPassword}
                       onChange={(e) =>
-                        setChangePasswordData(prev => ({
+                        setChangePasswordData((prev) => ({
                           ...prev,
-                          newPassword: e.target.value
+                          newPassword: e.target.value,
                         }))
                       }
                       placeholder="Enter new password"
@@ -556,15 +566,17 @@ export default function UserEdit() {
                   </div>
 
                   <div>
-                    <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                    <Label htmlFor="confirmPassword">
+                      Confirm New Password
+                    </Label>
                     <Input
                       id="confirmPassword"
                       type="password"
                       value={changePasswordData.confirmPassword}
                       onChange={(e) =>
-                        setChangePasswordData(prev => ({
+                        setChangePasswordData((prev) => ({
                           ...prev,
-                          confirmPassword: e.target.value
+                          confirmPassword: e.target.value,
                         }))
                       }
                       placeholder="Confirm new password"

@@ -285,7 +285,8 @@ export const mockTemplates = [
         template_id: 2,
         step_order: 1,
         name: "Enterprise Discovery Call",
-        description: "Comprehensive discovery session with stakeholders to understand enterprise requirements.",
+        description:
+          "Comprehensive discovery session with stakeholders to understand enterprise requirements.",
         default_eta_days: 3,
         auto_alert: true,
         email_reminder: true,
@@ -300,7 +301,8 @@ export const mockTemplates = [
         template_id: 2,
         step_order: 2,
         name: "Technical Architecture Review",
-        description: "Review existing technical infrastructure and integration requirements.",
+        description:
+          "Review existing technical infrastructure and integration requirements.",
         default_eta_days: 5,
         auto_alert: true,
         email_reminder: true,
@@ -330,7 +332,8 @@ export const mockTemplates = [
         template_id: 2,
         step_order: 4,
         name: "Custom Integration Planning",
-        description: "Design custom integration solutions for enterprise systems.",
+        description:
+          "Design custom integration solutions for enterprise systems.",
         default_eta_days: 10,
         auto_alert: true,
         email_reminder: false,
@@ -420,7 +423,8 @@ export const mockTemplates = [
         template_id: 3,
         step_order: 1,
         name: "Quick Setup Call",
-        description: "Brief onboarding call to gather basic requirements and set expectations.",
+        description:
+          "Brief onboarding call to gather basic requirements and set expectations.",
         default_eta_days: 1,
         auto_alert: true,
         email_reminder: true,
@@ -435,7 +439,8 @@ export const mockTemplates = [
         template_id: 3,
         step_order: 2,
         name: "Basic Configuration",
-        description: "Configure essential settings and integrations for SMB client.",
+        description:
+          "Configure essential settings and integrations for SMB client.",
         default_eta_days: 2,
         auto_alert: true,
         email_reminder: true,
@@ -450,7 +455,8 @@ export const mockTemplates = [
         template_id: 3,
         step_order: 3,
         name: "Go-Live Support",
-        description: "Activate service and provide basic support documentation.",
+        description:
+          "Activate service and provide basic support documentation.",
         default_eta_days: 1,
         auto_alert: false,
         email_reminder: true,

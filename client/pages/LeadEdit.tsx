@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useLead, useUpdateLead, useTemplates, useTemplate } from "@/hooks/useApi";
+import {
+  useLead,
+  useUpdateLead,
+  useTemplates,
+  useTemplate,
+} from "@/hooks/useApi";
 import { useAuth } from "@/lib/auth-context";
 import TemplatePreviewModal from "@/components/TemplatePreviewModal";
 import { Button } from "@/components/ui/button";
@@ -168,7 +173,10 @@ export default function LeadEdit() {
   const [showTemplatePreview, setShowTemplatePreview] = useState(false);
 
   // Get selected template data
-  const selectedTemplateId = selectedTemplate && selectedTemplate !== "manual" ? parseInt(selectedTemplate) : null;
+  const selectedTemplateId =
+    selectedTemplate && selectedTemplate !== "manual"
+      ? parseInt(selectedTemplate)
+      : null;
   const { data: templateData } = useTemplate(selectedTemplateId || 0);
 
   // Check if user has edit permissions
@@ -703,9 +711,14 @@ export default function LeadEdit() {
                         <SelectValue placeholder="Select a template or use manual" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="manual">Manual (Create from scratch)</SelectItem>
+                        <SelectItem value="manual">
+                          Manual (Create from scratch)
+                        </SelectItem>
                         {templates.map((template: any) => (
-                          <SelectItem key={template.id} value={template.id.toString()}>
+                          <SelectItem
+                            key={template.id}
+                            value={template.id.toString()}
+                          >
                             {template.name}
                           </SelectItem>
                         ))}
@@ -854,36 +867,53 @@ export default function LeadEdit() {
                 <div>
                   <CardTitle>Commercials</CardTitle>
                   <CardDescription>
-                    Select the commercial products and services relevant to this lead
+                    Select the commercial products and services relevant to this
+                    lead
                   </CardDescription>
                 </div>
-                {leadData.commercial_pricing && leadData.commercial_pricing.length > 0 && (
-                  <div className="bg-gray-50 rounded-lg p-3 border">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-gray-600">Total Value:</span>
-                      <div className="flex space-x-3">
-                        {Object.entries(
-                          leadData.commercial_pricing.reduce((acc: Record<string, { total: number; count: number }>, pricing) => {
-                            const key = `${pricing.currency}_${pricing.unit}`;
-                            if (!acc[key]) {
-                              acc[key] = { total: 0, count: 0 };
-                            }
-                            acc[key].total += pricing.value || 0;
-                            acc[key].count += 1;
-                            return acc;
-                          }, {})
-                        ).map(([key, data]) => {
-                          const [currency, unit] = key.split('_');
-                          return (
-                            <span key={key} className="text-sm font-semibold text-gray-900">
-                              {data.total.toLocaleString()} {currency} ({unit})
-                            </span>
-                          );
-                        })}
+                {leadData.commercial_pricing &&
+                  leadData.commercial_pricing.length > 0 && (
+                    <div className="bg-gray-50 rounded-lg p-3 border">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-600">
+                          Total Value:
+                        </span>
+                        <div className="flex space-x-3">
+                          {Object.entries(
+                            leadData.commercial_pricing.reduce(
+                              (
+                                acc: Record<
+                                  string,
+                                  { total: number; count: number }
+                                >,
+                                pricing,
+                              ) => {
+                                const key = `${pricing.currency}_${pricing.unit}`;
+                                if (!acc[key]) {
+                                  acc[key] = { total: 0, count: 0 };
+                                }
+                                acc[key].total += pricing.value || 0;
+                                acc[key].count += 1;
+                                return acc;
+                              },
+                              {},
+                            ),
+                          ).map(([key, data]) => {
+                            const [currency, unit] = key.split("_");
+                            return (
+                              <span
+                                key={key}
+                                className="text-sm font-semibold text-gray-900"
+                              >
+                                {data.total.toLocaleString()} {currency} ({unit}
+                                )
+                              </span>
+                            );
+                          })}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
+                  )}
               </div>
             </CardHeader>
             <CardContent className="space-y-6">

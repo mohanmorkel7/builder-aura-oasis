@@ -16,12 +16,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Plus,
-  ArrowLeft,
-  Trash2,
-  Save,
-} from "lucide-react";
+import { Plus, ArrowLeft, Trash2, Save } from "lucide-react";
 
 interface TemplateStep {
   id: string;
@@ -212,7 +207,9 @@ export default function TemplateCreator() {
                     </Button>
                     <Button
                       onClick={handleAddStep}
-                      disabled={!newStep.name.trim() || !newStep.description.trim()}
+                      disabled={
+                        !newStep.name.trim() || !newStep.description.trim()
+                      }
                     >
                       Add Step
                     </Button>
@@ -246,7 +243,9 @@ export default function TemplateCreator() {
                           <div className="flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-800 rounded-full font-semibold text-sm">
                             {index + 1}
                           </div>
-                          <h3 className="font-medium text-gray-900">{step.name}</h3>
+                          <h3 className="font-medium text-gray-900">
+                            {step.name}
+                          </h3>
                         </div>
                         <p className="text-sm text-gray-600 ml-11">
                           {step.description}

@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useLead, useLeadSteps, useCreateLeadStep, useReorderLeadSteps } from "@/hooks/useApi";
+import {
+  useLead,
+  useLeadSteps,
+  useCreateLeadStep,
+  useReorderLeadSteps,
+} from "@/hooks/useApi";
 import { useAuth } from "@/lib/auth-context";
 import { DraggableStepsList } from "@/components/DraggableStepsList";
 import { Button } from "@/components/ui/button";
@@ -167,12 +172,12 @@ export default function LeadDetails() {
     try {
       const stepOrders = reorderedSteps.map((step, index) => ({
         id: step.id,
-        order: index + 1
+        order: index + 1,
       }));
 
       await reorderStepsMutation.mutateAsync({
         leadId,
-        stepOrders
+        stepOrders,
       });
     } catch (error) {
       console.error("Failed to reorder steps:", error);
@@ -531,7 +536,9 @@ export default function LeadDetails() {
                       </Button>
                       <Button
                         onClick={handleAddStep}
-                        disabled={!newStep.name.trim() || !newStep.description.trim()}
+                        disabled={
+                          !newStep.name.trim() || !newStep.description.trim()
+                        }
                       >
                         Add Step
                       </Button>

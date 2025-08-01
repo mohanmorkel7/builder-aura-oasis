@@ -52,7 +52,8 @@ export default function TemplatePreviewModal({
             {template.name}
           </DialogTitle>
           <DialogDescription>
-            {template.description || "Template preview with all steps and details"}
+            {template.description ||
+              "Template preview with all steps and details"}
           </DialogDescription>
         </DialogHeader>
 
@@ -61,7 +62,9 @@ export default function TemplatePreviewModal({
           <div className="flex justify-center">
             <Card className="text-center w-48">
               <CardContent className="p-6">
-                <div className="text-3xl font-bold text-blue-600 mb-2">{totalSteps}</div>
+                <div className="text-3xl font-bold text-blue-600 mb-2">
+                  {totalSteps}
+                </div>
                 <div className="text-sm text-gray-600">Total Steps</div>
               </CardContent>
             </Card>
@@ -71,7 +74,10 @@ export default function TemplatePreviewModal({
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <CheckCircle key="title-icon" className="w-5 h-5 text-green-600" />
+                <CheckCircle
+                  key="title-icon"
+                  className="w-5 h-5 text-green-600"
+                />
                 <span key="title-text">Template Steps</span>
               </CardTitle>
             </CardHeader>
@@ -79,18 +85,37 @@ export default function TemplatePreviewModal({
               {template.steps && template.steps.length > 0 ? (
                 <div className="space-y-4">
                   {template.steps
-                    .sort((a, b) => (a.order_position || a.step_order || 0) - (b.order_position || b.step_order || 0))
+                    .sort(
+                      (a, b) =>
+                        (a.order_position || a.step_order || 0) -
+                        (b.order_position || b.step_order || 0),
+                    )
                     .map((step, index) => (
-                      <div key={step.id} className="border rounded-lg p-4 space-y-3">
+                      <div
+                        key={step.id}
+                        className="border rounded-lg p-4 space-y-3"
+                      >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <div className="flex items-center space-x-3 mb-2">
-                              <div key={`number-${step.id}`} className="flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-800 rounded-full font-semibold text-sm">
+                              <div
+                                key={`number-${step.id}`}
+                                className="flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-800 rounded-full font-semibold text-sm"
+                              >
                                 {index + 1}
                               </div>
-                              <h3 key={`title-${step.id}`} className="font-medium text-gray-900">{step.name}</h3>
+                              <h3
+                                key={`title-${step.id}`}
+                                className="font-medium text-gray-900"
+                              >
+                                {step.name}
+                              </h3>
                               {step.is_required && (
-                                <Badge key={`badge-${step.id}`} variant="secondary" className="bg-red-100 text-red-700">
+                                <Badge
+                                  key={`badge-${step.id}`}
+                                  variant="secondary"
+                                  className="bg-red-100 text-red-700"
+                                >
                                   Required
                                 </Badge>
                               )}
@@ -105,7 +130,10 @@ export default function TemplatePreviewModal({
                 </div>
               ) : (
                 <div className="text-center py-8 text-gray-500">
-                  <CheckCircle key="no-steps-icon" className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                  <CheckCircle
+                    key="no-steps-icon"
+                    className="w-12 h-12 mx-auto mb-4 text-gray-300"
+                  />
                   <p key="no-steps-text">No steps defined in this template</p>
                 </div>
               )}
@@ -118,15 +146,26 @@ export default function TemplatePreviewModal({
               <CardContent className="p-4">
                 <div className="flex items-center justify-between text-sm text-gray-600">
                   {template.created_by && (
-                    <div key="created-by" className="flex items-center space-x-1">
+                    <div
+                      key="created-by"
+                      className="flex items-center space-x-1"
+                    >
                       <User key="created-by-icon" className="w-4 h-4" />
-                      <span key="created-by-text">Created by: {template.created_by}</span>
+                      <span key="created-by-text">
+                        Created by: {template.created_by}
+                      </span>
                     </div>
                   )}
                   {template.created_at && (
-                    <div key="created-at" className="flex items-center space-x-1">
+                    <div
+                      key="created-at"
+                      className="flex items-center space-x-1"
+                    >
                       <Calendar key="created-at-icon" className="w-4 h-4" />
-                      <span key="created-at-text">Created: {new Date(template.created_at).toLocaleDateString()}</span>
+                      <span key="created-at-text">
+                        Created:{" "}
+                        {new Date(template.created_at).toLocaleDateString()}
+                      </span>
                     </div>
                   )}
                 </div>

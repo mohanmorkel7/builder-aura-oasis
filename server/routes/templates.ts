@@ -51,7 +51,7 @@ router.get("/:id", async (req: Request, res: Response) => {
     } else {
       // Fallback to mock data
       const templates = await MockDataService.getAllTemplates();
-      template = templates.find(t => t.id === id) || null;
+      template = templates.find((t) => t.id === id) || null;
     }
 
     if (!template) {
@@ -64,7 +64,7 @@ router.get("/:id", async (req: Request, res: Response) => {
     // Fallback to mock data
     try {
       const templates = await MockDataService.getAllTemplates();
-      const template = templates.find(t => t.id === id) || null;
+      const template = templates.find((t) => t.id === id) || null;
       if (template) {
         res.json(template);
       } else {
@@ -80,7 +80,10 @@ router.get("/:id", async (req: Request, res: Response) => {
 router.post("/", async (req: Request, res: Response) => {
   try {
     const templateData: CreateTemplateData = req.body;
-    console.log("Creating template with data:", JSON.stringify(templateData, null, 2));
+    console.log(
+      "Creating template with data:",
+      JSON.stringify(templateData, null, 2),
+    );
 
     // Validate required fields
     if (!templateData.name || !templateData.created_by) {
@@ -135,9 +138,11 @@ router.post("/", async (req: Request, res: Response) => {
 
       console.log("Template created successfully:", template);
       res.status(201).json(template);
-
     } catch (dbError) {
-      console.error("Error with primary creation method, trying fallback:", dbError);
+      console.error(
+        "Error with primary creation method, trying fallback:",
+        dbError,
+      );
 
       // Try fallback to mock data if database creation failed
       try {
@@ -149,7 +154,7 @@ router.post("/", async (req: Request, res: Response) => {
         console.error("Fallback also failed:", fallbackError);
         res.status(500).json({
           error: "Failed to create template",
-          details: `Primary: ${dbError.message}, Fallback: ${fallbackError.message}`
+          details: `Primary: ${dbError.message}, Fallback: ${fallbackError.message}`,
         });
       }
     }
@@ -158,7 +163,7 @@ router.post("/", async (req: Request, res: Response) => {
     console.error("Error stack:", error.stack);
     res.status(500).json({
       error: "Failed to create template",
-      details: error.message
+      details: error.message,
     });
   }
 });
