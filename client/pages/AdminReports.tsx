@@ -584,17 +584,17 @@ export default function AdminReports() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="deployments" className="space-y-6">
+        <TabsContent value="followups" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Deployment Success Rate</CardTitle>
+              <CardTitle>Follow-up Status Overview</CardTitle>
               <CardDescription>
-                Weekly deployment performance trends
+                Current follow-up status distribution
               </CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={400}>
-                <BarChart data={deploymentTrends}>
+                <BarChart data={followUpTrends}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="week" />
                   <YAxis />
