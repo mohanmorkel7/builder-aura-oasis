@@ -138,6 +138,7 @@ const clientTypes = [
 const categories = [
   { value: "aggregator", label: "Aggregator" },
   { value: "banks", label: "Banks" },
+  { value: "partner", label: "Partner" },
 ];
 
 const countries = [
