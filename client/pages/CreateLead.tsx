@@ -1127,6 +1127,13 @@ export default function CreateLead() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Template Preview Modal */}
+      <TemplatePreviewModal
+        isOpen={showTemplatePreview}
+        onClose={() => setShowTemplatePreview(false)}
+        template={templateData}
+      />
     </div>
   );
 }
