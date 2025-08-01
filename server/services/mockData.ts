@@ -631,9 +631,6 @@ export class MockDataService {
 
   // User operations
   static async findUserByEmail(email: string) {
-    const availableEmails = this.users.map(u => u.email);
-    console.log("MockData: Available emails:", availableEmails);
-    console.log("MockData: Looking for email:", email);
     return this.users.find((user) => user.email === email) || null;
   }
 
