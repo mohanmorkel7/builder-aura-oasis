@@ -119,16 +119,26 @@ router.post("/", async (req: Request, res: Response) => {
     console.log("Validation passed, creating template...");
 
     let template;
-    if (await isDatabaseAvailable()) {
+    const dbAvailable = await isDatabaseAvailable();
+    console.log("Database available:", dbAvailable);
+
+    if (dbAvailable) {
+      console.log("Using database to create template");
       template = await TemplateRepository.create(templateData);
     } else {
-      // Fallback to mock data (for development without database)
+      console.log("Using mock data to create template");
       template = await MockDataService.createTemplate(templateData);
     }
+
+    console.log("Template created successfully:", template);
     res.status(201).json(template);
   } catch (error) {
     console.error("Error creating template:", error);
-    res.status(500).json({ error: "Failed to create template" });
+    console.error("Error stack:", error.stack);
+    res.status(500).json({
+      error: "Failed to create template",
+      details: error.message
+    });
   }
 });
 
