@@ -670,7 +670,7 @@ export function EnhancedStepItem({
                       <Button
                         size="sm"
                         onClick={handleSendMessage}
-                        disabled={!newMessage.trim()}
+                        disabled={!newMessage.trim() && stagedAttachments.length === 0}
                         className="bg-blue-500 hover:bg-blue-600 text-white px-4"
                       >
                         <Send className="w-4 h-4 mr-2" />
