@@ -303,7 +303,6 @@ router.put("/:id", async (req: Request, res: Response) => {
     }
 
     let leadData: UpdateLeadData = req.body;
-    console.log(`Updating lead ${id} with data:`, JSON.stringify(leadData, null, 2));
 
     // Sanitize date fields - convert empty strings to null for PostgreSQL compatibility
     const dateFields = ['start_date', 'targeted_end_date', 'expected_close_date'];
@@ -311,10 +310,6 @@ router.put("/:id", async (req: Request, res: Response) => {
       if (leadData[field] === "") {
         leadData[field] = null;
       }
-    }
-
-    if (Object.keys(leadData).some(key => dateFields.includes(key) && leadData[key] === null)) {
-      console.log("Sanitized empty date fields to null for PostgreSQL compatibility");
     }
 
     // Validate status if provided
