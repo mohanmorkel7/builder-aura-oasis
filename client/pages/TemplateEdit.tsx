@@ -71,6 +71,18 @@ export default function TemplateEdit() {
     description: "",
   });
   const [saving, setSaving] = useState(false);
+  const [activeId, setActiveId] = useState<string | null>(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
 
   // Load template data when it becomes available
   useEffect(() => {
