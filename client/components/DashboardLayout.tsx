@@ -100,10 +100,10 @@ const getNotificationsFromFollowUps = async (
   userName: string,
 ): Promise<Notification[]> => {
   try {
-    const response = await fetch(
-      `/api/follow-ups?userId=${userId}&userRole=all`,
-    );
-    const followUps = await response.json();
+    const followUps = await apiClient.getAllFollowUps({
+      userId,
+      userRole: "all",
+    });
 
     const notifications: Notification[] = [];
     const currentDate = new Date();
