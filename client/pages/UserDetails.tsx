@@ -102,6 +102,34 @@ export default function UserDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: user, isLoading, error } = useUser(parseInt(id || "0"));
+  const [resetError, setResetError] = React.useState<string | null>(null);
+
+  const resetPassword = async () => {
+    if (!id) return;
+
+    setResetError(null);
+    try {
+      const response = await fetch(`/api/users/${id}/reset-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to reset password');
+      }
+
+      alert('Password reset email sent successfully!');
+    } catch (error) {
+      console.error("Failed to reset password:", error);
+      setResetError(
+        error instanceof Error
+          ? error.message
+          : "Failed to reset password. Please try again."
+      );
+    }
+  };
 
   const handleBack = () => {
     navigate("/admin/users");
