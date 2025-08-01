@@ -154,10 +154,12 @@ export default function AdminPanel() {
                     variant={
                       template.type === "enterprise" ? "default" : "secondary"
                     }
-                    className={getTypeColor(template.type)}
+                    className={getTypeColor(template.type || "standard")}
                   >
-                    {template.type.charAt(0).toUpperCase() +
-                      template.type.slice(1)}
+                    {template.type
+                      ? template.type.charAt(0).toUpperCase() +
+                        template.type.slice(1)
+                      : "Standard"}
                   </Badge>
                 </div>
                 <div className="flex items-center space-x-2">
