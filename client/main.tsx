@@ -3,6 +3,15 @@ import * as ReactDOM from "react-dom/client";
 import App from "./App";
 import "./global.css";
 
+// Ensure Error objects never display as [object Object]
+if (!Error.prototype.toString.name?.includes('custom')) {
+  const originalToString = Error.prototype.toString;
+  Error.prototype.toString = function() {
+    return this.message || this.name || 'Unknown error';
+  };
+  (Error.prototype.toString as any).name = 'customToString';
+}
+
 // Comprehensive warning suppression for defaultProps from third-party libraries
 const originalWarn = console.warn;
 const originalError = console.error;
