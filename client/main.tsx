@@ -30,7 +30,12 @@ console.warn = (...args) => {
 };
 
 console.error = (...args) => {
-  const fullMessage = args.map((arg) => String(arg)).join(" ");
+  // Create a string representation for filtering, but preserve original args for logging
+  const fullMessage = args.map((arg) =>
+    typeof arg === 'string' ? arg :
+    typeof arg === 'object' && arg !== null ? JSON.stringify(arg) :
+    String(arg)
+  ).join(" ");
 
   // Also suppress from console.error in case React uses that
   if (
@@ -41,6 +46,8 @@ console.error = (...args) => {
   ) {
     return;
   }
+
+  // Pass original args to preserve object details in console
   originalError.apply(console, args);
 };
 
