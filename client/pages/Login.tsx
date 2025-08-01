@@ -121,25 +121,50 @@ export default function Login() {
               </Button>
             </div>
 
-            <div className="text-sm text-gray-600 bg-blue-50 p-3 rounded-md">
-              <p className="font-medium mb-2">Demo Credentials:</p>
-              <p>Admin: admin@banani.com / password</p>
-              <p>Sales: sales@banani.com / password</p>
-              <p>Product: product@banani.com / password</p>
+            <div className="text-sm text-gray-600 bg-blue-50 p-3 rounded-md border border-blue-200">
+              <p className="font-semibold mb-2 text-blue-800">Demo Credentials (Click to auto-fill):</p>
 
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="mt-2 w-full"
-                onClick={() => {
-                  setEmail("admin@banani.com");
-                  setPassword("password");
-                }}
-                disabled={isLoading}
-              >
-                Use Admin Demo Credentials
-              </Button>
+              <div className="space-y-1 mb-3">
+                <button
+                  type="button"
+                  className="w-full text-left p-2 rounded bg-white hover:bg-blue-50 border border-blue-200 transition-colors"
+                  onClick={() => {
+                    setEmail("admin@banani.com");
+                    setPassword("password");
+                    setError("");
+                  }}
+                >
+                  <span className="font-medium text-blue-700">Admin:</span> admin@banani.com / password
+                </button>
+
+                <button
+                  type="button"
+                  className="w-full text-left p-2 rounded bg-white hover:bg-blue-50 border border-blue-200 transition-colors"
+                  onClick={() => {
+                    setEmail("sales@banani.com");
+                    setPassword("password");
+                    setError("");
+                  }}
+                >
+                  <span className="font-medium text-blue-700">Sales:</span> sales@banani.com / password
+                </button>
+
+                <button
+                  type="button"
+                  className="w-full text-left p-2 rounded bg-white hover:bg-blue-50 border border-blue-200 transition-colors"
+                  onClick={() => {
+                    setEmail("product@banani.com");
+                    setPassword("password");
+                    setError("");
+                  }}
+                >
+                  <span className="font-medium text-blue-700">Product:</span> product@banani.com / password
+                </button>
+              </div>
+
+              <p className="text-xs text-blue-600 bg-blue-100 p-2 rounded">
+                💡 <strong>Tip:</strong> Click any credential above to auto-fill the form, then click "Sign in"
+              </p>
             </div>
           </CardContent>
         </Card>
