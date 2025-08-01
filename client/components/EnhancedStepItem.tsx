@@ -374,7 +374,10 @@ export function EnhancedStepItem({
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {/* Chat Messages */}
-                  <div className="space-y-3 max-h-96 overflow-y-auto">
+                  <div
+                    ref={messagesContainerRef}
+                    className="space-y-3 max-h-96 overflow-y-auto"
+                  >
                     {chatLoading && (
                       <div className="text-center py-4 text-gray-500">
                         Loading messages...
