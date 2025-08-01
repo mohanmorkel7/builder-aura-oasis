@@ -32,7 +32,9 @@ import {
   Building,
   Mail,
   Phone,
+  Sparkles,
 } from "lucide-react";
+import ProposalPreview from "@/components/ProposalPreview";
 
 const proposalTypes = [
   { value: "development", label: "Software Development" },
@@ -74,6 +76,7 @@ export default function ProposalNew() {
   });
 
   const [saving, setSaving] = useState(false);
+  const [useEnhancedBuilder, setUseEnhancedBuilder] = useState(false);
 
   const updateField = (field: string, value: any) => {
     setProposalData((prev) => ({
@@ -129,6 +132,53 @@ export default function ProposalNew() {
     proposalData.proposalType &&
     proposalData.estimatedValue;
 
+  if (useEnhancedBuilder) {
+    return (
+      <div className="p-6 max-w-7xl mx-auto space-y-6">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center space-x-4">
+            <Button variant="ghost" onClick={() => setUseEnhancedBuilder(false)}>
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Simple Form
+            </Button>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Enhanced Proposal Builder</h1>
+              <p className="text-gray-600">Professional proposal builder for {leadData?.client_name}</p>
+            </div>
+          </div>
+          <Button variant="outline" onClick={handleCancel}>
+            Cancel
+          </Button>
+        </div>
+        <ProposalPreview
+          initialData={{
+            title: proposalData.title || `${leadData?.project_title || "Custom Solution"} - Proposal`,
+            clientName: leadData?.client_name || "",
+            leadId: id || "",
+            value: proposalData.estimatedValue ? parseFloat(proposalData.estimatedValue) : 0,
+            validUntil: proposalData.validUntil,
+          }}
+          onSave={async (data) => {
+            setSaving(true);
+            try {
+              // Save the enhanced proposal data
+              await new Promise((resolve) => setTimeout(resolve, 1000));
+              navigate(`/leads/${id}`, {
+                state: {
+                  message: "Enhanced proposal created successfully and ready for review",
+                },
+              });
+            } catch (error) {
+              console.error("Failed to create proposal:", error);
+            } finally {
+              setSaving(false);
+            }
+          }}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">
       {/* Header */}
@@ -150,6 +200,14 @@ export default function ProposalNew() {
         <div className="flex items-center space-x-3">
           <Button variant="outline" onClick={handleCancel}>
             Cancel
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => setUseEnhancedBuilder(true)}
+            className="border-purple-600 text-purple-600 hover:bg-purple-50"
+          >
+            <Sparkles className="w-4 h-4 mr-2" />
+            Enhanced Builder
           </Button>
           <Button
             onClick={handleSave}
