@@ -58,6 +58,8 @@ export default function UserEdit() {
 
   const [hasChanges, setHasChanges] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [resetError, setResetError] = useState<string | null>(null);
 
   // Update state when user data is loaded
   React.useEffect(() => {
