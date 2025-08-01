@@ -403,7 +403,54 @@ export class LeadRepository {
     ];
 
     const result = await pool.query(query, values);
-    return result.rows[0];
+    const lead = result.rows[0];
+
+    // If a template was selected, auto-populate steps from the template
+    if (leadData.selected_template_id) {
+      await this.populateStepsFromTemplate(lead.id, leadData.selected_template_id);
+    }
+
+    return lead;
+  }
+
+  static async populateStepsFromTemplate(leadId: number, templateId: number): Promise<void> {
+    try {
+      // Get template steps
+      const templateStepsQuery = `
+        SELECT * FROM template_steps
+        WHERE template_id = $1
+        ORDER BY step_order ASC
+      `;
+      const templateStepsResult = await pool.query(templateStepsQuery, [templateId]);
+
+      if (templateStepsResult.rows.length === 0) {
+        return; // No steps in template
+      }
+
+      // Insert lead steps based on template steps
+      const insertPromises = templateStepsResult.rows.map((templateStep, index) => {
+        const insertStepQuery = `
+          INSERT INTO lead_steps (
+            lead_id, name, description, status, step_order, estimated_days
+          )
+          VALUES ($1, $2, $3, $4, $5, $6)
+        `;
+
+        return pool.query(insertStepQuery, [
+          leadId,
+          templateStep.name,
+          templateStep.description || null,
+          'pending',
+          templateStep.step_order || (index + 1),
+          templateStep.default_eta_days || 3
+        ]);
+      });
+
+      await Promise.all(insertPromises);
+    } catch (error) {
+      console.error('Error populating steps from template:', error);
+      // Don't throw error as lead creation should still succeed
+    }
   }
 
   static async update(
