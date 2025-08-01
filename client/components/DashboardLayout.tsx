@@ -100,10 +100,17 @@ const getNotificationsFromFollowUps = async (
   userName: string,
 ): Promise<Notification[]> => {
   try {
+    console.log("Fetching follow-ups for notifications, userId:", userId, "userName:", userName);
+
     const followUps = await apiClient.getAllFollowUps({
       userId,
       userRole: "all",
     });
+
+    if (!Array.isArray(followUps)) {
+      console.warn("Follow-ups response is not an array:", followUps);
+      return [];
+    }
 
     const notifications: Notification[] = [];
     const currentDate = new Date();
