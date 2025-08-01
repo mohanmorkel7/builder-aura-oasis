@@ -133,11 +133,11 @@ const mockTemplate = {
 export default function TemplateEdit() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { data: templates = [] } = useTemplates();
+  const { data: templateData, isLoading: templateLoading } = useTemplate(parseInt(id || "0"));
+  const updateTemplateMutation = useUpdateTemplate();
 
-  // Find template by ID or use mock data
-  const originalTemplate =
-    templates.find((t: any) => t.id === parseInt(id || "0")) || mockTemplate;
+  // Use loaded template data or mock data as fallback
+  const originalTemplate = templateData || mockTemplate;
 
   const [template, setTemplate] = useState({
     ...originalTemplate,
