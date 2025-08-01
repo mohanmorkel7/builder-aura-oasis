@@ -514,8 +514,82 @@ export default function UserEdit() {
                 />
               </div>
 
+              <div className="p-4 border rounded-lg space-y-4">
+                <h4 className="font-medium">Change Password</h4>
+                <p className="text-sm text-gray-600">
+                  Change the user's password by providing the current password
+                </p>
+
+                <div className="space-y-3">
+                  <div>
+                    <Label htmlFor="oldPassword">Current Password</Label>
+                    <Input
+                      id="oldPassword"
+                      type="password"
+                      value={changePasswordData.oldPassword}
+                      onChange={(e) =>
+                        setChangePasswordData(prev => ({
+                          ...prev,
+                          oldPassword: e.target.value
+                        }))
+                      }
+                      placeholder="Enter current password"
+                      className="mt-1"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="newPassword">New Password</Label>
+                    <Input
+                      id="newPassword"
+                      type="password"
+                      value={changePasswordData.newPassword}
+                      onChange={(e) =>
+                        setChangePasswordData(prev => ({
+                          ...prev,
+                          newPassword: e.target.value
+                        }))
+                      }
+                      placeholder="Enter new password"
+                      className="mt-1"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                    <Input
+                      id="confirmPassword"
+                      type="password"
+                      value={changePasswordData.confirmPassword}
+                      onChange={(e) =>
+                        setChangePasswordData(prev => ({
+                          ...prev,
+                          confirmPassword: e.target.value
+                        }))
+                      }
+                      placeholder="Confirm new password"
+                      className="mt-1"
+                    />
+                  </div>
+                </div>
+
+                {changePasswordError && (
+                  <Alert variant="destructive">
+                    <AlertDescription>{changePasswordError}</AlertDescription>
+                  </Alert>
+                )}
+
+                <Button
+                  onClick={changePassword}
+                  disabled={changePasswordLoading}
+                  className="w-full"
+                >
+                  {changePasswordLoading ? "Changing..." : "Change Password"}
+                </Button>
+              </div>
+
               <div className="p-4 border rounded-lg">
-                <h4 className="font-medium mb-2">Password Management</h4>
+                <h4 className="font-medium mb-2">Admin Reset Password</h4>
                 <p className="text-sm text-gray-600 mb-4">
                   Reset the user's password and send them new login instructions
                 </p>
