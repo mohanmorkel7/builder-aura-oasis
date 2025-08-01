@@ -578,7 +578,7 @@ export default function CreateLead() {
                         type="button"
                         variant="outline"
                         size="sm"
-                        onClick={() => {/* TODO: Show preview modal */}}
+                        onClick={() => setShowTemplatePreview(true)}
                       >
                         <Eye className="w-4 h-4" />
                       </Button>
