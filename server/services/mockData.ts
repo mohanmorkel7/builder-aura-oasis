@@ -1,18 +1,5 @@
 import bcrypt from "bcryptjs";
 
-// Generate correct bcrypt hash for 'password'
-(async () => {
-  try {
-    const correctHash = await bcrypt.hash("password", 10);
-    console.log("Correct bcrypt hash for 'password':", correctHash);
-
-    const testResult = await bcrypt.compare("password", correctHash);
-    console.log("New hash verification test:", testResult);
-  } catch (error) {
-    console.error("Bcrypt hash generation failed:", error);
-  }
-})();
-
 // Mock data that will be used when database is not available
 export const mockUsers = [
   {
