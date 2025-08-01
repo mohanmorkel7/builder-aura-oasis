@@ -57,7 +57,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     } catch (error: any) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      console.error("API login failed:", errorMessage);
+      console.log("API login failed:", errorMessage);
 
       // Only try demo authentication if this was a network error, not invalid credentials
       if (error.message && error.message.includes("Invalid credentials")) {
