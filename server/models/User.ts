@@ -62,10 +62,22 @@ export class UserRepository {
 
   static async findById(id: number): Promise<User | null> {
     const query = `
-      SELECT id, first_name, last_name, email, phone, role, department, 
-             manager_id, status, start_date, last_login, two_factor_enabled, 
+      SELECT id, first_name, last_name, email, phone, role, department,
+             manager_id, status, start_date, last_login, two_factor_enabled,
              notes, created_at, updated_at
-      FROM users 
+      FROM users
+      WHERE id = $1
+    `;
+    const result = await pool.query(query, [id]);
+    return result.rows[0] || null;
+  }
+
+  static async findByIdWithPassword(id: number): Promise<(User & { password_hash: string }) | null> {
+    const query = `
+      SELECT id, first_name, last_name, email, phone, role, department,
+             manager_id, status, start_date, last_login, two_factor_enabled,
+             notes, created_at, updated_at, password_hash
+      FROM users
       WHERE id = $1
     `;
     const result = await pool.query(query, [id]);
