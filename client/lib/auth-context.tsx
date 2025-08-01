@@ -152,9 +152,22 @@ export function useAuth() {
   const context = React.useContext(AuthContext);
   if (context === undefined) {
     console.error("useAuth called outside of AuthProvider. Component tree:", {
-      location: window.location.pathname,
+      location: window.location?.pathname || "unknown",
       timestamp: new Date().toISOString(),
     });
+
+    // During development/HMR, provide a fallback instead of throwing
+    if (process.env.NODE_ENV === 'development') {
+      console.warn("Providing fallback auth context for development");
+      return {
+        user: null,
+        login: async () => false,
+        loginWithSSO: async () => false,
+        logout: () => {},
+        isLoading: false,
+      };
+    }
+
     throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
