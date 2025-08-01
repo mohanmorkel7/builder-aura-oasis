@@ -72,7 +72,9 @@ export class UserRepository {
     return result.rows[0] || null;
   }
 
-  static async findByIdWithPassword(id: number): Promise<(User & { password_hash: string }) | null> {
+  static async findByIdWithPassword(
+    id: number,
+  ): Promise<(User & { password_hash: string }) | null> {
     const query = `
       SELECT id, first_name, last_name, email, phone, role, department,
              manager_id, status, start_date, last_login, two_factor_enabled,
