@@ -720,32 +720,29 @@ export default function CreateLead() {
                   </CardDescription>
                 </div>
                 {leadData.commercial_pricing && leadData.commercial_pricing.length > 0 && (
-                  <div className="text-right">
-                    <div className="text-sm text-gray-600 mb-1">Total Value</div>
-                    <div className="flex space-x-4">
-                      {Object.entries(
-                        leadData.commercial_pricing.reduce((acc: Record<string, { total: number; count: number }>, pricing) => {
-                          const key = `${pricing.currency}_${pricing.unit}`;
-                          if (!acc[key]) {
-                            acc[key] = { total: 0, count: 0 };
-                          }
-                          acc[key].total += pricing.value || 0;
-                          acc[key].count += 1;
-                          return acc;
-                        }, {})
-                      ).map(([key, data]) => {
-                        const [currency, unit] = key.split('_');
-                        return (
-                          <div key={key} className="text-right">
-                            <div className="text-lg font-bold text-gray-900">
-                              {data.total.toLocaleString()}
-                            </div>
-                            <div className="text-xs text-gray-500">
-                              {currency} ({unit}) • {data.count} item{data.count !== 1 ? 's' : ''}
-                            </div>
-                          </div>
-                        );
-                      })}
+                  <div className="bg-gray-50 rounded-lg p-3 border">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-600">Total Value:</span>
+                      <div className="flex space-x-3">
+                        {Object.entries(
+                          leadData.commercial_pricing.reduce((acc: Record<string, { total: number; count: number }>, pricing) => {
+                            const key = `${pricing.currency}_${pricing.unit}`;
+                            if (!acc[key]) {
+                              acc[key] = { total: 0, count: 0 };
+                            }
+                            acc[key].total += pricing.value || 0;
+                            acc[key].count += 1;
+                            return acc;
+                          }, {})
+                        ).map(([key, data]) => {
+                          const [currency, unit] = key.split('_');
+                          return (
+                            <span key={key} className="text-sm font-semibold text-gray-900">
+                              {data.total.toLocaleString()} {currency} ({unit})
+                            </span>
+                          );
+                        })}
+                      </div>
                     </div>
                   </div>
                 )}
