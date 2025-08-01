@@ -29,24 +29,7 @@ export default function Overview() {
   const { data: users = [] } = useUsers();
   const { data: leads = [] } = useLeads();
   const { data: leadStats } = useLeadStats();
-
-  // State for follow-ups data
-  const [followUps, setFollowUps] = React.useState([]);
-
-  // Fetch follow-ups data
-  React.useEffect(() => {
-    const fetchFollowUps = async () => {
-      try {
-        const response = await fetch('/api/follow-ups');
-        const data = await response.json();
-        setFollowUps(data);
-      } catch (error) {
-        console.error('Failed to fetch follow-ups:', error);
-      }
-    };
-
-    fetchFollowUps();
-  }, []);
+  const { data: followUps = [] } = useFollowUps();
 
   const handleQuickAction = (action: string) => {
     switch (action) {
