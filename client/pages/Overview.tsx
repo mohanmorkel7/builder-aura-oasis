@@ -211,11 +211,11 @@ export default function Overview() {
         ];
       case "sales":
         return [
-          {
-            action: "Client follow-up completed",
-            detail: "Acme Corp - Phase 2 discussion",
-            time: "30 minutes ago",
-          },
+          ...recentLeads.map((lead: any) => ({
+            action: "Lead activity",
+            detail: `${lead.client_name} - ${lead.status}`,
+            time: formatToIST(lead.updated_at || lead.created_at),
+          })),
           {
             action: "New client added",
             detail: "Global Solutions Inc.",
