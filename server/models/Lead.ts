@@ -397,8 +397,9 @@ export class LeadRepository {
       leadData.expected_close_date || null, // $24
       leadData.probability || 50, // $25
       leadData.notes || null, // $26
-      leadData.created_by, // $27
-      leadData.assigned_to || null, // $28
+      leadData.selected_template_id || null, // $27
+      leadData.created_by, // $28
+      leadData.assigned_to || null, // $29
     ];
 
     const result = await pool.query(query, values);
