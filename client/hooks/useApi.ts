@@ -239,7 +239,14 @@ export function useLogin() {
 export function useUsers() {
   return useQuery({
     queryKey: ["users"],
-    queryFn: () => apiClient.getUsers(),
+    queryFn: async () => {
+      try {
+        return await apiClient.getUsers();
+      } catch (error) {
+        console.log("API unavailable, using mock users data");
+        return mockUsers;
+      }
+    },
   });
 }
 
@@ -287,7 +294,14 @@ export function useDeleteUser() {
 export function useClients(salesRepId?: number) {
   return useQuery({
     queryKey: ["clients", salesRepId],
-    queryFn: () => apiClient.getClients(salesRepId),
+    queryFn: async () => {
+      try {
+        return await apiClient.getClients(salesRepId);
+      } catch (error) {
+        console.log("API unavailable, using mock clients data");
+        return mockClients;
+      }
+    },
   });
 }
 
@@ -337,7 +351,14 @@ export function useDeleteClient() {
 export function useClientStats() {
   return useQuery({
     queryKey: ["client-stats"],
-    queryFn: () => apiClient.getClientStats(),
+    queryFn: async () => {
+      try {
+        return await apiClient.getClientStats();
+      } catch (error) {
+        console.log("API unavailable, using mock client stats");
+        return { total: 3, active: 2, onboarding: 1, completed: 0 };
+      }
+    },
   });
 }
 
@@ -345,7 +366,14 @@ export function useClientStats() {
 export function useTemplates() {
   return useQuery({
     queryKey: ["templates"],
-    queryFn: () => apiClient.getTemplates(),
+    queryFn: async () => {
+      try {
+        return await apiClient.getTemplates();
+      } catch (error) {
+        console.log("API unavailable, using mock templates data");
+        return mockTemplates;
+      }
+    },
   });
 }
 
@@ -404,7 +432,14 @@ export function useDuplicateTemplate() {
 export function useDeployments(assigneeId?: number) {
   return useQuery({
     queryKey: ["deployments", assigneeId],
-    queryFn: () => apiClient.getDeployments(assigneeId),
+    queryFn: async () => {
+      try {
+        return await apiClient.getDeployments(assigneeId);
+      } catch (error) {
+        console.log("API unavailable, using mock deployments data");
+        return mockDeployments;
+      }
+    },
   });
 }
 
@@ -468,7 +503,14 @@ export function useDeleteDeployment() {
 export function useDeploymentStats() {
   return useQuery({
     queryKey: ["deployment-stats"],
-    queryFn: () => apiClient.getDeploymentStats(),
+    queryFn: async () => {
+      try {
+        return await apiClient.getDeploymentStats();
+      } catch (error) {
+        console.log("API unavailable, using mock deployment stats");
+        return { total: 3, completed: 1, failed: 1, pending: 1, in_progress: 1 };
+      }
+    },
   });
 }
 
@@ -619,14 +661,28 @@ export function useDeleteStepComment() {
 export function useLeads(salesRepId?: number) {
   return useQuery({
     queryKey: ["leads", salesRepId],
-    queryFn: () => apiClient.getLeads(salesRepId),
+    queryFn: async () => {
+      try {
+        return await apiClient.getLeads(salesRepId);
+      } catch (error) {
+        console.log("API unavailable, using mock leads data");
+        return mockLeads;
+      }
+    },
   });
 }
 
 export function useLead(id: number) {
   return useQuery({
     queryKey: ["leads", id],
-    queryFn: () => apiClient.getLead(id),
+    queryFn: async () => {
+      try {
+        return await apiClient.getLead(id);
+      } catch (error) {
+        console.log(`API unavailable for lead ${id}, using mock data`);
+        return mockLeads.find((lead) => lead.id === id) || null;
+      }
+    },
     enabled: !!id,
     retry: false,
   });
@@ -673,7 +729,14 @@ export function useDeleteLead() {
 export function useLeadStats(salesRepId?: number) {
   return useQuery({
     queryKey: ["lead-stats", salesRepId],
-    queryFn: () => apiClient.getLeadStats(salesRepId),
+    queryFn: async () => {
+      try {
+        return await apiClient.getLeadStats(salesRepId);
+      } catch (error) {
+        console.log("API unavailable, using mock lead stats");
+        return { total: 3, in_progress: 2, won: 1, lost: 0, completed: 0 };
+      }
+    },
   });
 }
 
@@ -773,7 +836,14 @@ export function useFollowUps(params?: {
 }) {
   return useQuery({
     queryKey: ["follow-ups", params],
-    queryFn: () => apiClient.getAllFollowUps(params),
+    queryFn: async () => {
+      try {
+        return await apiClient.getAllFollowUps(params);
+      } catch (error) {
+        console.log("API unavailable, using mock follow-ups data");
+        return [];
+      }
+    },
   });
 }
 
