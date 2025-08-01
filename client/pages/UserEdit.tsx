@@ -89,14 +89,22 @@ export default function UserEdit() {
 
   const handleSave = async () => {
     setSaving(true);
+    setSaveError(null);
+
     try {
-      // Here you would make an API call to update the user
-      console.log("Saving user:", user);
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
+      await updateUserMutation.mutateAsync({
+        id: userId,
+        userData: user,
+      });
       setHasChanges(false);
       navigate(`/admin/users/${id}`);
     } catch (error) {
       console.error("Failed to save user:", error);
+      setSaveError(
+        error instanceof Error
+          ? error.message
+          : "Failed to save user. Please try again."
+      );
     } finally {
       setSaving(false);
     }
