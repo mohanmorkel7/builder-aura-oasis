@@ -462,14 +462,14 @@ export default function AdminReports() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Client Status Distribution</CardTitle>
+                <CardTitle>Lead Status Distribution</CardTitle>
                 <CardDescription>
-                  Current client status breakdown
+                  Current lead status breakdown
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {clientStatusData.map((item) => (
+                  {leadStatusData.map((item) => (
                     <div
                       key={item.status}
                       className="flex items-center justify-between"
