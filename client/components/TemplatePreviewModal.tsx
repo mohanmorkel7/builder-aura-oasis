@@ -110,12 +110,12 @@ export default function TemplatePreviewModal({
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <div className="flex items-center space-x-3 mb-2">
-                              <div className="flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-800 rounded-full font-semibold text-sm">
+                              <div key={`number-${step.id}`} className="flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-800 rounded-full font-semibold text-sm">
                                 {index + 1}
                               </div>
-                              <h3 className="font-medium text-gray-900">{step.name}</h3>
+                              <h3 key={`title-${step.id}`} className="font-medium text-gray-900">{step.name}</h3>
                               {step.is_required && (
-                                <Badge variant="secondary" className="bg-red-100 text-red-700">
+                                <Badge key={`badge-${step.id}`} variant="secondary" className="bg-red-100 text-red-700">
                                   Required
                                 </Badge>
                               )}
