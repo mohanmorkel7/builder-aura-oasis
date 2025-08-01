@@ -458,7 +458,7 @@ export default function LeadDetails() {
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
-                      <DialogTitle>Add New Sales Step</DialogTitle>
+                      <DialogTitle>Add New Step</DialogTitle>
                       <DialogDescription>
                         Create a custom step for this lead's sales process
                       </DialogDescription>
