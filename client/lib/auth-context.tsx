@@ -59,12 +59,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const errorMessage = error instanceof Error ? error.message : String(error);
       console.log("API login failed:", errorMessage);
 
-      // Only try demo authentication if this was a network error, not invalid credentials
+      // If API is working and rejects credentials, don't try demo fallback - show error
       if (error.message && error.message.includes("Invalid credentials")) {
-        console.log("API rejected credentials, trying demo authentication fallback...");
-      } else {
-        console.log("API unavailable (network error), trying demo authentication...");
+        console.log("API rejected credentials - showing error to user");
+        setIsLoading(false);
+        return false;
       }
+
+      // Only try demo authentication if this was a network error (API unavailable)
+      console.log("API unavailable (network error), trying demo authentication...");
 
       if (password === "password") {
         let userData: User | null = null;
@@ -88,7 +91,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       }
 
-      // If both API and demo auth fail, return false to show error
+      // If demo auth also fails, return false to show error
       console.log(
         "Login failed. Use demo credentials: admin@banani.com, sales@banani.com, or product@banani.com with password: password",
       );
