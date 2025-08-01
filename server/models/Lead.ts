@@ -642,11 +642,21 @@ export class LeadStepRepository {
     try {
       await client.query("BEGIN");
 
+      // Update lead step orders
       for (const { id, order } of stepOrders) {
         await client.query(
           "UPDATE lead_steps SET step_order = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 AND lead_id = $3",
           [order, id, leadId],
         );
+      }
+
+      // Check if this lead was created from a template
+      const leadQuery = "SELECT template_id FROM leads WHERE id = $1";
+      const leadResult = await client.query(leadQuery, [leadId]);
+
+      if (leadResult.rows.length > 0 && leadResult.rows[0].template_id) {
+        // Update template step orders as well
+        await this.syncTemplateStepOrders(client, leadResult.rows[0].template_id, leadId, stepOrders);
       }
 
       await client.query("COMMIT");
@@ -655,6 +665,56 @@ export class LeadStepRepository {
       throw error;
     } finally {
       client.release();
+    }
+  }
+
+  static async syncTemplateStepOrders(
+    client: any,
+    templateId: number,
+    leadId: number,
+    stepOrders: { id: number; order: number }[]
+  ): Promise<void> {
+    try {
+      // Get current lead steps with their names to match with template steps
+      const leadStepsQuery = `
+        SELECT id, name, step_order
+        FROM lead_steps
+        WHERE lead_id = $1
+        ORDER BY step_order ASC
+      `;
+      const leadStepsResult = await client.query(leadStepsQuery, [leadId]);
+
+      // Get template steps
+      const templateStepsQuery = `
+        SELECT id, name, step_order
+        FROM template_steps
+        WHERE template_id = $1
+        ORDER BY step_order ASC
+      `;
+      const templateStepsResult = await client.query(templateStepsQuery, [templateId]);
+
+      // Create a mapping of step names to new orders based on lead step reordering
+      const stepOrderMap = new Map();
+      stepOrders.forEach(({ id, order }) => {
+        const leadStep = leadStepsResult.rows.find(step => step.id === id);
+        if (leadStep) {
+          stepOrderMap.set(leadStep.name, order);
+        }
+      });
+
+      // Update template step orders based on the mapping
+      for (const templateStep of templateStepsResult.rows) {
+        const newOrder = stepOrderMap.get(templateStep.name);
+        if (newOrder !== undefined) {
+          await client.query(
+            "UPDATE template_steps SET step_order = $1 WHERE id = $2",
+            [newOrder, templateStep.id]
+          );
+        }
+      }
+    } catch (error) {
+      console.error('Error syncing template step orders:', error);
+      // Don't throw error as lead step reordering should still succeed
     }
   }
 
