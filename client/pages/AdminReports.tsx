@@ -488,7 +488,7 @@ export default function AdminReports() {
                         >
                           {Math.round(
                             (item.count /
-                              clientStatusData.reduce(
+                              leadStatusData.reduce(
                                 (sum, d) => sum + d.count,
                                 0,
                               )) *
