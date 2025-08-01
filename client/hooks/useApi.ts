@@ -598,23 +598,13 @@ export function useLead(id: number) {
     queryKey: ["leads", id],
     queryFn: async () => {
       try {
-        console.log("Fetching lead with ID:", id);
-        const result = await apiClient.getLead(id);
-        console.log("API result for lead:", result);
-        return result;
-      } catch (error) {
-        console.log(
-          "API failed for lead",
-          id,
-          "falling back to mock data:",
-          error,
-        );
-        const mockLead = mockLeads.find((lead) => lead.id === id);
-        console.log("Found mock lead:", mockLead);
-        return mockLead || null;
+        return await apiClient.getLead(id);
+      } catch {
+        return mockLeads.find((lead) => lead.id === id) || null;
       }
     },
     enabled: !!id,
+    retry: false,
   });
 }
 
