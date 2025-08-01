@@ -546,8 +546,7 @@ export default function LeadDetails() {
                       <Button
                         onClick={handleAddStep}
                         disabled={
-                          !newStep.name.trim() ||
-                          !newStep.description.trim()
+                          !newStep.name.trim() || !newStep.description.trim()
                         }
                       >
                         Add Step
