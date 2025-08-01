@@ -18,9 +18,6 @@ interface TemplateStep {
   order_position?: number;
   step_order?: number;
   is_required?: boolean;
-  estimated_days?: number;
-  default_eta_days?: number;
-  assigned_role?: string;
 }
 
 interface Template {
