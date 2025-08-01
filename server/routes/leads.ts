@@ -343,9 +343,6 @@ router.put("/:id", async (req: Request, res: Response) => {
         if (!mockLead) {
           return res.status(404).json({ error: "Lead not found" });
         }
-        console.log(
-          "Database unavailable, returning mock lead update response",
-        );
         res.json(mockLead);
       }
     } catch (dbError) {
