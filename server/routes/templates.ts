@@ -8,6 +8,12 @@ import { MockDataService } from "../services/mockData";
 
 const router = Router();
 
+// Debug endpoint to test template creation data
+router.post("/debug", async (req: Request, res: Response) => {
+  console.log("Debug endpoint received:", JSON.stringify(req.body, null, 2));
+  res.json({ received: req.body, message: "Debug data received successfully" });
+});
+
 // Helper function to check if database is available
 async function isDatabaseAvailable() {
   try {
