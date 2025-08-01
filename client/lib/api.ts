@@ -62,9 +62,21 @@ export class ApiClient {
         throw new Error("Invalid JSON response from server");
       }
     } catch (error) {
-      if (error instanceof TypeError && error.message.includes("body stream")) {
-        throw new Error("Network error: Please try again");
+      console.error("API request failed:", {
+        url,
+        error: error.message,
+        type: error.constructor.name
+      });
+
+      if (error instanceof TypeError) {
+        if (error.message.includes("Failed to fetch")) {
+          throw new Error("Network error: Cannot connect to server. Please check your internet connection or try again later.");
+        }
+        if (error.message.includes("body stream")) {
+          throw new Error("Network error: Please try again");
+        }
       }
+
       if (error instanceof Error) {
         throw error;
       }
