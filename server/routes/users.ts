@@ -144,17 +144,26 @@ router.put("/:id", async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Invalid status" });
     }
 
-    // Check if email already exists (if being updated)
-    if (userData.email) {
-      const existingUser = await UserRepository.findByEmail(userData.email);
-      if (existingUser && existingUser.id !== id) {
-        return res.status(409).json({ error: "Email already exists" });
+    let user;
+    if (await isDatabaseAvailable()) {
+      // Check if email already exists (if being updated)
+      if (userData.email) {
+        const existingUser = await UserRepository.findByEmail(userData.email);
+        if (existingUser && existingUser.id !== id) {
+          return res.status(409).json({ error: "Email already exists" });
+        }
       }
-    }
 
-    const user = await UserRepository.update(id, userData);
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      user = await UserRepository.update(id, userData);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+    } else {
+      // Use mock data fallback
+      user = await MockDataService.updateUser(id, userData);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
     }
 
     res.json(user);
