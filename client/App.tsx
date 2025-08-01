@@ -86,25 +86,31 @@ function ProtectedRoute({
   children: React.ReactNode;
   allowedRoles?: string[];
 }) {
-  const { user, isLoading } = useAuth();
+  try {
+    const { user, isLoading } = useAuth();
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        Loading...
-      </div>
-    );
-  }
+    if (isLoading) {
+      return (
+        <div className="flex items-center justify-center min-h-screen">
+          Loading...
+        </div>
+      );
+    }
 
-  if (!user) {
+    if (!user) {
+      return <Navigate to="/login" replace />;
+    }
+
+    if (allowedRoles && !allowedRoles.includes(user.role)) {
+      return <Navigate to="/dashboard" replace />;
+    }
+
+    return <>{children}</>;
+  } catch (error) {
+    // Handle case where AuthProvider is not available (e.g., during HMR)
+    console.error("ProtectedRoute AuthProvider error:", error);
     return <Navigate to="/login" replace />;
   }
-
-  if (allowedRoles && !allowedRoles.includes(user.role)) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
-  return <>{children}</>;
 }
 
 // Auth Guard Component
