@@ -179,7 +179,9 @@ export default function LeadEdit() {
     return (
       <div className="p-6 max-w-7xl mx-auto">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-red-600 mb-4">Lead Not Found</h1>
+          <h1 className="text-2xl font-bold text-red-600 mb-4">
+            Lead Not Found
+          </h1>
           <p className="text-gray-600 mb-4">
             The lead you're trying to edit could not be found.
           </p>
