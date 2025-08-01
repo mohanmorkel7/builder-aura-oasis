@@ -163,9 +163,20 @@ export default function LeadDetails() {
     console.log("Deleting step:", stepId);
   };
 
-  const handleReorderSteps = (reorderedSteps: any[]) => {
-    // TODO: Implement step reordering API call
-    console.log("Reordering steps:", reorderedSteps);
+  const handleReorderSteps = async (reorderedSteps: any[]) => {
+    try {
+      const stepOrders = reorderedSteps.map((step, index) => ({
+        id: step.id,
+        order: index + 1
+      }));
+
+      await reorderStepsMutation.mutateAsync({
+        leadId,
+        stepOrders
+      });
+    } catch (error) {
+      console.error("Failed to reorder steps:", error);
+    }
   };
 
   if (isLoading || stepsLoading) {
