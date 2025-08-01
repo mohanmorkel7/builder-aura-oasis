@@ -104,7 +104,6 @@ export default function LeadDetails() {
   const [newStep, setNewStep] = useState({
     name: "",
     description: "",
-    estimated_days: 1,
     due_date: "",
   });
 
@@ -122,7 +121,6 @@ export default function LeadDetails() {
         const stepData = {
           name: newStep.name.trim(),
           description: newStep.description.trim(),
-          estimated_days: newStep.estimated_days,
           due_date: newStep.due_date.trim() || undefined,
         };
 
@@ -136,7 +134,6 @@ export default function LeadDetails() {
         setNewStep({
           name: "",
           description: "",
-          estimated_days: 1,
           due_date: "",
         });
         setNewStepDialog(false);
@@ -468,7 +465,7 @@ export default function LeadDetails() {
                     </DialogHeader>
                     <div className="space-y-4">
                       <div>
-                        <Label htmlFor="stepName">Step Name</Label>
+                        <Label htmlFor="stepName">Step Name *</Label>
                         <Input
                           id="stepName"
                           value={newStep.name}
@@ -479,10 +476,14 @@ export default function LeadDetails() {
                             }))
                           }
                           placeholder="e.g., Technical Demo"
+                          className={!newStep.name.trim() ? "border-red-300" : ""}
                         />
+                        {!newStep.name.trim() && (
+                          <p className="text-sm text-red-600 mt-1">Step name is required</p>
+                        )}
                       </div>
                       <div>
-                        <Label htmlFor="stepDescription">Description</Label>
+                        <Label htmlFor="stepDescription">Description *</Label>
                         <Textarea
                           id="stepDescription"
                           value={newStep.description}
@@ -494,38 +495,25 @@ export default function LeadDetails() {
                           }
                           placeholder="Describe what needs to be done in this step"
                           rows={3}
+                          className={!newStep.description.trim() ? "border-red-300" : ""}
                         />
+                        {!newStep.description.trim() && (
+                          <p className="text-sm text-red-600 mt-1">Description is required</p>
+                        )}
                       </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <Label htmlFor="estimatedDays">Estimated Days</Label>
-                          <Input
-                            id="estimatedDays"
-                            type="number"
-                            min="1"
-                            value={newStep.estimated_days}
-                            onChange={(e) =>
-                              setNewStep((prev) => ({
-                                ...prev,
-                                estimated_days: parseInt(e.target.value) || 1,
-                              }))
-                            }
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="dueDate">Due Date</Label>
-                          <Input
-                            id="dueDate"
-                            type="date"
-                            value={newStep.due_date}
-                            onChange={(e) =>
-                              setNewStep((prev) => ({
-                                ...prev,
-                                due_date: e.target.value,
-                              }))
-                            }
-                          />
-                        </div>
+                      <div>
+                        <Label htmlFor="dueDate">Due Date</Label>
+                        <Input
+                          id="dueDate"
+                          type="date"
+                          value={newStep.due_date}
+                          onChange={(e) =>
+                            setNewStep((prev) => ({
+                              ...prev,
+                              due_date: e.target.value,
+                            }))
+                          }
+                        />
                       </div>
                     </div>
                     <DialogFooter>
@@ -535,7 +523,12 @@ export default function LeadDetails() {
                       >
                         Cancel
                       </Button>
-                      <Button onClick={handleAddStep}>Add Step</Button>
+                      <Button
+                        onClick={handleAddStep}
+                        disabled={!newStep.name.trim() || !newStep.description.trim()}
+                      >
+                        Add Step
+                      </Button>
                     </DialogFooter>
                   </DialogContent>
                 </Dialog>
