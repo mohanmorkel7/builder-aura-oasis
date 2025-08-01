@@ -44,8 +44,14 @@ router.post(
   async (req: Request, res: Response) => {
     try {
       if (!req.files || !Array.isArray(req.files) || req.files.length === 0) {
+        console.log("No files received in upload request");
         return res.status(400).json({ error: "No files uploaded" });
       }
+
+      console.log(`Received ${req.files.length} files for upload`);
+      req.files.forEach((file, index) => {
+        console.log(`File ${index + 1}: ${file.originalname} (field: ${file.fieldname})`);
+      });
 
       const uploadedFiles = req.files.map((file) => ({
         originalName: file.originalname,
@@ -53,6 +59,7 @@ router.post(
         size: file.size,
         mimetype: file.mimetype,
         path: `/uploads/${file.filename}`,
+        fieldname: file.fieldname,
       }));
 
       console.log(
