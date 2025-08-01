@@ -9,7 +9,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Calendar, CheckCircle } from "lucide-react";
+import { User, Calendar, CheckCircle } from "lucide-react";
 
 interface TemplateStep {
   id: number;
