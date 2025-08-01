@@ -37,6 +37,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
 
+    console.log("Login attempt:", { email, passwordLength: password.length });
+
     try {
       const response: any = await apiClient.login(email, password);
 
