@@ -76,20 +76,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         if (userData) {
-          console.log("Client-side demo authentication successful:", userData.role);
           setUser(userData);
           localStorage.setItem("banani_user", JSON.stringify(userData));
           setIsLoading(false);
           return true;
-        } else {
-          console.log("Client-side demo authentication failed - email not recognized");
         }
       }
-
-      // If demo auth also fails, return false to show error
-      console.log(
-        "Login failed. Use demo credentials: admin@banani.com, sales@banani.com, or product@banani.com with password: password",
-      );
 
       setIsLoading(false);
       return false;
