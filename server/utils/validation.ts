@@ -361,7 +361,8 @@ export class DatabaseValidator {
     }
 
     // Fallback to timestamp-based ID if database is unavailable or error occurs
-    return `#${Date.now().toString().slice(-4)}`;
+    const fallbackNumber = parseInt(Date.now().toString().slice(-4));
+    return `#${fallbackNumber.toString().padStart(4, '0')}`;
   }
 }
 
