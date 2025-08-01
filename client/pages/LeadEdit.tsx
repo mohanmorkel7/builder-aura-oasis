@@ -1175,24 +1175,7 @@ export default function LeadEdit() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Assignment - Available to Sales users */}
-              {canEditAssignments && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Removed duplicate status field - it's already in the main form */}
-                  <div>
-                    <Label htmlFor="assigned_to">Assigned To</Label>
-                    <Input
-                      id="assigned_to"
-                      value={leadData.assigned_to?.toString() || ""}
-                      onChange={(e) =>
-                        updateField("assigned_to", parseInt(e.target.value))
-                      }
-                      className="mt-1"
-                      placeholder="User ID"
-                    />
-                  </div>
-                </div>
-              )}
+
 
               {/* Full access fields for admin users */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
