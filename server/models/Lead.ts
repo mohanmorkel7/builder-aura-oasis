@@ -471,8 +471,24 @@ export class LeadRepository {
     const values = [];
     let paramIndex = 1;
 
+    // Date fields that need empty string to null conversion
+    const dateFields = [
+      'start_date',
+      'targeted_end_date',
+      'expected_close_date',
+      'created_at',
+      'updated_at'
+    ];
+
     for (const [key, value] of Object.entries(leadData)) {
       if (value !== undefined) {
+        let processedValue = value;
+
+        // Convert empty strings to null for date fields
+        if (dateFields.includes(key) && value === "") {
+          processedValue = null;
+        }
+
         if (
           key === "solutions" ||
           key === "commercials" ||
@@ -481,10 +497,10 @@ export class LeadRepository {
         ) {
           // Handle JSON fields
           setClause.push(`${key} = $${paramIndex}`);
-          values.push(JSON.stringify(value));
+          values.push(JSON.stringify(processedValue));
         } else {
           setClause.push(`${key} = $${paramIndex}`);
-          values.push(value);
+          values.push(processedValue);
         }
         paramIndex++;
       }
