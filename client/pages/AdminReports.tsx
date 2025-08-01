@@ -516,15 +516,15 @@ export default function AdminReports() {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 <div className="text-center p-4 bg-blue-50 rounded-lg">
-                  <p className="text-3xl font-bold text-blue-600">247</p>
+                  <p className="text-3xl font-bold text-blue-600">{users.length}</p>
                   <p className="text-sm text-gray-600">Total Users</p>
                 </div>
                 <div className="text-center p-4 bg-green-50 rounded-lg">
-                  <p className="text-3xl font-bold text-green-600">189</p>
+                  <p className="text-3xl font-bold text-green-600">{users.filter((u: any) => u.status === 'active').length}</p>
                   <p className="text-sm text-gray-600">Active Users</p>
                 </div>
                 <div className="text-center p-4 bg-purple-50 rounded-lg">
-                  <p className="text-3xl font-bold text-purple-600">58</p>
+                  <p className="text-3xl font-bold text-purple-600">{users.filter((u: any) => new Date(u.created_at) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)).length}</p>
                   <p className="text-sm text-gray-600">New This Month</p>
                 </div>
               </div>
