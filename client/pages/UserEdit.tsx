@@ -39,7 +39,9 @@ import {
 export default function UserEdit() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { data: originalUser, isLoading, error } = useUser(parseInt(id || "0"));
+  const userId = parseInt(id || "0");
+  const { data: originalUser, isLoading, error } = useUser(userId);
+  const updateUserMutation = useUpdateUser();
 
   const [user, setUser] = useState({
     first_name: "",
