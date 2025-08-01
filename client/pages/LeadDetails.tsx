@@ -476,7 +476,7 @@ export default function LeadDetails() {
                             }))
                           }
                           placeholder="e.g., Technical Demo"
-                          className={!newStep.name.trim() ? "border-red-300" : ""}
+                          className=""
                         />
                       </div>
                       <div>
