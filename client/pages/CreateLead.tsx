@@ -347,6 +347,26 @@ export default function CreateLead() {
     }
   };
 
+  const handleResumePartialSave = (resumeData: any) => {
+    // Extract metadata
+    const { _resumeFromId, _lastSaved, _completedTabs, ...formData } = resumeData;
+
+    // Update the form with the resumed data
+    setLeadData(formData);
+
+    // Set the current tab to the last completed tab or first tab
+    if (_completedTabs && _completedTabs.length > 0) {
+      setCurrentTab(_completedTabs[0]);
+    }
+
+    // Mark as resumed from draft
+    setIsResumedFromDraft(true);
+    setShowPartialSaves(false);
+
+    // Show a success message
+    alert(`Resumed draft from ${new Date(_lastSaved).toLocaleString()}`);
+  };
+
   const handlePartialSave = async () => {
     try {
       setSaving(true);
