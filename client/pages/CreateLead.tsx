@@ -346,21 +346,29 @@ export default function CreateLead() {
 
   const handlePartialSave = async () => {
     try {
-      // Save partial data to localStorage
+      setSaving(true);
+
+      // Prepare partial data for database save
       const partialData = {
         ...leadData,
-        isPartialSave: true,
-        lastSaved: new Date().toISOString(),
-        completedTabs: [currentTab],
+        is_partial: true,
+        partial_data: {
+          lastSaved: new Date().toISOString(),
+          completedTabs: [currentTab],
+          formData: leadData,
+        },
+        created_by: parseInt(user?.id || "1"),
       };
 
-      localStorage.setItem('partial_lead_data', JSON.stringify(partialData));
+      await partialSaveMutation.mutateAsync(partialData);
       setIsPartialSaved(true);
 
       // Show success message for 2 seconds
       setTimeout(() => setIsPartialSaved(false), 2000);
     } catch (error) {
       console.error('Error saving partial data:', error);
+    } finally {
+      setSaving(false);
     }
   };
 
