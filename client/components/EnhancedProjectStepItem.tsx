@@ -44,6 +44,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
+import { FollowUpModal } from "./FollowUpModal";
 
 interface EnhancedProjectStepItemProps {
   step: any;
