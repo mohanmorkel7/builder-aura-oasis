@@ -166,7 +166,7 @@ export default function CreateTicketForm({
           <Label htmlFor="description">Description *</Label>
           <Textarea
             id="description"
-            rows={4}
+            rows={3}
             value={formData.description}
             onChange={(e) => handleInputChange("description", e.target.value)}
             placeholder="Detailed description of the issue or request"
