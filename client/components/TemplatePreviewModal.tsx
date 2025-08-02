@@ -111,6 +111,15 @@ export default function TemplatePreviewModal({
                               >
                                 {step.name}
                               </h3>
+                              {step.probability_percent !== undefined && (
+                                <Badge
+                                  key={`probability-${step.id}`}
+                                  variant="secondary"
+                                  className="bg-blue-100 text-blue-700"
+                                >
+                                  {step.probability_percent}%
+                                </Badge>
+                              )}
                               {step.is_required && (
                                 <Badge
                                   key={`badge-${step.id}`}
