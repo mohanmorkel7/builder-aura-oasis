@@ -269,6 +269,20 @@ export default function LeadEdit() {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [displayCurrency, setDisplayCurrency] = useState<"INR" | "USD" | "AED">("INR");
+  const [currentTab, setCurrentTab] = useState("basic");
+  const [isPartialSaved, setIsPartialSaved] = useState(false);
+
+  const tabs = [
+    { value: "basic", label: "Lead Info", icon: "📋" },
+    { value: "project", label: "Project Details", icon: "🎯" },
+    { value: "commercials", label: "Commercials", icon: "💰" },
+    { value: "client", label: "Client & Contact", icon: "🏢" },
+    { value: "additional", label: "Additional", icon: "📝" },
+  ];
+
+  const currentTabIndex = tabs.findIndex(tab => tab.value === currentTab);
+  const isFirstTab = currentTabIndex === 0;
+  const isLastTab = currentTabIndex === tabs.length - 1;
 
   // Mock exchange rates (in production, these would come from an API)
   const exchangeRates = {
