@@ -304,6 +304,9 @@ export default function LeadEdit() {
         expected_daily_txn_volume:
           lead.expected_daily_txn_volume?.toString() || "",
         project_value: lead.project_value?.toString() || "",
+        project_value_12m: lead.project_value_12m?.toString() || "",
+        project_value_24m: lead.project_value_24m?.toString() || "",
+        project_value_36m: lead.project_value_36m?.toString() || "",
         spoc: lead.spoc || "",
 
         // Commercials
