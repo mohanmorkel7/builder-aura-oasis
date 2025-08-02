@@ -134,6 +134,13 @@ router.post("/", async (req: Request, res: Response) => {
     const isPartialSave = leadData.is_partial === true;
     console.log("Is partial save:", isPartialSave);
 
+    // Check if database is available and has the required columns
+    if (await isDatabaseAvailable()) {
+      console.log("Database is available");
+    } else {
+      console.log("Database is not available, lead creation may fail");
+    }
+
     if (!isPartialSave) {
       // Validate required fields only for complete leads
       const validation = DatabaseValidator.validateRequiredFields(
