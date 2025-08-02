@@ -1225,6 +1225,14 @@ function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogPr
           </Card>
         </div>
       </DialogContent>
+
+      {/* Add Step Modal */}
+      <AddStepModal
+        isOpen={addStepModalOpen}
+        onClose={() => setAddStepModalOpen(false)}
+        projectId={project.id}
+        currentStepCount={projectDetails?.steps?.length || 0}
+      />
     </Dialog>
   );
 }
