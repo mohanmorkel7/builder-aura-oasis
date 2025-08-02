@@ -287,7 +287,11 @@ router.post("/", async (req: Request, res: Response) => {
     }
   } catch (error) {
     console.error("Error creating lead:", error);
-    res.status(500).json({ error: "Failed to create lead" });
+    console.error("Error stack:", error.stack);
+    res.status(500).json({
+      error: "Failed to create lead",
+      details: error.message
+    });
   }
 });
 
