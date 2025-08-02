@@ -350,7 +350,7 @@ export default function UserManagement() {
                         </Badge>
                       </TableCell>
                       <TableCell>{user.department || 'N/A'}</TableCell>
-                      <TableCell>{user.lastLogin || 'N/A'}</TableCell>
+                      <TableCell>{user.lastLogin ? formatLastLogin(user.lastLogin) : 'N/A'}</TableCell>
                       <TableCell>
                         <Badge className={getUserStatusColor(user.status)}>
                           {user.status}
@@ -504,7 +504,7 @@ export default function UserManagement() {
                           {user.azureObjectId}
                         </code>
                       </TableCell>
-                      <TableCell>{user.lastLogin || 'N/A'}</TableCell>
+                      <TableCell>{user.lastLogin ? formatLastLogin(user.lastLogin) : 'N/A'}</TableCell>
                       <TableCell>
                         <div className="flex items-center space-x-2">
                           <Button
