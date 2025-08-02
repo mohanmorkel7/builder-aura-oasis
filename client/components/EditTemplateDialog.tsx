@@ -389,6 +389,16 @@ export default function EditTemplateDialog({
                         </div>
                       )}
                     </div>
+
+                    <div className="p-4 bg-blue-50 rounded-lg">
+                      <h4 className="font-medium mb-2">Template Guidelines</h4>
+                      <ul className="text-sm text-gray-600 space-y-1">
+                        <li>• Choose a clear, descriptive name</li>
+                        <li>• Select the appropriate category</li>
+                        <li>• Add relevant tags for easy searching</li>
+                        <li>• Break down complex processes into steps</li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
               </TabsContent>
