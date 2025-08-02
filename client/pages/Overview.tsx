@@ -99,6 +99,46 @@ export default function Overview() {
             return lead.template_id === template.id;
           });
           
+          // Create more realistic distribution based on step order
+          const totalLeads = leadsAtStep.length;
+          let pending_count, in_progress_count, completed_count, blocked_count;
+
+          if (totalLeads > 0) {
+            // Early steps have more pending/in-progress, later steps have more completed
+            const stepProgress = step.step_order / (template.steps?.length || 5);
+
+            if (stepProgress < 0.3) {
+              // Early steps: more pending
+              pending_count = Math.ceil(totalLeads * 0.6);
+              in_progress_count = Math.ceil(totalLeads * 0.3);
+              completed_count = Math.floor(totalLeads * 0.1);
+              blocked_count = Math.max(0, totalLeads - pending_count - in_progress_count - completed_count);
+            } else if (stepProgress < 0.7) {
+              // Middle steps: more in progress
+              pending_count = Math.ceil(totalLeads * 0.3);
+              in_progress_count = Math.ceil(totalLeads * 0.5);
+              completed_count = Math.ceil(totalLeads * 0.15);
+              blocked_count = Math.max(0, totalLeads - pending_count - in_progress_count - completed_count);
+            } else {
+              // Later steps: more completed
+              pending_count = Math.ceil(totalLeads * 0.2);
+              in_progress_count = Math.ceil(totalLeads * 0.2);
+              completed_count = Math.ceil(totalLeads * 0.5);
+              blocked_count = Math.max(0, totalLeads - pending_count - in_progress_count - completed_count);
+            }
+
+            // Ensure we don't exceed total leads
+            const sum = pending_count + in_progress_count + completed_count + blocked_count;
+            if (sum > totalLeads) {
+              const excess = sum - totalLeads;
+              if (pending_count >= excess) pending_count -= excess;
+              else if (in_progress_count >= excess) in_progress_count -= excess;
+              else completed_count -= excess;
+            }
+          } else {
+            pending_count = in_progress_count = completed_count = blocked_count = 0;
+          }
+
           stepData.push({
             template_id: template.id,
             template_name: template.name,
@@ -106,11 +146,11 @@ export default function Overview() {
             step_name: step.name,
             step_order: step.step_order,
             probability_percent: step.probability_percent || 0,
-            total_leads: leadsAtStep.length,
-            pending_count: Math.floor(leadsAtStep.length * 0.4),
-            in_progress_count: Math.floor(leadsAtStep.length * 0.3),
-            completed_count: Math.floor(leadsAtStep.length * 0.2),
-            blocked_count: Math.floor(leadsAtStep.length * 0.1),
+            total_leads: totalLeads,
+            pending_count,
+            in_progress_count,
+            completed_count,
+            blocked_count,
             leads: leadsAtStep
           });
         }
