@@ -1145,8 +1145,15 @@ export default function CreateLead() {
                                   // Auto-update unit to the first unit of the selected currency
                                   const newUnits = getCurrencyUnits(value);
                                   const defaultUnit = newUnits[0]?.value || "rupee";
-                                  updateCommercialPricing(index, "currency", value);
-                                  updateCommercialPricing(index, "unit", defaultUnit);
+
+                                  // Update both currency and unit in a single operation
+                                  const newPricing = [...(leadData.commercial_pricing || [])];
+                                  newPricing[index] = {
+                                    ...newPricing[index],
+                                    currency: value,
+                                    unit: defaultUnit
+                                  };
+                                  setLeadData((prev) => ({ ...prev, commercial_pricing: newPricing }));
                                 }}
                               >
                                 <SelectTrigger className="w-20">
