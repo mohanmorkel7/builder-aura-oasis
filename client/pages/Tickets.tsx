@@ -101,15 +101,17 @@ export default function Tickets() {
               Create Ticket
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Create New Ticket</DialogTitle>
             </DialogHeader>
-            <CreateTicketForm 
-              onSuccess={handleTicketCreated}
-              metadata={metadata}
-              currentUser={user}
-            />
+            <div className="max-h-[calc(85vh-80px)] overflow-y-auto">
+              <CreateTicketForm
+                onSuccess={handleTicketCreated}
+                metadata={metadata}
+                currentUser={user}
+              />
+            </div>
           </DialogContent>
         </Dialog>
       </div>
