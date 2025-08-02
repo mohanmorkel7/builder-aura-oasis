@@ -86,6 +86,14 @@ export default function ViewTemplateDialog({
                     <FileText className="w-4 h-4 text-gray-500" />
                     <span>{template.step_count || 0} steps</span>
                   </div>
+                  {template.steps && (
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-gray-500" />
+                      <span>
+                        Total: {template.steps.reduce((sum: number, step: any) => sum + (step.probability_percent || 0), 0)}% probability
+                      </span>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
