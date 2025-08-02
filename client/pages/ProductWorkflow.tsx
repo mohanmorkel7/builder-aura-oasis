@@ -988,6 +988,8 @@ function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogPr
     setExpandedSteps(prev => ({ ...prev, [stepId]: !prev[stepId] }));
   };
 
+  if (!project) return null;
+
   // Calculate auto progress percentage
   const calculateProgress = () => {
     if (!projectDetails?.steps || projectDetails.steps.length === 0) return 0;
@@ -997,8 +999,6 @@ function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogPr
 
   const autoProgress = calculateProgress();
   const displayProgress = autoProgress > 0 ? autoProgress : project.progress_percentage || 0;
-
-  if (!project) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
