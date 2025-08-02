@@ -300,8 +300,8 @@ export default function UserManagement() {
                             </span>
                           </div>
                           <div>
-                            <div className="font-medium">{user.name}</div>
-                            <div className="text-sm text-gray-500">{user.email}</div>
+                            <div className="font-medium">{user.name || 'N/A'}</div>
+                            <div className="text-sm text-gray-500">{user.email || 'N/A'}</div>
                           </div>
                         </div>
                       </TableCell>
@@ -379,8 +379,8 @@ export default function UserManagement() {
                             </span>
                           </div>
                           <div className="flex-1">
-                            <div className="font-medium">{user.name}</div>
-                            <div className="text-sm text-gray-500">{user.email}</div>
+                            <div className="font-medium">{user.name || 'N/A'}</div>
+                            <div className="text-sm text-gray-500">{user.email || 'N/A'}</div>
                             <div className="text-xs text-gray-400">{user.department}</div>
                           </div>
                           {user.azureObjectId && (
@@ -433,8 +433,8 @@ export default function UserManagement() {
                             </span>
                           </div>
                           <div>
-                            <div className="font-medium">{user.name}</div>
-                            <div className="text-sm text-gray-500">{user.email}</div>
+                            <div className="font-medium">{user.name || 'N/A'}</div>
+                            <div className="text-sm text-gray-500">{user.email || 'N/A'}</div>
                           </div>
                         </div>
                       </TableCell>
