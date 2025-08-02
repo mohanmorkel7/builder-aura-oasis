@@ -624,7 +624,7 @@ export default function LeadEdit() {
       )}
 
       {/* Form Tabs */}
-      <Tabs defaultValue="basic" className="space-y-6">
+      <Tabs value={currentTab} onValueChange={setCurrentTab} className="space-y-6">
         <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="basic">Lead Info</TabsTrigger>
           <TabsTrigger value="project">Project Details</TabsTrigger>
