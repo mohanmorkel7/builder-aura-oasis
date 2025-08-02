@@ -120,6 +120,9 @@ CREATE TABLE IF NOT EXISTS leads (
     targeted_end_date DATE,
     expected_daily_txn_volume INTEGER,
     project_value DECIMAL(15,2),
+    project_value_12m DECIMAL(15,2),
+    project_value_24m DECIMAL(15,2),
+    project_value_36m DECIMAL(15,2),
     spoc VARCHAR(255),
     
     -- Commercials
