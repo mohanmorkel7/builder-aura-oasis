@@ -321,7 +321,7 @@ export interface CreateLeadChatData {
 }
 
 export class LeadRepository {
-  static async findAll(salesRepId?: number, isPartialOnly?: boolean): Promise<Lead[]> {
+  static async findAll(salesRepId?: number, isPartialOnly?: boolean, createdById?: number, isPartialSavesOnly?: boolean): Promise<Lead[]> {
     let whereConditions = [];
     let values = [];
     let paramIndex = 1;
@@ -332,10 +332,20 @@ export class LeadRepository {
       paramIndex++;
     }
 
+    if (createdById) {
+      whereConditions.push(`l.created_by = $${paramIndex}`);
+      values.push(createdById);
+      paramIndex++;
+    }
+
     if (isPartialOnly !== undefined) {
       whereConditions.push(`l.is_partial = $${paramIndex}`);
       values.push(isPartialOnly);
       paramIndex++;
+    }
+
+    if (isPartialSavesOnly) {
+      whereConditions.push(`l.notes::jsonb ? 'isPartialSave' AND (l.notes::jsonb->>'isPartialSave')::boolean = true`);
     }
 
     const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
