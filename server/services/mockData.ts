@@ -117,6 +117,18 @@ export const mockUsers = [
   },
 ];
 
+// Map string user IDs to numeric IDs for SSO users
+export function normalizeUserId(userId: string | number): number {
+  if (typeof userId === "number") return userId;
+
+  // Handle special SSO user IDs
+  if (userId === "sso-user-1") return 6;
+
+  // Try to parse as integer
+  const parsed = parseInt(userId);
+  return isNaN(parsed) ? 1 : parsed; // Default to admin user if parsing fails
+}
+
 export const mockClients = [
   {
     id: 1,
