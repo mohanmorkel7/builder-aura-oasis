@@ -106,6 +106,22 @@ export default function LeadDetails() {
   const reorderStepsMutation = useReorderLeadSteps();
 
   const [newStepDialog, setNewStepDialog] = useState(false);
+
+  // Calculate completion percentage based on template probability values
+  const calculateCompletionPercentage = () => {
+    if (!lead?.template_id || !steps || steps.length === 0) return 0;
+
+    const completedSteps = steps.filter(step => step.status === 'completed');
+
+    // In a real implementation, you'd fetch template steps and their probability values
+    // For now, we'll use a simple calculation based on completed steps
+    const totalSteps = steps.length;
+    const completedCount = completedSteps.length;
+
+    return Math.round((completedCount / totalSteps) * 100);
+  };
+
+  const completionPercentage = calculateCompletionPercentage();
   const [expandedSteps, setExpandedSteps] = useState(new Set<number>());
   const [newStep, setNewStep] = useState({
     name: "",
