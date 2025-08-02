@@ -92,11 +92,28 @@ export default function AdminPanel() {
 
   return (
     <div className="p-6">
+      {/* Quick Navigation */}
+      <div className="mb-6">
+        <Card className="bg-blue-50 border-blue-200">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-semibold text-blue-900">Enhanced Template Management</h3>
+                <p className="text-sm text-blue-700">Manage templates with categories, advanced features, and analytics</p>
+              </div>
+              <Button onClick={() => navigate("/admin/templates")} className="bg-blue-600 hover:bg-blue-700">
+                Go to Template Manager
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">
-            Onboarding Templates
+            Legacy Onboarding Templates
           </h1>
           <p className="text-gray-600 mt-1">
             Manage and create onboarding workflows
