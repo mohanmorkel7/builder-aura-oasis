@@ -427,25 +427,31 @@ export default function CreateLead() {
     try {
       const submitData = {
         ...leadData,
-        project_budget: leadData.project_budget
+        project_budget: leadData.project_budget && leadData.project_budget !== ""
           ? parseFloat(leadData.project_budget)
           : undefined,
-        project_value: leadData.project_value
+        project_value: leadData.project_value && leadData.project_value !== ""
           ? parseFloat(leadData.project_value)
           : undefined,
-        project_value_12m: leadData.project_value_12m
+        project_value_12m: leadData.project_value_12m && leadData.project_value_12m !== ""
           ? parseFloat(leadData.project_value_12m)
           : undefined,
-        project_value_24m: leadData.project_value_24m
+        project_value_24m: leadData.project_value_24m && leadData.project_value_24m !== ""
           ? parseFloat(leadData.project_value_24m)
           : undefined,
-        project_value_36m: leadData.project_value_36m
+        project_value_36m: leadData.project_value_36m && leadData.project_value_36m !== ""
           ? parseFloat(leadData.project_value_36m)
           : undefined,
-        expected_daily_txn_volume: leadData.expected_daily_txn_volume
+        expected_daily_txn_volume: leadData.expected_daily_txn_volume && leadData.expected_daily_txn_volume !== ""
           ? parseInt(leadData.expected_daily_txn_volume)
           : undefined,
-        probability: parseInt(leadData.probability),
+        probability: leadData.probability && leadData.probability !== ""
+          ? parseInt(leadData.probability)
+          : undefined,
+        // Clean date fields
+        expected_close_date: leadData.expected_close_date === "" ? null : leadData.expected_close_date,
+        targeted_end_date: leadData.targeted_end_date === "" ? null : leadData.targeted_end_date,
+        start_date: leadData.start_date === "" ? null : leadData.start_date,
         created_by: parseInt(user?.id || "1"),
         template_id:
           selectedTemplate && selectedTemplate !== "manual"
