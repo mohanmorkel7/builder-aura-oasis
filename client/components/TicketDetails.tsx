@@ -327,47 +327,15 @@ export default function TicketDetails({ ticket, onUpdate, metadata, currentUser 
         </TabsContent>
 
         <TabsContent value="comments" className="space-y-4">
-          {/* Add Comment */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Add Comment</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Textarea
-                value={newComment}
-                onChange={(e) => handleCommentChange(e.target.value)}
-                placeholder="Type your comment here... Use @username to mention someone or @TKT-#### to reference another ticket"
-                rows={3}
-              />
-              
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={isInternal}
-                      onChange={(e) => setIsInternal(e.target.checked)}
-                    />
-                    <span className="text-sm">Internal comment</span>
-                  </label>
-                  
-                  {mentions.length > 0 && (
-                    <div className="text-sm text-gray-600">
-                      Mentioning: {mentions.map(mention => `@${mention}`).join(", ")}
-                    </div>
-                  )}
-                </div>
-                
-                <Button 
-                  onClick={handleAddComment} 
-                  disabled={!newComment.trim() || addCommentMutation.isPending}
-                >
-                  <Send className="w-4 h-4 mr-2" />
-                  {addCommentMutation.isPending ? "Posting..." : "Post Comment"}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Add Comment with Rich Text Editor */}
+          <div>
+            <h3 className="text-lg font-medium mb-3">Add Comment</h3>
+            <RichTextCommentEditor
+              onSubmit={handleAddComment}
+              isLoading={addCommentMutation.isPending}
+              placeholder="Type your comment here... Use @username to mention someone or @TKT-#### to reference another ticket"
+            />
+          </div>
 
           {/* Comments List */}
           <div className="space-y-4">
