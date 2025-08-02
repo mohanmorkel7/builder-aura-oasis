@@ -97,6 +97,24 @@ export const mockUsers = [
     created_at: "2024-01-10T09:00:00Z",
     updated_at: "2024-01-10T09:00:00Z",
   },
+  {
+    id: 6,
+    first_name: "Microsoft",
+    last_name: "User",
+    email: "microsoft.user@company.com",
+    phone: "+1 (555) 678-9012",
+    password_hash: "", // SSO user, no password
+    role: "admin" as const,
+    department: "SSO Users",
+    manager_id: null,
+    status: "active" as const,
+    start_date: "2024-01-20",
+    last_login: new Date().toISOString(),
+    two_factor_enabled: false,
+    notes: "Microsoft SSO authenticated user",
+    created_at: "2024-01-20T09:00:00Z",
+    updated_at: new Date().toISOString(),
+  },
 ];
 
 export const mockClients = [
