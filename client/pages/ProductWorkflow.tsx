@@ -975,6 +975,16 @@ export default function ProductWorkflow() {
         isOpen={isProjectDetailOpen}
         onClose={() => setIsProjectDetailOpen(false)}
       />
+
+      {/* Lead Overview Modal */}
+      <LeadOverviewModal
+        isOpen={isLeadOverviewOpen}
+        onClose={() => {
+          setIsLeadOverviewOpen(false);
+          setSelectedLeadForOverview(null);
+        }}
+        lead={selectedLeadForOverview}
+      />
     </div>
   );
 }
