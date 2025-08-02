@@ -33,7 +33,12 @@ import {
   ArrowDown,
   PlayCircle,
   PauseCircle,
-  AlertTriangle
+  AlertTriangle,
+  Upload,
+  Paperclip,
+  Send,
+  ChevronRight,
+  ChevronDown
 } from "lucide-react";
 import { format } from "date-fns";
 
