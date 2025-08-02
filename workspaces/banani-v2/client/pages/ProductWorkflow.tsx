@@ -548,6 +548,39 @@ export default function ProductWorkflow() {
     lead.status === 'completed' || lead.lead_status === 'completed'
   );
 
+  // Calculate dynamic lead status based on project completion
+  const getLeadStatus = (lead: any) => {
+    const leadProjects = projects.filter((p: any) => p.source_type === 'lead' && p.source_id === lead.id);
+
+    if (leadProjects.length === 0) {
+      return lead.product_status || 'ready_for_product';
+    }
+
+    const allCompleted = leadProjects.every((p: any) => p.status === 'completed');
+    const anyInProgress = leadProjects.some((p: any) => p.status === 'in_progress');
+
+    if (allCompleted) {
+      return 'completed';
+    } else if (anyInProgress) {
+      return 'in_progress';
+    } else {
+      return 'ready_for_product';
+    }
+  };
+
+  const getLeadStatusColor = (status: string) => {
+    switch (status) {
+      case 'completed': return 'text-green-600 bg-green-100';
+      case 'in_progress': return 'text-blue-600 bg-blue-100';
+      case 'ready_for_product': return 'text-purple-600 bg-purple-100';
+      case 'approved': return 'text-emerald-600 bg-emerald-100';
+      case 'in_review': return 'text-yellow-600 bg-yellow-100';
+      case 'on_hold': return 'text-orange-600 bg-orange-100';
+      case 'rejected': return 'text-red-600 bg-red-100';
+      default: return 'text-gray-600 bg-gray-100';
+    }
+  };
+
   // Add mutations for status updates
   const queryClient = useQueryClient();
 
@@ -759,24 +792,31 @@ export default function ProductWorkflow() {
                               <div>
                                 <span className="font-medium">Status:</span>
                                 <br />
-                                <Select
-                                  value={lead.product_status || "ready_for_product"}
-                                  onValueChange={(value) => {
-                                    updateLeadStatusMutation.mutate({ leadId: lead.id, status: value });
-                                  }}
-                                  disabled={updateLeadStatusMutation.isPending}
-                                >
-                                  <SelectTrigger className="w-full h-8">
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="ready_for_product">Ready for Product</SelectItem>
-                                    <SelectItem value="in_review">In Review</SelectItem>
-                                    <SelectItem value="approved">Approved</SelectItem>
-                                    <SelectItem value="on_hold">On Hold</SelectItem>
-                                    <SelectItem value="rejected">Rejected</SelectItem>
-                                  </SelectContent>
-                                </Select>
+                                {/* Show dynamic status based on projects if any exist */}
+                                {projects.filter((p: any) => p.source_type === 'lead' && p.source_id === lead.id).length > 0 ? (
+                                  <Badge className={getLeadStatusColor(getLeadStatus(lead))}>
+                                    {getLeadStatus(lead).replace('_', ' ')}
+                                  </Badge>
+                                ) : (
+                                  <Select
+                                    value={lead.product_status || "ready_for_product"}
+                                    onValueChange={(value) => {
+                                      updateLeadStatusMutation.mutate({ leadId: lead.id, status: value });
+                                    }}
+                                    disabled={updateLeadStatusMutation.isPending}
+                                  >
+                                    <SelectTrigger className="w-full h-8">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="ready_for_product">Ready for Product</SelectItem>
+                                      <SelectItem value="in_review">In Review</SelectItem>
+                                      <SelectItem value="approved">Approved</SelectItem>
+                                      <SelectItem value="on_hold">On Hold</SelectItem>
+                                      <SelectItem value="rejected">Rejected</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                )}
                               </div>
                             </div>
 
@@ -802,8 +842,10 @@ export default function ProductWorkflow() {
                               onClick={() => handleCreateProject(lead)}
                               className="min-w-[140px]"
                             >
-                              <ArrowRight className="w-4 h-4 mr-2" />
-                              Create Project
+                              <Plus className="w-4 h-4 mr-2" />
+                              {projects.filter((p: any) => p.source_type === 'lead' && p.source_id === lead.id).length > 0
+                                ? 'Add Another Project'
+                                : 'Create Project'}
                             </Button>
                             <Button
                               variant="outline"
@@ -813,6 +855,22 @@ export default function ProductWorkflow() {
                               <Eye className="w-4 h-4 mr-2" />
                               View Lead
                             </Button>
+                            {/* Show existing projects */}
+                            {projects.filter((p: any) => p.source_type === 'lead' && p.source_id === lead.id).length > 0 && (
+                              <div className="text-xs text-gray-600 mt-1">
+                                <strong>Projects:</strong>
+                                {projects.filter((p: any) => p.source_type === 'lead' && p.source_id === lead.id).map((project: any) => (
+                                  <div key={project.id} className="flex items-center gap-1 mt-1">
+                                    <Badge variant="outline" className="text-xs">
+                                      {project.name.length > 20 ? project.name.substring(0, 20) + '...' : project.name}
+                                    </Badge>
+                                    <Badge className={getStatusColor(project.status) + ' text-xs'}>
+                                      {project.status}
+                                    </Badge>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
                           </div>
                         </div>
                       </CardContent>
