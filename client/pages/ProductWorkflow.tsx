@@ -1020,11 +1020,19 @@ function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogPr
   });
 
   const updateStepStatusMutation = useMutation({
-    mutationFn: ({ stepId, status }: { stepId: number; status: string }) =>
-      apiClient.updateStepStatus(stepId, status, parseInt(user?.id || "1")),
+    mutationFn: ({ stepId, status }: { stepId: number; status: string }) => {
+      console.log("Updating step status:", stepId, status);
+      return apiClient.updateStepStatus(stepId, status, parseInt(user?.id || "1"));
+    },
     onSuccess: () => {
+      console.log("Step status updated successfully");
       queryClient.invalidateQueries({ queryKey: ["workflow-project-details", project?.id] });
       queryClient.invalidateQueries({ queryKey: ["workflow-projects"] });
+      queryClient.invalidateQueries({ queryKey: ["project-step-comments", stepId] });
+    },
+    onError: (error) => {
+      console.error("Failed to update step status:", error);
+      alert("Failed to update step status. Please try again.");
     },
   });
 
