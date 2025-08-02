@@ -1000,6 +1000,16 @@ export default function ProductWorkflow() {
         }}
         lead={selectedLeadForOverview}
       />
+
+      {/* Steps Preview Modal */}
+      <StepsPreviewModal
+        isOpen={isStepsPreviewOpen}
+        onClose={() => {
+          setIsStepsPreviewOpen(false);
+          setSelectedLeadForSteps(null);
+        }}
+        lead={selectedLeadForSteps}
+      />
     </div>
   );
 }
