@@ -328,7 +328,7 @@ export class WorkflowRepository {
       );
 
       // Handle steps creation - either from template or from provided steps
-      if (projectData.template_id) {
+      if ((projectData as any).template_id) {
         // Get template steps from template
         try {
           const templateStepsResult = await client.query(
