@@ -844,6 +844,10 @@ function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogPr
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [newComment, setNewComment] = useState("");
+  const [selectedStepId, setSelectedStepId] = useState<number | null>(null);
+  const [stepComments, setStepComments] = useState<{[key: number]: string}>({});
+  const [expandedSteps, setExpandedSteps] = useState<{[key: number]: boolean}>({});
+  const [uploadingFiles, setUploadingFiles] = useState<{[key: number]: boolean}>({});
 
   // Helper functions for status display
   const getStatusIcon = (status: string) => {
@@ -880,11 +884,42 @@ function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogPr
     enabled: !!project?.id && isOpen,
   });
 
+  // Fetch step-specific comments for expanded steps
+  const getStepComments = (stepId: number) => {
+    return useQuery({
+      queryKey: ["step-comments", project?.id, stepId],
+      queryFn: () => project ? apiClient.getProjectComments(project.id, stepId) : [],
+      enabled: !!project?.id && isOpen && expandedSteps[stepId],
+    });
+  };
+
   const addCommentMutation = useMutation({
     mutationFn: (commentData: any) => apiClient.createProjectComment(project.id, commentData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["project-comments", project?.id] });
-      setNewComment("");
+      if (commentData.step_id) {
+        queryClient.invalidateQueries({ queryKey: ["step-comments", project?.id, commentData.step_id] });
+        setStepComments(prev => ({ ...prev, [commentData.step_id]: "" }));
+      } else {
+        setNewComment("");
+      }
+    },
+  });
+
+  const updateStepStatusMutation = useMutation({
+    mutationFn: ({ stepId, status }: { stepId: number; status: string }) =>
+      apiClient.updateStepStatus(stepId, status, parseInt(user?.id || "1")),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["workflow-project-details", project?.id] });
+      queryClient.invalidateQueries({ queryKey: ["workflow-projects"] });
+    },
+  });
+
+  const fileUploadMutation = useMutation({
+    mutationFn: (files: FileList) => apiClient.uploadFiles(files),
+    onSuccess: (uploadedFiles) => {
+      console.log("Files uploaded:", uploadedFiles);
+      // Handle file upload success
     },
   });
 
@@ -898,6 +933,56 @@ function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogPr
       created_by: parseInt(user?.id || "1")
     });
   };
+
+  const handleAddStepComment = (stepId: number) => {
+    const comment = stepComments[stepId];
+    if (!comment?.trim()) return;
+
+    addCommentMutation.mutate({
+      step_id: stepId,
+      comment_text: comment,
+      comment_type: "comment",
+      is_internal: false,
+      created_by: parseInt(user?.id || "1")
+    });
+  };
+
+  const handleStepStatusUpdate = (stepId: number, newStatus: string) => {
+    updateStepStatusMutation.mutate({ stepId, status: newStatus });
+  };
+
+  const handleFileUpload = async (stepId: number, files: FileList) => {
+    if (files.length === 0) return;
+
+    setUploadingFiles(prev => ({ ...prev, [stepId]: true }));
+    try {
+      await fileUploadMutation.mutateAsync(files);
+      // Add comment about file upload
+      addCommentMutation.mutate({
+        step_id: stepId,
+        comment_text: `Uploaded ${files.length} file(s): ${Array.from(files).map(f => f.name).join(", ")}`,
+        comment_type: "system",
+        is_internal: false,
+        created_by: parseInt(user?.id || "1")
+      });
+    } finally {
+      setUploadingFiles(prev => ({ ...prev, [stepId]: false }));
+    }
+  };
+
+  const toggleStepExpansion = (stepId: number) => {
+    setExpandedSteps(prev => ({ ...prev, [stepId]: !prev[stepId] }));
+  };
+
+  // Calculate auto progress percentage
+  const calculateProgress = () => {
+    if (!projectDetails?.steps || projectDetails.steps.length === 0) return 0;
+    const completedSteps = projectDetails.steps.filter((step: any) => step.status === "completed").length;
+    return Math.round((completedSteps / projectDetails.steps.length) * 100);
+  };
+
+  const autoProgress = calculateProgress();
+  const displayProgress = autoProgress > 0 ? autoProgress : project.progress_percentage || 0;
 
   if (!project) return null;
 
