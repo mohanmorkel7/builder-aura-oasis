@@ -305,15 +305,21 @@ function CreateProjectFromLeadDialog({ lead, isOpen, onClose, onSuccess }: Creat
                     <SelectValue placeholder="Select a template (optional)" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="none">No Template</SelectItem>
-                    {templates.map((template: any) => (
-                      <SelectItem key={template.id} value={template.id.toString()}>
-                        {template.name}
-                        {template.description && (
-                          <span className="text-sm text-gray-500 block">{template.description}</span>
-                        )}
+                    <SelectItem value="none">Manual Steps (Create Custom)</SelectItem>
+                    {templates.length > 0 ? (
+                      templates.map((template: any) => (
+                        <SelectItem key={template.id} value={template.id.toString()}>
+                          {template.name}
+                          {template.description && (
+                            <span className="text-sm text-gray-500 block">{template.description}</span>
+                          )}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <SelectItem value="loading" disabled>
+                        {allTemplates.length === 0 ? "Loading templates..." : "No product templates available"}
                       </SelectItem>
-                    ))}
+                    )}
                   </SelectContent>
                 </Select>
                 {selectedTemplate && (
