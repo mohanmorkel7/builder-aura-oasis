@@ -85,7 +85,7 @@ const navigationItems: NavigationItem[] = [
     roles: ["admin", "sales", "product"],
   },
   {
-    name: "Product Team",
+    name: "Product Management",
     href: "/product",
     icon: Grid3X3,
     roles: ["admin", "product"],
