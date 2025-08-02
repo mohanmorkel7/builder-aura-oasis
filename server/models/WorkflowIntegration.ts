@@ -333,7 +333,7 @@ export class WorkflowRepository {
         try {
           const templateStepsResult = await client.query(
             "SELECT * FROM template_steps WHERE template_id = $1 ORDER BY step_order",
-            [projectData.template_id]
+            [(projectData as any).template_id]
           );
 
           if (templateStepsResult.rows.length > 0) {
