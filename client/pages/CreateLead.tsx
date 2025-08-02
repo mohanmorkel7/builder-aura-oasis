@@ -1157,7 +1157,7 @@ export default function CreateLead() {
                                 }}
                               >
                                 <SelectTrigger className="w-20">
-                                  <SelectValue />
+                                  <SelectValue placeholder="Currency" />
                                 </SelectTrigger>
                                 <SelectContent>
                                   {currencyOptions.map((currency) => (
