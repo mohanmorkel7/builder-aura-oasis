@@ -248,6 +248,8 @@ export default function CreateLead() {
   const [displayCurrency, setDisplayCurrency] = useState<"INR" | "USD" | "AED">("INR");
   const [currentTab, setCurrentTab] = useState("basic");
   const [isPartialSaved, setIsPartialSaved] = useState(false);
+  const [showPartialSaves, setShowPartialSaves] = useState(true);
+  const [isResumedFromDraft, setIsResumedFromDraft] = useState(false);
 
   const tabs = [
     { value: "basic", label: "Lead Info", icon: "📋" },
