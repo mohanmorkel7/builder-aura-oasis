@@ -166,6 +166,7 @@ const mockLeads = [
     project_description: "Integrate payment gateway for mobile app",
     priority: "medium",
     assigned_to: 2,
+    template_id: 2,
     created_at: "2023-10-25T09:00:00Z",
     updated_at: "2023-10-25T09:00:00Z",
     solutions: ["Switch-UPI", "FRM"],
