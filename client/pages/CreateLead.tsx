@@ -209,8 +209,8 @@ export default function CreateLead() {
     commercial_pricing: [] as Array<{
       solution: string;
       value: number;
-      unit: "paisa" | "cents";
-      currency: "INR" | "USD" | "Dubai";
+      unit: "rupee" | "paisa" | "dollar" | "cents" | "dirham" | "fils";
+      currency: "INR" | "USD" | "AED";
     }>,
 
     // Client Information
