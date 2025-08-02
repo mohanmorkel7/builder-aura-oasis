@@ -830,10 +830,28 @@ export default function ProductWorkflow() {
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-2">
                                 <h3 className="font-semibold text-lg">{project.name}</h3>
-                                <Badge className={getStatusColor(project.status)}>
-                                  <StatusIcon className="w-3 h-3 mr-1" />
-                                  {project.status.replace("_", " ")}
-                                </Badge>
+                                <Select
+                                  value={project.status}
+                                  onValueChange={(value) => {
+                                    console.log("Updating project status:", project.id, value);
+                                    // TODO: Implement API call to update project status
+                                  }}
+                                >
+                                  <SelectTrigger className="w-36 h-7 text-xs">
+                                    <div className="flex items-center gap-1">
+                                      <StatusIcon className="w-3 h-3" />
+                                      <SelectValue />
+                                    </div>
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="created">Created</SelectItem>
+                                    <SelectItem value="in_progress">In Progress</SelectItem>
+                                    <SelectItem value="review">Review</SelectItem>
+                                    <SelectItem value="completed">Completed</SelectItem>
+                                    <SelectItem value="on_hold">On Hold</SelectItem>
+                                    <SelectItem value="cancelled">Cancelled</SelectItem>
+                                  </SelectContent>
+                                </Select>
                                 {project.source_type === "lead" && (
                                   <Badge variant="outline">
                                     From Lead #{project.source_id}
