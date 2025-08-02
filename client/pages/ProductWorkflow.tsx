@@ -1117,7 +1117,7 @@ function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogPr
               <CardTitle className="text-lg">Project Overview</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div>
                   <Label className="text-sm font-medium">Status</Label>
                   <div className="mt-1">
@@ -1130,7 +1130,7 @@ function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogPr
                   <Label className="text-sm font-medium">Progress</Label>
                   <div className="mt-1">
                     <div className="flex items-center gap-2">
-                      <div className="w-32 bg-gray-200 rounded-full h-2">
+                      <div className="w-24 bg-gray-200 rounded-full h-2">
                         <div
                           className="bg-blue-600 h-2 rounded-full transition-all duration-300"
                           style={{ width: `${displayProgress}%` }}
@@ -1138,18 +1138,36 @@ function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogPr
                       </div>
                       <span className="text-sm font-medium">{displayProgress}%</span>
                       {autoProgress > 0 && autoProgress !== project.progress_percentage && (
-                        <Badge variant="outline" className="text-xs">Auto-calculated</Badge>
+                        <Badge variant="outline" className="text-xs">Auto</Badge>
                       )}
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Steps</Label>
+                  <div className="mt-1">
+                    <div className="text-sm">
+                      <span className="font-medium text-green-600">
+                        {projectDetails?.steps?.filter((s: any) => s.status === "completed").length || 0}
+                      </span>
+                      <span className="text-gray-500"> / </span>
+                      <span className="font-medium">
+                        {projectDetails?.steps?.length || 0}
+                      </span>
+                      <span className="text-xs text-gray-500 ml-1">completed</span>
+                    </div>
+                    <div className="text-xs text-gray-500 mt-1">
+                      {projectDetails?.steps?.filter((s: any) => s.status === "in_progress").length || 0} in progress, {" "}
+                      {projectDetails?.steps?.filter((s: any) => s.status === "pending").length || 0} pending
                     </div>
                   </div>
                 </div>
                 <div>
                   <Label className="text-sm font-medium">Team</Label>
                   <p className="text-sm mt-1">{project.assigned_team}</p>
-                </div>
-                <div>
-                  <Label className="text-sm font-medium">Created</Label>
-                  <p className="text-sm mt-1">{format(new Date(project.created_at), "MMM d, yyyy")}</p>
+                  <div className="text-xs text-gray-500 mt-1">
+                    Created {format(new Date(project.created_at), "MMM d, yyyy")}
+                  </div>
                 </div>
               </div>
 
