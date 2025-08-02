@@ -165,6 +165,7 @@ const countries = [
 
 export default function CreateLead() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
   const createLeadMutation = useCreateLead();
   const partialSaveMutation = usePartialSaveLead();
