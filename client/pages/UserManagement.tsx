@@ -296,7 +296,7 @@ export default function UserManagement() {
                         <div className="flex items-center space-x-3">
                           <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
                             <span className="text-sm font-medium text-blue-600">
-                              {user.name.split(' ').map(n => n[0]).join('')}
+                              {user.name?.split(' ').map(n => n[0]).join('') || 'N/A'}
                             </span>
                           </div>
                           <div>
@@ -375,7 +375,7 @@ export default function UserManagement() {
                         <div className="flex items-center space-x-3">
                           <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
                             <span className="text-sm font-medium text-blue-600">
-                              {user.name.split(' ').map(n => n[0]).join('')}
+                              {user.name?.split(' ').map(n => n[0]).join('') || 'N/A'}
                             </span>
                           </div>
                           <div className="flex-1">
@@ -429,7 +429,7 @@ export default function UserManagement() {
                         <div className="flex items-center space-x-3">
                           <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
                             <span className="text-sm font-medium text-blue-600">
-                              {user.name.split(' ').map(n => n[0]).join('')}
+                              {user.name?.split(' ').map(n => n[0]).join('') || 'N/A'}
                             </span>
                           </div>
                           <div>
