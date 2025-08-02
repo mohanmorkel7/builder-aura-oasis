@@ -321,19 +321,36 @@ export interface CreateLeadChatData {
 }
 
 export class LeadRepository {
-  static async findAll(salesRepId?: number): Promise<Lead[]> {
+  static async findAll(salesRepId?: number, isPartialOnly?: boolean): Promise<Lead[]> {
+    let whereConditions = [];
+    let values = [];
+    let paramIndex = 1;
+
+    if (salesRepId) {
+      whereConditions.push(`l.assigned_to = $${paramIndex}`);
+      values.push(salesRepId);
+      paramIndex++;
+    }
+
+    if (isPartialOnly !== undefined) {
+      whereConditions.push(`l.is_partial = $${paramIndex}`);
+      values.push(isPartialOnly);
+      paramIndex++;
+    }
+
+    const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
+
     const query = `
-      SELECT l.*, 
+      SELECT l.*,
              CONCAT(u.first_name, ' ', u.last_name) as sales_rep_name,
              CONCAT(c.first_name, ' ', c.last_name) as creator_name
       FROM leads l
       LEFT JOIN users u ON l.assigned_to = u.id
       LEFT JOIN users c ON l.created_by = c.id
-      ${salesRepId ? "WHERE l.assigned_to = $1" : ""}
+      ${whereClause}
       ORDER BY l.created_at DESC
     `;
 
-    const values = salesRepId ? [salesRepId] : [];
     const result = await pool.query(query, values);
     return result.rows;
   }
