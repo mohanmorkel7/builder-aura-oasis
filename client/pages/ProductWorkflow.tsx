@@ -526,6 +526,8 @@ export default function ProductWorkflow() {
   const [isLeadDetailOpen, setIsLeadDetailOpen] = useState(false);
   const [selectedLeadForOverview, setSelectedLeadForOverview] = useState<any>(null);
   const [isLeadOverviewOpen, setIsLeadOverviewOpen] = useState(false);
+  const [selectedLeadForSteps, setSelectedLeadForSteps] = useState<any>(null);
+  const [isStepsPreviewOpen, setIsStepsPreviewOpen] = useState(false);
 
   // Fetch project statistics
   const { data: projectStats } = useQuery({
