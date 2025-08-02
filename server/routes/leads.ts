@@ -186,8 +186,8 @@ router.post("/", async (req: Request, res: Response) => {
       }
     }
 
-    // Validate dates
-    if (leadData.expected_close_date) {
+    // Validate dates only when they have actual values
+    if (leadData.expected_close_date && leadData.expected_close_date !== "" && leadData.expected_close_date !== null) {
       if (!DatabaseValidator.isValidFutureDate(leadData.expected_close_date)) {
         return res
           .status(400)
@@ -195,7 +195,7 @@ router.post("/", async (req: Request, res: Response) => {
       }
     }
 
-    if (leadData.targeted_end_date) {
+    if (leadData.targeted_end_date && leadData.targeted_end_date !== "" && leadData.targeted_end_date !== null) {
       if (!DatabaseValidator.isValidFutureDate(leadData.targeted_end_date)) {
         return res
           .status(400)
