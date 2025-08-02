@@ -60,12 +60,6 @@ export default function ViewTemplateDialog({
                     >
                       {template.is_active ? "Active" : "Inactive"}
                     </Badge>
-                    {template.type && (
-                      <Badge variant="outline">
-                        {template.type.charAt(0).toUpperCase() +
-                          template.type.slice(1)}
-                      </Badge>
-                    )}
                   </div>
                 </div>
               </CardHeader>
