@@ -377,9 +377,21 @@ export function EnhancedProjectStepItem({
                                   ? "Me"
                                   : comment.user_name || "Unknown User"}
                               </span>
-                              <span className="text-xs text-gray-500">
-                                {format(new Date(comment.created_at), "MMM d, h:mm a")}
-                              </span>
+                              <div className="flex items-center space-x-2">
+                                <span className="text-xs text-gray-500">
+                                  {format(new Date(comment.created_at), "MMM d, h:mm a")}
+                                </span>
+                                {comment.comment_type !== "system" && (
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => handleFollowUp(comment.id)}
+                                    className="text-blue-600 hover:text-blue-700 h-6 px-2 text-xs"
+                                  >
+                                    Follow-up
+                                  </Button>
+                                )}
+                              </div>
                             </div>
                             <div className="text-sm text-gray-700 whitespace-pre-wrap">
                               {comment.comment_text}
