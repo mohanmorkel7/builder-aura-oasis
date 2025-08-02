@@ -364,6 +364,14 @@ export default function Overview() {
                     ></div>
                   </div>
 
+                  {/* Completion Percentage */}
+                  <div className="flex justify-between items-center text-xs pt-1">
+                    <span className="text-gray-500">Completion Rate</span>
+                    <span className="font-semibold text-green-600">
+                      {stepData.total_leads > 0 ? Math.round((stepData.completed_count / stepData.total_leads) * 100) : 0}%
+                    </span>
+                  </div>
+
                   {/* Total */}
                   <div className="flex justify-between items-center text-sm pt-2 border-t border-gray-100">
                     <span className="text-gray-500">Total Leads</span>
