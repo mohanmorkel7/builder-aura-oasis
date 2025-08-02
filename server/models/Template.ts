@@ -74,6 +74,9 @@ export interface CreateTemplateData {
   name: string;
   description?: string;
   type?: "standard" | "enterprise" | "smb";
+  category_id?: number;
+  template_type_id?: number;
+  tags?: string[];
   created_by: number;
   steps: CreateTemplateStepData[];
 }
