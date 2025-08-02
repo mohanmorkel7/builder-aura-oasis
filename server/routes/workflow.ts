@@ -520,7 +520,8 @@ router.post("/projects/:projectId/comments", async (req: Request, res: Response)
         is_internal: commentData.is_internal || false,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-        creator_name: "Current User"
+        creator_name: commentData.user_name || "Current User",
+        user_name: commentData.user_name || "Current User"
       };
       res.status(201).json(mockComment);
     }
