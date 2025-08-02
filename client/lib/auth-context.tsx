@@ -155,12 +155,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
           const profile: MicrosoftProfile = await graphResponse.json();
 
+          // Get user's Azure AD groups to determine role
+          const groupsResponse = await fetch(`${graphConfig.graphMeEndpoint}/memberOf`, {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          });
+
+          const groups = await groupsResponse.json();
+          const userRole = extractRoleFromGroups(groups.value || []);
+
           // Create user data from Microsoft profile
           const userData: User = {
             id: profile.id,
             name: profile.displayName,
             email: profile.mail || profile.userPrincipalName,
-            role: "admin", // Default role for SSO users - can be customized based on your business logic
+            role: userRole,
+            azureObjectId: profile.id,
             avatar: undefined,
           };
 
