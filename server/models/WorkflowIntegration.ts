@@ -318,7 +318,43 @@ export class WorkflowRepository {
         [leadId, projectId, projectData.description || "Lead to product handoff", createdBy]
       );
 
-      // Copy lead steps as reference steps for the project
+      // Handle steps creation - either from template or from provided steps
+      if (projectData.template_id) {
+        // Get template steps from template
+        try {
+          const templateStepsResult = await client.query(
+            "SELECT * FROM template_steps WHERE template_id = $1 ORDER BY step_order",
+            [projectData.template_id]
+          );
+
+          if (templateStepsResult.rows.length > 0) {
+            for (const templateStep of templateStepsResult.rows) {
+              await client.query(
+                `INSERT INTO workflow_steps
+                 (project_id, step_name, step_description, step_order, status, estimated_hours, created_by)
+                 VALUES ($1, $2, $3, $4, 'pending', $5, $6)`,
+                [projectId, templateStep.name, templateStep.description,
+                 templateStep.step_order, templateStep.default_eta_days ? templateStep.default_eta_days * 8 : null, createdBy]
+              );
+            }
+          }
+        } catch (templateError) {
+          console.log("Could not load template steps, using provided steps instead:", templateError);
+        }
+      } else if (projectData.steps && projectData.steps.length > 0) {
+        // Use provided custom steps
+        for (const step of projectData.steps) {
+          await client.query(
+            `INSERT INTO workflow_steps
+             (project_id, step_name, step_description, step_order, status, estimated_hours, due_date, created_by)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+            [projectId, step.step_name, step.step_description, step.step_order,
+             step.status || 'pending', step.estimated_hours, step.due_date, createdBy]
+          );
+        }
+      }
+
+      // Copy lead steps as reference steps for the project (always add this as the first step)
       const leadStepsResult = await client.query(
         "SELECT * FROM lead_steps WHERE lead_id = $1 ORDER BY step_order",
         [leadId]
@@ -326,7 +362,7 @@ export class WorkflowRepository {
       const leadSteps = leadStepsResult.rows;
 
       if (leadSteps.length > 0) {
-        // Add reference step showing completed lead work
+        // Add reference step showing completed lead work as step 0
         await client.query(
           `INSERT INTO workflow_steps
            (project_id, step_name, step_description, step_order, status, created_by)
