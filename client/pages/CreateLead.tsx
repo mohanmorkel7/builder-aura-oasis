@@ -324,6 +324,15 @@ export default function CreateLead() {
         project_value: leadData.project_value
           ? parseFloat(leadData.project_value)
           : undefined,
+        project_value_12m: leadData.project_value_12m
+          ? parseFloat(leadData.project_value_12m)
+          : undefined,
+        project_value_24m: leadData.project_value_24m
+          ? parseFloat(leadData.project_value_24m)
+          : undefined,
+        project_value_36m: leadData.project_value_36m
+          ? parseFloat(leadData.project_value_36m)
+          : undefined,
         expected_daily_txn_volume: leadData.expected_daily_txn_volume
           ? parseInt(leadData.expected_daily_txn_volume)
           : undefined,
