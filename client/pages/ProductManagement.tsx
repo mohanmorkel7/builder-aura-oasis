@@ -35,7 +35,8 @@ import {
   Bug,
   Zap,
   Star,
-  BarChart3
+  BarChart3,
+  ArrowRight
 } from "lucide-react";
 import { format } from "date-fns";
 
