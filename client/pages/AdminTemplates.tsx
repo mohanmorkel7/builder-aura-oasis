@@ -40,7 +40,7 @@ import {
   Megaphone,
 } from "lucide-react";
 import { format } from "date-fns";
-import CreateTemplateDialog from "@/components/CreateTemplateDialogSimple";
+import CreateTemplateDialog from "@/components/CreateTemplateDialog";
 import TemplateStatsCard from "@/components/TemplateStatsCard";
 import ViewTemplateDialog from "@/components/ViewTemplateDialog";
 import EditTemplateDialog from "@/components/EditTemplateDialog";
