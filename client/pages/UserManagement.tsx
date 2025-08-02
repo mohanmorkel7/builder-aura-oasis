@@ -384,7 +384,7 @@ export default function UserManagement() {
                             <div className="text-xs text-gray-400">{user.department}</div>
                           </div>
                           {user.azureObjectId && (
-                            <Microsoft className="w-4 h-4 text-blue-600" />
+                            <Cloud className="w-4 h-4 text-blue-600" />
                           )}
                         </div>
                       </div>
