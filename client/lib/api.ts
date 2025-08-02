@@ -311,6 +311,11 @@ export class ApiClient {
     return this.request(`/leads${params}`);
   }
 
+  async getPartialLeads(salesRepId?: number) {
+    const params = salesRepId ? `?salesRep=${salesRepId}&partial=true` : "?partial=true";
+    return this.request(`/leads${params}`);
+  }
+
   async getLead(id: number) {
     return this.request(`/leads/${id}`);
   }
