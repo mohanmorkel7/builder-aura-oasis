@@ -253,7 +253,7 @@ export function FollowUpModal({
                   }))
                 }
                 placeholder="Describe what needs to be followed up on..."
-                rows={3}
+                rows={2}
               />
             </div>
 
