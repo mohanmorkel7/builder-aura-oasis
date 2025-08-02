@@ -766,6 +766,19 @@ export function useLead(id: number) {
   });
 }
 
+export function usePartialSaveLead() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (leadData: any) => {
+      const partialData = { ...leadData, is_partial: true };
+      return await apiClient.createLead(partialData);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["leads"] });
+    },
+  });
+}
+
 export function useCreateLead() {
   const queryClient = useQueryClient();
   return useMutation({
