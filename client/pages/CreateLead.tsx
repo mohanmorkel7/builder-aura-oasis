@@ -119,7 +119,7 @@ const getCurrencyUnits = (currency: string) => {
   switch (currency) {
     case "INR":
       return [
-        { value: "rupee", label: "Rupee (��)" },
+        { value: "rupee", label: "Rupee (₹)" },
         { value: "paisa", label: "Paisa" },
       ];
     case "USD":
@@ -1140,7 +1140,7 @@ export default function CreateLead() {
                             </TableCell>
                             <TableCell>
                               <Select
-                                value={pricing.currency}
+                                value={pricing.currency || ""}
                                 onValueChange={(value) => {
                                   // Auto-update unit to the first unit of the selected currency
                                   const newUnits = getCurrencyUnits(value);
