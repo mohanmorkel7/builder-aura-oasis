@@ -360,20 +360,16 @@ router.get("/search", async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Search term is required" });
     }
 
-    if (await isDatabaseAvailable()) {
-      const templates = await TemplateRepository.searchTemplates(searchTerm, categoryId);
-      res.json(templates);
-    } else {
-      const allTemplates = await MockDataService.getAllTemplates();
-      const filteredTemplates = allTemplates.filter(template =>
-        template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        template.description?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      res.json(filteredTemplates);
-    }
+    // Use mock data
+    const allTemplates = await MockDataService.getAllTemplates();
+    const filteredTemplates = allTemplates.filter(template =>
+      template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      template.description?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    res.json(filteredTemplates);
   } catch (error) {
     console.error("Error searching templates:", error);
-    res.status(500).json({ error: "Failed to search templates" });
+    res.json([]); // Return empty array as fallback
   }
 });
 
