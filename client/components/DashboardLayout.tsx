@@ -22,6 +22,7 @@ import {
   FileText,
   MessageCircle,
   AlertCircle,
+  Ticket,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { apiClient } from "@/lib/api";
