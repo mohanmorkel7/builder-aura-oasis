@@ -167,6 +167,7 @@ router.post("/", async (req: Request, res: Response) => {
     }
 
     if (
+      !isPartialSave &&
       leadData.status &&
       !ValidationSchemas.lead.enums.status.includes(leadData.status)
     ) {
@@ -177,6 +178,7 @@ router.post("/", async (req: Request, res: Response) => {
     }
 
     if (
+      !isPartialSave &&
       leadData.priority &&
       !ValidationSchemas.lead.enums.priority.includes(leadData.priority)
     ) {
