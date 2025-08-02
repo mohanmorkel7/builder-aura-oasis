@@ -66,6 +66,7 @@ import FollowUpNew from "@/pages/FollowUpNew";
 import AdminReports from "@/pages/AdminReports";
 import SalesDashboard from "@/pages/SalesDashboard";
 import ProductManagement from "@/pages/ProductManagement";
+import ProductWorkflow from "@/pages/ProductWorkflow";
 import AlertsNotifications from "@/pages/AlertsNotifications";
 import PlaceholderPage from "@/pages/PlaceholderPage";
 import LeadDashboard from "@/pages/LeadDashboard";
