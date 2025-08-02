@@ -1,5 +1,60 @@
 -- Banani App Complete Database Schema
 
+-- Create ENUM types for workflow integration
+DO $$ BEGIN
+    CREATE TYPE workflow_source_type AS ENUM ('lead', 'manual');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+    CREATE TYPE workflow_project_type AS ENUM ('product_development', 'finops_process', 'integration');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+    CREATE TYPE workflow_project_status AS ENUM ('created', 'in_progress', 'review', 'completed', 'on_hold', 'cancelled');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+    CREATE TYPE workflow_priority AS ENUM ('low', 'medium', 'high', 'critical');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+    CREATE TYPE workflow_step_status AS ENUM ('pending', 'in_progress', 'completed', 'blocked', 'cancelled');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+    CREATE TYPE workflow_comment_type AS ENUM ('comment', 'status_update', 'assignment', 'alert', 'system');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+    CREATE TYPE workflow_notification_type AS ENUM ('step_overdue', 'project_delayed', 'assignment', 'mention', 'process_failed', 'daily_task', 'system_alert');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+    CREATE TYPE workflow_automation_type AS ENUM ('daily_task', 'scheduled_check', 'conditional_trigger', 'notification');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+    CREATE TYPE workflow_document_type AS ENUM ('requirement', 'specification', 'design', 'report', 'contract', 'other');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
 -- Users table
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
