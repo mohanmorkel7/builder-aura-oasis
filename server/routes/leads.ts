@@ -802,4 +802,157 @@ router.delete("/chats/:id", async (req: Request, res: Response) => {
   }
 });
 
+// Get template step dashboard data
+router.get("/template-step-dashboard", async (req: Request, res: Response) => {
+  try {
+    let dashboardData = [];
+
+    if (await isDatabaseAvailable()) {
+      // Get all active templates with their steps
+      const templatesQuery = `
+        SELECT
+          t.id as template_id,
+          t.name as template_name,
+          ts.id as step_id,
+          ts.name as step_name,
+          ts.step_order,
+          ts.probability_percent
+        FROM onboarding_templates t
+        JOIN template_steps ts ON t.id = ts.template_id
+        WHERE t.is_active = true
+        ORDER BY t.id, ts.step_order
+      `;
+
+      const { Pool } = require('pg');
+      const pool = new Pool({
+        connectionString: process.env.DATABASE_URL || 'postgresql://postgres:password@localhost:5432/finops_onboarding'
+      });
+
+      const templatesResult = await pool.query(templatesQuery);
+
+      for (const templateStep of templatesResult.rows) {
+        // Get lead steps count for this template step
+        const stepStatsQuery = `
+          SELECT
+            COUNT(*) as total_leads,
+            COUNT(CASE WHEN ls.status = 'pending' THEN 1 END) as pending_count,
+            COUNT(CASE WHEN ls.status = 'in_progress' THEN 1 END) as in_progress_count,
+            COUNT(CASE WHEN ls.status = 'completed' THEN 1 END) as completed_count,
+            COUNT(CASE WHEN ls.status = 'cancelled' THEN 1 END) as blocked_count
+          FROM leads l
+          LEFT JOIN lead_steps ls ON l.id = ls.lead_id
+            AND ls.name = $1
+            AND ls.step_order = $2
+          WHERE l.template_id = $3
+        `;
+
+        const statsResult = await pool.query(stepStatsQuery, [
+          templateStep.step_name,
+          templateStep.step_order,
+          templateStep.template_id
+        ]);
+
+        const stats = statsResult.rows[0];
+
+        dashboardData.push({
+          template_id: templateStep.template_id,
+          template_name: templateStep.template_name,
+          step_id: templateStep.step_id,
+          step_name: templateStep.step_name,
+          step_order: templateStep.step_order,
+          probability_percent: templateStep.probability_percent || 0,
+          total_leads: parseInt(stats.total_leads) || 0,
+          pending_count: parseInt(stats.pending_count) || 0,
+          in_progress_count: parseInt(stats.in_progress_count) || 0,
+          completed_count: parseInt(stats.completed_count) || 0,
+          blocked_count: parseInt(stats.blocked_count) || 0
+        });
+      }
+
+      await pool.end();
+    } else {
+      // Mock data with realistic numbers for demonstration
+      const mockTemplates = [
+        {
+          id: 1,
+          name: "Standard Client Onboarding",
+          steps: [
+            { id: 1, name: "Initial Contact", step_order: 1, probability_percent: 10 },
+            { id: 2, name: "Requirement Analysis", step_order: 2, probability_percent: 25 },
+            { id: 3, name: "Proposal Submission", step_order: 3, probability_percent: 40 },
+            { id: 4, name: "Contract Negotiation", step_order: 4, probability_percent: 70 },
+            { id: 5, name: "Project Kickoff", step_order: 5, probability_percent: 100 }
+          ]
+        },
+        {
+          id: 2,
+          name: "Enterprise Client Onboarding",
+          steps: [
+            { id: 6, name: "Discovery Call", step_order: 1, probability_percent: 5 },
+            { id: 7, name: "Technical Review", step_order: 2, probability_percent: 15 },
+            { id: 8, name: "Security Assessment", step_order: 3, probability_percent: 30 },
+            { id: 9, name: "Stakeholder Meeting", step_order: 4, probability_percent: 45 },
+            { id: 10, name: "Pilot Program", step_order: 5, probability_percent: 60 },
+            { id: 11, name: "Implementation Plan", step_order: 6, probability_percent: 75 },
+            { id: 12, name: "Contract Finalization", step_order: 7, probability_percent: 90 },
+            { id: 13, name: "Go Live", step_order: 8, probability_percent: 100 }
+          ]
+        }
+      ];
+
+      for (const template of mockTemplates) {
+        for (const step of template.steps) {
+          // Generate realistic mock data based on step progression
+          const stepProgress = step.step_order / template.steps.length;
+          const baseLeads = Math.floor(Math.random() * 15) + 5; // 5-20 leads
+
+          let pending_count, in_progress_count, completed_count, blocked_count;
+
+          if (stepProgress < 0.3) {
+            // Early steps: more pending
+            pending_count = Math.ceil(baseLeads * 0.6);
+            in_progress_count = Math.ceil(baseLeads * 0.25);
+            completed_count = Math.floor(baseLeads * 0.1);
+            blocked_count = Math.max(0, baseLeads - pending_count - in_progress_count - completed_count);
+          } else if (stepProgress < 0.7) {
+            // Middle steps: more in progress
+            pending_count = Math.ceil(baseLeads * 0.3);
+            in_progress_count = Math.ceil(baseLeads * 0.45);
+            completed_count = Math.ceil(baseLeads * 0.2);
+            blocked_count = Math.max(0, baseLeads - pending_count - in_progress_count - completed_count);
+          } else {
+            // Later steps: more completed
+            pending_count = Math.ceil(baseLeads * 0.15);
+            in_progress_count = Math.ceil(baseLeads * 0.25);
+            completed_count = Math.ceil(baseLeads * 0.55);
+            blocked_count = Math.max(0, baseLeads - pending_count - in_progress_count - completed_count);
+          }
+
+          // Ensure totals match
+          const total = pending_count + in_progress_count + completed_count + blocked_count;
+
+          dashboardData.push({
+            template_id: template.id,
+            template_name: template.name,
+            step_id: step.id,
+            step_name: step.name,
+            step_order: step.step_order,
+            probability_percent: step.probability_percent,
+            total_leads: total,
+            pending_count,
+            in_progress_count,
+            completed_count,
+            blocked_count
+          });
+        }
+      }
+    }
+
+    res.json(dashboardData);
+  } catch (error) {
+    console.error("Error fetching template step dashboard:", error);
+    res.status(500).json({ error: "Failed to fetch template step dashboard data" });
+  }
+});
+
 export default router;
