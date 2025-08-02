@@ -758,15 +758,11 @@ export function useLead(id: number) {
   return useQuery({
     queryKey: ["leads", id],
     queryFn: async () => {
-      try {
-        return await apiClient.getLead(id);
-      } catch (error) {
-        console.log(`API unavailable for lead ${id}, using mock data`);
-        return mockLeads.find((lead) => lead.id === id) || null;
-      }
+      return await apiClient.getLead(id);
     },
     enabled: !!id,
-    retry: false,
+    retry: 2,
+    retryDelay: 1000,
   });
 }
 
