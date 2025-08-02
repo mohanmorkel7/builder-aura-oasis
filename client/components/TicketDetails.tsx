@@ -294,7 +294,7 @@ export default function TicketDetails({ ticket, onUpdate, metadata, currentUser 
                         <SelectValue placeholder="Select assignee" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Unassigned</SelectItem>
+                        <SelectItem value="unassigned">Unassigned</SelectItem>
                         {users?.map((user) => (
                           <SelectItem key={user.id} value={user.id.toString()}>
                             {user.first_name} {user.last_name} ({user.role})
