@@ -1207,6 +1207,7 @@ function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogPr
                               <Select
                                 value={step.status}
                                 onValueChange={(value) => handleStepStatusUpdate(step.id, value)}
+                                onClick={(e: any) => e.stopPropagation()}
                               >
                                 <SelectTrigger className="w-32">
                                   <SelectValue />
@@ -1219,22 +1220,18 @@ function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogPr
                                 </SelectContent>
                               </Select>
 
-                              {/* Expand/Collapse Button */}
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => toggleStepExpansion(step.id)}
-                              >
+                              {/* Expand/Collapse Indicator */}
+                              <div className="flex items-center gap-1 px-2 py-1 rounded-md bg-gray-100 text-gray-600">
                                 {isExpanded ? (
                                   <ChevronDown className="w-4 h-4" />
                                 ) : (
                                   <ChevronRight className="w-4 h-4" />
                                 )}
-                                <MessageSquare className="w-4 h-4 ml-1" />
+                                <MessageSquare className="w-4 h-4" />
                                 {stepCommentsList.length > 0 && (
-                                  <span className="ml-1 text-xs">({stepCommentsList.length})</span>
+                                  <span className="text-xs">({stepCommentsList.length})</span>
                                 )}
-                              </Button>
+                              </div>
                             </div>
                           </div>
 
