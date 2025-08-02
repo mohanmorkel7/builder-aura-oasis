@@ -363,7 +363,7 @@ export default function CreateLead() {
         created_by: parseInt(user?.id || "1"),
       };
 
-      await partialSaveMutation.mutateAsync(partialData);
+      await createLeadMutation.mutateAsync(partialData);
       setIsPartialSaved(true);
 
       // Show success message for 2 seconds
