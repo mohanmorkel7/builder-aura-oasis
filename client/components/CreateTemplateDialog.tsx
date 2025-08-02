@@ -534,6 +534,38 @@ export default function CreateTemplateDialog({
                 No steps added yet. Click "Add Step" to get started.
               </div>
             )}
+
+            {/* Probability Total Calculation */}
+            {steps.length > 0 && (
+              <div className="mt-6 p-4 bg-gray-50 rounded-lg border">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-gray-700">
+                    Total Probability Percentage:
+                  </span>
+                  <div className="flex items-center space-x-2">
+                    <span
+                      className={`text-lg font-bold ${
+                        steps.reduce((sum, step) => sum + (step.probability_percent || 0), 0) === 100
+                          ? 'text-green-600'
+                          : 'text-red-600'
+                      }`}
+                    >
+                      {steps.reduce((sum, step) => sum + (step.probability_percent || 0), 0)}%
+                    </span>
+                    {steps.reduce((sum, step) => sum + (step.probability_percent || 0), 0) === 100 && (
+                      <span className="text-sm text-green-600 bg-green-100 px-2 py-1 rounded">
+                        ✓ Perfect!
+                      </span>
+                    )}
+                  </div>
+                </div>
+                {steps.reduce((sum, step) => sum + (step.probability_percent || 0), 0) !== 100 && (
+                  <p className="text-xs text-red-600 mt-2">
+                    Total should equal 100%. Current total: {steps.reduce((sum, step) => sum + (step.probability_percent || 0), 0)}%
+                  </p>
+                )}
+              </div>
+            )}
           </div>
         </TabsContent>
 
