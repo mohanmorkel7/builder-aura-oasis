@@ -100,17 +100,21 @@ export default function ViewTemplateDialog({
               <CardContent>
                 {template.steps && template.steps.length > 0 ? (
                   <div className="space-y-4">
-                    {template.steps.map((step: any, index: number) => (
+                    {template.steps
+                      .sort((a: any, b: any) => (a.step_order || a.order_position || 0) - (b.step_order || b.order_position || 0))
+                      .map((step: any, index: number) => (
                       <div
                         key={step.id || index}
                         className="border rounded-lg p-4"
                       >
                         <div className="flex items-start justify-between mb-2">
                           <div className="flex items-center gap-2">
-                            <Badge variant="outline">Step {index + 1}</Badge>
+                            <div className="flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-800 rounded-full font-semibold text-sm">
+                              {index + 1}
+                            </div>
                             <h4 className="font-medium">{step.name}</h4>
                           </div>
-                          {step.probability_percent !== undefined && (
+                          {(step.probability_percent !== undefined && step.probability_percent !== null) && (
                             <Badge
                               variant="secondary"
                               className="bg-blue-100 text-blue-700"
@@ -121,7 +125,7 @@ export default function ViewTemplateDialog({
                         </div>
 
                         {step.description && (
-                          <p className="text-gray-600 mb-3">
+                          <p className="text-gray-600 mb-3 ml-10">
                             {step.description}
                           </p>
                         )}
