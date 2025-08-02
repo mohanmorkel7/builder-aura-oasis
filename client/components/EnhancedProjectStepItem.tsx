@@ -210,6 +210,22 @@ export function EnhancedProjectStepItem({
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
+  const handleFollowUp = async (messageId: number) => {
+    if (!user) return;
+
+    // Navigate to follow-up screen with message and step context
+    navigate(`/follow-up`, {
+      state: {
+        messageId,
+        stepId: step.id,
+        projectId: projectId,
+        stepName: step.step_name,
+        fromChat: true,
+        createSystemMessage: true,
+      },
+    });
+  };
+
   const StatusIcon = getStatusIcon(step.status);
 
   return (
