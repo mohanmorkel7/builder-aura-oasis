@@ -337,20 +337,16 @@ router.get("/category/:categoryId", async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Invalid category ID" });
     }
 
-    if (await isDatabaseAvailable()) {
-      const templates = await TemplateRepository.findByCategory(categoryId);
-      res.json(templates);
-    } else {
-      const allTemplates = await MockDataService.getAllTemplates();
-      // Filter by mock category
-      const filteredTemplates = categoryId === 2
-        ? allTemplates.filter(t => t.id <= 2)
-        : allTemplates.filter(t => t.id > 2);
-      res.json(filteredTemplates);
-    }
+    // Use mock data
+    const allTemplates = await MockDataService.getAllTemplates();
+    // Filter by mock category
+    const filteredTemplates = categoryId === 2
+      ? allTemplates.filter(t => t.id <= 2)
+      : allTemplates.filter(t => t.id > 2);
+    res.json(filteredTemplates);
   } catch (error) {
     console.error("Error fetching templates by category:", error);
-    res.status(500).json({ error: "Failed to fetch templates" });
+    res.json([]); // Return empty array as fallback
   }
 });
 
