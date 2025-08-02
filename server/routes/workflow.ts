@@ -642,6 +642,42 @@ router.post("/automations/:automationId/trigger", async (req: Request, res: Resp
   }
 });
 
+// FOLLOW-UP ENDPOINTS
+
+// Create project follow-up
+router.post("/projects/:projectId/follow-ups", async (req: Request, res: Response) => {
+  try {
+    const projectId = parseInt(req.params.projectId);
+    if (isNaN(projectId)) {
+      return res.status(400).json({ error: "Invalid project ID" });
+    }
+
+    const followUpData = {
+      ...req.body,
+      project_id: projectId
+    };
+
+    // Validate required fields
+    if (!followUpData.title || !followUpData.created_by) {
+      return res.status(400).json({ error: "Missing required fields: title, created_by" });
+    }
+
+    // Mock response for now
+    const mockFollowUp = {
+      id: Math.floor(Math.random() * 1000) + 100,
+      ...followUpData,
+      status: "pending",
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+
+    res.status(201).json(mockFollowUp);
+  } catch (error) {
+    console.error("Error creating follow-up:", error);
+    res.status(500).json({ error: "Failed to create follow-up" });
+  }
+});
+
 // LEAD INTEGRATION ENDPOINTS
 
 // Get completed leads ready for project creation
