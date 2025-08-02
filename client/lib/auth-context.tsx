@@ -50,6 +50,33 @@ interface MicrosoftProfile {
 // Initialize MSAL instance
 const msalInstance = new PublicClientApplication(msalConfig);
 
+// Azure AD group mappings to roles
+const azureGroupMappings: Record<string, UserRole> = {
+  // Replace these with your actual Azure AD group IDs or names
+  "Admin Group": "admin",
+  "Sales Team": "sales",
+  "Product Team": "product",
+  "Development Team": "development",
+  "Database Team": "db",
+  "FinOps Team": "finops",
+  "HR Management": "hr_management",
+  "Infrastructure Team": "infra",
+  "Switch Team": "switch_team",
+};
+
+// Function to extract role from Azure AD groups
+const extractRoleFromGroups = (groups: any[]): UserRole => {
+  for (const group of groups) {
+    const groupName = group.displayName || group.name;
+    if (azureGroupMappings[groupName]) {
+      return azureGroupMappings[groupName];
+    }
+  }
+
+  // Default role if no matching group found
+  return "product";
+};
+
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<boolean>;
