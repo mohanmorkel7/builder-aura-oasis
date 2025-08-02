@@ -380,7 +380,7 @@ export default function LeadEdit() {
           existing || {
             solution,
             value: 0,
-            unit: "paisa" as const,
+            unit: "rupee" as const,
             currency: "INR" as const,
           }
         );
