@@ -766,6 +766,27 @@ function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogPr
   const queryClient = useQueryClient();
   const [newComment, setNewComment] = useState("");
 
+  // Helper functions for status display
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "completed": return CheckCircle;
+      case "in_progress": return PlayCircle;
+      case "on_hold": return PauseCircle;
+      case "cancelled": return AlertTriangle;
+      default: return Clock;
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "completed": return "text-green-600 bg-green-100";
+      case "in_progress": return "text-blue-600 bg-blue-100";
+      case "on_hold": return "text-yellow-600 bg-yellow-100";
+      case "cancelled": return "text-red-600 bg-red-100";
+      default: return "text-gray-600 bg-gray-100";
+    }
+  };
+
   // Fetch project details including steps and comments
   const { data: projectDetails, isLoading } = useQuery({
     queryKey: ["workflow-project-details", project?.id],
