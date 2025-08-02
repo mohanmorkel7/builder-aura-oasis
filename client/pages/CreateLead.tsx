@@ -426,7 +426,6 @@ export default function CreateLead() {
 
       await createLeadMutation.mutateAsync(partialData);
       setIsPartialSaved(true);
-      setShowPartialSaves(false); // Hide partial saves after saving
 
       // Show success message for 2 seconds
       setTimeout(() => setIsPartialSaved(false), 2000);
