@@ -879,6 +879,14 @@ export function useLeadStats(salesRepId?: number) {
   });
 }
 
+export function useTemplateStepDashboard() {
+  return useQuery({
+    queryKey: ["template-step-dashboard"],
+    queryFn: () => apiClient.getTemplateStepDashboard(),
+    refetchInterval: 30000, // Refetch every 30 seconds for real-time updates
+  });
+}
+
 // Lead steps hooks
 export function useLeadSteps(leadId: number) {
   return useQuery({
