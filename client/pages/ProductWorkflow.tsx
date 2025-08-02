@@ -1054,30 +1054,166 @@ function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogPr
               {isLoading ? (
                 <div className="text-center py-4">Loading project steps...</div>
               ) : projectDetails?.steps?.length > 0 ? (
-                <div className="space-y-3">
+                <div className="space-y-4">
                   {projectDetails.steps.map((step: any) => {
                     const StatusIcon = getStatusIcon(step.status);
+                    const isExpanded = expandedSteps[step.id];
+                    const stepCommentsQuery = isExpanded ? getStepComments(step.id) : null;
+                    const stepCommentsList = stepCommentsQuery?.data || [];
+
                     return (
-                      <div key={step.id} className="flex items-start gap-3 p-3 border rounded-lg">
-                        <div className={`p-2 rounded-full ${getStatusColor(step.status)}`}>
-                          <StatusIcon className="w-4 h-4" />
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="font-medium">{step.step_name}</h4>
-                          {step.step_description && (
-                            <p className="text-sm text-gray-600 mt-1">{step.step_description}</p>
-                          )}
-                          <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
-                            <span>Order: {step.step_order}</span>
-                            {step.assigned_user_name && (
-                              <span>Assigned: {step.assigned_user_name}</span>
-                            )}
-                            {step.estimated_hours && (
-                              <span>Est: {step.estimated_hours}h</span>
-                            )}
+                      <Card key={step.id} className="border-l-4 border-l-blue-500">
+                        <CardContent className="p-4">
+                          <div className="flex items-start justify-between">
+                            <div className="flex items-start gap-3 flex-1">
+                              <div className={`p-2 rounded-full ${getStatusColor(step.status)}`}>
+                                <StatusIcon className="w-4 h-4" />
+                              </div>
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2">
+                                  <h4 className="font-medium">{step.step_name}</h4>
+                                  <Badge variant="outline">Step {step.step_order}</Badge>
+                                </div>
+                                {step.step_description && (
+                                  <p className="text-sm text-gray-600 mt-1">{step.step_description}</p>
+                                )}
+                                <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
+                                  {step.assigned_user_name && (
+                                    <span>Assigned: {step.assigned_user_name}</span>
+                                  )}
+                                  {step.estimated_hours && (
+                                    <span>Est: {step.estimated_hours}h</span>
+                                  )}
+                                  {step.due_date && (
+                                    <span>Due: {format(new Date(step.due_date), "MMM d")}</span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                              {/* Status Update Dropdown */}
+                              <Select
+                                value={step.status}
+                                onValueChange={(value) => handleStepStatusUpdate(step.id, value)}
+                              >
+                                <SelectTrigger className="w-32">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="pending">Pending</SelectItem>
+                                  <SelectItem value="in_progress">In Progress</SelectItem>
+                                  <SelectItem value="completed">Completed</SelectItem>
+                                  <SelectItem value="blocked">Blocked</SelectItem>
+                                </SelectContent>
+                              </Select>
+
+                              {/* Expand/Collapse Button */}
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => toggleStepExpansion(step.id)}
+                              >
+                                {isExpanded ? (
+                                  <ChevronDown className="w-4 h-4" />
+                                ) : (
+                                  <ChevronRight className="w-4 h-4" />
+                                )}
+                                <MessageSquare className="w-4 h-4 ml-1" />
+                                {stepCommentsList.length > 0 && (
+                                  <span className="ml-1 text-xs">({stepCommentsList.length})</span>
+                                )}
+                              </Button>
+                            </div>
                           </div>
-                        </div>
-                      </div>
+
+                          {/* Expanded Step Communication */}
+                          {isExpanded && (
+                            <div className="mt-4 border-t pt-4">
+                              {/* Step Comments List */}
+                              {stepCommentsQuery?.isLoading ? (
+                                <div className="text-center py-2 text-sm">Loading comments...</div>
+                              ) : stepCommentsList.length > 0 ? (
+                                <div className="space-y-3 mb-4">
+                                  {stepCommentsList.map((comment: any) => (
+                                    <div key={comment.id} className="flex gap-3">
+                                      <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                                        <Users className="w-4 h-4 text-blue-600" />
+                                      </div>
+                                      <div className="flex-1">
+                                        <div className="bg-gray-50 rounded-lg p-3">
+                                          <p className="text-sm">{comment.comment_text}</p>
+                                        </div>
+                                        <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
+                                          <span>{comment.creator_name || "Unknown User"}</span>
+                                          <span>•</span>
+                                          <span>{format(new Date(comment.created_at), "MMM d, h:mm a")}</span>
+                                          {comment.comment_type !== "comment" && (
+                                            <>
+                                              <span>•</span>
+                                              <Badge variant="outline" className="text-xs">
+                                                {comment.comment_type.replace("_", " ")}
+                                              </Badge>
+                                            </>
+                                          )}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : (
+                                <div className="text-center py-4 text-gray-500 text-sm">
+                                  No comments yet for this step.
+                                </div>
+                              )}
+
+                              {/* Add Comment Section */}
+                              <div className="space-y-3">
+                                <div className="flex gap-2">
+                                  <Textarea
+                                    value={stepComments[step.id] || ""}
+                                    onChange={(e) => setStepComments(prev => ({
+                                      ...prev,
+                                      [step.id]: e.target.value
+                                    }))}
+                                    placeholder="Add a comment for this step..."
+                                    className="flex-1 min-h-[80px]"
+                                  />
+                                  <div className="flex flex-col gap-2">
+                                    <Button
+                                      size="sm"
+                                      onClick={() => handleAddStepComment(step.id)}
+                                      disabled={!stepComments[step.id]?.trim() || addCommentMutation.isPending}
+                                    >
+                                      <Send className="w-4 h-4" />
+                                    </Button>
+                                    <div className="relative">
+                                      <input
+                                        type="file"
+                                        multiple
+                                        onChange={(e) => e.target.files && handleFileUpload(step.id, e.target.files)}
+                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                        accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.txt"
+                                      />
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        disabled={uploadingFiles[step.id]}
+                                      >
+                                        {uploadingFiles[step.id] ? (
+                                          <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                                        ) : (
+                                          <Paperclip className="w-4 h-4" />
+                                        )}
+                                      </Button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
                     );
                   })}
                 </div>
