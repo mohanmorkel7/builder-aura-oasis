@@ -47,14 +47,6 @@ interface TemplateStep {
   probability_percent: number;
 }
 
-interface Template {
-  id: number;
-  name: string;
-  description: string;
-  steps: TemplateStep[];
-  is_active: boolean;
-}
-
 interface StepStatusModal {
   isOpen: boolean;
   step: TemplateStep | null;
