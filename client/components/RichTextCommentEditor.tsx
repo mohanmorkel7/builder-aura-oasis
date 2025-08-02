@@ -52,74 +52,15 @@ export default function RichTextCommentEditor({
             // Mock suggestions - in real app, this would fetch from API
             const users = ['admin', 'sales', 'product', 'support'];
             const tickets = ['TKT-0001', 'TKT-0002', 'TKT-0003'];
-            
+
             const allSuggestions = [
               ...users.map(user => ({ id: user, label: `@${user}` })),
               ...tickets.map(ticket => ({ id: ticket, label: `@${ticket}` }))
             ];
-            
+
             return allSuggestions
               .filter(item => item.label.toLowerCase().includes(query.toLowerCase()))
               .slice(0, 5);
-          },
-          render: () => {
-            let component: any;
-            let popup: any;
-
-            return {
-              onStart: (props: any) => {
-                component = document.createElement('div');
-                component.className = 'bg-white border rounded-lg shadow-lg p-2 max-h-60 overflow-y-auto z-50';
-                
-                popup = tippy('body', {
-                  getReferenceClientRect: props.clientRect,
-                  appendTo: () => document.body,
-                  content: component,
-                  showOnCreate: true,
-                  interactive: true,
-                  trigger: 'manual',
-                  placement: 'bottom-start',
-                });
-              },
-
-              onUpdate(props: any) {
-                component.innerHTML = '';
-                
-                if (props.items.length === 0) {
-                  const noResults = document.createElement('div');
-                  noResults.className = 'text-gray-500 text-sm p-2';
-                  noResults.textContent = 'No mentions found';
-                  component.appendChild(noResults);
-                  return;
-                }
-
-                props.items.forEach((item: any, index: number) => {
-                  const button = document.createElement('button');
-                  button.className = `w-full text-left p-2 hover:bg-gray-100 rounded ${
-                    index === props.selectedIndex ? 'bg-gray-100' : ''
-                  }`;
-                  button.textContent = item.label;
-                  button.onclick = () => props.command({ id: item.id, label: item.label });
-                  component.appendChild(button);
-                });
-
-                popup[0].setProps({
-                  getReferenceClientRect: props.clientRect,
-                });
-              },
-
-              onKeyDown(props: any) {
-                if (props.event.key === 'Escape') {
-                  popup[0].hide();
-                  return true;
-                }
-                return false;
-              },
-
-              onExit() {
-                popup[0].destroy();
-              },
-            };
           },
         },
       }),
