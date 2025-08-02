@@ -130,37 +130,20 @@ router.post("/", async (req: Request, res: Response) => {
     const leadData: CreateLeadData = req.body;
     console.log("Received lead creation request. Body:", JSON.stringify(req.body, null, 2));
 
-    // For partial saves, skip strict validation
-    const isPartialSave = leadData.is_partial === true;
-    console.log("Is partial save:", isPartialSave);
-
-    // Check if database is available and has the required columns
-    if (await isDatabaseAvailable()) {
-      console.log("Database is available");
-    } else {
-      console.log("Database is not available, lead creation may fail");
+    // Minimal validation - only check for absolutely required fields
+    if (!leadData.created_by) {
+      return res.status(400).json({
+        error: "created_by is required",
+      });
     }
 
-    if (!isPartialSave) {
-      // Validate required fields only for complete leads
-      const validation = DatabaseValidator.validateRequiredFields(
-        leadData,
-        ValidationSchemas.lead.required,
-      );
+    // Ensure basic required fields have defaults
+    if (!leadData.client_name) {
+      leadData.client_name = 'New Lead';
+    }
 
-      if (!validation.isValid) {
-        return res.status(400).json({
-          error: "Missing required fields",
-          missingFields: validation.missingFields,
-        });
-      }
-    } else {
-      // For partial saves, ensure at least created_by is present
-      if (!leadData.created_by) {
-        return res.status(400).json({
-          error: "created_by is required even for partial saves",
-        });
-      }
+    if (!leadData.lead_source) {
+      leadData.lead_source = 'other';
     }
 
     // Validate enum values (skip for partial saves)
