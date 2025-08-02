@@ -445,10 +445,17 @@ export default function Overview() {
             <DialogTitle className="flex items-center gap-2">
               {stepModal.step && (
                 <>
-                  {React.createElement(getStatusIcon(stepModal.status), { 
-                    className: `w-5 h-5 ${getStatusColor(stepModal.status).split(' ')[0]}` 
+                  {React.createElement(getStatusIcon(stepModal.status), {
+                    className: `w-5 h-5 ${getStatusColor(stepModal.status).split(' ')[0]}`
                   })}
-                  {stepModal.step.name} - {stepModal.status.replace('_', ' ').toUpperCase()} Leads
+                  <div>
+                    <div className="text-lg font-semibold">
+                      {stepModal.step.name} - {stepModal.status.replace('_', ' ').toUpperCase()} Leads
+                    </div>
+                    <div className="text-sm font-normal text-gray-600">
+                      Step {stepModal.step.step_order} • {stepModal.step.probability_percent}% Probability Weight
+                    </div>
+                  </div>
                 </>
               )}
             </DialogTitle>
