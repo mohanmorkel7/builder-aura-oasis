@@ -13,6 +13,16 @@ export interface User {
   avatar?: string;
 }
 
+interface MicrosoftProfile {
+  id: string;
+  displayName: string;
+  userPrincipalName: string;
+  mail: string;
+}
+
+// Initialize MSAL instance
+const msalInstance = new PublicClientApplication(msalConfig);
+
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<boolean>;
