@@ -80,10 +80,14 @@ export default function ViewTemplateDialog({
                     <FileText className="w-4 h-4 text-gray-500" />
                     <span>{template.step_count || 0} steps</span>
                   </div>
-                  {template.steps && (
+                  {template.steps && template.steps.some((step: any) => step.probability_percent !== undefined) && (
                     <div className="flex items-center gap-2">
                       <CheckCircle className="w-4 h-4 text-gray-500" />
-                      <span>
+                      <span className={`${
+                        template.steps.reduce((sum: number, step: any) => sum + (step.probability_percent || 0), 0) === 100
+                          ? 'text-green-600 font-medium'
+                          : 'text-orange-600 font-medium'
+                      }`}>
                         Total: {template.steps.reduce((sum: number, step: any) => sum + (step.probability_percent || 0), 0)}% probability
                       </span>
                     </div>
