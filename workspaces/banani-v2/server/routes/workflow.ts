@@ -216,14 +216,14 @@ router.get("/projects", async (req: Request, res: Response) => {
       const projects = await WorkflowRepository.getAllProjects(userId, userRole);
       res.json(projects);
     } else {
-      let filteredProjects = WorkflowMockData.projects;
-      
+      let filteredProjects = [...WorkflowMockData.projects];
+
       if (userRole === "product") {
         filteredProjects = filteredProjects.filter(p => p.project_type === "product_development");
       } else if (userRole === "finance") {
         filteredProjects = filteredProjects.filter(p => p.project_type === "finops_process");
       }
-      
+
       res.json(filteredProjects);
     }
   } catch (error) {
@@ -314,29 +314,70 @@ router.post("/projects/from-lead/:leadId", async (req: Request, res: Response) =
       return res.status(400).json({ error: "Invalid lead ID" });
     }
 
+    // Validate required fields
+    if (!projectData.name || !projectData.assigned_team) {
+      return res.status(400).json({ error: "Missing required fields: name, assigned_team" });
+    }
+
     if (await isDatabaseAvailable()) {
-      const newProject = await WorkflowRepository.createProjectFromLead(leadId, projectData, createdBy);
+      const newProject = await WorkflowRepository.createProjectFromLead(leadId, {
+        ...projectData,
+        source_type: 'lead',
+        source_id: leadId,
+        project_type: 'product_development',
+        created_by: createdBy
+      });
       res.status(201).json(newProject);
     } else {
       // Return mock project created from lead
       const mockProject = {
         id: Math.floor(Math.random() * 1000) + 100,
-        name: `Lead ${leadId} - Product Development`,
-        description: `Product development project created from completed lead ${leadId}`,
+        name: projectData.name,
+        description: projectData.description || `Product development project created from completed lead ${leadId}`,
         source_type: "lead",
         source_id: leadId,
         project_type: "product_development",
         status: "created",
-        priority: "high",
-        assigned_team: "Product Team",
+        priority: projectData.priority || "high",
+        assigned_team: projectData.assigned_team,
+        project_manager_id: projectData.project_manager_id,
+        budget: projectData.budget,
+        estimated_hours: projectData.estimated_hours,
+        target_completion_date: projectData.target_completion_date,
         progress_percentage: 0,
+        total_steps: projectData.steps ? projectData.steps.length : 0,
+        completed_steps: 0,
+        active_steps: 0,
+        pending_steps: projectData.steps ? projectData.steps.length : 0,
         created_at: new Date().toISOString(),
-        lead_data: {
-          client_name: "Sample Client",
-          project_title: "Sample Project",
-          lead_status: "completed"
-        }
+        updated_at: new Date().toISOString(),
+        created_by: createdBy
       };
+
+      // Add the project to mock data
+      WorkflowMockData.projects.push(mockProject);
+
+      // Create mock steps if provided
+      if (projectData.steps && Array.isArray(projectData.steps)) {
+        projectData.steps.forEach((step: any, index: number) => {
+          const mockStep = {
+            id: Math.floor(Math.random() * 1000) + 100,
+            project_id: mockProject.id,
+            step_name: step.step_name,
+            step_description: step.step_description,
+            step_order: step.step_order || index + 1,
+            status: step.status || 'pending',
+            assigned_to: step.assigned_to,
+            estimated_hours: step.estimated_hours,
+            due_date: step.due_date,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            created_by: createdBy
+          };
+          WorkflowMockData.steps.push(mockStep);
+        });
+      }
+
       res.status(201).json(mockProject);
     }
   } catch (error) {
@@ -689,36 +730,40 @@ router.post("/projects/:projectId/follow-ups", async (req: Request, res: Respons
 // Get completed leads ready for project creation
 router.get("/leads/completed", async (req: Request, res: Response) => {
   try {
-    // In real implementation, this would query leads with status 'completed' 
-    // that haven't been converted to projects yet
-    const mockCompletedLeads = [
-      {
-        id: 1,
-        client_name: "TechCorp Solutions",
-        project_title: "Enterprise Platform Development",
-        project_description: "Building a comprehensive enterprise platform with microservices architecture",
-        lead_status: "completed",
-        completion_date: "2024-01-25T00:00:00Z",
-        total_steps: 8,
-        completed_steps: 8,
-        estimated_budget: 250000,
-        has_project: false
-      },
-      {
-        id: 2,
-        client_name: "StartupXYZ",
-        project_title: "Mobile App Development",
-        project_description: "Cross-platform mobile application for e-commerce",
-        lead_status: "completed",
-        completion_date: "2024-01-20T00:00:00Z",
-        total_steps: 6,
-        completed_steps: 6,
-        estimated_budget: 80000,
-        has_project: false
-      }
-    ];
-
-    res.json(mockCompletedLeads);
+    if (await isDatabaseAvailable()) {
+      // Query real database for completed leads
+      const completedLeads = await WorkflowRepository.getCompletedLeads();
+      res.json(completedLeads);
+    } else {
+      // Return mock data when database not available
+      const mockCompletedLeads = [
+        {
+          id: 1,
+          client_name: "TechCorp Solutions",
+          project_title: "Enterprise Platform Development",
+          project_description: "Building a comprehensive enterprise platform with microservices architecture",
+          status: "completed",
+          completion_date: "2024-01-25T00:00:00Z",
+          total_steps: 8,
+          completed_steps: 8,
+          estimated_budget: 250000,
+          product_status: "ready_for_product"
+        },
+        {
+          id: 2,
+          client_name: "StartupXYZ",
+          project_title: "Mobile App Development",
+          project_description: "Cross-platform mobile application for e-commerce",
+          status: "completed",
+          completion_date: "2024-01-20T00:00:00Z",
+          total_steps: 6,
+          completed_steps: 6,
+          estimated_budget: 80000,
+          product_status: "in_progress"
+        }
+      ];
+      res.json(mockCompletedLeads);
+    }
   } catch (error) {
     console.error("Error fetching completed leads:", error);
     res.json([]);
@@ -748,6 +793,13 @@ router.patch("/projects/:projectId/status", async (req: Request, res: Response) 
       if (mockProject) {
         mockProject.status = status;
         mockProject.updated_at = new Date().toISOString();
+
+        // Update completion date if project is completed
+        if (status === 'completed') {
+          mockProject.actual_completion_date = new Date().toISOString();
+          mockProject.progress_percentage = 100;
+        }
+
         console.log(`Mock project ${projectId} status updated to ${status}`);
       }
       res.json({ success: true, message: "Project status updated (mock)" });
