@@ -401,7 +401,7 @@ export default function UserManagement() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <Microsoft className="w-5 h-5 text-blue-600" />
+                <Cloud className="w-5 h-5 text-blue-600" />
                 <span>Azure SSO Users ({mockAzureUsers.length})</span>
               </CardTitle>
               <CardDescription>
