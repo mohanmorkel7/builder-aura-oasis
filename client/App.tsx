@@ -78,6 +78,7 @@ import FollowUpTracker from "@/pages/FollowUpTracker";
 import PipelineSettings from "@/pages/PipelineSettings";
 import Tickets from "@/pages/Tickets";
 import AdminTemplates from "@/pages/AdminTemplates";
+import FinOpsDashboard from "@/pages/FinOpsDashboard";
 import NotFound from "@/pages/NotFound";
 
 // Protected Route Component
