@@ -104,10 +104,10 @@ export default function TicketDetails({ ticket, onUpdate, metadata, currentUser 
       priority_id: editForm.priority_id ? parseInt(editForm.priority_id) : undefined,
       status_id: editForm.status_id ? parseInt(editForm.status_id) : undefined,
       category_id: editForm.category_id ? parseInt(editForm.category_id) : undefined,
-      assigned_to: editForm.assigned_to ? parseInt(editForm.assigned_to) : undefined,
+      assigned_to: editForm.assigned_to && editForm.assigned_to !== "unassigned" ? parseInt(editForm.assigned_to) : undefined,
       updated_by: currentUser?.id || "1",
     };
-    
+
     updateTicketMutation.mutate(updateData);
   };
 
