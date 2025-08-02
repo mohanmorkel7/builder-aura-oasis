@@ -1,10 +1,44 @@
 import { pool } from "../database/connection";
 
+export interface TemplateCategory {
+  id: number;
+  name: string;
+  description?: string;
+  color: string;
+  icon?: string;
+  sort_order: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface TemplateType {
+  id: number;
+  name: string;
+  description?: string;
+  category_id: number;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface StepCategory {
+  id: number;
+  name: string;
+  description?: string;
+  color: string;
+  created_at: string;
+}
+
 export interface Template {
   id: number;
   name: string;
   description?: string;
   type: "standard" | "enterprise" | "smb";
+  category_id?: number;
+  template_type_id?: number;
+  tags?: string[];
+  usage_count: number;
+  last_used_at?: string;
   is_active: boolean;
   created_by: number;
   created_at: string;
@@ -12,6 +46,8 @@ export interface Template {
   steps?: TemplateStep[];
   step_count?: number;
   creator_name?: string;
+  category?: TemplateCategory;
+  template_type?: TemplateType;
 }
 
 export interface TemplateStep {
