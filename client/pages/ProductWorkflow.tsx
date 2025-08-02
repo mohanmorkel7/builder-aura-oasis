@@ -748,26 +748,20 @@ export default function ProductWorkflow() {
                               </div>
                             </div>
 
-                            {/* Project Steps Preview */}
-                            <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                              <div className="flex items-center justify-between">
-                                <div>
-                                  <span className="text-sm font-medium text-blue-800">Project Steps Preview</span>
-                                  <p className="text-xs text-blue-600 mt-1">
-                                    Based on lead requirements and default product template
-                                  </p>
-                                </div>
-                                <Badge variant="outline" className="bg-blue-100 text-blue-700">
-                                  {Math.ceil((lead.estimated_budget || 100000) / 50000)} estimated steps
-                                </Badge>
-                              </div>
-                              <div className="mt-2 flex flex-wrap gap-1">
-                                {["Requirements Analysis", "Design Phase", "Development", "Testing", "Deployment"].slice(0, Math.min(5, Math.ceil((lead.estimated_budget || 100000) / 50000))).map((stepName, index) => (
-                                  <Badge key={index} variant="secondary" className="text-xs">
-                                    {index + 1}. {stepName}
-                                  </Badge>
-                                ))}
-                              </div>
+                            {/* Project Steps Count - Clickable */}
+                            <div className="mt-3">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  setSelectedLeadForSteps(lead);
+                                  setIsStepsPreviewOpen(true);
+                                }}
+                                className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                              >
+                                <Target className="w-4 h-4 mr-2" />
+                                View {Math.ceil((lead.estimated_budget || 100000) / 50000)} Estimated Project Steps
+                              </Button>
                             </div>
                           </div>
                           
