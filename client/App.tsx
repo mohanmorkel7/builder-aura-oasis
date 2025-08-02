@@ -65,7 +65,7 @@ import ClientEdit from "@/pages/ClientEdit";
 import FollowUpNew from "@/pages/FollowUpNew";
 import AdminReports from "@/pages/AdminReports";
 import SalesDashboard from "@/pages/SalesDashboard";
-import ProductDashboard from "@/pages/ProductDashboard";
+import ProductManagement from "@/pages/ProductManagement";
 import AlertsNotifications from "@/pages/AlertsNotifications";
 import PlaceholderPage from "@/pages/PlaceholderPage";
 import LeadDashboard from "@/pages/LeadDashboard";
