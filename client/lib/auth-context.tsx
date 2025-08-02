@@ -148,7 +148,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setIsLoading(false);
         return false;
       }
-    } catch (error) {
+    } catch (error: any) {
+      // Handle user cancellation gracefully - don't show error or fallback
+      if (error.errorCode === "user_cancelled" || error.message?.includes("User cancelled")) {
+        console.log("User cancelled SSO login");
+        setIsLoading(false);
+        return false;
+      }
+
       console.error("SSO login error:", error);
 
       // Fallback for development/demo when Azure AD is not configured
