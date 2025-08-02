@@ -381,58 +381,26 @@ export class LeadRepository {
       leadId = `#${count.toString().padStart(4, "0")}`;
     }
 
-    // Check if partial save columns exist in the database
-    const columnsResult = await pool.query(`
-      SELECT column_name
-      FROM information_schema.columns
-      WHERE table_name = 'leads'
-      AND column_name IN ('is_partial', 'partial_data')
-    `);
+    const query = `
+      INSERT INTO leads (
+        lead_id, lead_source, lead_source_value, project_title, project_description,
+        project_requirements, solutions, priority_level,
+        start_date, targeted_end_date, expected_daily_txn_volume, project_value, spoc,
+        commercials, commercial_pricing, client_name, client_type, company,
+        company_location, category, country, contacts, priority, expected_close_date,
+        probability, notes, template_id, created_by, assigned_to
+      )
+      VALUES (
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13,
+        $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24,
+        $25, $26, $27, $28, $29
+      )
+      RETURNING *
+    `;
 
-    const hasPartialColumns = columnsResult.rows.length === 2;
-    console.log("Database has partial save columns:", hasPartialColumns);
-
-    let query, values;
-
-    if (hasPartialColumns) {
-      query = `
-        INSERT INTO leads (
-          lead_id, lead_source, lead_source_value, project_title, project_description,
-          project_requirements, solutions, priority_level,
-          start_date, targeted_end_date, expected_daily_txn_volume, project_value, spoc,
-          commercials, commercial_pricing, client_name, client_type, company,
-          company_location, category, country, contacts, priority, expected_close_date,
-          probability, notes, template_id, created_by, assigned_to, is_partial, partial_data
-        )
-        VALUES (
-          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13,
-          $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24,
-          $25, $26, $27, $28, $29, $30, $31
-        )
-        RETURNING *
-      `;
-    } else {
-      query = `
-        INSERT INTO leads (
-          lead_id, lead_source, lead_source_value, project_title, project_description,
-          project_requirements, solutions, priority_level,
-          start_date, targeted_end_date, expected_daily_txn_volume, project_value, spoc,
-          commercials, commercial_pricing, client_name, client_type, company,
-          company_location, category, country, contacts, priority, expected_close_date,
-          probability, notes, template_id, created_by, assigned_to
-        )
-        VALUES (
-          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13,
-          $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24,
-          $25, $26, $27, $28, $29
-        )
-        RETURNING *
-      `;
-    }
-
-    const baseValues = [
+    const values = [
       leadId, // $1
-      leadData.lead_source || 'other', // $2 - default to 'other' for partial saves
+      leadData.lead_source || 'other', // $2
       leadData.lead_source_value || null, // $3
       leadData.project_title || null, // $4
       leadData.project_description || null, // $5
@@ -446,7 +414,7 @@ export class LeadRepository {
       leadData.spoc || null, // $13
       JSON.stringify(leadData.commercials || []), // $14
       JSON.stringify(leadData.commercial_pricing || []), // $15
-      leadData.client_name || null, // $16
+      leadData.client_name || 'New Lead', // $16
       leadData.client_type || null, // $17
       leadData.company || null, // $18
       leadData.company_location || null, // $19
@@ -461,12 +429,6 @@ export class LeadRepository {
       leadData.created_by, // $28
       leadData.assigned_to || null, // $29
     ];
-
-    const values = hasPartialColumns ? [
-      ...baseValues,
-      leadData.is_partial || false, // $30
-      JSON.stringify(leadData.partial_data || {}), // $31
-    ] : baseValues;
 
     const result = await pool.query(query, values);
     const lead = result.rows[0];
