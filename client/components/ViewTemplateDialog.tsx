@@ -108,13 +108,14 @@ export default function ViewTemplateDialog({
                             <Badge variant="outline">Step {index + 1}</Badge>
                             <h4 className="font-medium">{step.name}</h4>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <Clock className="w-4 h-4 text-gray-500" />
-                            <span className="text-sm text-gray-600">
-                              {step.default_eta_days} day
-                              {step.default_eta_days !== 1 ? "s" : ""}
-                            </span>
-                          </div>
+                          {step.probability_percent !== undefined && (
+                            <Badge
+                              variant="secondary"
+                              className="bg-blue-100 text-blue-700"
+                            >
+                              {step.probability_percent}%
+                            </Badge>
+                          )}
                         </div>
 
                         {step.description && (
@@ -122,33 +123,6 @@ export default function ViewTemplateDialog({
                             {step.description}
                           </p>
                         )}
-
-                        <div className="flex flex-wrap gap-2">
-                          {step.assigned_role && (
-                            <Badge variant="secondary">
-                              <User className="w-3 h-3 mr-1" />
-                              {step.assigned_role}
-                            </Badge>
-                          )}
-                          {step.auto_alert && (
-                            <Badge variant="outline">
-                              <AlertCircle className="w-3 h-3 mr-1" />
-                              Auto Alert
-                            </Badge>
-                          )}
-                          {step.email_reminder && (
-                            <Badge variant="outline">Email Reminder</Badge>
-                          )}
-                          {step.approval_required && (
-                            <Badge variant="outline">
-                              <CheckCircle className="w-3 h-3 mr-1" />
-                              Approval Required
-                            </Badge>
-                          )}
-                          {step.parallel_execution && (
-                            <Badge variant="outline">Parallel Execution</Badge>
-                          )}
-                        </div>
                       </div>
                     ))}
                   </div>
