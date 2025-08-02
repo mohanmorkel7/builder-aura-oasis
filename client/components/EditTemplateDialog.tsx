@@ -182,6 +182,7 @@ export default function EditTemplateDialog({
       email_reminder: false,
       approval_required: false,
       parallel_execution: false,
+      probability_percent: 0,
       required_documents: [],
     };
     setSteps([...steps, newStep]);
