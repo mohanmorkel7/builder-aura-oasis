@@ -80,6 +80,10 @@ export interface Lead {
   // Template Reference
   template_id?: number;
 
+  // Partial save support
+  is_partial?: boolean;
+  partial_data?: any;
+
   // Metadata
   created_by: number;
   assigned_to?: number;
