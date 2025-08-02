@@ -6,15 +6,39 @@ import {
 } from "@azure/msal-browser";
 import { msalConfig, loginRequest, graphConfig } from "./msal-config";
 
-export type UserRole = "admin" | "sales" | "product";
+export type UserRole =
+  | "admin"
+  | "sales"
+  | "product"
+  | "development"
+  | "db"
+  | "finops"
+  | "hr_management"
+  | "infra"
+  | "switch_team";
 
 export interface User {
   id: string;
   name: string;
   email: string;
   role: UserRole;
+  department?: string;
   avatar?: string;
+  azureObjectId?: string;
+  employeeId?: string;
 }
+
+export const roleGroups = {
+  admin: { label: "Admin", color: "bg-red-100 text-red-800", permissions: ["all"] },
+  sales: { label: "Sales", color: "bg-blue-100 text-blue-800", permissions: ["leads", "clients", "reports"] },
+  product: { label: "Product", color: "bg-green-100 text-green-800", permissions: ["templates", "features", "analytics"] },
+  development: { label: "Development", color: "bg-purple-100 text-purple-800", permissions: ["technical", "deployment"] },
+  db: { label: "Database", color: "bg-gray-100 text-gray-800", permissions: ["database", "data_management"] },
+  finops: { label: "FinOps", color: "bg-yellow-100 text-yellow-800", permissions: ["financial", "operations"] },
+  hr_management: { label: "HR Management", color: "bg-pink-100 text-pink-800", permissions: ["users", "roles", "hr"] },
+  infra: { label: "Infrastructure", color: "bg-indigo-100 text-indigo-800", permissions: ["infrastructure", "monitoring"] },
+  switch_team: { label: "Switch Team", color: "bg-orange-100 text-orange-800", permissions: ["switch", "integration"] },
+};
 
 interface MicrosoftProfile {
   id: string;
