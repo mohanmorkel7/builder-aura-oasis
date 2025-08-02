@@ -180,6 +180,103 @@ export default function LeadEdit() {
       : null;
   const { data: templateData } = useTemplate(selectedTemplateId || 0);
 
+  // State hooks
+  const [leadData, setLeadData] = useState({
+    // Lead Source & Status
+    lead_source: "",
+    lead_source_value: "",
+    status: "",
+    assigned_to: undefined as number | undefined,
+
+    // Project Information
+    project_title: "",
+    project_description: "",
+    project_requirements: "",
+
+    // Enhanced Project Info
+    solutions: [] as string[],
+    priority_level: "",
+    start_date: "",
+    targeted_end_date: "",
+    expected_daily_txn_volume: "",
+    project_value: "",
+    project_value_12m: "",
+    project_value_24m: "",
+    project_value_36m: "",
+    spoc: "",
+
+    // Commercials
+    commercials: [] as string[],
+    commercial_pricing: [] as Array<{
+      solution: string;
+      value: number;
+      unit: "paisa" | "cents";
+      currency: "INR" | "USD" | "Dubai";
+    }>,
+
+    // Client Information
+    client_name: "",
+    client_type: "",
+    company_location: "",
+    category: "",
+    country: "",
+
+    // Contact Information
+    contacts: [
+      {
+        contact_name: "",
+        designation: "",
+        phone: "",
+        email: "",
+        linkedin: "",
+      },
+    ] as Array<{
+      contact_name: string;
+      designation: string;
+      phone: string;
+      email: string;
+      linkedin: string;
+    }>,
+
+    // Additional Information
+    priority: "",
+    expected_close_date: "",
+    probability: "",
+    notes: "",
+  });
+
+  const [hasChanges, setHasChanges] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
+  // Early returns after all hooks have been declared
+  if (isLoading) {
+    return (
+      <div className="p-6 max-w-7xl mx-auto">
+        <div className="text-center">Loading lead data...</div>
+      </div>
+    );
+  }
+
+  if (error || !originalLead) {
+    return (
+      <div className="p-6 max-w-7xl mx-auto">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-red-600 mb-4">
+            Lead Not Found
+          </h1>
+          <p className="text-gray-600 mb-4">
+            The lead you're trying to edit could not be found.
+          </p>
+          <Button onClick={() => navigate("/leads")}>
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Leads
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   // Check if user has edit permissions
   const canEditLead =
     user?.role === "admin" ||
