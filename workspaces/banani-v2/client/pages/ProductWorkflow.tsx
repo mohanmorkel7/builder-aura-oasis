@@ -842,33 +842,11 @@ export default function ProductWorkflow() {
                                 ₹{lead.estimated_budget?.toLocaleString()}
                               </div>
                               <div>
-                                <span className="font-medium">Status:</span>
+                                <span className="font-medium">Projects:</span>
                                 <br />
-                                {/* Show dynamic status based on projects if any exist */}
-                                {projects.filter((p: any) => p.source_type === 'lead' && p.source_id === lead.id).length > 0 ? (
-                                  <Badge className={getLeadStatusColor(getLeadStatus(lead))}>
-                                    {getLeadStatus(lead).replace('_', ' ')}
-                                  </Badge>
-                                ) : (
-                                  <Select
-                                    value={lead.product_status || "ready_for_product"}
-                                    onValueChange={(value) => {
-                                      updateLeadStatusMutation.mutate({ leadId: lead.id, status: value });
-                                    }}
-                                    disabled={updateLeadStatusMutation.isPending}
-                                  >
-                                    <SelectTrigger className="w-full h-8">
-                                      <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value="ready_for_product">Ready for Product</SelectItem>
-                                      <SelectItem value="in_review">In Review</SelectItem>
-                                      <SelectItem value="approved">Approved</SelectItem>
-                                      <SelectItem value="on_hold">On Hold</SelectItem>
-                                      <SelectItem value="rejected">Rejected</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                )}
+                                <Badge variant="secondary">
+                                  {projects.filter((p: any) => p.source_type === 'lead' && p.source_id === lead.id).length} projects
+                                </Badge>
                               </div>
                             </div>
 
@@ -907,22 +885,7 @@ export default function ProductWorkflow() {
                               <Eye className="w-4 h-4 mr-2" />
                               View Lead
                             </Button>
-                            {/* Show existing projects */}
-                            {projects.filter((p: any) => p.source_type === 'lead' && p.source_id === lead.id).length > 0 && (
-                              <div className="text-xs text-gray-600 mt-1">
-                                <strong>Projects:</strong>
-                                {projects.filter((p: any) => p.source_type === 'lead' && p.source_id === lead.id).map((project: any) => (
-                                  <div key={project.id} className="flex items-center gap-1 mt-1">
-                                    <Badge variant="outline" className="text-xs">
-                                      {project.name.length > 20 ? project.name.substring(0, 20) + '...' : project.name}
-                                    </Badge>
-                                    <Badge className={getStatusColor(project.status) + ' text-xs'}>
-                                      {project.status}
-                                    </Badge>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
+
                           </div>
                         </div>
                       </CardContent>
@@ -974,10 +937,12 @@ export default function ProductWorkflow() {
                                   disabled={updateProjectStatusMutation.isPending}
                                 >
                                   <SelectTrigger className="w-36 h-7 text-xs">
-                                    <div className="flex items-center gap-1">
-                                      <StatusIcon className="w-3 h-3" />
-                                      <SelectValue />
-                                    </div>
+                                    <SelectValue>
+                                      <div className="flex items-center gap-1">
+                                        <StatusIcon className="w-3 h-3" />
+                                        <span>{project.status.replace('_', ' ')}</span>
+                                      </div>
+                                    </SelectValue>
                                   </SelectTrigger>
                                   <SelectContent>
                                     <SelectItem value="created">Created</SelectItem>
