@@ -471,6 +471,24 @@ export default function Overview() {
               </div>
             )}
 
+            <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  {React.createElement(getStatusIcon(stepModal.status), {
+                    className: `w-5 h-5 ${getStatusColor(stepModal.status).split(' ')[0]}`
+                  })}
+                </div>
+                <div className="ml-3">
+                  <h4 className="text-sm font-medium text-blue-800">
+                    Showing leads with "{stepModal.status.replace('_', ' ').toUpperCase()}" status
+                  </h4>
+                  <p className="text-sm text-blue-700">
+                    {stepModal.leads.length} lead(s) found for this step
+                  </p>
+                </div>
+              </div>
+            </div>
+
             {stepModal.leads.length > 0 ? (
               <Table>
                 <TableHeader>
@@ -478,20 +496,26 @@ export default function Overview() {
                     <TableHead>Lead ID</TableHead>
                     <TableHead>Client Name</TableHead>
                     <TableHead>Project Title</TableHead>
-                    <TableHead>Status</TableHead>
+                    <TableHead>Step Status</TableHead>
+                    <TableHead>Overall Status</TableHead>
                     <TableHead>Created</TableHead>
                     <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {stepModal.leads.map((lead: any) => (
-                    <TableRow key={lead.id}>
+                    <TableRow key={lead.id} className="hover:bg-gray-50">
                       <TableCell className="font-medium">#{lead.lead_id || lead.id}</TableCell>
-                      <TableCell>{lead.client_name}</TableCell>
+                      <TableCell className="font-medium">{lead.client_name}</TableCell>
                       <TableCell>{lead.project_title || 'N/A'}</TableCell>
                       <TableCell>
                         <Badge className={getStatusColor(stepModal.status)}>
                           {stepModal.status.replace('_', ' ')}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={lead.status === 'won' ? 'default' : lead.status === 'lost' ? 'destructive' : 'secondary'}>
+                          {lead.status}
                         </Badge>
                       </TableCell>
                       <TableCell>{new Date(lead.created_at).toLocaleDateString()}</TableCell>
@@ -500,9 +524,10 @@ export default function Overview() {
                           size="sm"
                           variant="outline"
                           onClick={() => handleLeadClick(lead.id)}
+                          className="text-blue-600 hover:text-blue-700"
                         >
                           <Eye className="w-4 h-4 mr-2" />
-                          View
+                          View Lead
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -510,9 +535,26 @@ export default function Overview() {
                 </TableBody>
               </Table>
             ) : (
-              <div className="text-center py-8 text-gray-500">
-                <Target className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-                <p>No leads found with {stepModal.status.replace('_', ' ')} status for this step.</p>
+              <div className="text-center py-12">
+                <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  {React.createElement(getStatusIcon(stepModal.status), {
+                    className: "w-10 h-10 text-gray-400"
+                  })}
+                </div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  No leads found
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  There are currently no leads with "{stepModal.status.replace('_', ' ')}" status for this step.
+                </p>
+                <div className="text-sm text-gray-500">
+                  <p>This could mean:</p>
+                  <ul className="list-disc list-inside mt-2 space-y-1">
+                    <li>No leads have reached this step yet</li>
+                    <li>All leads have moved past this status</li>
+                    <li>The step hasn't been started for any leads</li>
+                  </ul>
+                </div>
               </div>
             )}
           </div>
