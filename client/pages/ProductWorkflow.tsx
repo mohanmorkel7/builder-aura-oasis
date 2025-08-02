@@ -911,8 +911,8 @@ function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogPr
     mutationFn: (commentData: any) => apiClient.createProjectComment(project.id, commentData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["project-comments", project?.id] });
+      queryClient.invalidateQueries({ queryKey: ["all-step-comments", project?.id] });
       if (commentData.step_id) {
-        queryClient.invalidateQueries({ queryKey: ["step-comments", project?.id, commentData.step_id] });
         setStepComments(prev => ({ ...prev, [commentData.step_id]: "" }));
       } else {
         setNewComment("");
