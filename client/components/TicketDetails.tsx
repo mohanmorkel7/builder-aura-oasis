@@ -111,34 +111,17 @@ export default function TicketDetails({ ticket, onUpdate, metadata, currentUser 
     updateTicketMutation.mutate(updateData);
   };
 
-  const handleAddComment = () => {
-    if (!newComment.trim()) return;
-    
+  const handleAddComment = (content: string, attachments: File[], isInternal: boolean, mentions: string[]) => {
+    if (!content.trim() || content === '<p></p>') return;
+
     const commentData = {
-      content: newComment,
+      content,
       is_internal: isInternal,
       mentions: mentions.length > 0 ? mentions : undefined,
       user_id: currentUser?.id || "1",
     };
-    
-    addCommentMutation.mutate(commentData);
-  };
 
-  const detectMentions = (text: string) => {
-    const mentionPattern = /@(\w+)/g;
-    const foundMentions: string[] = [];
-    let match;
-    
-    while ((match = mentionPattern.exec(text)) !== null) {
-      foundMentions.push(match[1]);
-    }
-    
-    setMentions(foundMentions);
-  };
-
-  const handleCommentChange = (value: string) => {
-    setNewComment(value);
-    detectMentions(value);
+    addCommentMutation.mutate({ commentData, attachments });
   };
 
   return (
