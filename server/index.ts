@@ -103,5 +103,12 @@ export function createServer() {
     console.error("Error loading files router:", error);
   }
 
+  try {
+    app.use("/api/tickets", ticketsRouter);
+    console.log("Tickets router loaded successfully");
+  } catch (error) {
+    console.error("Error loading tickets router:", error);
+  }
+
   return app;
 }
