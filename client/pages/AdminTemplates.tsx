@@ -30,6 +30,8 @@ import {
 import { format } from "date-fns";
 import CreateTemplateDialog from "@/components/CreateTemplateDialog";
 import TemplateStatsCard from "@/components/TemplateStatsCard";
+import ViewTemplateDialog from "@/components/ViewTemplateDialog";
+import EditTemplateDialog from "@/components/EditTemplateDialog";
 
 interface TemplateCategory {
   id: number;
@@ -71,6 +73,8 @@ export default function AdminTemplates() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [viewTemplateId, setViewTemplateId] = useState<number | null>(null);
+  const [editTemplateId, setEditTemplateId] = useState<number | null>(null);
 
   // Fetch template categories
   const { data: categories = [] } = useQuery({
@@ -120,7 +124,17 @@ export default function AdminTemplates() {
   };
 
   const handleDuplicateTemplate = (templateId: number) => {
-    duplicateTemplateMutation.mutate(templateId);
+    if (user) {
+      duplicateTemplateMutation.mutate(templateId, parseInt(user.id));
+    }
+  };
+
+  const handleViewTemplate = (templateId: number) => {
+    setViewTemplateId(templateId);
+  };
+
+  const handleEditTemplate = (templateId: number) => {
+    setEditTemplateId(templateId);
   };
 
   const getCategoryIcon = (iconName?: string) => {
@@ -291,11 +305,21 @@ export default function AdminTemplates() {
                       </div>
                       
                       <div className="flex gap-2">
-                        <Button variant="outline" size="sm" className="flex-1">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1"
+                          onClick={() => handleViewTemplate(template.id)}
+                        >
                           <Eye className="w-4 h-4 mr-1" />
                           View
                         </Button>
-                        <Button variant="outline" size="sm" className="flex-1">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1"
+                          onClick={() => handleEditTemplate(template.id)}
+                        >
                           <Edit className="w-4 h-4 mr-1" />
                           Edit
                         </Button>
@@ -360,10 +384,18 @@ export default function AdminTemplates() {
                     </div>
                     
                     <div className="flex gap-2">
-                      <Button variant="outline" size="sm">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleViewTemplate(template.id)}
+                      >
                         <Eye className="w-4 h-4" />
                       </Button>
-                      <Button variant="outline" size="sm">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleEditTemplate(template.id)}
+                      >
                         <Edit className="w-4 h-4" />
                       </Button>
                       <Button 
@@ -431,7 +463,12 @@ export default function AdminTemplates() {
                           </div>
                           <p className="text-sm text-gray-600 mb-3">{template.description}</p>
                           <div className="flex gap-2">
-                            <Button variant="outline" size="sm" className="flex-1">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="flex-1"
+                              onClick={() => handleEditTemplate(template.id)}
+                            >
                               Edit
                             </Button>
                             <Button 
@@ -458,6 +495,21 @@ export default function AdminTemplates() {
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* View Template Dialog */}
+      <ViewTemplateDialog
+        templateId={viewTemplateId}
+        isOpen={!!viewTemplateId}
+        onClose={() => setViewTemplateId(null)}
+      />
+
+      {/* Edit Template Dialog */}
+      <EditTemplateDialog
+        templateId={editTemplateId}
+        isOpen={!!editTemplateId}
+        onClose={() => setEditTemplateId(null)}
+        categories={categories}
+      />
     </div>
   );
 }
