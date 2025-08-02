@@ -143,7 +143,12 @@ export default function CreateLead() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const createLeadMutation = useCreateLead();
-  const { data: templates = [] } = useTemplates();
+
+  // Get only Lead templates (category ID 2 based on our mock data)
+  const { data: templates = [] } = useQuery({
+    queryKey: ["templates-by-category", 2],
+    queryFn: () => apiClient.getTemplatesByCategory(2),
+  });
 
   const [selectedTemplate, setSelectedTemplate] = useState<string>("");
   const [showTemplatePreview, setShowTemplatePreview] = useState(false);
