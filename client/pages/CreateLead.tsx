@@ -1123,7 +1123,7 @@ export default function CreateLead() {
                                   updateCommercialPricing(index, "unit", value)
                                 }
                               >
-                                <SelectTrigger className="w-24">
+                                <SelectTrigger className="w-28">
                                   <SelectValue placeholder="Select unit" />
                                 </SelectTrigger>
                                 <SelectContent>
