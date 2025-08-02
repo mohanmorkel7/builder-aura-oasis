@@ -249,7 +249,6 @@ export default function CreateLead() {
   const [displayCurrency, setDisplayCurrency] = useState<"INR" | "USD" | "AED">("INR");
   const [currentTab, setCurrentTab] = useState("basic");
   const [isPartialSaved, setIsPartialSaved] = useState(false);
-  const [showPartialSaves, setShowPartialSaves] = useState(true);
   const [isResumedFromDraft, setIsResumedFromDraft] = useState(false);
 
   // Handle resume data from location state (when coming from dashboard)
