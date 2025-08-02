@@ -754,6 +754,17 @@ export function useLeads(salesRepId?: number) {
   });
 }
 
+export function usePartialLeads(salesRepId?: number) {
+  return useQuery({
+    queryKey: ["partial-leads", salesRepId],
+    queryFn: async () => {
+      return await apiClient.getPartialLeads(salesRepId);
+    },
+    retry: 2,
+    retryDelay: 1000,
+  });
+}
+
 export function useLead(id: number) {
   return useQuery({
     queryKey: ["leads", id],
