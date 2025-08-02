@@ -424,7 +424,13 @@ router.patch("/steps/:stepId/status", async (req: Request, res: Response) => {
       await WorkflowRepository.updateStepStatus(stepId, status, parseInt(updated_by));
       res.json({ success: true, message: "Step status updated" });
     } else {
-      // Mock response
+      // Update mock data for testing
+      const mockStep = WorkflowMockData.steps.find(s => s.id === stepId);
+      if (mockStep) {
+        mockStep.status = status;
+        mockStep.updated_at = new Date().toISOString();
+        console.log(`Mock step ${stepId} status updated to ${status}`);
+      }
       res.json({ success: true, message: "Step status updated (mock)" });
     }
   } catch (error) {
