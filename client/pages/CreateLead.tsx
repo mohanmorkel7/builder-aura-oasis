@@ -1057,7 +1057,10 @@ export default function CreateLead() {
                             </span>
                           </div>
                           <div className="text-xs text-gray-500 mt-1">
-                            *Exchange rates are indicative and updated daily
+                            <div>*Exchange rates are indicative and updated daily</div>
+                            <div className="mt-1">
+                              Current rates: 1 USD = {exchangeRates.USD.INR} INR, 1 USD = {exchangeRates.USD.AED} AED, 1 AED = {exchangeRates.AED.INR} INR
+                            </div>
                           </div>
                         </div>
                       </div>
