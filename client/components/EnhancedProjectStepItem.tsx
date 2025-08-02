@@ -389,6 +389,7 @@ export function EnhancedProjectStepItem({
                                     onClick={() => handleFollowUp(comment.id)}
                                     className="text-blue-600 hover:text-blue-700 h-6 px-2 text-xs"
                                   >
+                                    <Reply className="w-3 h-3 mr-1" />
                                     Follow-up
                                   </Button>
                                 )}
