@@ -17,6 +17,7 @@ export class ApiClient {
 
     try {
       console.log("Making API request to:", url);
+      console.log("Request config:", JSON.stringify(config, null, 2));
       const response = await fetch(url, config);
 
       if (!response.ok) {
