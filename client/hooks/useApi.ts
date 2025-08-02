@@ -199,6 +199,7 @@ const mockLeads = [
     expected_daily_txn_volume: 124,
     project_value: 34324,
     spoc: "Sales Team",
+    template_id: 1,
     commercial_pricing: [
       { unit: "paisa", value: 0.5, currency: "INR", solution: "CardToken" },
       { unit: "paisa", value: 0.7, currency: "INR", solution: "MylapaySecure" },
