@@ -381,6 +381,17 @@ export class LeadRepository {
       leadId = `#${count.toString().padStart(4, "0")}`;
     }
 
+    // Check if partial save columns exist in the database
+    const columnsResult = await pool.query(`
+      SELECT column_name
+      FROM information_schema.columns
+      WHERE table_name = 'leads'
+      AND column_name IN ('is_partial', 'partial_data')
+    `);
+
+    const hasPartialColumns = columnsResult.rows.length === 2;
+    console.log("Database has partial save columns:", hasPartialColumns);
+
     const query = `
       INSERT INTO leads (
         lead_id, lead_source, lead_source_value, project_title, project_description,
