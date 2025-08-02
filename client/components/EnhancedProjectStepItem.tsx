@@ -353,7 +353,7 @@ export function EnhancedProjectStepItem({
                               <span className="text-sm font-medium text-gray-900">
                                 {comment.user_id === parseInt(user?.id || "0")
                                   ? "Me"
-                                  : comment.user_name}
+                                  : comment.user_name || "Unknown User"}
                               </span>
                               <span className="text-xs text-gray-500">
                                 {format(new Date(comment.created_at), "MMM d, h:mm a")}
