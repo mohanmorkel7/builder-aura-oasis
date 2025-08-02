@@ -430,7 +430,7 @@ export class LeadRepository {
       `;
     }
 
-    const values = [
+    const baseValues = [
       leadId, // $1
       leadData.lead_source || 'other', // $2 - default to 'other' for partial saves
       leadData.lead_source_value || null, // $3
@@ -460,9 +460,13 @@ export class LeadRepository {
       leadData.selected_template_id || null, // $27
       leadData.created_by, // $28
       leadData.assigned_to || null, // $29
+    ];
+
+    const values = hasPartialColumns ? [
+      ...baseValues,
       leadData.is_partial || false, // $30
       JSON.stringify(leadData.partial_data || {}), // $31
-    ];
+    ] : baseValues;
 
     const result = await pool.query(query, values);
     const lead = result.rows[0];
