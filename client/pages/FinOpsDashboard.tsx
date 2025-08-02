@@ -69,6 +69,7 @@ function MetricCard({ title, value, change, changeType, icon: Icon, color }: Met
 }
 
 export default function FinOpsDashboard() {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [selectedPeriod, setSelectedPeriod] = useState("monthly");
   const [dateRange, setDateRange] = useState({
