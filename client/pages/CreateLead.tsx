@@ -949,13 +949,13 @@ export default function CreateLead() {
                             <TableCell>
                               <Select
                                 value={pricing.currency}
-                                onValueChange={(value) =>
-                                  updateCommercialPricing(
-                                    index,
-                                    "currency",
-                                    value,
-                                  )
-                                }
+                                onValueChange={(value) => {
+                                  // Auto-update unit to the first unit of the selected currency
+                                  const newUnits = getCurrencyUnits(value);
+                                  const defaultUnit = newUnits[0]?.value || "rupee";
+                                  updateCommercialPricing(index, "currency", value);
+                                  updateCommercialPricing(index, "unit", defaultUnit);
+                                }}
                               >
                                 <SelectTrigger className="w-20">
                                   <SelectValue />
