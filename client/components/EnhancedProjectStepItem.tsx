@@ -119,6 +119,8 @@ export function EnhancedProjectStepItem({
   const [newComment, setNewComment] = useState("");
   const [stagedAttachments, setStagedAttachments] = useState<any[]>([]);
   const [uploadingFiles, setUploadingFiles] = useState(false);
+  const [followUpModalOpen, setFollowUpModalOpen] = useState(false);
+  const [selectedComment, setSelectedComment] = useState<StepComment | null>(null);
 
   // Add comment mutation
   const addCommentMutation = useMutation({
