@@ -82,26 +82,49 @@ export default function Overview() {
   const { data: templateStepData = [], isLoading: templateStepLoading, error: templateStepError } = useTemplateStepDashboard();
 
   const handleStepStatusClick = async (stepData: any, status: string) => {
-    // Filter leads by the clicked status
-    const statusLeads = stepData.leads.filter((lead: any) => {
-      // Mock status filtering - in real implementation, this would query actual step statuses
-      const statuses = ['pending', 'in_progress', 'completed', 'blocked'];
-      const leadStatus = statuses[lead.id % 4]; // Mock status assignment
-      return leadStatus === status;
-    });
+    try {
+      // Get detailed leads for this template and step with the specific status
+      const response = await apiClient.getLeads();
+      const allLeads = response || [];
 
-    setStepModal({
-      isOpen: true,
-      step: {
-        id: stepData.step_id,
-        name: stepData.step_name,
-        description: `Step ${stepData.step_order} in ${stepData.template_name}`,
-        step_order: stepData.step_order,
-        probability_percent: stepData.probability_percent
-      },
-      status,
-      leads: statusLeads
-    });
+      // Filter leads that belong to this template and have the step with the requested status
+      const statusLeads = allLeads.filter((lead: any) => {
+        // Check if lead belongs to this template
+        return lead.template_id === stepData.template_id;
+      });
+
+      // For now, show all leads from this template (in real implementation, would filter by actual step status)
+      // This is a simplified version - in practice, you'd need to query lead_steps table
+      const mockStatusLeads = statusLeads.slice(0, Math.max(1, stepData[`${status}_count`]));
+
+      setStepModal({
+        isOpen: true,
+        step: {
+          id: stepData.step_id,
+          name: stepData.step_name,
+          description: `Step ${stepData.step_order} in ${stepData.template_name}`,
+          step_order: stepData.step_order,
+          probability_percent: stepData.probability_percent
+        },
+        status,
+        leads: mockStatusLeads
+      });
+    } catch (error) {
+      console.error("Error fetching leads for step:", error);
+      // Fallback to empty modal
+      setStepModal({
+        isOpen: true,
+        step: {
+          id: stepData.step_id,
+          name: stepData.step_name,
+          description: `Step ${stepData.step_order} in ${stepData.template_name}`,
+          step_order: stepData.step_order,
+          probability_percent: stepData.probability_percent
+        },
+        status,
+        leads: []
+      });
+    }
   };
 
   const handleLeadClick = (leadId: number) => {
