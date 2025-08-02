@@ -338,7 +338,7 @@ export default function CreateLead() {
           : undefined,
         probability: parseInt(leadData.probability),
         created_by: parseInt(user?.id || "1"),
-        selected_template_id:
+        template_id:
           selectedTemplate && selectedTemplate !== "manual"
             ? parseInt(selectedTemplate)
             : null,
