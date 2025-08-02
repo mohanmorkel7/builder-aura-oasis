@@ -109,9 +109,9 @@ const priorityLevels = [
 ];
 
 const currencyOptions = [
-  { value: "INR", label: "INR" },
-  { value: "USD", label: "USD" },
-  { value: "AED", label: "AED (Dubai)" },
+  { value: "INR", label: "INR (₹)" },
+  { value: "USD", label: "USD ($)" },
+  { value: "AED", label: "AED (د.إ)" },
 ];
 
 const getCurrencyUnits = (currency: string) => {
