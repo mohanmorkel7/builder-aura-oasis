@@ -111,5 +111,12 @@ export function createServer() {
     console.error("Error loading tickets router:", error);
   }
 
+  try {
+    app.use("/api/finops", finopsRouter);
+    console.log("FinOps router loaded successfully");
+  } catch (error) {
+    console.error("Error loading FinOps router:", error);
+  }
+
   return app;
 }
