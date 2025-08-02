@@ -135,11 +135,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         let userData: User | null = null;
 
         if (email === "admin@banani.com") {
-          userData = { id: "1", name: "John Doe", email, role: "admin" };
+          userData = { id: "1", name: "John Doe", email, role: "admin", department: "Administration" };
         } else if (email === "sales@banani.com") {
-          userData = { id: "2", name: "Jane Smith", email, role: "sales" };
+          userData = { id: "2", name: "Jane Smith", email, role: "sales", department: "Sales" };
         } else if (email === "product@banani.com") {
-          userData = { id: "3", name: "Mike Johnson", email, role: "product" };
+          userData = { id: "3", name: "Mike Johnson", email, role: "product", department: "Product" };
+        } else if (email === "dev@banani.com") {
+          userData = { id: "4", name: "Alex Chen", email, role: "development", department: "Development" };
+        } else if (email === "db@banani.com") {
+          userData = { id: "5", name: "Sarah Wilson", email, role: "db", department: "Database" };
+        } else if (email === "finops@banani.com") {
+          userData = { id: "6", name: "David Brown", email, role: "finops", department: "FinOps" };
+        } else if (email === "hr@banani.com") {
+          userData = { id: "7", name: "Lisa Garcia", email, role: "hr_management", department: "HR" };
+        } else if (email === "infra@banani.com") {
+          userData = { id: "8", name: "Tom Martinez", email, role: "infra", department: "Infrastructure" };
+        } else if (email === "switch@banani.com") {
+          userData = { id: "9", name: "Emma Davis", email, role: "switch_team", department: "Switch Team" };
         }
 
         if (userData) {
