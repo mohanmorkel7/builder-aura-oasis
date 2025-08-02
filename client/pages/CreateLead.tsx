@@ -1156,7 +1156,7 @@ export default function CreateLead() {
                                   setLeadData((prev) => ({ ...prev, commercial_pricing: newPricing }));
                                 }}
                               >
-                                <SelectTrigger className="w-20">
+                                <SelectTrigger className="w-24">
                                   <SelectValue placeholder="Currency" />
                                 </SelectTrigger>
                                 <SelectContent>
