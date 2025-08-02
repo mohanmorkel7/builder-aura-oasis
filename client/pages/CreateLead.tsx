@@ -592,7 +592,7 @@ export default function CreateLead() {
       )}
 
       {/* Partial Saves Section */}
-      {showPartialSaves && !isResumedFromDraft && (
+      {shouldShowPartialSaves && (
         <PartialSaves onResumePartialSave={handleResumePartialSave} />
       )}
 
