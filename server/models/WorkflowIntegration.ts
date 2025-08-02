@@ -443,6 +443,28 @@ export class WorkflowRepository {
     // The trigger will handle progress updates and notifications
   }
 
+  static async reorderProjectSteps(projectId: number, stepOrders: { id: number; order: number }[]): Promise<void> {
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+
+      // Update step orders in batch
+      for (const stepOrder of stepOrders) {
+        await client.query(
+          "UPDATE workflow_steps SET step_order = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 AND project_id = $3",
+          [stepOrder.order, stepOrder.id, projectId]
+        );
+      }
+
+      await client.query('COMMIT');
+    } catch (error) {
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+
   // Comment operations
   static async getProjectComments(projectId: number, stepId?: number): Promise<WorkflowComment[]> {
     let whereClause = "WHERE wc.project_id = $1";
