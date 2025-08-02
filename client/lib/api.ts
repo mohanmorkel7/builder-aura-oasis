@@ -749,6 +749,100 @@ export class ApiClient {
     const query = params.toString();
     return this.request(`/finops/export/${type}${query ? `?${query}` : ""}`);
   }
+
+  // Workflow API methods
+  async getWorkflowDashboard(userId: number, userRole: string) {
+    return this.request(`/workflow/dashboard?userId=${userId}&userRole=${userRole}`);
+  }
+
+  async getWorkflowProjects(userId?: number, userRole?: string) {
+    const params = new URLSearchParams();
+    if (userId) params.append("userId", userId.toString());
+    if (userRole) params.append("userRole", userRole);
+
+    const query = params.toString();
+    return this.request(`/workflow/projects${query ? `?${query}` : ""}`);
+  }
+
+  async getWorkflowProject(id: number) {
+    return this.request(`/workflow/projects/${id}`);
+  }
+
+  async createWorkflowProject(projectData: any) {
+    return this.request("/workflow/projects", {
+      method: "POST",
+      body: JSON.stringify(projectData),
+    });
+  }
+
+  async createProjectFromLead(leadId: number, projectData: any) {
+    return this.request(`/workflow/projects/from-lead/${leadId}`, {
+      method: "POST",
+      body: JSON.stringify(projectData),
+    });
+  }
+
+  async getProjectSteps(projectId: number) {
+    return this.request(`/workflow/projects/${projectId}/steps`);
+  }
+
+  async createProjectStep(projectId: number, stepData: any) {
+    return this.request(`/workflow/projects/${projectId}/steps`, {
+      method: "POST",
+      body: JSON.stringify(stepData),
+    });
+  }
+
+  async updateStepStatus(stepId: number, status: string, updatedBy: number) {
+    return this.request(`/workflow/steps/${stepId}/status`, {
+      method: "PATCH",
+      body: JSON.stringify({ status, updated_by: updatedBy }),
+    });
+  }
+
+  async getProjectComments(projectId: number, stepId?: number) {
+    const params = new URLSearchParams();
+    if (stepId) params.append("stepId", stepId.toString());
+
+    const query = params.toString();
+    return this.request(`/workflow/projects/${projectId}/comments${query ? `?${query}` : ""}`);
+  }
+
+  async createProjectComment(projectId: number, commentData: any) {
+    return this.request(`/workflow/projects/${projectId}/comments`, {
+      method: "POST",
+      body: JSON.stringify(commentData),
+    });
+  }
+
+  async getWorkflowNotifications(userId: number, unreadOnly?: boolean) {
+    const params = new URLSearchParams();
+    params.append("userId", userId.toString());
+    if (unreadOnly) params.append("unreadOnly", "true");
+
+    const query = params.toString();
+    return this.request(`/workflow/notifications?${query}`);
+  }
+
+  async markNotificationAsRead(notificationId: number) {
+    return this.request(`/workflow/notifications/${notificationId}/read`, {
+      method: "PATCH",
+    });
+  }
+
+  async getWorkflowAutomations() {
+    return this.request("/workflow/automations");
+  }
+
+  async triggerAutomation(automationId: number) {
+    return this.request(`/workflow/automations/${automationId}/trigger`, {
+      method: "POST",
+    });
+  }
+
+  async getCompletedLeads() {
+    return this.request("/workflow/leads/completed");
+  }
 }
 
 export const apiClient = new ApiClient();
