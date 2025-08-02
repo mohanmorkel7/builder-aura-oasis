@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth-context";
-import { useUsers, useLeads, useLeadStats, useFollowUps, useTemplates } from "@/hooks/useApi";
+import { useUsers, useLeads, useLeadStats, useFollowUps, useTemplates, useTemplateStepDashboard } from "@/hooks/useApi";
 import { useQuery } from "@tanstack/react-query";
 import { formatToIST } from "@/lib/dateUtils";
 import { apiClient } from "@/lib/api";
