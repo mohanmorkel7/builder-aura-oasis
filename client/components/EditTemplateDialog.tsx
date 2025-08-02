@@ -57,6 +57,7 @@ interface TemplateStep {
   required_documents?: string[];
   approval_required: boolean;
   parallel_execution: boolean;
+  probability_percent: number;
 }
 
 const iconMap = {
