@@ -70,6 +70,7 @@ export interface TicketComment {
   // Joined data
   user?: { id: number; name: string; email: string; avatar?: string };
   replies?: TicketComment[];
+  attachments?: TicketAttachment[];
 }
 
 export interface TicketAttachment {
