@@ -350,9 +350,9 @@ export class WorkflowRepository {
         } catch (templateError) {
           console.log("Could not load template steps, using provided steps instead:", templateError);
         }
-      } else if (projectData.steps && projectData.steps.length > 0) {
+      } else if ((projectData as any).steps && (projectData as any).steps.length > 0) {
         // Use provided custom steps
-        for (const step of projectData.steps) {
+        for (const step of (projectData as any).steps) {
           await client.query(
             `INSERT INTO workflow_steps
              (project_id, step_name, step_description, step_order, status, estimated_hours, due_date, created_by)
