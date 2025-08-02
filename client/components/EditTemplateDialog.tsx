@@ -395,10 +395,23 @@ export default function EditTemplateDialog({
               <TabsContent value="steps" className="space-y-4">
                 <div className="flex justify-between items-center">
                   <h3 className="text-lg font-medium">Template Steps</h3>
-                  <Button onClick={addStep} size="sm">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Step
-                  </Button>
+                  <div className="flex items-center gap-4">
+                    <div className="text-sm">
+                      <span className="text-gray-600">Total Probability: </span>
+                      <span className={`font-medium ${
+                        steps.reduce((sum, step) => sum + (step.probability_percent || 0), 0) === 100
+                          ? 'text-green-600'
+                          : 'text-red-600'
+                      }`}>
+                        {steps.reduce((sum, step) => sum + (step.probability_percent || 0), 0)}%
+                      </span>
+                      <span className="text-gray-500 ml-1">/ 100%</span>
+                    </div>
+                    <Button onClick={addStep} size="sm">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Step
+                    </Button>
+                  </div>
                 </div>
 
                 <div className="space-y-4">
