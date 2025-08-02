@@ -992,21 +992,32 @@ export default function LeadEdit() {
                 </div>
                 {leadData.commercial_pricing &&
                   leadData.commercial_pricing.length > 0 && (
-                    <div className="bg-gray-50 rounded-lg p-3 border">
+                    <div className="bg-gray-50 rounded-lg p-4 border space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium text-gray-600">
-                          Total Value:
+                          Total Value by Currency:
                         </span>
-                        <div className="flex space-x-3">
+                        <div className="flex items-center space-x-2">
+                          <span className="text-xs text-gray-500">Convert to:</span>
+                          <Select value={displayCurrency} onValueChange={(value: "INR" | "USD" | "AED") => setDisplayCurrency(value)}>
+                            <SelectTrigger className="w-20 h-7 text-xs">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="INR">INR</SelectItem>
+                              <SelectItem value="USD">USD</SelectItem>
+                              <SelectItem value="AED">AED</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        {/* Original values by currency */}
+                        <div className="flex flex-wrap gap-2">
                           {Object.entries(
                             leadData.commercial_pricing.reduce(
-                              (
-                                acc: Record<
-                                  string,
-                                  { total: number; count: number }
-                                >,
-                                pricing,
-                              ) => {
+                              (acc: Record<string, { total: number; count: number }>, pricing) => {
                                 const key = `${pricing.currency}_${pricing.unit}`;
                                 if (!acc[key]) {
                                   acc[key] = { total: 0, count: 0 };
@@ -1022,13 +1033,42 @@ export default function LeadEdit() {
                             return (
                               <span
                                 key={key}
-                                className="text-sm font-semibold text-gray-900"
+                                className="text-xs bg-white px-2 py-1 rounded border text-gray-700"
                               >
-                                {data.total.toLocaleString()} {currency} ({unit}
-                                )
+                                {data.total.toLocaleString()} {currency} ({unit})
                               </span>
                             );
                           })}
+                        </div>
+
+                        {/* Converted total */}
+                        <div className="border-t pt-2">
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm font-medium text-gray-800">
+                              Total Converted to {displayCurrency}:
+                            </span>
+                            <span className="text-lg font-bold text-blue-600">
+                              {Object.entries(
+                                leadData.commercial_pricing.reduce(
+                                  (acc: Record<string, number>, pricing) => {
+                                    const convertedValue = convertCurrency(
+                                      pricing.value || 0,
+                                      pricing.currency,
+                                      displayCurrency
+                                    );
+                                    acc[displayCurrency] = (acc[displayCurrency] || 0) + convertedValue;
+                                    return acc;
+                                  },
+                                  {},
+                                ),
+                              ).map(([currency, total]) =>
+                                `${total.toLocaleString(undefined, { maximumFractionDigits: 2 })} ${currency}`
+                              ).join(", ")}
+                            </span>
+                          </div>
+                          <div className="text-xs text-gray-500 mt-1">
+                            *Exchange rates are indicative and updated daily
+                          </div>
                         </div>
                       </div>
                     </div>
