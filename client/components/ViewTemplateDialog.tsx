@@ -99,7 +99,21 @@ export default function ViewTemplateDialog({
             {/* Template Steps */}
             <Card>
               <CardHeader>
-                <CardTitle>Template Steps</CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle>Template Steps</CardTitle>
+                  {template.steps && template.steps.some((step: any) => step.probability_percent !== undefined) && (
+                    <div className="text-sm">
+                      <span className="text-gray-600">Total Probability: </span>
+                      <span className={`font-medium ${
+                        template.steps.reduce((sum: number, step: any) => sum + (step.probability_percent || 0), 0) === 100
+                          ? 'text-green-600' : 'text-orange-600'
+                      }`}>
+                        {template.steps.reduce((sum: number, step: any) => sum + (step.probability_percent || 0), 0)}%
+                      </span>
+                      <span className="text-gray-500 ml-1">/ 100%</span>
+                    </div>
+                  )}
+                </div>
               </CardHeader>
               <CardContent>
                 {template.steps && template.steps.length > 0 ? (
