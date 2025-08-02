@@ -324,4 +324,170 @@ export class TemplateRepository {
 
     return this.create(duplicateData);
   }
+
+  // Category management methods
+  static async getAllCategories(): Promise<TemplateCategory[]> {
+    const query = `
+      SELECT * FROM template_categories
+      WHERE is_active = true
+      ORDER BY sort_order ASC, name ASC
+    `;
+    const result = await pool.query(query);
+    return result.rows;
+  }
+
+  static async getCategoryById(id: number): Promise<TemplateCategory | null> {
+    const query = "SELECT * FROM template_categories WHERE id = $1";
+    const result = await pool.query(query, [id]);
+    return result.rows.length > 0 ? result.rows[0] : null;
+  }
+
+  static async createCategory(categoryData: {
+    name: string;
+    description?: string;
+    color?: string;
+    icon?: string;
+    sort_order?: number;
+  }): Promise<TemplateCategory> {
+    const query = `
+      INSERT INTO template_categories (name, description, color, icon, sort_order)
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING *
+    `;
+    const values = [
+      categoryData.name,
+      categoryData.description,
+      categoryData.color || '#6B7280',
+      categoryData.icon,
+      categoryData.sort_order || 0,
+    ];
+    const result = await pool.query(query, values);
+    return result.rows[0];
+  }
+
+  // Template type management methods
+  static async getTemplateTypesByCategory(categoryId: number): Promise<TemplateType[]> {
+    const query = `
+      SELECT * FROM template_types
+      WHERE category_id = $1 AND is_active = true
+      ORDER BY name ASC
+    `;
+    const result = await pool.query(query, [categoryId]);
+    return result.rows;
+  }
+
+  static async getAllTemplateTypes(): Promise<TemplateType[]> {
+    const query = `
+      SELECT * FROM template_types
+      WHERE is_active = true
+      ORDER BY name ASC
+    `;
+    const result = await pool.query(query);
+    return result.rows;
+  }
+
+  // Step category management methods
+  static async getAllStepCategories(): Promise<StepCategory[]> {
+    const query = "SELECT * FROM step_categories ORDER BY name ASC";
+    const result = await pool.query(query);
+    return result.rows;
+  }
+
+  // Enhanced template queries with categories
+  static async findAllWithCategories(): Promise<Template[]> {
+    const query = `
+      SELECT t.*,
+             COUNT(ts.id) as step_count,
+             CONCAT(u.first_name, ' ', u.last_name) as creator_name,
+             tc.name as category_name,
+             tc.color as category_color,
+             tc.icon as category_icon,
+             tt.name as template_type_name
+      FROM templates t
+      LEFT JOIN template_steps ts ON t.id = ts.template_id
+      LEFT JOIN users u ON t.created_by = u.id
+      LEFT JOIN template_categories tc ON t.category_id = tc.id
+      LEFT JOIN template_types tt ON t.template_type_id = tt.id
+      WHERE t.is_active = true
+      GROUP BY t.id, u.first_name, u.last_name, tc.name, tc.color, tc.icon, tt.name
+      ORDER BY t.updated_at DESC
+    `;
+    const result = await pool.query(query);
+    return result.rows.map(row => ({
+      ...row,
+      category: row.category_name ? {
+        id: row.category_id,
+        name: row.category_name,
+        color: row.category_color,
+        icon: row.category_icon,
+      } : undefined,
+      template_type: row.template_type_name ? {
+        id: row.template_type_id,
+        name: row.template_type_name,
+      } : undefined,
+    }));
+  }
+
+  static async findByCategory(categoryId: number): Promise<Template[]> {
+    const query = `
+      SELECT t.*,
+             COUNT(ts.id) as step_count,
+             CONCAT(u.first_name, ' ', u.last_name) as creator_name,
+             tc.name as category_name,
+             tc.color as category_color
+      FROM templates t
+      LEFT JOIN template_steps ts ON t.id = ts.template_id
+      LEFT JOIN users u ON t.created_by = u.id
+      LEFT JOIN template_categories tc ON t.category_id = tc.id
+      WHERE t.is_active = true AND t.category_id = $1
+      GROUP BY t.id, u.first_name, u.last_name, tc.name, tc.color
+      ORDER BY t.updated_at DESC
+    `;
+    const result = await pool.query(query, [categoryId]);
+    return result.rows;
+  }
+
+  // Template usage tracking
+  static async recordUsage(templateId: number, userId: number, entityType: string, entityId: number): Promise<void> {
+    const query = "SELECT increment_template_usage($1, $2, $3, $4)";
+    await pool.query(query, [templateId, userId, entityType, entityId]);
+  }
+
+  static async getTemplateStats(): Promise<any> {
+    const query = "SELECT * FROM get_template_stats()";
+    const result = await pool.query(query);
+    return result.rows[0];
+  }
+
+  // Search templates
+  static async searchTemplates(searchTerm: string, categoryId?: number): Promise<Template[]> {
+    let query = `
+      SELECT t.*,
+             COUNT(ts.id) as step_count,
+             CONCAT(u.first_name, ' ', u.last_name) as creator_name,
+             tc.name as category_name,
+             tc.color as category_color
+      FROM templates t
+      LEFT JOIN template_steps ts ON t.id = ts.template_id
+      LEFT JOIN users u ON t.created_by = u.id
+      LEFT JOIN template_categories tc ON t.category_id = tc.id
+      WHERE t.is_active = true
+        AND (t.name ILIKE $1 OR t.description ILIKE $1 OR $2 = ANY(t.tags))
+    `;
+
+    const params = [`%${searchTerm}%`, searchTerm];
+
+    if (categoryId) {
+      query += ` AND t.category_id = $3`;
+      params.push(categoryId);
+    }
+
+    query += `
+      GROUP BY t.id, u.first_name, u.last_name, tc.name, tc.color
+      ORDER BY t.usage_count DESC, t.updated_at DESC
+    `;
+
+    const result = await pool.query(query, params);
+    return result.rows;
+  }
 }
