@@ -1329,68 +1329,6 @@ function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogPr
               )}
             </CardContent>
           </Card>
-
-          {/* Comments Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Comments & Updates</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {/* Add Comment */}
-              <div className="mb-4">
-                <div className="flex gap-3">
-                  <Textarea
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                    placeholder="Add a comment or update..."
-                    className="flex-1"
-                    rows={3}
-                  />
-                  <Button
-                    onClick={handleAddComment}
-                    disabled={!newComment.trim() || addCommentMutation.isPending}
-                  >
-                    <MessageSquare className="w-4 h-4 mr-2" />
-                    {addCommentMutation.isPending ? "Adding..." : "Add Comment"}
-                  </Button>
-                </div>
-              </div>
-
-              {/* Comments List */}
-              {commentsLoading ? (
-                <div className="text-center py-4">Loading comments...</div>
-              ) : comments.length > 0 ? (
-                <div className="space-y-3">
-                  {comments.map((comment: any) => (
-                    <div key={comment.id} className="border-l-4 border-l-blue-500 pl-4 py-2">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <p className="text-sm">{comment.comment_text}</p>
-                          <div className="flex items-center gap-2 mt-2 text-xs text-gray-500">
-                            <span>{comment.creator_name || "Unknown User"}</span>
-                            <span>•</span>
-                            <span>{format(new Date(comment.created_at), "MMM d, h:mm a")}</span>
-                            {comment.comment_type !== "comment" && (
-                              <>
-                                <span>•</span>
-                                <Badge variant="outline" className="text-xs">
-                                  {comment.comment_type.replace("_", " ")}
-                                </Badge>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-4 text-gray-500">
-                  No comments yet. Be the first to add a comment!
-                </div>
-              )}
-            </CardContent>
-          </Card>
         </div>
       </DialogContent>
     </Dialog>
