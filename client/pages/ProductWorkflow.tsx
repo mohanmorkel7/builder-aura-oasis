@@ -1024,11 +1024,11 @@ function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogPr
       console.log("Updating step status:", stepId, status);
       return apiClient.updateStepStatus(stepId, status, parseInt(user?.id || "1"));
     },
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       console.log("Step status updated successfully");
       queryClient.invalidateQueries({ queryKey: ["workflow-project-details", project?.id] });
       queryClient.invalidateQueries({ queryKey: ["workflow-projects"] });
-      queryClient.invalidateQueries({ queryKey: ["project-step-comments", stepId] });
+      queryClient.invalidateQueries({ queryKey: ["project-step-comments", variables.stepId] });
     },
     onError: (error) => {
       console.error("Failed to update step status:", error);
