@@ -123,6 +123,12 @@ export default function Login() {
               </Button>
             </div>
 
+            <div className="text-xs text-gray-500 mt-4 p-3 bg-gray-50 rounded border">
+              <p className="font-medium mb-1">Demo Credentials:</p>
+              <p>• Admin: admin@banani.com / password</p>
+              <p>• Sales: sales@banani.com / password</p>
+              <p>• Product: product@banani.com / password</p>
+            </div>
 
           </CardContent>
         </Card>
