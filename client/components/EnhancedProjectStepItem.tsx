@@ -223,10 +223,11 @@ export function EnhancedProjectStepItem({
           <div
             {...attributes}
             {...listeners}
-            className="flex-shrink-0 cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600"
+            className="flex-shrink-0 cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 hover:bg-gray-100 p-2 rounded transition-colors"
             onClick={(e) => e.stopPropagation()}
+            title="Drag to reorder step"
           >
-            <GripVertical className="w-5 h-5" />
+            <GripVertical className="w-4 h-4" />
           </div>
 
           {/* Status Icon */}
