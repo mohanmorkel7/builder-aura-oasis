@@ -68,7 +68,12 @@ export default function UserManagement() {
   const [selectedDepartment, setSelectedDepartment] = useState<string>("all");
 
   // Combine local and Azure users (in real app, these would come from API)
-  const allUsers = [...localUsers, ...mockAzureUsers];
+  // Add prefix to Azure user IDs to avoid key conflicts
+  const azureUsersWithUniqueIds = mockAzureUsers.map(user => ({
+    ...user,
+    id: `azure-${user.id}`
+  }));
+  const allUsers = [...localUsers, ...azureUsersWithUniqueIds];
 
   // Filter users based on search and filters
   const filteredUsers = allUsers.filter((user) => {
