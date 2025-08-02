@@ -392,22 +392,43 @@ export class LeadRepository {
     const hasPartialColumns = columnsResult.rows.length === 2;
     console.log("Database has partial save columns:", hasPartialColumns);
 
-    const query = `
-      INSERT INTO leads (
-        lead_id, lead_source, lead_source_value, project_title, project_description,
-        project_requirements, solutions, priority_level,
-        start_date, targeted_end_date, expected_daily_txn_volume, project_value, spoc,
-        commercials, commercial_pricing, client_name, client_type, company,
-        company_location, category, country, contacts, priority, expected_close_date,
-        probability, notes, template_id, created_by, assigned_to, is_partial, partial_data
-      )
-      VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13,
-        $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24,
-        $25, $26, $27, $28, $29, $30, $31
-      )
-      RETURNING *
-    `;
+    let query, values;
+
+    if (hasPartialColumns) {
+      query = `
+        INSERT INTO leads (
+          lead_id, lead_source, lead_source_value, project_title, project_description,
+          project_requirements, solutions, priority_level,
+          start_date, targeted_end_date, expected_daily_txn_volume, project_value, spoc,
+          commercials, commercial_pricing, client_name, client_type, company,
+          company_location, category, country, contacts, priority, expected_close_date,
+          probability, notes, template_id, created_by, assigned_to, is_partial, partial_data
+        )
+        VALUES (
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13,
+          $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24,
+          $25, $26, $27, $28, $29, $30, $31
+        )
+        RETURNING *
+      `;
+    } else {
+      query = `
+        INSERT INTO leads (
+          lead_id, lead_source, lead_source_value, project_title, project_description,
+          project_requirements, solutions, priority_level,
+          start_date, targeted_end_date, expected_daily_txn_volume, project_value, spoc,
+          commercials, commercial_pricing, client_name, client_type, company,
+          company_location, category, country, contacts, priority, expected_close_date,
+          probability, notes, template_id, created_by, assigned_to
+        )
+        VALUES (
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13,
+          $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24,
+          $25, $26, $27, $28, $29
+        )
+        RETURNING *
+      `;
+    }
 
     const values = [
       leadId, // $1
