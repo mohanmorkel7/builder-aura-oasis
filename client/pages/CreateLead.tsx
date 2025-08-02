@@ -1040,9 +1040,9 @@ export default function CreateLead() {
         <TabsContent value="client" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Client Information</CardTitle>
+              <CardTitle>Client & Contact Information</CardTitle>
               <CardDescription>
-                Additional details about the client's company and background
+                Client company details and contact information
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
