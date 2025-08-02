@@ -94,7 +94,7 @@ function CreateProjectFromLeadDialog({ lead, isOpen, onClose, onSuccess }: Creat
 
   // Update steps when template changes
   useEffect(() => {
-    if (templateSteps?.steps) {
+    if (templateSteps?.steps && templateSteps.steps.length > 0) {
       const convertedSteps = templateSteps.steps.map((step: any, index: number) => ({
         step_name: step.name,
         step_description: step.description,
@@ -122,7 +122,7 @@ function CreateProjectFromLeadDialog({ lead, isOpen, onClose, onSuccess }: Creat
         }
       ]);
     }
-  }, [templateSteps, selectedTemplate]);
+  }, [templateSteps?.steps?.length, selectedTemplate?.id]);
 
   const handleTemplateSelect = (templateId: string) => {
     const template = templates.find((t: any) => t.id.toString() === templateId);
