@@ -1167,10 +1167,16 @@ function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogPr
                     const stepCommentsList = allStepComments[step.id] || [];
 
                     return (
-                      <Card key={step.id} className="border-l-4 border-l-blue-500">
+                      <Card key={step.id} className="border-l-4 border-l-blue-500 hover:shadow-md transition-shadow cursor-pointer"
+                            onClick={() => toggleStepExpansion(step.id)}>
                         <CardContent className="p-4">
                           <div className="flex items-start justify-between">
                             <div className="flex items-start gap-3 flex-1">
+                              {/* Drag Handle */}
+                              <div className="cursor-move p-1 text-gray-400 hover:text-gray-600"
+                                   onClick={(e) => e.stopPropagation()}>
+                                <GripVertical className="w-4 h-4" />
+                              </div>
                               <div className={`p-2 rounded-full ${getStatusColor(step.status)}`}>
                                 <StatusIcon className="w-4 h-4" />
                               </div>
