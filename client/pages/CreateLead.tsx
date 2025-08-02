@@ -348,16 +348,18 @@ export default function CreateLead() {
     try {
       setSaving(true);
 
-      // Prepare partial data for database save
+      // Prepare partial data for database save (using existing fields as workaround)
       const partialData = {
         ...leadData,
-        is_partial: true,
         lead_source: leadData.lead_source || 'other', // Ensure we have a lead_source
-        partial_data: {
+        client_name: leadData.client_name || 'PARTIAL_SAVE_IN_PROGRESS', // Required field workaround
+        project_title: leadData.project_title || 'Partial Save - In Progress',
+        notes: JSON.stringify({
+          isPartialSave: true,
           lastSaved: new Date().toISOString(),
           completedTabs: [currentTab],
-          formData: leadData,
-        },
+          originalData: leadData,
+        }),
         created_by: parseInt(user?.id || "1"),
       };
 
