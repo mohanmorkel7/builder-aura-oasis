@@ -510,21 +510,7 @@ export default function EditTemplateDialog({
                           />
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div>
-                            <Label>Default ETA (days)</Label>
-                            <Input
-                              type="number"
-                              min="1"
-                              value={step.default_eta_days}
-                              onChange={(e) =>
-                                updateStep(step.id, {
-                                  default_eta_days:
-                                    parseInt(e.target.value) || 1,
-                                })
-                              }
-                            />
-                          </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
                             <Label htmlFor={`probability-${step.id}`}>
                               Probability (%)
@@ -543,76 +529,6 @@ export default function EditTemplateDialog({
                               }
                               placeholder="% probability"
                             />
-                          </div>
-                          <div className="space-y-2">
-                            <div className="flex items-center space-x-2">
-                              <Checkbox
-                                id={`auto-alert-${step.id}`}
-                                checked={step.auto_alert}
-                                onCheckedChange={(checked) =>
-                                  updateStep(step.id, { auto_alert: !!checked })
-                                }
-                              />
-                              <Label
-                                htmlFor={`auto-alert-${step.id}`}
-                                className="text-sm"
-                              >
-                                Auto Alert
-                              </Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <Checkbox
-                                id={`email-reminder-${step.id}`}
-                                checked={step.email_reminder}
-                                onCheckedChange={(checked) =>
-                                  updateStep(step.id, {
-                                    email_reminder: !!checked,
-                                  })
-                                }
-                              />
-                              <Label
-                                htmlFor={`email-reminder-${step.id}`}
-                                className="text-sm"
-                              >
-                                Email Reminder
-                              </Label>
-                            </div>
-                          </div>
-                          <div className="space-y-2">
-                            <div className="flex items-center space-x-2">
-                              <Checkbox
-                                id={`approval-required-${step.id}`}
-                                checked={step.approval_required}
-                                onCheckedChange={(checked) =>
-                                  updateStep(step.id, {
-                                    approval_required: !!checked,
-                                  })
-                                }
-                              />
-                              <Label
-                                htmlFor={`approval-required-${step.id}`}
-                                className="text-sm"
-                              >
-                                Approval Required
-                              </Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <Checkbox
-                                id={`parallel-execution-${step.id}`}
-                                checked={step.parallel_execution}
-                                onCheckedChange={(checked) =>
-                                  updateStep(step.id, {
-                                    parallel_execution: !!checked,
-                                  })
-                                }
-                              />
-                              <Label
-                                htmlFor={`parallel-execution-${step.id}`}
-                                className="text-sm"
-                              >
-                                Parallel Execution
-                              </Label>
-                            </div>
                           </div>
                         </div>
                       </CardContent>
