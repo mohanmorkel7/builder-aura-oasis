@@ -1401,21 +1401,7 @@ export default function CreateLead() {
           </div>
         </div>
 
-        {/* Progress Bar */}
-        <div className="mt-4">
-          <div className="flex items-center space-x-2 mb-2">
-            <span className="text-xs text-gray-500">Progress:</span>
-            <span className="text-xs font-medium text-gray-700">
-              {Math.round(((currentTabIndex + 1) / tabs.length) * 100)}% Complete
-            </span>
-          </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
-            <div
-              className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${((currentTabIndex + 1) / tabs.length) * 100}%` }}
-            ></div>
-          </div>
-        </div>
+
       </div>
 
       {/* Template Preview Modal */}
