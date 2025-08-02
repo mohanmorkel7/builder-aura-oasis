@@ -44,6 +44,7 @@ export default function TemplatePreviewModal({
   if (!template) return null;
 
   const totalSteps = template.steps?.length || 0;
+  const totalProbability = template.steps?.reduce((sum, step) => sum + (step.probability_percent || 0), 0) || 0;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
