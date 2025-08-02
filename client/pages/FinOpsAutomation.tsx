@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -31,7 +32,8 @@ import {
   ChevronRight,
   Zap,
   Timer,
-  Target
+  Target,
+  BarChart3
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -62,6 +64,7 @@ interface ProcessStep {
 
 export default function FinOpsAutomation() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   // Fetch workflow projects for FinOps
@@ -174,11 +177,18 @@ export default function FinOpsAutomation() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">FinOps Automation</h1>
+          <h1 className="text-3xl font-bold text-gray-900">FinOps Management</h1>
           <p className="text-gray-600 mt-1">Automated daily processes, reconciliation, and team coordination</p>
         </div>
-        
+
         <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={() => navigate("/finops/dashboard")}
+          >
+            <BarChart3 className="w-4 h-4 mr-2" />
+            Dashboard
+          </Button>
           <Button variant="outline">
             <Settings className="w-4 h-4 mr-2" />
             Configure
