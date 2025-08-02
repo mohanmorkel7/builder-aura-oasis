@@ -1072,8 +1072,7 @@ function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogPr
                   {projectDetails.steps.map((step: any) => {
                     const StatusIcon = getStatusIcon(step.status);
                     const isExpanded = expandedSteps[step.id];
-                    const stepCommentsQuery = isExpanded ? getStepComments(step.id) : null;
-                    const stepCommentsList = stepCommentsQuery?.data || [];
+                    const stepCommentsList = allStepComments[step.id] || [];
 
                     return (
                       <Card key={step.id} className="border-l-4 border-l-blue-500">
