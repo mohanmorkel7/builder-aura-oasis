@@ -129,17 +129,29 @@ router.post("/", async (req: Request, res: Response) => {
   try {
     const leadData: CreateLeadData = req.body;
 
-    // Validate required fields
-    const validation = DatabaseValidator.validateRequiredFields(
-      leadData,
-      ValidationSchemas.lead.required,
-    );
+    // For partial saves, skip strict validation
+    const isPartialSave = leadData.is_partial === true;
 
-    if (!validation.isValid) {
-      return res.status(400).json({
-        error: "Missing required fields",
-        missingFields: validation.missingFields,
-      });
+    if (!isPartialSave) {
+      // Validate required fields only for complete leads
+      const validation = DatabaseValidator.validateRequiredFields(
+        leadData,
+        ValidationSchemas.lead.required,
+      );
+
+      if (!validation.isValid) {
+        return res.status(400).json({
+          error: "Missing required fields",
+          missingFields: validation.missingFields,
+        });
+      }
+    } else {
+      // For partial saves, ensure at least created_by is present
+      if (!leadData.created_by) {
+        return res.status(400).json({
+          error: "created_by is required even for partial saves",
+        });
+      }
     }
 
     // Validate enum values
