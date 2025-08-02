@@ -275,6 +275,40 @@ function CreateProjectFromLeadDialog({ lead, isOpen, onClose, onSuccess }: Creat
                 />
               </div>
 
+              <div>
+                <Label htmlFor="template">Project Template</Label>
+                <Select
+                  value={projectData.template_id}
+                  onValueChange={handleTemplateSelect}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a template (optional)" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">No Template</SelectItem>
+                    {templates.map((template: any) => (
+                      <SelectItem key={template.id} value={template.id.toString()}>
+                        {template.name}
+                        {template.description && (
+                          <span className="text-sm text-gray-500 block">{template.description}</span>
+                        )}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {selectedTemplate && (
+                  <div className="mt-2 p-3 bg-blue-50 rounded-lg">
+                    <div className="text-sm font-medium text-blue-900">{selectedTemplate.name}</div>
+                    {selectedTemplate.description && (
+                      <div className="text-sm text-blue-700 mt-1">{selectedTemplate.description}</div>
+                    )}
+                    <div className="text-xs text-blue-600 mt-1">
+                      This will load {templateSteps?.steps?.length || 0} pre-defined steps
+                    </div>
+                  </div>
+                )}
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="project_manager">Project Manager</Label>
