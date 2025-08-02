@@ -44,7 +44,7 @@ import {
   Eye,
   Edit,
   Trash2,
-  Microsoft,
+  Cloud,
 } from "lucide-react";
 
 // Mock Azure SSO users data
