@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useCreateLead, usePartialSaveLead, useTemplate } from "@/hooks/useApi";
 import { useAuth } from "@/lib/auth-context";
