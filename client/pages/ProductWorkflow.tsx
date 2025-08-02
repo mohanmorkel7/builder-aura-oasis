@@ -1253,15 +1253,15 @@ function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogPr
                                 <div className="space-y-3 mb-4">
                                   {stepCommentsList.map((comment: any) => (
                                     <div key={comment.id} className="flex gap-3">
-                                      <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                                        <Users className="w-4 h-4 text-blue-600" />
+                                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-sm">
+                                        <Users className="w-4 h-4 text-white" />
                                       </div>
                                       <div className="flex-1">
-                                        <div className="bg-gray-50 rounded-lg p-3">
-                                          <p className="text-sm">{comment.comment_text}</p>
+                                        <div className="bg-white border rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow">
+                                          <p className="text-sm leading-relaxed whitespace-pre-wrap">{comment.comment_text}</p>
                                         </div>
-                                        <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
-                                          <span>{comment.creator_name || "Unknown User"}</span>
+                                        <div className="flex items-center gap-2 mt-2 text-xs text-gray-500">
+                                          <span className="font-medium">{comment.creator_name || "Unknown User"}</span>
                                           <span>•</span>
                                           <span>{format(new Date(comment.created_at), "MMM d, h:mm a")}</span>
                                           {comment.comment_type !== "comment" && (
