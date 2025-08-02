@@ -31,8 +31,18 @@ export class ApiClient {
           const clonedResponse = response.clone();
           errorText = await clonedResponse.text();
         } catch (textError) {
-          // If we can't read the response body, provide a generic error
-          throw new Error(`Authentication failed (${response.status})`);
+          // If we can't read the response body, provide a status-specific error
+          if (response.status === 400) {
+            throw new Error(`Bad Request (${response.status}): Invalid data provided`);
+          } else if (response.status === 403) {
+            throw new Error(`Forbidden (${response.status}): Access denied`);
+          } else if (response.status === 404) {
+            throw new Error(`Not Found (${response.status}): Resource not found`);
+          } else if (response.status >= 500) {
+            throw new Error(`Server Error (${response.status}): Internal server error`);
+          } else {
+            throw new Error(`HTTP Error (${response.status}): Request failed`);
+          }
         }
 
         if (errorText) {
