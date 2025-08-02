@@ -747,13 +747,10 @@ export function useLeads(salesRepId?: number) {
   return useQuery({
     queryKey: ["leads", salesRepId],
     queryFn: async () => {
-      try {
-        return await apiClient.getLeads(salesRepId);
-      } catch (error) {
-        console.log("API unavailable, using mock leads data");
-        return mockLeads;
-      }
+      return await apiClient.getLeads(salesRepId);
     },
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 }
 
