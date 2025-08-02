@@ -1349,6 +1349,75 @@ export default function CreateLead() {
         </TabsContent>
       </Tabs>
 
+      {/* Navigation and Action Bar */}
+      <div className="border-t bg-gray-50 p-6 rounded-lg">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <Button
+              variant="outline"
+              onClick={handlePreviousTab}
+              disabled={isFirstTab}
+            >
+              ← Previous
+            </Button>
+            <div className="text-sm text-gray-600">
+              Step {currentTabIndex + 1} of {tabs.length}: {tabs[currentTabIndex].label}
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-3">
+            {isPartialSaved && (
+              <span className="text-sm text-green-600 bg-green-50 px-3 py-1 rounded-full">
+                ✓ Progress saved
+              </span>
+            )}
+            <Button
+              variant="outline"
+              onClick={handlePartialSave}
+              disabled={saving}
+            >
+              Save Progress
+            </Button>
+            {!isLastTab ? (
+              <Button
+                onClick={handleNextTab}
+                disabled={saving}
+              >
+                Next →
+              </Button>
+            ) : (
+              <Button
+                onClick={handleSave}
+                disabled={saving || !isFormValid}
+                className="min-w-32"
+              >
+                {saving ? (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  "Create Lead"
+                )}
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {/* Progress Bar */}
+        <div className="mt-4">
+          <div className="flex items-center space-x-2 mb-2">
+            <span className="text-xs text-gray-500">Progress:</span>
+            <span className="text-xs font-medium text-gray-700">
+              {Math.round(((currentTabIndex + 1) / tabs.length) * 100)}% Complete
+            </span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div
+              className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${((currentTabIndex + 1) / tabs.length) * 100}%` }}
+            ></div>
+          </div>
+        </div>
+      </div>
+
       {/* Template Preview Modal */}
       <TemplatePreviewModal
         isOpen={showTemplatePreview}
