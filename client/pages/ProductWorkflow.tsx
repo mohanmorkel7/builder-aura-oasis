@@ -38,7 +38,9 @@ import {
   Paperclip,
   Send,
   ChevronRight,
-  ChevronDown
+  ChevronDown,
+  GripVertical,
+  Move
 } from "lucide-react";
 import { format } from "date-fns";
 
