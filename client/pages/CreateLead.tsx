@@ -543,14 +543,6 @@ export default function CreateLead() {
           </div>
         </div>
         <div className="flex items-center space-x-3">
-          <Button
-            variant="outline"
-            onClick={() => setShowPartialSaves(!showPartialSaves)}
-            className="text-blue-600"
-          >
-            <FileText className="w-4 h-4 mr-2" />
-            {shouldShowPartialSaves ? 'Hide' : 'Show'} Saved Drafts
-          </Button>
           <Button variant="outline" onClick={handleCancel}>
             Cancel
           </Button>
@@ -585,24 +577,12 @@ export default function CreateLead() {
         </Alert>
       )}
 
-      {/* Partial Saves Section */}
-      {shouldShowPartialSaves && (
-        <PartialSaves onResumePartialSave={handleResumePartialSave} />
-      )}
-
       {/* Resume Notification */}
       {isResumedFromDraft && (
         <Alert>
           <Info className="h-4 w-4" />
-          <AlertDescription className="flex items-center justify-between">
-            <span>You are continuing from a saved draft.</span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowPartialSaves(true)}
-            >
-              View Other Drafts
-            </Button>
+          <AlertDescription>
+            <span>You are continuing from a saved draft. You can access other drafts from the Lead Dashboard.</span>
           </AlertDescription>
         </Alert>
       )}
