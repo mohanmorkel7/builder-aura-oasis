@@ -239,6 +239,7 @@ CREATE TABLE IF NOT EXISTS template_steps (
     default_eta_days INTEGER DEFAULT 3,
     auto_alert BOOLEAN DEFAULT false,
     email_reminder BOOLEAN DEFAULT false,
+    probability_percent INTEGER DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
