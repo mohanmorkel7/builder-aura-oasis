@@ -165,6 +165,7 @@ export default function CreateLead() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const createLeadMutation = useCreateLead();
+  const partialSaveMutation = usePartialSaveLead();
 
   // Get only Lead templates (category ID 2 based on our mock data)
   const { data: templates = [] } = useQuery({
