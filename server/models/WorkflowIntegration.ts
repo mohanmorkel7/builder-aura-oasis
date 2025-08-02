@@ -164,6 +164,15 @@ export interface CreateWorkflowProjectData {
   target_completion_date?: string;
   budget?: number;
   estimated_hours?: number;
+  template_id?: number;
+  steps?: Array<{
+    step_name: string;
+    step_description?: string;
+    step_order: number;
+    status?: "pending" | "in_progress" | "completed" | "blocked";
+    estimated_hours?: number;
+    due_date?: string;
+  }>;
   created_by: number;
 }
 
