@@ -44,6 +44,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { DraggableProjectStepsList } from "@/components/DraggableProjectStepsList";
+import { AddStepModal } from "@/components/AddStepModal";
 
 interface ProjectStep {
   id?: number;
