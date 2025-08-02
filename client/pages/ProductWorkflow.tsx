@@ -948,6 +948,7 @@ function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogPr
   const [stepComments, setStepComments] = useState<{[key: number]: string}>({});
   const [expandedSteps, setExpandedSteps] = useState<{[key: number]: boolean}>({});
   const [uploadingFiles, setUploadingFiles] = useState<{[key: number]: boolean}>({});
+  const [addStepModalOpen, setAddStepModalOpen] = useState(false);
 
   // Helper functions for status display
   const getStatusIcon = (status: string) => {
