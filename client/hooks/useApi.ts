@@ -69,7 +69,15 @@ const mockTemplates = [
     description: "A comprehensive template for standard client onboarding",
     type: "standard",
     step_count: 5,
+    is_active: true,
     created_at: "2023-01-15T09:00:00Z",
+    steps: [
+      { id: 1, name: "Initial Contact", description: "First contact with client", step_order: 1, probability_percent: 10 },
+      { id: 2, name: "Requirement Analysis", description: "Analyze client requirements", step_order: 2, probability_percent: 25 },
+      { id: 3, name: "Proposal Submission", description: "Submit project proposal", step_order: 3, probability_percent: 40 },
+      { id: 4, name: "Contract Negotiation", description: "Negotiate contract terms", step_order: 4, probability_percent: 70 },
+      { id: 5, name: "Project Kickoff", description: "Start project execution", step_order: 5, probability_percent: 100 }
+    ]
   },
   {
     id: 2,
@@ -77,7 +85,18 @@ const mockTemplates = [
     description: "Tailored onboarding process for large enterprise clients",
     type: "enterprise",
     step_count: 8,
+    is_active: true,
     created_at: "2023-01-15T09:00:00Z",
+    steps: [
+      { id: 6, name: "Discovery Call", description: "Initial discovery and assessment", step_order: 1, probability_percent: 5 },
+      { id: 7, name: "Technical Review", description: "Technical requirements review", step_order: 2, probability_percent: 15 },
+      { id: 8, name: "Security Assessment", description: "Security and compliance check", step_order: 3, probability_percent: 30 },
+      { id: 9, name: "Stakeholder Meeting", description: "Meet with key stakeholders", step_order: 4, probability_percent: 45 },
+      { id: 10, name: "Pilot Program", description: "Run pilot program", step_order: 5, probability_percent: 60 },
+      { id: 11, name: "Implementation Plan", description: "Create implementation roadmap", step_order: 6, probability_percent: 75 },
+      { id: 12, name: "Contract Finalization", description: "Finalize enterprise contract", step_order: 7, probability_percent: 90 },
+      { id: 13, name: "Go Live", description: "Launch full implementation", step_order: 8, probability_percent: 100 }
+    ]
   },
   {
     id: 3,
@@ -85,7 +104,16 @@ const mockTemplates = [
     description: "Template for partner integration and setup",
     type: "partner",
     step_count: 6,
+    is_active: false,
     created_at: "2023-02-01T09:00:00Z",
+    steps: [
+      { id: 14, name: "Partner Qualification", description: "Qualify potential partner", step_order: 1, probability_percent: 15 },
+      { id: 15, name: "Integration Planning", description: "Plan integration approach", step_order: 2, probability_percent: 30 },
+      { id: 16, name: "Technical Integration", description: "Technical integration setup", step_order: 3, probability_percent: 50 },
+      { id: 17, name: "Testing & Validation", description: "Test integration", step_order: 4, probability_percent: 70 },
+      { id: 18, name: "Partnership Agreement", description: "Sign partnership agreement", step_order: 5, probability_percent: 85 },
+      { id: 19, name: "Go Live", description: "Launch partnership", step_order: 6, probability_percent: 100 }
+    ]
   },
 ];
 
