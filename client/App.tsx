@@ -177,6 +177,17 @@ function AppRoutes() {
       />
 
       <Route
+        path="/admin/templates"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <DashboardLayout>
+              <AdminTemplates />
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
         path="/admin/templates/new"
         element={
           <ProtectedRoute allowedRoles={["admin"]}>
