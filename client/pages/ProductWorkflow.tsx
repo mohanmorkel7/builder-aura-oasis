@@ -46,6 +46,7 @@ import { format } from "date-fns";
 import { DraggableProjectStepsList } from "@/components/DraggableProjectStepsList";
 import { AddStepModal } from "@/components/AddStepModal";
 import { LeadOverviewModal } from "@/components/LeadOverviewModal";
+import { StepsPreviewModal } from "@/components/StepsPreviewModal";
 
 interface ProjectStep {
   id?: number;
