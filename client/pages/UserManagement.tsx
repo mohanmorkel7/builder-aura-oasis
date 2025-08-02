@@ -310,8 +310,8 @@ export default function UserManagement() {
                           {roleGroups[user.role as UserRole]?.label}
                         </Badge>
                       </TableCell>
-                      <TableCell>{user.department}</TableCell>
-                      <TableCell>{user.lastLogin}</TableCell>
+                      <TableCell>{user.department || 'N/A'}</TableCell>
+                      <TableCell>{user.lastLogin || 'N/A'}</TableCell>
                       <TableCell>
                         <Badge className={getUserStatusColor(user.status)}>
                           {user.status}
@@ -381,7 +381,7 @@ export default function UserManagement() {
                           <div className="flex-1">
                             <div className="font-medium">{user.name || 'N/A'}</div>
                             <div className="text-sm text-gray-500">{user.email || 'N/A'}</div>
-                            <div className="text-xs text-gray-400">{user.department}</div>
+                            <div className="text-xs text-gray-400">{user.department || 'N/A'}</div>
                           </div>
                           {user.azureObjectId && (
                             <Cloud className="w-4 h-4 text-blue-600" />
@@ -443,13 +443,13 @@ export default function UserManagement() {
                           {roleGroups[user.role as UserRole]?.label}
                         </Badge>
                       </TableCell>
-                      <TableCell>{user.department}</TableCell>
+                      <TableCell>{user.department || 'N/A'}</TableCell>
                       <TableCell>
                         <code className="text-xs bg-gray-100 px-2 py-1 rounded">
                           {user.azureObjectId}
                         </code>
                       </TableCell>
-                      <TableCell>{user.lastLogin}</TableCell>
+                      <TableCell>{user.lastLogin || 'N/A'}</TableCell>
                       <TableCell>
                         <div className="flex items-center space-x-2">
                           <Button size="sm" variant="outline">
