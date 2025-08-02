@@ -213,7 +213,9 @@ export function EnhancedProjectStepItem({
     <div
       ref={setNodeRef}
       style={style}
-      className={`border rounded-lg bg-white ${isDragOverlay ? "shadow-2xl" : ""}`}
+      className={`border rounded-lg bg-white transition-all duration-200 hover:shadow-md ${
+        isDragOverlay ? "shadow-2xl scale-105 border-blue-300" : ""
+      } ${isDragging ? "opacity-50 scale-95" : ""}`}
     >
       <Collapsible open={isExpanded} onOpenChange={onToggleExpansion}>
         <div className="flex items-center space-x-4 p-4">
