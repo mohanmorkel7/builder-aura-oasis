@@ -146,38 +146,17 @@ router.post("/", async (req: Request, res: Response) => {
       leadData.lead_source = 'other';
     }
 
-    // Validate enum values (skip for partial saves)
-    if (
-      !isPartialSave &&
-      leadData.lead_source &&
-      !ValidationSchemas.lead.enums.lead_source.includes(leadData.lead_source)
-    ) {
-      return res.status(400).json({
-        error: "Invalid lead source",
-        validOptions: ValidationSchemas.lead.enums.lead_source,
-      });
+    // Basic enum validation with defaults
+    if (leadData.lead_source && !ValidationSchemas.lead.enums.lead_source.includes(leadData.lead_source)) {
+      leadData.lead_source = 'other';
     }
 
-    if (
-      !isPartialSave &&
-      leadData.status &&
-      !ValidationSchemas.lead.enums.status.includes(leadData.status)
-    ) {
-      return res.status(400).json({
-        error: "Invalid status",
-        validOptions: ValidationSchemas.lead.enums.status,
-      });
+    if (leadData.status && !ValidationSchemas.lead.enums.status.includes(leadData.status)) {
+      leadData.status = 'in-progress';
     }
 
-    if (
-      !isPartialSave &&
-      leadData.priority &&
-      !ValidationSchemas.lead.enums.priority.includes(leadData.priority)
-    ) {
-      return res.status(400).json({
-        error: "Invalid priority",
-        validOptions: ValidationSchemas.lead.enums.priority,
-      });
+    if (leadData.priority && !ValidationSchemas.lead.enums.priority.includes(leadData.priority)) {
+      leadData.priority = 'medium';
     }
 
     // Validate numeric fields
