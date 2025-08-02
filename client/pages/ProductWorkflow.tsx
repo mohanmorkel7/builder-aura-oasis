@@ -1184,6 +1184,14 @@ function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogPr
                                 <div className="flex items-center gap-2">
                                   <h4 className="font-medium">{step.step_name}</h4>
                                   <Badge variant="outline">Step {step.step_order}</Badge>
+                                  {stepCommentsList.length > 0 && (
+                                    <Badge variant="secondary" className="text-xs">
+                                      {stepCommentsList.length} comments
+                                    </Badge>
+                                  )}
+                                  <div className="text-xs text-gray-400 italic">
+                                    Click to expand
+                                  </div>
                                 </div>
                                 {step.step_description && (
                                   <p className="text-sm text-gray-600 mt-1">{step.step_description}</p>
