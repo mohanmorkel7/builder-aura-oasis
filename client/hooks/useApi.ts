@@ -765,6 +765,18 @@ export function usePartialLeads(salesRepId?: number) {
   });
 }
 
+export function useMyPartialSaves(userId?: number) {
+  return useQuery({
+    queryKey: ["my-partial-saves", userId],
+    queryFn: async () => {
+      return await apiClient.getMyPartialSaves(userId);
+    },
+    enabled: !!userId,
+    retry: 2,
+    retryDelay: 1000,
+  });
+}
+
 export function useLead(id: number) {
   return useQuery({
     queryKey: ["leads", id],
