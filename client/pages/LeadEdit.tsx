@@ -268,6 +268,20 @@ export default function LeadEdit() {
   const [hasChanges, setHasChanges] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [displayCurrency, setDisplayCurrency] = useState<"INR" | "USD" | "AED">("INR");
+
+  // Mock exchange rates (in production, these would come from an API)
+  const exchangeRates = {
+    INR: { USD: 0.012, AED: 0.044, INR: 1 },
+    USD: { INR: 83.5, AED: 3.67, USD: 1 },
+    AED: { INR: 22.75, USD: 0.27, AED: 1 },
+  };
+
+  const convertCurrency = (amount: number, fromCurrency: string, toCurrency: string): number => {
+    if (fromCurrency === toCurrency) return amount;
+    const rate = exchangeRates[fromCurrency as keyof typeof exchangeRates]?.[toCurrency as keyof typeof exchangeRates.INR];
+    return rate ? amount * rate : amount;
+  };
 
   // Early returns after all hooks have been declared
   if (isLoading) {
