@@ -608,6 +608,54 @@ export class ApiClient {
       headers: {}, // Let browser set Content-Type for FormData
     });
   }
+
+  // Enhanced Template API methods
+  async getTemplateCategories() {
+    return this.request<any[]>("/templates/categories");
+  }
+
+  async getTemplatesByCategory(categoryId: number) {
+    return this.request<any[]>(`/templates/category/${categoryId}`);
+  }
+
+  async getTemplatesWithCategories() {
+    return this.request<any[]>("/templates/with-categories");
+  }
+
+  async getTemplateStats() {
+    return this.request<any>("/templates/stats");
+  }
+
+  async searchTemplates(searchTerm: string, categoryId?: number) {
+    let endpoint = `/templates/search?q=${encodeURIComponent(searchTerm)}`;
+    if (categoryId) {
+      endpoint += `&category=${categoryId}`;
+    }
+    return this.request<any[]>(endpoint);
+  }
+
+  async duplicateTemplate(templateId: number) {
+    return this.request<any>(`/templates/${templateId}/duplicate`, {
+      method: "POST",
+    });
+  }
+
+  async deleteTemplate(templateId: number) {
+    return this.request<void>(`/templates/${templateId}`, {
+      method: "DELETE",
+    });
+  }
+
+  async getStepCategories() {
+    return this.request<any[]>("/templates/step-categories");
+  }
+
+  async recordTemplateUsage(templateId: number, entityType: string, entityId: number) {
+    return this.request<void>(`/templates/${templateId}/usage`, {
+      method: "POST",
+      body: JSON.stringify({ entityType, entityId }),
+    });
+  }
 }
 
 export const apiClient = new ApiClient();
