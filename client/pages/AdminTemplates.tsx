@@ -182,6 +182,24 @@ export default function AdminTemplates() {
         </Button>
       </div>
 
+      {/* Create Template Dialog */}
+      <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Create New Template</DialogTitle>
+          </DialogHeader>
+          <CreateTemplateDialog
+            onSuccess={() => {
+              setIsCreateDialogOpen(false);
+              queryClient.invalidateQueries({
+                queryKey: ["templates-admin"],
+              });
+            }}
+            categories={categories}
+          />
+        </DialogContent>
+      </Dialog>
+
       {/* Stats Overview */}
       {stats && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
