@@ -203,7 +203,9 @@ router.post("/", async (req: Request, res: Response) => {
       }
     }
 
-    // Validate assigned user exists (if provided and database available)
+    // Skip user existence validation for now (users might not exist in database during demo mode)
+    // TODO: Re-enable when user management is properly set up
+    /*
     if (leadData.created_by && (await isDatabaseAvailable())) {
       const userExists = await DatabaseValidator.userExists(
         leadData.created_by,
@@ -221,6 +223,7 @@ router.post("/", async (req: Request, res: Response) => {
         return res.status(400).json({ error: "Assigned user not found" });
       }
     }
+    */
 
     // Validate contact information if provided
     if (leadData.contacts && Array.isArray(leadData.contacts)) {
