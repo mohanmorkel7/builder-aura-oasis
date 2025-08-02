@@ -271,22 +271,81 @@ export default function LeadDetails() {
             <p className="text-gray-600 mt-1">
               Lead Details & Custom Sales Pipeline
             </p>
-            {/* Progress Bar */}
+            {/* Enhanced Progress Bar */}
             <div className="mt-3">
               <div className="flex items-center space-x-3">
                 <span className="text-sm font-medium text-gray-700">Progress:</span>
-                <div className="flex-1 max-w-xs">
-                  <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="flex-1 max-w-sm">
+                  <div className="w-full bg-gray-200 rounded-full h-3 relative">
                     <div
-                      className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                      className={`h-3 rounded-full transition-all duration-500 ${
+                        completionPercentage === 100 ? 'bg-green-500' :
+                        completionPercentage >= 75 ? 'bg-blue-500' :
+                        completionPercentage >= 50 ? 'bg-yellow-500' :
+                        completionPercentage >= 25 ? 'bg-orange-500' : 'bg-red-500'
+                      }`}
                       style={{ width: `${completionPercentage}%` }}
                     ></div>
+                    {completionPercentage > 0 && (
+                      <div
+                        className="absolute top-0 h-3 w-1 bg-white opacity-75 rounded-full"
+                        style={{ left: `${completionPercentage}%` }}
+                      ></div>
+                    )}
+                  </div>
+                  <div className="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>0%</span>
+                    <span>50%</span>
+                    <span>100%</span>
                   </div>
                 </div>
-                <span className="text-sm font-bold text-blue-600">
-                  {completionPercentage}% Complete
-                </span>
+                <div className="text-right">
+                  <div className="text-sm font-bold text-blue-600">
+                    {completionPercentage}% Complete
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    {steps ? steps.filter(s => s.status === 'completed').length : 0} of {steps?.length || 0} steps
+                  </div>
+                </div>
               </div>
+
+              {/* Step-by-step breakdown */}
+              {steps && steps.length > 0 && (
+                <div className="mt-2 text-xs text-gray-600">
+                  <details className="cursor-pointer">
+                    <summary className="hover:text-gray-800 select-none">
+                      📊 View detailed progress breakdown
+                    </summary>
+                    <div className="mt-2 p-3 bg-gray-50 rounded border space-y-1">
+                      {steps.map((step, index) => {
+                        const stepProbability = step.probability_percent || (100 / steps.length);
+                        return (
+                          <div key={step.id} className="flex justify-between items-center">
+                            <span className="flex items-center space-x-2">
+                              {step.status === 'completed' ? (
+                                <span className="text-green-600">✓</span>
+                              ) : step.status === 'in_progress' ? (
+                                <span className="text-blue-600">⋯</span>
+                              ) : (
+                                <span className="text-gray-400">○</span>
+                              )}
+                              <span className={step.status === 'completed' ? 'line-through text-gray-500' : ''}>
+                                {step.name}
+                              </span>
+                            </span>
+                            <span className="font-medium">
+                              {Math.round(stepProbability)}%
+                              {step.status === 'in_progress' && (
+                                <span className="text-blue-600 ml-1">(50%)</span>
+                              )}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </details>
+                </div>
+              )}
             </div>
           </div>
         </div>
