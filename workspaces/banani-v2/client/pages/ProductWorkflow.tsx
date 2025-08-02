@@ -78,7 +78,8 @@ function CreateProjectFromLeadDialog({ lead, isOpen, onClose, onSuccess }: Creat
     target_completion_date: "",
     estimated_hours: "",
     budget: lead?.estimated_budget || "",
-    template_id: ""
+    template_id: "",
+    project_type: "product_development" as const
   });
 
   const [steps, setSteps] = useState<ProjectStep[]>([]);
@@ -230,7 +231,7 @@ function CreateProjectFromLeadDialog({ lead, isOpen, onClose, onSuccess }: Creat
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Create Product Project from Lead</DialogTitle>
+          <DialogTitle>Create Project from Lead - {lead?.client_name}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -250,6 +251,19 @@ function CreateProjectFromLeadDialog({ lead, isOpen, onClose, onSuccess }: Creat
                 <strong>Description:</strong>
                 <p className="text-gray-600">{lead.project_description}</p>
               </div>
+
+              <div className="mt-2 p-3 bg-blue-50 rounded-lg">
+                <div className="text-sm text-blue-900">
+                  <strong>💡 Project Suggestions:</strong>
+                </div>
+                <div className="text-xs text-blue-700 mt-1">
+                  Based on this lead, you might create multiple projects like:
+                  <br />• <strong>Base Product:</strong> Core platform development
+                  <br />• <strong>Logic Modules:</strong> Business logic implementation
+                  <br />• <strong>API Integration:</strong> Third-party service connections
+                  <br />• <strong>Testing & QA:</strong> Quality assurance processes
+                </div>
+              </div>
             </CardContent>
           </Card>
 
@@ -267,13 +281,33 @@ function CreateProjectFromLeadDialog({ lead, isOpen, onClose, onSuccess }: Creat
                     value={projectData.name}
                     onChange={(e) => setProjectData(prev => ({ ...prev, name: e.target.value }))}
                     required
+                    placeholder="e.g., Base Product Development, Logic Modules, API Integration"
                   />
                 </div>
-                
+
+                <div>
+                  <Label htmlFor="project_type">Project Type *</Label>
+                  <Select
+                    value={projectData.project_type}
+                    onValueChange={(value) => setProjectData(prev => ({ ...prev, project_type: value as any }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="product_development">Product Development</SelectItem>
+                      <SelectItem value="integration">System Integration</SelectItem>
+                      <SelectItem value="finops_process">FinOps Process</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="assigned_team">Assigned Team *</Label>
-                  <Select 
-                    value={projectData.assigned_team} 
+                  <Select
+                    value={projectData.assigned_team}
                     onValueChange={(value) => setProjectData(prev => ({ ...prev, assigned_team: value }))}
                   >
                     <SelectTrigger>
@@ -283,6 +317,24 @@ function CreateProjectFromLeadDialog({ lead, isOpen, onClose, onSuccess }: Creat
                       {teams.map((team) => (
                         <SelectItem key={team} value={team}>{team}</SelectItem>
                       ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="priority">Priority</Label>
+                  <Select
+                    value={projectData.priority || "medium"}
+                    onValueChange={(value) => setProjectData(prev => ({ ...prev, priority: value }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="low">Low</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="high">High</SelectItem>
+                      <SelectItem value="critical">Critical</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
