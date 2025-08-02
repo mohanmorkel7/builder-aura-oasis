@@ -312,8 +312,9 @@ router.post("/auth/login", async (req: Request, res: Response) => {
       }
 
       if (!user) {
-        return res.status(401).json({ error: "Invalid credentials" });
-      }
+      console.log("Authentication failed for:", email);
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
 
       console.log("Fallback login successful for:", req.body.email);
       res.json({ user });
