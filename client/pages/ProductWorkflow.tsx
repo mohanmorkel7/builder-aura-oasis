@@ -743,6 +743,227 @@ export default function ProductWorkflow() {
         onClose={() => setIsCreateDialogOpen(false)}
         onSuccess={handleProjectCreated}
       />
+
+      {/* Project Detail Dialog */}
+      <ProjectDetailDialog
+        project={selectedProject}
+        isOpen={isProjectDetailOpen}
+        onClose={() => setIsProjectDetailOpen(false)}
+      />
     </div>
+  );
+}
+
+// Project Detail Dialog Component
+interface ProjectDetailDialogProps {
+  project: any;
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogProps) {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const [newComment, setNewComment] = useState("");
+
+  // Fetch project details including steps and comments
+  const { data: projectDetails, isLoading } = useQuery({
+    queryKey: ["workflow-project-details", project?.id],
+    queryFn: () => project ? apiClient.getWorkflowProject(project.id) : null,
+    enabled: !!project?.id && isOpen,
+  });
+
+  // Fetch project comments
+  const { data: comments = [], isLoading: commentsLoading } = useQuery({
+    queryKey: ["project-comments", project?.id],
+    queryFn: () => project ? apiClient.getProjectComments(project.id) : [],
+    enabled: !!project?.id && isOpen,
+  });
+
+  const addCommentMutation = useMutation({
+    mutationFn: (commentData: any) => apiClient.createProjectComment(project.id, commentData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["project-comments", project?.id] });
+      setNewComment("");
+    },
+  });
+
+  const handleAddComment = () => {
+    if (!newComment.trim()) return;
+
+    addCommentMutation.mutate({
+      comment_text: newComment,
+      comment_type: "comment",
+      is_internal: false,
+      created_by: parseInt(user?.id || "1")
+    });
+  };
+
+  if (!project) return null;
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Project Details - {project.name}</DialogTitle>
+        </DialogHeader>
+
+        <div className="space-y-6">
+          {/* Project Overview */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Project Overview</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-sm font-medium">Status</Label>
+                  <div className="mt-1">
+                    <Badge className={getStatusColor(project.status)}>
+                      {project.status.replace("_", " ")}
+                    </Badge>
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Progress</Label>
+                  <div className="mt-1">
+                    <div className="flex items-center gap-2">
+                      <div className="w-32 bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-blue-600 h-2 rounded-full"
+                          style={{ width: `${project.progress_percentage || 0}%` }}
+                        />
+                      </div>
+                      <span className="text-sm">{project.progress_percentage || 0}%</span>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Team</Label>
+                  <p className="text-sm mt-1">{project.assigned_team}</p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Created</Label>
+                  <p className="text-sm mt-1">{format(new Date(project.created_at), "MMM d, yyyy")}</p>
+                </div>
+              </div>
+
+              {project.description && (
+                <div className="mt-4">
+                  <Label className="text-sm font-medium">Description</Label>
+                  <p className="text-sm text-gray-600 mt-1">{project.description}</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Project Steps */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Project Steps</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <div className="text-center py-4">Loading project steps...</div>
+              ) : projectDetails?.steps?.length > 0 ? (
+                <div className="space-y-3">
+                  {projectDetails.steps.map((step: any) => {
+                    const StatusIcon = getStatusIcon(step.status);
+                    return (
+                      <div key={step.id} className="flex items-start gap-3 p-3 border rounded-lg">
+                        <div className={`p-2 rounded-full ${getStatusColor(step.status)}`}>
+                          <StatusIcon className="w-4 h-4" />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-medium">{step.step_name}</h4>
+                          {step.step_description && (
+                            <p className="text-sm text-gray-600 mt-1">{step.step_description}</p>
+                          )}
+                          <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
+                            <span>Order: {step.step_order}</span>
+                            {step.assigned_user_name && (
+                              <span>Assigned: {step.assigned_user_name}</span>
+                            )}
+                            {step.estimated_hours && (
+                              <span>Est: {step.estimated_hours}h</span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="text-center py-4 text-gray-500">
+                  No steps defined for this project yet.
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Comments Section */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Comments & Updates</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {/* Add Comment */}
+              <div className="mb-4">
+                <div className="flex gap-3">
+                  <Textarea
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    placeholder="Add a comment or update..."
+                    className="flex-1"
+                    rows={3}
+                  />
+                  <Button
+                    onClick={handleAddComment}
+                    disabled={!newComment.trim() || addCommentMutation.isPending}
+                  >
+                    <MessageSquare className="w-4 h-4 mr-2" />
+                    {addCommentMutation.isPending ? "Adding..." : "Add Comment"}
+                  </Button>
+                </div>
+              </div>
+
+              {/* Comments List */}
+              {commentsLoading ? (
+                <div className="text-center py-4">Loading comments...</div>
+              ) : comments.length > 0 ? (
+                <div className="space-y-3">
+                  {comments.map((comment: any) => (
+                    <div key={comment.id} className="border-l-4 border-l-blue-500 pl-4 py-2">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <p className="text-sm">{comment.comment_text}</p>
+                          <div className="flex items-center gap-2 mt-2 text-xs text-gray-500">
+                            <span>{comment.creator_name || "Unknown User"}</span>
+                            <span>•</span>
+                            <span>{format(new Date(comment.created_at), "MMM d, h:mm a")}</span>
+                            {comment.comment_type !== "comment" && (
+                              <>
+                                <span>•</span>
+                                <Badge variant="outline" className="text-xs">
+                                  {comment.comment_type.replace("_", " ")}
+                                </Badge>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-4 text-gray-500">
+                  No comments yet. Be the first to add a comment!
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
