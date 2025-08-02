@@ -159,8 +159,8 @@ router.post("/", async (req: Request, res: Response) => {
       leadData.priority = 'medium';
     }
 
-    // Validate numeric fields
-    if (leadData.probability !== undefined) {
+    // Validate numeric fields only when they have actual numeric values
+    if (leadData.probability !== undefined && leadData.probability !== null && leadData.probability !== "") {
       if (!DatabaseValidator.isValidNumber(leadData.probability, 0, 100)) {
         return res
           .status(400)
@@ -168,7 +168,7 @@ router.post("/", async (req: Request, res: Response) => {
       }
     }
 
-    if (leadData.project_value !== undefined) {
+    if (leadData.project_value !== undefined && leadData.project_value !== null && leadData.project_value !== "") {
       if (!DatabaseValidator.isValidNumber(leadData.project_value, 0)) {
         return res
           .status(400)
@@ -176,7 +176,7 @@ router.post("/", async (req: Request, res: Response) => {
       }
     }
 
-    if (leadData.expected_daily_txn_volume !== undefined) {
+    if (leadData.expected_daily_txn_volume !== undefined && leadData.expected_daily_txn_volume !== null && leadData.expected_daily_txn_volume !== "") {
       if (
         !DatabaseValidator.isValidNumber(leadData.expected_daily_txn_volume, 0)
       ) {
