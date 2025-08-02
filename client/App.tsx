@@ -283,6 +283,17 @@ function AppRoutes() {
         element={
           <ProtectedRoute allowedRoles={["admin", "finance"]}>
             <DashboardLayout>
+              <FinOpsAutomation />
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/finops/dashboard"
+        element={
+          <ProtectedRoute allowedRoles={["admin", "finance"]}>
+            <DashboardLayout>
               <FinOpsDashboard />
             </DashboardLayout>
           </ProtectedRoute>
