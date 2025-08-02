@@ -119,7 +119,7 @@ const getCurrencyUnits = (currency: string) => {
   switch (currency) {
     case "INR":
       return [
-        { value: "rupee", label: "Rupee (₹)" },
+        { value: "rupee", label: "Rupee (��)" },
         { value: "paisa", label: "Paisa" },
       ];
     case "USD":
@@ -1118,13 +1118,13 @@ export default function CreateLead() {
                             </TableCell>
                             <TableCell>
                               <Select
-                                value={pricing.unit}
+                                value={pricing.unit || ""}
                                 onValueChange={(value) =>
                                   updateCommercialPricing(index, "unit", value)
                                 }
                               >
                                 <SelectTrigger className="w-24">
-                                  <SelectValue />
+                                  <SelectValue placeholder="Select unit" />
                                 </SelectTrigger>
                                 <SelectContent>
                                   {getCurrencyUnits(pricing.currency).map((unit) => (
