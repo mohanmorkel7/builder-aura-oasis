@@ -568,6 +568,20 @@ export function EnhancedProjectStepItem({
           </div>
         </CollapsibleContent>
       </Collapsible>
+
+      {/* Follow-up Modal */}
+      <FollowUpModal
+        isOpen={followUpModalOpen}
+        onClose={() => {
+          setFollowUpModalOpen(false);
+          setSelectedComment(null);
+        }}
+        projectId={projectId}
+        stepId={step.id}
+        stepName={step.step_name}
+        messageId={selectedComment?.id}
+        commentText={selectedComment?.comment_text}
+      />
     </div>
   );
 }
