@@ -333,93 +333,155 @@ export default function Overview() {
               </Button>
             </CardContent>
           </Card>
-        ) : templateStepData.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {templateStepData.map((stepData: any) => (
-              <Card key={`${stepData.template_id}-${stepData.step_id}`} className="hover:shadow-lg transition-all duration-200 border-l-4 border-l-blue-500">
-                <CardHeader className="pb-4">
-                  <div className="flex justify-between items-center">
-                    <div className="flex-1">
-                      <CardTitle className="text-lg font-semibold text-gray-900">{stepData.step_name}</CardTitle>
-                      <CardDescription className="text-sm text-gray-500 mt-1">
-                        {stepData.template_name} • Step {stepData.step_order}
-                      </CardDescription>
-                    </div>
-                    <Badge variant="outline" className="text-xs font-medium">
-                      {stepData.probability_percent}%
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {/* Progress Summary */}
-                  <div className="flex justify-between items-center">
-                    <div className="text-center cursor-pointer hover:bg-green-50 rounded-lg p-2 transition-colors"
-                         onClick={() => handleStepStatusClick(stepData, 'completed')}>
-                      <div className="text-2xl font-bold text-green-600">{stepData.completed_count}</div>
-                      <div className="text-xs text-green-600 font-medium">Completed</div>
-                    </div>
-                    <div className="text-center cursor-pointer hover:bg-blue-50 rounded-lg p-2 transition-colors"
-                         onClick={() => handleStepStatusClick(stepData, 'in_progress')}>
-                      <div className="text-2xl font-bold text-blue-600">{stepData.in_progress_count}</div>
-                      <div className="text-xs text-blue-600 font-medium">In Progress</div>
-                    </div>
-                    <div className="text-center cursor-pointer hover:bg-gray-50 rounded-lg p-2 transition-colors"
-                         onClick={() => handleStepStatusClick(stepData, 'pending')}>
-                      <div className="text-2xl font-bold text-gray-600">{stepData.pending_count}</div>
-                      <div className="text-xs text-gray-600 font-medium">Pending</div>
-                    </div>
-                  </div>
-
-                  {/* Progress Bar */}
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-green-500 h-2 rounded-full transition-all duration-300"
-                      style={{
-                        width: `${stepData.total_leads > 0 ? (stepData.completed_count / stepData.total_leads) * 100 : 0}%`
-                      }}
-                    ></div>
-                  </div>
-
-                  {/* Completion Percentage */}
-                  <div className="flex justify-between items-center text-xs pt-1">
-                    <span className="text-gray-500">Completion Rate</span>
-                    <span className="font-semibold text-green-600">
-                      {stepData.total_leads > 0 ? Math.round((stepData.completed_count / stepData.total_leads) * 100) : 0}%
-                    </span>
-                  </div>
-
-                  {/* Enhanced Statistics */}
-                  <div className="space-y-2 pt-2 border-t border-gray-100">
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="text-gray-500">Total Leads</span>
-                      <span className="font-semibold text-gray-900">{stepData.total_leads}</span>
-                    </div>
-
-                    <div className="flex justify-between items-center text-xs">
-                      <span className="text-gray-400">Step Weight</span>
-                      <span className="font-medium text-purple-600">
-                        {stepData.probability_percent}% of total
-                      </span>
-                    </div>
-
-                    {/* Mini progress indicator for this step */}
-                    <div className="flex items-center space-x-2 text-xs">
-                      <span className="text-gray-400">Impact:</span>
-                      <div className="flex-1 bg-gray-200 rounded-full h-1">
-                        <div
-                          className="bg-purple-400 h-1 rounded-full"
-                          style={{ width: `${stepData.probability_percent}%` }}
-                        ></div>
+        ) : templatesArray.length > 0 ? (
+          <Accordion type="multiple" defaultValue={templatesArray.map((t: any) => `template-${t.template_id}`)} className="w-full space-y-4">
+            {templatesArray.map((templateGroup: any) => (
+              <AccordionItem
+                key={`template-${templateGroup.template_id}`}
+                value={`template-${templateGroup.template_id}`}
+                className="border rounded-lg"
+              >
+                <AccordionTrigger className="px-6 py-4 hover:no-underline">
+                  <div className="flex items-center justify-between w-full mr-4">
+                    <div className="flex items-center space-x-4">
+                      <div className="flex items-center space-x-2">
+                        <div className={`w-4 h-4 rounded-full ${
+                          templateGroup.template_id === 1 ? 'bg-blue-500' :
+                          templateGroup.template_id === 2 ? 'bg-purple-500' :
+                          'bg-green-500'
+                        }`}></div>
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          {templateGroup.template_name}
+                        </h3>
                       </div>
-                      <span className="text-purple-600 font-medium">
-                        {stepData.probability_percent}%
-                      </span>
+                      <Badge variant="outline" className="text-xs">
+                        {templateGroup.steps.length} steps
+                      </Badge>
+                      <Badge
+                        variant="secondary"
+                        className={`text-xs ${
+                          templateGroup.total_probability === 100
+                            ? 'bg-green-100 text-green-700'
+                            : 'bg-orange-100 text-orange-700'
+                        }`}
+                      >
+                        {templateGroup.total_probability}% total probability
+                      </Badge>
+                    </div>
+
+                    {/* Template Summary Stats */}
+                    <div className="flex items-center space-x-6 text-sm">
+                      <div className="text-center">
+                        <div className="font-semibold text-green-600">{templateGroup.total_completed}</div>
+                        <div className="text-xs text-gray-500">Completed</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="font-semibold text-blue-600">{templateGroup.total_in_progress}</div>
+                        <div className="text-xs text-gray-500">In Progress</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="font-semibold text-gray-600">{templateGroup.total_pending}</div>
+                        <div className="text-xs text-gray-500">Pending</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="font-semibold text-gray-900">{templateGroup.total_leads}</div>
+                        <div className="text-xs text-gray-500">Total Leads</div>
+                      </div>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                </AccordionTrigger>
+
+                <AccordionContent className="px-6 pb-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {templateGroup.steps.map((stepData: any) => (
+                      <Card key={`${stepData.template_id}-${stepData.step_id}`} className="hover:shadow-lg transition-all duration-200 border-l-4 border-l-blue-500">
+                        <CardHeader className="pb-4">
+                          <div className="flex justify-between items-center">
+                            <div className="flex-1">
+                              <CardTitle className="text-lg font-semibold text-gray-900">{stepData.step_name}</CardTitle>
+                              <CardDescription className="text-sm text-gray-500 mt-1">
+                                Step {stepData.step_order} of {templateGroup.steps.length}
+                              </CardDescription>
+                            </div>
+                            <Badge variant="outline" className="text-xs font-medium">
+                              {stepData.probability_percent}%
+                            </Badge>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          {/* Progress Summary */}
+                          <div className="flex justify-between items-center">
+                            <div className="text-center cursor-pointer hover:bg-green-50 rounded-lg p-2 transition-colors"
+                                 onClick={() => handleStepStatusClick(stepData, 'completed')}>
+                              <div className="text-2xl font-bold text-green-600">{stepData.completed_count}</div>
+                              <div className="text-xs text-green-600 font-medium">Completed</div>
+                            </div>
+                            <div className="text-center cursor-pointer hover:bg-blue-50 rounded-lg p-2 transition-colors"
+                                 onClick={() => handleStepStatusClick(stepData, 'in_progress')}>
+                              <div className="text-2xl font-bold text-blue-600">{stepData.in_progress_count}</div>
+                              <div className="text-xs text-blue-600 font-medium">In Progress</div>
+                            </div>
+                            <div className="text-center cursor-pointer hover:bg-gray-50 rounded-lg p-2 transition-colors"
+                                 onClick={() => handleStepStatusClick(stepData, 'pending')}>
+                              <div className="text-2xl font-bold text-gray-600">{stepData.pending_count}</div>
+                              <div className="text-xs text-gray-600 font-medium">Pending</div>
+                            </div>
+                          </div>
+
+                          {/* Progress Bar */}
+                          <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div
+                              className="bg-green-500 h-2 rounded-full transition-all duration-300"
+                              style={{
+                                width: `${stepData.total_leads > 0 ? (stepData.completed_count / stepData.total_leads) * 100 : 0}%`
+                              }}
+                            ></div>
+                          </div>
+
+                          {/* Completion Percentage */}
+                          <div className="flex justify-between items-center text-xs pt-1">
+                            <span className="text-gray-500">Completion Rate</span>
+                            <span className="font-semibold text-green-600">
+                              {stepData.total_leads > 0 ? Math.round((stepData.completed_count / stepData.total_leads) * 100) : 0}%
+                            </span>
+                          </div>
+
+                          {/* Enhanced Statistics */}
+                          <div className="space-y-2 pt-2 border-t border-gray-100">
+                            <div className="flex justify-between items-center text-sm">
+                              <span className="text-gray-500">Total Leads</span>
+                              <span className="font-semibold text-gray-900">{stepData.total_leads}</span>
+                            </div>
+
+                            <div className="flex justify-between items-center text-xs">
+                              <span className="text-gray-400">Step Weight</span>
+                              <span className="font-medium text-purple-600">
+                                {stepData.probability_percent}% of total
+                              </span>
+                            </div>
+
+                            {/* Mini progress indicator for this step */}
+                            <div className="flex items-center space-x-2 text-xs">
+                              <span className="text-gray-400">Impact:</span>
+                              <div className="flex-1 bg-gray-200 rounded-full h-1">
+                                <div
+                                  className="bg-purple-400 h-1 rounded-full"
+                                  style={{ width: `${stepData.probability_percent}%` }}
+                                ></div>
+                              </div>
+                              <span className="text-purple-600 font-medium">
+                                {stepData.probability_percent}%
+                              </span>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
             ))}
-          </div>
+          </Accordion>
         ) : (
           <Card>
             <CardContent className="p-8 text-center">
