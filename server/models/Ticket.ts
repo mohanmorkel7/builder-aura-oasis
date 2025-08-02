@@ -606,13 +606,33 @@ export class TicketRepository {
   // Get comments for ticket
   static async getComments(ticketId: number): Promise<TicketComment[]> {
     const result = await pool.query(
-      `SELECT 
+      `SELECT
         tc.*,
         u.first_name || ' ' || u.last_name as user_name,
-        u.email as user_email
+        u.email as user_email,
+        COALESCE(
+          json_agg(
+            CASE
+              WHEN ta.id IS NOT NULL THEN
+                json_build_object(
+                  'id', ta.id,
+                  'filename', ta.filename,
+                  'original_filename', ta.original_filename,
+                  'file_path', ta.file_path,
+                  'file_size', ta.file_size,
+                  'mime_type', ta.mime_type,
+                  'uploaded_at', ta.uploaded_at
+                )
+              ELSE NULL
+            END
+          ) FILTER (WHERE ta.id IS NOT NULL),
+          '[]'
+        ) as attachments
       FROM ticket_comments tc
       LEFT JOIN users u ON tc.user_id = u.id
+      LEFT JOIN ticket_attachments ta ON ta.comment_id = tc.id
       WHERE tc.ticket_id = $1
+      GROUP BY tc.id, u.first_name, u.last_name, u.email
       ORDER BY tc.created_at ASC`,
       [ticketId]
     );
@@ -628,6 +648,7 @@ export class TicketRepository {
       created_at: row.created_at,
       updated_at: row.updated_at,
       edited_at: row.edited_at,
+      attachments: row.attachments || [],
       user: {
         id: row.user_id,
         name: row.user_name,
