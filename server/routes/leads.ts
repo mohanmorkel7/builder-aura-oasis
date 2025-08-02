@@ -146,6 +146,7 @@ router.get("/template-step-dashboard", async (req: Request, res: Response) => {
       `;
 
       const templatesResult = await pool.query(templatesQuery);
+      console.log(`Found ${templatesResult.rows.length} template steps`);
 
       for (const templateStep of templatesResult.rows) {
         // Get lead steps count for this template step
