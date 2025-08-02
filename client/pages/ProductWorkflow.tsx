@@ -125,9 +125,14 @@ function CreateProjectFromLeadDialog({ lead, isOpen, onClose, onSuccess }: Creat
   }, [templateSteps?.steps?.length, selectedTemplate?.id]);
 
   const handleTemplateSelect = (templateId: string) => {
-    const template = templates.find((t: any) => t.id.toString() === templateId);
-    setSelectedTemplate(template);
-    setProjectData(prev => ({ ...prev, template_id: templateId }));
+    if (templateId === "none") {
+      setSelectedTemplate(null);
+      setProjectData(prev => ({ ...prev, template_id: "" }));
+    } else {
+      const template = templates.find((t: any) => t.id.toString() === templateId);
+      setSelectedTemplate(template);
+      setProjectData(prev => ({ ...prev, template_id: templateId }));
+    }
   };
 
   const teams = ["Product Team", "Frontend Team", "Backend Team", "DevOps Team", "Full Stack Team"];
