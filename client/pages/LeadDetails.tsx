@@ -109,15 +109,15 @@ export default function LeadDetails() {
 
   // Calculate completion percentage based on template probability values
   const calculateCompletionPercentage = () => {
-    if (!lead?.template_id || !steps || steps.length === 0) return 0;
+    if (!lead?.template_id || !leadSteps || leadSteps.length === 0) return 0;
 
     // Enhanced calculation using step probability weights
     let totalCompletedProbability = 0;
     let totalPossibleProbability = 0;
 
-    steps.forEach((step, index) => {
+    leadSteps.forEach((step, index) => {
       // Use step probability if available, otherwise distribute evenly
-      const stepProbability = step.probability_percent || (100 / steps.length);
+      const stepProbability = step.probability_percent || (100 / leadSteps.length);
       totalPossibleProbability += stepProbability;
 
       if (step.status === 'completed') {
@@ -304,21 +304,21 @@ export default function LeadDetails() {
                     {completionPercentage}% Complete
                   </div>
                   <div className="text-xs text-gray-500">
-                    {steps ? steps.filter(s => s.status === 'completed').length : 0} of {steps?.length || 0} steps
+                    {leadSteps ? leadSteps.filter(s => s.status === 'completed').length : 0} of {leadSteps?.length || 0} steps
                   </div>
                 </div>
               </div>
 
               {/* Step-by-step breakdown */}
-              {steps && steps.length > 0 && (
+              {leadSteps && leadSteps.length > 0 && (
                 <div className="mt-2 text-xs text-gray-600">
                   <details className="cursor-pointer">
                     <summary className="hover:text-gray-800 select-none">
                       📊 View detailed progress breakdown
                     </summary>
                     <div className="mt-2 p-3 bg-gray-50 rounded border space-y-1">
-                      {steps.map((step, index) => {
-                        const stepProbability = step.probability_percent || (100 / steps.length);
+                      {leadSteps.map((step, index) => {
+                        const stepProbability = step.probability_percent || (100 / leadSteps.length);
                         return (
                           <div key={step.id} className="flex justify-between items-center">
                             <span className="flex items-center space-x-2">
