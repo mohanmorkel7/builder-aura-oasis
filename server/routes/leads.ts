@@ -34,13 +34,19 @@ router.get("/", async (req: Request, res: Response) => {
     let leads;
     try {
       if (await isDatabaseAvailable()) {
-        leads = await LeadRepository.findAll(salesRepId);
+        leads = await LeadRepository.findAll(salesRepId, isPartialOnly);
       } else {
         leads = await MockDataService.getAllLeads(salesRepId);
+        if (isPartialOnly) {
+          leads = leads.filter((lead: any) => lead.is_partial === true);
+        }
       }
     } catch (dbError) {
       console.log("Database error, using mock data:", dbError.message);
       leads = await MockDataService.getAllLeads(salesRepId);
+      if (isPartialOnly) {
+        leads = leads.filter((lead: any) => lead.is_partial === true);
+      }
     }
 
     res.json(leads);
