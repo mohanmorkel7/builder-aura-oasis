@@ -306,7 +306,7 @@ export default function Overview() {
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-bold text-gray-900">Template Step Progress</h2>
           <Badge variant="outline" className="text-sm">
-            {[...new Set(templateStepData.map((step: any) => step.template_id))].length} Active Templates
+            {templatesArray.length} Active Templates
           </Badge>
         </div>
 
