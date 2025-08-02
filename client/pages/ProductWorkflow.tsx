@@ -1144,7 +1144,7 @@ function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogPr
                           {isExpanded && (
                             <div className="mt-4 border-t pt-4">
                               {/* Step Comments List */}
-                              {stepCommentsQuery?.isLoading ? (
+                              {!stepCommentsList ? (
                                 <div className="text-center py-2 text-sm">Loading comments...</div>
                               ) : stepCommentsList.length > 0 ? (
                                 <div className="space-y-3 mb-4">
