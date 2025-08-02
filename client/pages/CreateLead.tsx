@@ -348,12 +348,28 @@ export default function CreateLead() {
     try {
       setSaving(true);
 
+      // Clean form data - convert empty strings to null for numeric fields
+      const cleanedData = {
+        ...leadData,
+        // Convert empty strings to null for numeric fields
+        expected_daily_txn_volume: leadData.expected_daily_txn_volume === "" ? null : leadData.expected_daily_txn_volume,
+        project_value: leadData.project_value === "" ? null : leadData.project_value,
+        project_value_12m: leadData.project_value_12m === "" ? null : leadData.project_value_12m,
+        project_value_24m: leadData.project_value_24m === "" ? null : leadData.project_value_24m,
+        project_value_36m: leadData.project_value_36m === "" ? null : leadData.project_value_36m,
+        probability: leadData.probability === "" ? null : leadData.probability,
+        // Convert empty string dates to null
+        expected_close_date: leadData.expected_close_date === "" ? null : leadData.expected_close_date,
+        targeted_end_date: leadData.targeted_end_date === "" ? null : leadData.targeted_end_date,
+        start_date: leadData.start_date === "" ? null : leadData.start_date,
+      };
+
       // Prepare partial data for database save (using existing fields as workaround)
       const partialData = {
-        ...leadData,
-        lead_source: leadData.lead_source || 'other', // Ensure we have a lead_source
-        client_name: leadData.client_name || 'PARTIAL_SAVE_IN_PROGRESS', // Required field workaround
-        project_title: leadData.project_title || 'Partial Save - In Progress',
+        ...cleanedData,
+        lead_source: cleanedData.lead_source || 'other', // Ensure we have a lead_source
+        client_name: cleanedData.client_name || 'PARTIAL_SAVE_IN_PROGRESS', // Required field workaround
+        project_title: cleanedData.project_title || 'Partial Save - In Progress',
         notes: JSON.stringify({
           isPartialSave: true,
           lastSaved: new Date().toISOString(),
