@@ -47,17 +47,17 @@ import {
   Cloud,
 } from "lucide-react";
 
-// Mock Azure SSO users data
+// Mock Azure SSO users data with realistic information
 const mockAzureUsers = [
-  { id: "1", name: "John Doe", email: "john.doe@company.com", role: "admin", department: "Administration", lastLogin: "2024-01-15", status: "active", azureObjectId: "abc123" },
-  { id: "2", name: "Jane Smith", email: "jane.smith@company.com", role: "sales", department: "Sales", lastLogin: "2024-01-14", status: "active", azureObjectId: "def456" },
-  { id: "3", name: "Mike Johnson", email: "mike.johnson@company.com", role: "product", department: "Product", lastLogin: "2024-01-13", status: "active", azureObjectId: "ghi789" },
-  { id: "4", name: "Alex Chen", email: "alex.chen@company.com", role: "development", department: "Development", lastLogin: "2024-01-12", status: "active", azureObjectId: "jkl012" },
-  { id: "5", name: "Sarah Wilson", email: "sarah.wilson@company.com", role: "db", department: "Database", lastLogin: "2024-01-11", status: "active", azureObjectId: "mno345" },
-  { id: "6", name: "David Brown", email: "david.brown@company.com", role: "finops", department: "FinOps", lastLogin: "2024-01-10", status: "active", azureObjectId: "pqr678" },
-  { id: "7", name: "Lisa Garcia", email: "lisa.garcia@company.com", role: "hr_management", department: "HR", lastLogin: "2024-01-09", status: "active", azureObjectId: "stu901" },
-  { id: "8", name: "Tom Martinez", email: "tom.martinez@company.com", role: "infra", department: "Infrastructure", lastLogin: "2024-01-08", status: "active", azureObjectId: "vwx234" },
-  { id: "9", name: "Emma Davis", email: "emma.davis@company.com", role: "switch_team", department: "Switch Team", lastLogin: "2024-01-07", status: "active", azureObjectId: "yzA567" },
+  { id: "1", name: "John Doe", email: "john.doe@company.com", role: "admin", department: "Administration", lastLogin: "2024-01-15T09:30:00Z", status: "active", azureObjectId: "a1b2c3d4-e5f6-7890-abcd-ef1234567890" },
+  { id: "2", name: "Jane Smith", email: "jane.smith@company.com", role: "sales", department: "Sales", lastLogin: "2024-01-14T14:22:00Z", status: "active", azureObjectId: "b2c3d4e5-f6g7-8901-bcde-f23456789012" },
+  { id: "3", name: "Mike Johnson", email: "mike.johnson@company.com", role: "product", department: "Product", lastLogin: "2024-01-13T11:15:00Z", status: "active", azureObjectId: "c3d4e5f6-g7h8-9012-cdef-345678901234" },
+  { id: "4", name: "Alex Chen", email: "alex.chen@company.com", role: "development", department: "Development", lastLogin: "2024-01-12T16:45:00Z", status: "active", azureObjectId: "d4e5f6g7-h8i9-0123-def0-456789012345" },
+  { id: "5", name: "Sarah Wilson", email: "sarah.wilson@company.com", role: "db", department: "Database", lastLogin: "2024-01-11T10:30:00Z", status: "active", azureObjectId: "e5f6g7h8-i9j0-1234-ef01-567890123456" },
+  { id: "6", name: "David Brown", email: "david.brown@company.com", role: "finops", department: "FinOps", lastLogin: "2024-01-10T13:20:00Z", status: "active", azureObjectId: "f6g7h8i9-j0k1-2345-f012-678901234567" },
+  { id: "7", name: "Lisa Garcia", email: "lisa.garcia@company.com", role: "hr_management", department: "HR", lastLogin: "2024-01-09T15:10:00Z", status: "active", azureObjectId: "g7h8i9j0-k1l2-3456-0123-789012345678" },
+  { id: "8", name: "Tom Martinez", email: "tom.martinez@company.com", role: "infra", department: "Infrastructure", lastLogin: "2024-01-08T08:55:00Z", status: "active", azureObjectId: "h8i9j0k1-l2m3-4567-1234-890123456789" },
+  { id: "9", name: "Emma Davis", email: "emma.davis@company.com", role: "switch_team", department: "Switch Team", lastLogin: "2024-01-07T12:40:00Z", status: "active", azureObjectId: "i9j0k1l2-m3n4-5678-2345-901234567890" },
 ];
 
 export default function UserManagement() {
