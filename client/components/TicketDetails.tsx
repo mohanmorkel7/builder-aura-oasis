@@ -48,7 +48,7 @@ export default function TicketDetails({ ticket, onUpdate, metadata, currentUser 
     priority_id: ticket.priority_id?.toString() || "",
     status_id: ticket.status_id?.toString() || "",
     category_id: ticket.category_id?.toString() || "",
-    assigned_to: ticket.assigned_to?.toString() || "",
+    assigned_to: ticket.assigned_to?.toString() || "unassigned",
   });
   
   // Comment attachments are now handled in RichTextCommentEditor
