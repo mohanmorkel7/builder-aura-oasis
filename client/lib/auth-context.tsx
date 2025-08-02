@@ -168,7 +168,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return false;
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      // Check if user logged in via Microsoft SSO
+      const msalAccount = localStorage.getItem("msal_account");
+      if (msalAccount) {
+        await msalInstance.logoutPopup();
+        localStorage.removeItem("msal_account");
+      }
+    } catch (error) {
+      console.error("MSAL logout error:", error);
+    }
+
     setUser(null);
     localStorage.removeItem("banani_user");
   };
