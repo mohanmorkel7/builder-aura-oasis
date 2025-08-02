@@ -187,6 +187,17 @@ function AppRoutes() {
       />
 
       <Route
+        path="/tickets"
+        element={
+          <ProtectedRoute>
+            <DashboardLayout>
+              <Tickets />
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
         path="/admin/users"
         element={
           <ProtectedRoute allowedRoles={["admin"]}>
