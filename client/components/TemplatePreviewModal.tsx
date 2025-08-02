@@ -18,6 +18,7 @@ interface TemplateStep {
   order_position?: number;
   step_order?: number;
   is_required?: boolean;
+  probability_percent?: number;
 }
 
 interface Template {
