@@ -384,7 +384,6 @@ export default function CreateLead() {
 
     // Mark as resumed from draft
     setIsResumedFromDraft(true);
-    setShowPartialSaves(false);
 
     // Show a success message
     alert(`Resumed draft from ${new Date(_lastSaved).toLocaleString()}`);
