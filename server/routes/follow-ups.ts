@@ -394,12 +394,12 @@ router.get("/", async (req: Request, res: Response) => {
 
       // Apply role-based filtering to mock data
       if (userRole === "sales" && userId) {
-        const userIdNum = parseInt(userId as string);
+        const userIdNum = normalizeUserId(userId as string);
         mockFollowUps = mockFollowUps.filter(
           (f) => f.assigned_to === userIdNum || f.created_by === userIdNum,
         );
       } else if (userRole === "product" && userId) {
-        const userIdNum = parseInt(userId as string);
+        const userIdNum = normalizeUserId(userId as string);
         mockFollowUps = mockFollowUps.filter(
           (f) => f.assigned_to === userIdNum || f.created_by === userIdNum,
         );
