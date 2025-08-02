@@ -125,7 +125,7 @@ export default function AdminTemplates() {
 
   const handleDuplicateTemplate = (templateId: number) => {
     if (user) {
-      duplicateTemplateMutation.mutate(templateId, parseInt(user.id));
+      duplicateTemplateMutation.mutate(templateId);
     }
   };
 
