@@ -634,11 +634,7 @@ export class ApiClient {
     return this.request<any[]>(endpoint);
   }
 
-  async duplicateTemplate(templateId: number) {
-    return this.request<any>(`/templates/${templateId}/duplicate`, {
-      method: "POST",
-    });
-  }
+
 
   async deleteTemplate(templateId: number) {
     return this.request<void>(`/templates/${templateId}`, {
