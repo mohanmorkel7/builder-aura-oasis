@@ -466,24 +466,6 @@ export default function LeadEdit() {
 
   // No redirection needed - all roles can edit
 
-  if (isLoading) {
-    return (
-      <div className="p-6">
-        <div className="text-center">Loading lead details...</div>
-      </div>
-    );
-  }
-
-  if (error || !originalLead) {
-    return (
-      <div className="p-6">
-        <div className="text-center text-red-600">
-          Error loading lead details
-        </div>
-      </div>
-    );
-  }
-
   const isFormValid = leadData.client_name.trim() && leadData.lead_source;
 
   return (
