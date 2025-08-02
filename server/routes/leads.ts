@@ -128,65 +128,69 @@ router.get("/template-step-dashboard", async (req: Request, res: Response) => {
     console.log("Template step dashboard endpoint called");
     let dashboardData = [];
 
-    if (await isDatabaseAvailable()) {
-      console.log("Database is available, querying template step data...");
-      // Get all active templates with their steps
-      const templatesQuery = `
-        SELECT
-          t.id as template_id,
-          t.name as template_name,
-          ts.id as step_id,
-          ts.name as step_name,
-          ts.step_order,
-          ts.probability_percent
-        FROM onboarding_templates t
-        JOIN template_steps ts ON t.id = ts.template_id
-        WHERE t.is_active = true
-        ORDER BY t.id, ts.step_order
-      `;
-
-      const templatesResult = await pool.query(templatesQuery);
-      console.log(`Found ${templatesResult.rows.length} template steps`);
-
-      for (const templateStep of templatesResult.rows) {
-        // Get lead steps count for this template step
-        const stepStatsQuery = `
+    try {
+      if (await isDatabaseAvailable()) {
+        console.log("Database is available, querying template step data...");
+        // Get all active templates with their steps
+        const templatesQuery = `
           SELECT
-            COUNT(*) as total_leads,
-            COUNT(CASE WHEN ls.status = 'pending' THEN 1 END) as pending_count,
-            COUNT(CASE WHEN ls.status = 'in_progress' THEN 1 END) as in_progress_count,
-            COUNT(CASE WHEN ls.status = 'completed' THEN 1 END) as completed_count,
-            COUNT(CASE WHEN ls.status = 'cancelled' THEN 1 END) as blocked_count
-          FROM leads l
-          LEFT JOIN lead_steps ls ON l.id = ls.lead_id
-            AND ls.name = $1
-            AND ls.step_order = $2
-          WHERE l.template_id = $3
+            t.id as template_id,
+            t.name as template_name,
+            ts.id as step_id,
+            ts.name as step_name,
+            ts.step_order,
+            ts.probability_percent
+          FROM onboarding_templates t
+          JOIN template_steps ts ON t.id = ts.template_id
+          WHERE t.is_active = true
+          ORDER BY t.id, ts.step_order
         `;
 
-        const statsResult = await pool.query(stepStatsQuery, [
-          templateStep.step_name,
-          templateStep.step_order,
-          templateStep.template_id
-        ]);
+        const templatesResult = await pool.query(templatesQuery);
+        console.log(`Found ${templatesResult.rows.length} template steps`);
 
-        const stats = statsResult.rows[0];
+        for (const templateStep of templatesResult.rows) {
+          // Get lead steps count for this template step
+          const stepStatsQuery = `
+            SELECT
+              COUNT(*) as total_leads,
+              COUNT(CASE WHEN ls.status = 'pending' THEN 1 END) as pending_count,
+              COUNT(CASE WHEN ls.status = 'in_progress' THEN 1 END) as in_progress_count,
+              COUNT(CASE WHEN ls.status = 'completed' THEN 1 END) as completed_count,
+              COUNT(CASE WHEN ls.status = 'cancelled' THEN 1 END) as blocked_count
+            FROM leads l
+            LEFT JOIN lead_steps ls ON l.id = ls.lead_id
+              AND ls.name = $1
+              AND ls.step_order = $2
+            WHERE l.template_id = $3
+          `;
 
-        dashboardData.push({
-          template_id: templateStep.template_id,
-          template_name: templateStep.template_name,
-          step_id: templateStep.step_id,
-          step_name: templateStep.step_name,
-          step_order: templateStep.step_order,
-          probability_percent: templateStep.probability_percent || 0,
-          total_leads: parseInt(stats.total_leads) || 0,
-          pending_count: parseInt(stats.pending_count) || 0,
-          in_progress_count: parseInt(stats.in_progress_count) || 0,
-          completed_count: parseInt(stats.completed_count) || 0,
-          blocked_count: parseInt(stats.blocked_count) || 0
-        });
+          const statsResult = await pool.query(stepStatsQuery, [
+            templateStep.step_name,
+            templateStep.step_order,
+            templateStep.template_id
+          ]);
+
+          const stats = statsResult.rows[0];
+
+          dashboardData.push({
+            template_id: templateStep.template_id,
+            template_name: templateStep.template_name,
+            step_id: templateStep.step_id,
+            step_name: templateStep.step_name,
+            step_order: templateStep.step_order,
+            probability_percent: templateStep.probability_percent || 0,
+            total_leads: parseInt(stats.total_leads) || 0,
+            pending_count: parseInt(stats.pending_count) || 0,
+            in_progress_count: parseInt(stats.in_progress_count) || 0,
+            completed_count: parseInt(stats.completed_count) || 0,
+            blocked_count: parseInt(stats.blocked_count) || 0
+          });
+        }
+      } else {
+        throw new Error("Database not available");
       }
-    } else {
+    } catch (dbError) {
       console.log("Database not available, using mock data");
       // Mock data with realistic numbers for demonstration
       const mockTemplates = [
