@@ -514,7 +514,7 @@ function AppRoutes() {
         element={
           <ProtectedRoute allowedRoles={["admin", "product"]}>
             <DashboardLayout>
-              <ProductManagement />
+              <ProductWorkflow />
             </DashboardLayout>
           </ProtectedRoute>
         }
@@ -526,6 +526,17 @@ function AppRoutes() {
           <ProtectedRoute allowedRoles={["admin", "product"]}>
             <DashboardLayout>
               <ProductWorkflow />
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/product/dashboard"
+        element={
+          <ProtectedRoute allowedRoles={["admin", "product"]}>
+            <DashboardLayout>
+              <ProductManagement />
             </DashboardLayout>
           </ProtectedRoute>
         }
