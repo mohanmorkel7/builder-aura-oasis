@@ -299,9 +299,9 @@ export default function CreateTicketForm({
       <div>
         <Label>Attachments</Label>
         <Card>
-          <CardContent className="p-4">
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-              <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+          <CardContent className="p-3">
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+              <Upload className="mx-auto h-8 w-8 text-gray-400 mb-2" />
               <div className="text-sm">
                 <label htmlFor="file-upload" className="cursor-pointer text-blue-600 hover:text-blue-500">
                   Upload files
@@ -317,7 +317,7 @@ export default function CreateTicketForm({
                 />
                 <p className="text-gray-500"> or drag and drop</p>
               </div>
-              <p className="text-xs text-gray-500 mt-2">
+              <p className="text-xs text-gray-500 mt-1">
                 PNG, JPG, PDF, DOC up to 10MB each
               </p>
             </div>
