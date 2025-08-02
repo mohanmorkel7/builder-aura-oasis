@@ -79,11 +79,22 @@ export default function TicketDetails({ ticket, onUpdate, metadata, currentUser 
 
   // Add comment mutation
   const addCommentMutation = useMutation({
-    mutationFn: (commentData: any) => apiClient.addTicketComment(ticket.id, commentData),
+    mutationFn: async ({ commentData, attachments }: { commentData: any; attachments: File[] }) => {
+      const comment = await apiClient.addTicketComment(ticket.id, commentData);
+
+      // Upload attachments if any
+      if (attachments.length > 0) {
+        await Promise.all(
+          attachments.map(file =>
+            apiClient.uploadTicketAttachment(ticket.id, file, comment.id, currentUser?.id)
+          )
+        );
+      }
+
+      return comment;
+    },
     onSuccess: () => {
       refetchComments();
-      setNewComment("");
-      setMentions([]);
     },
   });
 
