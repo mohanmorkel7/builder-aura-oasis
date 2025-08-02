@@ -499,6 +499,25 @@ export default function EditTemplateDialog({
                               }
                             />
                           </div>
+                          <div>
+                            <Label htmlFor={`probability-${step.id}`}>
+                              Probability (%)
+                            </Label>
+                            <Input
+                              id={`probability-${step.id}`}
+                              type="number"
+                              min="0"
+                              max="100"
+                              value={step.probability_percent || 0}
+                              onChange={(e) =>
+                                updateStep(step.id, {
+                                  probability_percent:
+                                    parseInt(e.target.value) || 0,
+                                })
+                              }
+                              placeholder="% probability"
+                            />
+                          </div>
                           <div className="space-y-2">
                             <div className="flex items-center space-x-2">
                               <Checkbox
