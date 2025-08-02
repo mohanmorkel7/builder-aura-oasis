@@ -36,11 +36,24 @@ router.get("/", async (req: Request, res: Response) => {
     let leads;
     try {
       if (await isDatabaseAvailable()) {
-        leads = await LeadRepository.findAll(salesRepId, isPartialOnly);
+        leads = await LeadRepository.findAll(salesRepId, isPartialOnly, createdById, isPartialSavesOnly);
       } else {
         leads = await MockDataService.getAllLeads(salesRepId);
         if (isPartialOnly) {
           leads = leads.filter((lead: any) => lead.is_partial === true);
+        }
+        if (isPartialSavesOnly) {
+          leads = leads.filter((lead: any) => {
+            try {
+              const notes = JSON.parse(lead.notes || '{}');
+              return notes.isPartialSave === true;
+            } catch {
+              return false;
+            }
+          });
+        }
+        if (createdById) {
+          leads = leads.filter((lead: any) => lead.created_by === createdById);
         }
       }
     } catch (dbError) {
@@ -48,6 +61,19 @@ router.get("/", async (req: Request, res: Response) => {
       leads = await MockDataService.getAllLeads(salesRepId);
       if (isPartialOnly) {
         leads = leads.filter((lead: any) => lead.is_partial === true);
+      }
+      if (isPartialSavesOnly) {
+        leads = leads.filter((lead: any) => {
+          try {
+            const notes = JSON.parse(lead.notes || '{}');
+            return notes.isPartialSave === true;
+          } catch {
+            return false;
+          }
+        });
+      }
+      if (createdById) {
+        leads = leads.filter((lead: any) => lead.created_by === createdById);
       }
     }
 
