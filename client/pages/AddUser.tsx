@@ -216,13 +216,18 @@ export default function AddUser() {
                     <SelectValue placeholder="Select user role" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="admin">Admin - Full access</SelectItem>
-                    <SelectItem value="sales">
-                      Sales - Client management
-                    </SelectItem>
-                    <SelectItem value="product">
-                      Product - Development tools
-                    </SelectItem>
+                    {Object.entries(roleGroups).map(([key, role]) => (
+                      <SelectItem key={key} value={key}>
+                        <div className="flex items-center space-x-2">
+                          <span className={`px-2 py-1 text-xs rounded ${role.color}`}>
+                            {role.label}
+                          </span>
+                          <span className="text-xs text-gray-500">
+                            {role.permissions.join(", ")}
+                          </span>
+                        </div>
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
