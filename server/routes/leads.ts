@@ -143,11 +143,6 @@ router.get("/template-step-dashboard", async (req: Request, res: Response) => {
         ORDER BY t.id, ts.step_order
       `;
 
-      const { Pool } = require('pg');
-      const pool = new Pool({
-        connectionString: process.env.DATABASE_URL || 'postgresql://postgres:password@localhost:5432/finops_onboarding'
-      });
-
       const templatesResult = await pool.query(templatesQuery);
 
       for (const templateStep of templatesResult.rows) {
