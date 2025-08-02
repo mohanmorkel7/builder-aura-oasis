@@ -79,6 +79,36 @@ export default function Overview() {
   // Get template step dashboard data with real API integration
   const { data: templateStepData = [], isLoading: templateStepLoading, error: templateStepError } = useTemplateStepDashboard();
 
+  // Group template steps by template
+  const groupedTemplateData = templateStepData.reduce((acc: any, stepData: any) => {
+    const templateId = stepData.template_id;
+    if (!acc[templateId]) {
+      acc[templateId] = {
+        template_id: templateId,
+        template_name: stepData.template_name,
+        steps: [],
+        total_leads: 0,
+        total_pending: 0,
+        total_in_progress: 0,
+        total_completed: 0,
+        total_blocked: 0,
+        total_probability: 0
+      };
+    }
+
+    acc[templateId].steps.push(stepData);
+    acc[templateId].total_leads += stepData.total_leads;
+    acc[templateId].total_pending += stepData.pending_count;
+    acc[templateId].total_in_progress += stepData.in_progress_count;
+    acc[templateId].total_completed += stepData.completed_count;
+    acc[templateId].total_blocked += stepData.blocked_count;
+    acc[templateId].total_probability += stepData.probability_percent;
+
+    return acc;
+  }, {});
+
+  const templatesArray = Object.values(groupedTemplateData);
+
   const handleStepStatusClick = async (stepData: any, status: string) => {
     try {
       console.log(`Fetching leads for template ${stepData.template_id}, step ${stepData.step_id}, status ${status}`);
