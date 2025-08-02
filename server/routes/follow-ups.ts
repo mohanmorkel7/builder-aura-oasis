@@ -1,5 +1,6 @@
 import { Router, Request, Response } from "express";
 import { pool } from "../database/connection";
+import { normalizeUserId } from "../services/mockData";
 
 const router = Router();
 
