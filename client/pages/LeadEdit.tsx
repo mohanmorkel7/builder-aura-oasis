@@ -233,6 +233,9 @@ export default function LeadEdit() {
     targeted_end_date: "",
     expected_daily_txn_volume: "",
     project_value: "",
+    project_value_12m: "",
+    project_value_24m: "",
+    project_value_36m: "",
     spoc: "",
 
     // Commercials
