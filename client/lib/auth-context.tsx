@@ -1,6 +1,9 @@
 import * as React from "react";
 import { apiClient } from "./api";
-import { PublicClientApplication, AuthenticationResult } from "@azure/msal-browser";
+import {
+  PublicClientApplication,
+  AuthenticationResult,
+} from "@azure/msal-browser";
 import { msalConfig, loginRequest, graphConfig } from "./msal-config";
 
 export type UserRole = "admin" | "sales" | "product";
@@ -114,7 +117,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         await msalInstance.initialize();
 
         // Microsoft SSO using MSAL
-        const loginResponse: AuthenticationResult = await msalInstance.loginPopup(loginRequest);
+        const loginResponse: AuthenticationResult =
+          await msalInstance.loginPopup(loginRequest);
 
         if (loginResponse.account) {
           // Get user profile from Microsoft Graph
@@ -138,7 +142,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
           setUser(userData);
           localStorage.setItem("banani_user", JSON.stringify(userData));
-          localStorage.setItem("msal_account", JSON.stringify(loginResponse.account));
+          localStorage.setItem(
+            "msal_account",
+            JSON.stringify(loginResponse.account),
+          );
           setIsLoading(false);
           return true;
         }
@@ -150,7 +157,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     } catch (error: any) {
       // Handle user cancellation gracefully - don't show error or fallback
-      if (error.errorCode === "user_cancelled" || error.message?.includes("User cancelled")) {
+      if (
+        error.errorCode === "user_cancelled" ||
+        error.message?.includes("User cancelled")
+      ) {
         console.log("User cancelled SSO login");
         setIsLoading(false);
         return false;

@@ -129,7 +129,6 @@ export default function Login() {
               <p>• Sales: sales@banani.com / password</p>
               <p>• Product: product@banani.com / password</p>
             </div>
-
           </CardContent>
         </Card>
       </div>

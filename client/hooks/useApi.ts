@@ -1003,8 +1003,13 @@ export function useCreateTicket() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ ticketData, attachments }: { ticketData: any; attachments?: File[] }) =>
-      apiClient.createTicket(ticketData, attachments),
+    mutationFn: ({
+      ticketData,
+      attachments,
+    }: {
+      ticketData: any;
+      attachments?: File[];
+    }) => apiClient.createTicket(ticketData, attachments),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tickets"] });
       queryClient.invalidateQueries({ queryKey: ["ticket-notifications"] });
@@ -1048,10 +1053,17 @@ export function useAddTicketComment() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ ticketId, commentData }: { ticketId: number; commentData: any }) =>
-      apiClient.addTicketComment(ticketId, commentData),
+    mutationFn: ({
+      ticketId,
+      commentData,
+    }: {
+      ticketId: number;
+      commentData: any;
+    }) => apiClient.addTicketComment(ticketId, commentData),
     onSuccess: (_, { ticketId }) => {
-      queryClient.invalidateQueries({ queryKey: ["ticket-comments", ticketId] });
+      queryClient.invalidateQueries({
+        queryKey: ["ticket-comments", ticketId],
+      });
       queryClient.invalidateQueries({ queryKey: ["ticket-notifications"] });
     },
   });
@@ -1069,7 +1081,8 @@ export function useMarkNotificationAsRead() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (notificationId: number) => apiClient.markNotificationAsRead(notificationId),
+    mutationFn: (notificationId: number) =>
+      apiClient.markNotificationAsRead(notificationId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["ticket-notifications"] });
     },
@@ -1080,7 +1093,12 @@ export function useUploadTicketAttachment() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ ticketId, file, commentId, userId }: {
+    mutationFn: ({
+      ticketId,
+      file,
+      commentId,
+      userId,
+    }: {
       ticketId: number;
       file: File;
       commentId?: number;
@@ -1088,7 +1106,9 @@ export function useUploadTicketAttachment() {
     }) => apiClient.uploadTicketAttachment(ticketId, file, commentId, userId),
     onSuccess: (_, { ticketId }) => {
       queryClient.invalidateQueries({ queryKey: ["ticket", ticketId] });
-      queryClient.invalidateQueries({ queryKey: ["ticket-comments", ticketId] });
+      queryClient.invalidateQueries({
+        queryKey: ["ticket-comments", ticketId],
+      });
     },
   });
 }

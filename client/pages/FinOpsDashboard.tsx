@@ -4,10 +4,22 @@ import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -27,7 +39,7 @@ import {
   Wallet,
   Receipt,
   CreditCard,
-  Building
+  Building,
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -40,22 +52,40 @@ interface MetricCardProps {
   color: string;
 }
 
-function MetricCard({ title, value, change, changeType, icon: Icon, color }: MetricCardProps) {
+function MetricCard({
+  title,
+  value,
+  change,
+  changeType,
+  icon: Icon,
+  color,
+}: MetricCardProps) {
   return (
     <Card>
       <CardContent className="p-6">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-muted-foreground">{title}</p>
-            <p className="text-2xl font-bold">{typeof value === 'number' ? value.toLocaleString() : value}</p>
+            <p className="text-2xl font-bold">
+              {typeof value === "number" ? value.toLocaleString() : value}
+            </p>
             {change !== undefined && (
-              <div className={`flex items-center text-sm ${
-                changeType === 'positive' ? 'text-green-600' : 
-                changeType === 'negative' ? 'text-red-600' : 'text-gray-600'
-              }`}>
-                {changeType === 'positive' ? <TrendingUp className="w-4 h-4 mr-1" /> : 
-                 changeType === 'negative' ? <TrendingDown className="w-4 h-4 mr-1" /> : null}
-                {change > 0 ? '+' : ''}{change}%
+              <div
+                className={`flex items-center text-sm ${
+                  changeType === "positive"
+                    ? "text-green-600"
+                    : changeType === "negative"
+                      ? "text-red-600"
+                      : "text-gray-600"
+                }`}
+              >
+                {changeType === "positive" ? (
+                  <TrendingUp className="w-4 h-4 mr-1" />
+                ) : changeType === "negative" ? (
+                  <TrendingDown className="w-4 h-4 mr-1" />
+                ) : null}
+                {change > 0 ? "+" : ""}
+                {change}%
               </div>
             )}
           </div>
@@ -73,8 +103,10 @@ export default function FinOpsDashboard() {
   const { user } = useAuth();
   const [selectedPeriod, setSelectedPeriod] = useState("monthly");
   const [dateRange, setDateRange] = useState({
-    start: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0],
-    end: new Date().toISOString().split('T')[0]
+    start: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+      .toISOString()
+      .split("T")[0],
+    end: new Date().toISOString().split("T")[0],
   });
 
   // Fetch dashboard data
@@ -85,8 +117,18 @@ export default function FinOpsDashboard() {
 
   // Fetch financial metrics
   const { data: metrics } = useQuery({
-    queryKey: ["finops-metrics", selectedPeriod, dateRange.start, dateRange.end],
-    queryFn: () => apiClient.getFinOpsMetrics(selectedPeriod, dateRange.start, dateRange.end),
+    queryKey: [
+      "finops-metrics",
+      selectedPeriod,
+      dateRange.start,
+      dateRange.end,
+    ],
+    queryFn: () =>
+      apiClient.getFinOpsMetrics(
+        selectedPeriod,
+        dateRange.start,
+        dateRange.end,
+      ),
   });
 
   // Fetch recent transactions
@@ -117,10 +159,17 @@ export default function FinOpsDashboard() {
 
   const handleExportData = async (type: string) => {
     try {
-      const result = await apiClient.exportFinOpsData(type, "csv", dateRange.start, dateRange.end);
+      const result = await apiClient.exportFinOpsData(
+        type,
+        "csv",
+        dateRange.start,
+        dateRange.end,
+      );
       console.log("Export initiated:", result);
       // In a real implementation, this would trigger a download
-      alert(`Export of ${type} data initiated. You will receive a download link shortly.`);
+      alert(
+        `Export of ${type} data initiated. You will receive a download link shortly.`,
+      );
     } catch (error) {
       console.error("Export failed:", error);
       alert("Export failed. Please try again.");
@@ -133,7 +182,7 @@ export default function FinOpsDashboard() {
         report_type: reportType,
         start_date: dateRange.start,
         end_date: dateRange.end,
-        created_by: parseInt(user?.id || "1")
+        created_by: parseInt(user?.id || "1"),
       });
       console.log("Report generated:", result);
       alert(`${reportType} report generated successfully.`);
@@ -149,12 +198,13 @@ export default function FinOpsDashboard() {
     profit: 75000,
     profit_margin: 62.5,
     overdue_invoices: { overdue_count: 2, overdue_amount: 15000 },
-    budget_utilization: []
+    budget_utilization: [],
   };
 
-  const overdueInvoices = invoices.filter((invoice: any) => 
-    invoice.status === 'overdue' || 
-    (invoice.status === 'sent' && new Date(invoice.due_date) < new Date())
+  const overdueInvoices = invoices.filter(
+    (invoice: any) =>
+      invoice.status === "overdue" ||
+      (invoice.status === "sent" && new Date(invoice.due_date) < new Date()),
   );
 
   return (
@@ -162,10 +212,14 @@ export default function FinOpsDashboard() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Financial Operations</h1>
-          <p className="text-gray-600 mt-1">Monitor financial performance, budgets, and cash flow</p>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Financial Operations
+          </h1>
+          <p className="text-gray-600 mt-1">
+            Monitor financial performance, budgets, and cash flow
+          </p>
         </div>
-        
+
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <Label>Period:</Label>
@@ -182,18 +236,22 @@ export default function FinOpsDashboard() {
               </SelectContent>
             </Select>
           </div>
-          
+
           <div className="flex gap-2">
             <Input
               type="date"
               value={dateRange.start}
-              onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
+              onChange={(e) =>
+                setDateRange((prev) => ({ ...prev, start: e.target.value }))
+              }
               className="w-40"
             />
             <Input
               type="date"
               value={dateRange.end}
-              onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}
+              onChange={(e) =>
+                setDateRange((prev) => ({ ...prev, end: e.target.value }))
+              }
               className="w-40"
             />
           </div>
@@ -218,7 +276,7 @@ export default function FinOpsDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricCard
           title="Total Revenue"
-          value={`₹${data.total_revenue?.toLocaleString() || '0'}`}
+          value={`₹${data.total_revenue?.toLocaleString() || "0"}`}
           change={15.2}
           changeType="positive"
           icon={DollarSign}
@@ -226,7 +284,7 @@ export default function FinOpsDashboard() {
         />
         <MetricCard
           title="Total Costs"
-          value={`₹${data.total_costs?.toLocaleString() || '0'}`}
+          value={`₹${data.total_costs?.toLocaleString() || "0"}`}
           change={-8.1}
           changeType="positive"
           icon={TrendingDown}
@@ -234,7 +292,7 @@ export default function FinOpsDashboard() {
         />
         <MetricCard
           title="Net Profit"
-          value={`₹${data.profit?.toLocaleString() || '0'}`}
+          value={`₹${data.profit?.toLocaleString() || "0"}`}
           change={23.5}
           changeType="positive"
           icon={TrendingUp}
@@ -242,7 +300,7 @@ export default function FinOpsDashboard() {
         />
         <MetricCard
           title="Profit Margin"
-          value={`${data.profit_margin?.toFixed(1) || '0'}%`}
+          value={`${data.profit_margin?.toFixed(1) || "0"}%`}
           change={5.2}
           changeType="positive"
           icon={Target}
@@ -267,14 +325,18 @@ export default function FinOpsDashboard() {
             <Card>
               <CardHeader>
                 <CardTitle>Cash Flow Trend</CardTitle>
-                <CardDescription>Revenue and expenses over time</CardDescription>
+                <CardDescription>
+                  Revenue and expenses over time
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="h-64 flex items-center justify-center text-gray-500">
                   <div className="text-center">
                     <BarChart3 className="w-12 h-12 mx-auto mb-2" />
                     <p>Cash flow chart would be displayed here</p>
-                    <p className="text-sm">(Chart component integration needed)</p>
+                    <p className="text-sm">
+                      (Chart component integration needed)
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -284,28 +346,43 @@ export default function FinOpsDashboard() {
             <Card>
               <CardHeader>
                 <CardTitle>Budget Utilization</CardTitle>
-                <CardDescription>How much of each budget has been spent</CardDescription>
+                <CardDescription>
+                  How much of each budget has been spent
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {budgets.slice(0, 3).map((budget: any) => (
                     <div key={budget.id} className="space-y-2">
                       <div className="flex justify-between text-sm">
-                        <span className="font-medium">{budget.budget_name}</span>
-                        <span>{budget.utilization_percentage?.toFixed(1) || 0}%</span>
+                        <span className="font-medium">
+                          {budget.budget_name}
+                        </span>
+                        <span>
+                          {budget.utilization_percentage?.toFixed(1) || 0}%
+                        </span>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div 
+                        <div
                           className={`h-2 rounded-full ${
-                            (budget.utilization_percentage || 0) > 80 ? 'bg-red-500' :
-                            (budget.utilization_percentage || 0) > 60 ? 'bg-yellow-500' : 'bg-green-500'
+                            (budget.utilization_percentage || 0) > 80
+                              ? "bg-red-500"
+                              : (budget.utilization_percentage || 0) > 60
+                                ? "bg-yellow-500"
+                                : "bg-green-500"
                           }`}
-                          style={{ width: `${Math.min(budget.utilization_percentage || 0, 100)}%` }}
+                          style={{
+                            width: `${Math.min(budget.utilization_percentage || 0, 100)}%`,
+                          }}
                         />
                       </div>
                       <div className="flex justify-between text-xs text-gray-500">
-                        <span>₹{budget.spent_amount?.toLocaleString() || '0'} spent</span>
-                        <span>₹{budget.total_budget?.toLocaleString() || '0'} budget</span>
+                        <span>
+                          ₹{budget.spent_amount?.toLocaleString() || "0"} spent
+                        </span>
+                        <span>
+                          ₹{budget.total_budget?.toLocaleString() || "0"} budget
+                        </span>
                       </div>
                     </div>
                   ))}
@@ -326,7 +403,9 @@ export default function FinOpsDashboard() {
             <Card>
               <CardHeader>
                 <CardTitle>Financial Alerts</CardTitle>
-                <CardDescription>Important items requiring attention</CardDescription>
+                <CardDescription>
+                  Important items requiring attention
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
@@ -334,19 +413,26 @@ export default function FinOpsDashboard() {
                     <div className="flex items-start gap-3 p-3 bg-red-50 border border-red-200 rounded-lg">
                       <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5" />
                       <div>
-                        <p className="font-medium text-red-900">Overdue Invoices</p>
+                        <p className="font-medium text-red-900">
+                          Overdue Invoices
+                        </p>
                         <p className="text-sm text-red-700">
-                          {overdueInvoices.length} invoice{overdueInvoices.length > 1 ? 's' : ''} past due
+                          {overdueInvoices.length} invoice
+                          {overdueInvoices.length > 1 ? "s" : ""} past due
                         </p>
                       </div>
                     </div>
                   )}
-                  
-                  {budgets.some((b: any) => (b.utilization_percentage || 0) > 90) && (
+
+                  {budgets.some(
+                    (b: any) => (b.utilization_percentage || 0) > 90,
+                  ) && (
                     <div className="flex items-start gap-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                       <AlertTriangle className="w-5 h-5 text-yellow-600 mt-0.5" />
                       <div>
-                        <p className="font-medium text-yellow-900">Budget Alert</p>
+                        <p className="font-medium text-yellow-900">
+                          Budget Alert
+                        </p>
                         <p className="text-sm text-yellow-700">
                           Some budgets are over 90% utilized
                         </p>
@@ -358,9 +444,12 @@ export default function FinOpsDashboard() {
                     <div className="flex items-start gap-3 p-3 bg-green-50 border border-green-200 rounded-lg">
                       <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
                       <div>
-                        <p className="font-medium text-green-900">Healthy Margins</p>
+                        <p className="font-medium text-green-900">
+                          Healthy Margins
+                        </p>
                         <p className="text-sm text-green-700">
-                          Current profit margin: {data.profit_margin?.toFixed(1)}%
+                          Current profit margin:{" "}
+                          {data.profit_margin?.toFixed(1)}%
                         </p>
                       </div>
                     </div>
@@ -423,11 +512,25 @@ export default function FinOpsDashboard() {
                   </thead>
                   <tbody>
                     {transactions.map((transaction: any) => (
-                      <tr key={transaction.id} className="border-b hover:bg-gray-50">
-                        <td className="p-4">{format(new Date(transaction.transaction_date), "MMM d, yyyy")}</td>
+                      <tr
+                        key={transaction.id}
+                        className="border-b hover:bg-gray-50"
+                      >
+                        <td className="p-4">
+                          {format(
+                            new Date(transaction.transaction_date),
+                            "MMM d, yyyy",
+                          )}
+                        </td>
                         <td className="p-4">{transaction.description}</td>
                         <td className="p-4">
-                          <Badge variant={transaction.transaction_type === 'income' ? 'default' : 'secondary'}>
+                          <Badge
+                            variant={
+                              transaction.transaction_type === "income"
+                                ? "default"
+                                : "secondary"
+                            }
+                          >
                             {transaction.transaction_type}
                           </Badge>
                         </td>
@@ -435,7 +538,13 @@ export default function FinOpsDashboard() {
                           ₹{transaction.total_amount?.toLocaleString()}
                         </td>
                         <td className="p-4">
-                          <Badge variant={transaction.status === 'posted' ? 'default' : 'outline'}>
+                          <Badge
+                            variant={
+                              transaction.status === "posted"
+                                ? "default"
+                                : "outline"
+                            }
+                          >
                             {transaction.status}
                           </Badge>
                         </td>
@@ -461,33 +570,53 @@ export default function FinOpsDashboard() {
             {budgets.map((budget: any) => (
               <Card key={budget.id}>
                 <CardHeader>
-                  <CardTitle className="text-lg">{budget.budget_name}</CardTitle>
+                  <CardTitle className="text-lg">
+                    {budget.budget_name}
+                  </CardTitle>
                   <CardDescription>{budget.budget_type} budget</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     <div className="flex justify-between">
                       <span>Total Budget:</span>
-                      <span className="font-medium">₹{budget.total_budget?.toLocaleString()}</span>
+                      <span className="font-medium">
+                        ₹{budget.total_budget?.toLocaleString()}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span>Spent:</span>
-                      <span className="font-medium">₹{budget.spent_amount?.toLocaleString() || '0'}</span>
+                      <span className="font-medium">
+                        ₹{budget.spent_amount?.toLocaleString() || "0"}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span>Remaining:</span>
-                      <span className="font-medium">₹{(budget.total_budget - (budget.spent_amount || 0))?.toLocaleString()}</span>
+                      <span className="font-medium">
+                        ₹
+                        {(
+                          budget.total_budget - (budget.spent_amount || 0)
+                        )?.toLocaleString()}
+                      </span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div 
+                      <div
                         className={`h-2 rounded-full ${
-                          (budget.utilization_percentage || 0) > 80 ? 'bg-red-500' :
-                          (budget.utilization_percentage || 0) > 60 ? 'bg-yellow-500' : 'bg-green-500'
+                          (budget.utilization_percentage || 0) > 80
+                            ? "bg-red-500"
+                            : (budget.utilization_percentage || 0) > 60
+                              ? "bg-yellow-500"
+                              : "bg-green-500"
                         }`}
-                        style={{ width: `${Math.min(budget.utilization_percentage || 0, 100)}%` }}
+                        style={{
+                          width: `${Math.min(budget.utilization_percentage || 0, 100)}%`,
+                        }}
                       />
                     </div>
-                    <Badge variant={budget.status === 'active' ? 'default' : 'secondary'}>
+                    <Badge
+                      variant={
+                        budget.status === "active" ? "default" : "secondary"
+                      }
+                    >
                       {budget.status}
                     </Badge>
                   </div>
@@ -522,19 +651,36 @@ export default function FinOpsDashboard() {
                   </thead>
                   <tbody>
                     {invoices.map((invoice: any) => (
-                      <tr key={invoice.id} className="border-b hover:bg-gray-50">
-                        <td className="p-4 font-medium">{invoice.invoice_number}</td>
-                        <td className="p-4">{invoice.client_name || 'N/A'}</td>
-                        <td className="p-4">{format(new Date(invoice.invoice_date), "MMM d, yyyy")}</td>
-                        <td className="p-4">{format(new Date(invoice.due_date), "MMM d, yyyy")}</td>
+                      <tr
+                        key={invoice.id}
+                        className="border-b hover:bg-gray-50"
+                      >
+                        <td className="p-4 font-medium">
+                          {invoice.invoice_number}
+                        </td>
+                        <td className="p-4">{invoice.client_name || "N/A"}</td>
+                        <td className="p-4">
+                          {format(
+                            new Date(invoice.invoice_date),
+                            "MMM d, yyyy",
+                          )}
+                        </td>
+                        <td className="p-4">
+                          {format(new Date(invoice.due_date), "MMM d, yyyy")}
+                        </td>
                         <td className="p-4 text-right font-medium">
                           ₹{invoice.total_amount?.toLocaleString()}
                         </td>
                         <td className="p-4">
-                          <Badge variant={
-                            invoice.status === 'paid' ? 'default' :
-                            invoice.status === 'overdue' ? 'destructive' : 'secondary'
-                          }>
+                          <Badge
+                            variant={
+                              invoice.status === "paid"
+                                ? "default"
+                                : invoice.status === "overdue"
+                                  ? "destructive"
+                                  : "secondary"
+                            }
+                          >
                             {invoice.status}
                           </Badge>
                         </td>
@@ -559,7 +705,9 @@ export default function FinOpsDashboard() {
           <div className="text-center py-8 text-gray-500">
             <PieChart className="w-12 h-12 mx-auto mb-2" />
             <p>Cost tracking interface would be displayed here</p>
-            <p className="text-sm">Track expenses by category, project, and time period</p>
+            <p className="text-sm">
+              Track expenses by category, project, and time period
+            </p>
           </div>
         </TabsContent>
 
@@ -567,7 +715,10 @@ export default function FinOpsDashboard() {
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-semibold">Financial Reports</h2>
             <div className="flex gap-2">
-              <Button variant="outline" onClick={() => handleExportData("transactions")}>
+              <Button
+                variant="outline"
+                onClick={() => handleExportData("transactions")}
+              >
                 <Download className="w-4 h-4 mr-2" />
                 Export Data
               </Button>
@@ -580,21 +731,48 @@ export default function FinOpsDashboard() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              { name: "Profit & Loss", description: "Revenue and expenses breakdown", type: "profit_loss" },
-              { name: "Balance Sheet", description: "Assets, liabilities, and equity", type: "balance_sheet" },
-              { name: "Cash Flow", description: "Cash inflows and outflows", type: "cash_flow" },
-              { name: "Budget Variance", description: "Budget vs actual analysis", type: "budget_variance" },
-              { name: "Cost Analysis", description: "Detailed cost breakdown", type: "cost_analysis" },
-              { name: "Revenue Report", description: "Revenue trends and analysis", type: "revenue_report" }
+              {
+                name: "Profit & Loss",
+                description: "Revenue and expenses breakdown",
+                type: "profit_loss",
+              },
+              {
+                name: "Balance Sheet",
+                description: "Assets, liabilities, and equity",
+                type: "balance_sheet",
+              },
+              {
+                name: "Cash Flow",
+                description: "Cash inflows and outflows",
+                type: "cash_flow",
+              },
+              {
+                name: "Budget Variance",
+                description: "Budget vs actual analysis",
+                type: "budget_variance",
+              },
+              {
+                name: "Cost Analysis",
+                description: "Detailed cost breakdown",
+                type: "cost_analysis",
+              },
+              {
+                name: "Revenue Report",
+                description: "Revenue trends and analysis",
+                type: "revenue_report",
+              },
             ].map((report) => (
-              <Card key={report.type} className="hover:shadow-md transition-shadow cursor-pointer">
+              <Card
+                key={report.type}
+                className="hover:shadow-md transition-shadow cursor-pointer"
+              >
                 <CardHeader>
                   <CardTitle className="text-lg">{report.name}</CardTitle>
                   <CardDescription>{report.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="w-full"
                     onClick={() => generateReport(report.type)}
                   >

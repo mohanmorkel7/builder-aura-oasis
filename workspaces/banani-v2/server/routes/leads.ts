@@ -786,7 +786,7 @@ router.patch("/:id/status", async (req: Request, res: Response) => {
     }
 
     // Validate status
-    if (!['in-progress', 'won', 'lost', 'completed'].includes(status)) {
+    if (!["in-progress", "won", "lost", "completed"].includes(status)) {
       return res.status(400).json({ error: "Invalid status value" });
     }
 
@@ -801,7 +801,9 @@ router.patch("/:id/status", async (req: Request, res: Response) => {
 
         const lead = await LeadRepository.update(id, { status });
         if (!lead) {
-          return res.status(500).json({ error: "Failed to update lead status" });
+          return res
+            .status(500)
+            .json({ error: "Failed to update lead status" });
         }
         res.json({ success: true, lead });
       } else {
@@ -812,7 +814,10 @@ router.patch("/:id/status", async (req: Request, res: Response) => {
         res.json({ success: true, lead: mockLead });
       }
     } catch (dbError) {
-      console.log("Database error, falling back to mock data:", dbError.message);
+      console.log(
+        "Database error, falling back to mock data:",
+        dbError.message,
+      );
       const mockLead = await MockDataService.updateLead(id, { status });
       if (!mockLead) {
         return res.status(404).json({ error: "Lead not found" });

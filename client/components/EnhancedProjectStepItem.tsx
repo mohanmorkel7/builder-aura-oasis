@@ -16,12 +16,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   CheckCircle,
   Clock,
@@ -104,7 +99,8 @@ export function EnhancedProjectStepItem({
   // Sort comments by created_at
   const sortedComments = React.useMemo(() => {
     return [...stepComments].sort(
-      (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+      (a, b) =>
+        new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
     );
   }, [stepComments]);
 
@@ -120,16 +116,21 @@ export function EnhancedProjectStepItem({
   const [stagedAttachments, setStagedAttachments] = useState<any[]>([]);
   const [uploadingFiles, setUploadingFiles] = useState(false);
   const [followUpModalOpen, setFollowUpModalOpen] = useState(false);
-  const [selectedComment, setSelectedComment] = useState<StepComment | null>(null);
+  const [selectedComment, setSelectedComment] = useState<StepComment | null>(
+    null,
+  );
 
   // Add comment mutation
   const addCommentMutation = useMutation({
-    mutationFn: (commentData: any) => apiClient.createProjectComment(projectId, {
-      ...commentData,
-      step_id: step.id,
-    }),
+    mutationFn: (commentData: any) =>
+      apiClient.createProjectComment(projectId, {
+        ...commentData,
+        step_id: step.id,
+      }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["project-step-comments", step.id] });
+      queryClient.invalidateQueries({
+        queryKey: ["project-step-comments", step.id],
+      });
       setNewComment("");
       setStagedAttachments([]);
     },
@@ -137,25 +138,37 @@ export function EnhancedProjectStepItem({
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case "completed": return CheckCircle;
-      case "in_progress": return PlayCircle;
-      case "blocked": return PauseCircle;
-      case "cancelled": return AlertTriangle;
-      default: return Clock;
+      case "completed":
+        return CheckCircle;
+      case "in_progress":
+        return PlayCircle;
+      case "blocked":
+        return PauseCircle;
+      case "cancelled":
+        return AlertTriangle;
+      default:
+        return Clock;
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "completed": return "text-green-600 bg-green-100";
-      case "in_progress": return "text-blue-600 bg-blue-100";
-      case "blocked": return "text-yellow-600 bg-yellow-100";
-      case "cancelled": return "text-red-600 bg-red-100";
-      default: return "text-gray-600 bg-gray-100";
+      case "completed":
+        return "text-green-600 bg-green-100";
+      case "in_progress":
+        return "text-blue-600 bg-blue-100";
+      case "blocked":
+        return "text-yellow-600 bg-yellow-100";
+      case "cancelled":
+        return "text-red-600 bg-red-100";
+      default:
+        return "text-gray-600 bg-gray-100";
     }
   };
 
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const files = event.target.files;
     if (!files || files.length === 0 || !user) return;
 
@@ -249,23 +262,30 @@ export function EnhancedProjectStepItem({
           </div>
 
           {/* Status Icon */}
-          <div className={`flex-shrink-0 p-2 rounded-full ${getStatusColor(step.status)}`}>
+          <div
+            className={`flex-shrink-0 p-2 rounded-full ${getStatusColor(step.status)}`}
+          >
             <StatusIcon className="w-4 h-4" />
           </div>
 
           <CollapsibleTrigger className="flex-1 flex items-center justify-between text-left">
             <div className="flex-1">
               <div className="flex items-center space-x-2">
-                <span className="font-medium text-gray-900">{step.step_name}</span>
+                <span className="font-medium text-gray-900">
+                  {step.step_name}
+                </span>
                 <Badge variant="outline">Step {step.step_order}</Badge>
                 {sortedComments.length > 0 && (
                   <Badge variant="secondary" className="text-xs">
-                    {sortedComments.length} comment{sortedComments.length !== 1 ? "s" : ""}
+                    {sortedComments.length} comment
+                    {sortedComments.length !== 1 ? "s" : ""}
                   </Badge>
                 )}
               </div>
               {step.step_description && (
-                <div className="text-sm text-gray-600 mt-1">{step.step_description}</div>
+                <div className="text-sm text-gray-600 mt-1">
+                  {step.step_description}
+                </div>
               )}
               <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
                 {step.assigned_user_name && (
@@ -329,7 +349,8 @@ export function EnhancedProjectStepItem({
                     <div className="flex items-center space-x-1">
                       {sortedComments.length > 0 && (
                         <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
-                          {sortedComments.length} message{sortedComments.length !== 1 ? "s" : ""}
+                          {sortedComments.length} message
+                          {sortedComments.length !== 1 ? "s" : ""}
                         </span>
                       )}
                     </div>
@@ -346,123 +367,149 @@ export function EnhancedProjectStepItem({
                         Loading comments...
                       </div>
                     )}
-                    {!commentsLoading && sortedComments.length > 0 ? (
-                      sortedComments.map((comment: StepComment) => (
-                        <div
-                          key={comment.id}
-                          className={`flex space-x-3 p-3 rounded border ${
-                            comment.comment_type === "system"
-                              ? "bg-blue-50 border-blue-200"
-                              : comment.user_id === parseInt(user?.id || "0")
-                                ? "bg-green-50 border-green-200"
-                                : "bg-white"
-                          }`}
-                        >
+                    {!commentsLoading && sortedComments.length > 0
+                      ? sortedComments.map((comment: StepComment) => (
                           <div
-                            className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium ${
+                            key={comment.id}
+                            className={`flex space-x-3 p-3 rounded border ${
                               comment.comment_type === "system"
-                                ? "bg-orange-500"
-                                : "bg-blue-500"
+                                ? "bg-blue-50 border-blue-200"
+                                : comment.user_id === parseInt(user?.id || "0")
+                                  ? "bg-green-50 border-green-200"
+                                  : "bg-white"
                             }`}
                           >
-                            {comment.comment_type === "system"
-                              ? "⚙"
-                              : (comment.user_name || "?").charAt(0)}
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center justify-between mb-1">
-                              <span className="text-sm font-medium text-gray-900">
-                                {comment.user_id === parseInt(user?.id || "0")
-                                  ? "Me"
-                                  : comment.user_name || "Unknown User"}
-                              </span>
-                              <div className="flex items-center space-x-2">
-                                <span className="text-xs text-gray-500">
-                                  {format(new Date(comment.created_at), "MMM d, h:mm a")}
+                            <div
+                              className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium ${
+                                comment.comment_type === "system"
+                                  ? "bg-orange-500"
+                                  : "bg-blue-500"
+                              }`}
+                            >
+                              {comment.comment_type === "system"
+                                ? "⚙"
+                                : (comment.user_name || "?").charAt(0)}
+                            </div>
+                            <div className="flex-1">
+                              <div className="flex items-center justify-between mb-1">
+                                <span className="text-sm font-medium text-gray-900">
+                                  {comment.user_id === parseInt(user?.id || "0")
+                                    ? "Me"
+                                    : comment.user_name || "Unknown User"}
                                 </span>
-                                {comment.comment_type !== "system" && (
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    onClick={() => handleFollowUp(comment)}
-                                    className="text-blue-600 hover:text-blue-700 h-6 px-2 text-xs"
-                                  >
-                                    <Reply className="w-3 h-3 mr-1" />
-                                    Follow-up
-                                  </Button>
-                                )}
-                              </div>
-                            </div>
-                            <div className="text-sm text-gray-700 whitespace-pre-wrap">
-                              {comment.comment_text}
-                            </div>
-                            {comment.attachments && comment.attachments.length > 0 && (
-                              <div className="mt-3 space-y-2">
-                                {comment.attachments.map((attachment, index) => (
-                                  <div
-                                    key={index}
-                                    className="flex items-center space-x-3 p-2 bg-gray-50 rounded-lg border"
-                                  >
-                                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                                      <Paperclip className="w-4 h-4 text-blue-600" />
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                      <p className="text-sm font-medium text-gray-900 truncate">
-                                        {attachment.file_name}
-                                      </p>
-                                      <p className="text-xs text-gray-500">
-                                        {formatFileSize(attachment.file_size)}
-                                      </p>
-                                    </div>
+                                <div className="flex items-center space-x-2">
+                                  <span className="text-xs text-gray-500">
+                                    {format(
+                                      new Date(comment.created_at),
+                                      "MMM d, h:mm a",
+                                    )}
+                                  </span>
+                                  {comment.comment_type !== "system" && (
                                     <Button
                                       size="sm"
-                                      variant="outline"
-                                      className="h-8 px-3 text-xs"
-                                      onClick={async () => {
-                                        try {
-                                          const fileToDownload =
-                                            attachment.server_filename || attachment.file_name;
-                                          
-                                          const response = await fetch(
-                                            `/api/files/download/${fileToDownload}`
-                                          );
-
-                                          if (response.ok) {
-                                            const blob = await response.blob();
-                                            const url = window.URL.createObjectURL(blob);
-                                            const link = document.createElement("a");
-                                            link.href = url;
-                                            link.download = attachment.file_name;
-                                            document.body.appendChild(link);
-                                            link.click();
-                                            document.body.removeChild(link);
-                                            window.URL.revokeObjectURL(url);
-                                          } else {
-                                            throw new Error("Download failed");
-                                          }
-                                        } catch (error) {
-                                          console.error("Download failed:", error);
-                                          alert("Download failed. File may not be available.");
-                                        }
-                                      }}
+                                      variant="ghost"
+                                      onClick={() => handleFollowUp(comment)}
+                                      className="text-blue-600 hover:text-blue-700 h-6 px-2 text-xs"
                                     >
-                                      <Download className="w-3 h-3 mr-1" />
-                                      Download
+                                      <Reply className="w-3 h-3 mr-1" />
+                                      Follow-up
                                     </Button>
-                                  </div>
-                                ))}
+                                  )}
+                                </div>
                               </div>
-                            )}
+                              <div className="text-sm text-gray-700 whitespace-pre-wrap">
+                                {comment.comment_text}
+                              </div>
+                              {comment.attachments &&
+                                comment.attachments.length > 0 && (
+                                  <div className="mt-3 space-y-2">
+                                    {comment.attachments.map(
+                                      (attachment, index) => (
+                                        <div
+                                          key={index}
+                                          className="flex items-center space-x-3 p-2 bg-gray-50 rounded-lg border"
+                                        >
+                                          <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                            <Paperclip className="w-4 h-4 text-blue-600" />
+                                          </div>
+                                          <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-medium text-gray-900 truncate">
+                                              {attachment.file_name}
+                                            </p>
+                                            <p className="text-xs text-gray-500">
+                                              {formatFileSize(
+                                                attachment.file_size,
+                                              )}
+                                            </p>
+                                          </div>
+                                          <Button
+                                            size="sm"
+                                            variant="outline"
+                                            className="h-8 px-3 text-xs"
+                                            onClick={async () => {
+                                              try {
+                                                const fileToDownload =
+                                                  attachment.server_filename ||
+                                                  attachment.file_name;
+
+                                                const response = await fetch(
+                                                  `/api/files/download/${fileToDownload}`,
+                                                );
+
+                                                if (response.ok) {
+                                                  const blob =
+                                                    await response.blob();
+                                                  const url =
+                                                    window.URL.createObjectURL(
+                                                      blob,
+                                                    );
+                                                  const link =
+                                                    document.createElement("a");
+                                                  link.href = url;
+                                                  link.download =
+                                                    attachment.file_name;
+                                                  document.body.appendChild(
+                                                    link,
+                                                  );
+                                                  link.click();
+                                                  document.body.removeChild(
+                                                    link,
+                                                  );
+                                                  window.URL.revokeObjectURL(
+                                                    url,
+                                                  );
+                                                } else {
+                                                  throw new Error(
+                                                    "Download failed",
+                                                  );
+                                                }
+                                              } catch (error) {
+                                                console.error(
+                                                  "Download failed:",
+                                                  error,
+                                                );
+                                                alert(
+                                                  "Download failed. File may not be available.",
+                                                );
+                                              }
+                                            }}
+                                          >
+                                            <Download className="w-3 h-3 mr-1" />
+                                            Download
+                                          </Button>
+                                        </div>
+                                      ),
+                                    )}
+                                  </div>
+                                )}
+                            </div>
                           </div>
-                        </div>
-                      ))
-                    ) : (
-                      !commentsLoading && (
-                        <p className="text-sm text-gray-500 text-center py-8">
-                          No comments yet. Start the conversation!
-                        </p>
-                      )
-                    )}
+                        ))
+                      : !commentsLoading && (
+                          <p className="text-sm text-gray-500 text-center py-8">
+                            No comments yet. Start the conversation!
+                          </p>
+                        )}
                   </div>
 
                   {/* Rich Text Editor */}
@@ -552,7 +599,8 @@ export function EnhancedProjectStepItem({
                         size="sm"
                         onClick={handleSendComment}
                         disabled={
-                          (!newComment.trim() && stagedAttachments.length === 0) ||
+                          (!newComment.trim() &&
+                            stagedAttachments.length === 0) ||
                           addCommentMutation.isPending
                         }
                         className="bg-blue-500 hover:bg-blue-600 text-white px-4"

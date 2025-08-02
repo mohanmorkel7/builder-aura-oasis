@@ -160,7 +160,7 @@ export class TicketRepository {
   // Get all priorities
   static async getPriorities(): Promise<TicketPriority[]> {
     const result = await pool.query(
-      "SELECT * FROM ticket_priorities ORDER BY level ASC"
+      "SELECT * FROM ticket_priorities ORDER BY level ASC",
     );
     return result.rows;
   }
@@ -168,7 +168,7 @@ export class TicketRepository {
   // Get all statuses
   static async getStatuses(): Promise<TicketStatus[]> {
     const result = await pool.query(
-      "SELECT * FROM ticket_statuses ORDER BY sort_order ASC"
+      "SELECT * FROM ticket_statuses ORDER BY sort_order ASC",
     );
     return result.rows;
   }
@@ -176,13 +176,16 @@ export class TicketRepository {
   // Get all categories
   static async getCategories(): Promise<TicketCategory[]> {
     const result = await pool.query(
-      "SELECT * FROM ticket_categories ORDER BY name ASC"
+      "SELECT * FROM ticket_categories ORDER BY name ASC",
     );
     return result.rows;
   }
 
   // Create a new ticket
-  static async create(ticketData: CreateTicketRequest, createdBy: number): Promise<Ticket> {
+  static async create(
+    ticketData: CreateTicketRequest,
+    createdBy: number,
+  ): Promise<Ticket> {
     const {
       subject,
       description,
@@ -214,13 +217,20 @@ export class TicketRepository {
         tags,
         JSON.stringify(custom_fields),
         createdBy,
-      ]
+      ],
     );
 
     const ticket = result.rows[0];
 
     // Log activity
-    await this.logActivity(ticket.id, createdBy, "created", undefined, undefined, `Ticket created: ${subject}`);
+    await this.logActivity(
+      ticket.id,
+      createdBy,
+      "created",
+      undefined,
+      undefined,
+      `Ticket created: ${subject}`,
+    );
 
     // Create notification for assigned user
     if (assigned_to && assigned_to !== createdBy) {
@@ -228,7 +238,7 @@ export class TicketRepository {
         ticket.id,
         assigned_to,
         "assigned",
-        `You have been assigned to ticket ${ticket.track_id}: ${subject}`
+        `You have been assigned to ticket ${ticket.track_id}: ${subject}`,
       );
     }
 
@@ -239,10 +249,10 @@ export class TicketRepository {
   static async getAll(
     filters: TicketFilters = {},
     page: number = 1,
-    limit: number = 20
+    limit: number = 20,
   ): Promise<{ tickets: Ticket[]; total: number; pages: number }> {
     const offset = (page - 1) * limit;
-    
+
     let whereConditions: string[] = [];
     let queryParams: any[] = [];
     let paramIndex = 1;
@@ -274,7 +284,9 @@ export class TicketRepository {
     }
 
     if (filters.search) {
-      whereConditions.push(`(t.subject ILIKE $${paramIndex} OR t.description ILIKE $${paramIndex} OR t.track_id ILIKE $${paramIndex})`);
+      whereConditions.push(
+        `(t.subject ILIKE $${paramIndex} OR t.description ILIKE $${paramIndex} OR t.track_id ILIKE $${paramIndex})`,
+      );
       queryParams.push(`%${filters.search}%`);
       paramIndex++;
     }
@@ -294,7 +306,10 @@ export class TicketRepository {
       queryParams.push(filters.date_to);
     }
 
-    const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(" AND ")}` : "";
+    const whereClause =
+      whereConditions.length > 0
+        ? `WHERE ${whereConditions.join(" AND ")}`
+        : "";
 
     // Get total count
     const countQuery = `
@@ -348,13 +363,15 @@ export class TicketRepository {
       actual_hours: row.actual_hours,
       tags: row.tags,
       custom_fields: row.custom_fields,
-      priority: row.priority_name ? {
-        id: row.priority_id,
-        name: row.priority_name,
-        level: row.priority_level,
-        color: row.priority_color,
-        created_at: row.created_at,
-      } : undefined,
+      priority: row.priority_name
+        ? {
+            id: row.priority_id,
+            name: row.priority_name,
+            level: row.priority_level,
+            color: row.priority_color,
+            created_at: row.created_at,
+          }
+        : undefined,
       status: {
         id: row.status_id,
         name: row.status_name,
@@ -363,24 +380,28 @@ export class TicketRepository {
         sort_order: 0,
         created_at: row.created_at,
       },
-      category: row.category_name ? {
-        id: row.category_id,
-        name: row.category_name,
-        description: "",
-        color: row.category_color,
-        created_at: row.created_at,
-        updated_at: row.updated_at,
-      } : undefined,
+      category: row.category_name
+        ? {
+            id: row.category_id,
+            name: row.category_name,
+            description: "",
+            color: row.category_color,
+            created_at: row.created_at,
+            updated_at: row.updated_at,
+          }
+        : undefined,
       creator: {
         id: row.created_by,
         name: row.creator_name,
         email: row.creator_email,
       },
-      assignee: row.assignee_name ? {
-        id: row.assigned_to,
-        name: row.assignee_name,
-        email: row.assignee_email,
-      } : undefined,
+      assignee: row.assignee_name
+        ? {
+            id: row.assigned_to,
+            name: row.assignee_name,
+            email: row.assignee_email,
+          }
+        : undefined,
     }));
 
     const pages = Math.ceil(total / limit);
@@ -405,7 +426,7 @@ export class TicketRepository {
       LEFT JOIN users creator ON t.created_by = creator.id
       LEFT JOIN users assignee ON t.assigned_to = assignee.id
       WHERE t.id = $1`,
-      [id]
+      [id],
     );
 
     if (result.rows.length === 0) {
@@ -433,13 +454,15 @@ export class TicketRepository {
       actual_hours: row.actual_hours,
       tags: row.tags,
       custom_fields: row.custom_fields,
-      priority: row.priority_name ? {
-        id: row.priority_id,
-        name: row.priority_name,
-        level: row.priority_level,
-        color: row.priority_color,
-        created_at: row.created_at,
-      } : undefined,
+      priority: row.priority_name
+        ? {
+            id: row.priority_id,
+            name: row.priority_name,
+            level: row.priority_level,
+            color: row.priority_color,
+            created_at: row.created_at,
+          }
+        : undefined,
       status: {
         id: row.status_id,
         name: row.status_name,
@@ -448,24 +471,28 @@ export class TicketRepository {
         sort_order: 0,
         created_at: row.created_at,
       },
-      category: row.category_name ? {
-        id: row.category_id,
-        name: row.category_name,
-        description: "",
-        color: row.category_color,
-        created_at: row.created_at,
-        updated_at: row.updated_at,
-      } : undefined,
+      category: row.category_name
+        ? {
+            id: row.category_id,
+            name: row.category_name,
+            description: "",
+            color: row.category_color,
+            created_at: row.created_at,
+            updated_at: row.updated_at,
+          }
+        : undefined,
       creator: {
         id: row.created_by,
         name: row.creator_name,
         email: row.creator_email,
       },
-      assignee: row.assignee_name ? {
-        id: row.assigned_to,
-        name: row.assignee_name,
-        email: row.assignee_email,
-      } : undefined,
+      assignee: row.assignee_name
+        ? {
+            id: row.assigned_to,
+            name: row.assignee_name,
+            email: row.assignee_email,
+          }
+        : undefined,
     };
   }
 
@@ -473,7 +500,7 @@ export class TicketRepository {
   static async getByTrackId(trackId: string): Promise<Ticket> {
     const result = await pool.query(
       "SELECT id FROM tickets WHERE track_id = $1",
-      [trackId]
+      [trackId],
     );
 
     if (result.rows.length === 0) {
@@ -484,7 +511,11 @@ export class TicketRepository {
   }
 
   // Update ticket
-  static async update(id: number, updateData: UpdateTicketRequest, updatedBy: number): Promise<Ticket> {
+  static async update(
+    id: number,
+    updateData: UpdateTicketRequest,
+    updatedBy: number,
+  ): Promise<Ticket> {
     // Get current ticket data for logging changes
     const currentTicket = await this.getById(id);
 
@@ -530,7 +561,7 @@ export class TicketRepository {
             "updated",
             field,
             String(oldValue),
-            String(newValue)
+            String(newValue),
           );
 
           // Special handling for assignment changes
@@ -539,15 +570,21 @@ export class TicketRepository {
               id,
               newValue as number,
               "assigned",
-              `You have been assigned to ticket ${currentTicket.track_id}: ${currentTicket.subject}`
+              `You have been assigned to ticket ${currentTicket.track_id}: ${currentTicket.subject}`,
             );
           }
 
           // Special handling for status changes
           if (field === "status_id") {
-            const status = await pool.query("SELECT name, is_closed FROM ticket_statuses WHERE id = $1", [newValue]);
+            const status = await pool.query(
+              "SELECT name, is_closed FROM ticket_statuses WHERE id = $1",
+              [newValue],
+            );
             if (status.rows[0]?.is_closed) {
-              await pool.query("UPDATE tickets SET closed_at = CURRENT_TIMESTAMP WHERE id = $1", [id]);
+              await pool.query(
+                "UPDATE tickets SET closed_at = CURRENT_TIMESTAMP WHERE id = $1",
+                [id],
+              );
             }
           }
         }
@@ -564,19 +601,26 @@ export class TicketRepository {
     content: string,
     isInternal: boolean = false,
     parentCommentId?: number,
-    mentions?: string[]
+    mentions?: string[],
   ): Promise<TicketComment> {
     const result = await pool.query(
       `INSERT INTO ticket_comments (ticket_id, user_id, content, is_internal, parent_comment_id, mentions)
        VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING *`,
-      [ticketId, userId, content, isInternal, parentCommentId, mentions]
+      [ticketId, userId, content, isInternal, parentCommentId, mentions],
     );
 
     const comment = result.rows[0];
 
     // Log activity
-    await this.logActivity(ticketId, userId, "comment_added", undefined, undefined, "Comment added");
+    await this.logActivity(
+      ticketId,
+      userId,
+      "comment_added",
+      undefined,
+      undefined,
+      "Comment added",
+    );
 
     // Create notifications for mentions
     if (mentions && mentions.length > 0) {
@@ -594,7 +638,7 @@ export class TicketRepository {
               ticketId,
               mentionUserId,
               "mentioned",
-              `You were mentioned in ticket ${ticket.track_id}: ${ticket.subject}`
+              `You were mentioned in ticket ${ticket.track_id}: ${ticket.subject}`,
             );
           }
         }
@@ -635,7 +679,7 @@ export class TicketRepository {
       WHERE tc.ticket_id = $1
       GROUP BY tc.id, u.first_name, u.last_name, u.email
       ORDER BY tc.created_at ASC`,
-      [ticketId]
+      [ticketId],
     );
 
     return result.rows.map((row) => ({
@@ -668,7 +712,7 @@ export class TicketRepository {
       FROM ticket_comments tc
       LEFT JOIN users u ON tc.user_id = u.id
       WHERE tc.id = $1`,
-      [id]
+      [id],
     );
 
     if (result.rows.length === 0) {
@@ -702,10 +746,10 @@ export class TicketRepository {
     action: string,
     fieldName?: string,
     oldValue?: string,
-    newValue?: string
+    newValue?: string,
   ): Promise<void> {
     let description = "";
-    
+
     switch (action) {
       case "created":
         description = "Ticket created";
@@ -726,7 +770,7 @@ export class TicketRepository {
     await pool.query(
       `INSERT INTO ticket_activities (ticket_id, user_id, action, field_name, old_value, new_value, description)
        VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-      [ticketId, userId, action, fieldName, oldValue, newValue, description]
+      [ticketId, userId, action, fieldName, oldValue, newValue, description],
     );
   }
 
@@ -735,19 +779,19 @@ export class TicketRepository {
     ticketId: number,
     userId: number,
     type: string,
-    message: string
+    message: string,
   ): Promise<void> {
     await pool.query(
       `INSERT INTO ticket_notifications (ticket_id, user_id, type, message)
        VALUES ($1, $2, $3, $4)`,
-      [ticketId, userId, type, message]
+      [ticketId, userId, type, message],
     );
   }
 
   // Get user notifications
   static async getUserNotifications(
     userId: number,
-    unreadOnly: boolean = false
+    unreadOnly: boolean = false,
   ): Promise<TicketNotification[]> {
     let query = `
       SELECT 
@@ -758,11 +802,11 @@ export class TicketRepository {
       LEFT JOIN tickets t ON tn.ticket_id = t.id
       WHERE tn.user_id = $1
     `;
-    
+
     if (unreadOnly) {
       query += " AND tn.is_read = FALSE";
     }
-    
+
     query += " ORDER BY tn.created_at DESC";
 
     const result = await pool.query(query, [userId]);
@@ -787,7 +831,7 @@ export class TicketRepository {
   static async markNotificationAsRead(notificationId: number): Promise<void> {
     await pool.query(
       "UPDATE ticket_notifications SET is_read = TRUE, read_at = CURRENT_TIMESTAMP WHERE id = $1",
-      [notificationId]
+      [notificationId],
     );
   }
 

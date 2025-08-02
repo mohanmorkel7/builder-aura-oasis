@@ -5,7 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AlertCircle, Upload, X, FileText } from "lucide-react";
@@ -22,12 +28,12 @@ interface CreateTicketFormProps {
   relatedClientId?: number;
 }
 
-export default function CreateTicketForm({ 
-  onSuccess, 
-  metadata, 
+export default function CreateTicketForm({
+  onSuccess,
+  metadata,
   currentUser,
   relatedLeadId,
-  relatedClientId 
+  relatedClientId,
 }: CreateTicketFormProps) {
   const [formData, setFormData] = useState({
     subject: "",
@@ -38,7 +44,7 @@ export default function CreateTicketForm({
     estimated_hours: "",
     tags: [] as string[],
   });
-  
+
   const [newTag, setNewTag] = useState("");
   const [attachments, setAttachments] = useState<File[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -78,7 +84,7 @@ export default function CreateTicketForm({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validation
     const newErrors: Record<string, string> = {};
     if (!formData.subject.trim()) {
@@ -87,7 +93,7 @@ export default function CreateTicketForm({
     if (!formData.description.trim()) {
       newErrors.description = "Description is required";
     }
-    
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
@@ -95,10 +101,18 @@ export default function CreateTicketForm({
 
     const ticketData = {
       ...formData,
-      priority_id: formData.priority_id ? parseInt(formData.priority_id) : undefined,
-      category_id: formData.category_id ? parseInt(formData.category_id) : undefined,
-      assigned_to: formData.assigned_to ? parseInt(formData.assigned_to) : undefined,
-      estimated_hours: formData.estimated_hours ? parseFloat(formData.estimated_hours) : undefined,
+      priority_id: formData.priority_id
+        ? parseInt(formData.priority_id)
+        : undefined,
+      category_id: formData.category_id
+        ? parseInt(formData.category_id)
+        : undefined,
+      assigned_to: formData.assigned_to
+        ? parseInt(formData.assigned_to)
+        : undefined,
+      estimated_hours: formData.estimated_hours
+        ? parseFloat(formData.estimated_hours)
+        : undefined,
       created_by: currentUser?.id || "1",
       related_lead_id: relatedLeadId,
       related_client_id: relatedClientId,
@@ -108,15 +122,15 @@ export default function CreateTicketForm({
   };
 
   const handleInputChange = (field: string, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: "" }));
+      setErrors((prev) => ({ ...prev, [field]: "" }));
     }
   };
 
   const handleAddTag = () => {
     if (newTag.trim() && !formData.tags.includes(newTag.trim())) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         tags: [...prev.tags, newTag.trim()],
       }));
@@ -125,20 +139,20 @@ export default function CreateTicketForm({
   };
 
   const handleRemoveTag = (tagToRemove: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      tags: prev.tags.filter(tag => tag !== tagToRemove),
+      tags: prev.tags.filter((tag) => tag !== tagToRemove),
     }));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setAttachments(prev => [...prev, ...Array.from(e.target.files!)]);
+      setAttachments((prev) => [...prev, ...Array.from(e.target.files!)]);
     }
   };
 
   const handleRemoveAttachment = (index: number) => {
-    setAttachments(prev => prev.filter((_, i) => i !== index));
+    setAttachments((prev) => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -196,8 +210,8 @@ export default function CreateTicketForm({
               {metadata?.priorities?.map((priority) => (
                 <SelectItem key={priority.id} value={priority.id.toString()}>
                   <span className="flex items-center gap-2">
-                    <div 
-                      className="w-3 h-3 rounded-full" 
+                    <div
+                      className="w-3 h-3 rounded-full"
                       style={{ backgroundColor: priority.color }}
                     />
                     {priority.name}
@@ -221,8 +235,8 @@ export default function CreateTicketForm({
               {metadata?.categories?.map((category) => (
                 <SelectItem key={category.id} value={category.id.toString()}>
                   <span className="flex items-center gap-2">
-                    <div 
-                      className="w-3 h-3 rounded-full" 
+                    <div
+                      className="w-3 h-3 rounded-full"
                       style={{ backgroundColor: category.color }}
                     />
                     {category.name}
@@ -260,7 +274,9 @@ export default function CreateTicketForm({
             step="0.5"
             min="0"
             value={formData.estimated_hours}
-            onChange={(e) => handleInputChange("estimated_hours", e.target.value)}
+            onChange={(e) =>
+              handleInputChange("estimated_hours", e.target.value)
+            }
             placeholder="0.0"
           />
         </div>
@@ -274,7 +290,9 @@ export default function CreateTicketForm({
             value={newTag}
             onChange={(e) => setNewTag(e.target.value)}
             placeholder="Add a tag"
-            onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), handleAddTag())}
+            onKeyPress={(e) =>
+              e.key === "Enter" && (e.preventDefault(), handleAddTag())
+            }
           />
           <Button type="button" variant="outline" onClick={handleAddTag}>
             Add
@@ -283,7 +301,11 @@ export default function CreateTicketForm({
         {formData.tags.length > 0 && (
           <div className="flex flex-wrap gap-2">
             {formData.tags.map((tag) => (
-              <Badge key={tag} variant="secondary" className="flex items-center gap-1">
+              <Badge
+                key={tag}
+                variant="secondary"
+                className="flex items-center gap-1"
+              >
                 {tag}
                 <X
                   className="w-3 h-3 cursor-pointer hover:text-red-500"
@@ -303,7 +325,10 @@ export default function CreateTicketForm({
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
               <Upload className="mx-auto h-8 w-8 text-gray-400 mb-2" />
               <div className="text-sm">
-                <label htmlFor="file-upload" className="cursor-pointer text-blue-600 hover:text-blue-500">
+                <label
+                  htmlFor="file-upload"
+                  className="cursor-pointer text-blue-600 hover:text-blue-500"
+                >
                   Upload files
                 </label>
                 <input
@@ -321,11 +346,14 @@ export default function CreateTicketForm({
                 PNG, JPG, PDF, DOC up to 10MB each
               </p>
             </div>
-            
+
             {attachments.length > 0 && (
               <div className="mt-4 space-y-2">
                 {attachments.map((file, index) => (
-                  <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                  <div
+                    key={index}
+                    className="flex items-center justify-between p-2 bg-gray-50 rounded"
+                  >
                     <div className="flex items-center gap-2">
                       <FileText className="w-4 h-4 text-gray-500" />
                       <span className="text-sm">{file.name}</span>
@@ -359,10 +387,7 @@ export default function CreateTicketForm({
         >
           Reset
         </Button>
-        <Button
-          type="submit"
-          disabled={createTicketMutation.isPending}
-        >
+        <Button type="submit" disabled={createTicketMutation.isPending}>
           {createTicketMutation.isPending ? "Creating..." : "Create Ticket"}
         </Button>
       </div>

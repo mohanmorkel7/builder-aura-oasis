@@ -596,7 +596,12 @@ export class ApiClient {
     });
   }
 
-  async uploadTicketAttachment(ticketId: number, file: File, commentId?: number, userId?: string) {
+  async uploadTicketAttachment(
+    ticketId: number,
+    file: File,
+    commentId?: number,
+    userId?: string,
+  ) {
     const formData = new FormData();
     formData.append("file", file);
     if (commentId) formData.append("comment_id", String(commentId));
@@ -634,15 +639,15 @@ export class ApiClient {
     return this.request<any[]>(endpoint);
   }
 
-
-
-
-
   async getStepCategories() {
     return this.request<any[]>("/templates/step-categories");
   }
 
-  async recordTemplateUsage(templateId: number, entityType: string, entityId: number) {
+  async recordTemplateUsage(
+    templateId: number,
+    entityType: string,
+    entityId: number,
+  ) {
     return this.request<void>(`/templates/${templateId}/usage`, {
       method: "POST",
       body: JSON.stringify({ entityType, entityId }),
@@ -654,7 +659,11 @@ export class ApiClient {
     return this.request("/finops/dashboard");
   }
 
-  async getFinOpsMetrics(period?: string, startDate?: string, endDate?: string) {
+  async getFinOpsMetrics(
+    period?: string,
+    startDate?: string,
+    endDate?: string,
+  ) {
     const params = new URLSearchParams();
     if (period) params.append("period", period);
     if (startDate) params.append("start_date", startDate);
@@ -740,7 +749,12 @@ export class ApiClient {
     });
   }
 
-  async exportFinOpsData(type: string, format?: string, startDate?: string, endDate?: string) {
+  async exportFinOpsData(
+    type: string,
+    format?: string,
+    startDate?: string,
+    endDate?: string,
+  ) {
     const params = new URLSearchParams();
     if (format) params.append("format", format);
     if (startDate) params.append("start_date", startDate);
@@ -752,7 +766,9 @@ export class ApiClient {
 
   // Workflow API methods
   async getWorkflowDashboard(userId: number, userRole: string) {
-    return this.request(`/workflow/dashboard?userId=${userId}&userRole=${userRole}`);
+    return this.request(
+      `/workflow/dashboard?userId=${userId}&userRole=${userRole}`,
+    );
   }
 
   async getWorkflowProjects(userId?: number, userRole?: string) {
@@ -805,7 +821,9 @@ export class ApiClient {
     if (stepId) params.append("stepId", stepId.toString());
 
     const query = params.toString();
-    return this.request(`/workflow/projects/${projectId}/comments${query ? `?${query}` : ""}`);
+    return this.request(
+      `/workflow/projects/${projectId}/comments${query ? `?${query}` : ""}`,
+    );
   }
 
   async createProjectComment(projectId: number, commentData: any) {
@@ -844,7 +862,10 @@ export class ApiClient {
     return this.request("/workflow/leads/completed");
   }
 
-  async reorderProjectSteps(projectId: number, stepOrders: { id: number; order: number }[]) {
+  async reorderProjectSteps(
+    projectId: number,
+    stepOrders: { id: number; order: number }[],
+  ) {
     return this.request(`/workflow/projects/${projectId}/steps/reorder`, {
       method: "POST",
       body: JSON.stringify({ stepOrders }),

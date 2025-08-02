@@ -2,7 +2,12 @@ import { Router, Request, Response } from "express";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
-import { TicketRepository, CreateTicketRequest, UpdateTicketRequest, TicketFilters } from "../models/Ticket";
+import {
+  TicketRepository,
+  CreateTicketRequest,
+  UpdateTicketRequest,
+  TicketFilters,
+} from "../models/Ticket";
 import { normalizeUserId } from "../services/mockData";
 
 const router = Router();
@@ -17,12 +22,12 @@ const storage = multer.diskStorage({
     cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1E9);
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     cb(null, `ticket-${uniqueSuffix}${path.extname(file.originalname)}`);
   },
 });
 
-const upload = multer({ 
+const upload = multer({
   storage,
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
   fileFilter: (req, file, cb) => {
@@ -54,7 +59,7 @@ router.get("/metadata", async (req: Request, res: Response) => {
       const priorities = await TicketRepository.getPriorities();
       const statuses = await TicketRepository.getStatuses();
       const categories = await TicketRepository.getCategories();
-      
+
       res.json({ priorities, statuses, categories });
     } else {
       // Mock metadata for development
@@ -66,18 +71,73 @@ router.get("/metadata", async (req: Request, res: Response) => {
           { id: 4, name: "Critical", level: 4, color: "#DC2626" },
         ],
         statuses: [
-          { id: 1, name: "Open", color: "#3B82F6", is_closed: false, sort_order: 1 },
-          { id: 2, name: "In Progress", color: "#F59E0B", is_closed: false, sort_order: 2 },
-          { id: 3, name: "Pending", color: "#8B5CF6", is_closed: false, sort_order: 3 },
-          { id: 4, name: "Resolved", color: "#10B981", is_closed: true, sort_order: 4 },
-          { id: 5, name: "Closed", color: "#6B7280", is_closed: true, sort_order: 5 },
+          {
+            id: 1,
+            name: "Open",
+            color: "#3B82F6",
+            is_closed: false,
+            sort_order: 1,
+          },
+          {
+            id: 2,
+            name: "In Progress",
+            color: "#F59E0B",
+            is_closed: false,
+            sort_order: 2,
+          },
+          {
+            id: 3,
+            name: "Pending",
+            color: "#8B5CF6",
+            is_closed: false,
+            sort_order: 3,
+          },
+          {
+            id: 4,
+            name: "Resolved",
+            color: "#10B981",
+            is_closed: true,
+            sort_order: 4,
+          },
+          {
+            id: 5,
+            name: "Closed",
+            color: "#6B7280",
+            is_closed: true,
+            sort_order: 5,
+          },
         ],
         categories: [
-          { id: 1, name: "Technical Issue", description: "Technical problems and bugs", color: "#EF4444" },
-          { id: 2, name: "Feature Request", description: "New feature requests", color: "#3B82F6" },
-          { id: 3, name: "Support", description: "General support", color: "#10B981" },
-          { id: 4, name: "Documentation", description: "Documentation related", color: "#8B5CF6" },
-          { id: 5, name: "Training", description: "Training related", color: "#F59E0B" },
+          {
+            id: 1,
+            name: "Technical Issue",
+            description: "Technical problems and bugs",
+            color: "#EF4444",
+          },
+          {
+            id: 2,
+            name: "Feature Request",
+            description: "New feature requests",
+            color: "#3B82F6",
+          },
+          {
+            id: 3,
+            name: "Support",
+            description: "General support",
+            color: "#10B981",
+          },
+          {
+            id: 4,
+            name: "Documentation",
+            description: "Documentation related",
+            color: "#8B5CF6",
+          },
+          {
+            id: 5,
+            name: "Training",
+            description: "Training related",
+            color: "#F59E0B",
+          },
         ],
       });
     }
@@ -91,11 +151,21 @@ router.get("/metadata", async (req: Request, res: Response) => {
 router.get("/", async (req: Request, res: Response) => {
   try {
     const filters: TicketFilters = {
-      status_id: req.query.status_id ? parseInt(req.query.status_id as string) : undefined,
-      priority_id: req.query.priority_id ? parseInt(req.query.priority_id as string) : undefined,
-      category_id: req.query.category_id ? parseInt(req.query.category_id as string) : undefined,
-      assigned_to: req.query.assigned_to ? normalizeUserId(req.query.assigned_to as string) : undefined,
-      created_by: req.query.created_by ? normalizeUserId(req.query.created_by as string) : undefined,
+      status_id: req.query.status_id
+        ? parseInt(req.query.status_id as string)
+        : undefined,
+      priority_id: req.query.priority_id
+        ? parseInt(req.query.priority_id as string)
+        : undefined,
+      category_id: req.query.category_id
+        ? parseInt(req.query.category_id as string)
+        : undefined,
+      assigned_to: req.query.assigned_to
+        ? normalizeUserId(req.query.assigned_to as string)
+        : undefined,
+      created_by: req.query.created_by
+        ? normalizeUserId(req.query.created_by as string)
+        : undefined,
       search: req.query.search as string,
       tags: req.query.tags ? (req.query.tags as string).split(",") : undefined,
       date_from: req.query.date_from as string,
@@ -115,7 +185,8 @@ router.get("/", async (req: Request, res: Response) => {
           id: 1,
           track_id: "TKT-0001",
           subject: "Login page not loading",
-          description: "Users are reporting that the login page is not loading properly",
+          description:
+            "Users are reporting that the login page is not loading properly",
           priority_id: 3,
           status_id: 2,
           category_id: 1,
@@ -124,7 +195,13 @@ router.get("/", async (req: Request, res: Response) => {
           created_at: new Date("2024-01-15T10:00:00Z"),
           updated_at: new Date("2024-01-15T10:00:00Z"),
           priority: { id: 3, name: "High", level: 3, color: "#EF4444" },
-          status: { id: 2, name: "In Progress", color: "#F59E0B", is_closed: false, sort_order: 2 },
+          status: {
+            id: 2,
+            name: "In Progress",
+            color: "#F59E0B",
+            is_closed: false,
+            sort_order: 2,
+          },
           category: { id: 1, name: "Technical Issue", color: "#EF4444" },
           creator: { id: 1, name: "John Doe", email: "admin@banani.com" },
           assignee: { id: 1, name: "John Doe", email: "admin@banani.com" },
@@ -142,10 +219,20 @@ router.get("/", async (req: Request, res: Response) => {
           created_at: new Date("2024-01-16T14:30:00Z"),
           updated_at: new Date("2024-01-16T14:30:00Z"),
           priority: { id: 2, name: "Medium", level: 2, color: "#F59E0B" },
-          status: { id: 1, name: "Open", color: "#3B82F6", is_closed: false, sort_order: 1 },
+          status: {
+            id: 1,
+            name: "Open",
+            color: "#3B82F6",
+            is_closed: false,
+            sort_order: 1,
+          },
           category: { id: 2, name: "Feature Request", color: "#3B82F6" },
           creator: { id: 2, name: "Jane Smith", email: "sales@banani.com" },
-          assignee: { id: 3, name: "Mike Johnson", email: "product@banani.com" },
+          assignee: {
+            id: 3,
+            name: "Mike Johnson",
+            email: "product@banani.com",
+          },
         },
       ];
 
@@ -178,7 +265,8 @@ router.get("/:id", async (req: Request, res: Response) => {
         id: 1,
         track_id: "TKT-0001",
         subject: "Login page not loading",
-        description: "Users are reporting that the login page is not loading properly",
+        description:
+          "Users are reporting that the login page is not loading properly",
         priority_id: 3,
         status_id: 2,
         category_id: 1,
@@ -187,7 +275,13 @@ router.get("/:id", async (req: Request, res: Response) => {
         created_at: new Date("2024-01-15T10:00:00Z"),
         updated_at: new Date("2024-01-15T10:00:00Z"),
         priority: { id: 3, name: "High", level: 3, color: "#EF4444" },
-        status: { id: 2, name: "In Progress", color: "#F59E0B", is_closed: false, sort_order: 2 },
+        status: {
+          id: 2,
+          name: "In Progress",
+          color: "#F59E0B",
+          is_closed: false,
+          sort_order: 2,
+        },
         category: { id: 1, name: "Technical Issue", color: "#EF4444" },
         creator: { id: 1, name: "John Doe", email: "admin@banani.com" },
         assignee: { id: 1, name: "John Doe", email: "admin@banani.com" },
@@ -218,7 +312,8 @@ router.get("/track/:trackId", async (req: Request, res: Response) => {
           id: 1,
           track_id: "TKT-0001",
           subject: "Login page not loading",
-          description: "Users are reporting that the login page is not loading properly",
+          description:
+            "Users are reporting that the login page is not loading properly",
           created_at: new Date("2024-01-15T10:00:00Z"),
         });
       } else {
@@ -236,55 +331,64 @@ router.get("/track/:trackId", async (req: Request, res: Response) => {
 });
 
 // Create new ticket
-router.post("/", upload.array("attachments", 5), async (req: Request, res: Response) => {
-  try {
-    const ticketData: CreateTicketRequest = req.body;
-    const createdBy = normalizeUserId(req.body.created_by || "1");
+router.post(
+  "/",
+  upload.array("attachments", 5),
+  async (req: Request, res: Response) => {
+    try {
+      const ticketData: CreateTicketRequest = req.body;
+      const createdBy = normalizeUserId(req.body.created_by || "1");
 
-    // Parse JSON fields if they're strings
-    if (typeof ticketData.tags === "string") {
-      ticketData.tags = JSON.parse(ticketData.tags);
-    }
-    if (typeof ticketData.custom_fields === "string") {
-      ticketData.custom_fields = JSON.parse(ticketData.custom_fields);
-    }
-
-    if (await isDatabaseAvailable()) {
-      const ticket = await TicketRepository.create(ticketData, createdBy);
-
-      // Handle file attachments
-      if (req.files && Array.isArray(req.files)) {
-        for (const file of req.files) {
-          // Store attachment info in database (would be implemented in TicketRepository)
-          console.log("Uploaded file:", file.filename, "for ticket:", ticket.id);
-        }
+      // Parse JSON fields if they're strings
+      if (typeof ticketData.tags === "string") {
+        ticketData.tags = JSON.parse(ticketData.tags);
+      }
+      if (typeof ticketData.custom_fields === "string") {
+        ticketData.custom_fields = JSON.parse(ticketData.custom_fields);
       }
 
-      res.status(201).json(ticket);
-    } else {
-      // Mock ticket creation
-      const mockTicket = {
-        id: Math.floor(Math.random() * 1000),
-        track_id: `TKT-${String(Math.floor(Math.random() * 10000)).padStart(4, "0")}`,
-        subject: ticketData.subject,
-        description: ticketData.description,
-        priority_id: ticketData.priority_id,
-        status_id: 1, // Default to Open
-        category_id: ticketData.category_id,
-        created_by: createdBy,
-        assigned_to: ticketData.assigned_to,
-        created_at: new Date(),
-        updated_at: new Date(),
-      };
+      if (await isDatabaseAvailable()) {
+        const ticket = await TicketRepository.create(ticketData, createdBy);
 
-      console.log("Mock ticket created:", mockTicket.track_id);
-      res.status(201).json(mockTicket);
+        // Handle file attachments
+        if (req.files && Array.isArray(req.files)) {
+          for (const file of req.files) {
+            // Store attachment info in database (would be implemented in TicketRepository)
+            console.log(
+              "Uploaded file:",
+              file.filename,
+              "for ticket:",
+              ticket.id,
+            );
+          }
+        }
+
+        res.status(201).json(ticket);
+      } else {
+        // Mock ticket creation
+        const mockTicket = {
+          id: Math.floor(Math.random() * 1000),
+          track_id: `TKT-${String(Math.floor(Math.random() * 10000)).padStart(4, "0")}`,
+          subject: ticketData.subject,
+          description: ticketData.description,
+          priority_id: ticketData.priority_id,
+          status_id: 1, // Default to Open
+          category_id: ticketData.category_id,
+          created_by: createdBy,
+          assigned_to: ticketData.assigned_to,
+          created_at: new Date(),
+          updated_at: new Date(),
+        };
+
+        console.log("Mock ticket created:", mockTicket.track_id);
+        res.status(201).json(mockTicket);
+      }
+    } catch (error) {
+      console.error("Error creating ticket:", error);
+      res.status(500).json({ error: "Failed to create ticket" });
     }
-  } catch (error) {
-    console.error("Error creating ticket:", error);
-    res.status(500).json({ error: "Failed to create ticket" });
-  }
-});
+  },
+);
 
 // Update ticket
 router.put("/:id", async (req: Request, res: Response) => {
@@ -361,7 +465,8 @@ router.get("/:id/comments", async (req: Request, res: Response) => {
           id: 1,
           ticket_id: ticketId,
           user_id: 1,
-          content: "<p>This is the <strong>initial comment</strong> for the ticket with <em>rich formatting</em>.</p>",
+          content:
+            "<p>This is the <strong>initial comment</strong> for the ticket with <em>rich formatting</em>.</p>",
           is_internal: false,
           created_at: new Date("2024-01-15T10:05:00Z"),
           attachments: [],
@@ -371,7 +476,8 @@ router.get("/:id/comments", async (req: Request, res: Response) => {
           id: 2,
           ticket_id: ticketId,
           user_id: 2,
-          content: "<p>I'm investigating this issue. See attached <a href='#'>documentation</a>.</p>",
+          content:
+            "<p>I'm investigating this issue. See attached <a href='#'>documentation</a>.</p>",
           is_internal: true,
           created_at: new Date("2024-01-15T11:00:00Z"),
           attachments: [
@@ -403,7 +509,12 @@ router.post("/:id/comments", async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Invalid ticket ID" });
     }
 
-    const { content, is_internal = false, parent_comment_id, mentions } = req.body;
+    const {
+      content,
+      is_internal = false,
+      parent_comment_id,
+      mentions,
+    } = req.body;
     const userId = normalizeUserId(req.body.user_id || "1");
 
     if (!content) {
@@ -417,7 +528,7 @@ router.post("/:id/comments", async (req: Request, res: Response) => {
         content,
         is_internal,
         parent_comment_id,
-        mentions
+        mentions,
       );
       res.status(201).json(comment);
     } else {
@@ -451,7 +562,10 @@ router.get("/notifications/:userId", async (req: Request, res: Response) => {
     const unreadOnly = req.query.unread_only === "true";
 
     if (await isDatabaseAvailable()) {
-      const notifications = await TicketRepository.getUserNotifications(userId, unreadOnly);
+      const notifications = await TicketRepository.getUserNotifications(
+        userId,
+        unreadOnly,
+      );
       res.json(notifications);
     } else {
       // Mock notifications
@@ -461,7 +575,8 @@ router.get("/notifications/:userId", async (req: Request, res: Response) => {
           ticket_id: 1,
           user_id: userId,
           type: "assigned",
-          message: "You have been assigned to ticket TKT-0001: Login page not loading",
+          message:
+            "You have been assigned to ticket TKT-0001: Login page not loading",
           is_read: false,
           created_at: new Date("2024-01-15T10:00:00Z"),
           ticket: { track_id: "TKT-0001", subject: "Login page not loading" },
@@ -475,74 +590,88 @@ router.get("/notifications/:userId", async (req: Request, res: Response) => {
 });
 
 // Mark notification as read
-router.put("/notifications/:notificationId/read", async (req: Request, res: Response) => {
-  try {
-    const notificationId = parseInt(req.params.notificationId);
-    if (isNaN(notificationId)) {
-      return res.status(400).json({ error: "Invalid notification ID" });
-    }
+router.put(
+  "/notifications/:notificationId/read",
+  async (req: Request, res: Response) => {
+    try {
+      const notificationId = parseInt(req.params.notificationId);
+      if (isNaN(notificationId)) {
+        return res.status(400).json({ error: "Invalid notification ID" });
+      }
 
-    if (await isDatabaseAvailable()) {
-      await TicketRepository.markNotificationAsRead(notificationId);
-      res.status(204).send();
-    } else {
-      // Mock notification update
-      console.log("Mock notification marked as read:", notificationId);
-      res.status(204).send();
+      if (await isDatabaseAvailable()) {
+        await TicketRepository.markNotificationAsRead(notificationId);
+        res.status(204).send();
+      } else {
+        // Mock notification update
+        console.log("Mock notification marked as read:", notificationId);
+        res.status(204).send();
+      }
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+      res.status(500).json({ error: "Failed to mark notification as read" });
     }
-  } catch (error) {
-    console.error("Error marking notification as read:", error);
-    res.status(500).json({ error: "Failed to mark notification as read" });
-  }
-});
+  },
+);
 
 // Upload attachment to existing ticket
-router.post("/:id/attachments", upload.single("file"), async (req: Request, res: Response) => {
-  try {
-    const ticketId = parseInt(req.params.id);
-    if (isNaN(ticketId)) {
-      return res.status(400).json({ error: "Invalid ticket ID" });
-    }
+router.post(
+  "/:id/attachments",
+  upload.single("file"),
+  async (req: Request, res: Response) => {
+    try {
+      const ticketId = parseInt(req.params.id);
+      if (isNaN(ticketId)) {
+        return res.status(400).json({ error: "Invalid ticket ID" });
+      }
 
-    if (!req.file) {
-      return res.status(400).json({ error: "No file uploaded" });
-    }
+      if (!req.file) {
+        return res.status(400).json({ error: "No file uploaded" });
+      }
 
-    const userId = normalizeUserId(req.body.user_id || "1");
-    const commentId = req.body.comment_id ? parseInt(req.body.comment_id) : undefined;
+      const userId = normalizeUserId(req.body.user_id || "1");
+      const commentId = req.body.comment_id
+        ? parseInt(req.body.comment_id)
+        : undefined;
 
-    if (await isDatabaseAvailable()) {
-      // In real implementation, save attachment to database
-      console.log("File uploaded for ticket:", ticketId, "File:", req.file.filename);
-      
-      res.status(201).json({
-        id: Math.floor(Math.random() * 1000),
-        ticket_id: ticketId,
-        comment_id: commentId,
-        user_id: userId,
-        filename: req.file.filename,
-        original_filename: req.file.originalname,
-        file_path: `/uploads/tickets/${req.file.filename}`,
-        file_size: req.file.size,
-        mime_type: req.file.mimetype,
-        uploaded_at: new Date(),
-      });
-    } else {
-      // Mock attachment upload
-      res.status(201).json({
-        id: Math.floor(Math.random() * 1000),
-        ticket_id: ticketId,
-        filename: req.file.filename,
-        original_filename: req.file.originalname,
-        file_path: `/uploads/tickets/${req.file.filename}`,
-        file_size: req.file.size,
-        uploaded_at: new Date(),
-      });
+      if (await isDatabaseAvailable()) {
+        // In real implementation, save attachment to database
+        console.log(
+          "File uploaded for ticket:",
+          ticketId,
+          "File:",
+          req.file.filename,
+        );
+
+        res.status(201).json({
+          id: Math.floor(Math.random() * 1000),
+          ticket_id: ticketId,
+          comment_id: commentId,
+          user_id: userId,
+          filename: req.file.filename,
+          original_filename: req.file.originalname,
+          file_path: `/uploads/tickets/${req.file.filename}`,
+          file_size: req.file.size,
+          mime_type: req.file.mimetype,
+          uploaded_at: new Date(),
+        });
+      } else {
+        // Mock attachment upload
+        res.status(201).json({
+          id: Math.floor(Math.random() * 1000),
+          ticket_id: ticketId,
+          filename: req.file.filename,
+          original_filename: req.file.originalname,
+          file_path: `/uploads/tickets/${req.file.filename}`,
+          file_size: req.file.size,
+          uploaded_at: new Date(),
+        });
+      }
+    } catch (error) {
+      console.error("Error uploading attachment:", error);
+      res.status(500).json({ error: "Failed to upload attachment" });
     }
-  } catch (error) {
-    console.error("Error uploading attachment:", error);
-    res.status(500).json({ error: "Failed to upload attachment" });
-  }
-});
+  },
+);
 
 export default router;

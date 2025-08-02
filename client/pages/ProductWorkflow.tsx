@@ -7,11 +7,29 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Plus,
@@ -40,7 +58,7 @@ import {
   ChevronRight,
   ChevronDown,
   GripVertical,
-  Move
+  Move,
 } from "lucide-react";
 import { format } from "date-fns";
 import { DraggableProjectStepsList } from "@/components/DraggableProjectStepsList";
@@ -66,19 +84,26 @@ interface CreateProjectFromLeadDialogProps {
   onSuccess: () => void;
 }
 
-function CreateProjectFromLeadDialog({ lead, isOpen, onClose, onSuccess }: CreateProjectFromLeadDialogProps) {
+function CreateProjectFromLeadDialog({
+  lead,
+  isOpen,
+  onClose,
+  onSuccess,
+}: CreateProjectFromLeadDialogProps) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
   const [projectData, setProjectData] = useState({
     name: lead ? `${lead.client_name} - ${lead.project_title}` : "",
-    description: lead ? `Product development project for ${lead.client_name}` : "",
+    description: lead
+      ? `Product development project for ${lead.client_name}`
+      : "",
     assigned_team: "Product Team",
     project_manager_id: "",
     target_completion_date: "",
     estimated_hours: "",
     budget: lead?.estimated_budget || "",
-    template_id: ""
+    template_id: "",
   });
 
   const [steps, setSteps] = useState<ProjectStep[]>([]);
@@ -92,47 +117,55 @@ function CreateProjectFromLeadDialog({ lead, isOpen, onClose, onSuccess }: Creat
   });
 
   // Filter templates to only show product-related templates
-  const templates = allTemplates.filter((template: any) =>
-    template.name?.toLowerCase().includes('product') ||
-    template.description?.toLowerCase().includes('product') ||
-    template.type === 'product'
+  const templates = allTemplates.filter(
+    (template: any) =>
+      template.name?.toLowerCase().includes("product") ||
+      template.description?.toLowerCase().includes("product") ||
+      template.type === "product",
   );
 
   // Fetch template steps when template is selected
   const { data: templateSteps = [] } = useQuery({
     queryKey: ["template-steps", selectedTemplate?.id],
-    queryFn: () => selectedTemplate ? apiClient.getTemplate(selectedTemplate.id) : null,
+    queryFn: () =>
+      selectedTemplate ? apiClient.getTemplate(selectedTemplate.id) : null,
     enabled: !!selectedTemplate?.id,
   });
 
   // Update steps when template changes
   useEffect(() => {
     if (templateSteps?.steps && templateSteps.steps.length > 0) {
-      const convertedSteps = templateSteps.steps.map((step: any, index: number) => ({
-        step_name: step.name,
-        step_description: step.description,
-        step_order: step.step_order || index + 1,
-        status: "pending" as const,
-        estimated_hours: step.default_eta_days ? step.default_eta_days * 8 : undefined
-      }));
+      const convertedSteps = templateSteps.steps.map(
+        (step: any, index: number) => ({
+          step_name: step.name,
+          step_description: step.description,
+          step_order: step.step_order || index + 1,
+          status: "pending" as const,
+          estimated_hours: step.default_eta_days
+            ? step.default_eta_days * 8
+            : undefined,
+        }),
+      );
       setSteps(convertedSteps);
     } else if (selectedTemplate === null) {
       // Default steps when no template selected
       setSteps([
         {
           step_name: "Build base using platform",
-          step_description: "Create the foundational architecture using our existing platform components and review lead requirements",
+          step_description:
+            "Create the foundational architecture using our existing platform components and review lead requirements",
           step_order: 1,
           status: "pending",
-          estimated_hours: 40
+          estimated_hours: 40,
         },
         {
           step_name: "Follow-up with development team",
-          step_description: "Coordinate with development team and assign specific tasks with tracking and milestone planning",
+          step_description:
+            "Coordinate with development team and assign specific tasks with tracking and milestone planning",
           step_order: 2,
           status: "pending",
-          estimated_hours: 20
-        }
+          estimated_hours: 20,
+        },
       ]);
     }
   }, [templateSteps?.steps?.length, selectedTemplate?.id]);
@@ -140,19 +173,27 @@ function CreateProjectFromLeadDialog({ lead, isOpen, onClose, onSuccess }: Creat
   const handleTemplateSelect = (templateId: string) => {
     if (templateId === "none") {
       setSelectedTemplate(null);
-      setProjectData(prev => ({ ...prev, template_id: "" }));
+      setProjectData((prev) => ({ ...prev, template_id: "" }));
     } else {
-      const template = templates.find((t: any) => t.id.toString() === templateId);
+      const template = templates.find(
+        (t: any) => t.id.toString() === templateId,
+      );
       setSelectedTemplate(template);
-      setProjectData(prev => ({ ...prev, template_id: templateId }));
+      setProjectData((prev) => ({ ...prev, template_id: templateId }));
     }
   };
 
-  const teams = ["Product Team", "Frontend Team", "Backend Team", "DevOps Team", "Full Stack Team"];
+  const teams = [
+    "Product Team",
+    "Frontend Team",
+    "Backend Team",
+    "DevOps Team",
+    "Full Stack Team",
+  ];
   const projectManagers = [
     { id: 2, name: "Alice Johnson" },
     { id: 3, name: "Bob Smith" },
-    { id: 4, name: "Carol Davis" }
+    { id: 4, name: "Carol Davis" },
   ];
 
   const createProjectMutation = useMutation({
@@ -167,15 +208,21 @@ function CreateProjectFromLeadDialog({ lead, isOpen, onClose, onSuccess }: Creat
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const submitData = {
       ...projectData,
-      project_manager_id: projectData.project_manager_id ? parseInt(projectData.project_manager_id) : undefined,
-      estimated_hours: projectData.estimated_hours ? parseInt(projectData.estimated_hours) : undefined,
+      project_manager_id: projectData.project_manager_id
+        ? parseInt(projectData.project_manager_id)
+        : undefined,
+      estimated_hours: projectData.estimated_hours
+        ? parseInt(projectData.estimated_hours)
+        : undefined,
       budget: projectData.budget ? parseFloat(projectData.budget) : undefined,
-      template_id: projectData.template_id ? parseInt(projectData.template_id) : undefined,
+      template_id: projectData.template_id
+        ? parseInt(projectData.template_id)
+        : undefined,
       created_by: parseInt(user?.id || "1"),
-      steps: steps
+      steps: steps,
     };
 
     createProjectMutation.mutate(submitData);
@@ -186,7 +233,7 @@ function CreateProjectFromLeadDialog({ lead, isOpen, onClose, onSuccess }: Creat
       step_name: "",
       step_description: "",
       step_order: steps.length + 1,
-      status: "pending"
+      status: "pending",
     };
     setSteps([...steps, newStep]);
   };
@@ -207,20 +254,26 @@ function CreateProjectFromLeadDialog({ lead, isOpen, onClose, onSuccess }: Creat
   };
 
   const moveStep = (index: number, direction: "up" | "down") => {
-    if ((direction === "up" && index === 0) || (direction === "down" && index === steps.length - 1)) {
+    if (
+      (direction === "up" && index === 0) ||
+      (direction === "down" && index === steps.length - 1)
+    ) {
       return;
     }
 
     const newSteps = [...steps];
     const targetIndex = direction === "up" ? index - 1 : index + 1;
-    
-    [newSteps[index], newSteps[targetIndex]] = [newSteps[targetIndex], newSteps[index]];
-    
+
+    [newSteps[index], newSteps[targetIndex]] = [
+      newSteps[targetIndex],
+      newSteps[index],
+    ];
+
     // Update step orders
     newSteps.forEach((step, i) => {
       step.step_order = i + 1;
     });
-    
+
     setSteps(newSteps);
   };
 
@@ -241,10 +294,20 @@ function CreateProjectFromLeadDialog({ lead, isOpen, onClose, onSuccess }: Creat
             </CardHeader>
             <CardContent className="space-y-2">
               <div className="grid grid-cols-2 gap-4 text-sm">
-                <div><strong>Client:</strong> {lead.client_name}</div>
-                <div><strong>Project:</strong> {lead.project_title}</div>
-                <div><strong>Completed:</strong> {format(new Date(lead.completion_date), "MMM d, yyyy")}</div>
-                <div><strong>Lead Steps:</strong> {lead.completed_steps}/{lead.total_steps}</div>
+                <div>
+                  <strong>Client:</strong> {lead.client_name}
+                </div>
+                <div>
+                  <strong>Project:</strong> {lead.project_title}
+                </div>
+                <div>
+                  <strong>Completed:</strong>{" "}
+                  {format(new Date(lead.completion_date), "MMM d, yyyy")}
+                </div>
+                <div>
+                  <strong>Lead Steps:</strong> {lead.completed_steps}/
+                  {lead.total_steps}
+                </div>
               </div>
               <div className="mt-2">
                 <strong>Description:</strong>
@@ -265,23 +328,35 @@ function CreateProjectFromLeadDialog({ lead, isOpen, onClose, onSuccess }: Creat
                   <Input
                     id="name"
                     value={projectData.name}
-                    onChange={(e) => setProjectData(prev => ({ ...prev, name: e.target.value }))}
+                    onChange={(e) =>
+                      setProjectData((prev) => ({
+                        ...prev,
+                        name: e.target.value,
+                      }))
+                    }
                     required
                   />
                 </div>
-                
+
                 <div>
                   <Label htmlFor="assigned_team">Assigned Team *</Label>
-                  <Select 
-                    value={projectData.assigned_team} 
-                    onValueChange={(value) => setProjectData(prev => ({ ...prev, assigned_team: value }))}
+                  <Select
+                    value={projectData.assigned_team}
+                    onValueChange={(value) =>
+                      setProjectData((prev) => ({
+                        ...prev,
+                        assigned_team: value,
+                      }))
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       {teams.map((team) => (
-                        <SelectItem key={team} value={team}>{team}</SelectItem>
+                        <SelectItem key={team} value={team}>
+                          {team}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -293,7 +368,12 @@ function CreateProjectFromLeadDialog({ lead, isOpen, onClose, onSuccess }: Creat
                 <Textarea
                   id="description"
                   value={projectData.description}
-                  onChange={(e) => setProjectData(prev => ({ ...prev, description: e.target.value }))}
+                  onChange={(e) =>
+                    setProjectData((prev) => ({
+                      ...prev,
+                      description: e.target.value,
+                    }))
+                  }
                   rows={3}
                 />
               </div>
@@ -308,31 +388,45 @@ function CreateProjectFromLeadDialog({ lead, isOpen, onClose, onSuccess }: Creat
                     <SelectValue placeholder="Select a template (optional)" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="none">Manual Steps (Create Custom)</SelectItem>
+                    <SelectItem value="none">
+                      Manual Steps (Create Custom)
+                    </SelectItem>
                     {templates.length > 0 ? (
                       templates.map((template: any) => (
-                        <SelectItem key={template.id} value={template.id.toString()}>
+                        <SelectItem
+                          key={template.id}
+                          value={template.id.toString()}
+                        >
                           {template.name}
                           {template.description && (
-                            <span className="text-sm text-gray-500 block">{template.description}</span>
+                            <span className="text-sm text-gray-500 block">
+                              {template.description}
+                            </span>
                           )}
                         </SelectItem>
                       ))
                     ) : (
                       <SelectItem value="loading" disabled>
-                        {allTemplates.length === 0 ? "Loading templates..." : "No product templates available"}
+                        {allTemplates.length === 0
+                          ? "Loading templates..."
+                          : "No product templates available"}
                       </SelectItem>
                     )}
                   </SelectContent>
                 </Select>
                 {selectedTemplate && (
                   <div className="mt-2 p-3 bg-blue-50 rounded-lg">
-                    <div className="text-sm font-medium text-blue-900">{selectedTemplate.name}</div>
+                    <div className="text-sm font-medium text-blue-900">
+                      {selectedTemplate.name}
+                    </div>
                     {selectedTemplate.description && (
-                      <div className="text-sm text-blue-700 mt-1">{selectedTemplate.description}</div>
+                      <div className="text-sm text-blue-700 mt-1">
+                        {selectedTemplate.description}
+                      </div>
                     )}
                     <div className="text-xs text-blue-600 mt-1">
-                      This will load {templateSteps?.steps?.length || 0} pre-defined steps
+                      This will load {templateSteps?.steps?.length || 0}{" "}
+                      pre-defined steps
                     </div>
                   </div>
                 )}
@@ -341,28 +435,42 @@ function CreateProjectFromLeadDialog({ lead, isOpen, onClose, onSuccess }: Creat
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="project_manager">Project Manager</Label>
-                  <Select 
-                    value={projectData.project_manager_id} 
-                    onValueChange={(value) => setProjectData(prev => ({ ...prev, project_manager_id: value }))}
+                  <Select
+                    value={projectData.project_manager_id}
+                    onValueChange={(value) =>
+                      setProjectData((prev) => ({
+                        ...prev,
+                        project_manager_id: value,
+                      }))
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select PM" />
                     </SelectTrigger>
                     <SelectContent>
                       {projectManagers.map((pm) => (
-                        <SelectItem key={pm.id} value={pm.id.toString()}>{pm.name}</SelectItem>
+                        <SelectItem key={pm.id} value={pm.id.toString()}>
+                          {pm.name}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div>
-                  <Label htmlFor="target_completion_date">Target Completion Date</Label>
+                  <Label htmlFor="target_completion_date">
+                    Target Completion Date
+                  </Label>
                   <Input
                     id="target_completion_date"
                     type="date"
                     value={projectData.target_completion_date}
-                    onChange={(e) => setProjectData(prev => ({ ...prev, target_completion_date: e.target.value }))}
+                    onChange={(e) =>
+                      setProjectData((prev) => ({
+                        ...prev,
+                        target_completion_date: e.target.value,
+                      }))
+                    }
                   />
                 </div>
               </div>
@@ -374,7 +482,12 @@ function CreateProjectFromLeadDialog({ lead, isOpen, onClose, onSuccess }: Creat
                     id="estimated_hours"
                     type="number"
                     value={projectData.estimated_hours}
-                    onChange={(e) => setProjectData(prev => ({ ...prev, estimated_hours: e.target.value }))}
+                    onChange={(e) =>
+                      setProjectData((prev) => ({
+                        ...prev,
+                        estimated_hours: e.target.value,
+                      }))
+                    }
                     placeholder="Total project hours"
                   />
                 </div>
@@ -385,7 +498,12 @@ function CreateProjectFromLeadDialog({ lead, isOpen, onClose, onSuccess }: Creat
                     id="budget"
                     type="number"
                     value={projectData.budget}
-                    onChange={(e) => setProjectData(prev => ({ ...prev, budget: e.target.value }))}
+                    onChange={(e) =>
+                      setProjectData((prev) => ({
+                        ...prev,
+                        budget: e.target.value,
+                      }))
+                    }
                     placeholder="Project budget"
                   />
                 </div>
@@ -398,7 +516,12 @@ function CreateProjectFromLeadDialog({ lead, isOpen, onClose, onSuccess }: Creat
             <CardHeader>
               <div className="flex justify-between items-center">
                 <CardTitle className="text-lg">Project Steps</CardTitle>
-                <Button type="button" variant="outline" size="sm" onClick={addStep}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={addStep}
+                >
                   <Plus className="w-4 h-4 mr-2" />
                   Add Step
                 </Button>
@@ -449,7 +572,9 @@ function CreateProjectFromLeadDialog({ lead, isOpen, onClose, onSuccess }: Creat
                         <Label>Step Name *</Label>
                         <Input
                           value={step.step_name}
-                          onChange={(e) => updateStep(index, "step_name", e.target.value)}
+                          onChange={(e) =>
+                            updateStep(index, "step_name", e.target.value)
+                          }
                           placeholder="Enter step name"
                           required
                         />
@@ -459,7 +584,13 @@ function CreateProjectFromLeadDialog({ lead, isOpen, onClose, onSuccess }: Creat
                         <Label>Description</Label>
                         <Textarea
                           value={step.step_description}
-                          onChange={(e) => updateStep(index, "step_description", e.target.value)}
+                          onChange={(e) =>
+                            updateStep(
+                              index,
+                              "step_description",
+                              e.target.value,
+                            )
+                          }
                           placeholder="Describe what needs to be done in this step"
                           rows={2}
                         />
@@ -471,7 +602,15 @@ function CreateProjectFromLeadDialog({ lead, isOpen, onClose, onSuccess }: Creat
                           <Input
                             type="number"
                             value={step.estimated_hours || ""}
-                            onChange={(e) => updateStep(index, "estimated_hours", e.target.value ? parseInt(e.target.value) : undefined)}
+                            onChange={(e) =>
+                              updateStep(
+                                index,
+                                "estimated_hours",
+                                e.target.value
+                                  ? parseInt(e.target.value)
+                                  : undefined,
+                              )
+                            }
                             placeholder="Hours"
                           />
                         </div>
@@ -480,7 +619,9 @@ function CreateProjectFromLeadDialog({ lead, isOpen, onClose, onSuccess }: Creat
                           <Input
                             type="date"
                             value={step.due_date || ""}
-                            onChange={(e) => updateStep(index, "due_date", e.target.value)}
+                            onChange={(e) =>
+                              updateStep(index, "due_date", e.target.value)
+                            }
                           />
                         </div>
                       </div>
@@ -492,7 +633,9 @@ function CreateProjectFromLeadDialog({ lead, isOpen, onClose, onSuccess }: Creat
               {steps.length === 0 && (
                 <div className="text-center py-8 text-gray-500">
                   <Target className="w-12 h-12 mx-auto mb-2" />
-                  <p>No steps defined yet. Add steps to structure your project.</p>
+                  <p>
+                    No steps defined yet. Add steps to structure your project.
+                  </p>
                 </div>
               )}
             </CardContent>
@@ -503,12 +646,18 @@ function CreateProjectFromLeadDialog({ lead, isOpen, onClose, onSuccess }: Creat
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button 
-              type="submit" 
-              disabled={!projectData.name.trim() || steps.length === 0 || createProjectMutation.isPending}
+            <Button
+              type="submit"
+              disabled={
+                !projectData.name.trim() ||
+                steps.length === 0 ||
+                createProjectMutation.isPending
+              }
             >
               <Rocket className="w-4 h-4 mr-2" />
-              {createProjectMutation.isPending ? "Creating..." : "Create Project"}
+              {createProjectMutation.isPending
+                ? "Creating..."
+                : "Create Project"}
             </Button>
           </div>
         </form>
@@ -525,7 +674,8 @@ export default function ProductWorkflow() {
   const [selectedProject, setSelectedProject] = useState<any>(null);
   const [isProjectDetailOpen, setIsProjectDetailOpen] = useState(false);
   const [isLeadDetailOpen, setIsLeadDetailOpen] = useState(false);
-  const [selectedLeadForOverview, setSelectedLeadForOverview] = useState<any>(null);
+  const [selectedLeadForOverview, setSelectedLeadForOverview] =
+    useState<any>(null);
   const [isLeadOverviewOpen, setIsLeadOverviewOpen] = useState(false);
   const [selectedLeadForSteps, setSelectedLeadForSteps] = useState<any>(null);
   const [isStepsPreviewOpen, setIsStepsPreviewOpen] = useState(false);
@@ -533,7 +683,11 @@ export default function ProductWorkflow() {
   // Fetch project statistics
   const { data: projectStats } = useQuery({
     queryKey: ["workflow-project-stats"],
-    queryFn: () => apiClient.getWorkflowDashboard(parseInt(user?.id || "1"), user?.role || "admin"),
+    queryFn: () =>
+      apiClient.getWorkflowDashboard(
+        parseInt(user?.id || "1"),
+        user?.role || "admin",
+      ),
   });
 
   // Fetch completed leads ready for project creation (only leads with status 'completed')
@@ -543,14 +697,16 @@ export default function ProductWorkflow() {
   });
 
   // Filter to only show leads that are actually marked as completed
-  const completedLeads = allLeads.filter((lead: any) =>
-    lead.status === 'completed' || lead.lead_status === 'completed'
+  const completedLeads = allLeads.filter(
+    (lead: any) =>
+      lead.status === "completed" || lead.lead_status === "completed",
   );
 
   // Fetch workflow projects for the product team
   const { data: projects = [], isLoading: projectsLoading } = useQuery({
     queryKey: ["workflow-projects"],
-    queryFn: () => apiClient.getWorkflowProjects(parseInt(user?.id || "1"), user?.role),
+    queryFn: () =>
+      apiClient.getWorkflowProjects(parseInt(user?.id || "1"), user?.role),
   });
 
   const handleCreateProject = (lead: any) => {
@@ -575,21 +731,31 @@ export default function ProductWorkflow() {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case "completed": return CheckCircle;
-      case "in_progress": return PlayCircle;
-      case "on_hold": return PauseCircle;
-      case "cancelled": return AlertTriangle;
-      default: return Clock;
+      case "completed":
+        return CheckCircle;
+      case "in_progress":
+        return PlayCircle;
+      case "on_hold":
+        return PauseCircle;
+      case "cancelled":
+        return AlertTriangle;
+      default:
+        return Clock;
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "completed": return "text-green-600 bg-green-100";
-      case "in_progress": return "text-blue-600 bg-blue-100";
-      case "on_hold": return "text-yellow-600 bg-yellow-100";
-      case "cancelled": return "text-red-600 bg-red-100";
-      default: return "text-gray-600 bg-gray-100";
+      case "completed":
+        return "text-green-600 bg-green-100";
+      case "in_progress":
+        return "text-blue-600 bg-blue-100";
+      case "on_hold":
+        return "text-yellow-600 bg-yellow-100";
+      case "cancelled":
+        return "text-red-600 bg-red-100";
+      default:
+        return "text-gray-600 bg-gray-100";
     }
   };
 
@@ -599,7 +765,9 @@ export default function ProductWorkflow() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Product Workflow</h1>
-          <p className="text-gray-600 mt-1">Manage lead-to-product handoffs and project development</p>
+          <p className="text-gray-600 mt-1">
+            Manage lead-to-product handoffs and project development
+          </p>
         </div>
       </div>
 
@@ -609,9 +777,14 @@ export default function ProductWorkflow() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Active Projects</p>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Active Projects
+                </p>
                 <p className="text-2xl font-bold text-blue-600">
-                  {projects.filter((p: any) => p.status === 'in_progress').length}
+                  {
+                    projects.filter((p: any) => p.status === "in_progress")
+                      .length
+                  }
                 </p>
               </div>
               <div className="p-3 rounded-lg bg-blue-100">
@@ -625,9 +798,11 @@ export default function ProductWorkflow() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Completed Projects</p>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Completed Projects
+                </p>
                 <p className="text-2xl font-bold text-green-600">
-                  {projects.filter((p: any) => p.status === 'completed').length}
+                  {projects.filter((p: any) => p.status === "completed").length}
                 </p>
               </div>
               <div className="p-3 rounded-lg bg-green-100">
@@ -641,8 +816,12 @@ export default function ProductWorkflow() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Completed Leads</p>
-                <p className="text-2xl font-bold text-purple-600">{completedLeads.length}</p>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Completed Leads
+                </p>
+                <p className="text-2xl font-bold text-purple-600">
+                  {completedLeads.length}
+                </p>
               </div>
               <div className="p-3 rounded-lg bg-purple-100">
                 <Target className="w-6 h-6 text-purple-600" />
@@ -655,11 +834,20 @@ export default function ProductWorkflow() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Avg Progress</p>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Avg Progress
+                </p>
                 <p className="text-2xl font-bold text-orange-600">
                   {projects.length > 0
-                    ? Math.round(projects.reduce((acc: number, p: any) => acc + (p.progress_percentage || 0), 0) / projects.length)
-                    : 0}%
+                    ? Math.round(
+                        projects.reduce(
+                          (acc: number, p: any) =>
+                            acc + (p.progress_percentage || 0),
+                          0,
+                        ) / projects.length,
+                      )
+                    : 0}
+                  %
                 </p>
               </div>
               <div className="p-3 rounded-lg bg-orange-100">
@@ -683,57 +871,84 @@ export default function ProductWorkflow() {
             <CardHeader>
               <CardTitle>Leads Ready for Product Development</CardTitle>
               <CardDescription>
-                Completed leads that can be converted into product development projects
+                Completed leads that can be converted into product development
+                projects
               </CardDescription>
             </CardHeader>
             <CardContent>
               {leadsLoading ? (
-                <div className="text-center py-8">Loading completed leads...</div>
+                <div className="text-center py-8">
+                  Loading completed leads...
+                </div>
               ) : completedLeads.length > 0 ? (
                 <div className="space-y-4">
                   {completedLeads.map((lead: any) => (
-                    <Card key={lead.id} className="border-l-4 border-l-green-500">
+                    <Card
+                      key={lead.id}
+                      className="border-l-4 border-l-green-500"
+                    >
                       <CardContent className="p-4">
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-2">
-                              <h3 className="font-semibold text-lg">{lead.client_name}</h3>
-                              <Badge variant="outline" className="text-green-600">
+                              <h3 className="font-semibold text-lg">
+                                {lead.client_name}
+                              </h3>
+                              <Badge
+                                variant="outline"
+                                className="text-green-600"
+                              >
                                 <CheckCircle className="w-3 h-3 mr-1" />
                                 Lead Completed
                               </Badge>
                             </div>
-                            
-                            <h4 className="font-medium text-gray-900 mb-2">{lead.project_title}</h4>
-                            <p className="text-gray-600 mb-3">{lead.project_description}</p>
-                            
+
+                            <h4 className="font-medium text-gray-900 mb-2">
+                              {lead.project_title}
+                            </h4>
+                            <p className="text-gray-600 mb-3">
+                              {lead.project_description}
+                            </p>
+
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                               <div>
                                 <span className="font-medium">Completed:</span>
                                 <br />
-                                {format(new Date(lead.completion_date), "MMM d, yyyy")}
+                                {format(
+                                  new Date(lead.completion_date),
+                                  "MMM d, yyyy",
+                                )}
                               </div>
                               <div>
                                 <span className="font-medium">Lead Steps:</span>
                                 <br />
                                 <div className="flex items-center gap-1">
                                   <CheckCircle className="w-3 h-3 text-green-600" />
-                                  <span>{lead.completed_steps}/{lead.total_steps}</span>
+                                  <span>
+                                    {lead.completed_steps}/{lead.total_steps}
+                                  </span>
                                 </div>
                               </div>
                               <div>
-                                <span className="font-medium">Est. Budget:</span>
-                                <br />
-                                ₹{lead.estimated_budget?.toLocaleString()}
+                                <span className="font-medium">
+                                  Est. Budget:
+                                </span>
+                                <br />₹{lead.estimated_budget?.toLocaleString()}
                               </div>
                               <div>
                                 <span className="font-medium">Status:</span>
                                 <br />
                                 <Select
-                                  value={lead.product_status || "ready_for_product"}
+                                  value={
+                                    lead.product_status || "ready_for_product"
+                                  }
                                   onValueChange={(value) => {
                                     // Update lead status
-                                    console.log("Updating lead status:", lead.id, value);
+                                    console.log(
+                                      "Updating lead status:",
+                                      lead.id,
+                                      value,
+                                    );
                                     // TODO: Implement API call to update lead status
                                   }}
                                 >
@@ -741,11 +956,21 @@ export default function ProductWorkflow() {
                                     <SelectValue />
                                   </SelectTrigger>
                                   <SelectContent>
-                                    <SelectItem value="ready_for_product">Ready for Product</SelectItem>
-                                    <SelectItem value="in_review">In Review</SelectItem>
-                                    <SelectItem value="approved">Approved</SelectItem>
-                                    <SelectItem value="on_hold">On Hold</SelectItem>
-                                    <SelectItem value="rejected">Rejected</SelectItem>
+                                    <SelectItem value="ready_for_product">
+                                      Ready for Product
+                                    </SelectItem>
+                                    <SelectItem value="in_review">
+                                      In Review
+                                    </SelectItem>
+                                    <SelectItem value="approved">
+                                      Approved
+                                    </SelectItem>
+                                    <SelectItem value="on_hold">
+                                      On Hold
+                                    </SelectItem>
+                                    <SelectItem value="rejected">
+                                      Rejected
+                                    </SelectItem>
                                   </SelectContent>
                                 </Select>
                               </div>
@@ -763,11 +988,15 @@ export default function ProductWorkflow() {
                                 className="text-blue-600 border-blue-200 hover:bg-blue-50"
                               >
                                 <Target className="w-4 h-4 mr-2" />
-                                View {Math.ceil((lead.estimated_budget || 100000) / 50000)} Estimated Project Steps
+                                View{" "}
+                                {Math.ceil(
+                                  (lead.estimated_budget || 100000) / 50000,
+                                )}{" "}
+                                Estimated Project Steps
                               </Button>
                             </div>
                           </div>
-                          
+
                           <div className="flex flex-col gap-2 ml-4">
                             <Button
                               onClick={() => handleCreateProject(lead)}
@@ -793,9 +1022,12 @@ export default function ProductWorkflow() {
               ) : (
                 <div className="text-center py-12">
                   <Package className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No Completed Leads</h3>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    No Completed Leads
+                  </h3>
                   <p className="text-gray-600 mb-4">
-                    There are no completed leads ready for product development at the moment.
+                    There are no completed leads ready for product development
+                    at the moment.
                   </p>
                 </div>
               )}
@@ -817,109 +1049,151 @@ export default function ProductWorkflow() {
                 <div className="text-center py-8">Loading projects...</div>
               ) : projects.length > 0 ? (
                 <div className="space-y-4">
-                  {projects.filter((p: any) => p.project_type === "product_development").map((project: any) => {
-                    const StatusIcon = getStatusIcon(project.status);
-                    
-                    return (
-                      <Card key={project.id} className="hover:shadow-md transition-shadow">
-                        <CardContent className="p-4">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-2">
-                                <h3 className="font-semibold text-lg">{project.name}</h3>
-                                <Select
-                                  value={project.status}
-                                  onValueChange={(value) => {
-                                    console.log("Updating project status:", project.id, value);
-                                    // TODO: Implement API call to update project status
-                                  }}
-                                >
-                                  <SelectTrigger className="w-36 h-7 text-xs">
-                                    <div className="flex items-center gap-1">
-                                      <StatusIcon className="w-3 h-3" />
-                                      <SelectValue />
+                  {projects
+                    .filter(
+                      (p: any) => p.project_type === "product_development",
+                    )
+                    .map((project: any) => {
+                      const StatusIcon = getStatusIcon(project.status);
+
+                      return (
+                        <Card
+                          key={project.id}
+                          className="hover:shadow-md transition-shadow"
+                        >
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <h3 className="font-semibold text-lg">
+                                    {project.name}
+                                  </h3>
+                                  <Select
+                                    value={project.status}
+                                    onValueChange={(value) => {
+                                      console.log(
+                                        "Updating project status:",
+                                        project.id,
+                                        value,
+                                      );
+                                      // TODO: Implement API call to update project status
+                                    }}
+                                  >
+                                    <SelectTrigger className="w-36 h-7 text-xs">
+                                      <div className="flex items-center gap-1">
+                                        <StatusIcon className="w-3 h-3" />
+                                        <SelectValue />
+                                      </div>
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="created">
+                                        Created
+                                      </SelectItem>
+                                      <SelectItem value="in_progress">
+                                        In Progress
+                                      </SelectItem>
+                                      <SelectItem value="review">
+                                        Review
+                                      </SelectItem>
+                                      <SelectItem value="completed">
+                                        Completed
+                                      </SelectItem>
+                                      <SelectItem value="on_hold">
+                                        On Hold
+                                      </SelectItem>
+                                      <SelectItem value="cancelled">
+                                        Cancelled
+                                      </SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                  {project.source_type === "lead" && (
+                                    <Badge variant="outline">
+                                      From Lead #{project.source_id}
+                                    </Badge>
+                                  )}
+                                </div>
+
+                                <p className="text-gray-600 mb-3">
+                                  {project.description}
+                                </p>
+
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                                  <div>
+                                    <span className="font-medium">
+                                      Progress:
+                                    </span>
+                                    <br />
+                                    <div className="flex items-center gap-2">
+                                      <div className="w-20 bg-gray-200 rounded-full h-2">
+                                        <div
+                                          className="bg-blue-600 h-2 rounded-full"
+                                          style={{
+                                            width: `${project.progress_percentage || 0}%`,
+                                          }}
+                                        />
+                                      </div>
+                                      <span>
+                                        {project.progress_percentage || 0}%
+                                      </span>
                                     </div>
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="created">Created</SelectItem>
-                                    <SelectItem value="in_progress">In Progress</SelectItem>
-                                    <SelectItem value="review">Review</SelectItem>
-                                    <SelectItem value="completed">Completed</SelectItem>
-                                    <SelectItem value="on_hold">On Hold</SelectItem>
-                                    <SelectItem value="cancelled">Cancelled</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                                {project.source_type === "lead" && (
-                                  <Badge variant="outline">
-                                    From Lead #{project.source_id}
-                                  </Badge>
-                                )}
-                              </div>
-                              
-                              <p className="text-gray-600 mb-3">{project.description}</p>
-                              
-                              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                                <div>
-                                  <span className="font-medium">Progress:</span>
-                                  <br />
-                                  <div className="flex items-center gap-2">
-                                    <div className="w-20 bg-gray-200 rounded-full h-2">
-                                      <div 
-                                        className="bg-blue-600 h-2 rounded-full"
-                                        style={{ width: `${project.progress_percentage || 0}%` }}
-                                      />
-                                    </div>
-                                    <span>{project.progress_percentage || 0}%</span>
+                                  </div>
+                                  <div>
+                                    <span className="font-medium">Steps:</span>
+                                    <br />
+                                    {project.completed_steps || 0}/
+                                    {project.total_steps || 0}
+                                  </div>
+                                  <div>
+                                    <span className="font-medium">Team:</span>
+                                    <br />
+                                    {project.assigned_team}
+                                  </div>
+                                  <div>
+                                    <span className="font-medium">
+                                      Created:
+                                    </span>
+                                    <br />
+                                    {format(
+                                      new Date(project.created_at),
+                                      "MMM d",
+                                    )}
                                   </div>
                                 </div>
-                                <div>
-                                  <span className="font-medium">Steps:</span>
-                                  <br />
-                                  {project.completed_steps || 0}/{project.total_steps || 0}
-                                </div>
-                                <div>
-                                  <span className="font-medium">Team:</span>
-                                  <br />
-                                  {project.assigned_team}
-                                </div>
-                                <div>
-                                  <span className="font-medium">Created:</span>
-                                  <br />
-                                  {format(new Date(project.created_at), "MMM d")}
-                                </div>
+                              </div>
+
+                              <div className="flex flex-col gap-2 ml-4">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleViewProject(project)}
+                                >
+                                  <Eye className="w-4 h-4 mr-2" />
+                                  View Project
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleViewProject(project)}
+                                >
+                                  <MessageSquare className="w-4 h-4 mr-2" />
+                                  Comments ({project.total_comments || 0})
+                                </Button>
                               </div>
                             </div>
-                            
-                            <div className="flex flex-col gap-2 ml-4">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleViewProject(project)}
-                              >
-                                <Eye className="w-4 h-4 mr-2" />
-                                View Project
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleViewProject(project)}
-                              >
-                                <MessageSquare className="w-4 h-4 mr-2" />
-                                Comments ({project.total_comments || 0})
-                              </Button>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
                 </div>
               ) : (
                 <div className="text-center py-12">
                   <Rocket className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No Active Projects</h3>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    No Active Projects
+                  </h3>
                   <p className="text-gray-600 mb-4">
-                    Start by converting completed leads into product development projects.
+                    Start by converting completed leads into product development
+                    projects.
                   </p>
                 </div>
               )}
@@ -931,9 +1205,11 @@ export default function ProductWorkflow() {
         <TabsContent value="project-pipeline" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {["created", "in_progress", "review", "completed"].map((status) => {
-              const statusProjects = projects.filter((p: any) => p.status === status);
+              const statusProjects = projects.filter(
+                (p: any) => p.status === status,
+              );
               const StatusIcon = getStatusIcon(status);
-              
+
               return (
                 <Card key={status}>
                   <CardHeader className="pb-3">
@@ -947,17 +1223,26 @@ export default function ProductWorkflow() {
                   </CardHeader>
                   <CardContent className="space-y-3">
                     {statusProjects.map((project: any) => (
-                      <Card key={project.id} className="p-3 hover:shadow-sm transition-shadow cursor-pointer">
+                      <Card
+                        key={project.id}
+                        className="p-3 hover:shadow-sm transition-shadow cursor-pointer"
+                      >
                         <div className="space-y-2">
-                          <div className="font-medium text-sm">{project.name}</div>
+                          <div className="font-medium text-sm">
+                            {project.name}
+                          </div>
                           <div className="flex items-center justify-between text-xs">
-                            <span className="text-gray-600">{project.assigned_team}</span>
+                            <span className="text-gray-600">
+                              {project.assigned_team}
+                            </span>
                             <span>{project.progress_percentage || 0}%</span>
                           </div>
                           <div className="w-full bg-gray-200 rounded-full h-1">
-                            <div 
+                            <div
                               className="bg-blue-600 h-1 rounded-full"
-                              style={{ width: `${project.progress_percentage || 0}%` }}
+                              style={{
+                                width: `${project.progress_percentage || 0}%`,
+                              }}
                             />
                           </div>
                         </div>
@@ -1021,68 +1306,93 @@ interface ProjectDetailDialogProps {
   onClose: () => void;
 }
 
-function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogProps) {
+function ProjectDetailDialog({
+  project,
+  isOpen,
+  onClose,
+}: ProjectDetailDialogProps) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [newComment, setNewComment] = useState("");
   const [selectedStepId, setSelectedStepId] = useState<number | null>(null);
-  const [stepComments, setStepComments] = useState<{[key: number]: string}>({});
-  const [expandedSteps, setExpandedSteps] = useState<{[key: number]: boolean}>({});
-  const [uploadingFiles, setUploadingFiles] = useState<{[key: number]: boolean}>({});
+  const [stepComments, setStepComments] = useState<{ [key: number]: string }>(
+    {},
+  );
+  const [expandedSteps, setExpandedSteps] = useState<{
+    [key: number]: boolean;
+  }>({});
+  const [uploadingFiles, setUploadingFiles] = useState<{
+    [key: number]: boolean;
+  }>({});
   const [addStepModalOpen, setAddStepModalOpen] = useState(false);
 
   // Helper functions for status display
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case "completed": return CheckCircle;
-      case "in_progress": return PlayCircle;
-      case "on_hold": return PauseCircle;
-      case "cancelled": return AlertTriangle;
-      default: return Clock;
+      case "completed":
+        return CheckCircle;
+      case "in_progress":
+        return PlayCircle;
+      case "on_hold":
+        return PauseCircle;
+      case "cancelled":
+        return AlertTriangle;
+      default:
+        return Clock;
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "completed": return "text-green-600 bg-green-100";
-      case "in_progress": return "text-blue-600 bg-blue-100";
-      case "on_hold": return "text-yellow-600 bg-yellow-100";
-      case "cancelled": return "text-red-600 bg-red-100";
-      default: return "text-gray-600 bg-gray-100";
+      case "completed":
+        return "text-green-600 bg-green-100";
+      case "in_progress":
+        return "text-blue-600 bg-blue-100";
+      case "on_hold":
+        return "text-yellow-600 bg-yellow-100";
+      case "cancelled":
+        return "text-red-600 bg-red-100";
+      default:
+        return "text-gray-600 bg-gray-100";
     }
   };
 
   // Fetch project details including steps and comments
   const { data: projectDetails, isLoading } = useQuery({
     queryKey: ["workflow-project-details", project?.id],
-    queryFn: () => project ? apiClient.getWorkflowProject(project.id) : null,
+    queryFn: () => (project ? apiClient.getWorkflowProject(project.id) : null),
     enabled: !!project?.id && isOpen,
   });
 
   // Fetch project comments
   const { data: comments = [], isLoading: commentsLoading } = useQuery({
     queryKey: ["project-comments", project?.id],
-    queryFn: () => project ? apiClient.getProjectComments(project.id) : [],
+    queryFn: () => (project ? apiClient.getProjectComments(project.id) : []),
     enabled: !!project?.id && isOpen,
   });
 
   // Fetch all step comments when needed
-  const expandedStepIds = Object.keys(expandedSteps).filter(id => expandedSteps[parseInt(id)]).map(id => parseInt(id));
+  const expandedStepIds = Object.keys(expandedSteps)
+    .filter((id) => expandedSteps[parseInt(id)])
+    .map((id) => parseInt(id));
   const { data: allStepComments = {} } = useQuery({
     queryKey: ["all-step-comments", project?.id, expandedStepIds],
     queryFn: async () => {
       if (!project?.id || expandedStepIds.length === 0) return {};
 
-      const commentsMap: {[key: number]: any[]} = {};
+      const commentsMap: { [key: number]: any[] } = {};
       await Promise.all(
         expandedStepIds.map(async (stepId) => {
           try {
-            const comments = await apiClient.getProjectComments(project.id, stepId);
+            const comments = await apiClient.getProjectComments(
+              project.id,
+              stepId,
+            );
             commentsMap[stepId] = comments;
           } catch (error) {
             commentsMap[stepId] = [];
           }
-        })
+        }),
       );
       return commentsMap;
     },
@@ -1090,12 +1400,17 @@ function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogPr
   });
 
   const addCommentMutation = useMutation({
-    mutationFn: (commentData: any) => apiClient.createProjectComment(project.id, commentData),
+    mutationFn: (commentData: any) =>
+      apiClient.createProjectComment(project.id, commentData),
     onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["project-comments", project?.id] });
-      queryClient.invalidateQueries({ queryKey: ["all-step-comments", project?.id] });
+      queryClient.invalidateQueries({
+        queryKey: ["project-comments", project?.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["all-step-comments", project?.id],
+      });
       if (variables.step_id) {
-        setStepComments(prev => ({ ...prev, [variables.step_id]: "" }));
+        setStepComments((prev) => ({ ...prev, [variables.step_id]: "" }));
       } else {
         setNewComment("");
       }
@@ -1105,13 +1420,21 @@ function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogPr
   const updateStepStatusMutation = useMutation({
     mutationFn: ({ stepId, status }: { stepId: number; status: string }) => {
       console.log("Updating step status:", stepId, status);
-      return apiClient.updateStepStatus(stepId, status, parseInt(user?.id || "1"));
+      return apiClient.updateStepStatus(
+        stepId,
+        status,
+        parseInt(user?.id || "1"),
+      );
     },
     onSuccess: (data, variables) => {
       console.log("Step status updated successfully");
-      queryClient.invalidateQueries({ queryKey: ["workflow-project-details", project?.id] });
+      queryClient.invalidateQueries({
+        queryKey: ["workflow-project-details", project?.id],
+      });
       queryClient.invalidateQueries({ queryKey: ["workflow-projects"] });
-      queryClient.invalidateQueries({ queryKey: ["project-step-comments", variables.stepId] });
+      queryClient.invalidateQueries({
+        queryKey: ["project-step-comments", variables.stepId],
+      });
     },
     onError: (error) => {
       console.error("Failed to update step status:", error);
@@ -1134,7 +1457,7 @@ function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogPr
       comment_text: newComment,
       comment_type: "comment",
       is_internal: false,
-      created_by: parseInt(user?.id || "1")
+      created_by: parseInt(user?.id || "1"),
     });
   };
 
@@ -1147,7 +1470,7 @@ function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogPr
       comment_text: comment,
       comment_type: "comment",
       is_internal: false,
-      created_by: parseInt(user?.id || "1")
+      created_by: parseInt(user?.id || "1"),
     });
   };
 
@@ -1158,24 +1481,26 @@ function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogPr
   const handleFileUpload = async (stepId: number, files: FileList) => {
     if (files.length === 0) return;
 
-    setUploadingFiles(prev => ({ ...prev, [stepId]: true }));
+    setUploadingFiles((prev) => ({ ...prev, [stepId]: true }));
     try {
       await fileUploadMutation.mutateAsync(files);
       // Add comment about file upload
       addCommentMutation.mutate({
         step_id: stepId,
-        comment_text: `Uploaded ${files.length} file(s): ${Array.from(files).map(f => f.name).join(", ")}`,
+        comment_text: `Uploaded ${files.length} file(s): ${Array.from(files)
+          .map((f) => f.name)
+          .join(", ")}`,
         comment_type: "system",
         is_internal: false,
-        created_by: parseInt(user?.id || "1")
+        created_by: parseInt(user?.id || "1"),
       });
     } finally {
-      setUploadingFiles(prev => ({ ...prev, [stepId]: false }));
+      setUploadingFiles((prev) => ({ ...prev, [stepId]: false }));
     }
   };
 
   const toggleStepExpansion = (stepId: number) => {
-    setExpandedSteps(prev => ({ ...prev, [stepId]: !prev[stepId] }));
+    setExpandedSteps((prev) => ({ ...prev, [stepId]: !prev[stepId] }));
   };
 
   const handleUpdateStepStatus = (stepId: number, status: string) => {
@@ -1187,12 +1512,15 @@ function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogPr
   // Calculate auto progress percentage
   const calculateProgress = () => {
     if (!projectDetails?.steps || projectDetails.steps.length === 0) return 0;
-    const completedSteps = projectDetails.steps.filter((step: any) => step.status === "completed").length;
+    const completedSteps = projectDetails.steps.filter(
+      (step: any) => step.status === "completed",
+    ).length;
     return Math.round((completedSteps / projectDetails.steps.length) * 100);
   };
 
   const autoProgress = calculateProgress();
-  const displayProgress = autoProgress > 0 ? autoProgress : project.progress_percentage || 0;
+  const displayProgress =
+    autoProgress > 0 ? autoProgress : project.progress_percentage || 0;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -1227,10 +1555,15 @@ function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogPr
                           style={{ width: `${displayProgress}%` }}
                         />
                       </div>
-                      <span className="text-sm font-medium">{displayProgress}%</span>
-                      {autoProgress > 0 && autoProgress !== project.progress_percentage && (
-                        <Badge variant="outline" className="text-xs">Auto</Badge>
-                      )}
+                      <span className="text-sm font-medium">
+                        {displayProgress}%
+                      </span>
+                      {autoProgress > 0 &&
+                        autoProgress !== project.progress_percentage && (
+                          <Badge variant="outline" className="text-xs">
+                            Auto
+                          </Badge>
+                        )}
                     </div>
                   </div>
                 </div>
@@ -1239,17 +1572,27 @@ function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogPr
                   <div className="mt-1">
                     <div className="text-sm">
                       <span className="font-medium text-green-600">
-                        {projectDetails?.steps?.filter((s: any) => s.status === "completed").length || 0}
+                        {projectDetails?.steps?.filter(
+                          (s: any) => s.status === "completed",
+                        ).length || 0}
                       </span>
                       <span className="text-gray-500"> / </span>
                       <span className="font-medium">
                         {projectDetails?.steps?.length || 0}
                       </span>
-                      <span className="text-xs text-gray-500 ml-1">completed</span>
+                      <span className="text-xs text-gray-500 ml-1">
+                        completed
+                      </span>
                     </div>
                     <div className="text-xs text-gray-500 mt-1">
-                      {projectDetails?.steps?.filter((s: any) => s.status === "in_progress").length || 0} in progress, {" "}
-                      {projectDetails?.steps?.filter((s: any) => s.status === "pending").length || 0} pending
+                      {projectDetails?.steps?.filter(
+                        (s: any) => s.status === "in_progress",
+                      ).length || 0}{" "}
+                      in progress,{" "}
+                      {projectDetails?.steps?.filter(
+                        (s: any) => s.status === "pending",
+                      ).length || 0}{" "}
+                      pending
                     </div>
                   </div>
                 </div>
@@ -1257,7 +1600,8 @@ function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogPr
                   <Label className="text-sm font-medium">Team</Label>
                   <p className="text-sm mt-1">{project.assigned_team}</p>
                   <div className="text-xs text-gray-500 mt-1">
-                    Created {format(new Date(project.created_at), "MMM d, yyyy")}
+                    Created{" "}
+                    {format(new Date(project.created_at), "MMM d, yyyy")}
                   </div>
                 </div>
               </div>
@@ -1265,7 +1609,9 @@ function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogPr
               {project.description && (
                 <div className="mt-4">
                   <Label className="text-sm font-medium">Description</Label>
-                  <p className="text-sm text-gray-600 mt-1">{project.description}</p>
+                  <p className="text-sm text-gray-600 mt-1">
+                    {project.description}
+                  </p>
                 </div>
               )}
             </CardContent>

@@ -53,7 +53,9 @@ export function AddStepModal({
       return apiClient.createProjectStep(projectId, data);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["workflow-project-details", projectId] });
+      queryClient.invalidateQueries({
+        queryKey: ["workflow-project-details", projectId],
+      });
       queryClient.invalidateQueries({ queryKey: ["workflow-projects"] });
       onClose();
       resetForm();
@@ -87,8 +89,12 @@ export function AddStepModal({
       ...stepData,
       step_order: currentStepCount + 1,
       status: "pending",
-      estimated_hours: stepData.estimated_hours ? parseInt(stepData.estimated_hours) : undefined,
-      assigned_to: stepData.assigned_to ? parseInt(stepData.assigned_to) : undefined,
+      estimated_hours: stepData.estimated_hours
+        ? parseInt(stepData.estimated_hours)
+        : undefined,
+      assigned_to: stepData.assigned_to
+        ? parseInt(stepData.assigned_to)
+        : undefined,
       created_by: parseInt(user?.id || "1"),
     };
 
@@ -111,7 +117,8 @@ export function AddStepModal({
             Add New Project Step
           </DialogTitle>
           <DialogDescription>
-            Create a new step for this project. It will be added as step #{currentStepCount + 1}.
+            Create a new step for this project. It will be added as step #
+            {currentStepCount + 1}.
           </DialogDescription>
         </DialogHeader>
 
@@ -123,7 +130,10 @@ export function AddStepModal({
                 id="step_name"
                 value={stepData.step_name}
                 onChange={(e) =>
-                  setStepData((prev) => ({ ...prev, step_name: e.target.value }))
+                  setStepData((prev) => ({
+                    ...prev,
+                    step_name: e.target.value,
+                  }))
                 }
                 placeholder="e.g., Implement user authentication"
                 required

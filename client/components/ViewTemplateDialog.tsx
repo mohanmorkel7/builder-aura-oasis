@@ -1,7 +1,12 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Clock, User, CheckCircle, AlertCircle, FileText } from "lucide-react";
@@ -13,10 +18,14 @@ interface ViewTemplateDialogProps {
   onClose: () => void;
 }
 
-export default function ViewTemplateDialog({ templateId, isOpen, onClose }: ViewTemplateDialogProps) {
+export default function ViewTemplateDialog({
+  templateId,
+  isOpen,
+  onClose,
+}: ViewTemplateDialogProps) {
   const { data: template, isLoading } = useQuery({
     queryKey: ["template", templateId],
-    queryFn: () => templateId ? apiClient.getTemplate(templateId) : null,
+    queryFn: () => (templateId ? apiClient.getTemplate(templateId) : null),
     enabled: !!templateId && isOpen,
   });
 
@@ -40,16 +49,21 @@ export default function ViewTemplateDialog({ templateId, isOpen, onClose }: View
                   <div>
                     <CardTitle className="text-xl">{template.name}</CardTitle>
                     {template.description && (
-                      <p className="text-gray-600 mt-2">{template.description}</p>
+                      <p className="text-gray-600 mt-2">
+                        {template.description}
+                      </p>
                     )}
                   </div>
                   <div className="flex flex-col gap-2">
-                    <Badge variant={template.is_active ? "default" : "secondary"}>
+                    <Badge
+                      variant={template.is_active ? "default" : "secondary"}
+                    >
                       {template.is_active ? "Active" : "Inactive"}
                     </Badge>
                     {template.type && (
                       <Badge variant="outline">
-                        {template.type.charAt(0).toUpperCase() + template.type.slice(1)}
+                        {template.type.charAt(0).toUpperCase() +
+                          template.type.slice(1)}
                       </Badge>
                     )}
                   </div>
@@ -63,7 +77,10 @@ export default function ViewTemplateDialog({ templateId, isOpen, onClose }: View
                   </div>
                   <div className="flex items-center gap-2">
                     <Clock className="w-4 h-4 text-gray-500" />
-                    <span>Created {format(new Date(template.created_at), "MMM d, yyyy")}</span>
+                    <span>
+                      Created{" "}
+                      {format(new Date(template.created_at), "MMM d, yyyy")}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <FileText className="w-4 h-4 text-gray-500" />
@@ -82,7 +99,10 @@ export default function ViewTemplateDialog({ templateId, isOpen, onClose }: View
                 {template.steps && template.steps.length > 0 ? (
                   <div className="space-y-4">
                     {template.steps.map((step: any, index: number) => (
-                      <div key={step.id || index} className="border rounded-lg p-4">
+                      <div
+                        key={step.id || index}
+                        className="border rounded-lg p-4"
+                      >
                         <div className="flex items-start justify-between mb-2">
                           <div className="flex items-center gap-2">
                             <Badge variant="outline">Step {index + 1}</Badge>
@@ -91,15 +111,18 @@ export default function ViewTemplateDialog({ templateId, isOpen, onClose }: View
                           <div className="flex items-center gap-2">
                             <Clock className="w-4 h-4 text-gray-500" />
                             <span className="text-sm text-gray-600">
-                              {step.default_eta_days} day{step.default_eta_days !== 1 ? 's' : ''}
+                              {step.default_eta_days} day
+                              {step.default_eta_days !== 1 ? "s" : ""}
                             </span>
                           </div>
                         </div>
-                        
+
                         {step.description && (
-                          <p className="text-gray-600 mb-3">{step.description}</p>
+                          <p className="text-gray-600 mb-3">
+                            {step.description}
+                          </p>
                         )}
-                        
+
                         <div className="flex flex-wrap gap-2">
                           {step.assigned_role && (
                             <Badge variant="secondary">
@@ -114,9 +137,7 @@ export default function ViewTemplateDialog({ templateId, isOpen, onClose }: View
                             </Badge>
                           )}
                           {step.email_reminder && (
-                            <Badge variant="outline">
-                              Email Reminder
-                            </Badge>
+                            <Badge variant="outline">Email Reminder</Badge>
                           )}
                           {step.approval_required && (
                             <Badge variant="outline">
@@ -125,9 +146,7 @@ export default function ViewTemplateDialog({ templateId, isOpen, onClose }: View
                             </Badge>
                           )}
                           {step.parallel_execution && (
-                            <Badge variant="outline">
-                              Parallel Execution
-                            </Badge>
+                            <Badge variant="outline">Parallel Execution</Badge>
                           )}
                         </div>
                       </div>

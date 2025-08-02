@@ -52,7 +52,13 @@ export interface FinOpsTransactionLine {
 export interface FinOpsBudget {
   id: number;
   budget_name: string;
-  budget_type: "project" | "department" | "client" | "annual" | "quarterly" | "monthly";
+  budget_type:
+    | "project"
+    | "department"
+    | "client"
+    | "annual"
+    | "quarterly"
+    | "monthly";
   reference_type?: "lead" | "client" | "deployment" | "department" | "company";
   reference_id?: number;
   start_date: string;
@@ -129,7 +135,13 @@ export interface FinOpsPayment {
   payment_date: string;
   amount: number;
   currency: string;
-  payment_method: "bank_transfer" | "check" | "cash" | "credit_card" | "online" | "other";
+  payment_method:
+    | "bank_transfer"
+    | "check"
+    | "cash"
+    | "credit_card"
+    | "online"
+    | "other";
   payment_reference?: string;
   notes?: string;
   status: "pending" | "cleared" | "failed" | "cancelled";
@@ -141,7 +153,14 @@ export interface FinOpsPayment {
 
 export interface FinOpsCost {
   id: number;
-  cost_category: "infrastructure" | "personnel" | "tools" | "travel" | "marketing" | "operations" | "other";
+  cost_category:
+    | "infrastructure"
+    | "personnel"
+    | "tools"
+    | "travel"
+    | "marketing"
+    | "operations"
+    | "other";
   reference_type: "lead" | "client" | "deployment" | "department" | "project";
   reference_id: number;
   description: string;
@@ -205,7 +224,13 @@ export interface CreateFinOpsTransactionData {
 
 export interface CreateFinOpsBudgetData {
   budget_name: string;
-  budget_type: "project" | "department" | "client" | "annual" | "quarterly" | "monthly";
+  budget_type:
+    | "project"
+    | "department"
+    | "client"
+    | "annual"
+    | "quarterly"
+    | "monthly";
   reference_type?: "lead" | "client" | "deployment" | "department" | "company";
   reference_id?: number;
   start_date: string;
@@ -258,29 +283,41 @@ export class FinOpsRepository {
        LEFT JOIN finops_transaction_lines ftl ON fa.id = ftl.account_id
        WHERE fa.is_active = true
        GROUP BY fa.id
-       ORDER BY fa.account_code`
+       ORDER BY fa.account_code`,
     );
     return rows as FinOpsAccount[];
   }
 
-  static async createAccount(data: CreateFinOpsAccountData): Promise<FinOpsAccount> {
+  static async createAccount(
+    data: CreateFinOpsAccountData,
+  ): Promise<FinOpsAccount> {
     const [result] = await pool.execute<ResultSetHeader>(
       `INSERT INTO finops_accounts 
        (account_code, account_name, account_type, parent_account_id, description, balance_type, created_by)
        VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [data.account_code, data.account_name, data.account_type, data.parent_account_id, 
-       data.description, data.balance_type, data.created_by]
+      [
+        data.account_code,
+        data.account_name,
+        data.account_type,
+        data.parent_account_id,
+        data.description,
+        data.balance_type,
+        data.created_by,
+      ],
     );
-    
+
     const [newAccount] = await pool.execute<RowDataPacket[]>(
       "SELECT * FROM finops_accounts WHERE id = ?",
-      [result.insertId]
+      [result.insertId],
     );
     return newAccount[0] as FinOpsAccount;
   }
 
   // Transaction operations
-  static async getAllTransactions(limit: number = 50, offset: number = 0): Promise<FinOpsTransaction[]> {
+  static async getAllTransactions(
+    limit: number = 50,
+    offset: number = 0,
+  ): Promise<FinOpsTransaction[]> {
     const [rows] = await pool.execute<RowDataPacket[]>(
       `SELECT ft.*, u.name as creator_name,
        COUNT(ftl.id) as line_count
@@ -290,24 +327,26 @@ export class FinOpsRepository {
        GROUP BY ft.id
        ORDER BY ft.transaction_date DESC, ft.created_at DESC
        LIMIT ? OFFSET ?`,
-      [limit, offset]
+      [limit, offset],
     );
     return rows as FinOpsTransaction[];
   }
 
-  static async getTransactionById(id: number): Promise<FinOpsTransaction | null> {
+  static async getTransactionById(
+    id: number,
+  ): Promise<FinOpsTransaction | null> {
     const [rows] = await pool.execute<RowDataPacket[]>(
       `SELECT ft.*, u.name as creator_name
        FROM finops_transactions ft
        LEFT JOIN users u ON ft.created_by = u.id
        WHERE ft.id = ?`,
-      [id]
+      [id],
     );
-    
+
     if (rows.length === 0) return null;
-    
+
     const transaction = rows[0] as FinOpsTransaction;
-    
+
     // Get transaction lines
     const [lineRows] = await pool.execute<RowDataPacket[]>(
       `SELECT ftl.*, fa.account_name, fa.account_code
@@ -315,43 +354,60 @@ export class FinOpsRepository {
        JOIN finops_accounts fa ON ftl.account_id = fa.id
        WHERE ftl.transaction_id = ?
        ORDER BY ftl.line_order`,
-      [id]
+      [id],
     );
-    
+
     transaction.transaction_lines = lineRows as FinOpsTransactionLine[];
     return transaction;
   }
 
-  static async createTransaction(data: CreateFinOpsTransactionData): Promise<FinOpsTransaction> {
+  static async createTransaction(
+    data: CreateFinOpsTransactionData,
+  ): Promise<FinOpsTransaction> {
     const connection = await pool.getConnection();
     try {
       await connection.beginTransaction();
-      
+
       // Insert main transaction
       const [result] = await connection.execute<ResultSetHeader>(
         `INSERT INTO finops_transactions 
          (transaction_number, transaction_date, reference_type, reference_id, description, 
           total_amount, currency, transaction_type, created_by)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [data.transaction_number, data.transaction_date, data.reference_type, data.reference_id,
-         data.description, data.total_amount, data.currency || 'INR', data.transaction_type, data.created_by]
+        [
+          data.transaction_number,
+          data.transaction_date,
+          data.reference_type,
+          data.reference_id,
+          data.description,
+          data.total_amount,
+          data.currency || "INR",
+          data.transaction_type,
+          data.created_by,
+        ],
       );
-      
+
       const transactionId = result.insertId;
-      
+
       // Insert transaction lines
       for (const line of data.transaction_lines) {
         await connection.execute(
           `INSERT INTO finops_transaction_lines 
            (transaction_id, account_id, debit_amount, credit_amount, description, line_order)
            VALUES (?, ?, ?, ?, ?, ?)`,
-          [transactionId, line.account_id, line.debit_amount, line.credit_amount, 
-           line.description, line.line_order || 1]
+          [
+            transactionId,
+            line.account_id,
+            line.debit_amount,
+            line.credit_amount,
+            line.description,
+            line.line_order || 1,
+          ],
         );
       }
-      
+
       await connection.commit();
-      
+
       const newTransaction = await this.getTransactionById(transactionId);
       return newTransaction!;
     } catch (error) {
@@ -372,14 +428,16 @@ export class FinOpsRepository {
        LEFT JOIN users u ON fb.created_by = u.id
        LEFT JOIN finops_budget_lines fbl ON fb.id = fbl.budget_id
        GROUP BY fb.id
-       ORDER BY fb.created_at DESC`
+       ORDER BY fb.created_at DESC`,
     );
-    
-    return rows.map(budget => ({
+
+    return rows.map((budget) => ({
       ...budget,
       remaining_amount: budget.total_budget - (budget.total_spent || 0),
-      utilization_percentage: budget.total_budget > 0 ? 
-        ((budget.total_spent || 0) / budget.total_budget) * 100 : 0
+      utilization_percentage:
+        budget.total_budget > 0
+          ? ((budget.total_spent || 0) / budget.total_budget) * 100
+          : 0,
     })) as FinOpsBudget[];
   }
 
@@ -392,83 +450,106 @@ export class FinOpsRepository {
        LEFT JOIN clients c ON fi.client_id = c.id
        LEFT JOIN finops_payments fp ON fi.id = fp.invoice_id AND fp.status = 'cleared'
        GROUP BY fi.id
-       ORDER BY fi.invoice_date DESC`
+       ORDER BY fi.invoice_date DESC`,
     );
-    
-    return rows.map(invoice => ({
+
+    return rows.map((invoice) => ({
       ...invoice,
-      outstanding_amount: invoice.total_amount - (invoice.paid_amount || 0)
+      outstanding_amount: invoice.total_amount - (invoice.paid_amount || 0),
     })) as FinOpsInvoice[];
   }
 
   // Cost tracking operations
-  static async getCostsByReference(referenceType: string, referenceId: number): Promise<FinOpsCost[]> {
+  static async getCostsByReference(
+    referenceType: string,
+    referenceId: number,
+  ): Promise<FinOpsCost[]> {
     const [rows] = await pool.execute<RowDataPacket[]>(
       `SELECT fc.*, u.name as creator_name
        FROM finops_costs fc
        LEFT JOIN users u ON fc.created_by = u.id
        WHERE fc.reference_type = ? AND fc.reference_id = ?
        ORDER BY fc.cost_date DESC`,
-      [referenceType, referenceId]
+      [referenceType, referenceId],
     );
     return rows as FinOpsCost[];
   }
 
-  static async createCost(costData: Omit<FinOpsCost, 'id' | 'created_at' | 'updated_at'>): Promise<FinOpsCost> {
+  static async createCost(
+    costData: Omit<FinOpsCost, "id" | "created_at" | "updated_at">,
+  ): Promise<FinOpsCost> {
     const [result] = await pool.execute<ResultSetHeader>(
       `INSERT INTO finops_costs 
        (cost_category, reference_type, reference_id, description, cost_amount, currency,
         cost_date, is_recurring, recurring_frequency, vendor, cost_center, created_by)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [costData.cost_category, costData.reference_type, costData.reference_id, costData.description,
-       costData.cost_amount, costData.currency, costData.cost_date, costData.is_recurring,
-       costData.recurring_frequency, costData.vendor, costData.cost_center, costData.created_by]
+      [
+        costData.cost_category,
+        costData.reference_type,
+        costData.reference_id,
+        costData.description,
+        costData.cost_amount,
+        costData.currency,
+        costData.cost_date,
+        costData.is_recurring,
+        costData.recurring_frequency,
+        costData.vendor,
+        costData.cost_center,
+        costData.created_by,
+      ],
     );
-    
+
     const [newCost] = await pool.execute<RowDataPacket[]>(
       "SELECT * FROM finops_costs WHERE id = ?",
-      [result.insertId]
+      [result.insertId],
     );
     return newCost[0] as FinOpsCost;
   }
 
   // Financial metrics and reporting
-  static async getFinancialMetrics(period: string, startDate: string, endDate: string): Promise<any> {
+  static async getFinancialMetrics(
+    period: string,
+    startDate: string,
+    endDate: string,
+  ): Promise<any> {
     const [revenueRows] = await pool.execute<RowDataPacket[]>(
       `SELECT SUM(total_amount) as total_revenue
        FROM finops_invoices 
        WHERE status = 'paid' AND invoice_date BETWEEN ? AND ?`,
-      [startDate, endDate]
+      [startDate, endDate],
     );
-    
+
     const [costRows] = await pool.execute<RowDataPacket[]>(
       `SELECT SUM(cost_amount) as total_costs
        FROM finops_costs 
        WHERE cost_date BETWEEN ? AND ?`,
-      [startDate, endDate]
+      [startDate, endDate],
     );
-    
+
     const [budgetRows] = await pool.execute<RowDataPacket[]>(
       `SELECT SUM(total_budget) as total_budgets,
        COUNT(*) as active_budgets
        FROM finops_budgets 
        WHERE status = 'active' AND start_date <= ? AND end_date >= ?`,
-      [endDate, startDate]
+      [endDate, startDate],
     );
-    
+
     const totalRevenue = revenueRows[0]?.total_revenue || 0;
     const totalCosts = costRows[0]?.total_costs || 0;
     const totalBudgets = budgetRows[0]?.total_budgets || 0;
     const activeBudgets = budgetRows[0]?.active_budgets || 0;
-    
+
     return {
       total_revenue: totalRevenue,
       total_costs: totalCosts,
       profit: totalRevenue - totalCosts,
-      profit_margin: totalRevenue > 0 ? ((totalRevenue - totalCosts) / totalRevenue) * 100 : 0,
+      profit_margin:
+        totalRevenue > 0
+          ? ((totalRevenue - totalCosts) / totalRevenue) * 100
+          : 0,
       total_budgets: totalBudgets,
       active_budgets: activeBudgets,
-      period: { start: startDate, end: endDate }
+      period: { start: startDate, end: endDate },
     };
   }
 
@@ -477,21 +558,27 @@ export class FinOpsRepository {
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth() + 1;
     const currentYear = currentDate.getFullYear();
-    const startOfMonth = `${currentYear}-${currentMonth.toString().padStart(2, '0')}-01`;
-    const endOfMonth = new Date(currentYear, currentMonth, 0).toISOString().split('T')[0];
-    
-    const metrics = await this.getFinancialMetrics('monthly', startOfMonth, endOfMonth);
-    
+    const startOfMonth = `${currentYear}-${currentMonth.toString().padStart(2, "0")}-01`;
+    const endOfMonth = new Date(currentYear, currentMonth, 0)
+      .toISOString()
+      .split("T")[0];
+
+    const metrics = await this.getFinancialMetrics(
+      "monthly",
+      startOfMonth,
+      endOfMonth,
+    );
+
     // Get recent transactions
     const recentTransactions = await this.getAllTransactions(10, 0);
-    
+
     // Get overdue invoices
     const [overdueInvoices] = await pool.execute<RowDataPacket[]>(
       `SELECT COUNT(*) as overdue_count, SUM(total_amount) as overdue_amount
        FROM finops_invoices 
-       WHERE status IN ('sent', 'overdue') AND due_date < CURDATE()`
+       WHERE status IN ('sent', 'overdue') AND due_date < CURDATE()`,
     );
-    
+
     // Get budget utilization
     const [budgetUtilization] = await pool.execute<RowDataPacket[]>(
       `SELECT fb.budget_name, fb.total_budget,
@@ -501,18 +588,23 @@ export class FinOpsRepository {
        WHERE fb.status = 'active'
        GROUP BY fb.id
        ORDER BY (COALESCE(SUM(fbl.spent_amount), 0) / fb.total_budget) DESC
-       LIMIT 5`
+       LIMIT 5`,
     );
-    
+
     return {
       ...metrics,
       recent_transactions: recentTransactions,
-      overdue_invoices: overdueInvoices[0] || { overdue_count: 0, overdue_amount: 0 },
+      overdue_invoices: overdueInvoices[0] || {
+        overdue_count: 0,
+        overdue_amount: 0,
+      },
       budget_utilization: budgetUtilization.map((budget: any) => ({
         ...budget,
-        utilization_percentage: budget.total_budget > 0 ? 
-          (budget.spent_amount / budget.total_budget) * 100 : 0
-      }))
+        utilization_percentage:
+          budget.total_budget > 0
+            ? (budget.spent_amount / budget.total_budget) * 100
+            : 0,
+      })),
     };
   }
 }

@@ -4,8 +4,11 @@ import { Configuration, PopupRequest } from "@azure/msal-browser";
 export const msalConfig: Configuration = {
   auth: {
     clientId: import.meta.env.VITE_AZURE_CLIENT_ID || "your-client-id-here", // Replace with your Azure AD app client ID
-    authority: import.meta.env.VITE_AZURE_AUTHORITY || "https://login.microsoftonline.com/common", // Replace with your tenant ID if needed
-    redirectUri: import.meta.env.VITE_AZURE_REDIRECT_URI || window.location.origin,
+    authority:
+      import.meta.env.VITE_AZURE_AUTHORITY ||
+      "https://login.microsoftonline.com/common", // Replace with your tenant ID if needed
+    redirectUri:
+      import.meta.env.VITE_AZURE_REDIRECT_URI || window.location.origin,
   },
   cache: {
     cacheLocation: "sessionStorage", // This configures where your cache will be stored

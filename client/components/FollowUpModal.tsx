@@ -62,8 +62,12 @@ export function FollowUpModal({
       return apiClient.createProjectFollowUp(projectId, data);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["project-follow-ups", projectId] });
-      queryClient.invalidateQueries({ queryKey: ["project-step-comments", stepId] });
+      queryClient.invalidateQueries({
+        queryKey: ["project-follow-ups", projectId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["project-step-comments", stepId],
+      });
       onClose();
       resetForm();
     },
@@ -149,7 +153,10 @@ export function FollowUpModal({
                 id="title"
                 value={followUpData.title}
                 onChange={(e) =>
-                  setFollowUpData((prev) => ({ ...prev, title: e.target.value }))
+                  setFollowUpData((prev) => ({
+                    ...prev,
+                    title: e.target.value,
+                  }))
                 }
                 placeholder="e.g., Review implementation progress"
                 required
@@ -161,7 +168,10 @@ export function FollowUpModal({
               <Select
                 value={followUpData.follow_up_type}
                 onValueChange={(value) =>
-                  setFollowUpData((prev) => ({ ...prev, follow_up_type: value }))
+                  setFollowUpData((prev) => ({
+                    ...prev,
+                    follow_up_type: value,
+                  }))
                 }
               >
                 <SelectTrigger>
@@ -203,7 +213,10 @@ export function FollowUpModal({
                 type="date"
                 value={followUpData.due_date}
                 onChange={(e) =>
-                  setFollowUpData((prev) => ({ ...prev, due_date: e.target.value }))
+                  setFollowUpData((prev) => ({
+                    ...prev,
+                    due_date: e.target.value,
+                  }))
                 }
               />
             </div>
@@ -215,7 +228,10 @@ export function FollowUpModal({
                 type="time"
                 value={followUpData.due_time}
                 onChange={(e) =>
-                  setFollowUpData((prev) => ({ ...prev, due_time: e.target.value }))
+                  setFollowUpData((prev) => ({
+                    ...prev,
+                    due_time: e.target.value,
+                  }))
                 }
               />
             </div>

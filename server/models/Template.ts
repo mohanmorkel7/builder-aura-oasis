@@ -357,7 +357,7 @@ export class TemplateRepository {
     const values = [
       categoryData.name,
       categoryData.description,
-      categoryData.color || '#6B7280',
+      categoryData.color || "#6B7280",
       categoryData.icon,
       categoryData.sort_order || 0,
     ];
@@ -366,7 +366,9 @@ export class TemplateRepository {
   }
 
   // Template type management methods
-  static async getTemplateTypesByCategory(categoryId: number): Promise<TemplateType[]> {
+  static async getTemplateTypesByCategory(
+    categoryId: number,
+  ): Promise<TemplateType[]> {
     const query = `
       SELECT * FROM template_types
       WHERE category_id = $1 AND is_active = true
@@ -413,18 +415,22 @@ export class TemplateRepository {
       ORDER BY t.updated_at DESC
     `;
     const result = await pool.query(query);
-    return result.rows.map(row => ({
+    return result.rows.map((row) => ({
       ...row,
-      category: row.category_name ? {
-        id: row.category_id,
-        name: row.category_name,
-        color: row.category_color,
-        icon: row.category_icon,
-      } : undefined,
-      template_type: row.template_type_name ? {
-        id: row.template_type_id,
-        name: row.template_type_name,
-      } : undefined,
+      category: row.category_name
+        ? {
+            id: row.category_id,
+            name: row.category_name,
+            color: row.category_color,
+            icon: row.category_icon,
+          }
+        : undefined,
+      template_type: row.template_type_name
+        ? {
+            id: row.template_type_id,
+            name: row.template_type_name,
+          }
+        : undefined,
     }));
   }
 
@@ -448,7 +454,12 @@ export class TemplateRepository {
   }
 
   // Template usage tracking
-  static async recordUsage(templateId: number, userId: number, entityType: string, entityId: number): Promise<void> {
+  static async recordUsage(
+    templateId: number,
+    userId: number,
+    entityType: string,
+    entityId: number,
+  ): Promise<void> {
     const query = "SELECT increment_template_usage($1, $2, $3, $4)";
     await pool.query(query, [templateId, userId, entityType, entityId]);
   }
@@ -460,7 +471,10 @@ export class TemplateRepository {
   }
 
   // Search templates
-  static async searchTemplates(searchTerm: string, categoryId?: number): Promise<Template[]> {
+  static async searchTemplates(
+    searchTerm: string,
+    categoryId?: number,
+  ): Promise<Template[]> {
     let query = `
       SELECT t.*,
              COUNT(ts.id) as step_count,

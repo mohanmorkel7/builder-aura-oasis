@@ -5,7 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -25,7 +31,7 @@ import {
   Upload,
   FileText,
   Download,
-  ExternalLink
+  ExternalLink,
 } from "lucide-react";
 import { formatDistanceToNow, format } from "date-fns";
 
@@ -40,7 +46,12 @@ interface TicketDetailsProps {
   currentUser?: any;
 }
 
-export default function TicketDetails({ ticket, onUpdate, metadata, currentUser }: TicketDetailsProps) {
+export default function TicketDetails({
+  ticket,
+  onUpdate,
+  metadata,
+  currentUser,
+}: TicketDetailsProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({
     subject: ticket.subject,
@@ -50,7 +61,7 @@ export default function TicketDetails({ ticket, onUpdate, metadata, currentUser 
     category_id: ticket.category_id?.toString() || "",
     assigned_to: ticket.assigned_to?.toString() || "unassigned",
   });
-  
+
   // Comment attachments are now handled in RichTextCommentEditor
 
   const queryClient = useQueryClient();
@@ -79,15 +90,26 @@ export default function TicketDetails({ ticket, onUpdate, metadata, currentUser 
 
   // Add comment mutation
   const addCommentMutation = useMutation({
-    mutationFn: async ({ commentData, attachments }: { commentData: any; attachments: File[] }) => {
+    mutationFn: async ({
+      commentData,
+      attachments,
+    }: {
+      commentData: any;
+      attachments: File[];
+    }) => {
       const comment = await apiClient.addTicketComment(ticket.id, commentData);
 
       // Upload attachments if any
       if (attachments.length > 0) {
         await Promise.all(
-          attachments.map(file =>
-            apiClient.uploadTicketAttachment(ticket.id, file, comment.id, currentUser?.id)
-          )
+          attachments.map((file) =>
+            apiClient.uploadTicketAttachment(
+              ticket.id,
+              file,
+              comment.id,
+              currentUser?.id,
+            ),
+          ),
         );
       }
 
@@ -101,18 +123,30 @@ export default function TicketDetails({ ticket, onUpdate, metadata, currentUser 
   const handleSave = () => {
     const updateData = {
       ...editForm,
-      priority_id: editForm.priority_id ? parseInt(editForm.priority_id) : undefined,
+      priority_id: editForm.priority_id
+        ? parseInt(editForm.priority_id)
+        : undefined,
       status_id: editForm.status_id ? parseInt(editForm.status_id) : undefined,
-      category_id: editForm.category_id ? parseInt(editForm.category_id) : undefined,
-      assigned_to: editForm.assigned_to && editForm.assigned_to !== "unassigned" ? parseInt(editForm.assigned_to) : undefined,
+      category_id: editForm.category_id
+        ? parseInt(editForm.category_id)
+        : undefined,
+      assigned_to:
+        editForm.assigned_to && editForm.assigned_to !== "unassigned"
+          ? parseInt(editForm.assigned_to)
+          : undefined,
       updated_by: currentUser?.id || "1",
     };
 
     updateTicketMutation.mutate(updateData);
   };
 
-  const handleAddComment = (content: string, attachments: File[], isInternal: boolean, mentions: string[]) => {
-    if (!content.trim() || content === '<p></p>') return;
+  const handleAddComment = (
+    content: string,
+    attachments: File[],
+    isInternal: boolean,
+    mentions: string[],
+  ) => {
+    if (!content.trim() || content === "<p></p>") return;
 
     const commentData = {
       content,
@@ -134,36 +168,52 @@ export default function TicketDetails({ ticket, onUpdate, metadata, currentUser 
               {ticket.track_id}
             </Badge>
             {ticket.priority && (
-              <Badge style={{ backgroundColor: `${ticket.priority.color}20`, color: ticket.priority.color }}>
+              <Badge
+                style={{
+                  backgroundColor: `${ticket.priority.color}20`,
+                  color: ticket.priority.color,
+                }}
+              >
                 {ticket.priority.name}
               </Badge>
             )}
             {ticket.status && (
-              <Badge variant={ticket.status.is_closed ? "secondary" : "default"}>
+              <Badge
+                variant={ticket.status.is_closed ? "secondary" : "default"}
+              >
                 {ticket.status.name}
               </Badge>
             )}
           </div>
-          
+
           {isEditing ? (
             <Input
               value={editForm.subject}
-              onChange={(e) => setEditForm(prev => ({ ...prev, subject: e.target.value }))}
+              onChange={(e) =>
+                setEditForm((prev) => ({ ...prev, subject: e.target.value }))
+              }
               className="text-xl font-semibold"
             />
           ) : (
             <h2 className="text-2xl font-semibold">{ticket.subject}</h2>
           )}
         </div>
-        
+
         <div className="flex gap-2">
           {isEditing ? (
             <>
-              <Button variant="outline" onClick={() => setIsEditing(false)} disabled={updateTicketMutation.isPending}>
+              <Button
+                variant="outline"
+                onClick={() => setIsEditing(false)}
+                disabled={updateTicketMutation.isPending}
+              >
                 <X className="w-4 h-4 mr-2" />
                 Cancel
               </Button>
-              <Button onClick={handleSave} disabled={updateTicketMutation.isPending}>
+              <Button
+                onClick={handleSave}
+                disabled={updateTicketMutation.isPending}
+              >
                 <Save className="w-4 h-4 mr-2" />
                 {updateTicketMutation.isPending ? "Saving..." : "Save"}
               </Button>
@@ -203,7 +253,12 @@ export default function TicketDetails({ ticket, onUpdate, metadata, currentUser 
                 {isEditing ? (
                   <Textarea
                     value={editForm.description}
-                    onChange={(e) => setEditForm(prev => ({ ...prev, description: e.target.value }))}
+                    onChange={(e) =>
+                      setEditForm((prev) => ({
+                        ...prev,
+                        description: e.target.value,
+                      }))
+                    }
                     rows={4}
                   />
                 ) : (
@@ -219,21 +274,28 @@ export default function TicketDetails({ ticket, onUpdate, metadata, currentUser 
                   {isEditing ? (
                     <Select
                       value={editForm.priority_id}
-                      onValueChange={(value) => setEditForm(prev => ({ ...prev, priority_id: value }))}
+                      onValueChange={(value) =>
+                        setEditForm((prev) => ({ ...prev, priority_id: value }))
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select priority" />
                       </SelectTrigger>
                       <SelectContent>
                         {metadata?.priorities?.map((priority) => (
-                          <SelectItem key={priority.id} value={priority.id.toString()}>
+                          <SelectItem
+                            key={priority.id}
+                            value={priority.id.toString()}
+                          >
                             {priority.name}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   ) : (
-                    <div className="p-2">{ticket.priority?.name || "Not set"}</div>
+                    <div className="p-2">
+                      {ticket.priority?.name || "Not set"}
+                    </div>
                   )}
                 </div>
 
@@ -242,21 +304,28 @@ export default function TicketDetails({ ticket, onUpdate, metadata, currentUser 
                   {isEditing ? (
                     <Select
                       value={editForm.status_id}
-                      onValueChange={(value) => setEditForm(prev => ({ ...prev, status_id: value }))}
+                      onValueChange={(value) =>
+                        setEditForm((prev) => ({ ...prev, status_id: value }))
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select status" />
                       </SelectTrigger>
                       <SelectContent>
                         {metadata?.statuses?.map((status) => (
-                          <SelectItem key={status.id} value={status.id.toString()}>
+                          <SelectItem
+                            key={status.id}
+                            value={status.id.toString()}
+                          >
                             {status.name}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   ) : (
-                    <div className="p-2">{ticket.status?.name || "Not set"}</div>
+                    <div className="p-2">
+                      {ticket.status?.name || "Not set"}
+                    </div>
                   )}
                 </div>
 
@@ -265,21 +334,28 @@ export default function TicketDetails({ ticket, onUpdate, metadata, currentUser 
                   {isEditing ? (
                     <Select
                       value={editForm.category_id}
-                      onValueChange={(value) => setEditForm(prev => ({ ...prev, category_id: value }))}
+                      onValueChange={(value) =>
+                        setEditForm((prev) => ({ ...prev, category_id: value }))
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
                       <SelectContent>
                         {metadata?.categories?.map((category) => (
-                          <SelectItem key={category.id} value={category.id.toString()}>
+                          <SelectItem
+                            key={category.id}
+                            value={category.id.toString()}
+                          >
                             {category.name}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   ) : (
-                    <div className="p-2">{ticket.category?.name || "Not set"}</div>
+                    <div className="p-2">
+                      {ticket.category?.name || "Not set"}
+                    </div>
                   )}
                 </div>
 
@@ -288,7 +364,9 @@ export default function TicketDetails({ ticket, onUpdate, metadata, currentUser 
                   {isEditing ? (
                     <Select
                       value={editForm.assigned_to}
-                      onValueChange={(value) => setEditForm(prev => ({ ...prev, assigned_to: value }))}
+                      onValueChange={(value) =>
+                        setEditForm((prev) => ({ ...prev, assigned_to: value }))
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select assignee" />
@@ -303,7 +381,9 @@ export default function TicketDetails({ ticket, onUpdate, metadata, currentUser 
                       </SelectContent>
                     </Select>
                   ) : (
-                    <div className="p-2">{ticket.assignee?.name || "Unassigned"}</div>
+                    <div className="p-2">
+                      {ticket.assignee?.name || "Unassigned"}
+                    </div>
                   )}
                 </div>
               </div>
@@ -312,13 +392,19 @@ export default function TicketDetails({ ticket, onUpdate, metadata, currentUser 
                 <div>
                   <Label>Created By</Label>
                   <div className="p-2">
-                    {ticket.creator?.name} on {format(new Date(ticket.created_at), "MMM d, yyyy 'at' h:mm a")}
+                    {ticket.creator?.name} on{" "}
+                    {format(
+                      new Date(ticket.created_at),
+                      "MMM d, yyyy 'at' h:mm a",
+                    )}
                   </div>
                 </div>
                 <div>
                   <Label>Last Updated</Label>
                   <div className="p-2">
-                    {formatDistanceToNow(new Date(ticket.updated_at), { addSuffix: true })}
+                    {formatDistanceToNow(new Date(ticket.updated_at), {
+                      addSuffix: true,
+                    })}
                   </div>
                 </div>
               </div>
@@ -345,15 +431,23 @@ export default function TicketDetails({ ticket, onUpdate, metadata, currentUser 
                   <div className="flex items-start gap-3">
                     <Avatar>
                       <AvatarFallback>
-                        {comment.user?.name?.split(" ").map((n: string) => n[0]).join("").toUpperCase()}
+                        {comment.user?.name
+                          ?.split(" ")
+                          .map((n: string) => n[0])
+                          .join("")
+                          .toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
-                    
+
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="font-medium">{comment.user?.name}</span>
+                        <span className="font-medium">
+                          {comment.user?.name}
+                        </span>
                         <span className="text-sm text-gray-500">
-                          {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
+                          {formatDistanceToNow(new Date(comment.created_at), {
+                            addSuffix: true,
+                          })}
                         </span>
                         {comment.is_internal && (
                           <Badge variant="outline" className="text-xs">
@@ -361,39 +455,55 @@ export default function TicketDetails({ ticket, onUpdate, metadata, currentUser 
                           </Badge>
                         )}
                       </div>
-                      
+
                       <div
                         className="prose prose-sm max-w-none text-sm"
                         dangerouslySetInnerHTML={{ __html: comment.content }}
                       />
 
                       {/* Comment Attachments */}
-                      {comment.attachments && comment.attachments.length > 0 && (
-                        <div className="mt-3 space-y-2">
-                          <div className="text-xs font-medium text-gray-600">
-                            Attachments ({comment.attachments.length}):
-                          </div>
-                          <div className="grid grid-cols-1 gap-2">
-                            {comment.attachments.map((attachment: any) => (
-                              <div key={attachment.id} className="flex items-center gap-2 p-2 bg-gray-100 rounded text-xs">
-                                <FileText className="w-3 h-3 text-gray-500" />
-                                <span className="flex-1">{attachment.original_filename}</span>
-                                <span className="text-gray-500">
-                                  {(attachment.file_size / 1024 / 1024).toFixed(2)} MB
-                                </span>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  className="h-6 w-6 p-0"
-                                  onClick={() => window.open(attachment.file_path, '_blank')}
+                      {comment.attachments &&
+                        comment.attachments.length > 0 && (
+                          <div className="mt-3 space-y-2">
+                            <div className="text-xs font-medium text-gray-600">
+                              Attachments ({comment.attachments.length}):
+                            </div>
+                            <div className="grid grid-cols-1 gap-2">
+                              {comment.attachments.map((attachment: any) => (
+                                <div
+                                  key={attachment.id}
+                                  className="flex items-center gap-2 p-2 bg-gray-100 rounded text-xs"
                                 >
-                                  <Download className="w-3 h-3" />
-                                </Button>
-                              </div>
-                            ))}
+                                  <FileText className="w-3 h-3 text-gray-500" />
+                                  <span className="flex-1">
+                                    {attachment.original_filename}
+                                  </span>
+                                  <span className="text-gray-500">
+                                    {(
+                                      attachment.file_size /
+                                      1024 /
+                                      1024
+                                    ).toFixed(2)}{" "}
+                                    MB
+                                  </span>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    className="h-6 w-6 p-0"
+                                    onClick={() =>
+                                      window.open(
+                                        attachment.file_path,
+                                        "_blank",
+                                      )
+                                    }
+                                  >
+                                    <Download className="w-3 h-3" />
+                                  </Button>
+                                </div>
+                              ))}
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
 
                       {comment.mentions && comment.mentions.length > 0 && (
                         <div className="mt-2 text-xs text-gray-500">
@@ -405,7 +515,7 @@ export default function TicketDetails({ ticket, onUpdate, metadata, currentUser 
                 </CardContent>
               </Card>
             ))}
-            
+
             {(!comments || comments.length === 0) && (
               <Card>
                 <CardContent className="p-8 text-center text-gray-500">
@@ -419,7 +529,8 @@ export default function TicketDetails({ ticket, onUpdate, metadata, currentUser 
         <TabsContent value="activity">
           <Card>
             <CardContent className="p-8 text-center text-gray-500">
-              Activity log will show ticket history, status changes, assignments, etc.
+              Activity log will show ticket history, status changes,
+              assignments, etc.
             </CardContent>
           </Card>
         </TabsContent>

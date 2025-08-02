@@ -6,10 +6,31 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Search, Filter, Eye, MessageSquare, Paperclip, Calendar, User } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Plus,
+  Search,
+  Filter,
+  Eye,
+  MessageSquare,
+  Paperclip,
+  Calendar,
+  User,
+} from "lucide-react";
 import { formatDistanceToNow, format } from "date-fns";
 import CreateTicketForm from "@/components/CreateTicketForm";
 import TicketDetails from "@/components/TicketDetails";
@@ -45,7 +66,11 @@ export default function Tickets() {
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
 
   // Fetch tickets
-  const { data: ticketsData, isLoading: ticketsLoading, refetch: refetchTickets } = useQuery({
+  const {
+    data: ticketsData,
+    isLoading: ticketsLoading,
+    refetch: refetchTickets,
+  } = useQuery({
     queryKey: ["tickets", filters, page],
     queryFn: () => apiClient.getTickets(filters, page, 20),
   });
@@ -57,7 +82,7 @@ export default function Tickets() {
   });
 
   const handleFilterChange = (key: keyof TicketFilters, value: any) => {
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
       [key]: value === "all" ? undefined : value,
     }));
@@ -81,8 +106,8 @@ export default function Tickets() {
 
   const getStatusColor = (status?: { color: string; is_closed: boolean }) => {
     if (!status) return "bg-gray-100 text-gray-800";
-    return status.is_closed 
-      ? "bg-gray-100 text-gray-600" 
+    return status.is_closed
+      ? "bg-gray-100 text-gray-600"
       : "bg-blue-100 text-blue-800";
   };
 
@@ -93,7 +118,7 @@ export default function Tickets() {
           <h1 className="text-3xl font-bold text-gray-900">Support Tickets</h1>
           <p className="text-gray-600 mt-1">Manage and track support tickets</p>
         </div>
-        
+
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
             <Button>
@@ -131,10 +156,15 @@ export default function Tickets() {
                 />
               </div>
             </div>
-            
+
             <Select
               value={filters.status_id?.toString() || "all"}
-              onValueChange={(value) => handleFilterChange("status_id", value === "all" ? undefined : parseInt(value))}
+              onValueChange={(value) =>
+                handleFilterChange(
+                  "status_id",
+                  value === "all" ? undefined : parseInt(value),
+                )
+              }
             >
               <SelectTrigger className="w-[150px]">
                 <SelectValue placeholder="Status" />
@@ -151,7 +181,12 @@ export default function Tickets() {
 
             <Select
               value={filters.priority_id?.toString() || "all"}
-              onValueChange={(value) => handleFilterChange("priority_id", value === "all" ? undefined : parseInt(value))}
+              onValueChange={(value) =>
+                handleFilterChange(
+                  "priority_id",
+                  value === "all" ? undefined : parseInt(value),
+                )
+              }
             >
               <SelectTrigger className="w-[150px]">
                 <SelectValue placeholder="Priority" />
@@ -168,7 +203,12 @@ export default function Tickets() {
 
             <Select
               value={filters.category_id?.toString() || "all"}
-              onValueChange={(value) => handleFilterChange("category_id", value === "all" ? undefined : parseInt(value))}
+              onValueChange={(value) =>
+                handleFilterChange(
+                  "category_id",
+                  value === "all" ? undefined : parseInt(value),
+                )
+              }
             >
               <SelectTrigger className="w-[150px]">
                 <SelectValue placeholder="Category" />
@@ -202,16 +242,25 @@ export default function Tickets() {
           ) : (
             <div className="space-y-4">
               {ticketsData?.tickets?.map((ticket) => (
-                <Card key={ticket.id} className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleViewTicket(ticket)}>
+                <Card
+                  key={ticket.id}
+                  className="hover:shadow-md transition-shadow cursor-pointer"
+                  onClick={() => handleViewTicket(ticket)}
+                >
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
-                          <Badge variant="outline" className="font-mono text-xs">
+                          <Badge
+                            variant="outline"
+                            className="font-mono text-xs"
+                          >
                             {ticket.track_id}
                           </Badge>
                           {ticket.priority && (
-                            <Badge className={getPriorityColor(ticket.priority)}>
+                            <Badge
+                              className={getPriorityColor(ticket.priority)}
+                            >
                               {ticket.priority.name}
                             </Badge>
                           )}
@@ -221,20 +270,28 @@ export default function Tickets() {
                             </Badge>
                           )}
                           {ticket.category && (
-                            <Badge variant="secondary" style={{ backgroundColor: `${ticket.category.color}20`, color: ticket.category.color }}>
+                            <Badge
+                              variant="secondary"
+                              style={{
+                                backgroundColor: `${ticket.category.color}20`,
+                                color: ticket.category.color,
+                              }}
+                            >
                               {ticket.category.name}
                             </Badge>
                           )}
                         </div>
-                        
-                        <h3 className="font-semibold text-lg mb-1">{ticket.subject}</h3>
-                        
+
+                        <h3 className="font-semibold text-lg mb-1">
+                          {ticket.subject}
+                        </h3>
+
                         {ticket.description && (
                           <p className="text-gray-600 text-sm mb-3 line-clamp-2">
                             {ticket.description}
                           </p>
                         )}
-                        
+
                         <div className="flex items-center gap-4 text-sm text-gray-500">
                           <div className="flex items-center gap-1">
                             <User className="w-4 h-4" />
@@ -248,13 +305,25 @@ export default function Tickets() {
                           )}
                           <div className="flex items-center gap-1">
                             <Calendar className="w-4 h-4" />
-                            <span>{formatDistanceToNow(new Date(ticket.created_at), { addSuffix: true })}</span>
+                            <span>
+                              {formatDistanceToNow(
+                                new Date(ticket.created_at),
+                                { addSuffix: true },
+                              )}
+                            </span>
                           </div>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center gap-2 ml-4">
-                        <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); handleViewTicket(ticket); }}>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleViewTicket(ticket);
+                          }}
+                        >
                           <Eye className="w-4 h-4" />
                         </Button>
                       </div>
@@ -262,7 +331,7 @@ export default function Tickets() {
                   </CardContent>
                 </Card>
               ))}
-              
+
               {ticketsData?.tickets?.length === 0 && (
                 <Card>
                   <CardContent className="p-8 text-center">
@@ -270,7 +339,7 @@ export default function Tickets() {
                   </CardContent>
                 </Card>
               )}
-              
+
               {/* Pagination */}
               {ticketsData && ticketsData.pages > 1 && (
                 <div className="flex justify-center gap-2 mt-6">
@@ -303,19 +372,19 @@ export default function Tickets() {
             My tickets view - would filter by created_by
           </div>
         </TabsContent>
-        
+
         <TabsContent value="assigned">
           <div className="text-center py-8 text-gray-500">
             Assigned tickets view - would filter by assigned_to
           </div>
         </TabsContent>
-        
+
         <TabsContent value="open">
           <div className="text-center py-8 text-gray-500">
             Open tickets view - would filter by open statuses
           </div>
         </TabsContent>
-        
+
         <TabsContent value="closed">
           <div className="text-center py-8 text-gray-500">
             Closed tickets view - would filter by closed statuses
@@ -330,8 +399,8 @@ export default function Tickets() {
             <DialogTitle>Ticket Details</DialogTitle>
           </DialogHeader>
           {selectedTicket && (
-            <TicketDetails 
-              ticket={selectedTicket} 
+            <TicketDetails
+              ticket={selectedTicket}
               onUpdate={refetchTickets}
               metadata={metadata}
               currentUser={user}

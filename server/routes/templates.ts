@@ -45,19 +45,75 @@ router.get("/categories", async (req: Request, res: Response) => {
   try {
     // Always use mock data for now since enhanced tables don't exist yet
     const mockCategories = [
-      { id: 1, name: "Product", description: "Product development templates", color: "#3B82F6", icon: "Package", sort_order: 1, is_active: true },
-      { id: 2, name: "Leads", description: "Lead management templates", color: "#10B981", icon: "Target", sort_order: 2, is_active: true },
-      { id: 3, name: "FinOps", description: "Financial operations templates", color: "#F59E0B", icon: "DollarSign", sort_order: 3, is_active: true },
-      { id: 4, name: "Onboarding", description: "Onboarding templates", color: "#8B5CF6", icon: "UserPlus", sort_order: 4, is_active: true },
-      { id: 5, name: "Support", description: "Customer support templates", color: "#EF4444", icon: "Headphones", sort_order: 5, is_active: true },
+      {
+        id: 1,
+        name: "Product",
+        description: "Product development templates",
+        color: "#3B82F6",
+        icon: "Package",
+        sort_order: 1,
+        is_active: true,
+      },
+      {
+        id: 2,
+        name: "Leads",
+        description: "Lead management templates",
+        color: "#10B981",
+        icon: "Target",
+        sort_order: 2,
+        is_active: true,
+      },
+      {
+        id: 3,
+        name: "FinOps",
+        description: "Financial operations templates",
+        color: "#F59E0B",
+        icon: "DollarSign",
+        sort_order: 3,
+        is_active: true,
+      },
+      {
+        id: 4,
+        name: "Onboarding",
+        description: "Onboarding templates",
+        color: "#8B5CF6",
+        icon: "UserPlus",
+        sort_order: 4,
+        is_active: true,
+      },
+      {
+        id: 5,
+        name: "Support",
+        description: "Customer support templates",
+        color: "#EF4444",
+        icon: "Headphones",
+        sort_order: 5,
+        is_active: true,
+      },
     ];
     res.json(mockCategories);
   } catch (error) {
     console.error("Error fetching template categories:", error);
     // Always fallback to mock data
     const mockCategories = [
-      { id: 1, name: "Product", description: "Product development templates", color: "#3B82F6", icon: "Package", sort_order: 1, is_active: true },
-      { id: 2, name: "Leads", description: "Lead management templates", color: "#10B981", icon: "Target", sort_order: 2, is_active: true },
+      {
+        id: 1,
+        name: "Product",
+        description: "Product development templates",
+        color: "#3B82F6",
+        icon: "Package",
+        sort_order: 1,
+        is_active: true,
+      },
+      {
+        id: 2,
+        name: "Leads",
+        description: "Lead management templates",
+        color: "#10B981",
+        icon: "Target",
+        sort_order: 2,
+        is_active: true,
+      },
     ];
     res.json(mockCategories);
   }
@@ -69,10 +125,13 @@ router.get("/with-categories", async (req: Request, res: Response) => {
     // Use mock data for now
     const templates = await MockDataService.getAllTemplates();
     // Add mock category data
-    const templatesWithCategories = templates.map(template => ({
+    const templatesWithCategories = templates.map((template) => ({
       ...template,
       usage_count: Math.floor(Math.random() * 20),
-      category: template.id <= 2 ? { id: 2, name: "Leads", color: "#10B981", icon: "Target" } : { id: 1, name: "Product", color: "#3B82F6", icon: "Package" },
+      category:
+        template.id <= 2
+          ? { id: 2, name: "Leads", color: "#10B981", icon: "Target" }
+          : { id: 1, name: "Product", color: "#3B82F6", icon: "Package" },
     }));
     res.json(templatesWithCategories);
   } catch (error) {
@@ -109,7 +168,9 @@ router.get("/with-categories", async (req: Request, res: Response) => {
 router.get("/search", async (req: Request, res: Response) => {
   try {
     const searchTerm = req.query.q as string;
-    const categoryId = req.query.category ? parseInt(req.query.category as string) : undefined;
+    const categoryId = req.query.category
+      ? parseInt(req.query.category as string)
+      : undefined;
 
     if (!searchTerm) {
       return res.status(400).json({ error: "Search term is required" });
@@ -117,9 +178,10 @@ router.get("/search", async (req: Request, res: Response) => {
 
     // Use mock data
     const allTemplates = await MockDataService.getAllTemplates();
-    const filteredTemplates = allTemplates.filter(template =>
-      template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      template.description?.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredTemplates = allTemplates.filter(
+      (template) =>
+        template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        template.description?.toLowerCase().includes(searchTerm.toLowerCase()),
     );
     res.json(filteredTemplates);
   } catch (error) {
@@ -158,13 +220,48 @@ router.get("/step-categories", async (req: Request, res: Response) => {
   try {
     // Mock step categories
     res.json([
-      { id: 1, name: "Initial Setup", description: "Initial setup steps", color: "#3B82F6" },
-      { id: 2, name: "Documentation", description: "Documentation steps", color: "#8B5CF6" },
-      { id: 3, name: "Review & Approval", description: "Review and approval steps", color: "#F59E0B" },
-      { id: 4, name: "Communication", description: "Communication steps", color: "#10B981" },
-      { id: 5, name: "Technical", description: "Technical implementation", color: "#EF4444" },
-      { id: 6, name: "Financial", description: "Financial processes", color: "#EC4899" },
-      { id: 7, name: "Final Steps", description: "Completion steps", color: "#6B7280" },
+      {
+        id: 1,
+        name: "Initial Setup",
+        description: "Initial setup steps",
+        color: "#3B82F6",
+      },
+      {
+        id: 2,
+        name: "Documentation",
+        description: "Documentation steps",
+        color: "#8B5CF6",
+      },
+      {
+        id: 3,
+        name: "Review & Approval",
+        description: "Review and approval steps",
+        color: "#F59E0B",
+      },
+      {
+        id: 4,
+        name: "Communication",
+        description: "Communication steps",
+        color: "#10B981",
+      },
+      {
+        id: 5,
+        name: "Technical",
+        description: "Technical implementation",
+        color: "#EF4444",
+      },
+      {
+        id: 6,
+        name: "Financial",
+        description: "Financial processes",
+        color: "#EC4899",
+      },
+      {
+        id: 7,
+        name: "Final Steps",
+        description: "Completion steps",
+        color: "#6B7280",
+      },
     ]);
   } catch (error) {
     console.error("Error fetching step categories:", error);
@@ -183,9 +280,10 @@ router.get("/category/:categoryId", async (req: Request, res: Response) => {
     // Use mock data
     const allTemplates = await MockDataService.getAllTemplates();
     // Filter by mock category
-    const filteredTemplates = categoryId === 2 
-      ? allTemplates.filter(t => t.id <= 2) 
-      : allTemplates.filter(t => t.id > 2);
+    const filteredTemplates =
+      categoryId === 2
+        ? allTemplates.filter((t) => t.id <= 2)
+        : allTemplates.filter((t) => t.id > 2);
     res.json(filteredTemplates);
   } catch (error) {
     console.error("Error fetching templates by category:", error);
@@ -220,7 +318,8 @@ router.get("/:id", async (req: Request, res: Response) => {
     // Fallback to mock data
     try {
       const templates = await MockDataService.getAllTemplates();
-      const template = templates.find((t) => t.id === parseInt(req.params.id)) || null;
+      const template =
+        templates.find((t) => t.id === parseInt(req.params.id)) || null;
       if (template) {
         res.json(template);
       } else {
@@ -282,7 +381,10 @@ router.post("/", async (req: Request, res: Response) => {
         throw new Error("Database unavailable");
       }
     } catch (dbError) {
-      console.log("Database error, falling back to mock data:", dbError.message);
+      console.log(
+        "Database error, falling back to mock data:",
+        dbError.message,
+      );
       try {
         template = await MockDataService.createTemplate(templateData);
         console.log("Template created successfully with mock data:", template);
@@ -369,7 +471,7 @@ router.delete("/:id", async (req: Request, res: Response) => {
     } else {
       // Mock data fallback - just return success
       const templates = await MockDataService.getAllTemplates();
-      const templateExists = templates.some(t => t.id === id);
+      const templateExists = templates.some((t) => t.id === id);
 
       if (!templateExists) {
         return res.status(404).json({ error: "Template not found" });
@@ -393,10 +495,15 @@ router.post("/:id/duplicate", async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Invalid template ID" });
     }
 
-    const created_by = normalizeUserId(req.body.created_by || req.body.userId || "1");
+    const created_by = normalizeUserId(
+      req.body.created_by || req.body.userId || "1",
+    );
 
     if (await isDatabaseAvailable()) {
-      const duplicatedTemplate = await TemplateRepository.duplicate(id, created_by);
+      const duplicatedTemplate = await TemplateRepository.duplicate(
+        id,
+        created_by,
+      );
       if (!duplicatedTemplate) {
         return res.status(404).json({ error: "Template not found" });
       }
@@ -404,7 +511,7 @@ router.post("/:id/duplicate", async (req: Request, res: Response) => {
     } else {
       // Mock data fallback
       const templates = await MockDataService.getAllTemplates();
-      const originalTemplate = templates.find(t => t.id === id);
+      const originalTemplate = templates.find((t) => t.id === id);
 
       if (!originalTemplate) {
         return res.status(404).json({ error: "Template not found" });
@@ -413,7 +520,7 @@ router.post("/:id/duplicate", async (req: Request, res: Response) => {
       // Create a mock duplicated template
       const duplicatedTemplate = {
         ...originalTemplate,
-        id: Math.max(...templates.map(t => t.id)) + 1,
+        id: Math.max(...templates.map((t) => t.id)) + 1,
         name: `${originalTemplate.name} (Copy)`,
         created_by: created_by,
         created_at: new Date().toISOString(),

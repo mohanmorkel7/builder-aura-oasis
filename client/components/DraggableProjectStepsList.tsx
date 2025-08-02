@@ -25,7 +25,7 @@ import { apiClient } from "@/lib/api";
 interface DraggableProjectStepsListProps {
   projectId: number;
   steps: any[];
-  expandedSteps: {[key: number]: boolean};
+  expandedSteps: { [key: number]: boolean };
   onToggleExpansion: (stepId: number) => void;
   onUpdateStepStatus: (stepId: number, status: string) => void;
 }
@@ -64,7 +64,9 @@ export function DraggableProjectStepsList({
       return await apiClient.reorderProjectSteps(projectId, stepOrders);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["workflow-project-details", projectId] });
+      queryClient.invalidateQueries({
+        queryKey: ["workflow-project-details", projectId],
+      });
     },
   });
 

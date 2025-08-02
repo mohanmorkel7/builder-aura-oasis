@@ -6,29 +6,34 @@ import Mention from "@tiptap/extension-mention";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Bold, 
-  Italic, 
-  Strikethrough, 
-  Link as LinkIcon, 
+import {
+  Bold,
+  Italic,
+  Strikethrough,
+  Link as LinkIcon,
   Upload,
   X,
   FileText,
   Send,
-  AtSign
+  AtSign,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface RichTextCommentEditorProps {
-  onSubmit: (content: string, attachments: File[], isInternal: boolean, mentions: string[]) => void;
+  onSubmit: (
+    content: string,
+    attachments: File[],
+    isInternal: boolean,
+    mentions: string[],
+  ) => void;
   isLoading?: boolean;
   placeholder?: string;
 }
 
-export default function RichTextCommentEditor({ 
-  onSubmit, 
+export default function RichTextCommentEditor({
+  onSubmit,
   isLoading = false,
-  placeholder = "Type your comment here... Use @username to mention someone or @TKT-#### to reference another ticket"
+  placeholder = "Type your comment here... Use @username to mention someone or @TKT-#### to reference another ticket",
 }: RichTextCommentEditorProps) {
   const [isInternal, setIsInternal] = useState(false);
   const [attachments, setAttachments] = useState<File[]>([]);
@@ -45,48 +50,51 @@ export default function RichTextCommentEditor({
       }),
       Mention.configure({
         HTMLAttributes: {
-          class: "bg-blue-100 text-blue-800 px-1 py-0.5 rounded text-sm font-medium",
+          class:
+            "bg-blue-100 text-blue-800 px-1 py-0.5 rounded text-sm font-medium",
         },
         suggestion: {
           items: ({ query }) => {
             // Mock suggestions - in real app, this would fetch from API
-            const users = ['admin', 'sales', 'product', 'support'];
-            const tickets = ['TKT-0001', 'TKT-0002', 'TKT-0003'];
+            const users = ["admin", "sales", "product", "support"];
+            const tickets = ["TKT-0001", "TKT-0002", "TKT-0003"];
 
             const allSuggestions = [
-              ...users.map(user => ({ id: user, label: `@${user}` })),
-              ...tickets.map(ticket => ({ id: ticket, label: `@${ticket}` }))
+              ...users.map((user) => ({ id: user, label: `@${user}` })),
+              ...tickets.map((ticket) => ({ id: ticket, label: `@${ticket}` })),
             ];
 
             return allSuggestions
-              .filter(item => item.label.toLowerCase().includes(query.toLowerCase()))
+              .filter((item) =>
+                item.label.toLowerCase().includes(query.toLowerCase()),
+              )
               .slice(0, 5);
           },
         },
       }),
     ],
-    content: '',
+    content: "",
     editorProps: {
       attributes: {
-        class: 'prose prose-sm max-w-none focus:outline-none min-h-[100px] p-3',
+        class: "prose prose-sm max-w-none focus:outline-none min-h-[100px] p-3",
       },
     },
     onUpdate: ({ editor }) => {
       // Extract mentions from content
       const content = editor.getHTML();
       const mentionMatches = content.match(/@[\w-]+/g) || [];
-      setMentions(mentionMatches.map(mention => mention.substring(1)));
+      setMentions(mentionMatches.map((mention) => mention.substring(1)));
     },
   });
 
   const handleSubmit = () => {
     if (!editor) return;
-    
+
     const content = editor.getHTML();
-    if (!content.trim() || content === '<p></p>') return;
+    if (!content.trim() || content === "<p></p>") return;
 
     onSubmit(content, attachments, isInternal, mentions);
-    
+
     // Reset form
     editor.commands.clearContent();
     setAttachments([]);
@@ -97,9 +105,9 @@ export default function RichTextCommentEditor({
   const toggleBold = () => editor?.chain().focus().toggleBold().run();
   const toggleItalic = () => editor?.chain().focus().toggleItalic().run();
   const toggleStrike = () => editor?.chain().focus().toggleStrike().run();
-  
+
   const setLink = () => {
-    const url = window.prompt('Enter URL:');
+    const url = window.prompt("Enter URL:");
     if (url) {
       editor?.chain().focus().setLink({ href: url }).run();
     }
@@ -107,12 +115,12 @@ export default function RichTextCommentEditor({
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setAttachments(prev => [...prev, ...Array.from(e.target.files!)]);
+      setAttachments((prev) => [...prev, ...Array.from(e.target.files!)]);
     }
   };
 
   const handleRemoveAttachment = (index: number) => {
-    setAttachments(prev => prev.filter((_, i) => i !== index));
+    setAttachments((prev) => prev.filter((_, i) => i !== index));
   };
 
   if (!editor) return null;
@@ -129,12 +137,12 @@ export default function RichTextCommentEditor({
             onClick={toggleBold}
             className={cn(
               "h-8 w-8 p-0",
-              editor.isActive('bold') && "bg-gray-200"
+              editor.isActive("bold") && "bg-gray-200",
             )}
           >
             <Bold className="w-4 h-4" />
           </Button>
-          
+
           <Button
             type="button"
             variant="ghost"
@@ -142,12 +150,12 @@ export default function RichTextCommentEditor({
             onClick={toggleItalic}
             className={cn(
               "h-8 w-8 p-0",
-              editor.isActive('italic') && "bg-gray-200"
+              editor.isActive("italic") && "bg-gray-200",
             )}
           >
             <Italic className="w-4 h-4" />
           </Button>
-          
+
           <Button
             type="button"
             variant="ghost"
@@ -155,12 +163,12 @@ export default function RichTextCommentEditor({
             onClick={toggleStrike}
             className={cn(
               "h-8 w-8 p-0",
-              editor.isActive('strike') && "bg-gray-200"
+              editor.isActive("strike") && "bg-gray-200",
             )}
           >
             <Strikethrough className="w-4 h-4" />
           </Button>
-          
+
           <Button
             type="button"
             variant="ghost"
@@ -168,14 +176,14 @@ export default function RichTextCommentEditor({
             onClick={setLink}
             className={cn(
               "h-8 w-8 p-0",
-              editor.isActive('link') && "bg-gray-200"
+              editor.isActive("link") && "bg-gray-200",
             )}
           >
             <LinkIcon className="w-4 h-4" />
           </Button>
 
           <div className="h-4 w-px bg-gray-300" />
-          
+
           <label htmlFor="comment-attachment" className="cursor-pointer">
             <Button
               type="button"
@@ -199,7 +207,7 @@ export default function RichTextCommentEditor({
           </label>
 
           <div className="flex-1" />
-          
+
           <div className="text-xs text-gray-500">
             <AtSign className="w-3 h-3 inline mr-1" />
             Type @ to mention
@@ -208,8 +216,8 @@ export default function RichTextCommentEditor({
 
         {/* Editor */}
         <div className="border rounded-md min-h-[120px] focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent">
-          <EditorContent 
-            editor={editor} 
+          <EditorContent
+            editor={editor}
             className="min-h-[120px]"
             placeholder={placeholder}
           />
@@ -218,10 +226,15 @@ export default function RichTextCommentEditor({
         {/* Attachments */}
         {attachments.length > 0 && (
           <div className="space-y-2">
-            <div className="text-sm font-medium">Attachments ({attachments.length}):</div>
+            <div className="text-sm font-medium">
+              Attachments ({attachments.length}):
+            </div>
             <div className="grid grid-cols-1 gap-2">
               {attachments.map((file, index) => (
-                <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                <div
+                  key={index}
+                  className="flex items-center justify-between p-2 bg-gray-50 rounded"
+                >
                   <div className="flex items-center gap-2">
                     <FileText className="w-4 h-4 text-gray-500" />
                     <span className="text-sm">{file.name}</span>
@@ -268,9 +281,9 @@ export default function RichTextCommentEditor({
             />
             <span className="text-sm">Internal comment</span>
           </label>
-          
-          <Button 
-            onClick={handleSubmit} 
+
+          <Button
+            onClick={handleSubmit}
             disabled={isLoading || !editor.getText().trim()}
           >
             <Send className="w-4 h-4 mr-2" />

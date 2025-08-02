@@ -8,15 +8,27 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { 
-  Plus, 
-  Search, 
-  Filter, 
-  Edit, 
-  Copy, 
-  Trash2, 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Plus,
+  Search,
+  Filter,
+  Edit,
+  Copy,
+  Trash2,
   Eye,
   Settings,
   BarChart3,
@@ -25,7 +37,7 @@ import {
   DollarSign,
   UserPlus,
   Headphones,
-  Megaphone
+  Megaphone,
 } from "lucide-react";
 import { format } from "date-fns";
 import CreateTemplateDialog from "@/components/CreateTemplateDialogSimple";
@@ -87,7 +99,10 @@ export default function AdminTemplates() {
     queryKey: ["templates-admin", selectedCategory, searchTerm],
     queryFn: () => {
       if (searchTerm) {
-        return apiClient.searchTemplates(searchTerm, selectedCategory === "all" ? undefined : parseInt(selectedCategory));
+        return apiClient.searchTemplates(
+          searchTerm,
+          selectedCategory === "all" ? undefined : parseInt(selectedCategory),
+        );
       }
       if (selectedCategory === "all") {
         return apiClient.getTemplatesWithCategories();
@@ -142,9 +157,10 @@ export default function AdminTemplates() {
     return iconMap[iconName as keyof typeof iconMap] || Settings;
   };
 
-  const filteredTemplates = templates.filter((template) => 
-    template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    template.description?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredTemplates = templates.filter(
+    (template) =>
+      template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      template.description?.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   return (
@@ -152,10 +168,14 @@ export default function AdminTemplates() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Template Management</h1>
-          <p className="text-gray-600 mt-1">Manage workflow templates and categories</p>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Template Management
+          </h1>
+          <p className="text-gray-600 mt-1">
+            Manage workflow templates and categories
+          </p>
         </div>
-        
+
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
             <Button>
@@ -167,10 +187,12 @@ export default function AdminTemplates() {
             <DialogHeader>
               <DialogTitle>Create New Template</DialogTitle>
             </DialogHeader>
-            <CreateTemplateDialog 
+            <CreateTemplateDialog
               onSuccess={() => {
                 setIsCreateDialogOpen(false);
-                queryClient.invalidateQueries({ queryKey: ["templates-admin"] });
+                queryClient.invalidateQueries({
+                  queryKey: ["templates-admin"],
+                });
               }}
               categories={categories}
             />
@@ -223,8 +245,11 @@ export default function AdminTemplates() {
                 />
               </div>
             </div>
-            
-            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+
+            <Select
+              value={selectedCategory}
+              onValueChange={setSelectedCategory}
+            >
               <SelectTrigger className="w-[200px]">
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
@@ -233,10 +258,13 @@ export default function AdminTemplates() {
                 {categories.map((category) => {
                   const IconComponent = getCategoryIcon(category.icon);
                   return (
-                    <SelectItem key={category.id} value={category.id.toString()}>
+                    <SelectItem
+                      key={category.id}
+                      value={category.id.toString()}
+                    >
                       <div className="flex items-center gap-2">
-                        <div 
-                          className="w-3 h-3 rounded-full" 
+                        <div
+                          className="w-3 h-3 rounded-full"
                           style={{ backgroundColor: category.color }}
                         />
                         <IconComponent className="w-4 h-4" />
@@ -265,20 +293,25 @@ export default function AdminTemplates() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredTemplates.map((template) => {
-                const CategoryIcon = template.category?.icon 
-                  ? getCategoryIcon(template.category.icon) 
+                const CategoryIcon = template.category?.icon
+                  ? getCategoryIcon(template.category.icon)
                   : Package;
-                
+
                 return (
-                  <Card key={template.id} className="hover:shadow-md transition-shadow">
+                  <Card
+                    key={template.id}
+                    className="hover:shadow-md transition-shadow"
+                  >
                     <CardHeader>
                       <div className="flex items-start justify-between">
                         <div className="flex items-center gap-2">
                           {template.category && (
                             <div className="flex items-center gap-1">
-                              <div 
-                                className="w-3 h-3 rounded-full" 
-                                style={{ backgroundColor: template.category.color }}
+                              <div
+                                className="w-3 h-3 rounded-full"
+                                style={{
+                                  backgroundColor: template.category.color,
+                                }}
                               />
                               <CategoryIcon className="w-4 h-4" />
                             </div>
@@ -287,7 +320,11 @@ export default function AdminTemplates() {
                             {template.step_count} steps
                           </Badge>
                         </div>
-                        <Badge variant={template.usage_count > 0 ? "default" : "outline"}>
+                        <Badge
+                          variant={
+                            template.usage_count > 0 ? "default" : "outline"
+                          }
+                        >
                           {template.usage_count} uses
                         </Badge>
                       </div>
@@ -301,9 +338,11 @@ export default function AdminTemplates() {
                     <CardContent>
                       <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
                         <span>by {template.creator_name}</span>
-                        <span>{format(new Date(template.updated_at), "MMM d, yyyy")}</span>
+                        <span>
+                          {format(new Date(template.updated_at), "MMM d, yyyy")}
+                        </span>
                       </div>
-                      
+
                       <div className="flex gap-2">
                         <Button
                           variant="outline"
@@ -323,16 +362,16 @@ export default function AdminTemplates() {
                           <Edit className="w-4 h-4 mr-1" />
                           Edit
                         </Button>
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           size="sm"
                           onClick={() => handleDuplicateTemplate(template.id)}
                           disabled={duplicateTemplateMutation.isPending}
                         >
                           <Copy className="w-4 h-4" />
                         </Button>
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           size="sm"
                           onClick={() => handleDeleteTemplate(template.id)}
                           disabled={deleteTemplateMutation.isPending}
@@ -345,7 +384,7 @@ export default function AdminTemplates() {
                   </Card>
                 );
               })}
-              
+
               {filteredTemplates.length === 0 && (
                 <div className="col-span-full text-center py-8 text-gray-500">
                   No templates found
@@ -363,26 +402,36 @@ export default function AdminTemplates() {
             <CardContent>
               <div className="space-y-4">
                 {filteredTemplates.map((template) => (
-                  <div key={template.id} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div
+                    key={template.id}
+                    className="flex items-center justify-between p-4 border rounded-lg"
+                  >
                     <div className="flex items-center gap-4">
                       {template.category && (
-                        <div 
-                          className="w-4 h-4 rounded-full flex-shrink-0" 
+                        <div
+                          className="w-4 h-4 rounded-full flex-shrink-0"
                           style={{ backgroundColor: template.category.color }}
                         />
                       )}
                       <div>
                         <h3 className="font-medium">{template.name}</h3>
-                        <p className="text-sm text-gray-600">{template.description}</p>
+                        <p className="text-sm text-gray-600">
+                          {template.description}
+                        </p>
                         <div className="flex items-center gap-4 text-xs text-gray-500 mt-1">
                           <span>{template.step_count} steps</span>
                           <span>{template.usage_count} uses</span>
                           <span>by {template.creator_name}</span>
-                          <span>{format(new Date(template.updated_at), "MMM d, yyyy")}</span>
+                          <span>
+                            {format(
+                              new Date(template.updated_at),
+                              "MMM d, yyyy",
+                            )}
+                          </span>
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="flex gap-2">
                       <Button
                         variant="outline"
@@ -398,15 +447,15 @@ export default function AdminTemplates() {
                       >
                         <Edit className="w-4 h-4" />
                       </Button>
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         size="sm"
                         onClick={() => handleDuplicateTemplate(template.id)}
                       >
                         <Copy className="w-4 h-4" />
                       </Button>
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         size="sm"
                         onClick={() => handleDeleteTemplate(template.id)}
                         className="text-red-600"
@@ -425,27 +474,29 @@ export default function AdminTemplates() {
           <div className="space-y-6">
             {categories.map((category) => {
               const categoryTemplates = filteredTemplates.filter(
-                t => t.category_id === category.id
+                (t) => t.category_id === category.id,
               );
               const CategoryIcon = getCategoryIcon(category.icon);
-              
+
               return (
                 <Card key={category.id}>
                   <CardHeader>
                     <div className="flex items-center gap-3">
-                      <div 
+                      <div
                         className="w-6 h-6 rounded-full flex items-center justify-center"
                         style={{ backgroundColor: `${category.color}20` }}
                       >
-                        <CategoryIcon 
-                          className="w-4 h-4" 
+                        <CategoryIcon
+                          className="w-4 h-4"
                           style={{ color: category.color }}
                         />
                       </div>
                       <div>
                         <CardTitle>{category.name}</CardTitle>
                         {category.description && (
-                          <p className="text-sm text-gray-600">{category.description}</p>
+                          <p className="text-sm text-gray-600">
+                            {category.description}
+                          </p>
                         )}
                       </div>
                       <Badge variant="secondary" className="ml-auto">
@@ -456,12 +507,19 @@ export default function AdminTemplates() {
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       {categoryTemplates.map((template) => (
-                        <div key={template.id} className="p-4 border rounded-lg">
+                        <div
+                          key={template.id}
+                          className="p-4 border rounded-lg"
+                        >
                           <div className="flex items-center justify-between mb-2">
                             <h4 className="font-medium">{template.name}</h4>
-                            <Badge variant="outline">{template.usage_count} uses</Badge>
+                            <Badge variant="outline">
+                              {template.usage_count} uses
+                            </Badge>
                           </div>
-                          <p className="text-sm text-gray-600 mb-3">{template.description}</p>
+                          <p className="text-sm text-gray-600 mb-3">
+                            {template.description}
+                          </p>
                           <div className="flex gap-2">
                             <Button
                               variant="outline"
@@ -471,17 +529,19 @@ export default function AdminTemplates() {
                             >
                               Edit
                             </Button>
-                            <Button 
-                              variant="outline" 
+                            <Button
+                              variant="outline"
                               size="sm"
-                              onClick={() => handleDuplicateTemplate(template.id)}
+                              onClick={() =>
+                                handleDuplicateTemplate(template.id)
+                              }
                             >
                               <Copy className="w-4 h-4" />
                             </Button>
                           </div>
                         </div>
                       ))}
-                      
+
                       {categoryTemplates.length === 0 && (
                         <div className="col-span-full text-center py-8 text-gray-500">
                           No templates in this category

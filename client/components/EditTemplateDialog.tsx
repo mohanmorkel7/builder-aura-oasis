@@ -2,29 +2,40 @@ import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  Plus, 
-  Trash2, 
-  Save, 
-  ArrowUp, 
-  ArrowDown, 
+import {
+  Plus,
+  Trash2,
+  Save,
+  ArrowUp,
+  ArrowDown,
   Settings,
   Package,
   Target,
   DollarSign,
   UserPlus,
   Headphones,
-  Megaphone
+  Megaphone,
 } from "lucide-react";
 
 interface EditTemplateDialogProps {
@@ -60,10 +71,15 @@ const iconMap = {
 
 const roles = ["admin", "sales", "product", "support", "finance"];
 
-export default function EditTemplateDialog({ templateId, isOpen, onClose, categories }: EditTemplateDialogProps) {
+export default function EditTemplateDialog({
+  templateId,
+  isOpen,
+  onClose,
+  categories,
+}: EditTemplateDialogProps) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  
+
   const [templateData, setTemplateData] = useState({
     name: "",
     description: "",
@@ -72,7 +88,7 @@ export default function EditTemplateDialog({ templateId, isOpen, onClose, catego
     tags: [] as string[],
     is_active: true,
   });
-  
+
   const [steps, setSteps] = useState<TemplateStep[]>([]);
   const [newTag, setNewTag] = useState("");
   const [activeTab, setActiveTab] = useState("basic");
@@ -80,7 +96,7 @@ export default function EditTemplateDialog({ templateId, isOpen, onClose, catego
   // Fetch template data
   const { data: template, isLoading } = useQuery({
     queryKey: ["template", templateId],
-    queryFn: () => templateId ? apiClient.getTemplate(templateId) : null,
+    queryFn: () => (templateId ? apiClient.getTemplate(templateId) : null),
     enabled: !!templateId && isOpen,
   });
 
@@ -105,22 +121,24 @@ export default function EditTemplateDialog({ templateId, isOpen, onClose, catego
         tags: template.tags || [],
         is_active: template.is_active !== false,
       });
-      
+
       // Convert template steps to editable format
       if (template.steps) {
-        const editableSteps = template.steps.map((step: any, index: number) => ({
-          id: step.id?.toString() || Date.now().toString() + index,
-          name: step.name || "",
-          description: step.description || "",
-          default_eta_days: step.default_eta_days || 3,
-          auto_alert: step.auto_alert || false,
-          email_reminder: step.email_reminder || false,
-          step_category_id: step.step_category_id,
-          assigned_role: step.assigned_role,
-          required_documents: step.required_documents || [],
-          approval_required: step.approval_required || false,
-          parallel_execution: step.parallel_execution || false,
-        }));
+        const editableSteps = template.steps.map(
+          (step: any, index: number) => ({
+            id: step.id?.toString() || Date.now().toString() + index,
+            name: step.name || "",
+            description: step.description || "",
+            default_eta_days: step.default_eta_days || 3,
+            auto_alert: step.auto_alert || false,
+            email_reminder: step.email_reminder || false,
+            step_category_id: step.step_category_id,
+            assigned_role: step.assigned_role,
+            required_documents: step.required_documents || [],
+            approval_required: step.approval_required || false,
+            parallel_execution: step.parallel_execution || false,
+          }),
+        );
         setSteps(editableSteps);
       }
     }
@@ -129,8 +147,12 @@ export default function EditTemplateDialog({ templateId, isOpen, onClose, catego
   const handleSubmit = () => {
     const submitData = {
       ...templateData,
-      category_id: templateData.category_id ? parseInt(templateData.category_id) : undefined,
-      template_type_id: templateData.template_type_id ? parseInt(templateData.template_type_id) : undefined,
+      category_id: templateData.category_id
+        ? parseInt(templateData.category_id)
+        : undefined,
+      template_type_id: templateData.template_type_id
+        ? parseInt(templateData.template_type_id)
+        : undefined,
       steps: steps.map((step, index) => ({
         step_order: index + 1,
         name: step.name,
@@ -165,31 +187,36 @@ export default function EditTemplateDialog({ templateId, isOpen, onClose, catego
   };
 
   const updateStep = (stepId: string, updates: Partial<TemplateStep>) => {
-    setSteps(steps.map(step => 
-      step.id === stepId ? { ...step, ...updates } : step
-    ));
+    setSteps(
+      steps.map((step) =>
+        step.id === stepId ? { ...step, ...updates } : step,
+      ),
+    );
   };
 
   const deleteStep = (stepId: string) => {
-    setSteps(steps.filter(step => step.id !== stepId));
+    setSteps(steps.filter((step) => step.id !== stepId));
   };
 
   const moveStep = (stepId: string, direction: "up" | "down") => {
-    const index = steps.findIndex(step => step.id === stepId);
+    const index = steps.findIndex((step) => step.id === stepId);
     if (
       (direction === "up" && index > 0) ||
       (direction === "down" && index < steps.length - 1)
     ) {
       const newSteps = [...steps];
       const targetIndex = direction === "up" ? index - 1 : index + 1;
-      [newSteps[index], newSteps[targetIndex]] = [newSteps[targetIndex], newSteps[index]];
+      [newSteps[index], newSteps[targetIndex]] = [
+        newSteps[targetIndex],
+        newSteps[index],
+      ];
       setSteps(newSteps);
     }
   };
 
   const addTag = () => {
     if (newTag.trim() && !templateData.tags.includes(newTag.trim())) {
-      setTemplateData(prev => ({
+      setTemplateData((prev) => ({
         ...prev,
         tags: [...prev.tags, newTag.trim()],
       }));
@@ -198,9 +225,9 @@ export default function EditTemplateDialog({ templateId, isOpen, onClose, catego
   };
 
   const removeTag = (tagToRemove: string) => {
-    setTemplateData(prev => ({
+    setTemplateData((prev) => ({
       ...prev,
-      tags: prev.tags.filter(tag => tag !== tagToRemove),
+      tags: prev.tags.filter((tag) => tag !== tagToRemove),
     }));
   };
 
@@ -237,7 +264,12 @@ export default function EditTemplateDialog({ templateId, isOpen, onClose, catego
                       <Input
                         id="name"
                         value={templateData.name}
-                        onChange={(e) => setTemplateData(prev => ({ ...prev, name: e.target.value }))}
+                        onChange={(e) =>
+                          setTemplateData((prev) => ({
+                            ...prev,
+                            name: e.target.value,
+                          }))
+                        }
                         placeholder="Enter template name"
                       />
                     </div>
@@ -248,7 +280,12 @@ export default function EditTemplateDialog({ templateId, isOpen, onClose, catego
                         id="description"
                         rows={3}
                         value={templateData.description}
-                        onChange={(e) => setTemplateData(prev => ({ ...prev, description: e.target.value }))}
+                        onChange={(e) =>
+                          setTemplateData((prev) => ({
+                            ...prev,
+                            description: e.target.value,
+                          }))
+                        }
                         placeholder="Describe what this template is for"
                       />
                     </div>
@@ -257,19 +294,29 @@ export default function EditTemplateDialog({ templateId, isOpen, onClose, catego
                       <Label htmlFor="category">Category</Label>
                       <Select
                         value={templateData.category_id}
-                        onValueChange={(value) => setTemplateData(prev => ({ ...prev, category_id: value }))}
+                        onValueChange={(value) =>
+                          setTemplateData((prev) => ({
+                            ...prev,
+                            category_id: value,
+                          }))
+                        }
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select category" />
                         </SelectTrigger>
                         <SelectContent>
                           {categories.map((category) => {
-                            const IconComponent = getCategoryIcon(category.icon);
+                            const IconComponent = getCategoryIcon(
+                              category.icon,
+                            );
                             return (
-                              <SelectItem key={category.id} value={category.id.toString()}>
+                              <SelectItem
+                                key={category.id}
+                                value={category.id.toString()}
+                              >
                                 <div className="flex items-center gap-2">
-                                  <div 
-                                    className="w-3 h-3 rounded-full" 
+                                  <div
+                                    className="w-3 h-3 rounded-full"
                                     style={{ backgroundColor: category.color }}
                                   />
                                   <IconComponent className="w-4 h-4" />
@@ -286,7 +333,12 @@ export default function EditTemplateDialog({ templateId, isOpen, onClose, catego
                       <Checkbox
                         id="is_active"
                         checked={templateData.is_active}
-                        onCheckedChange={(checked) => setTemplateData(prev => ({ ...prev, is_active: !!checked }))}
+                        onCheckedChange={(checked) =>
+                          setTemplateData((prev) => ({
+                            ...prev,
+                            is_active: !!checked,
+                          }))
+                        }
                       />
                       <Label htmlFor="is_active">Template is active</Label>
                     </div>
@@ -300,16 +352,26 @@ export default function EditTemplateDialog({ templateId, isOpen, onClose, catego
                           value={newTag}
                           onChange={(e) => setNewTag(e.target.value)}
                           placeholder="Add a tag"
-                          onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addTag())}
+                          onKeyPress={(e) =>
+                            e.key === "Enter" && (e.preventDefault(), addTag())
+                          }
                         />
-                        <Button type="button" variant="outline" onClick={addTag}>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={addTag}
+                        >
                           Add
                         </Button>
                       </div>
                       {templateData.tags.length > 0 && (
                         <div className="flex flex-wrap gap-2">
                           {templateData.tags.map((tag) => (
-                            <Badge key={tag} variant="secondary" className="flex items-center gap-1">
+                            <Badge
+                              key={tag}
+                              variant="secondary"
+                              className="flex items-center gap-1"
+                            >
                               {tag}
                               <button
                                 type="button"
@@ -378,7 +440,9 @@ export default function EditTemplateDialog({ templateId, isOpen, onClose, catego
                             <Label>Step Name *</Label>
                             <Input
                               value={step.name}
-                              onChange={(e) => updateStep(step.id, { name: e.target.value })}
+                              onChange={(e) =>
+                                updateStep(step.id, { name: e.target.value })
+                              }
                               placeholder="Enter step name"
                             />
                           </div>
@@ -386,7 +450,9 @@ export default function EditTemplateDialog({ templateId, isOpen, onClose, catego
                             <Label>Assigned Role</Label>
                             <Select
                               value={step.assigned_role || ""}
-                              onValueChange={(value) => updateStep(step.id, { assigned_role: value })}
+                              onValueChange={(value) =>
+                                updateStep(step.id, { assigned_role: value })
+                              }
                             >
                               <SelectTrigger>
                                 <SelectValue placeholder="Select role" />
@@ -394,7 +460,8 @@ export default function EditTemplateDialog({ templateId, isOpen, onClose, catego
                               <SelectContent>
                                 {roles.map((role) => (
                                   <SelectItem key={role} value={role}>
-                                    {role.charAt(0).toUpperCase() + role.slice(1)}
+                                    {role.charAt(0).toUpperCase() +
+                                      role.slice(1)}
                                   </SelectItem>
                                 ))}
                               </SelectContent>
@@ -407,7 +474,11 @@ export default function EditTemplateDialog({ templateId, isOpen, onClose, catego
                           <Textarea
                             rows={2}
                             value={step.description}
-                            onChange={(e) => updateStep(step.id, { description: e.target.value })}
+                            onChange={(e) =>
+                              updateStep(step.id, {
+                                description: e.target.value,
+                              })
+                            }
                             placeholder="Describe what needs to be done in this step"
                           />
                         </div>
@@ -419,7 +490,12 @@ export default function EditTemplateDialog({ templateId, isOpen, onClose, catego
                               type="number"
                               min="1"
                               value={step.default_eta_days}
-                              onChange={(e) => updateStep(step.id, { default_eta_days: parseInt(e.target.value) || 1 })}
+                              onChange={(e) =>
+                                updateStep(step.id, {
+                                  default_eta_days:
+                                    parseInt(e.target.value) || 1,
+                                })
+                              }
                             />
                           </div>
                           <div className="space-y-2">
@@ -427,9 +503,14 @@ export default function EditTemplateDialog({ templateId, isOpen, onClose, catego
                               <Checkbox
                                 id={`auto-alert-${step.id}`}
                                 checked={step.auto_alert}
-                                onCheckedChange={(checked) => updateStep(step.id, { auto_alert: !!checked })}
+                                onCheckedChange={(checked) =>
+                                  updateStep(step.id, { auto_alert: !!checked })
+                                }
                               />
-                              <Label htmlFor={`auto-alert-${step.id}`} className="text-sm">
+                              <Label
+                                htmlFor={`auto-alert-${step.id}`}
+                                className="text-sm"
+                              >
                                 Auto Alert
                               </Label>
                             </div>
@@ -437,9 +518,16 @@ export default function EditTemplateDialog({ templateId, isOpen, onClose, catego
                               <Checkbox
                                 id={`email-reminder-${step.id}`}
                                 checked={step.email_reminder}
-                                onCheckedChange={(checked) => updateStep(step.id, { email_reminder: !!checked })}
+                                onCheckedChange={(checked) =>
+                                  updateStep(step.id, {
+                                    email_reminder: !!checked,
+                                  })
+                                }
                               />
-                              <Label htmlFor={`email-reminder-${step.id}`} className="text-sm">
+                              <Label
+                                htmlFor={`email-reminder-${step.id}`}
+                                className="text-sm"
+                              >
                                 Email Reminder
                               </Label>
                             </div>
@@ -449,9 +537,16 @@ export default function EditTemplateDialog({ templateId, isOpen, onClose, catego
                               <Checkbox
                                 id={`approval-required-${step.id}`}
                                 checked={step.approval_required}
-                                onCheckedChange={(checked) => updateStep(step.id, { approval_required: !!checked })}
+                                onCheckedChange={(checked) =>
+                                  updateStep(step.id, {
+                                    approval_required: !!checked,
+                                  })
+                                }
                               />
-                              <Label htmlFor={`approval-required-${step.id}`} className="text-sm">
+                              <Label
+                                htmlFor={`approval-required-${step.id}`}
+                                className="text-sm"
+                              >
                                 Approval Required
                               </Label>
                             </div>
@@ -459,9 +554,16 @@ export default function EditTemplateDialog({ templateId, isOpen, onClose, catego
                               <Checkbox
                                 id={`parallel-execution-${step.id}`}
                                 checked={step.parallel_execution}
-                                onCheckedChange={(checked) => updateStep(step.id, { parallel_execution: !!checked })}
+                                onCheckedChange={(checked) =>
+                                  updateStep(step.id, {
+                                    parallel_execution: !!checked,
+                                  })
+                                }
                               />
-                              <Label htmlFor={`parallel-execution-${step.id}`} className="text-sm">
+                              <Label
+                                htmlFor={`parallel-execution-${step.id}`}
+                                className="text-sm"
+                              >
                                 Parallel Execution
                               </Label>
                             </div>
@@ -488,34 +590,45 @@ export default function EditTemplateDialog({ templateId, isOpen, onClose, catego
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <Label>Name</Label>
-                        <p className="text-sm bg-gray-50 p-2 rounded">{templateData.name || "Not set"}</p>
+                        <p className="text-sm bg-gray-50 p-2 rounded">
+                          {templateData.name || "Not set"}
+                        </p>
                       </div>
                       <div>
                         <Label>Category</Label>
                         <p className="text-sm bg-gray-50 p-2 rounded">
-                          {templateData.category_id 
-                            ? categories.find(c => c.id.toString() === templateData.category_id)?.name 
-                            : "Not set"
-                          }
+                          {templateData.category_id
+                            ? categories.find(
+                                (c) =>
+                                  c.id.toString() === templateData.category_id,
+                              )?.name
+                            : "Not set"}
                         </p>
                       </div>
                     </div>
 
                     <div>
                       <Label>Description</Label>
-                      <p className="text-sm bg-gray-50 p-2 rounded">{templateData.description || "Not set"}</p>
+                      <p className="text-sm bg-gray-50 p-2 rounded">
+                        {templateData.description || "Not set"}
+                      </p>
                     </div>
 
                     <div>
                       <Label>Steps ({steps.length})</Label>
                       <div className="space-y-2">
                         {steps.map((step, index) => (
-                          <div key={step.id} className="flex items-center gap-2 text-sm bg-gray-50 p-2 rounded">
+                          <div
+                            key={step.id}
+                            className="flex items-center gap-2 text-sm bg-gray-50 p-2 rounded"
+                          >
                             <Badge variant="outline" className="text-xs">
                               {index + 1}
                             </Badge>
                             <span className="flex-1">{step.name}</span>
-                            <span className="text-gray-500">{step.default_eta_days}d</span>
+                            <span className="text-gray-500">
+                              {step.default_eta_days}d
+                            </span>
                             {step.assigned_role && (
                               <Badge variant="secondary" className="text-xs">
                                 {step.assigned_role}
@@ -524,7 +637,9 @@ export default function EditTemplateDialog({ templateId, isOpen, onClose, catego
                           </div>
                         ))}
                         {steps.length === 0 && (
-                          <span className="text-sm text-gray-500">No steps defined</span>
+                          <span className="text-sm text-gray-500">
+                            No steps defined
+                          </span>
                         )}
                       </div>
                     </div>
@@ -538,12 +653,18 @@ export default function EditTemplateDialog({ templateId, isOpen, onClose, catego
               <Button variant="outline" onClick={onClose}>
                 Cancel
               </Button>
-              <Button 
+              <Button
                 onClick={handleSubmit}
-                disabled={!templateData.name.trim() || steps.length === 0 || updateTemplateMutation.isPending}
+                disabled={
+                  !templateData.name.trim() ||
+                  steps.length === 0 ||
+                  updateTemplateMutation.isPending
+                }
               >
                 <Save className="w-4 h-4 mr-2" />
-                {updateTemplateMutation.isPending ? "Saving..." : "Save Changes"}
+                {updateTemplateMutation.isPending
+                  ? "Saving..."
+                  : "Save Changes"}
               </Button>
             </div>
           </div>

@@ -67,7 +67,8 @@ export default function TemplateStatsCard({
                 change.trend === "up" ? "text-green-600" : "text-red-600"
               }
             >
-              {change.trend === "up" ? "+" : "-"}{Math.abs(change.value)}%
+              {change.trend === "up" ? "+" : "-"}
+              {Math.abs(change.value)}%
             </span>{" "}
             from last month
           </p>
