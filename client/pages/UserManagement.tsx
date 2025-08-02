@@ -172,7 +172,7 @@ export default function UserManagement() {
                 <p className="text-2xl font-bold text-green-600">{mockAzureUsers.length}</p>
               </div>
               <div className="p-3 rounded-lg bg-green-100">
-                <Microsoft className="w-6 h-6 text-green-600" />
+                <Cloud className="w-6 h-6 text-green-600" />
               </div>
             </div>
           </CardContent>
