@@ -136,7 +136,7 @@ export interface LeadChatAttachment {
 
 export interface CreateLeadData {
   lead_id?: string; // Optional, will be auto-generated if not provided
-  lead_source:
+  lead_source?:
     | "email"
     | "social-media"
     | "phone"
