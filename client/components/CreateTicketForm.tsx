@@ -142,9 +142,9 @@ export default function CreateTicketForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-4">
       {/* Basic Information */}
-      <div className="space-y-4">
+      <div className="space-y-3">
         <div>
           <Label htmlFor="subject">Subject *</Label>
           <Input
