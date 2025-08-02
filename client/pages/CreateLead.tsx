@@ -111,13 +111,33 @@ const priorityLevels = [
 const currencyOptions = [
   { value: "INR", label: "INR" },
   { value: "USD", label: "USD" },
-  { value: "Dubai", label: "Dubai" },
+  { value: "AED", label: "AED (Dubai)" },
 ];
 
-const unitOptions = [
-  { value: "paisa", label: "Paisa" },
-  { value: "cents", label: "Cents" },
-];
+const getCurrencyUnits = (currency: string) => {
+  switch (currency) {
+    case "INR":
+      return [
+        { value: "rupee", label: "Rupee" },
+        { value: "paisa", label: "Paisa" },
+      ];
+    case "USD":
+      return [
+        { value: "dollar", label: "Dollar" },
+        { value: "cents", label: "Cents" },
+      ];
+    case "AED":
+      return [
+        { value: "dirham", label: "Dirham" },
+        { value: "fils", label: "Fils" },
+      ];
+    default:
+      return [
+        { value: "rupee", label: "Rupee" },
+        { value: "paisa", label: "Paisa" },
+      ];
+  }
+};
 
 const clientTypes = [
   { value: "new", label: "New" },
