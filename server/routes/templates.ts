@@ -419,7 +419,7 @@ router.post("/:id/duplicate", async (req: Request, res: Response) => {
   }
 });
 
-// Get template categories
+export default router;
 router.get("/categories", async (req: Request, res: Response) => {
   try {
     // Always use mock data for now since enhanced tables don't exist yet
