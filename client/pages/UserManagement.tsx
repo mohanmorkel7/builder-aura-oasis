@@ -320,7 +320,7 @@ export default function UserManagement() {
                       <TableCell>
                         {user.azureObjectId ? (
                           <div className="flex items-center space-x-1">
-                            <Microsoft className="w-4 h-4 text-blue-600" />
+                            <Cloud className="w-4 h-4 text-blue-600" />
                             <span className="text-sm text-blue-600">Azure SSO</span>
                           </div>
                         ) : (
