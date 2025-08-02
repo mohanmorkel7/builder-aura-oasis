@@ -256,6 +256,23 @@ export default function LeadDetails() {
             <p className="text-gray-600 mt-1">
               Lead Details & Custom Sales Pipeline
             </p>
+            {/* Progress Bar */}
+            <div className="mt-3">
+              <div className="flex items-center space-x-3">
+                <span className="text-sm font-medium text-gray-700">Progress:</span>
+                <div className="flex-1 max-w-xs">
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div
+                      className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${completionPercentage}%` }}
+                    ></div>
+                  </div>
+                </div>
+                <span className="text-sm font-bold text-blue-600">
+                  {completionPercentage}% Complete
+                </span>
+              </div>
+            </div>
           </div>
         </div>
         <div className="flex space-x-3">
