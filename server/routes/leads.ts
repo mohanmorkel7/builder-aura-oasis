@@ -128,9 +128,11 @@ router.get("/:id", async (req: Request, res: Response) => {
 router.post("/", async (req: Request, res: Response) => {
   try {
     const leadData: CreateLeadData = req.body;
+    console.log("Received lead creation request. Body:", JSON.stringify(req.body, null, 2));
 
     // For partial saves, skip strict validation
     const isPartialSave = leadData.is_partial === true;
+    console.log("Is partial save:", isPartialSave);
 
     if (!isPartialSave) {
       // Validate required fields only for complete leads
