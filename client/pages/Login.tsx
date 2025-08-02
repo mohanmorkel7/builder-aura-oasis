@@ -65,6 +65,7 @@ export default function Login() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email"
+                  autoComplete="off"
                   required
                 />
               </div>
