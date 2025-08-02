@@ -88,7 +88,7 @@ function CreateProjectFromLeadDialog({ lead, isOpen, onClose, onSuccess }: Creat
   });
 
   // Update steps when template changes
-  React.useEffect(() => {
+  useEffect(() => {
     if (templateSteps?.steps) {
       const convertedSteps = templateSteps.steps.map((step: any, index: number) => ({
         step_name: step.name,
