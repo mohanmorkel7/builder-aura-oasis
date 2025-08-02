@@ -843,6 +843,13 @@ export class ApiClient {
   async getCompletedLeads() {
     return this.request("/workflow/leads/completed");
   }
+
+  async reorderProjectSteps(projectId: number, stepOrders: { id: number; order: number }[]) {
+    return this.request(`/workflow/projects/${projectId}/steps/reorder`, {
+      method: "POST",
+      body: JSON.stringify({ stepOrders }),
+    });
+  }
 }
 
 export const apiClient = new ApiClient();
