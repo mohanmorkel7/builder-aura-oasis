@@ -537,33 +537,80 @@ export default function CreateTemplateDialog({
 
             {/* Probability Total Calculation */}
             {steps.length > 0 && (
-              <div className="mt-6 p-4 bg-gray-50 rounded-lg border">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-700">
-                    Total Probability Percentage:
-                  </span>
-                  <div className="flex items-center space-x-2">
-                    <span
-                      className={`text-lg font-bold ${
-                        steps.reduce((sum, step) => sum + (step.probability_percent || 0), 0) === 100
-                          ? 'text-green-600'
-                          : 'text-red-600'
-                      }`}
-                    >
-                      {steps.reduce((sum, step) => sum + (step.probability_percent || 0), 0)}%
+              <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border-2 border-blue-200">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-semibold text-gray-800">
+                      🎯 Probability Distribution
                     </span>
-                    {steps.reduce((sum, step) => sum + (step.probability_percent || 0), 0) === 100 && (
-                      <span className="text-sm text-green-600 bg-green-100 px-2 py-1 rounded">
-                        ✓ Perfect!
+                    <div className="flex items-center space-x-2">
+                      <span
+                        className={`text-xl font-bold ${
+                          steps.reduce((sum, step) => sum + (step.probability_percent || 0), 0) === 100
+                            ? 'text-green-600'
+                            : steps.reduce((sum, step) => sum + (step.probability_percent || 0), 0) > 100
+                            ? 'text-red-600'
+                            : 'text-orange-600'
+                        }`}
+                      >
+                        {steps.reduce((sum, step) => sum + (step.probability_percent || 0), 0)}%
                       </span>
-                    )}
+                      <span className="text-gray-500">/ 100%</span>
+                    </div>
+                  </div>
+
+                  {/* Progress Bar */}
+                  <div className="w-full bg-gray-200 rounded-full h-3">
+                    <div
+                      className={`h-3 rounded-full transition-all duration-500 ${
+                        steps.reduce((sum, step) => sum + (step.probability_percent || 0), 0) === 100
+                          ? 'bg-green-500'
+                          : steps.reduce((sum, step) => sum + (step.probability_percent || 0), 0) > 100
+                          ? 'bg-red-500'
+                          : 'bg-orange-400'
+                      }`}
+                      style={{
+                        width: `${Math.min(steps.reduce((sum, step) => sum + (step.probability_percent || 0), 0), 100)}%`
+                      }}
+                    ></div>
+                  </div>
+
+                  {/* Status Messages */}
+                  <div className="flex items-center justify-between text-xs">
+                    <div className="flex items-center space-x-1">
+                      {steps.reduce((sum, step) => sum + (step.probability_percent || 0), 0) === 100 ? (
+                        <span className="text-green-600 bg-green-100 px-2 py-1 rounded font-medium">
+                          ✓ Perfect Distribution!
+                        </span>
+                      ) : steps.reduce((sum, step) => sum + (step.probability_percent || 0), 0) > 100 ? (
+                        <span className="text-red-600 bg-red-100 px-2 py-1 rounded font-medium">
+                          ⚠ Over 100% - Reduce by {steps.reduce((sum, step) => sum + (step.probability_percent || 0), 0) - 100}%
+                        </span>
+                      ) : (
+                        <span className="text-orange-600 bg-orange-100 px-2 py-1 rounded font-medium">
+                          📊 Remaining: {100 - steps.reduce((sum, step) => sum + (step.probability_percent || 0), 0)}%
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-gray-500">
+                      {steps.length} step{steps.length !== 1 ? 's' : ''}
+                    </span>
+                  </div>
+
+                  {/* Individual Step Breakdown */}
+                  <div className="grid grid-cols-2 gap-2 pt-2 border-t border-blue-200">
+                    {steps.map((step, index) => (
+                      <div key={step.id} className="flex justify-between text-xs">
+                        <span className="text-gray-600 truncate">
+                          {index + 1}. {step.name}
+                        </span>
+                        <span className="font-medium text-gray-800">
+                          {step.probability_percent || 0}%
+                        </span>
+                      </div>
+                    ))}
                   </div>
                 </div>
-                {steps.reduce((sum, step) => sum + (step.probability_percent || 0), 0) !== 100 && (
-                  <p className="text-xs text-red-600 mt-2">
-                    Total should equal 100%. Current total: {steps.reduce((sum, step) => sum + (step.probability_percent || 0), 0)}%
-                  </p>
-                )}
               </div>
             )}
           </div>
