@@ -58,7 +58,7 @@ interface CreateProjectFromLeadDialogProps {
 function CreateProjectFromLeadDialog({ lead, isOpen, onClose, onSuccess }: CreateProjectFromLeadDialogProps) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  
+
   const [projectData, setProjectData] = useState({
     name: lead ? `${lead.client_name} - ${lead.project_title}` : "",
     description: lead ? `Product development project for ${lead.client_name}` : "",
@@ -66,25 +66,64 @@ function CreateProjectFromLeadDialog({ lead, isOpen, onClose, onSuccess }: Creat
     project_manager_id: "",
     target_completion_date: "",
     estimated_hours: "",
-    budget: lead?.estimated_budget || ""
+    budget: lead?.estimated_budget || "",
+    template_id: ""
   });
 
-  const [steps, setSteps] = useState<ProjectStep[]>([
-    {
-      step_name: "Build base using platform",
-      step_description: "Create the foundational architecture using our existing platform components and review lead requirements",
-      step_order: 1,
-      status: "pending",
-      estimated_hours: 40
-    },
-    {
-      step_name: "Follow-up with development team",
-      step_description: "Coordinate with development team and assign specific tasks with tracking and milestone planning",
-      step_order: 2,
-      status: "pending",
-      estimated_hours: 20
+  const [steps, setSteps] = useState<ProjectStep[]>([]);
+  const [selectedTemplate, setSelectedTemplate] = useState<any>(null);
+
+  // Fetch available templates
+  const { data: templates = [] } = useQuery({
+    queryKey: ["templates"],
+    queryFn: () => apiClient.getTemplates(),
+    enabled: isOpen,
+  });
+
+  // Fetch template steps when template is selected
+  const { data: templateSteps = [] } = useQuery({
+    queryKey: ["template-steps", selectedTemplate?.id],
+    queryFn: () => selectedTemplate ? apiClient.getTemplate(selectedTemplate.id) : null,
+    enabled: !!selectedTemplate?.id,
+  });
+
+  // Update steps when template changes
+  React.useEffect(() => {
+    if (templateSteps?.steps) {
+      const convertedSteps = templateSteps.steps.map((step: any, index: number) => ({
+        step_name: step.name,
+        step_description: step.description,
+        step_order: step.step_order || index + 1,
+        status: "pending" as const,
+        estimated_hours: step.default_eta_days ? step.default_eta_days * 8 : undefined
+      }));
+      setSteps(convertedSteps);
+    } else if (selectedTemplate === null) {
+      // Default steps when no template selected
+      setSteps([
+        {
+          step_name: "Build base using platform",
+          step_description: "Create the foundational architecture using our existing platform components and review lead requirements",
+          step_order: 1,
+          status: "pending",
+          estimated_hours: 40
+        },
+        {
+          step_name: "Follow-up with development team",
+          step_description: "Coordinate with development team and assign specific tasks with tracking and milestone planning",
+          step_order: 2,
+          status: "pending",
+          estimated_hours: 20
+        }
+      ]);
     }
-  ]);
+  }, [templateSteps, selectedTemplate]);
+
+  const handleTemplateSelect = (templateId: string) => {
+    const template = templates.find((t: any) => t.id.toString() === templateId);
+    setSelectedTemplate(template);
+    setProjectData(prev => ({ ...prev, template_id: templateId }));
+  };
 
   const teams = ["Product Team", "Frontend Team", "Backend Team", "DevOps Team", "Full Stack Team"];
   const projectManagers = [
@@ -111,6 +150,7 @@ function CreateProjectFromLeadDialog({ lead, isOpen, onClose, onSuccess }: Creat
       project_manager_id: projectData.project_manager_id ? parseInt(projectData.project_manager_id) : undefined,
       estimated_hours: projectData.estimated_hours ? parseInt(projectData.estimated_hours) : undefined,
       budget: projectData.budget ? parseFloat(projectData.budget) : undefined,
+      template_id: projectData.template_id ? parseInt(projectData.template_id) : undefined,
       created_by: parseInt(user?.id || "1"),
       steps: steps
     };
