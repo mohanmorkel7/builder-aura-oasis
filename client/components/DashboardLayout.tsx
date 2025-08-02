@@ -23,6 +23,7 @@ import {
   MessageCircle,
   AlertCircle,
   Ticket,
+  DollarSign,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { apiClient } from "@/lib/api";
