@@ -184,10 +184,10 @@ export class ApiClient {
     });
   }
 
-  async duplicateTemplate(id: number, createdBy: number) {
-    return this.request(`/templates/${id}/duplicate`, {
+  async duplicateTemplate(templateId: number, createdBy?: number) {
+    return this.request(`/templates/${templateId}/duplicate`, {
       method: "POST",
-      body: JSON.stringify({ created_by: createdBy }),
+      body: JSON.stringify({ created_by: createdBy || 1 }),
     });
   }
 
