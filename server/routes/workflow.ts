@@ -429,6 +429,39 @@ router.patch("/steps/:stepId/status", async (req: Request, res: Response) => {
   }
 });
 
+// Reorder project steps
+router.post("/projects/:projectId/steps/reorder", async (req: Request, res: Response) => {
+  try {
+    const projectId = parseInt(req.params.projectId);
+    const { stepOrders } = req.body;
+
+    if (isNaN(projectId)) {
+      return res.status(400).json({ error: "Invalid project ID" });
+    }
+
+    if (!stepOrders || !Array.isArray(stepOrders)) {
+      return res.status(400).json({ error: "Missing or invalid stepOrders array" });
+    }
+
+    if (await isDatabaseAvailable()) {
+      await WorkflowRepository.reorderProjectSteps(projectId, stepOrders);
+      res.json({ success: true, message: "Steps reordered successfully" });
+    } else {
+      // Mock response - update mock data step orders
+      stepOrders.forEach((stepOrder: { id: number; order: number }) => {
+        const mockStep = WorkflowMockData.steps.find(s => s.id === stepOrder.id && s.project_id === projectId);
+        if (mockStep) {
+          mockStep.step_order = stepOrder.order;
+        }
+      });
+      res.json({ success: true, message: "Steps reordered successfully (mock)" });
+    }
+  } catch (error) {
+    console.error("Error reordering project steps:", error);
+    res.status(500).json({ error: "Failed to reorder project steps" });
+  }
+});
+
 // COMMENTS ENDPOINTS
 
 // Get project comments
