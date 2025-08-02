@@ -1015,11 +1015,14 @@ function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogPr
                     <div className="flex items-center gap-2">
                       <div className="w-32 bg-gray-200 rounded-full h-2">
                         <div
-                          className="bg-blue-600 h-2 rounded-full"
-                          style={{ width: `${project.progress_percentage || 0}%` }}
+                          className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${displayProgress}%` }}
                         />
                       </div>
-                      <span className="text-sm">{project.progress_percentage || 0}%</span>
+                      <span className="text-sm font-medium">{displayProgress}%</span>
+                      {autoProgress > 0 && autoProgress !== project.progress_percentage && (
+                        <Badge variant="outline" className="text-xs">Auto-calculated</Badge>
+                      )}
                     </div>
                   </div>
                 </div>
