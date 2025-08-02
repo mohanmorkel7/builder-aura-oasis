@@ -561,8 +561,8 @@ export default function ProductWorkflow() {
   };
 
   const handleViewLead = (lead: any) => {
-    // Navigate to lead details page or open lead detail modal
-    navigate(`/leads/${lead.id}`);
+    setSelectedLeadForOverview(lead);
+    setIsLeadOverviewOpen(true);
   };
 
   const handleViewProject = (project: any) => {
