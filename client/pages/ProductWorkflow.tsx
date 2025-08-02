@@ -78,12 +78,19 @@ function CreateProjectFromLeadDialog({ lead, isOpen, onClose, onSuccess }: Creat
   const [steps, setSteps] = useState<ProjectStep[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<any>(null);
 
-  // Fetch available templates
-  const { data: templates = [] } = useQuery({
+  // Fetch available templates (filtered for product type only)
+  const { data: allTemplates = [] } = useQuery({
     queryKey: ["templates"],
     queryFn: () => apiClient.getTemplates(),
     enabled: isOpen,
   });
+
+  // Filter templates to only show product-related templates
+  const templates = allTemplates.filter((template: any) =>
+    template.name?.toLowerCase().includes('product') ||
+    template.description?.toLowerCase().includes('product') ||
+    template.type === 'product'
+  );
 
   // Fetch template steps when template is selected
   const { data: templateSteps = [] } = useQuery({
@@ -507,11 +514,22 @@ export default function ProductWorkflow() {
   const [isProjectDetailOpen, setIsProjectDetailOpen] = useState(false);
   const [isLeadDetailOpen, setIsLeadDetailOpen] = useState(false);
 
-  // Fetch completed leads ready for project creation
-  const { data: completedLeads = [], isLoading: leadsLoading } = useQuery({
+  // Fetch project statistics
+  const { data: projectStats } = useQuery({
+    queryKey: ["workflow-project-stats"],
+    queryFn: () => apiClient.getWorkflowDashboard(parseInt(user?.id || "1"), user?.role || "admin"),
+  });
+
+  // Fetch completed leads ready for project creation (only leads with status 'completed')
+  const { data: allLeads = [], isLoading: leadsLoading } = useQuery({
     queryKey: ["completed-leads"],
     queryFn: () => apiClient.getCompletedLeads(),
   });
+
+  // Filter to only show leads that are actually marked as completed
+  const completedLeads = allLeads.filter((lead: any) =>
+    lead.status === 'completed' || lead.lead_status === 'completed'
+  );
 
   // Fetch workflow projects for the product team
   const { data: projects = [], isLoading: projectsLoading } = useQuery({
