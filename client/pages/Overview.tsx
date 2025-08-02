@@ -280,72 +280,54 @@ export default function Overview() {
         {templateStepData.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {templateStepData.map((stepData: any) => (
-              <Card key={`${stepData.template_id}-${stepData.step_id}`} className="hover:shadow-md transition-shadow">
-                <CardHeader className="pb-3">
-                  <div className="flex justify-between items-start">
+              <Card key={`${stepData.template_id}-${stepData.step_id}`} className="hover:shadow-lg transition-all duration-200 border-l-4 border-l-blue-500">
+                <CardHeader className="pb-4">
+                  <div className="flex justify-between items-center">
                     <div className="flex-1">
-                      <CardTitle className="text-lg">{stepData.step_name}</CardTitle>
-                      <CardDescription className="text-sm text-gray-600">
-                        Step {stepData.step_order} • {stepData.template_name}
+                      <CardTitle className="text-lg font-semibold text-gray-900">{stepData.step_name}</CardTitle>
+                      <CardDescription className="text-sm text-gray-500 mt-1">
+                        {stepData.template_name} • Step {stepData.step_order}
                       </CardDescription>
                     </div>
-                    <Badge variant="secondary" className="text-xs">
+                    <Badge variant="outline" className="text-xs font-medium">
                       {stepData.probability_percent}%
                     </Badge>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="grid grid-cols-2 gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-auto p-2 flex flex-col items-center justify-center"
-                      onClick={() => handleStepStatusClick(stepData, 'pending')}
-                    >
-                      <Clock className="w-4 h-4 text-gray-600 mb-1" />
-                      <div className="text-xs text-gray-600">Pending</div>
-                      <div className="text-lg font-bold text-gray-800">{stepData.pending_count}</div>
-                    </Button>
-
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-auto p-2 flex flex-col items-center justify-center"
-                      onClick={() => handleStepStatusClick(stepData, 'in_progress')}
-                    >
-                      <PlayCircle className="w-4 h-4 text-blue-600 mb-1" />
-                      <div className="text-xs text-blue-600">In Progress</div>
-                      <div className="text-lg font-bold text-blue-800">{stepData.in_progress_count}</div>
-                    </Button>
-
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-auto p-2 flex flex-col items-center justify-center"
-                      onClick={() => handleStepStatusClick(stepData, 'completed')}
-                    >
-                      <CheckCircle className="w-4 h-4 text-green-600 mb-1" />
-                      <div className="text-xs text-green-600">Completed</div>
-                      <div className="text-lg font-bold text-green-800">{stepData.completed_count}</div>
-                    </Button>
-
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-auto p-2 flex flex-col items-center justify-center"
-                      onClick={() => handleStepStatusClick(stepData, 'blocked')}
-                    >
-                      <XCircle className="w-4 h-4 text-red-600 mb-1" />
-                      <div className="text-xs text-red-600">Blocked</div>
-                      <div className="text-lg font-bold text-red-800">{stepData.blocked_count}</div>
-                    </Button>
+                <CardContent className="space-y-4">
+                  {/* Progress Summary */}
+                  <div className="flex justify-between items-center">
+                    <div className="text-center cursor-pointer hover:bg-green-50 rounded-lg p-2 transition-colors"
+                         onClick={() => handleStepStatusClick(stepData, 'completed')}>
+                      <div className="text-2xl font-bold text-green-600">{stepData.completed_count}</div>
+                      <div className="text-xs text-green-600 font-medium">Completed</div>
+                    </div>
+                    <div className="text-center cursor-pointer hover:bg-blue-50 rounded-lg p-2 transition-colors"
+                         onClick={() => handleStepStatusClick(stepData, 'in_progress')}>
+                      <div className="text-2xl font-bold text-blue-600">{stepData.in_progress_count}</div>
+                      <div className="text-xs text-blue-600 font-medium">In Progress</div>
+                    </div>
+                    <div className="text-center cursor-pointer hover:bg-gray-50 rounded-lg p-2 transition-colors"
+                         onClick={() => handleStepStatusClick(stepData, 'pending')}>
+                      <div className="text-2xl font-bold text-gray-600">{stepData.pending_count}</div>
+                      <div className="text-xs text-gray-600 font-medium">Pending</div>
+                    </div>
                   </div>
 
-                  <div className="pt-2 border-t">
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="text-gray-600">Total Leads:</span>
-                      <span className="font-medium">{stepData.total_leads}</span>
-                    </div>
+                  {/* Progress Bar */}
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div
+                      className="bg-green-500 h-2 rounded-full transition-all duration-300"
+                      style={{
+                        width: `${stepData.total_leads > 0 ? (stepData.completed_count / stepData.total_leads) * 100 : 0}%`
+                      }}
+                    ></div>
+                  </div>
+
+                  {/* Total */}
+                  <div className="flex justify-between items-center text-sm pt-2 border-t border-gray-100">
+                    <span className="text-gray-500">Total Leads</span>
+                    <span className="font-semibold text-gray-900">{stepData.total_leads}</span>
                   </div>
                 </CardContent>
               </Card>
