@@ -127,32 +127,32 @@ const priorityLevels = [
 ];
 
 const currencyOptions = [
-  { value: "INR", label: "INR" },
-  { value: "USD", label: "USD" },
-  { value: "AED", label: "AED (Dubai)" },
+  { value: "INR", label: "INR (₹)" },
+  { value: "USD", label: "USD ($)" },
+  { value: "AED", label: "AED (د.إ)" },
 ];
 
 const getCurrencyUnits = (currency: string) => {
   switch (currency) {
     case "INR":
       return [
-        { value: "rupee", label: "Rupee" },
+        { value: "rupee", label: "Rupee (₹)" },
         { value: "paisa", label: "Paisa" },
       ];
     case "USD":
       return [
-        { value: "dollar", label: "Dollar" },
-        { value: "cents", label: "Cents" },
+        { value: "dollar", label: "Dollar ($)" },
+        { value: "cents", label: "Cents (¢)" },
       ];
     case "AED":
       return [
-        { value: "dirham", label: "Dirham" },
+        { value: "dirham", label: "Dirham (د.إ)" },
         { value: "fils", label: "Fils" },
       ];
     default:
       return [
         { value: "paisa", label: "Paisa" },
-        { value: "cents", label: "Cents" },
+        { value: "cents", label: "Cents (¢)" },
       ];
   }
 };
