@@ -575,6 +575,18 @@ export default function ProductManagement() {
         </CardContent>
       </Card>
 
+      {/* Quick Actions */}
+      <div className="flex gap-4 mb-6">
+        <Button
+          variant="outline"
+          onClick={() => navigate("/product/workflow")}
+          className="flex items-center gap-2"
+        >
+          <ArrowRight className="w-4 h-4" />
+          Lead-to-Product Workflow
+        </Button>
+      </div>
+
       {/* Products List */}
       <Tabs defaultValue="grid" className="space-y-4">
         <TabsList>
