@@ -100,8 +100,8 @@ export default function UserManagement() {
     // Export users to CSV
     const csv = [
       "Name,Email,Role,Department,Last Login,Status",
-      ...filteredUsers.map(user => 
-        `"${user.name}","${user.email}","${user.role}","${user.department}","${user.lastLogin}","${user.status}"`
+      ...filteredUsers.map(user =>
+        `"${user.name || 'N/A'}","${user.email || 'N/A'}","${user.role || 'N/A'}","${user.department || 'N/A'}","${user.lastLogin || 'N/A'}","${user.status || 'N/A'}"`
       )
     ].join("\n");
     
