@@ -294,7 +294,30 @@ export default function Overview() {
           </Badge>
         </div>
 
-        {templateStepData.length > 0 ? (
+        {templateStepLoading ? (
+          <Card>
+            <CardContent className="p-8 text-center">
+              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Loading Template Step Data...</h3>
+              <p className="text-gray-600">
+                Fetching real-time step progress from database
+              </p>
+            </CardContent>
+          </Card>
+        ) : templateStepError ? (
+          <Card>
+            <CardContent className="p-8 text-center">
+              <AlertTriangle className="w-16 h-16 mx-auto text-red-400 mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Error Loading Data</h3>
+              <p className="text-gray-600 mb-4">
+                Unable to fetch template step data. Please check your connection.
+              </p>
+              <Button onClick={() => window.location.reload()}>
+                Retry
+              </Button>
+            </CardContent>
+          </Card>
+        ) : templateStepData.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {templateStepData.map((stepData: any) => (
               <Card key={`${stepData.template_id}-${stepData.step_id}`} className="hover:shadow-lg transition-all duration-200 border-l-4 border-l-blue-500">
