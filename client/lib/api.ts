@@ -21,6 +21,8 @@ export class ApiClient {
       const response = await fetch(url, config);
 
       if (!response.ok) {
+        console.log("API Response not OK. Status:", response.status, "StatusText:", response.statusText);
+
         // Handle specific status codes
         if (response.status === 401) {
           throw new Error("Invalid credentials");
