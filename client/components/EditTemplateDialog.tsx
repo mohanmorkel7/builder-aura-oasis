@@ -167,6 +167,7 @@ export default function EditTemplateDialog({
         required_documents: step.required_documents,
         approval_required: step.approval_required,
         parallel_execution: step.parallel_execution,
+        probability_percent: step.probability_percent || 0,
       })),
     };
 
