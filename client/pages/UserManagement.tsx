@@ -109,13 +109,47 @@ export default function UserManagement() {
         `"${user.name || 'N/A'}","${user.email || 'N/A'}","${user.role || 'N/A'}","${user.department || 'N/A'}","${user.lastLogin || 'N/A'}","${user.status || 'N/A'}"`
       )
     ].join("\n");
-    
+
     const blob = new Blob([csv], { type: "text/csv" });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
     a.download = "users-export.csv";
     a.click();
+  };
+
+  const handleViewUser = (userId: string) => {
+    // Navigate to user details page
+    navigate(`/admin/users/${userId}`);
+  };
+
+  const handleEditUser = (userId: string) => {
+    // Navigate to user edit page
+    navigate(`/admin/users/${userId}/edit`);
+  };
+
+  const handleDeleteUser = (userId: string, userName: string) => {
+    // Show confirmation dialog
+    if (window.confirm(`Are you sure you want to delete user "${userName}"? This action cannot be undone.`)) {
+      // In real implementation, this would call the delete API
+      console.log(`Deleting user ${userId}`);
+      // Show success toast
+      alert(`User "${userName}" has been scheduled for deletion.`);
+    }
+  };
+
+  const handleUserSettings = (userId: string) => {
+    // Navigate to user settings/permissions page
+    navigate(`/admin/users/${userId}/settings`);
+  };
+
+  const formatLastLogin = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } catch {
+      return dateString;
+    }
   };
 
   const getUserStatusColor = (status: string) => {
