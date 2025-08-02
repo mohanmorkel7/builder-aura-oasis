@@ -406,10 +406,33 @@ export default function Overview() {
                     </span>
                   </div>
 
-                  {/* Total */}
-                  <div className="flex justify-between items-center text-sm pt-2 border-t border-gray-100">
-                    <span className="text-gray-500">Total Leads</span>
-                    <span className="font-semibold text-gray-900">{stepData.total_leads}</span>
+                  {/* Enhanced Statistics */}
+                  <div className="space-y-2 pt-2 border-t border-gray-100">
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-gray-500">Total Leads</span>
+                      <span className="font-semibold text-gray-900">{stepData.total_leads}</span>
+                    </div>
+
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-gray-400">Step Weight</span>
+                      <span className="font-medium text-purple-600">
+                        {stepData.probability_percent}% of total
+                      </span>
+                    </div>
+
+                    {/* Mini progress indicator for this step */}
+                    <div className="flex items-center space-x-2 text-xs">
+                      <span className="text-gray-400">Impact:</span>
+                      <div className="flex-1 bg-gray-200 rounded-full h-1">
+                        <div
+                          className="bg-purple-400 h-1 rounded-full"
+                          style={{ width: `${stepData.probability_percent}%` }}
+                        ></div>
+                      </div>
+                      <span className="text-purple-600 font-medium">
+                        {stepData.probability_percent}%
+                      </span>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
