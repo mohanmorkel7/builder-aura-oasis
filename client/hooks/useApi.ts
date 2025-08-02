@@ -132,6 +132,7 @@ const mockLeads = [
     project_description: "Building a new e-commerce platform",
     priority: "high",
     assigned_to: 1,
+    template_id: 1,
     created_at: "2023-10-26T09:00:00Z",
     updated_at: "2023-10-26T09:00:00Z",
     solutions: ["CardToken", "Switch-Cards"],
