@@ -577,12 +577,11 @@ export default function LeadEdit() {
 
       {/* Form Tabs */}
       <Tabs defaultValue="basic" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="basic">Lead Info</TabsTrigger>
           <TabsTrigger value="project">Project Details</TabsTrigger>
           <TabsTrigger value="commercials">Commercials</TabsTrigger>
-          <TabsTrigger value="client">Client Info</TabsTrigger>
-          <TabsTrigger value="contact">Contact Info</TabsTrigger>
+          <TabsTrigger value="client">Client & Contact Info</TabsTrigger>
           <TabsTrigger value="additional">Additional</TabsTrigger>
         </TabsList>
 
