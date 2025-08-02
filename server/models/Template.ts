@@ -88,6 +88,13 @@ export interface CreateTemplateStepData {
   default_eta_days: number;
   auto_alert: boolean;
   email_reminder: boolean;
+  step_category_id?: number;
+  assigned_role?: string;
+  required_documents?: string[];
+  approval_required?: boolean;
+  parallel_execution?: boolean;
+  dependencies?: string[];
+  custom_fields?: Record<string, any>;
 }
 
 export interface UpdateTemplateData {
