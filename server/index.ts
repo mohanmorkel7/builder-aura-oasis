@@ -119,5 +119,12 @@ export function createServer() {
     console.error("Error loading FinOps router:", error);
   }
 
+  try {
+    app.use("/api/workflow", workflowRouter);
+    console.log("Workflow router loaded successfully");
+  } catch (error) {
+    console.error("Error loading Workflow router:", error);
+  }
+
   return app;
 }
