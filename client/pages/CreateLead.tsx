@@ -520,6 +520,14 @@ export default function CreateLead() {
           </div>
         </div>
         <div className="flex items-center space-x-3">
+          <Button
+            variant="outline"
+            onClick={() => setShowPartialSaves(!showPartialSaves)}
+            className="text-blue-600"
+          >
+            <FileText className="w-4 h-4 mr-2" />
+            {showPartialSaves ? 'Hide' : 'Show'} Saved Drafts
+          </Button>
           <Button variant="outline" onClick={handleCancel}>
             Cancel
           </Button>
