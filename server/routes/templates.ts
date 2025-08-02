@@ -38,6 +38,161 @@ router.get("/", async (req: Request, res: Response) => {
   }
 });
 
+// SPECIFIC ROUTES MUST COME BEFORE PARAMETERIZED ROUTES
+
+// Get template categories
+router.get("/categories", async (req: Request, res: Response) => {
+  try {
+    // Always use mock data for now since enhanced tables don't exist yet
+    const mockCategories = [
+      { id: 1, name: "Product", description: "Product development templates", color: "#3B82F6", icon: "Package", sort_order: 1, is_active: true },
+      { id: 2, name: "Leads", description: "Lead management templates", color: "#10B981", icon: "Target", sort_order: 2, is_active: true },
+      { id: 3, name: "FinOps", description: "Financial operations templates", color: "#F59E0B", icon: "DollarSign", sort_order: 3, is_active: true },
+      { id: 4, name: "Onboarding", description: "Onboarding templates", color: "#8B5CF6", icon: "UserPlus", sort_order: 4, is_active: true },
+      { id: 5, name: "Support", description: "Customer support templates", color: "#EF4444", icon: "Headphones", sort_order: 5, is_active: true },
+    ];
+    res.json(mockCategories);
+  } catch (error) {
+    console.error("Error fetching template categories:", error);
+    // Always fallback to mock data
+    const mockCategories = [
+      { id: 1, name: "Product", description: "Product development templates", color: "#3B82F6", icon: "Package", sort_order: 1, is_active: true },
+      { id: 2, name: "Leads", description: "Lead management templates", color: "#10B981", icon: "Target", sort_order: 2, is_active: true },
+    ];
+    res.json(mockCategories);
+  }
+});
+
+// Get templates with categories
+router.get("/with-categories", async (req: Request, res: Response) => {
+  try {
+    // Use mock data for now
+    const templates = await MockDataService.getAllTemplates();
+    // Add mock category data
+    const templatesWithCategories = templates.map(template => ({
+      ...template,
+      usage_count: Math.floor(Math.random() * 20),
+      category: template.id <= 2 ? { id: 2, name: "Leads", color: "#10B981", icon: "Target" } : { id: 1, name: "Product", color: "#3B82F6", icon: "Package" },
+    }));
+    res.json(templatesWithCategories);
+  } catch (error) {
+    console.error("Error fetching templates with categories:", error);
+    // Fallback to minimal mock data
+    res.json([
+      {
+        id: 1,
+        name: "Standard Lead Process",
+        description: "Standard lead qualification and conversion process",
+        usage_count: 15,
+        step_count: 5,
+        creator_name: "John Doe",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        category: { id: 2, name: "Leads", color: "#10B981", icon: "Target" },
+      },
+      {
+        id: 2,
+        name: "Product Launch Template",
+        description: "Template for launching new products",
+        usage_count: 8,
+        step_count: 7,
+        creator_name: "Jane Smith",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        category: { id: 1, name: "Product", color: "#3B82F6", icon: "Package" },
+      },
+    ]);
+  }
+});
+
+// Search templates
+router.get("/search", async (req: Request, res: Response) => {
+  try {
+    const searchTerm = req.query.q as string;
+    const categoryId = req.query.category ? parseInt(req.query.category as string) : undefined;
+
+    if (!searchTerm) {
+      return res.status(400).json({ error: "Search term is required" });
+    }
+
+    // Use mock data
+    const allTemplates = await MockDataService.getAllTemplates();
+    const filteredTemplates = allTemplates.filter(template =>
+      template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      template.description?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    res.json(filteredTemplates);
+  } catch (error) {
+    console.error("Error searching templates:", error);
+    res.json([]); // Return empty array as fallback
+  }
+});
+
+// Get template statistics
+router.get("/stats", async (req: Request, res: Response) => {
+  try {
+    // Use mock stats for now
+    const mockStats = {
+      total_templates: 8,
+      active_templates: 6,
+      total_usage: 45,
+      most_used_template_id: 1,
+      most_used_template_name: "Standard Lead Process",
+    };
+    res.json(mockStats);
+  } catch (error) {
+    console.error("Error fetching template stats:", error);
+    // Always return mock stats
+    res.json({
+      total_templates: 8,
+      active_templates: 6,
+      total_usage: 45,
+      most_used_template_id: 1,
+      most_used_template_name: "Standard Lead Process",
+    });
+  }
+});
+
+// Get step categories
+router.get("/step-categories", async (req: Request, res: Response) => {
+  try {
+    // Mock step categories
+    res.json([
+      { id: 1, name: "Initial Setup", description: "Initial setup steps", color: "#3B82F6" },
+      { id: 2, name: "Documentation", description: "Documentation steps", color: "#8B5CF6" },
+      { id: 3, name: "Review & Approval", description: "Review and approval steps", color: "#F59E0B" },
+      { id: 4, name: "Communication", description: "Communication steps", color: "#10B981" },
+      { id: 5, name: "Technical", description: "Technical implementation", color: "#EF4444" },
+      { id: 6, name: "Financial", description: "Financial processes", color: "#EC4899" },
+      { id: 7, name: "Final Steps", description: "Completion steps", color: "#6B7280" },
+    ]);
+  } catch (error) {
+    console.error("Error fetching step categories:", error);
+    res.json([]);
+  }
+});
+
+// Get templates by category
+router.get("/category/:categoryId", async (req: Request, res: Response) => {
+  try {
+    const categoryId = parseInt(req.params.categoryId);
+    if (isNaN(categoryId)) {
+      return res.status(400).json({ error: "Invalid category ID" });
+    }
+
+    // Use mock data
+    const allTemplates = await MockDataService.getAllTemplates();
+    // Filter by mock category
+    const filteredTemplates = categoryId === 2
+      ? allTemplates.filter(t => t.id <= 2)
+      : allTemplates.filter(t => t.id > 2);
+    res.json(filteredTemplates);
+  } catch (error) {
+    console.error("Error fetching templates by category:", error);
+    res.json([]); // Return empty array as fallback
+  }
+});
+
 // Get template by ID
 router.get("/:id", async (req: Request, res: Response) => {
   try {
