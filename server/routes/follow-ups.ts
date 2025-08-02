@@ -412,7 +412,7 @@ router.get("/", async (req: Request, res: Response) => {
 
       // Apply assigned to filtering
       if (assigned_to) {
-        const assignedToNum = parseInt(assigned_to as string);
+        const assignedToNum = normalizeUserId(assigned_to as string);
         mockFollowUps = mockFollowUps.filter(
           (f) => f.assigned_to === assignedToNum,
         );
