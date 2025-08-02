@@ -364,6 +364,10 @@ export class ApiClient {
     return this.request(`/leads/stats${params}`);
   }
 
+  async getTemplateStepDashboard() {
+    return this.request("/leads/template-step-dashboard");
+  }
+
   // Lead steps methods
   async getLeadSteps(leadId: number) {
     return this.request(`/leads/${leadId}/steps`);
