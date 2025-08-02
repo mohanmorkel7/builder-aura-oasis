@@ -288,7 +288,7 @@ function CreateProjectFromLeadDialog({ lead, isOpen, onClose, onSuccess }: Creat
               <div>
                 <Label htmlFor="template">Project Template</Label>
                 <Select
-                  value={projectData.template_id}
+                  value={projectData.template_id || "none"}
                   onValueChange={handleTemplateSelect}
                 >
                   <SelectTrigger>
