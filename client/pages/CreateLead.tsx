@@ -553,6 +553,28 @@ export default function CreateLead() {
         </Alert>
       )}
 
+      {/* Partial Saves Section */}
+      {showPartialSaves && !isResumedFromDraft && (
+        <PartialSaves onResumePartialSave={handleResumePartialSave} />
+      )}
+
+      {/* Resume Notification */}
+      {isResumedFromDraft && (
+        <Alert>
+          <Info className="h-4 w-4" />
+          <AlertDescription className="flex items-center justify-between">
+            <span>You are continuing from a saved draft.</span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowPartialSaves(true)}
+            >
+              View Other Drafts
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
+
       {/* Form Tabs */}
       <Tabs value={currentTab} onValueChange={setCurrentTab} className="space-y-6">
         <TabsList className="grid w-full grid-cols-5">
