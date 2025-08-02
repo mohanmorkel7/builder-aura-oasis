@@ -397,7 +397,7 @@ export class LeadRepository {
       leadData.spoc || null, // $13
       JSON.stringify(leadData.commercials || []), // $14
       JSON.stringify(leadData.commercial_pricing || []), // $15
-      leadData.client_name, // $16
+      leadData.client_name || null, // $16
       leadData.client_type || null, // $17
       leadData.company || null, // $18
       leadData.company_location || null, // $19
