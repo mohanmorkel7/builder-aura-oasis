@@ -183,8 +183,6 @@ router.get("/template-step-dashboard", async (req: Request, res: Response) => {
           blocked_count: parseInt(stats.blocked_count) || 0
         });
       }
-
-      await pool.end();
     } else {
       // Mock data with realistic numbers for demonstration
       const mockTemplates = [
