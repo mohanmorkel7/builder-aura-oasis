@@ -11,19 +11,21 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarInitials } from "@/components/ui/avatar";
-import { 
-  Edit, 
-  Save, 
-  X, 
-  MessageSquare, 
-  Paperclip, 
-  Clock, 
-  User, 
+import RichTextCommentEditor from "@/components/RichTextCommentEditor";
+import {
+  Edit,
+  Save,
+  X,
+  MessageSquare,
+  Paperclip,
+  Clock,
+  User,
   Calendar,
   Send,
   Upload,
   FileText,
-  Download
+  Download,
+  ExternalLink
 } from "lucide-react";
 import { formatDistanceToNow, format } from "date-fns";
 
