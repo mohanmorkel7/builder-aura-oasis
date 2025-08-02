@@ -196,10 +196,19 @@ export default function FinOpsDashboard() {
             />
           </div>
 
-          <Button onClick={() => generateReport("profit_loss")}>
-            <FileText className="w-4 h-4 mr-2" />
-            Generate Report
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => navigate("/finops/automation")}
+            >
+              <Clock className="w-4 h-4 mr-2" />
+              Automation Workflow
+            </Button>
+            <Button onClick={() => generateReport("profit_loss")}>
+              <FileText className="w-4 h-4 mr-2" />
+              Generate Report
+            </Button>
+          </div>
         </div>
       </div>
 
