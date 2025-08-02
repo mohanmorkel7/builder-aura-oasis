@@ -109,18 +109,52 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(true);
 
     try {
-      // For demo purposes, SSO will use the default admin credentials
-      const response: any = await apiClient.login(
-        "admin@banani.com",
-        "password",
-      );
+      if (provider === "microsoft") {
+        // Microsoft SSO using MSAL
+        const loginResponse: AuthenticationResult = await msalInstance.loginPopup(loginRequest);
 
-      if (response.user) {
+        if (loginResponse.account) {
+          // Get user profile from Microsoft Graph
+          const accessToken = loginResponse.accessToken;
+          const graphResponse = await fetch(graphConfig.graphMeEndpoint, {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          });
+
+          const profile: MicrosoftProfile = await graphResponse.json();
+
+          // Create user data from Microsoft profile
+          const userData: User = {
+            id: profile.id,
+            name: profile.displayName,
+            email: profile.mail || profile.userPrincipalName,
+            role: "admin", // Default role for SSO users - can be customized based on your business logic
+            avatar: undefined,
+          };
+
+          setUser(userData);
+          localStorage.setItem("banani_user", JSON.stringify(userData));
+          localStorage.setItem("msal_account", JSON.stringify(loginResponse.account));
+          setIsLoading(false);
+          return true;
+        }
+      } else if (provider === "google") {
+        // Google SSO - placeholder for future implementation
+        console.log("Google SSO not implemented yet");
+        setIsLoading(false);
+        return false;
+      }
+    } catch (error) {
+      console.error("SSO login error:", error);
+
+      // Fallback for development/demo when Azure AD is not configured
+      if (provider === "microsoft") {
         const userData: User = {
-          id: response.user.id.toString(),
-          name: `${response.user.first_name} ${response.user.last_name}`,
-          email: response.user.email,
-          role: response.user.role,
+          id: "sso-user-1",
+          name: "Microsoft User",
+          email: "microsoft.user@company.com",
+          role: "admin",
         };
 
         setUser(userData);
@@ -128,22 +162,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setIsLoading(false);
         return true;
       }
-    } catch (error) {
-      console.error("SSO login error:", error);
-
-      // Fallback SSO login - always authenticate as admin for demo
-      const userData: User = {
-        id: "1",
-        name: "John Doe",
-        email: "admin@banani.com",
-        role: "admin",
-      };
-
-      setUser(userData);
-      localStorage.setItem("banani_user", JSON.stringify(userData));
-      setIsLoading(false);
-      return true;
     }
+
+    setIsLoading(false);
+    return false;
   };
 
   const logout = () => {
