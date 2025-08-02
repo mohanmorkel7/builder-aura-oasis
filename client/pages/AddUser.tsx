@@ -66,7 +66,7 @@ export default function AddUser() {
         email: formData.email,
         phone: formData.phone || undefined,
         password: formData.password,
-        role: formData.role as "admin" | "sales" | "product",
+        role: formData.role as any,
         department: formData.department || undefined,
         manager_id: formData.manager ? parseInt(formData.manager) : undefined,
         start_date: formData.startDate || undefined,
