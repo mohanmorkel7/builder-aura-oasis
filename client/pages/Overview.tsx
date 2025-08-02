@@ -209,6 +209,18 @@ export default function Overview() {
     }
   };
 
+  // Calculate lead completion percentage
+  const calculateLeadCompletion = (lead: any) => {
+    // In a real implementation, this would fetch lead steps and calculate based on template probabilities
+    // For now, we'll use a mock calculation based on lead status
+    switch (lead.status) {
+      case 'won': return 100;
+      case 'in-progress': return Math.floor(Math.random() * 60) + 20; // 20-80%
+      case 'lost': return 0;
+      default: return Math.floor(Math.random() * 30); // 0-30%
+    }
+  };
+
   const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour < 12) return "Good morning";
