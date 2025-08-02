@@ -187,6 +187,7 @@ router.get("/template-step-dashboard", async (req: Request, res: Response) => {
         });
       }
     } else {
+      console.log("Database not available, using mock data");
       // Mock data with realistic numbers for demonstration
       const mockTemplates = [
         {
