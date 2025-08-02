@@ -128,17 +128,17 @@ export function FollowUpModal({
           </DialogTitle>
           <DialogDescription>
             Create a follow-up task for this step comment in project workflow
-            {stepName && (
-              <div className="mt-2 p-2 bg-blue-50 rounded text-sm">
-                <strong>Step:</strong> {stepName}
-              </div>
-            )}
-            {commentText && (
-              <div className="mt-2 p-2 bg-gray-50 rounded text-sm">
-                <strong>Reference:</strong> "{commentText.substring(0, 100)}..."
-              </div>
-            )}
           </DialogDescription>
+          {stepName && (
+            <div className="mt-2 p-2 bg-blue-50 rounded text-sm">
+              <strong>Step:</strong> {stepName}
+            </div>
+          )}
+          {commentText && (
+            <div className="mt-2 p-2 bg-gray-50 rounded text-sm">
+              <strong>Reference:</strong> "{commentText.substring(0, 100)}..."
+            </div>
+          )}
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
