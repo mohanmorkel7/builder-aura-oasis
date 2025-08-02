@@ -33,6 +33,7 @@ export class ApiClient {
           // Clone the response to avoid consuming the stream
           const clonedResponse = response.clone();
           errorText = await clonedResponse.text();
+          console.log("Server error response:", errorText);
         } catch (textError) {
           // If we can't read the response body, provide a status-specific error
           if (response.status === 400) {
