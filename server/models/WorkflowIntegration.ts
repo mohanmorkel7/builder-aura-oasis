@@ -1,5 +1,5 @@
 import { pool } from "../database/connection";
-import { RowDataPacket, ResultSetHeader } from "mysql2";
+import { QueryResult } from "pg";
 
 // Type definitions for workflow entities
 export interface WorkflowProject {
@@ -206,22 +206,22 @@ export class WorkflowRepository {
       whereClause += " AND (project_type = 'finops_process' OR assigned_team LIKE '%FinOps%')";
     }
 
-    const [rows] = await pool.execute<RowDataPacket[]>(
+    const result = await pool.query(
       `SELECT * FROM workflow_project_summary ${whereClause} ORDER BY created_at DESC`,
       params
     );
-    return rows as WorkflowProject[];
+    return result.rows as WorkflowProject[];
   }
 
   static async getProjectById(id: number, includeSteps = true, includeComments = true): Promise<WorkflowProject | null> {
-    const [rows] = await pool.execute<RowDataPacket[]>(
-      "SELECT * FROM workflow_project_summary WHERE id = ?",
+    const result = await pool.query(
+      "SELECT * FROM workflow_project_summary WHERE id = $1",
       [id]
     );
 
-    if (rows.length === 0) return null;
+    if (result.rows.length === 0) return null;
 
-    const project = rows[0] as WorkflowProject;
+    const project = result.rows[0] as WorkflowProject;
 
     if (includeSteps) {
       project.steps = await this.getProjectSteps(id);
@@ -234,12 +234,12 @@ export class WorkflowRepository {
     // Get lead data if project is sourced from lead
     if (project.source_type === "lead" && project.source_id) {
       try {
-        const [leadRows] = await pool.execute<RowDataPacket[]>(
-          "SELECT * FROM leads WHERE id = ?",
+        const leadResult = await pool.query(
+          "SELECT * FROM leads WHERE id = $1",
           [project.source_id]
         );
-        if (leadRows.length > 0) {
-          project.lead_data = leadRows[0];
+        if (leadResult.rows.length > 0) {
+          project.lead_data = leadResult.rows[0];
         }
       } catch (error) {
         console.log("Could not fetch lead data:", error);
@@ -250,36 +250,37 @@ export class WorkflowRepository {
   }
 
   static async createProject(data: CreateWorkflowProjectData): Promise<WorkflowProject> {
-    const [result] = await pool.execute<ResultSetHeader>(
-      `INSERT INTO workflow_projects 
-       (name, description, source_type, source_id, project_type, priority, assigned_team, 
+    const result = await pool.query(
+      `INSERT INTO workflow_projects
+       (name, description, source_type, source_id, project_type, priority, assigned_team,
         project_manager_id, start_date, target_completion_date, budget, estimated_hours, created_by)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+       RETURNING id`,
       [data.name, data.description, data.source_type, data.source_id, data.project_type,
        data.priority || "medium", data.assigned_team, data.project_manager_id,
        data.start_date, data.target_completion_date, data.budget, data.estimated_hours, data.created_by]
     );
 
-    const newProject = await this.getProjectById(result.insertId);
+    const newProject = await this.getProjectById(result.rows[0].id);
     return newProject!;
   }
 
   static async createProjectFromLead(leadId: number, projectData: Partial<CreateWorkflowProjectData>, createdBy: number): Promise<WorkflowProject> {
-    const connection = await pool.getConnection();
+    const client = await pool.connect();
     try {
-      await connection.beginTransaction();
+      await client.query('BEGIN');
 
       // Get lead data
-      const [leadRows] = await connection.execute<RowDataPacket[]>(
-        "SELECT * FROM leads WHERE id = ?",
+      const leadResult = await client.query(
+        "SELECT * FROM leads WHERE id = $1",
         [leadId]
       );
 
-      if (leadRows.length === 0) {
+      if (leadResult.rows.length === 0) {
         throw new Error("Lead not found");
       }
 
-      const lead = leadRows[0];
+      const lead = leadResult.rows[0];
 
       // Create project based on lead
       const projectCreateData: CreateWorkflowProjectData = {
@@ -298,74 +299,77 @@ export class WorkflowRepository {
         created_by: createdBy
       };
 
-      const [projectResult] = await connection.execute<ResultSetHeader>(
-        `INSERT INTO workflow_projects 
-         (name, description, source_type, source_id, project_type, priority, assigned_team, 
+      const projectResult = await client.query(
+        `INSERT INTO workflow_projects
+         (name, description, source_type, source_id, project_type, priority, assigned_team,
           project_manager_id, start_date, target_completion_date, budget, estimated_hours, created_by)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+         RETURNING id`,
         Object.values(projectCreateData)
       );
 
-      const projectId = projectResult.insertId;
+      const projectId = projectResult.rows[0].id;
 
       // Create transition record
-      await connection.execute(
-        `INSERT INTO lead_project_transitions 
+      await client.query(
+        `INSERT INTO lead_project_transitions
          (lead_id, project_id, transition_type, transition_reason, handoff_notes, created_by)
-         VALUES (?, ?, 'manual', 'Lead completed - handed off to product team', ?, ?)`,
+         VALUES ($1, $2, 'manual', 'Lead completed - handed off to product team', $3, $4)`,
         [leadId, projectId, projectData.description || "Lead to product handoff", createdBy]
       );
 
       // Copy lead steps as reference steps for the project
-      const [leadSteps] = await connection.execute<RowDataPacket[]>(
-        "SELECT * FROM lead_steps WHERE lead_id = ? ORDER BY step_order",
+      const leadStepsResult = await client.query(
+        "SELECT * FROM lead_steps WHERE lead_id = $1 ORDER BY step_order",
         [leadId]
       );
+      const leadSteps = leadStepsResult.rows;
 
       if (leadSteps.length > 0) {
         // Add reference step showing completed lead work
-        await connection.execute(
-          `INSERT INTO workflow_steps 
+        await client.query(
+          `INSERT INTO workflow_steps
            (project_id, step_name, step_description, step_order, status, created_by)
-           VALUES (?, ?, ?, ?, 'completed', ?)`,
-          [projectId, "Lead Completion Review", 
+           VALUES ($1, $2, $3, $4, 'completed', $5)`,
+          [projectId, "Lead Completion Review",
            `Review completed lead work: ${leadSteps.length} steps completed. Original lead requirements and documents attached.`,
            0, createdBy]
         );
       }
 
-      await connection.commit();
+      await client.query('COMMIT');
 
       const newProject = await this.getProjectById(projectId);
       return newProject!;
     } catch (error) {
-      await connection.rollback();
+      await client.query('ROLLBACK');
       throw error;
     } finally {
-      connection.release();
+      client.release();
     }
   }
 
   // Step operations
   static async getProjectSteps(projectId: number): Promise<WorkflowStep[]> {
-    const [rows] = await pool.execute<RowDataPacket[]>(
+    const result = await pool.query(
       `SELECT ws.*, u1.name as assigned_user_name, u2.name as creator_name
        FROM workflow_steps ws
        LEFT JOIN users u1 ON ws.assigned_to = u1.id
        LEFT JOIN users u2 ON ws.created_by = u2.id
-       WHERE ws.project_id = ?
+       WHERE ws.project_id = $1
        ORDER BY ws.step_order, ws.created_at`,
       [projectId]
     );
-    return rows as WorkflowStep[];
+    return result.rows as WorkflowStep[];
   }
 
   static async createStep(data: CreateWorkflowStepData): Promise<WorkflowStep> {
-    const [result] = await pool.execute<ResultSetHeader>(
-      `INSERT INTO workflow_steps 
-       (project_id, step_name, step_description, step_order, assigned_to, estimated_hours, 
+    const result = await pool.query(
+      `INSERT INTO workflow_steps
+       (project_id, step_name, step_description, step_order, assigned_to, estimated_hours,
         due_date, dependencies, is_automated, automation_config, created_by)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+       RETURNING id`,
       [data.project_id, data.step_name, data.step_description, data.step_order || 1,
        data.assigned_to, data.estimated_hours, data.due_date,
        data.dependencies ? JSON.stringify(data.dependencies) : null,
@@ -373,21 +377,21 @@ export class WorkflowRepository {
        data.created_by]
     );
 
-    const [newStep] = await pool.execute<RowDataPacket[]>(
+    const stepResult = await pool.query(
       `SELECT ws.*, u1.name as assigned_user_name, u2.name as creator_name
        FROM workflow_steps ws
        LEFT JOIN users u1 ON ws.assigned_to = u1.id
        LEFT JOIN users u2 ON ws.created_by = u2.id
-       WHERE ws.id = ?`,
-      [result.insertId]
+       WHERE ws.id = $1`,
+      [result.rows[0].id]
     );
 
-    return newStep[0] as WorkflowStep;
+    return stepResult.rows[0] as WorkflowStep;
   }
 
   static async updateStepStatus(stepId: number, status: string, userId: number): Promise<void> {
-    await pool.execute(
-      "UPDATE workflow_steps SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+    await pool.query(
+      "UPDATE workflow_steps SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2",
       [status, stepId]
     );
 
@@ -396,15 +400,15 @@ export class WorkflowRepository {
 
   // Comment operations
   static async getProjectComments(projectId: number, stepId?: number): Promise<WorkflowComment[]> {
-    let whereClause = "WHERE wc.project_id = ?";
+    let whereClause = "WHERE wc.project_id = $1";
     const params = [projectId];
 
     if (stepId) {
-      whereClause += " AND wc.step_id = ?";
+      whereClause += " AND wc.step_id = $2";
       params.push(stepId);
     }
 
-    const [rows] = await pool.execute<RowDataPacket[]>(
+    const result = await pool.query(
       `SELECT wc.*, u.name as creator_name
        FROM workflow_comments wc
        LEFT JOIN users u ON wc.created_by = u.id
@@ -412,88 +416,89 @@ export class WorkflowRepository {
        ORDER BY wc.created_at DESC`,
       params
     );
-    return rows as WorkflowComment[];
+    return result.rows as WorkflowComment[];
   }
 
   static async createComment(data: CreateWorkflowCommentData): Promise<WorkflowComment> {
-    const [result] = await pool.execute<ResultSetHeader>(
-      `INSERT INTO workflow_comments 
+    const result = await pool.query(
+      `INSERT INTO workflow_comments
        (project_id, step_id, comment_text, comment_type, mentioned_users, attachments, is_internal, created_by)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+       RETURNING id`,
       [data.project_id, data.step_id, data.comment_text, data.comment_type || "comment",
        data.mentioned_users ? JSON.stringify(data.mentioned_users) : null,
        data.attachments ? JSON.stringify(data.attachments) : null,
        data.is_internal || false, data.created_by]
     );
 
-    const [newComment] = await pool.execute<RowDataPacket[]>(
+    const commentResult = await pool.query(
       `SELECT wc.*, u.name as creator_name
        FROM workflow_comments wc
        LEFT JOIN users u ON wc.created_by = u.id
-       WHERE wc.id = ?`,
-      [result.insertId]
+       WHERE wc.id = $1`,
+      [result.rows[0].id]
     );
 
-    return newComment[0] as WorkflowComment;
+    return commentResult.rows[0] as WorkflowComment;
   }
 
   // Notification operations
   static async getUserNotifications(userId: number, unreadOnly = false): Promise<WorkflowNotification[]> {
-    let whereClause = "WHERE recipient_id = ?";
+    let whereClause = "WHERE recipient_id = $1";
     const params = [userId];
 
     if (unreadOnly) {
       whereClause += " AND is_read = false";
     }
 
-    const [rows] = await pool.execute<RowDataPacket[]>(
-      `SELECT * FROM workflow_notifications 
+    const result = await pool.query(
+      `SELECT * FROM workflow_notifications
        ${whereClause}
        ORDER BY created_at DESC
        LIMIT 50`,
       params
     );
-    return rows as WorkflowNotification[];
+    return result.rows as WorkflowNotification[];
   }
 
   static async createNotification(notificationData: Omit<WorkflowNotification, 'id' | 'created_at' | 'read_at'>): Promise<void> {
-    await pool.execute(
-      `INSERT INTO workflow_notifications 
-       (notification_type, title, message, recipient_id, project_id, step_id, source_type, 
+    await pool.query(
+      `INSERT INTO workflow_notifications
+       (notification_type, title, message, recipient_id, project_id, step_id, source_type,
         source_id, priority, is_read, is_email_sent, scheduled_for, expires_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
       [notificationData.notification_type, notificationData.title, notificationData.message,
        notificationData.recipient_id, notificationData.project_id, notificationData.step_id,
        notificationData.source_type, notificationData.source_id, notificationData.priority,
-       notificationData.is_read, notificationData.is_email_sent, 
+       notificationData.is_read, notificationData.is_email_sent,
        notificationData.scheduled_for, notificationData.expires_at]
     );
   }
 
   static async markNotificationAsRead(notificationId: number): Promise<void> {
-    await pool.execute(
-      "UPDATE workflow_notifications SET is_read = true, read_at = CURRENT_TIMESTAMP WHERE id = ?",
+    await pool.query(
+      "UPDATE workflow_notifications SET is_read = true, read_at = CURRENT_TIMESTAMP WHERE id = $1",
       [notificationId]
     );
   }
 
   // Automation operations
   static async getActiveAutomations(): Promise<WorkflowAutomation[]> {
-    const [rows] = await pool.execute<RowDataPacket[]>(
+    const result = await pool.query(
       "SELECT * FROM workflow_automations WHERE is_active = true ORDER BY next_run_at"
     );
-    return rows as WorkflowAutomation[];
+    return result.rows as WorkflowAutomation[];
   }
 
   static async updateAutomationRunStatus(automationId: number, success: boolean, error?: string): Promise<void> {
-    await pool.execute(
-      `UPDATE workflow_automations 
-       SET last_run_at = CURRENT_TIMESTAMP, 
+    await pool.query(
+      `UPDATE workflow_automations
+       SET last_run_at = CURRENT_TIMESTAMP,
            run_count = run_count + 1,
-           success_count = success_count + ?,
-           failure_count = failure_count + ?,
-           last_error = ?
-       WHERE id = ?`,
+           success_count = success_count + $1,
+           failure_count = failure_count + $2,
+           last_error = $3
+       WHERE id = $4`,
       [success ? 1 : 0, success ? 0 : 1, error || null, automationId]
     );
   }
@@ -501,22 +506,22 @@ export class WorkflowRepository {
   // Dashboard data
   static async getDashboardData(userId: number, userRole: string): Promise<any> {
     // Get project counts by status
-    const [projectStats] = await pool.execute<RowDataPacket[]>(
-      `SELECT status, COUNT(*) as count 
-       FROM workflow_projects 
-       WHERE (? = 'admin' OR assigned_team LIKE ? OR project_manager_id = ?)
+    const projectStatsResult = await pool.query(
+      `SELECT status, COUNT(*) as count
+       FROM workflow_projects
+       WHERE ($1 = 'admin' OR assigned_team LIKE $2 OR project_manager_id = $3)
        GROUP BY status`,
       [userRole, `%${userRole === 'product' ? 'Product' : userRole === 'finance' ? 'FinOps' : ''}%`, userId]
     );
 
     // Get overdue steps
-    const [overdueSteps] = await pool.execute<RowDataPacket[]>(
+    const overdueStepsResult = await pool.query(
       `SELECT COUNT(*) as overdue_count
        FROM workflow_steps ws
        JOIN workflow_projects wp ON ws.project_id = wp.id
-       WHERE ws.due_date < NOW() 
+       WHERE ws.due_date < NOW()
        AND ws.status NOT IN ('completed', 'cancelled')
-       AND (? = 'admin' OR wp.assigned_team LIKE ? OR ws.assigned_to = ?)`,
+       AND ($1 = 'admin' OR wp.assigned_team LIKE $2 OR ws.assigned_to = $3)`,
       [userRole, `%${userRole === 'product' ? 'Product' : userRole === 'finance' ? 'FinOps' : ''}%`, userId]
     );
 
@@ -524,8 +529,8 @@ export class WorkflowRepository {
     const recentNotifications = await this.getUserNotifications(userId, true);
 
     return {
-      project_stats: projectStats,
-      overdue_steps: overdueSteps[0]?.overdue_count || 0,
+      project_stats: projectStatsResult.rows,
+      overdue_steps: overdueStepsResult.rows[0]?.overdue_count || 0,
       unread_notifications: recentNotifications.length,
       recent_notifications: recentNotifications.slice(0, 5)
     };
