@@ -5,6 +5,7 @@ import {
   UpdateTemplateData,
 } from "../models/Template";
 import { MockDataService } from "../services/mockData";
+import { normalizeUserId } from "../services/mockData";
 
 const router = Router();
 
