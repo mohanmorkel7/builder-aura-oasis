@@ -51,9 +51,7 @@ export default function TicketDetails({ ticket, onUpdate, metadata, currentUser 
     assigned_to: ticket.assigned_to?.toString() || "",
   });
   
-  const [newComment, setNewComment] = useState("");
-  const [isInternal, setIsInternal] = useState(false);
-  const [mentions, setMentions] = useState<string[]>([]);
+  // Comment attachments are now handled in RichTextCommentEditor
 
   const queryClient = useQueryClient();
 
