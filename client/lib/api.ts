@@ -870,11 +870,7 @@ export class ApiClient {
     return this.request(`/workflow/notifications?${query}`);
   }
 
-  async markNotificationAsRead(notificationId: number) {
-    return this.request(`/workflow/notifications/${notificationId}/read`, {
-      method: "PATCH",
-    });
-  }
+
 
   async getWorkflowAutomations() {
     return this.request("/workflow/automations");
