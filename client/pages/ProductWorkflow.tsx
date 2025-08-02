@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -415,8 +416,12 @@ function CreateProjectFromLeadDialog({ lead, isOpen, onClose, onSuccess }: Creat
 
 export default function ProductWorkflow() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [selectedLead, setSelectedLead] = useState<any>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<any>(null);
+  const [isProjectDetailOpen, setIsProjectDetailOpen] = useState(false);
+  const [isLeadDetailOpen, setIsLeadDetailOpen] = useState(false);
 
   // Fetch completed leads ready for project creation
   const { data: completedLeads = [], isLoading: leadsLoading } = useQuery({
@@ -438,6 +443,16 @@ export default function ProductWorkflow() {
   const handleProjectCreated = () => {
     setSelectedLead(null);
     setIsCreateDialogOpen(false);
+  };
+
+  const handleViewLead = (lead: any) => {
+    // Navigate to lead details page or open lead detail modal
+    navigate(`/leads/${lead.id}`);
+  };
+
+  const handleViewProject = (project: any) => {
+    setSelectedProject(project);
+    setIsProjectDetailOpen(true);
   };
 
   const getStatusIcon = (status: string) => {
@@ -539,7 +554,11 @@ export default function ProductWorkflow() {
                               <ArrowRight className="w-4 h-4 mr-2" />
                               Create Project
                             </Button>
-                            <Button variant="outline" size="sm">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleViewLead(lead)}
+                            >
                               <Eye className="w-4 h-4 mr-2" />
                               View Lead
                             </Button>
@@ -632,11 +651,19 @@ export default function ProductWorkflow() {
                             </div>
                             
                             <div className="flex flex-col gap-2 ml-4">
-                              <Button variant="outline" size="sm">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleViewProject(project)}
+                              >
                                 <Eye className="w-4 h-4 mr-2" />
                                 View Project
                               </Button>
-                              <Button variant="outline" size="sm">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleViewProject(project)}
+                              >
                                 <MessageSquare className="w-4 h-4 mr-2" />
                                 Comments ({project.total_comments || 0})
                               </Button>
