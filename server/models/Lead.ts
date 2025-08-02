@@ -411,6 +411,8 @@ export class LeadRepository {
       leadData.selected_template_id || null, // $27
       leadData.created_by, // $28
       leadData.assigned_to || null, // $29
+      leadData.is_partial || false, // $30
+      JSON.stringify(leadData.partial_data || {}), // $31
     ];
 
     const result = await pool.query(query, values);
