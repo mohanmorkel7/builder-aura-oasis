@@ -72,6 +72,12 @@ const navigationItems: NavigationItem[] = [
     roles: ["admin", "sales", "product"],
   },
   {
+    name: "Support Tickets",
+    href: "/tickets",
+    icon: Ticket,
+    roles: ["admin", "sales", "product"],
+  },
+  {
     name: "Product Team",
     href: "/product",
     icon: Grid3X3,
