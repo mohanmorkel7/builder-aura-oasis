@@ -43,6 +43,7 @@ interface TemplateStep {
   id: string;
   name: string;
   description: string;
+  probability_percent: number;
 }
 
 interface CreateTemplateDialogProps {
@@ -117,6 +118,7 @@ export default function CreateTemplateDialogSimple({
         email_reminder: false,
         approval_required: false,
         parallel_execution: false,
+        probability_percent: step.probability_percent || 0,
       })),
     };
 
@@ -128,6 +130,7 @@ export default function CreateTemplateDialogSimple({
       id: Date.now().toString(),
       name: "",
       description: "",
+      probability_percent: 0,
     };
     setSteps([...steps, newStep]);
   };
@@ -357,15 +360,35 @@ export default function CreateTemplateDialogSimple({
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div>
-                    <Label>Step Name *</Label>
-                    <Input
-                      value={step.name}
-                      onChange={(e) =>
-                        updateStep(step.id, { name: e.target.value })
-                      }
-                      placeholder="Enter step name"
-                    />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label>Step Name *</Label>
+                      <Input
+                        value={step.name}
+                        onChange={(e) =>
+                          updateStep(step.id, { name: e.target.value })
+                        }
+                        placeholder="Enter step name"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor={`probability-${step.id}`}>
+                        Probability (%)
+                      </Label>
+                      <Input
+                        id={`probability-${step.id}`}
+                        type="number"
+                        min="0"
+                        max="100"
+                        value={step.probability_percent || 0}
+                        onChange={(e) =>
+                          updateStep(step.id, {
+                            probability_percent: parseInt(e.target.value) || 0,
+                          })
+                        }
+                        placeholder="% probability"
+                      />
+                    </div>
                   </div>
 
                   <div>
@@ -386,6 +409,85 @@ export default function CreateTemplateDialogSimple({
             {steps.length === 0 && (
               <div className="text-center py-8 text-gray-500">
                 No steps added yet. Click "Add Step" to get started.
+              </div>
+            )}
+
+            {/* Probability Total Calculation */}
+            {steps.length > 0 && (
+              <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border-2 border-blue-200">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-semibold text-gray-800">
+                      🎯 Probability Distribution
+                    </span>
+                    <div className="flex items-center space-x-2">
+                      <span
+                        className={`text-xl font-bold ${
+                          steps.reduce((sum, step) => sum + (step.probability_percent || 0), 0) === 100
+                            ? 'text-green-600'
+                            : steps.reduce((sum, step) => sum + (step.probability_percent || 0), 0) > 100
+                            ? 'text-red-600'
+                            : 'text-orange-600'
+                        }`}
+                      >
+                        {steps.reduce((sum, step) => sum + (step.probability_percent || 0), 0)}%
+                      </span>
+                      <span className="text-gray-500">/ 100%</span>
+                    </div>
+                  </div>
+
+                  {/* Progress Bar */}
+                  <div className="w-full bg-gray-200 rounded-full h-3">
+                    <div
+                      className={`h-3 rounded-full transition-all duration-500 ${
+                        steps.reduce((sum, step) => sum + (step.probability_percent || 0), 0) === 100
+                          ? 'bg-green-500'
+                          : steps.reduce((sum, step) => sum + (step.probability_percent || 0), 0) > 100
+                          ? 'bg-red-500'
+                          : 'bg-orange-400'
+                      }`}
+                      style={{
+                        width: `${Math.min(steps.reduce((sum, step) => sum + (step.probability_percent || 0), 0), 100)}%`
+                      }}
+                    ></div>
+                  </div>
+
+                  {/* Status Messages */}
+                  <div className="flex items-center justify-between text-xs">
+                    <div className="flex items-center space-x-1">
+                      {steps.reduce((sum, step) => sum + (step.probability_percent || 0), 0) === 100 ? (
+                        <span className="text-green-600 bg-green-100 px-2 py-1 rounded font-medium">
+                          ✓ Perfect Distribution!
+                        </span>
+                      ) : steps.reduce((sum, step) => sum + (step.probability_percent || 0), 0) > 100 ? (
+                        <span className="text-red-600 bg-red-100 px-2 py-1 rounded font-medium">
+                          ⚠ Over 100% - Reduce by {steps.reduce((sum, step) => sum + (step.probability_percent || 0), 0) - 100}%
+                        </span>
+                      ) : (
+                        <span className="text-orange-600 bg-orange-100 px-2 py-1 rounded font-medium">
+                          📊 Remaining: {100 - steps.reduce((sum, step) => sum + (step.probability_percent || 0), 0)}%
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-gray-500">
+                      {steps.length} step{steps.length !== 1 ? 's' : ''}
+                    </span>
+                  </div>
+
+                  {/* Individual Step Breakdown */}
+                  <div className="grid grid-cols-2 gap-2 pt-2 border-t border-blue-200">
+                    {steps.map((step, index) => (
+                      <div key={step.id} className="flex justify-between text-xs">
+                        <span className="text-gray-600 truncate">
+                          {index + 1}. {step.name}
+                        </span>
+                        <span className="font-medium text-gray-800">
+                          {step.probability_percent || 0}%
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             )}
           </div>
