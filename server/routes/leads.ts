@@ -125,9 +125,11 @@ router.get("/stats", async (req: Request, res: Response) => {
 // Get template step dashboard data
 router.get("/template-step-dashboard", async (req: Request, res: Response) => {
   try {
+    console.log("Template step dashboard endpoint called");
     let dashboardData = [];
 
     if (await isDatabaseAvailable()) {
+      console.log("Database is available, querying template step data...");
       // Get all active templates with their steps
       const templatesQuery = `
         SELECT
