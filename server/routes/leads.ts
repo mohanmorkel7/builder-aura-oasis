@@ -191,7 +191,7 @@ router.get("/template-step-dashboard", async (req: Request, res: Response) => {
         throw new Error("Database not available");
       }
     } catch (dbError) {
-      console.log("Database not available, using mock data");
+      console.log("Database error, falling back to mock data:", dbError.message);
       // Mock data with realistic numbers for demonstration
       const mockTemplates = [
         {
