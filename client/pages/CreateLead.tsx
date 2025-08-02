@@ -253,6 +253,33 @@ export default function CreateLead() {
   const [showPartialSaves, setShowPartialSaves] = useState(true);
   const [isResumedFromDraft, setIsResumedFromDraft] = useState(false);
 
+  // Handle resume data from location state (when coming from dashboard)
+  useEffect(() => {
+    if (location.state?.resumeData) {
+      const resumeData = location.state.resumeData;
+      setLeadData(resumeData);
+      setIsResumedFromDraft(true);
+      setShowPartialSaves(false); // Hide partial saves when resuming
+
+      // Set the active tab to the first incomplete tab if available
+      if (resumeData._completedTabs && resumeData._completedTabs.length > 0) {
+        const lastCompletedTab = resumeData._completedTabs[resumeData._completedTabs.length - 1];
+        const lastCompletedTabIndex = tabs.findIndex(tab => tab.value === lastCompletedTab);
+        if (lastCompletedTabIndex >= 0 && lastCompletedTabIndex < tabs.length - 1) {
+          setCurrentTab(tabs[lastCompletedTabIndex + 1].value);
+        } else {
+          setCurrentTab(lastCompletedTab);
+        }
+      }
+
+      // Clear location state to prevent re-initialization on re-renders
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
+
+  // Hide partial saves section when resuming from a draft
+  const shouldShowPartialSaves = showPartialSaves && !isResumedFromDraft;
+
   const tabs = [
     { value: "basic", label: "Lead Info", icon: "📋" },
     { value: "project", label: "Project Details", icon: "🎯" },
