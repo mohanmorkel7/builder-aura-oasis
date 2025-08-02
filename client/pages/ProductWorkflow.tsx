@@ -1002,11 +1002,11 @@ function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogPr
 
   const addCommentMutation = useMutation({
     mutationFn: (commentData: any) => apiClient.createProjectComment(project.id, commentData),
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["project-comments", project?.id] });
       queryClient.invalidateQueries({ queryKey: ["all-step-comments", project?.id] });
-      if (commentData.step_id) {
-        setStepComments(prev => ({ ...prev, [commentData.step_id]: "" }));
+      if (variables.step_id) {
+        setStepComments(prev => ({ ...prev, [variables.step_id]: "" }));
       } else {
         setNewComment("");
       }
