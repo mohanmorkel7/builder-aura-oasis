@@ -648,6 +648,107 @@ export class ApiClient {
       body: JSON.stringify({ entityType, entityId }),
     });
   }
+
+  // FinOps API methods
+  async getFinOpsDashboard() {
+    return this.request("/finops/dashboard");
+  }
+
+  async getFinOpsMetrics(period?: string, startDate?: string, endDate?: string) {
+    const params = new URLSearchParams();
+    if (period) params.append("period", period);
+    if (startDate) params.append("start_date", startDate);
+    if (endDate) params.append("end_date", endDate);
+
+    const query = params.toString();
+    return this.request(`/finops/metrics${query ? `?${query}` : ""}`);
+  }
+
+  async getFinOpsAccounts() {
+    return this.request("/finops/accounts");
+  }
+
+  async createFinOpsAccount(accountData: any) {
+    return this.request("/finops/accounts", {
+      method: "POST",
+      body: JSON.stringify(accountData),
+    });
+  }
+
+  async getFinOpsTransactions(limit?: number, offset?: number) {
+    const params = new URLSearchParams();
+    if (limit) params.append("limit", limit.toString());
+    if (offset) params.append("offset", offset.toString());
+
+    const query = params.toString();
+    return this.request(`/finops/transactions${query ? `?${query}` : ""}`);
+  }
+
+  async getFinOpsTransaction(id: number) {
+    return this.request(`/finops/transactions/${id}`);
+  }
+
+  async createFinOpsTransaction(transactionData: any) {
+    return this.request("/finops/transactions", {
+      method: "POST",
+      body: JSON.stringify(transactionData),
+    });
+  }
+
+  async getFinOpsBudgets() {
+    return this.request("/finops/budgets");
+  }
+
+  async createFinOpsBudget(budgetData: any) {
+    return this.request("/finops/budgets", {
+      method: "POST",
+      body: JSON.stringify(budgetData),
+    });
+  }
+
+  async getFinOpsInvoices() {
+    return this.request("/finops/invoices");
+  }
+
+  async createFinOpsInvoice(invoiceData: any) {
+    return this.request("/finops/invoices", {
+      method: "POST",
+      body: JSON.stringify(invoiceData),
+    });
+  }
+
+  async getFinOpsCosts(referenceType?: string, referenceId?: number) {
+    const params = new URLSearchParams();
+    if (referenceType) params.append("reference_type", referenceType);
+    if (referenceId) params.append("reference_id", referenceId.toString());
+
+    const query = params.toString();
+    return this.request(`/finops/costs${query ? `?${query}` : ""}`);
+  }
+
+  async createFinOpsCost(costData: any) {
+    return this.request("/finops/costs", {
+      method: "POST",
+      body: JSON.stringify(costData),
+    });
+  }
+
+  async generateFinOpsReport(reportData: any) {
+    return this.request("/finops/reports/generate", {
+      method: "POST",
+      body: JSON.stringify(reportData),
+    });
+  }
+
+  async exportFinOpsData(type: string, format?: string, startDate?: string, endDate?: string) {
+    const params = new URLSearchParams();
+    if (format) params.append("format", format);
+    if (startDate) params.append("start_date", startDate);
+    if (endDate) params.append("end_date", endDate);
+
+    const query = params.toString();
+    return this.request(`/finops/export/${type}${query ? `?${query}` : ""}`);
+  }
 }
 
 export const apiClient = new ApiClient();
