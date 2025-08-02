@@ -846,25 +846,26 @@ export default function LeadEdit() {
                   </div>
                 </div>
 
+                <div>
+                  <Label htmlFor="expected_daily_txn_volume">
+                    Expected Daily Txn Volume
+                  </Label>
+                  <Input
+                    id="expected_daily_txn_volume"
+                    type="number"
+                    value={leadData.expected_daily_txn_volume}
+                    onChange={(e) =>
+                      updateField("expected_daily_txn_volume", e.target.value)
+                    }
+                    className="mt-1"
+                    placeholder="Number of daily transactions"
+                  />
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="expected_daily_txn_volume">
-                      Expected Daily Txn Volume
-                    </Label>
-                    <Input
-                      id="expected_daily_txn_volume"
-                      type="number"
-                      value={leadData.expected_daily_txn_volume}
-                      onChange={(e) =>
-                        updateField("expected_daily_txn_volume", e.target.value)
-                      }
-                      className="mt-1"
-                      placeholder="Number of daily transactions"
-                    />
-                  </div>
-                  <div>
                     <Label htmlFor="project_value">
-                      Project Value (Expected Revenue)
+                      Project Current Value
                     </Label>
                     <div className="relative mt-1">
                       <DollarSign className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
@@ -876,7 +877,64 @@ export default function LeadEdit() {
                           updateField("project_value", e.target.value)
                         }
                         className="pl-10"
-                        placeholder="Expected deal size"
+                        placeholder="Current project value"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Label htmlFor="project_value_12m">
+                      Project Value After 12 Months
+                    </Label>
+                    <div className="relative mt-1">
+                      <DollarSign className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      <Input
+                        id="project_value_12m"
+                        type="number"
+                        value={leadData.project_value_12m || ""}
+                        onChange={(e) =>
+                          updateField("project_value_12m", e.target.value)
+                        }
+                        className="pl-10"
+                        placeholder="Expected value after 12 months"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="project_value_24m">
+                      Project Value After 24 Months
+                    </Label>
+                    <div className="relative mt-1">
+                      <DollarSign className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      <Input
+                        id="project_value_24m"
+                        type="number"
+                        value={leadData.project_value_24m || ""}
+                        onChange={(e) =>
+                          updateField("project_value_24m", e.target.value)
+                        }
+                        className="pl-10"
+                        placeholder="Expected value after 24 months"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Label htmlFor="project_value_36m">
+                      Project Value After 36 Months
+                    </Label>
+                    <div className="relative mt-1">
+                      <DollarSign className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      <Input
+                        id="project_value_36m"
+                        type="number"
+                        value={leadData.project_value_36m || ""}
+                        onChange={(e) =>
+                          updateField("project_value_36m", e.target.value)
+                        }
+                        className="pl-10"
+                        placeholder="Expected value after 36 months"
                       />
                     </div>
                   </div>
