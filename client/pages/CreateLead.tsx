@@ -352,6 +352,7 @@ export default function CreateLead() {
       const partialData = {
         ...leadData,
         is_partial: true,
+        lead_source: leadData.lead_source || 'other', // Ensure we have a lead_source
         partial_data: {
           lastSaved: new Date().toISOString(),
           completedTabs: [currentTab],
