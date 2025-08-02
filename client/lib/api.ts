@@ -486,6 +486,128 @@ export class ApiClient {
       body: JSON.stringify(statusData),
     });
   }
+
+  // Ticketing API methods
+  async getTicketMetadata() {
+    return this.request<{
+      priorities: any[];
+      statuses: any[];
+      categories: any[];
+    }>("/tickets/metadata");
+  }
+
+  async getTickets(filters?: any, page?: number, limit?: number) {
+    let endpoint = "/tickets";
+    const params = new URLSearchParams();
+
+    if (filters) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== "") {
+          params.append(key, String(value));
+        }
+      });
+    }
+
+    if (page) params.append("page", String(page));
+    if (limit) params.append("limit", String(limit));
+
+    if (params.toString()) {
+      endpoint += `?${params.toString()}`;
+    }
+
+    return this.request<{
+      tickets: any[];
+      total: number;
+      pages: number;
+    }>(endpoint);
+  }
+
+  async getTicketById(id: number) {
+    return this.request<any>(`/tickets/${id}`);
+  }
+
+  async getTicketByTrackId(trackId: string) {
+    return this.request<any>(`/tickets/track/${trackId}`);
+  }
+
+  async createTicket(ticketData: any, attachments?: File[]) {
+    const formData = new FormData();
+
+    // Add ticket data
+    Object.entries(ticketData).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        if (typeof value === "object") {
+          formData.append(key, JSON.stringify(value));
+        } else {
+          formData.append(key, String(value));
+        }
+      }
+    });
+
+    // Add attachments
+    if (attachments) {
+      attachments.forEach((file) => {
+        formData.append("attachments", file);
+      });
+    }
+
+    return this.request<any>("/tickets", {
+      method: "POST",
+      body: formData,
+      headers: {}, // Let browser set Content-Type for FormData
+    });
+  }
+
+  async updateTicket(id: number, updateData: any) {
+    return this.request<any>(`/tickets/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(updateData),
+    });
+  }
+
+  async deleteTicket(id: number) {
+    return this.request<void>(`/tickets/${id}`, {
+      method: "DELETE",
+    });
+  }
+
+  async getTicketComments(ticketId: number) {
+    return this.request<any[]>(`/tickets/${ticketId}/comments`);
+  }
+
+  async addTicketComment(ticketId: number, commentData: any) {
+    return this.request<any>(`/tickets/${ticketId}/comments`, {
+      method: "POST",
+      body: JSON.stringify(commentData),
+    });
+  }
+
+  async getTicketNotifications(userId: string, unreadOnly?: boolean) {
+    let endpoint = `/tickets/notifications/${userId}`;
+    if (unreadOnly) {
+      endpoint += "?unread_only=true";
+    }
+    return this.request<any[]>(endpoint);
+  }
+
+  async markNotificationAsRead(notificationId: number) {
+    return this.request<void>(`/tickets/notifications/${notificationId}/read`, {
+      method: "PUT",
+    });
+  }
+
+  async uploadTicketAttachment(ticketId: number, file: File, commentId?: number, userId?: string) {
+    const formData = new FormData();
+    formData.append("file", file);
+    if (commentId) formData.append("comment_id", String(commentId));
+    if (userId) formData.append("user_id", userId);
+
+    return this.request<any>(`/tickets/${ticketId}/attachments`, {
+      method: "POST",
+      body: formData,
+      headers: {}, // Let browser set Content-Type for FormData
+    });
+  }
 }
 
 export const apiClient = new ApiClient();
