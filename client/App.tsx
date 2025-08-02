@@ -76,6 +76,7 @@ import ProposalNew from "@/pages/ProposalNew";
 import ProposalList from "@/pages/ProposalList";
 import FollowUpTracker from "@/pages/FollowUpTracker";
 import PipelineSettings from "@/pages/PipelineSettings";
+import Tickets from "@/pages/Tickets";
 import NotFound from "@/pages/NotFound";
 
 // Protected Route Component
