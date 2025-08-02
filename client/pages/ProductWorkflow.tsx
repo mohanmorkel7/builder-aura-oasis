@@ -711,9 +711,12 @@ export default function ProductWorkflow() {
                                 {format(new Date(lead.completion_date), "MMM d, yyyy")}
                               </div>
                               <div>
-                                <span className="font-medium">Steps:</span>
+                                <span className="font-medium">Lead Steps:</span>
                                 <br />
-                                {lead.completed_steps}/{lead.total_steps}
+                                <div className="flex items-center gap-1">
+                                  <CheckCircle className="w-3 h-3 text-green-600" />
+                                  <span>{lead.completed_steps}/{lead.total_steps}</span>
+                                </div>
                               </div>
                               <div>
                                 <span className="font-medium">Est. Budget:</span>
@@ -723,7 +726,47 @@ export default function ProductWorkflow() {
                               <div>
                                 <span className="font-medium">Status:</span>
                                 <br />
-                                <Badge variant="secondary">Ready for Product</Badge>
+                                <Select
+                                  value={lead.product_status || "ready_for_product"}
+                                  onValueChange={(value) => {
+                                    // Update lead status
+                                    console.log("Updating lead status:", lead.id, value);
+                                    // TODO: Implement API call to update lead status
+                                  }}
+                                >
+                                  <SelectTrigger className="w-full h-8">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="ready_for_product">Ready for Product</SelectItem>
+                                    <SelectItem value="in_review">In Review</SelectItem>
+                                    <SelectItem value="approved">Approved</SelectItem>
+                                    <SelectItem value="on_hold">On Hold</SelectItem>
+                                    <SelectItem value="rejected">Rejected</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </div>
+
+                            {/* Project Steps Preview */}
+                            <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <span className="text-sm font-medium text-blue-800">Project Steps Preview</span>
+                                  <p className="text-xs text-blue-600 mt-1">
+                                    Based on lead requirements and default product template
+                                  </p>
+                                </div>
+                                <Badge variant="outline" className="bg-blue-100 text-blue-700">
+                                  {Math.ceil((lead.estimated_budget || 100000) / 50000)} estimated steps
+                                </Badge>
+                              </div>
+                              <div className="mt-2 flex flex-wrap gap-1">
+                                {["Requirements Analysis", "Design Phase", "Development", "Testing", "Deployment"].slice(0, Math.min(5, Math.ceil((lead.estimated_budget || 100000) / 50000))).map((stepName, index) => (
+                                  <Badge key={index} variant="secondary" className="text-xs">
+                                    {index + 1}. {stepName}
+                                  </Badge>
+                                ))}
                               </div>
                             </div>
                           </div>
