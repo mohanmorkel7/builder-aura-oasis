@@ -346,7 +346,7 @@ export function EnhancedProjectStepItem({
                           >
                             {comment.comment_type === "system"
                               ? "⚙"
-                              : comment.user_name.charAt(0)}
+                              : (comment.user_name || "?").charAt(0)}
                           </div>
                           <div className="flex-1">
                             <div className="flex items-center justify-between mb-1">
