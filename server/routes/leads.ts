@@ -154,8 +154,10 @@ router.post("/", async (req: Request, res: Response) => {
       }
     }
 
-    // Validate enum values
+    // Validate enum values (skip for partial saves)
     if (
+      !isPartialSave &&
+      leadData.lead_source &&
       !ValidationSchemas.lead.enums.lead_source.includes(leadData.lead_source)
     ) {
       return res.status(400).json({
