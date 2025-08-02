@@ -1198,17 +1198,7 @@ function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogPr
                 <Button
                   size="sm"
                   variant="outline"
-                  onClick={() => {
-                    // Add new step functionality
-                    const newStepOrder = (projectDetails?.steps?.length || 0) + 1;
-                    const stepName = prompt("Enter step name:");
-                    if (stepName?.trim()) {
-                      const stepDescription = prompt("Enter step description (optional):") || "";
-                      // Create new step via API
-                      console.log("Creating step:", stepName, stepDescription, newStepOrder);
-                      // TODO: Implement actual step creation API call
-                    }
-                  }}
+                  onClick={() => setAddStepModalOpen(true)}
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Add Step
