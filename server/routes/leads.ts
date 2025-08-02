@@ -265,6 +265,7 @@ router.get("/template-step-dashboard", async (req: Request, res: Response) => {
       }
     }
 
+    console.log(`Returning ${dashboardData.length} step data items`);
     res.json(dashboardData);
   } catch (error) {
     console.error("Error fetching template step dashboard:", error);
