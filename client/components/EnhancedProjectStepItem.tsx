@@ -72,6 +72,7 @@ export function EnhancedProjectStepItem({
   isDragOverlay = false,
 }: EnhancedProjectStepItemProps) {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
