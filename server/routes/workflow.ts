@@ -128,7 +128,9 @@ const WorkflowMockData = {
       comment_type: "comment",
       is_internal: false,
       created_at: "2024-01-20T10:30:00Z",
-      creator_name: "John Developer"
+      creator_name: "John Developer",
+      user_name: "John Developer",
+      user_id: 3
     },
     {
       id: 2,
@@ -137,7 +139,9 @@ const WorkflowMockData = {
       comment_type: "status_update",
       is_internal: true,
       created_at: "2024-01-25T14:00:00Z",
-      creator_name: "System"
+      creator_name: "System",
+      user_name: "System",
+      user_id: 1
     }
   ],
   notifications: [
