@@ -507,10 +507,20 @@ export default function UserManagement() {
                       <TableCell>{user.lastLogin || 'N/A'}</TableCell>
                       <TableCell>
                         <div className="flex items-center space-x-2">
-                          <Button size="sm" variant="outline">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleViewUser(user.id)}
+                            title="View User"
+                          >
                             <Eye className="w-4 h-4" />
                           </Button>
-                          <Button size="sm" variant="outline">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleUserSettings(user.id)}
+                            title="User Settings"
+                          >
                             <Settings className="w-4 h-4" />
                           </Button>
                         </div>
