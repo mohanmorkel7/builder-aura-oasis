@@ -48,6 +48,12 @@ const navigationItems: NavigationItem[] = [
     roles: ["admin"],
   },
   {
+    name: "FinOps",
+    href: "/finops",
+    icon: DollarSign,
+    roles: ["admin", "finance"],
+  },
+  {
     name: "Sales Dashboard",
     href: "/sales",
     icon: BarChart3,
