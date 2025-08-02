@@ -180,6 +180,18 @@ const mockLeads = [
         unit: "paisa",
         currency: "INR",
       },
+      {
+        solution: "Switch-Cards",
+        value: 0.12,
+        unit: "cents",
+        currency: "USD",
+      },
+      {
+        solution: "FRM",
+        value: 0.44,
+        unit: "fils",
+        currency: "AED",
+      },
     ],
   },
   {
