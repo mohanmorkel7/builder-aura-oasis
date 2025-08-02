@@ -896,13 +896,6 @@ export class ApiClient {
     });
   }
 
-  async createProjectStep(projectId: number, stepData: any) {
-    return this.request(`/workflow/projects/${projectId}/steps`, {
-      method: "POST",
-      body: JSON.stringify(stepData),
-    });
-  }
-
   async createProjectFollowUp(projectId: number, followUpData: any) {
     return this.request(`/workflow/projects/${projectId}/follow-ups`, {
       method: "POST",
