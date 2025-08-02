@@ -12,6 +12,7 @@ import leadsRouter from "./routes/leads";
 import followUpsRouter from "./routes/follow-ups";
 import filesRouter from "./routes/files";
 import ticketsRouter from "./routes/tickets";
+import finopsRouter from "./routes/finops";
 
 export function createServer() {
   const app = express();
