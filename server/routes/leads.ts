@@ -237,8 +237,10 @@ router.post("/", async (req: Request, res: Response) => {
       }
     }
 
+    console.log("All validations passed, attempting to create lead...");
     try {
       if (await isDatabaseAvailable()) {
+        console.log("Database is available, creating lead via repository...");
         // Generate unique lead ID if not provided
         if (!leadData.lead_id) {
           leadData.lead_id = await DatabaseValidator.generateUniqueLeadId();
