@@ -290,7 +290,7 @@ function CreateProjectFromLeadDialog({ lead, isOpen, onClose, onSuccess }: Creat
                     <SelectValue placeholder="Select a template (optional)" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">No Template</SelectItem>
+                    <SelectItem value="none">No Template</SelectItem>
                     {templates.map((template: any) => (
                       <SelectItem key={template.id} value={template.id.toString()}>
                         {template.name}
