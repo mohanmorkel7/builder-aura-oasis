@@ -884,14 +884,28 @@ function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogPr
     enabled: !!project?.id && isOpen,
   });
 
-  // Fetch step-specific comments for expanded steps
-  const getStepComments = (stepId: number) => {
-    return useQuery({
-      queryKey: ["step-comments", project?.id, stepId],
-      queryFn: () => project ? apiClient.getProjectComments(project.id, stepId) : [],
-      enabled: !!project?.id && isOpen && expandedSteps[stepId],
-    });
-  };
+  // Fetch all step comments when needed
+  const expandedStepIds = Object.keys(expandedSteps).filter(id => expandedSteps[parseInt(id)]).map(id => parseInt(id));
+  const { data: allStepComments = {} } = useQuery({
+    queryKey: ["all-step-comments", project?.id, expandedStepIds],
+    queryFn: async () => {
+      if (!project?.id || expandedStepIds.length === 0) return {};
+
+      const commentsMap: {[key: number]: any[]} = {};
+      await Promise.all(
+        expandedStepIds.map(async (stepId) => {
+          try {
+            const comments = await apiClient.getProjectComments(project.id, stepId);
+            commentsMap[stepId] = comments;
+          } catch (error) {
+            commentsMap[stepId] = [];
+          }
+        })
+      );
+      return commentsMap;
+    },
+    enabled: !!project?.id && isOpen && expandedStepIds.length > 0,
+  });
 
   const addCommentMutation = useMutation({
     mutationFn: (commentData: any) => apiClient.createProjectComment(project.id, commentData),
