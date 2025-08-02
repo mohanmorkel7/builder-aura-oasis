@@ -967,3 +967,128 @@ export function useLeadFollowUps(leadId: number) {
     enabled: !!leadId && leadId > 0,
   });
 }
+
+// Ticketing system hooks
+export function useTicketMetadata() {
+  return useQuery({
+    queryKey: ["ticket-metadata"],
+    queryFn: () => apiClient.getTicketMetadata(),
+  });
+}
+
+export function useTickets(filters?: any, page?: number, limit?: number) {
+  return useQuery({
+    queryKey: ["tickets", filters, page, limit],
+    queryFn: () => apiClient.getTickets(filters, page, limit),
+  });
+}
+
+export function useTicket(id: number) {
+  return useQuery({
+    queryKey: ["ticket", id],
+    queryFn: () => apiClient.getTicketById(id),
+    enabled: !!id && id > 0,
+  });
+}
+
+export function useTicketByTrackId(trackId: string) {
+  return useQuery({
+    queryKey: ["ticket", "track", trackId],
+    queryFn: () => apiClient.getTicketByTrackId(trackId),
+    enabled: !!trackId,
+  });
+}
+
+export function useCreateTicket() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ ticketData, attachments }: { ticketData: any; attachments?: File[] }) =>
+      apiClient.createTicket(ticketData, attachments),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tickets"] });
+      queryClient.invalidateQueries({ queryKey: ["ticket-notifications"] });
+    },
+  });
+}
+
+export function useUpdateTicket() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, updateData }: { id: number; updateData: any }) =>
+      apiClient.updateTicket(id, updateData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tickets"] });
+      queryClient.invalidateQueries({ queryKey: ["ticket"] });
+    },
+  });
+}
+
+export function useDeleteTicket() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: number) => apiClient.deleteTicket(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tickets"] });
+    },
+  });
+}
+
+export function useTicketComments(ticketId: number) {
+  return useQuery({
+    queryKey: ["ticket-comments", ticketId],
+    queryFn: () => apiClient.getTicketComments(ticketId),
+    enabled: !!ticketId && ticketId > 0,
+  });
+}
+
+export function useAddTicketComment() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ ticketId, commentData }: { ticketId: number; commentData: any }) =>
+      apiClient.addTicketComment(ticketId, commentData),
+    onSuccess: (_, { ticketId }) => {
+      queryClient.invalidateQueries({ queryKey: ["ticket-comments", ticketId] });
+      queryClient.invalidateQueries({ queryKey: ["ticket-notifications"] });
+    },
+  });
+}
+
+export function useTicketNotifications(userId: string, unreadOnly?: boolean) {
+  return useQuery({
+    queryKey: ["ticket-notifications", userId, unreadOnly],
+    queryFn: () => apiClient.getTicketNotifications(userId, unreadOnly),
+    enabled: !!userId,
+  });
+}
+
+export function useMarkNotificationAsRead() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (notificationId: number) => apiClient.markNotificationAsRead(notificationId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["ticket-notifications"] });
+    },
+  });
+}
+
+export function useUploadTicketAttachment() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ ticketId, file, commentId, userId }: {
+      ticketId: number;
+      file: File;
+      commentId?: number;
+      userId?: string;
+    }) => apiClient.uploadTicketAttachment(ticketId, file, commentId, userId),
+    onSuccess: (_, { ticketId }) => {
+      queryClient.invalidateQueries({ queryKey: ["ticket", ticketId] });
+      queryClient.invalidateQueries({ queryKey: ["ticket-comments", ticketId] });
+    },
+  });
+}
