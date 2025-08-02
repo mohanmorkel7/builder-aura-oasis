@@ -555,7 +555,7 @@ export default function CreateLead() {
             className="text-blue-600"
           >
             <FileText className="w-4 h-4 mr-2" />
-            {showPartialSaves ? 'Hide' : 'Show'} Saved Drafts
+            {shouldShowPartialSaves ? 'Hide' : 'Show'} Saved Drafts
           </Button>
           <Button variant="outline" onClick={handleCancel}>
             Cancel
