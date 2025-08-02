@@ -850,6 +850,20 @@ export class ApiClient {
       body: JSON.stringify({ stepOrders }),
     });
   }
+
+  async createProjectStep(projectId: number, stepData: any) {
+    return this.request(`/workflow/projects/${projectId}/steps`, {
+      method: "POST",
+      body: JSON.stringify(stepData),
+    });
+  }
+
+  async createProjectFollowUp(projectId: number, followUpData: any) {
+    return this.request(`/workflow/projects/${projectId}/follow-ups`, {
+      method: "POST",
+      body: JSON.stringify(followUpData),
+    });
+  }
 }
 
 export const apiClient = new ApiClient();
