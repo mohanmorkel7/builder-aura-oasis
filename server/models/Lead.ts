@@ -383,7 +383,7 @@ export class LeadRepository {
 
     const values = [
       leadId, // $1
-      leadData.lead_source, // $2
+      leadData.lead_source || 'other', // $2 - default to 'other' for partial saves
       leadData.lead_source_value || null, // $3
       leadData.project_title || null, // $4
       leadData.project_description || null, // $5
