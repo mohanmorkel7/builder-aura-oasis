@@ -257,7 +257,6 @@ export default function CreateLead() {
       const resumeData = location.state.resumeData;
       setLeadData(resumeData);
       setIsResumedFromDraft(true);
-      setShowPartialSaves(false); // Hide partial saves when resuming
 
       // Set the active tab to the first incomplete tab if available
       if (resumeData._completedTabs && resumeData._completedTabs.length > 0) {
@@ -274,9 +273,6 @@ export default function CreateLead() {
       window.history.replaceState({}, document.title);
     }
   }, [location.state]);
-
-  // Hide partial saves section when resuming from a draft
-  const shouldShowPartialSaves = showPartialSaves && !isResumedFromDraft;
 
   const tabs = [
     { value: "basic", label: "Lead Info", icon: "📋" },
