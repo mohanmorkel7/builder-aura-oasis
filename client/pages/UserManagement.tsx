@@ -72,11 +72,11 @@ export default function UserManagement() {
 
   // Filter users based on search and filters
   const filteredUsers = allUsers.filter((user) => {
-    const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.email.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = (user.name?.toLowerCase().includes(searchTerm.toLowerCase()) || false) ||
+                         (user.email?.toLowerCase().includes(searchTerm.toLowerCase()) || false);
     const matchesRole = selectedRole === "all" || user.role === selectedRole;
     const matchesDepartment = selectedDepartment === "all" || user.department === selectedDepartment;
-    
+
     return matchesSearch && matchesRole && matchesDepartment;
   });
 
