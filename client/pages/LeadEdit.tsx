@@ -438,6 +438,40 @@ export default function LeadEdit() {
     setHasChanges(true);
   };
 
+  const handlePartialSave = async () => {
+    try {
+      // Save partial data to localStorage
+      const partialData = {
+        ...leadData,
+        leadId: leadId,
+        isPartialEdit: true,
+        lastSaved: new Date().toISOString(),
+        completedTabs: [currentTab],
+      };
+
+      localStorage.setItem(`partial_lead_edit_${leadId}`, JSON.stringify(partialData));
+      setIsPartialSaved(true);
+
+      // Show success message for 2 seconds
+      setTimeout(() => setIsPartialSaved(false), 2000);
+    } catch (error) {
+      console.error('Error saving partial data:', error);
+    }
+  };
+
+  const handleNextTab = async () => {
+    if (!isLastTab) {
+      await handlePartialSave();
+      setCurrentTab(tabs[currentTabIndex + 1].value);
+    }
+  };
+
+  const handlePreviousTab = () => {
+    if (!isFirstTab) {
+      setCurrentTab(tabs[currentTabIndex - 1].value);
+    }
+  };
+
   const addContact = () => {
     setLeadData((prev) => ({
       ...prev,
