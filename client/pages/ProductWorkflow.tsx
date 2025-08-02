@@ -1275,26 +1275,23 @@ function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogPr
                                 </div>
                               )}
 
-                              {/* Add Comment Section */}
+                              {/* Add Comment Section with Rich Text Features */}
                               <div className="space-y-3">
-                                <div className="flex gap-2">
-                                  <Textarea
-                                    value={stepComments[step.id] || ""}
-                                    onChange={(e) => setStepComments(prev => ({
-                                      ...prev,
-                                      [step.id]: e.target.value
-                                    }))}
-                                    placeholder="Add a comment for this step..."
-                                    className="flex-1 min-h-[80px]"
-                                  />
-                                  <div className="flex flex-col gap-2">
-                                    <Button
-                                      size="sm"
-                                      onClick={() => handleAddStepComment(step.id)}
-                                      disabled={!stepComments[step.id]?.trim() || addCommentMutation.isPending}
-                                    >
-                                      <Send className="w-4 h-4" />
+                                <div className="border rounded-lg">
+                                  {/* Rich Text Toolbar */}
+                                  <div className="flex items-center gap-2 p-2 border-b bg-gray-50">
+                                    <div className="text-xs text-gray-500 font-medium">Format:</div>
+                                    <Button size="sm" variant="ghost" className="h-6 px-2 text-xs">
+                                      <strong>B</strong>
                                     </Button>
+                                    <Button size="sm" variant="ghost" className="h-6 px-2 text-xs">
+                                      <em>I</em>
+                                    </Button>
+                                    <Button size="sm" variant="ghost" className="h-6 px-2 text-xs">
+                                      <u>U</u>
+                                    </Button>
+                                    <div className="flex-1" />
+                                    {/* File Upload */}
                                     <div className="relative">
                                       <input
                                         type="file"
@@ -1305,16 +1302,49 @@ function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogPr
                                       />
                                       <Button
                                         size="sm"
-                                        variant="outline"
+                                        variant="ghost"
                                         disabled={uploadingFiles[step.id]}
+                                        className="h-6 px-2"
                                       >
                                         {uploadingFiles[step.id] ? (
-                                          <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                                          <div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
                                         ) : (
-                                          <Paperclip className="w-4 h-4" />
+                                          <Paperclip className="w-3 h-3" />
                                         )}
                                       </Button>
                                     </div>
+                                  </div>
+
+                                  {/* Text Input Area */}
+                                  <div className="flex">
+                                    <Textarea
+                                      value={stepComments[step.id] || ""}
+                                      onChange={(e) => setStepComments(prev => ({
+                                        ...prev,
+                                        [step.id]: e.target.value
+                                      }))}
+                                      placeholder="Add a detailed comment for this step... You can use *bold*, _italic_, or format text as needed."
+                                      className="flex-1 min-h-[100px] border-0 focus:ring-0 resize-none"
+                                    />
+                                    <div className="p-2 border-l">
+                                      <Button
+                                        size="sm"
+                                        onClick={() => handleAddStepComment(step.id)}
+                                        disabled={!stepComments[step.id]?.trim() || addCommentMutation.isPending}
+                                        className="h-8"
+                                      >
+                                        {addCommentMutation.isPending ? (
+                                          <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                                        ) : (
+                                          <Send className="w-4 h-4" />
+                                        )}
+                                      </Button>
+                                    </div>
+                                  </div>
+
+                                  {/* Character Count */}
+                                  <div className="px-3 py-1 text-xs text-gray-500 border-t bg-gray-50">
+                                    {(stepComments[step.id] || "").length} characters
                                   </div>
                                 </div>
                               </div>
