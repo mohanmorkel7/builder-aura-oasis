@@ -1080,7 +1080,7 @@ export default function LeadEdit() {
                                   <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  {unitOptions.map((unit) => (
+                                  {getCurrencyUnits(pricing.currency).map((unit) => (
                                     <SelectItem
                                       key={unit.value}
                                       value={unit.value}
