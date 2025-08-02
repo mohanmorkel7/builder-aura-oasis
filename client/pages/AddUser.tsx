@@ -243,13 +243,15 @@ export default function AddUser() {
                     <SelectValue placeholder="Select department" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="administration">
-                      Administration
-                    </SelectItem>
-                    <SelectItem value="sales">Sales & Marketing</SelectItem>
-                    <SelectItem value="product">Product Development</SelectItem>
-                    <SelectItem value="support">Customer Support</SelectItem>
-                    <SelectItem value="hr">Human Resources</SelectItem>
+                    <SelectItem value="Administration">Administration</SelectItem>
+                    <SelectItem value="Sales">Sales & Marketing</SelectItem>
+                    <SelectItem value="Product">Product Development</SelectItem>
+                    <SelectItem value="Development">Development</SelectItem>
+                    <SelectItem value="Database">Database Management</SelectItem>
+                    <SelectItem value="FinOps">Financial Operations</SelectItem>
+                    <SelectItem value="HR">Human Resources</SelectItem>
+                    <SelectItem value="Infrastructure">Infrastructure</SelectItem>
+                    <SelectItem value="Switch Team">Switch Team</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
