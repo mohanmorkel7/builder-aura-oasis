@@ -362,10 +362,39 @@ export default function TicketDetails({ ticket, onUpdate, metadata, currentUser 
                         )}
                       </div>
                       
-                      <div className="whitespace-pre-wrap text-sm">
-                        {comment.content}
-                      </div>
-                      
+                      <div
+                        className="prose prose-sm max-w-none text-sm"
+                        dangerouslySetInnerHTML={{ __html: comment.content }}
+                      />
+
+                      {/* Comment Attachments */}
+                      {comment.attachments && comment.attachments.length > 0 && (
+                        <div className="mt-3 space-y-2">
+                          <div className="text-xs font-medium text-gray-600">
+                            Attachments ({comment.attachments.length}):
+                          </div>
+                          <div className="grid grid-cols-1 gap-2">
+                            {comment.attachments.map((attachment: any) => (
+                              <div key={attachment.id} className="flex items-center gap-2 p-2 bg-gray-100 rounded text-xs">
+                                <FileText className="w-3 h-3 text-gray-500" />
+                                <span className="flex-1">{attachment.original_filename}</span>
+                                <span className="text-gray-500">
+                                  {(attachment.file_size / 1024 / 1024).toFixed(2)} MB
+                                </span>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="h-6 w-6 p-0"
+                                  onClick={() => window.open(attachment.file_path, '_blank')}
+                                >
+                                  <Download className="w-3 h-3" />
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
                       {comment.mentions && comment.mentions.length > 0 && (
                         <div className="mt-2 text-xs text-gray-500">
                           Mentioned: {comment.mentions.join(", ")}
