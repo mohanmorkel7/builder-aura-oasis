@@ -49,6 +49,7 @@ import {
   Target,
   Users,
   Globe,
+  FileText,
   Award,
   Zap,
   Plus,
