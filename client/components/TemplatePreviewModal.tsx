@@ -61,13 +61,23 @@ export default function TemplatePreviewModal({
 
         <div className="space-y-6">
           {/* Template Summary */}
-          <div className="flex justify-center">
+          <div className="flex justify-center gap-4">
             <Card className="text-center w-48">
               <CardContent className="p-6">
                 <div className="text-3xl font-bold text-blue-600 mb-2">
                   {totalSteps}
                 </div>
                 <div className="text-sm text-gray-600">Total Steps</div>
+              </CardContent>
+            </Card>
+            <Card className="text-center w-48">
+              <CardContent className="p-6">
+                <div className={`text-3xl font-bold mb-2 ${
+                  totalProbability === 100 ? 'text-green-600' : 'text-orange-600'
+                }`}>
+                  {totalProbability}%
+                </div>
+                <div className="text-sm text-gray-600">Total Probability</div>
               </CardContent>
             </Card>
           </div>
