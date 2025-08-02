@@ -636,11 +636,7 @@ export class ApiClient {
 
 
 
-  async deleteTemplate(templateId: number) {
-    return this.request<void>(`/templates/${templateId}`, {
-      method: "DELETE",
-    });
-  }
+
 
   async getStepCategories() {
     return this.request<any[]>("/templates/step-categories");
