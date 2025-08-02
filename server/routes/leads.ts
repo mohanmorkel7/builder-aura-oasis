@@ -27,8 +27,9 @@ async function isDatabaseAvailable() {
 // Get all leads
 router.get("/", async (req: Request, res: Response) => {
   try {
-    const { salesRep } = req.query;
+    const { salesRep, partial } = req.query;
     const salesRepId = salesRep ? parseInt(salesRep as string) : undefined;
+    const isPartialOnly = partial === 'true';
 
     let leads;
     try {
