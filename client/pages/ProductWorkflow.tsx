@@ -1081,6 +1081,10 @@ function ProjectDetailDialog({ project, isOpen, onClose }: ProjectDetailDialogPr
     setExpandedSteps(prev => ({ ...prev, [stepId]: !prev[stepId] }));
   };
 
+  const handleUpdateStepStatus = (stepId: number, status: string) => {
+    updateStepStatusMutation.mutate({ stepId, status });
+  };
+
   if (!project) return null;
 
   // Calculate auto progress percentage
