@@ -110,6 +110,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     try {
       if (provider === "microsoft") {
+        // Initialize MSAL instance before use
+        await msalInstance.initialize();
+
         // Microsoft SSO using MSAL
         const loginResponse: AuthenticationResult = await msalInstance.loginPopup(loginRequest);
 
