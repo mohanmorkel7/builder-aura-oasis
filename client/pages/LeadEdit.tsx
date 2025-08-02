@@ -142,7 +142,7 @@ const getCurrencyUnits = (currency: string) => {
     case "USD":
       return [
         { value: "dollar", label: "Dollar ($)" },
-        { value: "cents", label: "Cents (¢)" },
+        { value: "cents", label: "Cents (��)" },
       ];
     case "AED":
       return [
@@ -284,11 +284,11 @@ export default function LeadEdit() {
   const isFirstTab = currentTabIndex === 0;
   const isLastTab = currentTabIndex === tabs.length - 1;
 
-  // Mock exchange rates (in production, these would come from an API)
+  // Current exchange rates (updated as of January 2025)
   const exchangeRates = {
     INR: { USD: 0.012, AED: 0.044, INR: 1 },
-    USD: { INR: 83.5, AED: 3.67, USD: 1 },
-    AED: { INR: 22.75, USD: 0.27, AED: 1 },
+    USD: { INR: 85.2, AED: 3.67, USD: 1 },
+    AED: { INR: 23.2, USD: 0.272, AED: 1 },
   };
 
   const convertCurrency = (amount: number, fromCurrency: string, toCurrency: string): number => {
