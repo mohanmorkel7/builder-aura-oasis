@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { useCreateLead, useTemplate } from "@/hooks/useApi";
 import { useAuth } from "@/lib/auth-context";
+import { apiClient } from "@/lib/api";
 import TemplatePreviewModal from "@/components/TemplatePreviewModal";
 import { Button } from "@/components/ui/button";
 import {
