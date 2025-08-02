@@ -193,6 +193,7 @@ export function EnhancedProjectStepItem({
       comment_type: "comment" as const,
       is_internal: false,
       created_by: parseInt(user.id),
+      user_name: user.name || "Current User",
       attachments: stagedAttachments.length > 0 ? stagedAttachments : undefined,
     };
 
