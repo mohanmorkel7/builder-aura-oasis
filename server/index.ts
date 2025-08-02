@@ -13,6 +13,7 @@ import followUpsRouter from "./routes/follow-ups";
 import filesRouter from "./routes/files";
 import ticketsRouter from "./routes/tickets";
 import finopsRouter from "./routes/finops";
+import workflowRouter from "./routes/workflow";
 
 export function createServer() {
   const app = express();
