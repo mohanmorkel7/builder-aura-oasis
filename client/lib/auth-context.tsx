@@ -176,6 +176,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Check if user logged in via Microsoft SSO
       const msalAccount = localStorage.getItem("msal_account");
       if (msalAccount) {
+        await msalInstance.initialize();
         await msalInstance.logoutPopup();
         localStorage.removeItem("msal_account");
       }
