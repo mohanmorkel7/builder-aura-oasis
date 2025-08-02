@@ -134,7 +134,7 @@ export default function UserManagement() {
         </div>
         <div className="flex items-center space-x-3">
           <Button variant="outline" onClick={handleSyncAzure}>
-            <Microsoft className="w-4 h-4 mr-2" />
+            <Cloud className="w-4 h-4 mr-2" />
             Sync Azure AD
           </Button>
           <Button variant="outline" onClick={handleExportUsers}>
