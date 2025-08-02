@@ -37,6 +37,7 @@ import {
   PauseCircle,
   AlertTriangle,
   Upload,
+  Reply,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
