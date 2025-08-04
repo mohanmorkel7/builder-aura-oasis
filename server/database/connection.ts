@@ -24,6 +24,17 @@ export async function initializeDatabase() {
     const schema = fs.readFileSync(schemaPath, "utf8");
 
     await client.query(schema);
+
+    // Run migration for notifications and activity logs
+    try {
+      const migrationPath = path.join(__dirname, "migration-fix-notifications-activity.sql");
+      const migration = fs.readFileSync(migrationPath, "utf8");
+      await client.query(migration);
+      console.log("Migration applied successfully");
+    } catch (migrationError) {
+      console.log("Migration already applied or error:", migrationError.message);
+    }
+
     console.log("Database initialized successfully");
 
     client.release();
