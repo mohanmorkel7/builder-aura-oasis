@@ -961,59 +961,78 @@ export default function ClientBasedFinOpsTaskManager() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {Object.entries(clientSummary).map(([clientName, summary]: [string, any]) => (
-                <div
-                  key={clientName}
-                  className={`border rounded-lg p-4 cursor-pointer transition-all hover:shadow-md ${
-                    selectedClientFromSummary === clientName
-                      ? "bg-blue-50 border-blue-300 shadow-md"
-                      : "bg-gray-50 hover:bg-gray-100"
-                  }`}
+            {Object.keys(clientSummary).length === 0 ? (
+              <div className="text-center py-8">
+                <Building2 className="w-16 h-16 mx-auto text-gray-400 mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No Client Data Available</h3>
+                <p className="text-gray-600 mb-4">
+                  Tasks exist but client information is not properly configured.
+                </p>
+                <Button
+                  variant="outline"
                   onClick={() => {
-                    if (selectedClientFromSummary === clientName) {
-                      setSelectedClientFromSummary(null);
-                    } else {
-                      setSelectedClientFromSummary(clientName);
-                    }
+                    queryClient.invalidateQueries({ queryKey: ["clients"] });
                   }}
                 >
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-medium text-sm">{clientName}</h4>
-                    {selectedClientFromSummary === clientName && (
-                      <Badge variant="secondary" className="text-xs">
-                        Selected
-                      </Badge>
-                    )}
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  Refresh Client Data
+                </Button>
+              </div>
+            ) : (
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {Object.entries(clientSummary).map(([clientName, summary]: [string, any]) => (
+                  <div
+                    key={clientName}
+                    className={`border rounded-lg p-4 cursor-pointer transition-all hover:shadow-md ${
+                      selectedClientFromSummary === clientName
+                        ? "bg-blue-50 border-blue-300 shadow-md"
+                        : "bg-gray-50 hover:bg-gray-100"
+                    }`}
+                    onClick={() => {
+                      if (selectedClientFromSummary === clientName) {
+                        setSelectedClientFromSummary(null);
+                      } else {
+                        setSelectedClientFromSummary(clientName);
+                      }
+                    }}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-medium text-sm">{clientName}</h4>
+                      {selectedClientFromSummary === clientName && (
+                        <Badge variant="secondary" className="text-xs">
+                          Selected
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="grid grid-cols-5 gap-2 text-center">
+                      <div>
+                        <div className="text-lg font-bold text-blue-600">{summary.total_tasks}</div>
+                        <div className="text-xs text-gray-600">Tasks</div>
+                      </div>
+                      <div>
+                        <div className="text-lg font-bold text-gray-900">{summary.total_subtasks}</div>
+                        <div className="text-xs text-gray-600">Subtasks</div>
+                      </div>
+                      <div>
+                        <div className="text-lg font-bold text-green-600">{summary.completed_subtasks}</div>
+                        <div className="text-xs text-gray-600">Done</div>
+                      </div>
+                      <div>
+                        <div className="text-lg font-bold text-yellow-600">{summary.delayed_subtasks}</div>
+                        <div className="text-xs text-gray-600">Delayed</div>
+                      </div>
+                      <div>
+                        <div className="text-lg font-bold text-red-600">{summary.overdue_subtasks}</div>
+                        <div className="text-xs text-gray-600">Overdue</div>
+                      </div>
+                    </div>
+                    <div className="mt-2 text-xs text-gray-500 text-center">
+                      Click to {selectedClientFromSummary === clientName ? 'show all' : 'filter'} tasks
+                    </div>
                   </div>
-                  <div className="grid grid-cols-5 gap-2 text-center">
-                    <div>
-                      <div className="text-lg font-bold text-blue-600">{summary.total_tasks}</div>
-                      <div className="text-xs text-gray-600">Tasks</div>
-                    </div>
-                    <div>
-                      <div className="text-lg font-bold text-gray-900">{summary.total_subtasks}</div>
-                      <div className="text-xs text-gray-600">Subtasks</div>
-                    </div>
-                    <div>
-                      <div className="text-lg font-bold text-green-600">{summary.completed_subtasks}</div>
-                      <div className="text-xs text-gray-600">Done</div>
-                    </div>
-                    <div>
-                      <div className="text-lg font-bold text-yellow-600">{summary.delayed_subtasks}</div>
-                      <div className="text-xs text-gray-600">Delayed</div>
-                    </div>
-                    <div>
-                      <div className="text-lg font-bold text-red-600">{summary.overdue_subtasks}</div>
-                      <div className="text-xs text-gray-600">Overdue</div>
-                    </div>
-                  </div>
-                  <div className="mt-2 text-xs text-gray-500 text-center">
-                    Click to {selectedClientFromSummary === clientName ? 'show all' : 'filter'} tasks
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
       )}
