@@ -445,6 +445,20 @@ export class ApiClient {
     return this.request("/finops/scheduler-status");
   }
 
+  async getFinOpsTaskSummary(taskId: number) {
+    return this.request(`/finops/tasks/${taskId}/summary`);
+  }
+
+  async sendFinOpsManualAlert(taskId: number, subtaskId: string, alertType: string, message: string) {
+    return this.request(`/finops/tasks/${taskId}/subtasks/${subtaskId}/alert`, {
+      method: "POST",
+      body: JSON.stringify({
+        alert_type: alertType,
+        message: message
+      }),
+    });
+  }
+
   // Lead steps methods
   async getLeadSteps(leadId: number) {
     return this.request(`/leads/${leadId}/steps`);
