@@ -1,5 +1,5 @@
 import { pool } from "../database/connection";
-import nodemailer from "nodemailer";
+import * as nodemailer from "nodemailer";
 
 interface AlertConfig {
   taskId: number;
