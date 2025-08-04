@@ -203,7 +203,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       if (user) {
         try {
           console.log("Fetching notifications for user:", user.name);
-          const realNotifications = await getNotificationsFromFollowUps(
+          const realNotifications = await getAllNotifications(
             user.id,
             user.name,
           );
@@ -233,8 +233,23 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     // Mark as read (in a real app, this would make an API call)
     notification.read = true;
 
-    // Navigate to the follow-up tracker with the specific ID
-    navigate(`/follow-ups?id=${notification.follow_up_id}`);
+    // Navigate based on notification type
+    switch (notification.entity_type) {
+      case "follow_up":
+        navigate(`/follow-ups?id=${notification.entity_id}`);
+        break;
+      case "finops_task":
+        navigate(`/finops`);
+        break;
+      case "ticket":
+        navigate(`/tickets`);
+        break;
+      case "lead":
+        navigate(`/leads/${notification.entity_id}`);
+        break;
+      default:
+        navigate(`/dashboard`);
+    }
   };
 
   return (
@@ -327,12 +342,18 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                                 : "bg-yellow-100"
                           }`}
                         >
-                          {notification.type === "follow_up_assigned" ? (
+                          {notification.type === "follow_up_assigned" || notification.type === "follow_up_mentioned" ? (
                             <MessageCircle className="w-4 h-4 text-blue-600" />
-                          ) : notification.type === "follow_up_mentioned" ? (
-                            <Bell className="w-4 h-4 text-red-600" />
-                          ) : (
+                          ) : notification.type === "follow_up_overdue" ? (
                             <AlertCircle className="w-4 h-4 text-yellow-600" />
+                          ) : notification.type === "finops_sla_warning" || notification.type === "finops_overdue" ? (
+                            <DollarSign className="w-4 h-4 text-orange-600" />
+                          ) : notification.type === "ticket_assigned" ? (
+                            <Ticket className="w-4 h-4 text-green-600" />
+                          ) : notification.type === "lead_updated" ? (
+                            <Target className="w-4 h-4 text-purple-600" />
+                          ) : (
+                            <Bell className="w-4 h-4 text-gray-600" />
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
@@ -368,7 +389,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                     variant="ghost"
                     size="sm"
                     className="w-full text-xs"
-                    onClick={() => navigate("/follow-ups")}
+                    onClick={() => navigate("/alerts")}
                   >
                     View All Follow-ups
                   </Button>
