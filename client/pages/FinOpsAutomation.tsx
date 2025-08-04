@@ -256,6 +256,11 @@ export default function FinOpsAutomation() {
           <TabsTrigger value="lead-integration">Lead Integration</TabsTrigger>
         </TabsList>
 
+        {/* Task Management Tab */}
+        <TabsContent value="task-management" className="space-y-6">
+          <FinOpsTaskManager />
+        </TabsContent>
+
         {/* Daily Processes Tab */}
         <TabsContent value="daily-processes" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
