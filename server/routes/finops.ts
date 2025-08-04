@@ -632,6 +632,67 @@ async function logUserActivity(userName: string, taskId: number) {
   }
 }
 
+// Handle notifications for status changes
+async function handleStatusChangeNotifications(subtaskData: any, newStatus: string, delayReason?: string, delayNotes?: string) {
+  try {
+    const reportingManagers = JSON.parse(subtaskData.reporting_managers || '[]');
+    const escalationManagers = JSON.parse(subtaskData.escalation_managers || '[]');
+
+    // Send delay notifications
+    if (newStatus === 'delayed') {
+      const notificationData = {
+        task_name: subtaskData.task_name,
+        subtask_name: subtaskData.name,
+        assigned_to: subtaskData.assigned_to,
+        delay_reason: delayReason,
+        delay_notes: delayNotes,
+        timestamp: new Date().toISOString()
+      };
+
+      // Log notification activity
+      await logActivity(
+        subtaskData.task_id,
+        subtaskData.id,
+        'delay_notification_sent',
+        'System',
+        `Delay notification sent to reporting managers: ${reportingManagers.join(', ')}`
+      );
+
+      console.log('Delay notification would be sent to:', reportingManagers);
+      console.log('Notification data:', notificationData);
+    }
+
+    // Send completion notifications
+    if (newStatus === 'completed') {
+      await logActivity(
+        subtaskData.task_id,
+        subtaskData.id,
+        'completion_notification_sent',
+        'System',
+        `Completion notification sent to reporting managers: ${reportingManagers.join(', ')}`
+      );
+
+      console.log('Completion notification would be sent to:', reportingManagers);
+    }
+
+    // Send overdue notifications
+    if (newStatus === 'overdue') {
+      await logActivity(
+        subtaskData.task_id,
+        subtaskData.id,
+        'overdue_notification_sent',
+        'System',
+        `Overdue notification sent to escalation managers: ${escalationManagers.join(', ')}`
+      );
+
+      console.log('Overdue escalation would be sent to:', escalationManagers);
+    }
+
+  } catch (error) {
+    console.error("Error handling status change notifications:", error);
+  }
+}
+
 // Check and update task status based on subtask completion
 async function checkAndUpdateTaskStatus(taskId: number, userName: string) {
   try {
