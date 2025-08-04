@@ -41,7 +41,6 @@ export default function CreateTicketForm({
     priority_id: "",
     category_id: "",
     assigned_to: "",
-    estimated_hours: "",
     tags: [] as string[],
   });
 
