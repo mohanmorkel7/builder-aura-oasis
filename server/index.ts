@@ -156,10 +156,17 @@ export function createServer() {
   }
 
   try {
-    app.use("/api/notifications", notificationsProductionRouter);
+    app.use("/api/notifications-production", notificationsProductionRouter);
     console.log("Notifications production router loaded successfully");
   } catch (error) {
     console.error("Error loading Notifications production router:", error);
+  }
+
+  try {
+    app.use("/api/finops-production", finopsProductionRouter);
+    console.log("FinOps production router loaded successfully");
+  } catch (error) {
+    console.error("Error loading FinOps production router:", error);
   }
 
   return app;
