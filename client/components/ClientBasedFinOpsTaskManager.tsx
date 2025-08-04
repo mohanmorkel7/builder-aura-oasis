@@ -649,16 +649,21 @@ export default function ClientBasedFinOpsTaskManager() {
   const startEditing = (task: ClientBasedFinOpsTask) => {
     setEditingTask(task);
     setTaskForm({
-      task_name: task.task_name,
-      description: task.description,
+      task_name: task.task_name || "",
+      description: task.description || "",
       client_id: task.client_id?.toString() || "",
-      assigned_to: task.assigned_to,
-      reporting_managers: task.reporting_managers,
-      escalation_managers: task.escalation_managers,
-      effective_from: task.effective_from,
-      duration: task.duration,
-      is_active: task.is_active,
-      subtasks: task.subtasks,
+      assigned_to: task.assigned_to || "",
+      reporting_managers: task.reporting_managers || [],
+      escalation_managers: task.escalation_managers || [],
+      effective_from: task.effective_from || new Date().toISOString().split('T')[0],
+      duration: task.duration || "daily",
+      is_active: task.is_active ?? true,
+      subtasks: (task.subtasks || []).map(subtask => ({
+        ...subtask,
+        name: subtask.name || "",
+        description: subtask.description || "",
+        start_time: subtask.start_time || "05:00",
+      })),
     });
     setIsCreateDialogOpen(true);
   };
