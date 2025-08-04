@@ -847,10 +847,42 @@ export default function ClientBasedFinOpsTaskManager() {
               Daily process tracking and task execution monitoring for the selected date
             </p>
           </div>
-          <Button onClick={() => setIsCreateDialogOpen(true)}>
-            <Plus className="w-4 h-4 mr-2" />
-            Create Task
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={() => setIsCreateDialogOpen(true)}>
+              <Plus className="w-4 h-4 mr-2" />
+              Create Task
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                // Create a test task for today's date
+                const testTaskData = {
+                  task_name: "Test Daily Task",
+                  description: "Test task for date filtering",
+                  client_id: "1",
+                  client_name: "Test Client",
+                  assigned_to: "Test User",
+                  reporting_managers: [],
+                  escalation_managers: [],
+                  effective_from: dateFilter,
+                  duration: "daily",
+                  is_active: true,
+                  subtasks: [{
+                    id: "test-subtask-1",
+                    name: "Test Subtask",
+                    description: "Test subtask",
+                    start_time: "09:00",
+                    order_position: 0,
+                    status: "pending"
+                  }],
+                  created_by: user?.id || 1,
+                };
+                createTaskMutation.mutate(testTaskData);
+              }}
+            >
+              Create Test Task
+            </Button>
+          </div>
         </div>
 
         {/* Overall Summary Cards */}
