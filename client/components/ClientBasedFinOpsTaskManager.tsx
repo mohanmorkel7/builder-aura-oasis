@@ -351,7 +351,7 @@ export default function ClientBasedFinOpsTaskManager() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [dateFilter, setDateFilter] = useState(new Date().toISOString().split('T')[0]); // Default to today
-  const [viewMode, setViewMode] = useState<"all" | "daily">("all");
+  const [viewMode, setViewMode] = useState<"all" | "daily">("daily");
 
   // Show more/less states for subtasks
   const [expandedTasks, setExpandedTasks] = useState<Set<number>>(new Set());
