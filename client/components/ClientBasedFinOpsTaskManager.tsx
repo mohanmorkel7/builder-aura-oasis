@@ -30,11 +30,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from "@/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   DndContext,
   closestCenter,
@@ -50,9 +46,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import {
-  useSortable,
-} from "@dnd-kit/sortable";
+import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
   Plus,
@@ -81,7 +75,14 @@ import {
   BarChart3,
   RefreshCw,
 } from "lucide-react";
-import { format, formatDistanceToNow, addHours, addMinutes, isBefore, isAfter } from "date-fns";
+import {
+  format,
+  formatDistanceToNow,
+  addHours,
+  addMinutes,
+  isBefore,
+  isAfter,
+} from "date-fns";
 
 // Enhanced interfaces with client integration
 interface ClientBasedFinOpsSubTask {
@@ -127,22 +128,29 @@ interface SortableSubTaskItemProps {
   index: number;
   onUpdate: (index: number, field: string, value: any) => void;
   onRemove: (index: number) => void;
-  onStatusChange?: (subtaskId: string, status: string, delayReason?: string, delayNotes?: string) => void;
+  onStatusChange?: (
+    subtaskId: string,
+    status: string,
+    delayReason?: string,
+    delayNotes?: string,
+  ) => void;
   isInline?: boolean;
 }
 
-function SortableSubTaskItem({ subtask, index, onUpdate, onRemove, onStatusChange, isInline = false }: SortableSubTaskItemProps) {
+function SortableSubTaskItem({
+  subtask,
+  index,
+  onUpdate,
+  onRemove,
+  onStatusChange,
+  isInline = false,
+}: SortableSubTaskItemProps) {
   const [showDelayDialog, setShowDelayDialog] = useState(false);
   const [delayReason, setDelayReason] = useState("");
   const [delayNotes, setDelayNotes] = useState("");
 
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-  } = useSortable({ id: subtask.id });
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: subtask.id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -157,7 +165,7 @@ function SortableSubTaskItem({ subtask, index, onUpdate, onRemove, onStatusChang
         onStatusChange(subtask.id, newStatus);
       }
     } else {
-      onUpdate(index, 'status', newStatus);
+      onUpdate(index, "status", newStatus);
     }
   };
 
@@ -172,7 +180,11 @@ function SortableSubTaskItem({ subtask, index, onUpdate, onRemove, onStatusChang
 
   return (
     <>
-      <div ref={setNodeRef} style={style} className="border rounded-lg p-4 bg-gray-50">
+      <div
+        ref={setNodeRef}
+        style={style}
+        className="border rounded-lg p-4 bg-gray-50"
+      >
         <div className="flex items-start gap-3">
           {!isInline && (
             <div {...attributes} {...listeners} className="mt-2 cursor-grab">
@@ -186,19 +198,29 @@ function SortableSubTaskItem({ subtask, index, onUpdate, onRemove, onStatusChang
               <div className="space-y-2">
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-medium text-sm break-words whitespace-pre-wrap">{subtask.name}</h4>
+                    <h4 className="font-medium text-sm break-words whitespace-pre-wrap">
+                      {subtask.name}
+                    </h4>
                     {subtask.description && (
-                      <p className="text-xs text-gray-600 mt-1 break-words whitespace-pre-wrap">{subtask.description}</p>
+                      <p className="text-xs text-gray-600 mt-1 break-words whitespace-pre-wrap">
+                        {subtask.description}
+                      </p>
                     )}
                     <div className="flex items-center gap-3 mt-2 text-xs text-gray-500">
                       <span>Start: {subtask.start_time}</span>
                       {subtask.started_at && (
-                        <span>Started: {format(new Date(subtask.started_at), "h:mm a")}</span>
+                        <span>
+                          Started:{" "}
+                          {format(new Date(subtask.started_at), "h:mm a")}
+                        </span>
                       )}
                     </div>
                   </div>
                   <div className="flex items-center gap-2 ml-3">
-                    <Select value={subtask.status} onValueChange={handleStatusChange}>
+                    <Select
+                      value={subtask.status}
+                      onValueChange={handleStatusChange}
+                    >
                       <SelectTrigger className="w-32 h-8">
                         <SelectValue />
                       </SelectTrigger>
@@ -212,15 +234,21 @@ function SortableSubTaskItem({ subtask, index, onUpdate, onRemove, onStatusChang
                     </Select>
                   </div>
                 </div>
-                
+
                 {/* Show delay information if present */}
                 {subtask.status === "delayed" && subtask.delay_reason && (
                   <Alert className="border-yellow-200 bg-yellow-50">
                     <AlertCircle className="h-4 w-4 text-yellow-600" />
                     <AlertTitle className="text-yellow-800">Delayed</AlertTitle>
                     <AlertDescription className="text-yellow-700">
-                      <div><strong>Reason:</strong> {subtask.delay_reason}</div>
-                      {subtask.delay_notes && <div><strong>Notes:</strong> {subtask.delay_notes}</div>}
+                      <div>
+                        <strong>Reason:</strong> {subtask.delay_reason}
+                      </div>
+                      {subtask.delay_notes && (
+                        <div>
+                          <strong>Notes:</strong> {subtask.delay_notes}
+                        </div>
+                      )}
                     </AlertDescription>
                   </Alert>
                 )}
@@ -231,8 +259,8 @@ function SortableSubTaskItem({ subtask, index, onUpdate, onRemove, onStatusChang
                 <div>
                   <Label>Subtask Name *</Label>
                   <Input
-                    value={subtask.name || ''}
-                    onChange={(e) => onUpdate(index, 'name', e.target.value)}
+                    value={subtask.name || ""}
+                    onChange={(e) => onUpdate(index, "name", e.target.value)}
                     placeholder="e.g., RBL DUMP VS TCP DATA (DAILY ALERT MAIL)"
                     required
                   />
@@ -242,8 +270,10 @@ function SortableSubTaskItem({ subtask, index, onUpdate, onRemove, onStatusChang
                   <Label>Daily Start Time *</Label>
                   <Input
                     type="time"
-                    value={subtask.start_time || ''}
-                    onChange={(e) => onUpdate(index, 'start_time', e.target.value)}
+                    value={subtask.start_time || ""}
+                    onChange={(e) =>
+                      onUpdate(index, "start_time", e.target.value)
+                    }
                     required
                   />
                 </div>
@@ -251,8 +281,10 @@ function SortableSubTaskItem({ subtask, index, onUpdate, onRemove, onStatusChang
                 <div className="md:col-span-2">
                   <Label>Description (Optional)</Label>
                   <Textarea
-                    value={subtask.description || ''}
-                    onChange={(e) => onUpdate(index, 'description', e.target.value)}
+                    value={subtask.description || ""}
+                    onChange={(e) =>
+                      onUpdate(index, "description", e.target.value)
+                    }
                     placeholder="Additional details about this subtask..."
                     rows={2}
                   />
@@ -260,7 +292,10 @@ function SortableSubTaskItem({ subtask, index, onUpdate, onRemove, onStatusChang
 
                 <div>
                   <Label>Status</Label>
-                  <Select value={subtask.status} onValueChange={handleStatusChange}>
+                  <Select
+                    value={subtask.status}
+                    onValueChange={handleStatusChange}
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -297,7 +332,8 @@ function SortableSubTaskItem({ subtask, index, onUpdate, onRemove, onStatusChang
           <DialogHeader>
             <DialogTitle>Mark as Delayed</DialogTitle>
             <DialogDescription>
-              Please provide a reason for the delay. This will trigger notifications to reporting managers.
+              Please provide a reason for the delay. This will trigger
+              notifications to reporting managers.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
@@ -308,10 +344,18 @@ function SortableSubTaskItem({ subtask, index, onUpdate, onRemove, onStatusChang
                   <SelectValue placeholder="Select delay reason" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="technical_issue">Technical Issue</SelectItem>
-                  <SelectItem value="data_unavailable">Data Unavailable</SelectItem>
-                  <SelectItem value="external_dependency">External Dependency</SelectItem>
-                  <SelectItem value="resource_constraint">Resource Constraint</SelectItem>
+                  <SelectItem value="technical_issue">
+                    Technical Issue
+                  </SelectItem>
+                  <SelectItem value="data_unavailable">
+                    Data Unavailable
+                  </SelectItem>
+                  <SelectItem value="external_dependency">
+                    External Dependency
+                  </SelectItem>
+                  <SelectItem value="resource_constraint">
+                    Resource Constraint
+                  </SelectItem>
                   <SelectItem value="process_change">Process Change</SelectItem>
                   <SelectItem value="other">Other</SelectItem>
                 </SelectContent>
@@ -345,20 +389,26 @@ export default function ClientBasedFinOpsTaskManager() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [editingTask, setEditingTask] = useState<ClientBasedFinOpsTask | null>(null);
+  const [editingTask, setEditingTask] = useState<ClientBasedFinOpsTask | null>(
+    null,
+  );
 
   // Filter states
   const [selectedClient, setSelectedClient] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
-  const [dateFilter, setDateFilter] = useState(new Date().toISOString().split('T')[0]); // Default to today
+  const [dateFilter, setDateFilter] = useState(
+    new Date().toISOString().split("T")[0],
+  ); // Default to today
   const [viewMode, setViewMode] = useState<"all" | "daily">("daily");
 
   // Show more/less states for subtasks
   const [expandedTasks, setExpandedTasks] = useState<Set<number>>(new Set());
 
   // Selected client from summary
-  const [selectedClientFromSummary, setSelectedClientFromSummary] = useState<string | null>(null);
+  const [selectedClientFromSummary, setSelectedClientFromSummary] = useState<
+    string | null
+  >(null);
 
   // Real-time timer state
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -371,7 +421,7 @@ export default function ClientBasedFinOpsTaskManager() {
     assigned_to: "",
     reporting_managers: [] as string[],
     escalation_managers: [] as string[],
-    effective_from: new Date().toISOString().split('T')[0],
+    effective_from: new Date().toISOString().split("T")[0],
     duration: "daily" as "daily" | "weekly" | "monthly",
     is_active: true,
     subtasks: [] as ClientBasedFinOpsSubTask[],
@@ -394,7 +444,11 @@ export default function ClientBasedFinOpsTaskManager() {
   }, []);
 
   // Fetch clients (from leads)
-  const { data: clients = [], isLoading: clientsLoading, error: clientsError } = useQuery({
+  const {
+    data: clients = [],
+    isLoading: clientsLoading,
+    error: clientsError,
+  } = useQuery({
     queryKey: ["clients"],
     queryFn: async () => {
       try {
@@ -409,23 +463,25 @@ export default function ClientBasedFinOpsTaskManager() {
 
         const uniqueClients = leads.reduce((acc: any[], lead: any) => {
           // Check multiple properties for client/company name
-          const clientName = lead.company_name || lead.client_name || lead.company || lead.name;
+          const clientName =
+            lead.company_name || lead.client_name || lead.company || lead.name;
 
-          if (clientName && !acc.find(c => c.company_name === clientName)) {
+          if (clientName && !acc.find((c) => c.company_name === clientName)) {
             acc.push({
               id: lead.id,
               company_name: clientName,
               client_name: lead.client_name || clientName,
               // Keep original lead data for reference
-              lead_data: lead
+              lead_data: lead,
             });
           }
           return acc;
         }, []);
 
         console.log("Processed clients from leads:", uniqueClients);
-        return uniqueClients.length > 0 ? uniqueClients : await apiClient.getClients();
-
+        return uniqueClients.length > 0
+          ? uniqueClients
+          : await apiClient.getClients();
       } catch (error) {
         console.error("Error fetching from leads API:", error);
         // Fallback to clients API
@@ -437,9 +493,21 @@ export default function ClientBasedFinOpsTaskManager() {
           console.error("Both APIs failed:", fallbackError);
           // Return mock data for development
           return [
-            { id: 1, company_name: "Sample Client 1", client_name: "Sample Client 1" },
-            { id: 2, company_name: "Sample Client 2", client_name: "Sample Client 2" },
-            { id: 3, company_name: "Sample Client 3", client_name: "Sample Client 3" }
+            {
+              id: 1,
+              company_name: "Sample Client 1",
+              client_name: "Sample Client 1",
+            },
+            {
+              id: 2,
+              company_name: "Sample Client 2",
+              client_name: "Sample Client 2",
+            },
+            {
+              id: 3,
+              company_name: "Sample Client 3",
+              client_name: "Sample Client 3",
+            },
           ];
         }
       }
@@ -481,9 +549,16 @@ export default function ClientBasedFinOpsTaskManager() {
   });
 
   const updateSubTaskMutation = useMutation({
-    mutationFn: ({ taskId, subTaskId, status, userName, delayReason, delayNotes }: { 
-      taskId: number; 
-      subTaskId: string; 
+    mutationFn: ({
+      taskId,
+      subTaskId,
+      status,
+      userName,
+      delayReason,
+      delayNotes,
+    }: {
+      taskId: number;
+      subTaskId: string;
       status: string;
       userName?: string;
       delayReason?: string;
@@ -502,7 +577,7 @@ export default function ClientBasedFinOpsTaskManager() {
       assigned_to: "",
       reporting_managers: [],
       escalation_managers: [],
-      effective_from: new Date().toISOString().split('T')[0],
+      effective_from: new Date().toISOString().split("T")[0],
       duration: "daily",
       is_active: true,
       subtasks: [],
@@ -518,29 +593,35 @@ export default function ClientBasedFinOpsTaskManager() {
       order_position: taskForm.subtasks.length,
       status: "pending",
     };
-    setTaskForm(prev => ({
+    setTaskForm((prev) => ({
       ...prev,
       subtasks: [...prev.subtasks, newSubTask],
     }));
   };
 
   const updateSubTask = (index: number, field: string, value: any) => {
-    setTaskForm(prev => ({
+    setTaskForm((prev) => ({
       ...prev,
       subtasks: prev.subtasks.map((subtask, i) =>
-        i === index ? { ...subtask, [field]: value } : subtask
+        i === index ? { ...subtask, [field]: value } : subtask,
       ),
     }));
   };
 
   const removeSubTask = (index: number) => {
-    setTaskForm(prev => ({
+    setTaskForm((prev) => ({
       ...prev,
       subtasks: prev.subtasks.filter((_, i) => i !== index),
     }));
   };
 
-  const handleInlineSubTaskStatusChange = (taskId: number, subtaskId: string, status: string, delayReason?: string, delayNotes?: string) => {
+  const handleInlineSubTaskStatusChange = (
+    taskId: number,
+    subtaskId: string,
+    status: string,
+    delayReason?: string,
+    delayNotes?: string,
+  ) => {
     updateSubTaskMutation.mutate({
       taskId,
       subTaskId: subtaskId,
@@ -552,7 +633,7 @@ export default function ClientBasedFinOpsTaskManager() {
   };
 
   const toggleTaskExpansion = (taskId: number) => {
-    setExpandedTasks(prev => {
+    setExpandedTasks((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(taskId)) {
         newSet.delete(taskId);
@@ -564,9 +645,9 @@ export default function ClientBasedFinOpsTaskManager() {
   };
 
   const getTimeSinceStart = (startTime: string) => {
-    if (!startTime || typeof startTime !== 'string') return 'N/A';
+    if (!startTime || typeof startTime !== "string") return "N/A";
 
-    const [hours, minutes] = startTime.split(':').map(Number);
+    const [hours, minutes] = startTime.split(":").map(Number);
     const taskStartTime = new Date();
     taskStartTime.setHours(hours, minutes, 0, 0);
 
@@ -585,9 +666,10 @@ export default function ClientBasedFinOpsTaskManager() {
   };
 
   const getSLAWarning = (startTime: string, status: string) => {
-    if (status === "completed" || !startTime || typeof startTime !== 'string') return null;
+    if (status === "completed" || !startTime || typeof startTime !== "string")
+      return null;
 
-    const [hours, minutes] = startTime.split(':').map(Number);
+    const [hours, minutes] = startTime.split(":").map(Number);
     const taskStartTime = new Date();
     taskStartTime.setHours(hours, minutes, 0, 0);
 
@@ -597,9 +679,15 @@ export default function ClientBasedFinOpsTaskManager() {
     const diffMinutes = Math.floor(diffMs / (1000 * 60));
 
     if (diffMinutes <= 0) {
-      return { type: "overdue", message: `Overdue by ${Math.abs(diffMinutes)} min` };
+      return {
+        type: "overdue",
+        message: `Overdue by ${Math.abs(diffMinutes)} min`,
+      };
     } else if (diffMinutes <= 15) {
-      return { type: "warning", message: `SLA Warning - ${diffMinutes} min remaining` };
+      return {
+        type: "warning",
+        message: `SLA Warning - ${diffMinutes} min remaining`,
+      };
     }
 
     return null;
@@ -609,16 +697,20 @@ export default function ClientBasedFinOpsTaskManager() {
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   );
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
     if (active.id !== over?.id) {
-      setTaskForm(prev => {
-        const oldIndex = prev.subtasks.findIndex(item => item.id === active.id);
-        const newIndex = prev.subtasks.findIndex(item => item.id === over?.id);
+      setTaskForm((prev) => {
+        const oldIndex = prev.subtasks.findIndex(
+          (item) => item.id === active.id,
+        );
+        const newIndex = prev.subtasks.findIndex(
+          (item) => item.id === over?.id,
+        );
 
         const reorderedSubtasks = arrayMove(prev.subtasks, oldIndex, newIndex);
 
@@ -634,9 +726,11 @@ export default function ClientBasedFinOpsTaskManager() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    const selectedClientData = clients.find((c: any) => c.id.toString() === taskForm.client_id);
-    
+
+    const selectedClientData = clients.find(
+      (c: any) => c.id.toString() === taskForm.client_id,
+    );
+
     const taskData = {
       ...taskForm,
       client_name: selectedClientData?.company_name || "",
@@ -659,10 +753,11 @@ export default function ClientBasedFinOpsTaskManager() {
       assigned_to: task.assigned_to || "",
       reporting_managers: task.reporting_managers || [],
       escalation_managers: task.escalation_managers || [],
-      effective_from: task.effective_from || new Date().toISOString().split('T')[0],
+      effective_from:
+        task.effective_from || new Date().toISOString().split("T")[0],
       duration: task.duration || "daily",
       is_active: task.is_active ?? true,
-      subtasks: (task.subtasks || []).map(subtask => ({
+      subtasks: (task.subtasks || []).map((subtask) => ({
         ...subtask,
         name: subtask.name || "",
         description: subtask.description || "",
@@ -682,7 +777,12 @@ export default function ClientBasedFinOpsTaskManager() {
       // Regular client filter
       if (selectedClient !== "all") {
         if (selectedClient === "unknown") {
-          if (task.client_id && task.client_name && task.client_name !== "Unknown Client") return false;
+          if (
+            task.client_id &&
+            task.client_name &&
+            task.client_name !== "Unknown Client"
+          )
+            return false;
         } else {
           if (task.client_id?.toString() !== selectedClient) return false;
         }
@@ -693,8 +793,12 @@ export default function ClientBasedFinOpsTaskManager() {
     if (statusFilter !== "all" && task.status !== statusFilter) return false;
 
     // Search filter
-    if (searchTerm && !task.task_name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-        !task.client_name?.toLowerCase().includes(searchTerm.toLowerCase())) return false;
+    if (
+      searchTerm &&
+      !task.task_name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      !task.client_name?.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+      return false;
 
     // Date filter for daily tasks (always enabled)
     if (dateFilter) {
@@ -706,7 +810,7 @@ export default function ClientBasedFinOpsTaskManager() {
         taskDate: taskDate.toDateString(),
         taskName: task.task_name,
         duration: task.duration,
-        effective_from: task.effective_from
+        effective_from: task.effective_from,
       });
 
       // For daily tasks, check if task should run on the selected date
@@ -730,7 +834,14 @@ export default function ClientBasedFinOpsTaskManager() {
     return true;
   });
 
-  console.log("Total tasks:", finopsTasks.length, "Filtered tasks:", filteredTasks.length, "Date filter:", dateFilter);
+  console.log(
+    "Total tasks:",
+    finopsTasks.length,
+    "Filtered tasks:",
+    filteredTasks.length,
+    "Date filter:",
+    dateFilter,
+  );
 
   // Calculate summary statistics
   const getOverallSummary = () => {
@@ -747,14 +858,14 @@ export default function ClientBasedFinOpsTaskManager() {
 
     filteredTasks.forEach((task: ClientBasedFinOpsTask) => {
       summary.total_subtasks += task.subtasks?.length || 0;
-      if (task.status === 'completed') summary.completed_tasks++;
-      if (task.status === 'delayed') summary.delayed_tasks++;
-      if (task.status === 'overdue') summary.overdue_tasks++;
-      
-      task.subtasks?.forEach(subtask => {
-        if (subtask.status === 'completed') summary.completed_subtasks++;
-        if (subtask.status === 'delayed') summary.delayed_subtasks++;
-        if (subtask.status === 'overdue') summary.overdue_subtasks++;
+      if (task.status === "completed") summary.completed_tasks++;
+      if (task.status === "delayed") summary.delayed_tasks++;
+      if (task.status === "overdue") summary.overdue_tasks++;
+
+      task.subtasks?.forEach((subtask) => {
+        if (subtask.status === "completed") summary.completed_subtasks++;
+        if (subtask.status === "delayed") summary.delayed_subtasks++;
+        if (subtask.status === "overdue") summary.overdue_subtasks++;
       });
     });
 
@@ -768,14 +879,24 @@ export default function ClientBasedFinOpsTaskManager() {
     console.log("Filtered tasks for client summary:", filteredTasks);
 
     filteredTasks.forEach((task: ClientBasedFinOpsTask) => {
-      console.log("Processing task:", task.task_name, "Client:", task.client_name, "Client ID:", task.client_id);
+      console.log(
+        "Processing task:",
+        task.task_name,
+        "Client:",
+        task.client_name,
+        "Client ID:",
+        task.client_id,
+      );
 
       // Show all clients, including unknown ones for debugging
-      const clientName = task.client_name ||
-                        clients.find((c: any) => c.id.toString() === task.client_id?.toString())?.company_name ||
-                        clients.find((c: any) => c.id.toString() === task.client_id?.toString())?.client_name ||
-                        `Client ${task.client_id}` ||
-                        "Unknown Client";
+      const clientName =
+        task.client_name ||
+        clients.find((c: any) => c.id.toString() === task.client_id?.toString())
+          ?.company_name ||
+        clients.find((c: any) => c.id.toString() === task.client_id?.toString())
+          ?.client_name ||
+        `Client ${task.client_id}` ||
+        "Unknown Client";
 
       if (!clientSummary[clientName]) {
         clientSummary[clientName] = {
@@ -790,10 +911,13 @@ export default function ClientBasedFinOpsTaskManager() {
       clientSummary[clientName].total_tasks++;
       clientSummary[clientName].total_subtasks += task.subtasks?.length || 0;
 
-      task.subtasks?.forEach(subtask => {
-        if (subtask.status === 'completed') clientSummary[clientName].completed_subtasks++;
-        if (subtask.status === 'delayed') clientSummary[clientName].delayed_subtasks++;
-        if (subtask.status === 'overdue') clientSummary[clientName].overdue_subtasks++;
+      task.subtasks?.forEach((subtask) => {
+        if (subtask.status === "completed")
+          clientSummary[clientName].completed_subtasks++;
+        if (subtask.status === "delayed")
+          clientSummary[clientName].delayed_subtasks++;
+        if (subtask.status === "overdue")
+          clientSummary[clientName].overdue_subtasks++;
       });
     });
 
@@ -841,10 +965,12 @@ export default function ClientBasedFinOpsTaskManager() {
         <div className="flex justify-between items-center">
           <div>
             <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-              FinOps Daily Process - {format(new Date(dateFilter), "MMM d, yyyy")}
+              FinOps Daily Process -{" "}
+              {format(new Date(dateFilter), "MMM d, yyyy")}
             </h2>
             <p className="text-gray-600 mt-1">
-              Daily process tracking and task execution monitoring for the selected date
+              Daily process tracking and task execution monitoring for the
+              selected date
             </p>
           </div>
           <div className="flex gap-2">
@@ -867,14 +993,16 @@ export default function ClientBasedFinOpsTaskManager() {
                   effective_from: dateFilter,
                   duration: "daily",
                   is_active: true,
-                  subtasks: [{
-                    id: "test-subtask-1",
-                    name: "Test Subtask",
-                    description: "Test subtask",
-                    start_time: "09:00",
-                    order_position: 0,
-                    status: "pending"
-                  }],
+                  subtasks: [
+                    {
+                      id: "test-subtask-1",
+                      name: "Test Subtask",
+                      description: "Test subtask",
+                      start_time: "09:00",
+                      order_position: 0,
+                      status: "pending",
+                    },
+                  ],
                   created_by: user?.id || 1,
                 };
                 createTaskMutation.mutate(testTaskData);
@@ -889,37 +1017,49 @@ export default function ClientBasedFinOpsTaskManager() {
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-blue-600">{overallSummary.total_tasks}</div>
+              <div className="text-2xl font-bold text-blue-600">
+                {overallSummary.total_tasks}
+              </div>
               <div className="text-xs text-gray-600">Total Tasks</div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-gray-900">{overallSummary.total_subtasks}</div>
+              <div className="text-2xl font-bold text-gray-900">
+                {overallSummary.total_subtasks}
+              </div>
               <div className="text-xs text-gray-600">Total Subtasks</div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-green-600">{overallSummary.completed_subtasks}</div>
+              <div className="text-2xl font-bold text-green-600">
+                {overallSummary.completed_subtasks}
+              </div>
               <div className="text-xs text-gray-600">Completed</div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-yellow-600">{overallSummary.delayed_subtasks}</div>
+              <div className="text-2xl font-bold text-yellow-600">
+                {overallSummary.delayed_subtasks}
+              </div>
               <div className="text-xs text-gray-600">Delayed</div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-red-600">{overallSummary.overdue_subtasks}</div>
+              <div className="text-2xl font-bold text-red-600">
+                {overallSummary.overdue_subtasks}
+              </div>
               <div className="text-xs text-gray-600">Overdue</div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-purple-600">{Object.keys(clientSummary).length}</div>
+              <div className="text-2xl font-bold text-purple-600">
+                {Object.keys(clientSummary).length}
+              </div>
               <div className="text-xs text-gray-600">Active Clients</div>
             </CardContent>
           </Card>
@@ -952,19 +1092,33 @@ export default function ClientBasedFinOpsTaskManager() {
             <div className="min-w-[150px]">
               <Label>Filter by Client</Label>
               <Select
-                value={selectedClientFromSummary ? "summary-selected" : selectedClient}
-                onValueChange={selectedClientFromSummary ? undefined : setSelectedClient}
+                value={
+                  selectedClientFromSummary
+                    ? "summary-selected"
+                    : selectedClient
+                }
+                onValueChange={
+                  selectedClientFromSummary ? undefined : setSelectedClient
+                }
                 disabled={!!selectedClientFromSummary}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder={selectedClientFromSummary ? `Selected: ${selectedClientFromSummary}` : "Select client"} />
+                  <SelectValue
+                    placeholder={
+                      selectedClientFromSummary
+                        ? `Selected: ${selectedClientFromSummary}`
+                        : "Select client"
+                    }
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Clients</SelectItem>
                   {clients.length > 0 ? (
                     clients.map((client: any) => (
                       <SelectItem key={client.id} value={client.id.toString()}>
-                        {client.company_name || client.client_name || `Client ${client.id}`}
+                        {client.company_name ||
+                          client.client_name ||
+                          `Client ${client.id}`}
                       </SelectItem>
                     ))
                   ) : (
@@ -1016,7 +1170,9 @@ export default function ClientBasedFinOpsTaskManager() {
             {Object.keys(clientSummary).length === 0 ? (
               <div className="text-center py-8">
                 <Building2 className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No Client Data Available</h3>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  No Client Data Available
+                </h3>
                 <p className="text-gray-600 mb-4">
                   Tasks exist but client information is not properly configured.
                 </p>
@@ -1032,57 +1188,73 @@ export default function ClientBasedFinOpsTaskManager() {
               </div>
             ) : (
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {Object.entries(clientSummary).map(([clientName, summary]: [string, any]) => (
-                  <div
-                    key={clientName}
-                    className={`border rounded-lg p-4 cursor-pointer transition-all hover:shadow-md ${
-                      selectedClientFromSummary === clientName
-                        ? "bg-blue-50 border-blue-300 shadow-md"
-                        : "bg-gray-50 hover:bg-gray-100"
-                    }`}
-                    onClick={() => {
-                      if (selectedClientFromSummary === clientName) {
-                        setSelectedClientFromSummary(null);
-                      } else {
-                        setSelectedClientFromSummary(clientName);
-                      }
-                    }}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-medium text-sm">{clientName}</h4>
-                      {selectedClientFromSummary === clientName && (
-                        <Badge variant="secondary" className="text-xs">
-                          Selected
-                        </Badge>
-                      )}
+                {Object.entries(clientSummary).map(
+                  ([clientName, summary]: [string, any]) => (
+                    <div
+                      key={clientName}
+                      className={`border rounded-lg p-4 cursor-pointer transition-all hover:shadow-md ${
+                        selectedClientFromSummary === clientName
+                          ? "bg-blue-50 border-blue-300 shadow-md"
+                          : "bg-gray-50 hover:bg-gray-100"
+                      }`}
+                      onClick={() => {
+                        if (selectedClientFromSummary === clientName) {
+                          setSelectedClientFromSummary(null);
+                        } else {
+                          setSelectedClientFromSummary(clientName);
+                        }
+                      }}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-medium text-sm">{clientName}</h4>
+                        {selectedClientFromSummary === clientName && (
+                          <Badge variant="secondary" className="text-xs">
+                            Selected
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="grid grid-cols-5 gap-2 text-center">
+                        <div>
+                          <div className="text-lg font-bold text-blue-600">
+                            {summary.total_tasks}
+                          </div>
+                          <div className="text-xs text-gray-600">Tasks</div>
+                        </div>
+                        <div>
+                          <div className="text-lg font-bold text-gray-900">
+                            {summary.total_subtasks}
+                          </div>
+                          <div className="text-xs text-gray-600">Subtasks</div>
+                        </div>
+                        <div>
+                          <div className="text-lg font-bold text-green-600">
+                            {summary.completed_subtasks}
+                          </div>
+                          <div className="text-xs text-gray-600">Done</div>
+                        </div>
+                        <div>
+                          <div className="text-lg font-bold text-yellow-600">
+                            {summary.delayed_subtasks}
+                          </div>
+                          <div className="text-xs text-gray-600">Delayed</div>
+                        </div>
+                        <div>
+                          <div className="text-lg font-bold text-red-600">
+                            {summary.overdue_subtasks}
+                          </div>
+                          <div className="text-xs text-gray-600">Overdue</div>
+                        </div>
+                      </div>
+                      <div className="mt-2 text-xs text-gray-500 text-center">
+                        Click to{" "}
+                        {selectedClientFromSummary === clientName
+                          ? "show all"
+                          : "filter"}{" "}
+                        tasks
+                      </div>
                     </div>
-                    <div className="grid grid-cols-5 gap-2 text-center">
-                      <div>
-                        <div className="text-lg font-bold text-blue-600">{summary.total_tasks}</div>
-                        <div className="text-xs text-gray-600">Tasks</div>
-                      </div>
-                      <div>
-                        <div className="text-lg font-bold text-gray-900">{summary.total_subtasks}</div>
-                        <div className="text-xs text-gray-600">Subtasks</div>
-                      </div>
-                      <div>
-                        <div className="text-lg font-bold text-green-600">{summary.completed_subtasks}</div>
-                        <div className="text-xs text-gray-600">Done</div>
-                      </div>
-                      <div>
-                        <div className="text-lg font-bold text-yellow-600">{summary.delayed_subtasks}</div>
-                        <div className="text-xs text-gray-600">Delayed</div>
-                      </div>
-                      <div>
-                        <div className="text-lg font-bold text-red-600">{summary.overdue_subtasks}</div>
-                        <div className="text-xs text-gray-600">Overdue</div>
-                      </div>
-                    </div>
-                    <div className="mt-2 text-xs text-gray-500 text-center">
-                      Click to {selectedClientFromSummary === clientName ? 'show all' : 'filter'} tasks
-                    </div>
-                  </div>
-                ))}
+                  ),
+                )}
               </div>
             )}
           </CardContent>
@@ -1097,7 +1269,8 @@ export default function ClientBasedFinOpsTaskManager() {
               <div className="flex items-center gap-2">
                 <Filter className="w-4 h-4 text-blue-600" />
                 <span className="text-sm font-medium text-blue-800">
-                  Showing tasks for: <strong>{selectedClientFromSummary}</strong>
+                  Showing tasks for:{" "}
+                  <strong>{selectedClientFromSummary}</strong>
                 </span>
               </div>
               <Button
@@ -1126,9 +1299,11 @@ export default function ClientBasedFinOpsTaskManager() {
           <Card>
             <CardContent className="p-8 text-center">
               <Target className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No Tasks Found</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                No Tasks Found
+              </h3>
               <p className="text-gray-600 mb-4">
-                {finopsTasks.length === 0 
+                {finopsTasks.length === 0
                   ? "Create your first task to get started."
                   : "No tasks match your current filters."}
               </p>
@@ -1142,15 +1317,27 @@ export default function ClientBasedFinOpsTaskManager() {
           </Card>
         ) : (
           filteredTasks.map((task: ClientBasedFinOpsTask) => {
-            const completedSubtasks = task.subtasks?.filter(st => st.status === "completed").length || 0;
+            const completedSubtasks =
+              task.subtasks?.filter((st) => st.status === "completed").length ||
+              0;
             const totalSubtasks = task.subtasks?.length || 0;
-            const delayedSubtasks = task.subtasks?.filter(st => st.status === "delayed").length || 0;
-            const overdueSubtasks = task.subtasks?.filter(st => st.status === "overdue").length || 0;
-            
-            const taskStatus = overdueSubtasks > 0 ? "overdue" : 
-                             delayedSubtasks > 0 ? "delayed" :
-                             completedSubtasks === totalSubtasks && totalSubtasks > 0 ? "completed" :
-                             completedSubtasks > 0 ? "in_progress" : "pending";
+            const delayedSubtasks =
+              task.subtasks?.filter((st) => st.status === "delayed").length ||
+              0;
+            const overdueSubtasks =
+              task.subtasks?.filter((st) => st.status === "overdue").length ||
+              0;
+
+            const taskStatus =
+              overdueSubtasks > 0
+                ? "overdue"
+                : delayedSubtasks > 0
+                  ? "delayed"
+                  : completedSubtasks === totalSubtasks && totalSubtasks > 0
+                    ? "completed"
+                    : completedSubtasks > 0
+                      ? "in_progress"
+                      : "pending";
             const StatusIcon = getStatusIcon(taskStatus);
 
             return (
@@ -1159,22 +1346,30 @@ export default function ClientBasedFinOpsTaskManager() {
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <CardTitle className="text-lg break-words">{task.task_name}</CardTitle>
-                        {task.client_name && task.client_name !== "Unknown Client" && (
-                          <Badge variant="outline" className="text-blue-600">
-                            {task.client_name}
-                          </Badge>
-                        )}
-                        <Badge variant={task.is_active ? "default" : "secondary"}>
+                        <CardTitle className="text-lg break-words">
+                          {task.task_name}
+                        </CardTitle>
+                        {task.client_name &&
+                          task.client_name !== "Unknown Client" && (
+                            <Badge variant="outline" className="text-blue-600">
+                              {task.client_name}
+                            </Badge>
+                          )}
+                        <Badge
+                          variant={task.is_active ? "default" : "secondary"}
+                        >
                           {task.is_active ? "Active" : "Inactive"}
                         </Badge>
                         <Badge className={getStatusColor(taskStatus)}>
                           <StatusIcon className="w-3 h-3 mr-1" />
-                          {taskStatus.charAt(0).toUpperCase() + taskStatus.slice(1).replace('_', ' ')}
+                          {taskStatus.charAt(0).toUpperCase() +
+                            taskStatus.slice(1).replace("_", " ")}
                         </Badge>
                       </div>
-                      <CardDescription className="break-words whitespace-pre-wrap">{task.description}</CardDescription>
-                      
+                      <CardDescription className="break-words whitespace-pre-wrap">
+                        {task.description}
+                      </CardDescription>
+
                       <div className="flex items-center gap-6 mt-3 text-sm text-gray-600">
                         <div className="flex items-center gap-1">
                           <User className="w-4 h-4" />
@@ -1186,7 +1381,9 @@ export default function ClientBasedFinOpsTaskManager() {
                         </div>
                         <div className="flex items-center gap-1">
                           <Activity className="w-4 h-4" />
-                          <span>{completedSubtasks}/{totalSubtasks} completed</span>
+                          <span>
+                            {completedSubtasks}/{totalSubtasks} completed
+                          </span>
                         </div>
                         {task.duration === "daily" && (
                           <div className="flex items-center gap-1">
@@ -1194,13 +1391,21 @@ export default function ClientBasedFinOpsTaskManager() {
                             <span>
                               {task.subtasks && task.subtasks.length > 0
                                 ? (() => {
-                                    const subtasksWithTime = task.subtasks.filter(st => st.start_time);
-                                    if (subtasksWithTime.length === 0) return "No schedule set";
-                                    const sorted = subtasksWithTime.sort((a, b) => (a.start_time || "").localeCompare(b.start_time || ""));
+                                    const subtasksWithTime =
+                                      task.subtasks.filter(
+                                        (st) => st.start_time,
+                                      );
+                                    if (subtasksWithTime.length === 0)
+                                      return "No schedule set";
+                                    const sorted = subtasksWithTime.sort(
+                                      (a, b) =>
+                                        (a.start_time || "").localeCompare(
+                                          b.start_time || "",
+                                        ),
+                                    );
                                     return `Starts: ${sorted[0].start_time}`;
                                   })()
-                                : "No schedule set"
-                              }
+                                : "No schedule set"}
                             </span>
                           </div>
                         )}
@@ -1220,7 +1425,11 @@ export default function ClientBasedFinOpsTaskManager() {
                         variant="outline"
                         size="sm"
                         onClick={() => {
-                          if (confirm(`Are you sure you want to delete "${task.task_name}"?`)) {
+                          if (
+                            confirm(
+                              `Are you sure you want to delete "${task.task_name}"?`,
+                            )
+                          ) {
                             deleteTaskMutation.mutate(task.id);
                           }
                         }}
@@ -1239,7 +1448,8 @@ export default function ClientBasedFinOpsTaskManager() {
                       <div className="flex items-center justify-between mb-3">
                         <h4 className="font-medium flex items-center gap-2">
                           <Activity className="w-4 h-4" />
-                          Subtasks ({completedSubtasks}/{totalSubtasks} completed)
+                          Subtasks ({completedSubtasks}/{totalSubtasks}{" "}
+                          completed)
                         </h4>
                         {task.subtasks.length > 3 && (
                           <Button
@@ -1248,14 +1458,20 @@ export default function ClientBasedFinOpsTaskManager() {
                             onClick={() => toggleTaskExpansion(task.id)}
                             className="text-blue-600 hover:text-blue-800"
                           >
-                            {expandedTasks.has(task.id) ? "Show Less" : "Show More"}
+                            {expandedTasks.has(task.id)
+                              ? "Show Less"
+                              : "Show More"}
                           </Button>
                         )}
                       </div>
                       <div className="space-y-3">
                         {(() => {
-                          const inProgressSubtasks = task.subtasks.filter(st => st.status === "in_progress");
-                          const otherSubtasks = task.subtasks.filter(st => st.status !== "in_progress");
+                          const inProgressSubtasks = task.subtasks.filter(
+                            (st) => st.status === "in_progress",
+                          );
+                          const otherSubtasks = task.subtasks.filter(
+                            (st) => st.status !== "in_progress",
+                          );
                           const isExpanded = expandedTasks.has(task.id);
 
                           // Always show in-progress subtasks
@@ -1266,11 +1482,20 @@ export default function ClientBasedFinOpsTaskManager() {
                             subtasksToShow = task.subtasks;
                           } else {
                             // Show in-progress + up to 2 others
-                            subtasksToShow = [...inProgressSubtasks, ...otherSubtasks.slice(0, Math.max(0, 3 - inProgressSubtasks.length))];
+                            subtasksToShow = [
+                              ...inProgressSubtasks,
+                              ...otherSubtasks.slice(
+                                0,
+                                Math.max(0, 3 - inProgressSubtasks.length),
+                              ),
+                            ];
                           }
 
                           return subtasksToShow.map((subtask) => {
-                            const slaWarning = getSLAWarning(subtask.start_time, subtask.status);
+                            const slaWarning = getSLAWarning(
+                              subtask.start_time,
+                              subtask.status,
+                            );
                             return (
                               <div key={subtask.id}>
                                 <SortableSubTaskItem
@@ -1278,22 +1503,46 @@ export default function ClientBasedFinOpsTaskManager() {
                                   index={0}
                                   onUpdate={() => {}}
                                   onRemove={() => {}}
-                                  onStatusChange={(subtaskId, status, delayReason, delayNotes) =>
-                                    handleInlineSubTaskStatusChange(task.id, subtaskId, status, delayReason, delayNotes)
+                                  onStatusChange={(
+                                    subtaskId,
+                                    status,
+                                    delayReason,
+                                    delayNotes,
+                                  ) =>
+                                    handleInlineSubTaskStatusChange(
+                                      task.id,
+                                      subtaskId,
+                                      status,
+                                      delayReason,
+                                      delayNotes,
+                                    )
                                   }
                                   isInline={true}
                                 />
                                 {slaWarning && (
-                                  <Alert className={`mt-2 p-2 ${
-                                    slaWarning.type === "overdue" ? "border-red-200 bg-red-50" : "border-orange-200 bg-orange-50"
-                                  }`}>
-                                    <Clock className={`h-3 w-3 ${
-                                      slaWarning.type === "overdue" ? "text-red-600" : "text-orange-600"
-                                    }`} />
-                                    <AlertDescription className={`text-xs ml-1 ${
-                                      slaWarning.type === "overdue" ? "text-red-700" : "text-orange-700"
-                                    }`}>
-                                      {slaWarning.message} • {getTimeSinceStart(subtask.start_time)}
+                                  <Alert
+                                    className={`mt-2 p-2 ${
+                                      slaWarning.type === "overdue"
+                                        ? "border-red-200 bg-red-50"
+                                        : "border-orange-200 bg-orange-50"
+                                    }`}
+                                  >
+                                    <Clock
+                                      className={`h-3 w-3 ${
+                                        slaWarning.type === "overdue"
+                                          ? "text-red-600"
+                                          : "text-orange-600"
+                                      }`}
+                                    />
+                                    <AlertDescription
+                                      className={`text-xs ml-1 ${
+                                        slaWarning.type === "overdue"
+                                          ? "text-red-700"
+                                          : "text-orange-700"
+                                      }`}
+                                    >
+                                      {slaWarning.message} •{" "}
+                                      {getTimeSinceStart(subtask.start_time)}
                                     </AlertDescription>
                                   </Alert>
                                 )}
@@ -1302,13 +1551,28 @@ export default function ClientBasedFinOpsTaskManager() {
                           });
                         })()}
 
-                        {!expandedTasks.has(task.id) && task.subtasks.length > 3 && (
-                          <div className="text-center py-2">
-                            <span className="text-sm text-gray-500">
-                              {task.subtasks.length - Math.min(3, task.subtasks.filter(st => st.status === "in_progress").length + Math.max(0, 3 - task.subtasks.filter(st => st.status === "in_progress").length))} more subtasks hidden
-                            </span>
-                          </div>
-                        )}
+                        {!expandedTasks.has(task.id) &&
+                          task.subtasks.length > 3 && (
+                            <div className="text-center py-2">
+                              <span className="text-sm text-gray-500">
+                                {task.subtasks.length -
+                                  Math.min(
+                                    3,
+                                    task.subtasks.filter(
+                                      (st) => st.status === "in_progress",
+                                    ).length +
+                                      Math.max(
+                                        0,
+                                        3 -
+                                          task.subtasks.filter(
+                                            (st) => st.status === "in_progress",
+                                          ).length,
+                                      ),
+                                  )}{" "}
+                                more subtasks hidden
+                              </span>
+                            </div>
+                          )}
                       </div>
                     </div>
                   </CardContent>
@@ -1320,20 +1584,24 @@ export default function ClientBasedFinOpsTaskManager() {
       </div>
 
       {/* Create/Edit Task Dialog */}
-      <Dialog open={isCreateDialogOpen} onOpenChange={(open) => {
-        setIsCreateDialogOpen(open);
-        if (!open) {
-          setEditingTask(null);
-          resetForm();
-        }
-      }}>
+      <Dialog
+        open={isCreateDialogOpen}
+        onOpenChange={(open) => {
+          setIsCreateDialogOpen(open);
+          if (!open) {
+            setEditingTask(null);
+            resetForm();
+          }
+        }}
+      >
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {editingTask ? "Edit FinOps Task" : "Create New FinOps Task"}
             </DialogTitle>
             <DialogDescription>
-              Configure client-based FinOps processes with comprehensive tracking.
+              Configure client-based FinOps processes with comprehensive
+              tracking.
             </DialogDescription>
           </DialogHeader>
 
@@ -1345,7 +1613,12 @@ export default function ClientBasedFinOpsTaskManager() {
                 <Input
                   id="task_name"
                   value={taskForm.task_name}
-                  onChange={(e) => setTaskForm(prev => ({ ...prev, task_name: e.target.value }))}
+                  onChange={(e) =>
+                    setTaskForm((prev) => ({
+                      ...prev,
+                      task_name: e.target.value,
+                    }))
+                  }
                   placeholder="e.g., CLEARING - FILE TRANSFER AND VALIDATION"
                   required
                 />
@@ -1355,7 +1628,9 @@ export default function ClientBasedFinOpsTaskManager() {
                 <Label htmlFor="client_id">Client *</Label>
                 <Select
                   value={taskForm.client_id}
-                  onValueChange={(value) => setTaskForm(prev => ({ ...prev, client_id: value }))}
+                  onValueChange={(value) =>
+                    setTaskForm((prev) => ({ ...prev, client_id: value }))
+                  }
                   required
                 >
                   <SelectTrigger>
@@ -1368,8 +1643,13 @@ export default function ClientBasedFinOpsTaskManager() {
                       </SelectItem>
                     ) : clients.length > 0 ? (
                       clients.map((client: any) => (
-                        <SelectItem key={client.id} value={client.id.toString()}>
-                          {client.company_name || client.client_name || `Client ${client.id}`}
+                        <SelectItem
+                          key={client.id}
+                          value={client.id.toString()}
+                        >
+                          {client.company_name ||
+                            client.client_name ||
+                            `Client ${client.id}`}
                         </SelectItem>
                       ))
                     ) : (
@@ -1382,7 +1662,8 @@ export default function ClientBasedFinOpsTaskManager() {
                 {!clientsLoading && clients.length === 0 && (
                   <div className="mt-2">
                     <p className="text-sm text-red-600">
-                      No clients found. Clients are automatically loaded from leads.
+                      No clients found. Clients are automatically loaded from
+                      leads.
                     </p>
                     {clientsError && (
                       <p className="text-xs text-gray-500 mt-1">
@@ -1395,7 +1676,9 @@ export default function ClientBasedFinOpsTaskManager() {
                       size="sm"
                       className="mt-2"
                       onClick={() => {
-                        queryClient.invalidateQueries({ queryKey: ["clients"] });
+                        queryClient.invalidateQueries({
+                          queryKey: ["clients"],
+                        });
                       }}
                     >
                       <RefreshCw className="w-3 h-3 mr-1" />
@@ -1409,7 +1692,9 @@ export default function ClientBasedFinOpsTaskManager() {
                 <Label htmlFor="duration">Duration *</Label>
                 <Select
                   value={taskForm.duration}
-                  onValueChange={(value) => setTaskForm(prev => ({ ...prev, duration: value as any }))}
+                  onValueChange={(value) =>
+                    setTaskForm((prev) => ({ ...prev, duration: value as any }))
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -1426,14 +1711,19 @@ export default function ClientBasedFinOpsTaskManager() {
                 <Label htmlFor="assigned_to">Assigned To *</Label>
                 <Select
                   value={taskForm.assigned_to}
-                  onValueChange={(value) => setTaskForm(prev => ({ ...prev, assigned_to: value }))}
+                  onValueChange={(value) =>
+                    setTaskForm((prev) => ({ ...prev, assigned_to: value }))
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select assignee" />
                   </SelectTrigger>
                   <SelectContent>
                     {users.map((user: any) => (
-                      <SelectItem key={user.id} value={`${user.first_name} ${user.last_name}`}>
+                      <SelectItem
+                        key={user.id}
+                        value={`${user.first_name} ${user.last_name}`}
+                      >
                         {user.first_name} {user.last_name}
                       </SelectItem>
                     ))}
@@ -1446,7 +1736,12 @@ export default function ClientBasedFinOpsTaskManager() {
                 <Textarea
                   id="description"
                   value={taskForm.description}
-                  onChange={(e) => setTaskForm(prev => ({ ...prev, description: e.target.value }))}
+                  onChange={(e) =>
+                    setTaskForm((prev) => ({
+                      ...prev,
+                      description: e.target.value,
+                    }))
+                  }
                   placeholder="e.g., clearing daily steps for file transfer"
                   required
                 />
@@ -1458,7 +1753,12 @@ export default function ClientBasedFinOpsTaskManager() {
                   id="effective_from"
                   type="date"
                   value={taskForm.effective_from}
-                  onChange={(e) => setTaskForm(prev => ({ ...prev, effective_from: e.target.value }))}
+                  onChange={(e) =>
+                    setTaskForm((prev) => ({
+                      ...prev,
+                      effective_from: e.target.value,
+                    }))
+                  }
                   required
                 />
               </div>
@@ -1466,7 +1766,9 @@ export default function ClientBasedFinOpsTaskManager() {
               <div className="flex items-center space-x-2">
                 <Switch
                   checked={taskForm.is_active}
-                  onCheckedChange={(checked) => setTaskForm(prev => ({ ...prev, is_active: checked }))}
+                  onCheckedChange={(checked) =>
+                    setTaskForm((prev) => ({ ...prev, is_active: checked }))
+                  }
                 />
                 <Label>Task is active</Label>
               </div>
@@ -1475,17 +1777,23 @@ export default function ClientBasedFinOpsTaskManager() {
             {/* Team Management */}
             <div className="space-y-4">
               <h3 className="text-lg font-medium">Team & Escalation</h3>
-              
+
               <div>
                 <Label>Reporting Managers</Label>
                 <div className="flex gap-2 mt-1">
                   <Select
                     value=""
                     onValueChange={(value) => {
-                      if (value && !taskForm.reporting_managers.includes(value)) {
-                        setTaskForm(prev => ({
+                      if (
+                        value &&
+                        !taskForm.reporting_managers.includes(value)
+                      ) {
+                        setTaskForm((prev) => ({
                           ...prev,
-                          reporting_managers: [...prev.reporting_managers, value]
+                          reporting_managers: [
+                            ...prev.reporting_managers,
+                            value,
+                          ],
                         }));
                       }
                     }}
@@ -1495,7 +1803,10 @@ export default function ClientBasedFinOpsTaskManager() {
                     </SelectTrigger>
                     <SelectContent>
                       {users.map((user: any) => (
-                        <SelectItem key={user.id} value={`${user.first_name} ${user.last_name}`}>
+                        <SelectItem
+                          key={user.id}
+                          value={`${user.first_name} ${user.last_name}`}
+                        >
                           {user.first_name} {user.last_name}
                         </SelectItem>
                       ))}
@@ -1508,10 +1819,14 @@ export default function ClientBasedFinOpsTaskManager() {
                       {manager}
                       <X
                         className="w-3 h-3 cursor-pointer"
-                        onClick={() => setTaskForm(prev => ({
-                          ...prev,
-                          reporting_managers: prev.reporting_managers.filter((_, i) => i !== index)
-                        }))}
+                        onClick={() =>
+                          setTaskForm((prev) => ({
+                            ...prev,
+                            reporting_managers: prev.reporting_managers.filter(
+                              (_, i) => i !== index,
+                            ),
+                          }))
+                        }
                       />
                     </Badge>
                   ))}
@@ -1524,10 +1839,16 @@ export default function ClientBasedFinOpsTaskManager() {
                   <Select
                     value=""
                     onValueChange={(value) => {
-                      if (value && !taskForm.escalation_managers.includes(value)) {
-                        setTaskForm(prev => ({
+                      if (
+                        value &&
+                        !taskForm.escalation_managers.includes(value)
+                      ) {
+                        setTaskForm((prev) => ({
                           ...prev,
-                          escalation_managers: [...prev.escalation_managers, value]
+                          escalation_managers: [
+                            ...prev.escalation_managers,
+                            value,
+                          ],
                         }));
                       }
                     }}
@@ -1537,7 +1858,10 @@ export default function ClientBasedFinOpsTaskManager() {
                     </SelectTrigger>
                     <SelectContent>
                       {users.map((user: any) => (
-                        <SelectItem key={user.id} value={`${user.first_name} ${user.last_name}`}>
+                        <SelectItem
+                          key={user.id}
+                          value={`${user.first_name} ${user.last_name}`}
+                        >
                           {user.first_name} {user.last_name}
                         </SelectItem>
                       ))}
@@ -1550,10 +1874,15 @@ export default function ClientBasedFinOpsTaskManager() {
                       {manager}
                       <X
                         className="w-3 h-3 cursor-pointer"
-                        onClick={() => setTaskForm(prev => ({
-                          ...prev,
-                          escalation_managers: prev.escalation_managers.filter((_, i) => i !== index)
-                        }))}
+                        onClick={() =>
+                          setTaskForm((prev) => ({
+                            ...prev,
+                            escalation_managers:
+                              prev.escalation_managers.filter(
+                                (_, i) => i !== index,
+                              ),
+                          }))
+                        }
                       />
                     </Badge>
                   ))}
@@ -1565,7 +1894,12 @@ export default function ClientBasedFinOpsTaskManager() {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-medium">Subtasks</h3>
-                <Button type="button" onClick={addSubTask} variant="outline" size="sm">
+                <Button
+                  type="button"
+                  onClick={addSubTask}
+                  variant="outline"
+                  size="sm"
+                >
                   <Plus className="w-4 h-4 mr-1" />
                   Add Subtask
                 </Button>
@@ -1577,7 +1911,7 @@ export default function ClientBasedFinOpsTaskManager() {
                 onDragEnd={handleDragEnd}
               >
                 <SortableContext
-                  items={taskForm.subtasks.map(st => st.id)}
+                  items={taskForm.subtasks.map((st) => st.id)}
                   strategy={verticalListSortingStrategy}
                 >
                   <div className="space-y-3">
@@ -1599,7 +1933,9 @@ export default function ClientBasedFinOpsTaskManager() {
                 <div className="text-center py-8 text-gray-500 border-2 border-dashed border-gray-300 rounded-lg">
                   <Timer className="w-12 h-12 mx-auto mb-2 text-gray-300" />
                   <p>No subtasks added yet</p>
-                  <p className="text-sm">Add subtasks to break down your process</p>
+                  <p className="text-sm">
+                    Add subtasks to break down your process
+                  </p>
                 </div>
               )}
             </div>
@@ -1612,7 +1948,12 @@ export default function ClientBasedFinOpsTaskManager() {
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={createTaskMutation.isPending || updateTaskMutation.isPending}>
+              <Button
+                type="submit"
+                disabled={
+                  createTaskMutation.isPending || updateTaskMutation.isPending
+                }
+              >
                 <Save className="w-4 h-4 mr-2" />
                 {editingTask ? "Update Task" : "Create Task"}
               </Button>

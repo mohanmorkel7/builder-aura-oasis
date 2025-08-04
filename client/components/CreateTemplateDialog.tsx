@@ -69,8 +69,6 @@ const iconMap = {
   Settings,
 };
 
-
-
 export default function CreateTemplateDialog({
   onSuccess,
   categories,
@@ -338,12 +336,21 @@ export default function CreateTemplateDialog({
             <div className="flex items-center gap-4">
               <div className="text-sm">
                 <span className="text-gray-600">Total Probability: </span>
-                <span className={`font-medium ${
-                  steps.reduce((sum, step) => sum + (step.probability_percent || 0), 0) === 100
-                    ? 'text-green-600'
-                    : 'text-red-600'
-                }`}>
-                  {steps.reduce((sum, step) => sum + (step.probability_percent || 0), 0)}%
+                <span
+                  className={`font-medium ${
+                    steps.reduce(
+                      (sum, step) => sum + (step.probability_percent || 0),
+                      0,
+                    ) === 100
+                      ? "text-green-600"
+                      : "text-red-600"
+                  }`}
+                >
+                  {steps.reduce(
+                    (sum, step) => sum + (step.probability_percent || 0),
+                    0,
+                  )}
+                  %
                 </span>
                 <span className="text-gray-500 ml-1">/ 100%</span>
               </div>
@@ -507,7 +514,6 @@ export default function CreateTemplateDialog({
                       <span className="text-gray-500">
                         {step.default_eta_days}d
                       </span>
-
                     </div>
                   ))}
                   {steps.length === 0 && (

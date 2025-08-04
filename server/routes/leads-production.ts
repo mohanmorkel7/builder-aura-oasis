@@ -17,7 +17,7 @@ const router = Router();
 // Production database availability check - fail fast if no database
 async function requireDatabase() {
   try {
-    await pool.query('SELECT 1');
+    await pool.query("SELECT 1");
     return true;
   } catch (error) {
     throw new Error(`Database connection failed: ${error.message}`);
@@ -28,30 +28,35 @@ async function requireDatabase() {
 router.get("/", async (req: Request, res: Response) => {
   try {
     await requireDatabase();
-    
+
     const { salesRep, partial, created_by, partial_saves_only } = req.query;
     const salesRepId = salesRep ? parseInt(salesRep as string) : undefined;
-    const isPartialOnly = partial === 'true';
+    const isPartialOnly = partial === "true";
     const createdById = created_by ? parseInt(created_by as string) : undefined;
-    const isPartialSavesOnly = partial_saves_only === 'true';
+    const isPartialSavesOnly = partial_saves_only === "true";
 
     // Validate parameters
     if (salesRepId && (isNaN(salesRepId) || salesRepId <= 0)) {
       return res.status(400).json({ error: "Invalid sales rep ID" });
     }
-    
+
     if (createdById && (isNaN(createdById) || createdById <= 0)) {
       return res.status(400).json({ error: "Invalid created_by ID" });
     }
 
-    const leads = await LeadRepository.findAll(salesRepId, isPartialOnly, createdById, isPartialSavesOnly);
+    const leads = await LeadRepository.findAll(
+      salesRepId,
+      isPartialOnly,
+      createdById,
+      isPartialSavesOnly,
+    );
     res.json(leads);
   } catch (error) {
     console.error("Error fetching leads:", error);
-    res.status(500).json({ 
-      error: "Database connection failed", 
+    res.status(500).json({
+      error: "Database connection failed",
       message: "Unable to fetch leads from database",
-      details: error.message 
+      details: error.message,
     });
   }
 });
@@ -60,7 +65,7 @@ router.get("/", async (req: Request, res: Response) => {
 router.get("/stats", async (req: Request, res: Response) => {
   try {
     await requireDatabase();
-    
+
     const { salesRep } = req.query;
     const salesRepId = salesRep ? parseInt(salesRep as string) : undefined;
 
@@ -72,9 +77,9 @@ router.get("/stats", async (req: Request, res: Response) => {
     res.json(stats);
   } catch (error) {
     console.error("Error fetching lead stats:", error);
-    res.status(500).json({ 
-      error: "Failed to fetch lead statistics", 
-      message: error.message 
+    res.status(500).json({
+      error: "Failed to fetch lead statistics",
+      message: error.message,
     });
   }
 });
@@ -83,9 +88,9 @@ router.get("/stats", async (req: Request, res: Response) => {
 router.get("/template-step-dashboard", async (req: Request, res: Response) => {
   try {
     await requireDatabase();
-    
+
     console.log("Template step dashboard endpoint called");
-    
+
     // Get all active templates with their steps
     const templatesQuery = `
       SELECT
@@ -124,7 +129,7 @@ router.get("/template-step-dashboard", async (req: Request, res: Response) => {
       const statsResult = await pool.query(stepStatsQuery, [
         templateStep.step_name,
         templateStep.step_order,
-        templateStep.template_id
+        templateStep.template_id,
       ]);
 
       const stats = statsResult.rows[0];
@@ -140,7 +145,7 @@ router.get("/template-step-dashboard", async (req: Request, res: Response) => {
         pending_count: parseInt(stats.pending_count) || 0,
         in_progress_count: parseInt(stats.in_progress_count) || 0,
         completed_count: parseInt(stats.completed_count) || 0,
-        blocked_count: parseInt(stats.blocked_count) || 0
+        blocked_count: parseInt(stats.blocked_count) || 0,
       });
     }
 
@@ -148,34 +153,46 @@ router.get("/template-step-dashboard", async (req: Request, res: Response) => {
     res.json(dashboardData);
   } catch (error) {
     console.error("Error fetching template step dashboard:", error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: "Failed to fetch template step dashboard data",
-      message: error.message 
+      message: error.message,
     });
   }
 });
 
 // Get leads for a specific template step and status
-router.get("/template-step/:templateId/:stepId/:status", async (req: Request, res: Response) => {
-  try {
-    await requireDatabase();
-    
-    const templateId = parseInt(req.params.templateId);
-    const stepId = parseInt(req.params.stepId);
-    const status = req.params.status;
+router.get(
+  "/template-step/:templateId/:stepId/:status",
+  async (req: Request, res: Response) => {
+    try {
+      await requireDatabase();
 
-    if (isNaN(templateId) || isNaN(stepId)) {
-      return res.status(400).json({ error: "Invalid template or step ID" });
-    }
+      const templateId = parseInt(req.params.templateId);
+      const stepId = parseInt(req.params.stepId);
+      const status = req.params.status;
 
-    if (!['pending', 'in_progress', 'completed', 'blocked', 'cancelled'].includes(status)) {
-      return res.status(400).json({ error: "Invalid status" });
-    }
+      if (isNaN(templateId) || isNaN(stepId)) {
+        return res.status(400).json({ error: "Invalid template or step ID" });
+      }
 
-    console.log(`Getting leads for template ${templateId}, step ${stepId}, status ${status}`);
+      if (
+        ![
+          "pending",
+          "in_progress",
+          "completed",
+          "blocked",
+          "cancelled",
+        ].includes(status)
+      ) {
+        return res.status(400).json({ error: "Invalid status" });
+      }
 
-    // Query leads that have this specific step with the requested status
-    const query = `
+      console.log(
+        `Getting leads for template ${templateId}, step ${stepId}, status ${status}`,
+      );
+
+      // Query leads that have this specific step with the requested status
+      const query = `
       SELECT DISTINCT l.*, ls.status as step_status
       FROM leads l
       JOIN lead_steps ls ON l.id = ls.lead_id
@@ -187,31 +204,32 @@ router.get("/template-step/:templateId/:stepId/:status", async (req: Request, re
       ORDER BY l.created_at DESC
     `;
 
-    const result = await pool.query(query, [templateId, stepId, status]);
-    console.log(`Found ${result.rows.length} leads with status ${status}`);
-    
-    res.json(result.rows);
-  } catch (error) {
-    console.error("Error fetching leads for step:", error);
-    res.status(500).json({ 
-      error: "Failed to fetch leads for step",
-      message: error.message 
-    });
-  }
-});
+      const result = await pool.query(query, [templateId, stepId, status]);
+      console.log(`Found ${result.rows.length} leads with status ${status}`);
+
+      res.json(result.rows);
+    } catch (error) {
+      console.error("Error fetching leads for step:", error);
+      res.status(500).json({
+        error: "Failed to fetch leads for step",
+        message: error.message,
+      });
+    }
+  },
+);
 
 // Get lead by ID
 router.get("/:id", async (req: Request, res: Response) => {
   try {
     await requireDatabase();
-    
+
     const id = parseInt(req.params.id);
     if (isNaN(id)) {
       return res.status(400).json({ error: "Invalid lead ID" });
     }
 
     const lead = await LeadRepository.findById(id);
-    
+
     if (!lead) {
       return res.status(404).json({ error: "Lead not found" });
     }
@@ -219,9 +237,9 @@ router.get("/:id", async (req: Request, res: Response) => {
     res.json(lead);
   } catch (error) {
     console.error("Error fetching lead:", error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: "Failed to fetch lead",
-      message: error.message 
+      message: error.message,
     });
   }
 });
@@ -230,9 +248,12 @@ router.get("/:id", async (req: Request, res: Response) => {
 router.post("/", async (req: Request, res: Response) => {
   try {
     await requireDatabase();
-    
+
     const leadData: CreateLeadData = req.body;
-    console.log("Received lead creation request. Body:", JSON.stringify(req.body, null, 2));
+    console.log(
+      "Received lead creation request. Body:",
+      JSON.stringify(req.body, null, 2),
+    );
 
     // Validate required fields
     if (!leadData.created_by) {
@@ -243,41 +264,68 @@ router.post("/", async (req: Request, res: Response) => {
 
     // Ensure basic required fields have defaults
     if (!leadData.client_name) {
-      leadData.client_name = 'New Lead';
+      leadData.client_name = "New Lead";
     }
 
     if (!leadData.lead_source) {
-      leadData.lead_source = 'other';
+      leadData.lead_source = "other";
     }
 
     // Basic enum validation with defaults
-    if (leadData.lead_source && !ValidationSchemas.lead.enums.lead_source.includes(leadData.lead_source)) {
-      leadData.lead_source = 'other';
+    if (
+      leadData.lead_source &&
+      !ValidationSchemas.lead.enums.lead_source.includes(leadData.lead_source)
+    ) {
+      leadData.lead_source = "other";
     }
 
-    if (leadData.status && !ValidationSchemas.lead.enums.status.includes(leadData.status)) {
-      leadData.status = 'in-progress';
+    if (
+      leadData.status &&
+      !ValidationSchemas.lead.enums.status.includes(leadData.status)
+    ) {
+      leadData.status = "in-progress";
     }
 
-    if (leadData.priority && !ValidationSchemas.lead.enums.priority.includes(leadData.priority)) {
-      leadData.priority = 'medium';
+    if (
+      leadData.priority &&
+      !ValidationSchemas.lead.enums.priority.includes(leadData.priority)
+    ) {
+      leadData.priority = "medium";
     }
 
     // Validate numeric fields
-    if (leadData.probability !== undefined && leadData.probability !== null && leadData.probability !== "") {
+    if (
+      leadData.probability !== undefined &&
+      leadData.probability !== null &&
+      leadData.probability !== ""
+    ) {
       if (!DatabaseValidator.isValidNumber(leadData.probability, 0, 100)) {
-        return res.status(400).json({ error: "Probability must be between 0 and 100" });
+        return res
+          .status(400)
+          .json({ error: "Probability must be between 0 and 100" });
       }
     }
 
-    if (leadData.project_value !== undefined && leadData.project_value !== null && leadData.project_value !== "") {
+    if (
+      leadData.project_value !== undefined &&
+      leadData.project_value !== null &&
+      leadData.project_value !== ""
+    ) {
       if (!DatabaseValidator.isValidNumber(leadData.project_value, 0)) {
-        return res.status(400).json({ error: "Project value must be a positive number" });
+        return res
+          .status(400)
+          .json({ error: "Project value must be a positive number" });
       }
     }
 
-    if (leadData.expected_daily_txn_volume !== undefined && leadData.expected_daily_txn_volume !== null && leadData.expected_daily_txn_volume !== "") {
-      if (!DatabaseValidator.isValidNumber(leadData.expected_daily_txn_volume, 0)) {
+    if (
+      leadData.expected_daily_txn_volume !== undefined &&
+      leadData.expected_daily_txn_volume !== null &&
+      leadData.expected_daily_txn_volume !== ""
+    ) {
+      if (
+        !DatabaseValidator.isValidNumber(leadData.expected_daily_txn_volume, 0)
+      ) {
         return res.status(400).json({
           error: "Expected daily transaction volume must be a positive number",
         });
@@ -285,15 +333,27 @@ router.post("/", async (req: Request, res: Response) => {
     }
 
     // Validate dates
-    if (leadData.expected_close_date && leadData.expected_close_date !== "" && leadData.expected_close_date !== null) {
+    if (
+      leadData.expected_close_date &&
+      leadData.expected_close_date !== "" &&
+      leadData.expected_close_date !== null
+    ) {
       if (!DatabaseValidator.isValidFutureDate(leadData.expected_close_date)) {
-        return res.status(400).json({ error: "Expected close date must be in the future" });
+        return res
+          .status(400)
+          .json({ error: "Expected close date must be in the future" });
       }
     }
 
-    if (leadData.targeted_end_date && leadData.targeted_end_date !== "" && leadData.targeted_end_date !== null) {
+    if (
+      leadData.targeted_end_date &&
+      leadData.targeted_end_date !== "" &&
+      leadData.targeted_end_date !== null
+    ) {
       if (!DatabaseValidator.isValidFutureDate(leadData.targeted_end_date)) {
-        return res.status(400).json({ error: "Targeted end date must be in the future" });
+        return res
+          .status(400)
+          .json({ error: "Targeted end date must be in the future" });
       }
     }
 
@@ -310,7 +370,7 @@ router.post("/", async (req: Request, res: Response) => {
     }
 
     console.log("All validations passed, attempting to create lead...");
-    
+
     // Generate unique lead ID if not provided
     if (!leadData.lead_id) {
       leadData.lead_id = await DatabaseValidator.generateUniqueLeadId();
@@ -329,7 +389,7 @@ router.post("/", async (req: Request, res: Response) => {
     console.error("Error stack:", error.stack);
     res.status(500).json({
       error: "Failed to create lead",
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -338,7 +398,7 @@ router.post("/", async (req: Request, res: Response) => {
 router.put("/:id", async (req: Request, res: Response) => {
   try {
     await requireDatabase();
-    
+
     const id = parseInt(req.params.id);
     if (isNaN(id)) {
       return res.status(400).json({ error: "Invalid lead ID" });
@@ -347,7 +407,11 @@ router.put("/:id", async (req: Request, res: Response) => {
     let leadData: UpdateLeadData = req.body;
 
     // Sanitize date fields - convert empty strings to null for PostgreSQL compatibility
-    const dateFields = ["start_date", "targeted_end_date", "expected_close_date"];
+    const dateFields = [
+      "start_date",
+      "targeted_end_date",
+      "expected_close_date",
+    ];
     for (const field of dateFields) {
       if (leadData[field] === "") {
         leadData[field] = null;
@@ -355,7 +419,10 @@ router.put("/:id", async (req: Request, res: Response) => {
     }
 
     // Validate status if provided
-    if (leadData.status && !["in-progress", "won", "lost", "completed"].includes(leadData.status)) {
+    if (
+      leadData.status &&
+      !["in-progress", "won", "lost", "completed"].includes(leadData.status)
+    ) {
       return res.status(400).json({ error: "Invalid status value" });
     }
 
@@ -372,13 +439,13 @@ router.put("/:id", async (req: Request, res: Response) => {
     if (!lead) {
       return res.status(500).json({ error: "Failed to update lead" });
     }
-    
+
     res.json(lead);
   } catch (error) {
     console.error("Error updating lead:", error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: "Failed to update lead",
-      message: error.message 
+      message: error.message,
     });
   }
 });
@@ -387,7 +454,7 @@ router.put("/:id", async (req: Request, res: Response) => {
 router.delete("/:id", async (req: Request, res: Response) => {
   try {
     await requireDatabase();
-    
+
     const id = parseInt(req.params.id);
     if (isNaN(id)) {
       return res.status(400).json({ error: "Invalid lead ID" });
@@ -397,13 +464,13 @@ router.delete("/:id", async (req: Request, res: Response) => {
     if (!success) {
       return res.status(404).json({ error: "Lead not found" });
     }
-    
+
     res.status(204).send();
   } catch (error) {
     console.error("Error deleting lead:", error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: "Failed to delete lead",
-      message: error.message 
+      message: error.message,
     });
   }
 });
@@ -412,7 +479,7 @@ router.delete("/:id", async (req: Request, res: Response) => {
 router.get("/:leadId/steps", async (req: Request, res: Response) => {
   try {
     await requireDatabase();
-    
+
     const leadId = parseInt(req.params.leadId);
     if (isNaN(leadId)) {
       return res.status(400).json({ error: "Invalid lead ID" });
@@ -422,9 +489,9 @@ router.get("/:leadId/steps", async (req: Request, res: Response) => {
     res.json(steps);
   } catch (error) {
     console.error("Error fetching lead steps:", error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: "Failed to fetch lead steps",
-      message: error.message 
+      message: error.message,
     });
   }
 });
@@ -433,9 +500,9 @@ router.get("/:leadId/steps", async (req: Request, res: Response) => {
 router.get("/health", async (req: Request, res: Response) => {
   try {
     const start = Date.now();
-    await pool.query('SELECT 1');
+    await pool.query("SELECT 1");
     const responseTime = Date.now() - start;
-    
+
     // Check if required tables exist
     const tablesQuery = `
       SELECT table_name 
@@ -444,30 +511,38 @@ router.get("/health", async (req: Request, res: Response) => {
       AND table_name IN ('leads', 'lead_steps', 'lead_chats', 'onboarding_templates', 'template_steps')
       ORDER BY table_name
     `;
-    
+
     const tablesResult = await pool.query(tablesQuery);
-    const tables = tablesResult.rows.map(row => row.table_name);
-    
-    const requiredTables = ['leads', 'lead_steps', 'lead_chats', 'onboarding_templates', 'template_steps'];
-    const missingTables = requiredTables.filter(table => !tables.includes(table));
-    
+    const tables = tablesResult.rows.map((row) => row.table_name);
+
+    const requiredTables = [
+      "leads",
+      "lead_steps",
+      "lead_chats",
+      "onboarding_templates",
+      "template_steps",
+    ];
+    const missingTables = requiredTables.filter(
+      (table) => !tables.includes(table),
+    );
+
     res.json({
-      status: missingTables.length === 0 ? 'healthy' : 'degraded',
-      database: 'connected',
+      status: missingTables.length === 0 ? "healthy" : "degraded",
+      database: "connected",
       responseTime: `${responseTime}ms`,
       tables: {
         found: tables,
-        missing: missingTables
+        missing: missingTables,
       },
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   } catch (error) {
     console.error("Health check failed:", error);
     res.status(503).json({
-      status: 'unhealthy',
-      database: 'disconnected',
+      status: "unhealthy",
+      database: "disconnected",
       error: error.message,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   }
 });

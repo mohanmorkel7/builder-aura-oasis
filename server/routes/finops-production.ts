@@ -8,7 +8,7 @@ const router = Router();
 // Production database availability check - fail fast if no database
 async function requireDatabase() {
   try {
-    await pool.query('SELECT 1');
+    await pool.query("SELECT 1");
     return true;
   } catch (error) {
     throw new Error(`Database connection failed: ${error.message}`);
@@ -19,7 +19,7 @@ async function requireDatabase() {
 router.get("/tasks", async (req: Request, res: Response) => {
   try {
     await requireDatabase();
-    
+
     const query = `
       SELECT 
         t.*,
@@ -43,20 +43,20 @@ router.get("/tasks", async (req: Request, res: Response) => {
       GROUP BY t.id
       ORDER BY t.created_at DESC
     `;
-    
+
     const result = await pool.query(query);
-    const tasks = result.rows.map(row => ({
+    const tasks = result.rows.map((row) => ({
       ...row,
-      subtasks: row.subtasks || []
+      subtasks: row.subtasks || [],
     }));
-    
+
     res.json(tasks);
   } catch (error) {
     console.error("Error fetching FinOps tasks:", error);
-    res.status(500).json({ 
-      error: "Database connection failed", 
+    res.status(500).json({
+      error: "Database connection failed",
       message: "Unable to fetch FinOps tasks from database",
-      details: error.message 
+      details: error.message,
     });
   }
 });
@@ -65,7 +65,7 @@ router.get("/tasks", async (req: Request, res: Response) => {
 router.post("/tasks", async (req: Request, res: Response) => {
   try {
     await requireDatabase();
-    
+
     const {
       task_name,
       description,
@@ -76,22 +76,34 @@ router.post("/tasks", async (req: Request, res: Response) => {
       duration,
       is_active,
       subtasks,
-      created_by
+      created_by,
     } = req.body;
 
     // Validate required fields
-    if (!task_name || !assigned_to || !effective_from || !duration || !created_by) {
-      return res.status(400).json({ 
+    if (
+      !task_name ||
+      !assigned_to ||
+      !effective_from ||
+      !duration ||
+      !created_by
+    ) {
+      return res.status(400).json({
         error: "Missing required fields",
-        required: ["task_name", "assigned_to", "effective_from", "duration", "created_by"]
+        required: [
+          "task_name",
+          "assigned_to",
+          "effective_from",
+          "duration",
+          "created_by",
+        ],
       });
     }
 
     const client = await pool.connect();
-    
+
     try {
-      await client.query('BEGIN');
-      
+      await client.query("BEGIN");
+
       // Insert main task
       const taskQuery = `
         INSERT INTO finops_tasks (
@@ -100,7 +112,7 @@ router.post("/tasks", async (req: Request, res: Response) => {
         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         RETURNING *
       `;
-      
+
       const taskResult = await client.query(taskQuery, [
         task_name,
         description,
@@ -110,11 +122,11 @@ router.post("/tasks", async (req: Request, res: Response) => {
         effective_from,
         duration,
         is_active ?? true,
-        created_by
+        created_by,
       ]);
-      
+
       const task = taskResult.rows[0];
-      
+
       // Insert subtasks
       const subtaskResults = [];
       if (subtasks && subtasks.length > 0) {
@@ -126,45 +138,53 @@ router.post("/tasks", async (req: Request, res: Response) => {
             ) VALUES ($1, $2, $3, $4, $5, $6)
             RETURNING *
           `;
-          
+
           const subtaskResult = await client.query(subtaskQuery, [
             task.id,
             subtask.name,
             subtask.description || null,
             subtask.sla_hours || 1,
             subtask.sla_minutes || 0,
-            i
+            i,
           ]);
-          
+
           subtaskResults.push(subtaskResult.rows[0]);
         }
       }
-      
-      await client.query('COMMIT');
-      
+
+      await client.query("COMMIT");
+
       // Log activity
-      await client.query(`
+      await client.query(
+        `
         INSERT INTO finops_activity_log (task_id, action, user_name, details)
         VALUES ($1, $2, $3, $4)
-      `, [task.id, 'created', assigned_to, `Task "${task_name}" created with ${subtaskResults.length} subtasks`]);
-      
+      `,
+        [
+          task.id,
+          "created",
+          assigned_to,
+          `Task "${task_name}" created with ${subtaskResults.length} subtasks`,
+        ],
+      );
+
       const response = {
         ...task,
-        subtasks: subtaskResults
+        subtasks: subtaskResults,
       };
-      
+
       res.status(201).json(response);
     } catch (error) {
-      await client.query('ROLLBACK');
+      await client.query("ROLLBACK");
       throw error;
     } finally {
       client.release();
     }
   } catch (error) {
     console.error("Error creating FinOps task:", error);
-    res.status(500).json({ 
-      error: "Failed to create FinOps task", 
-      message: error.message 
+    res.status(500).json({
+      error: "Failed to create FinOps task",
+      message: error.message,
     });
   }
 });
@@ -173,36 +193,42 @@ router.post("/tasks", async (req: Request, res: Response) => {
 router.put("/subtasks/:id", async (req: Request, res: Response) => {
   try {
     await requireDatabase();
-    
+
     const subtaskId = parseInt(req.params.id);
     const { status, delay_reason, user_name } = req.body;
-    
+
     if (isNaN(subtaskId)) {
       return res.status(400).json({ error: "Invalid subtask ID" });
     }
-    
+
     if (!status) {
       return res.status(400).json({ error: "Status is required" });
     }
-    
-    const validStatuses = ['pending', 'in_progress', 'completed', 'overdue', 'cancelled'];
+
+    const validStatuses = [
+      "pending",
+      "in_progress",
+      "completed",
+      "overdue",
+      "cancelled",
+    ];
     if (!validStatuses.includes(status)) {
-      return res.status(400).json({ 
-        error: "Invalid status", 
-        validStatuses 
+      return res.status(400).json({
+        error: "Invalid status",
+        validStatuses,
       });
     }
-    
+
     const client = await pool.connect();
-    
+
     try {
-      await client.query('BEGIN');
-      
+      await client.query("BEGIN");
+
       // Update subtask
-      let updateQuery = '';
+      let updateQuery = "";
       let queryParams = [];
-      
-      if (status === 'in_progress') {
+
+      if (status === "in_progress") {
         updateQuery = `
           UPDATE finops_subtasks 
           SET status = $1, started_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP
@@ -210,7 +236,7 @@ router.put("/subtasks/:id", async (req: Request, res: Response) => {
           RETURNING *
         `;
         queryParams = [status, subtaskId];
-      } else if (status === 'completed') {
+      } else if (status === "completed") {
         updateQuery = `
           UPDATE finops_subtasks 
           SET status = $1, completed_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP
@@ -227,45 +253,58 @@ router.put("/subtasks/:id", async (req: Request, res: Response) => {
         `;
         queryParams = [status, subtaskId];
       }
-      
+
       const result = await client.query(updateQuery, queryParams);
-      
+
       if (result.rows.length === 0) {
-        await client.query('ROLLBACK');
+        await client.query("ROLLBACK");
         return res.status(404).json({ error: "Subtask not found" });
       }
-      
+
       const subtask = result.rows[0];
-      
+
       // Log activity
       let activityDetails = `Subtask "${subtask.name}" status changed to ${status}`;
-      if (delay_reason && status === 'overdue') {
+      if (delay_reason && status === "overdue") {
         activityDetails += `. Delay reason: ${delay_reason}`;
       }
-      
-      await client.query(`
+
+      await client.query(
+        `
         INSERT INTO finops_activity_log (task_id, subtask_id, action, user_name, details)
         VALUES ($1, $2, $3, $4, $5)
-      `, [subtask.task_id, subtaskId, 'updated', user_name || 'System', activityDetails]);
-      
+      `,
+        [
+          subtask.task_id,
+          subtaskId,
+          "updated",
+          user_name || "System",
+          activityDetails,
+        ],
+      );
+
       // Trigger alerts if needed
-      if (status === 'overdue') {
-        await finopsAlertService.createSLABreachAlert(subtask.task_id, subtaskId, delay_reason);
+      if (status === "overdue") {
+        await finopsAlertService.createSLABreachAlert(
+          subtask.task_id,
+          subtaskId,
+          delay_reason,
+        );
       }
-      
-      await client.query('COMMIT');
+
+      await client.query("COMMIT");
       res.json(subtask);
     } catch (error) {
-      await client.query('ROLLBACK');
+      await client.query("ROLLBACK");
       throw error;
     } finally {
       client.release();
     }
   } catch (error) {
     console.error("Error updating subtask:", error);
-    res.status(500).json({ 
-      error: "Failed to update subtask", 
-      message: error.message 
+    res.status(500).json({
+      error: "Failed to update subtask",
+      message: error.message,
     });
   }
 });
@@ -274,9 +313,9 @@ router.put("/subtasks/:id", async (req: Request, res: Response) => {
 router.get("/activity-log", async (req: Request, res: Response) => {
   try {
     await requireDatabase();
-    
+
     const { start_date, end_date, task_id } = req.query;
-    
+
     let query = `
       SELECT 
         al.*,
@@ -289,34 +328,34 @@ router.get("/activity-log", async (req: Request, res: Response) => {
     `;
     const queryParams = [];
     let paramCount = 0;
-    
+
     if (start_date) {
       paramCount++;
       query += ` AND al.timestamp >= $${paramCount}`;
       queryParams.push(start_date);
     }
-    
+
     if (end_date) {
       paramCount++;
       query += ` AND al.timestamp <= $${paramCount}`;
       queryParams.push(end_date);
     }
-    
+
     if (task_id) {
       paramCount++;
       query += ` AND al.task_id = $${paramCount}`;
       queryParams.push(parseInt(task_id as string));
     }
-    
+
     query += ` ORDER BY al.timestamp DESC LIMIT 1000`;
-    
+
     const result = await pool.query(query, queryParams);
     res.json(result.rows);
   } catch (error) {
     console.error("Error fetching activity log:", error);
-    res.status(500).json({ 
-      error: "Failed to fetch activity log", 
-      message: error.message 
+    res.status(500).json({
+      error: "Failed to fetch activity log",
+      message: error.message,
     });
   }
 });
@@ -325,21 +364,21 @@ router.get("/activity-log", async (req: Request, res: Response) => {
 router.get("/clients", async (req: Request, res: Response) => {
   try {
     await requireDatabase();
-    
+
     const query = `
       SELECT DISTINCT client_name as name, client_name as id
       FROM leads 
       WHERE client_name IS NOT NULL AND client_name != ''
       ORDER BY client_name
     `;
-    
+
     const result = await pool.query(query);
     res.json(result.rows);
   } catch (error) {
     console.error("Error fetching clients from leads:", error);
-    res.status(500).json({ 
-      error: "Failed to fetch clients", 
-      message: error.message 
+    res.status(500).json({
+      error: "Failed to fetch clients",
+      message: error.message,
     });
   }
 });
@@ -348,7 +387,7 @@ router.get("/clients", async (req: Request, res: Response) => {
 router.get("/alerts", async (req: Request, res: Response) => {
   try {
     await requireDatabase();
-    
+
     const query = `
       SELECT 
         a.*,
@@ -361,14 +400,14 @@ router.get("/alerts", async (req: Request, res: Response) => {
       ORDER BY a.created_at DESC
       LIMIT 100
     `;
-    
+
     const result = await pool.query(query);
     res.json(result.rows);
   } catch (error) {
     console.error("Error fetching alerts:", error);
-    res.status(500).json({ 
-      error: "Failed to fetch alerts", 
-      message: error.message 
+    res.status(500).json({
+      error: "Failed to fetch alerts",
+      message: error.message,
     });
   }
 });
@@ -377,9 +416,9 @@ router.get("/alerts", async (req: Request, res: Response) => {
 router.get("/health", async (req: Request, res: Response) => {
   try {
     const start = Date.now();
-    await pool.query('SELECT 1');
+    await pool.query("SELECT 1");
     const responseTime = Date.now() - start;
-    
+
     // Check if required tables exist
     const tablesQuery = `
       SELECT table_name 
@@ -388,30 +427,37 @@ router.get("/health", async (req: Request, res: Response) => {
       AND table_name IN ('finops_tasks', 'finops_subtasks', 'finops_activity_log', 'finops_alerts')
       ORDER BY table_name
     `;
-    
+
     const tablesResult = await pool.query(tablesQuery);
-    const tables = tablesResult.rows.map(row => row.table_name);
-    
-    const requiredTables = ['finops_tasks', 'finops_subtasks', 'finops_activity_log', 'finops_alerts'];
-    const missingTables = requiredTables.filter(table => !tables.includes(table));
-    
+    const tables = tablesResult.rows.map((row) => row.table_name);
+
+    const requiredTables = [
+      "finops_tasks",
+      "finops_subtasks",
+      "finops_activity_log",
+      "finops_alerts",
+    ];
+    const missingTables = requiredTables.filter(
+      (table) => !tables.includes(table),
+    );
+
     res.json({
-      status: missingTables.length === 0 ? 'healthy' : 'degraded',
-      database: 'connected',
+      status: missingTables.length === 0 ? "healthy" : "degraded",
+      database: "connected",
       responseTime: `${responseTime}ms`,
       tables: {
         found: tables,
-        missing: missingTables
+        missing: missingTables,
       },
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   } catch (error) {
     console.error("Health check failed:", error);
     res.status(503).json({
-      status: 'unhealthy',
-      database: 'disconnected',
+      status: "unhealthy",
+      database: "disconnected",
       error: error.message,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   }
 });
