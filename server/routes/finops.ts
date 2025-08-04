@@ -424,73 +424,104 @@ router.delete("/tasks/:id", async (req: Request, res: Response) => {
   }
 });
 
-// Update subtask status with enhanced logging
+// Enhanced subtask status update with delay tracking and notifications
 router.patch("/tasks/:taskId/subtasks/:subtaskId", async (req: Request, res: Response) => {
   try {
     const taskId = parseInt(req.params.taskId);
     const subtaskId = req.params.subtaskId;
-    const { status, user_name } = req.body;
+    const { status, user_name, delay_reason, delay_notes } = req.body;
     const userName = user_name || 'Unknown User';
 
     if (await isDatabaseAvailable()) {
-      // Get current subtask status for logging
-      const currentSubtask = await pool.query(
-        'SELECT status, name FROM finops_subtasks WHERE task_id = $1 AND id = $2',
-        [taskId, subtaskId]
-      );
+      // Get current subtask and task information
+      const currentSubtask = await pool.query(`
+        SELECT st.*, t.task_name, t.reporting_managers, t.escalation_managers, t.assigned_to
+        FROM finops_subtasks st
+        JOIN finops_tasks t ON st.task_id = t.id
+        WHERE st.task_id = $1 AND st.id = $2
+      `, [taskId, subtaskId]);
 
       if (currentSubtask.rows.length === 0) {
         return res.status(404).json({ error: "Subtask not found" });
       }
 
-      const oldStatus = currentSubtask.rows[0].status;
-      const subtaskName = currentSubtask.rows[0].name;
+      const subtaskData = currentSubtask.rows[0];
+      const oldStatus = subtaskData.status;
+      const subtaskName = subtaskData.name;
+
+      // Build dynamic update query
+      let updateFields = ['status = $1', 'updated_at = CURRENT_TIMESTAMP'];
+      let queryParams = [status, taskId, subtaskId];
+      let paramIndex = 4;
+
+      if (status === 'completed') {
+        updateFields.push('completed_at = CURRENT_TIMESTAMP');
+      }
+      if (status === 'in_progress' && !subtaskData.started_at) {
+        updateFields.push('started_at = CURRENT_TIMESTAMP');
+      }
+      if (status === 'delayed' && delay_reason) {
+        updateFields.push(`delay_reason = $${paramIndex++}`);
+        updateFields.push(`delay_notes = $${paramIndex++}`);
+        queryParams.push(delay_reason, delay_notes || '');
+      }
 
       const query = `
         UPDATE finops_subtasks
-        SET status = $1,
-            ${status === 'completed' ? 'completed_at = CURRENT_TIMESTAMP,' : ''}
-            ${status === 'in_progress' ? 'started_at = CURRENT_TIMESTAMP,' : ''}
-            updated_at = CURRENT_TIMESTAMP
+        SET ${updateFields.join(', ')}
         WHERE task_id = $2 AND id = $3
       `;
 
-      await pool.query(query, [status, taskId, subtaskId]);
+      await pool.query(query, queryParams);
 
-      // Enhanced activity logging with more details
-      const logDetails = `Subtask "${subtaskName}" status changed from "${oldStatus}" to "${status}"`;
+      // Enhanced activity logging
+      let logDetails = `Subtask "${subtaskName}" status changed from "${oldStatus}" to "${status}"`;
+      if (status === 'delayed' && delay_reason) {
+        logDetails += ` (Reason: ${delay_reason})`;
+      }
       await logActivity(taskId, subtaskId, 'status_changed', userName, logDetails);
 
-      // Log user login activity if this is their first action today
-      await logUserActivity(userName, taskId);
+      // Send notifications based on status
+      await handleStatusChangeNotifications(subtaskData, status, delay_reason, delay_notes);
 
-      // Check if task completion status changed
+      // Log user activity and update task status
+      await logUserActivity(userName, taskId);
       await checkAndUpdateTaskStatus(taskId, userName);
 
       res.json({
         message: "Subtask status updated successfully",
         previous_status: oldStatus,
         new_status: status,
+        delay_reason: delay_reason || null,
+        delay_notes: delay_notes || null,
         updated_at: new Date().toISOString()
       });
     } else {
-      // Mock response
+      // Enhanced mock response
       const task = mockFinOpsTasks.find(t => t.id === taskId);
       if (task) {
         const subtask = task.subtasks.find(st => st.id === subtaskId);
         if (subtask) {
           const oldStatus = subtask.status;
           subtask.status = status;
+
           if (status === 'completed') {
             subtask.completed_at = new Date().toISOString();
           }
           if (status === 'in_progress') {
             subtask.started_at = new Date().toISOString();
           }
+          if (status === 'delayed') {
+            (subtask as any).delay_reason = delay_reason;
+            (subtask as any).delay_notes = delay_notes;
+          }
+
           res.json({
             message: "Subtask status updated successfully (mock)",
             previous_status: oldStatus,
-            new_status: status
+            new_status: status,
+            delay_reason: delay_reason || null,
+            delay_notes: delay_notes || null
           });
         } else {
           res.status(404).json({ error: "Subtask not found" });
