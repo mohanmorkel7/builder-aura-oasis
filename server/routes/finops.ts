@@ -843,6 +843,188 @@ router.get("/scheduler-status", async (req: Request, res: Response) => {
   }
 });
 
+// Get enhanced task summary with alert information
+router.get("/tasks/:id/summary", async (req: Request, res: Response) => {
+  try {
+    const taskId = parseInt(req.params.id);
+
+    if (await isDatabaseAvailable()) {
+      const taskQuery = `
+        SELECT
+          t.*,
+          json_agg(
+            json_build_object(
+              'id', st.id,
+              'name', st.name,
+              'status', st.status,
+              'sla_hours', st.sla_hours,
+              'sla_minutes', st.sla_minutes,
+              'start_time', st.start_time,
+              'started_at', st.started_at,
+              'completed_at', st.completed_at,
+              'delay_reason', st.delay_reason,
+              'delay_notes', st.delay_notes,
+              'order_position', st.order_position
+            ) ORDER BY st.order_position
+          ) FILTER (WHERE st.id IS NOT NULL) as subtasks
+        FROM finops_tasks t
+        LEFT JOIN finops_subtasks st ON t.id = st.task_id
+        WHERE t.id = $1 AND t.deleted_at IS NULL
+        GROUP BY t.id
+      `;
+
+      const result = await pool.query(taskQuery, [taskId]);
+
+      if (result.rows.length === 0) {
+        return res.status(404).json({ error: "Task not found" });
+      }
+
+      const task = result.rows[0];
+      const subtasks = task.subtasks || [];
+
+      // Calculate enhanced summary
+      const summary = {
+        total_subtasks: subtasks.length,
+        completed: subtasks.filter((st: any) => st.status === 'completed').length,
+        in_progress: subtasks.filter((st: any) => st.status === 'in_progress').length,
+        pending: subtasks.filter((st: any) => st.status === 'pending').length,
+        delayed: subtasks.filter((st: any) => st.status === 'delayed').length,
+        overdue: subtasks.filter((st: any) => st.status === 'overdue').length,
+        completion_percentage: subtasks.length > 0 ? Math.round((subtasks.filter((st: any) => st.status === 'completed').length / subtasks.length) * 100) : 0
+      };
+
+      // Get recent alerts
+      const alertsQuery = `
+        SELECT * FROM finops_alerts
+        WHERE task_id = $1
+        ORDER BY created_at DESC
+        LIMIT 10
+      `;
+      const alertsResult = await pool.query(alertsQuery, [taskId]);
+
+      res.json({
+        task: task,
+        summary: summary,
+        recent_alerts: alertsResult.rows,
+        sla_status: calculateSLAStatus(subtasks)
+      });
+
+    } else {
+      // Mock response
+      const task = mockFinOpsTasks.find(t => t.id === taskId);
+      if (!task) {
+        return res.status(404).json({ error: "Task not found" });
+      }
+
+      const summary = {
+        total_subtasks: task.subtasks.length,
+        completed: task.subtasks.filter(st => st.status === 'completed').length,
+        in_progress: task.subtasks.filter(st => st.status === 'in_progress').length,
+        pending: task.subtasks.filter(st => st.status === 'pending').length,
+        delayed: 0,
+        overdue: 0,
+        completion_percentage: task.subtasks.length > 0 ? Math.round((task.subtasks.filter(st => st.status === 'completed').length / task.subtasks.length) * 100) : 0
+      };
+
+      res.json({
+        task: task,
+        summary: summary,
+        recent_alerts: [],
+        sla_status: "normal"
+      });
+    }
+  } catch (error) {
+    console.error("Error fetching task summary:", error);
+    res.status(500).json({ error: "Failed to fetch task summary" });
+  }
+});
+
+// Send manual alert for subtask
+router.post("/tasks/:taskId/subtasks/:subtaskId/alert", async (req: Request, res: Response) => {
+  try {
+    const taskId = parseInt(req.params.taskId);
+    const subtaskId = req.params.subtaskId;
+    const { alert_type, message } = req.body;
+
+    if (await isDatabaseAvailable()) {
+      // Get task and subtask information
+      const taskQuery = `
+        SELECT
+          t.task_name, t.reporting_managers, t.escalation_managers, t.assigned_to,
+          st.name as subtask_name, st.status
+        FROM finops_tasks t
+        JOIN finops_subtasks st ON t.id = st.task_id
+        WHERE t.id = $1 AND st.id = $2
+      `;
+
+      const result = await pool.query(taskQuery, [taskId, subtaskId]);
+
+      if (result.rows.length === 0) {
+        return res.status(404).json({ error: "Task or subtask not found" });
+      }
+
+      const taskData = result.rows[0];
+
+      // Log manual alert
+      await logActivity(
+        taskId,
+        subtaskId,
+        'manual_alert_sent',
+        'User',
+        `Manual ${alert_type} alert sent: ${message}`
+      );
+
+      // In a real implementation, this would send actual notifications
+      console.log(`Manual alert sent for task ${taskData.task_name}, subtask ${taskData.subtask_name}`);
+      console.log(`Alert type: ${alert_type}, Message: ${message}`);
+
+      res.json({
+        message: "Manual alert sent successfully",
+        alert_type: alert_type,
+        recipients: JSON.parse(taskData.reporting_managers || '[]')
+      });
+
+    } else {
+      res.json({
+        message: "Manual alert sent successfully (mock)",
+        alert_type: alert_type
+      });
+    }
+  } catch (error) {
+    console.error("Error sending manual alert:", error);
+    res.status(500).json({ error: "Failed to send manual alert" });
+  }
+});
+
+// Helper function to calculate SLA status
+function calculateSLAStatus(subtasks: any[]) {
+  const now = new Date();
+  let overallStatus = "normal";
+
+  for (const subtask of subtasks) {
+    if (subtask.status === 'overdue') {
+      return "overdue";
+    }
+    if (subtask.status === 'delayed') {
+      overallStatus = "delayed";
+    }
+    if (subtask.started_at && subtask.status === 'in_progress') {
+      const startTime = new Date(subtask.started_at);
+      const slaTime = new Date(startTime.getTime() + (subtask.sla_hours * 60 + subtask.sla_minutes) * 60000);
+      const timeRemaining = slaTime.getTime() - now.getTime();
+      const minutesRemaining = Math.floor(timeRemaining / (1000 * 60));
+
+      if (minutesRemaining < 0) {
+        return "overdue";
+      } else if (minutesRemaining <= 15) {
+        overallStatus = "warning";
+      }
+    }
+  }
+
+  return overallStatus;
+}
+
 // Get activity log with enhanced filtering
 router.get("/activity-log", async (req: Request, res: Response) => {
   try {
