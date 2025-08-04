@@ -257,7 +257,7 @@ export default function FinOpsAutomation() {
 
         {/* Task Management Tab */}
         <TabsContent value="task-management" className="space-y-6">
-          <FinOpsTaskManager />
+          <EnhancedFinOpsTaskManager />
         </TabsContent>
 
         {/* Live Monitoring Tab */}
