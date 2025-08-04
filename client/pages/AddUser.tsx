@@ -59,26 +59,49 @@ export default function AddUser() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Validation
+    if (!formData.firstName.trim()) {
+      alert("First name is required");
+      return;
+    }
+    if (!formData.lastName.trim()) {
+      alert("Last name is required");
+      return;
+    }
+    if (!formData.email.trim()) {
+      alert("Email is required");
+      return;
+    }
+    if (!formData.role) {
+      alert("Role is required");
+      return;
+    }
+    if (!formData.password) {
+      alert("Password is required");
+      return;
+    }
+
     try {
       const userData = {
-        first_name: formData.firstName,
-        last_name: formData.lastName,
-        email: formData.email,
-        phone: formData.phone || undefined,
+        first_name: formData.firstName.trim(),
+        last_name: formData.lastName.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone?.trim() || undefined,
         password: formData.password,
         role: formData.role as any,
         department: formData.department || undefined,
         manager_id: formData.manager ? parseInt(formData.manager) : undefined,
         start_date: formData.startDate || undefined,
         two_factor_enabled: formData.twoFactorAuth,
-        notes: formData.notes || undefined,
+        notes: formData.notes?.trim() || undefined,
       };
 
       await createUserMutation.mutateAsync(userData);
+      alert("User created successfully!");
       navigate("/admin/users");
     } catch (error) {
       console.error("Error creating user:", error);
-      // Handle error (show toast, etc.)
+      alert("Failed to create user. Please try again.");
     }
   };
 
