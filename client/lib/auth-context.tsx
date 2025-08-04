@@ -13,6 +13,7 @@ export type UserRole =
   | "development"
   | "db"
   | "finops"
+  | "finance"
   | "hr_management"
   | "infra"
   | "switch_team";
