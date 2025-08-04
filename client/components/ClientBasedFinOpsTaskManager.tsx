@@ -510,6 +510,8 @@ export default function ClientBasedFinOpsTaskManager() {
   };
 
   const getTimeSinceStart = (startTime: string) => {
+    if (!startTime || typeof startTime !== 'string') return 'N/A';
+
     const [hours, minutes] = startTime.split(':').map(Number);
     const taskStartTime = new Date();
     taskStartTime.setHours(hours, minutes, 0, 0);
@@ -529,7 +531,7 @@ export default function ClientBasedFinOpsTaskManager() {
   };
 
   const getSLAWarning = (startTime: string, status: string) => {
-    if (status === "completed") return null;
+    if (status === "completed" || !startTime || typeof startTime !== 'string') return null;
 
     const [hours, minutes] = startTime.split(':').map(Number);
     const taskStartTime = new Date();
