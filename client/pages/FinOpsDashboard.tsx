@@ -40,6 +40,7 @@ import {
   Receipt,
   CreditCard,
   Building,
+  Bell,
 } from "lucide-react";
 import { format } from "date-fns";
 
