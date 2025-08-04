@@ -261,20 +261,7 @@ export default function CreateTicketForm({
           </Select>
         </div>
 
-        <div>
-          <Label htmlFor="estimated_hours">Estimated Hours</Label>
-          <Input
-            id="estimated_hours"
-            type="number"
-            step="0.5"
-            min="0"
-            value={formData.estimated_hours}
-            onChange={(e) =>
-              handleInputChange("estimated_hours", e.target.value)
-            }
-            placeholder="0.0"
-          />
-        </div>
+
       </div>
 
       {/* Tags */}
