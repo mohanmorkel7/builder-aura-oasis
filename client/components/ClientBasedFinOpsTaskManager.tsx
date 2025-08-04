@@ -1015,7 +1015,12 @@ export default function ClientBasedFinOpsTaskManager() {
                             <Timer className="w-4 h-4" />
                             <span>
                               {task.subtasks && task.subtasks.length > 0
-                                ? `Starts: ${task.subtasks.sort((a, b) => a.start_time.localeCompare(b.start_time))[0].start_time}`
+                                ? (() => {
+                                    const subtasksWithTime = task.subtasks.filter(st => st.start_time);
+                                    if (subtasksWithTime.length === 0) return "No schedule set";
+                                    const sorted = subtasksWithTime.sort((a, b) => (a.start_time || "").localeCompare(b.start_time || ""));
+                                    return `Starts: ${sorted[0].start_time}`;
+                                  })()
                                 : "No schedule set"
                               }
                             </span>
