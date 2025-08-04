@@ -397,22 +397,52 @@ export class ApiClient {
     });
   }
 
-  async updateFinOpsSubTask(taskId: number, subTaskId: string, status: string) {
+  async updateFinOpsSubTask(taskId: number, subTaskId: string, status: string, userName?: string) {
     return this.request(`/finops/tasks/${taskId}/subtasks/${subTaskId}`, {
       method: "PATCH",
-      body: JSON.stringify({ status }),
+      body: JSON.stringify({
+        status,
+        user_name: userName
+      }),
     });
   }
 
-  async getFinOpsActivityLog(taskId?: number) {
-    const params = taskId ? `?taskId=${taskId}` : "";
-    return this.request(`/finops/activity-log${params}`);
+  async getFinOpsActivityLog(filters?: { taskId?: number; userId?: string; action?: string; date?: string; limit?: number }) {
+    const params = new URLSearchParams();
+    if (filters?.taskId) params.append('taskId', filters.taskId.toString());
+    if (filters?.userId) params.append('userId', filters.userId);
+    if (filters?.action) params.append('action', filters.action);
+    if (filters?.date) params.append('date', filters.date);
+    if (filters?.limit) params.append('limit', filters.limit.toString());
+
+    return this.request(`/finops/activity-log?${params.toString()}`);
   }
 
   async runFinOpsTask(taskId: number) {
     return this.request(`/finops/tasks/${taskId}/run`, {
       method: "POST",
     });
+  }
+
+  async getFinOpsDailyTasks(date?: string) {
+    const params = date ? `?date=${date}` : '';
+    return this.request(`/finops/daily-tasks${params}`);
+  }
+
+  async triggerFinOpsSLACheck() {
+    return this.request("/finops/check-sla", {
+      method: "POST",
+    });
+  }
+
+  async triggerFinOpsDailyExecution() {
+    return this.request("/finops/trigger-daily", {
+      method: "POST",
+    });
+  }
+
+  async getFinOpsSchedulerStatus() {
+    return this.request("/finops/scheduler-status");
   }
 
   // Lead steps methods
