@@ -141,7 +141,8 @@ const getNotificationsFromFollowUps = async (
           type: "follow_up_assigned",
           title: "Follow-up Assigned",
           message: `You have been assigned: ${followUp.title}`,
-          follow_up_id: followUp.id,
+          entity_id: followUp.id,
+          entity_type: "follow_up",
           created_at: followUp.created_at,
           read: false,
         });
