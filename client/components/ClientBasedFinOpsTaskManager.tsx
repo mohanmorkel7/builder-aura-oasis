@@ -1191,7 +1191,7 @@ export default function ClientBasedFinOpsTaskManager() {
                         </SelectItem>
                       ))
                     ) : (
-                      <SelectItem value="" disabled>
+                      <SelectItem value="no-clients" disabled>
                         No clients available
                       </SelectItem>
                     )}
