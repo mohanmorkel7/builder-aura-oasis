@@ -115,7 +115,7 @@ export default function AdminTemplates() {
   });
 
   const deleteTemplateMutation = useMutation({
-    mutationFn: (templateId: number) => apiClient.deleteTemplate(templateId),
+    mutationFn: (templateId: number) => apiClient.request(`/templates-production/${templateId}`, { method: "DELETE" }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["templates-admin"] });
       queryClient.invalidateQueries({ queryKey: ["template-stats"] });
@@ -123,7 +123,10 @@ export default function AdminTemplates() {
   });
 
   const duplicateTemplateMutation = useMutation({
-    mutationFn: (templateId: number) => apiClient.duplicateTemplate(templateId),
+    mutationFn: (templateId: number) => apiClient.request(`/templates-production/${templateId}/duplicate`, {
+      method: "POST",
+      body: JSON.stringify({ created_by: user?.id || 1 })
+    }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["templates-admin"] });
     },
