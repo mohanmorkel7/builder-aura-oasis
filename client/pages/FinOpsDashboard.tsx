@@ -210,19 +210,15 @@ export default function FinOpsDashboard() {
     },
   };
 
-  // Fetch real-time FinOps daily process data
-  const { data: dailyProcessData } = useQuery({
-    queryKey: ["finops-daily-process", dateRange],
-    queryFn: () => apiClient.request("/finops-production/daily-process-stats", {
-      method: "POST",
-      body: JSON.stringify({
-        period: selectedPeriod,
-        start_date: dateRange.start,
-        end_date: dateRange.end,
-      }),
-    }),
-    refetchInterval: 60000, // Refresh every minute for real-time daily process data
-  });
+  // Fetch real-time FinOps daily process data (mock for now)
+  const dailyProcessData = {
+    tasks_completed_today: 12,
+    tasks_pending_today: 3,
+    sla_breaches_today: 1,
+    tasks_completed_this_month: 245,
+    tasks_pending_this_month: 18,
+    sla_breaches_this_month: 8,
+  };
 
   const processData = dailyProcessData || data.daily_process_counts;
 
