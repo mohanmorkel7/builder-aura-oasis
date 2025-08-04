@@ -678,10 +678,11 @@ export default function FinOpsDashboard() {
                         className="border-b hover:bg-gray-50"
                       >
                         <td className="p-4">
-                          {format(
-                            new Date(transaction.transaction_date),
-                            "MMM d, yyyy",
-                          )}
+                          {transaction.transaction_date ?
+                            format(
+                              new Date(transaction.transaction_date),
+                              "MMM d, yyyy",
+                            ) : "N/A"}
                         </td>
                         <td className="p-4">{transaction.description}</td>
                         <td className="p-4">
