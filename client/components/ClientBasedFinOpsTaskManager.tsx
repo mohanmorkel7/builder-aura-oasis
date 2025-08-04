@@ -900,12 +900,10 @@ export default function ClientBasedFinOpsTaskManager() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Building2 className="w-5 h-5" />
-              {viewMode === "daily" ? "Daily Process Summary by Client" : "Client-wise Summary"}
-              {viewMode === "daily" && dateFilter && (
-                <Badge variant="outline" className="ml-2">
-                  {format(new Date(dateFilter), "MMM d, yyyy")}
-                </Badge>
-              )}
+              Daily Process Summary by Client
+              <Badge variant="outline" className="ml-2">
+                {format(new Date(dateFilter), "MMM d, yyyy")}
+              </Badge>
             </CardTitle>
           </CardHeader>
           <CardContent>
