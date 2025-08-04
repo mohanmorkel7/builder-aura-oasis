@@ -423,7 +423,7 @@ export function useTemplate(id: number) {
     queryKey: ["templates", id],
     queryFn: async () => {
       try {
-        return await apiClient.getTemplate(id);
+        return await apiClient.request(`/templates-production/${id}`);
       } catch (error) {
         console.log(`API unavailable for template ${id}, using mock data`);
         return mockTemplates.find((template) => template.id === id) || null;
