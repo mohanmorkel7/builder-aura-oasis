@@ -1,6 +1,10 @@
 const API_BASE_URL = "/api";
 
 export class ApiClient {
+  private failureCount = 0;
+  private lastFailureTime = 0;
+  private readonly CIRCUIT_BREAKER_THRESHOLD = 5;
+  private readonly CIRCUIT_BREAKER_TIMEOUT = 30000; // 30 seconds
   private async request<T>(
     endpoint: string,
     options: RequestInit = {},
