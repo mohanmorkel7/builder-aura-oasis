@@ -246,7 +246,9 @@ export default function CreateLead() {
   });
 
   const [saving, setSaving] = useState(false);
-  const [displayCurrency, setDisplayCurrency] = useState<"INR" | "USD" | "AED">("INR");
+  const [displayCurrency, setDisplayCurrency] = useState<"INR" | "USD" | "AED">(
+    "INR",
+  );
   const [currentTab, setCurrentTab] = useState("basic");
   const [isPartialSaved, setIsPartialSaved] = useState(false);
   const [isResumedFromDraft, setIsResumedFromDraft] = useState(false);
@@ -260,9 +262,15 @@ export default function CreateLead() {
 
       // Set the active tab to the first incomplete tab if available
       if (resumeData._completedTabs && resumeData._completedTabs.length > 0) {
-        const lastCompletedTab = resumeData._completedTabs[resumeData._completedTabs.length - 1];
-        const lastCompletedTabIndex = tabs.findIndex(tab => tab.value === lastCompletedTab);
-        if (lastCompletedTabIndex >= 0 && lastCompletedTabIndex < tabs.length - 1) {
+        const lastCompletedTab =
+          resumeData._completedTabs[resumeData._completedTabs.length - 1];
+        const lastCompletedTabIndex = tabs.findIndex(
+          (tab) => tab.value === lastCompletedTab,
+        );
+        if (
+          lastCompletedTabIndex >= 0 &&
+          lastCompletedTabIndex < tabs.length - 1
+        ) {
           setCurrentTab(tabs[lastCompletedTabIndex + 1].value);
         } else {
           setCurrentTab(lastCompletedTab);
@@ -282,7 +290,7 @@ export default function CreateLead() {
     { value: "additional", label: "Additional", icon: "📝" },
   ];
 
-  const currentTabIndex = tabs.findIndex(tab => tab.value === currentTab);
+  const currentTabIndex = tabs.findIndex((tab) => tab.value === currentTab);
   const isFirstTab = currentTabIndex === 0;
   const isLastTab = currentTabIndex === tabs.length - 1;
 
@@ -293,9 +301,16 @@ export default function CreateLead() {
     AED: { INR: 23.2, USD: 0.272, AED: 1 },
   };
 
-  const convertCurrency = (amount: number, fromCurrency: string, toCurrency: string): number => {
+  const convertCurrency = (
+    amount: number,
+    fromCurrency: string,
+    toCurrency: string,
+  ): number => {
     if (fromCurrency === toCurrency) return amount;
-    const rate = exchangeRates[fromCurrency as keyof typeof exchangeRates]?.[toCurrency as keyof typeof exchangeRates.INR];
+    const rate =
+      exchangeRates[fromCurrency as keyof typeof exchangeRates]?.[
+        toCurrency as keyof typeof exchangeRates.INR
+      ];
     return rate ? amount * rate : amount;
   };
   const [errors, setErrors] = useState<string[]>([]);
@@ -372,7 +387,8 @@ export default function CreateLead() {
 
   const handleResumePartialSave = (resumeData: any) => {
     // Extract metadata
-    const { _resumeFromId, _lastSaved, _completedTabs, ...formData } = resumeData;
+    const { _resumeFromId, _lastSaved, _completedTabs, ...formData } =
+      resumeData;
 
     // Update the form with the resumed data
     setLeadData(formData);
@@ -397,24 +413,36 @@ export default function CreateLead() {
       const cleanedData = {
         ...leadData,
         // Convert empty strings to null for numeric fields
-        expected_daily_txn_volume: leadData.expected_daily_txn_volume === "" ? null : leadData.expected_daily_txn_volume,
-        project_value: leadData.project_value === "" ? null : leadData.project_value,
-        project_value_12m: leadData.project_value_12m === "" ? null : leadData.project_value_12m,
-        project_value_24m: leadData.project_value_24m === "" ? null : leadData.project_value_24m,
-        project_value_36m: leadData.project_value_36m === "" ? null : leadData.project_value_36m,
+        expected_daily_txn_volume:
+          leadData.expected_daily_txn_volume === ""
+            ? null
+            : leadData.expected_daily_txn_volume,
+        project_value:
+          leadData.project_value === "" ? null : leadData.project_value,
+        project_value_12m:
+          leadData.project_value_12m === "" ? null : leadData.project_value_12m,
+        project_value_24m:
+          leadData.project_value_24m === "" ? null : leadData.project_value_24m,
+        project_value_36m:
+          leadData.project_value_36m === "" ? null : leadData.project_value_36m,
         probability: leadData.probability === "" ? null : leadData.probability,
         // Convert empty string dates to null
-        expected_close_date: leadData.expected_close_date === "" ? null : leadData.expected_close_date,
-        targeted_end_date: leadData.targeted_end_date === "" ? null : leadData.targeted_end_date,
+        expected_close_date:
+          leadData.expected_close_date === ""
+            ? null
+            : leadData.expected_close_date,
+        targeted_end_date:
+          leadData.targeted_end_date === "" ? null : leadData.targeted_end_date,
         start_date: leadData.start_date === "" ? null : leadData.start_date,
       };
 
       // Prepare partial data for database save (using existing fields as workaround)
       const partialData = {
         ...cleanedData,
-        lead_source: cleanedData.lead_source || 'other', // Ensure we have a lead_source
-        client_name: cleanedData.client_name || 'PARTIAL_SAVE_IN_PROGRESS', // Required field workaround
-        project_title: cleanedData.project_title || 'Partial Save - In Progress',
+        lead_source: cleanedData.lead_source || "other", // Ensure we have a lead_source
+        client_name: cleanedData.client_name || "PARTIAL_SAVE_IN_PROGRESS", // Required field workaround
+        project_title:
+          cleanedData.project_title || "Partial Save - In Progress",
         notes: JSON.stringify({
           isPartialSave: true,
           lastSaved: new Date().toISOString(),
@@ -430,7 +458,7 @@ export default function CreateLead() {
       // Show success message for 2 seconds
       setTimeout(() => setIsPartialSaved(false), 2000);
     } catch (error) {
-      console.error('Error saving partial data:', error);
+      console.error("Error saving partial data:", error);
     } finally {
       setSaving(false);
     }
@@ -472,30 +500,42 @@ export default function CreateLead() {
     try {
       const submitData = {
         ...leadData,
-        project_budget: leadData.project_budget && leadData.project_budget !== ""
-          ? parseFloat(leadData.project_budget)
-          : undefined,
-        project_value: leadData.project_value && leadData.project_value !== ""
-          ? parseFloat(leadData.project_value)
-          : undefined,
-        project_value_12m: leadData.project_value_12m && leadData.project_value_12m !== ""
-          ? parseFloat(leadData.project_value_12m)
-          : undefined,
-        project_value_24m: leadData.project_value_24m && leadData.project_value_24m !== ""
-          ? parseFloat(leadData.project_value_24m)
-          : undefined,
-        project_value_36m: leadData.project_value_36m && leadData.project_value_36m !== ""
-          ? parseFloat(leadData.project_value_36m)
-          : undefined,
-        expected_daily_txn_volume: leadData.expected_daily_txn_volume && leadData.expected_daily_txn_volume !== ""
-          ? parseInt(leadData.expected_daily_txn_volume)
-          : undefined,
-        probability: leadData.probability && leadData.probability !== ""
-          ? parseInt(leadData.probability)
-          : undefined,
+        project_budget:
+          leadData.project_budget && leadData.project_budget !== ""
+            ? parseFloat(leadData.project_budget)
+            : undefined,
+        project_value:
+          leadData.project_value && leadData.project_value !== ""
+            ? parseFloat(leadData.project_value)
+            : undefined,
+        project_value_12m:
+          leadData.project_value_12m && leadData.project_value_12m !== ""
+            ? parseFloat(leadData.project_value_12m)
+            : undefined,
+        project_value_24m:
+          leadData.project_value_24m && leadData.project_value_24m !== ""
+            ? parseFloat(leadData.project_value_24m)
+            : undefined,
+        project_value_36m:
+          leadData.project_value_36m && leadData.project_value_36m !== ""
+            ? parseFloat(leadData.project_value_36m)
+            : undefined,
+        expected_daily_txn_volume:
+          leadData.expected_daily_txn_volume &&
+          leadData.expected_daily_txn_volume !== ""
+            ? parseInt(leadData.expected_daily_txn_volume)
+            : undefined,
+        probability:
+          leadData.probability && leadData.probability !== ""
+            ? parseInt(leadData.probability)
+            : undefined,
         // Clean date fields
-        expected_close_date: leadData.expected_close_date === "" ? null : leadData.expected_close_date,
-        targeted_end_date: leadData.targeted_end_date === "" ? null : leadData.targeted_end_date,
+        expected_close_date:
+          leadData.expected_close_date === ""
+            ? null
+            : leadData.expected_close_date,
+        targeted_end_date:
+          leadData.targeted_end_date === "" ? null : leadData.targeted_end_date,
         start_date: leadData.start_date === "" ? null : leadData.start_date,
         created_by: parseInt(user?.id || "1"),
         template_id:
@@ -580,13 +620,20 @@ export default function CreateLead() {
         <Alert>
           <Info className="h-4 w-4" />
           <AlertDescription>
-            <span>You are continuing from a saved draft. You can access other drafts from the Lead Dashboard.</span>
+            <span>
+              You are continuing from a saved draft. You can access other drafts
+              from the Lead Dashboard.
+            </span>
           </AlertDescription>
         </Alert>
       )}
 
       {/* Form Tabs */}
-      <Tabs value={currentTab} onValueChange={setCurrentTab} className="space-y-6">
+      <Tabs
+        value={currentTab}
+        onValueChange={setCurrentTab}
+        className="space-y-6"
+      >
         <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="basic">Lead Info</TabsTrigger>
           <TabsTrigger value="project">Project Details</TabsTrigger>
@@ -888,9 +935,7 @@ export default function CreateLead() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="project_value">
-                      Project Current Value
-                    </Label>
+                    <Label htmlFor="project_value">Project Current Value</Label>
                     <div className="relative mt-1">
                       <DollarSign className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                       <Input
@@ -988,8 +1033,15 @@ export default function CreateLead() {
                           Total Value by Currency:
                         </span>
                         <div className="flex items-center space-x-2">
-                          <span className="text-xs text-gray-500">Convert to:</span>
-                          <Select value={displayCurrency} onValueChange={(value: "INR" | "USD" | "AED") => setDisplayCurrency(value)}>
+                          <span className="text-xs text-gray-500">
+                            Convert to:
+                          </span>
+                          <Select
+                            value={displayCurrency}
+                            onValueChange={(value: "INR" | "USD" | "AED") =>
+                              setDisplayCurrency(value)
+                            }
+                          >
                             <SelectTrigger className="w-20 h-7 text-xs">
                               <SelectValue />
                             </SelectTrigger>
@@ -1007,7 +1059,13 @@ export default function CreateLead() {
                         <div className="flex flex-wrap gap-2">
                           {Object.entries(
                             leadData.commercial_pricing.reduce(
-                              (acc: Record<string, { total: number; count: number }>, pricing) => {
+                              (
+                                acc: Record<
+                                  string,
+                                  { total: number; count: number }
+                                >,
+                                pricing,
+                              ) => {
                                 const key = `${pricing.currency}_${pricing.unit}`;
                                 if (!acc[key]) {
                                   acc[key] = { total: 0, count: 0 };
@@ -1025,7 +1083,8 @@ export default function CreateLead() {
                                 key={key}
                                 className="text-xs bg-white px-2 py-1 rounded border text-gray-700"
                               >
-                                {data.total.toLocaleString()} {currency} ({unit})
+                                {data.total.toLocaleString()} {currency} ({unit}
+                                )
                               </span>
                             );
                           })}
@@ -1044,22 +1103,31 @@ export default function CreateLead() {
                                     const convertedValue = convertCurrency(
                                       pricing.value || 0,
                                       pricing.currency,
-                                      displayCurrency
+                                      displayCurrency,
                                     );
-                                    acc[displayCurrency] = (acc[displayCurrency] || 0) + convertedValue;
+                                    acc[displayCurrency] =
+                                      (acc[displayCurrency] || 0) +
+                                      convertedValue;
                                     return acc;
                                   },
                                   {},
                                 ),
-                              ).map(([currency, total]) =>
-                                `${total.toLocaleString(undefined, { maximumFractionDigits: 2 })} ${currency}`
-                              ).join(", ")}
+                              )
+                                .map(
+                                  ([currency, total]) =>
+                                    `${total.toLocaleString(undefined, { maximumFractionDigits: 2 })} ${currency}`,
+                                )
+                                .join(", ")}
                             </span>
                           </div>
                           <div className="text-xs text-gray-500 mt-1">
-                            <div>*Exchange rates are indicative and updated daily</div>
+                            <div>
+                              *Exchange rates are indicative and updated daily
+                            </div>
                             <div className="mt-1">
-                              Current rates: 1 USD = {exchangeRates.USD.INR} INR, 1 USD = {exchangeRates.USD.AED} AED, 1 AED = {exchangeRates.AED.INR} INR
+                              Current rates: 1 USD = {exchangeRates.USD.INR}{" "}
+                              INR, 1 USD = {exchangeRates.USD.AED} AED, 1 AED ={" "}
+                              {exchangeRates.AED.INR} INR
                             </div>
                           </div>
                         </div>
@@ -1127,14 +1195,16 @@ export default function CreateLead() {
                                   <SelectValue placeholder="Select unit" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  {getCurrencyUnits(pricing.currency).map((unit) => (
-                                    <SelectItem
-                                      key={unit.value}
-                                      value={unit.value}
-                                    >
-                                      {unit.label}
-                                    </SelectItem>
-                                  ))}
+                                  {getCurrencyUnits(pricing.currency).map(
+                                    (unit) => (
+                                      <SelectItem
+                                        key={unit.value}
+                                        value={unit.value}
+                                      >
+                                        {unit.label}
+                                      </SelectItem>
+                                    ),
+                                  )}
                                 </SelectContent>
                               </Select>
                             </TableCell>
@@ -1144,16 +1214,22 @@ export default function CreateLead() {
                                 onValueChange={(value) => {
                                   // Auto-update unit to the first unit of the selected currency
                                   const newUnits = getCurrencyUnits(value);
-                                  const defaultUnit = newUnits[0]?.value || "rupee";
+                                  const defaultUnit =
+                                    newUnits[0]?.value || "rupee";
 
                                   // Update both currency and unit in a single operation
-                                  const newPricing = [...(leadData.commercial_pricing || [])];
+                                  const newPricing = [
+                                    ...(leadData.commercial_pricing || []),
+                                  ];
                                   newPricing[index] = {
                                     ...newPricing[index],
                                     currency: value,
-                                    unit: defaultUnit
+                                    unit: defaultUnit,
                                   };
-                                  setLeadData((prev) => ({ ...prev, commercial_pricing: newPricing }));
+                                  setLeadData((prev) => ({
+                                    ...prev,
+                                    commercial_pricing: newPricing,
+                                  }));
                                 }}
                               >
                                 <SelectTrigger className="w-24">
@@ -1281,13 +1357,19 @@ export default function CreateLead() {
 
               {/* Contact Information Section */}
               <div className="border-t pt-6 space-y-6">
-                <h4 className="text-lg font-medium text-gray-900">Contact Information</h4>
+                <h4 className="text-lg font-medium text-gray-900">
+                  Contact Information
+                </h4>
                 <p className="text-sm text-gray-600">
-                  Add contact details. You can add multiple contacts for this lead.
+                  Add contact details. You can add multiple contacts for this
+                  lead.
                 </p>
 
                 {leadData.contacts.map((contact, index) => (
-                  <div key={index} className="border rounded-lg p-4 space-y-4 bg-gray-50">
+                  <div
+                    key={index}
+                    className="border rounded-lg p-4 space-y-4 bg-gray-50"
+                  >
                     <div className="flex items-center justify-between">
                       <h5 className="font-medium text-gray-900">
                         Contact #{index + 1}
@@ -1316,7 +1398,11 @@ export default function CreateLead() {
                             id={`contact_name_${index}`}
                             value={contact.contact_name}
                             onChange={(e) =>
-                              updateContact(index, "contact_name", e.target.value)
+                              updateContact(
+                                index,
+                                "contact_name",
+                                e.target.value,
+                              )
                             }
                             className="pl-10"
                             placeholder="Full name"
@@ -1404,8 +1490,6 @@ export default function CreateLead() {
           </Card>
         </TabsContent>
 
-
-
         {/* Additional Information Tab */}
         <TabsContent value="additional" className="space-y-6">
           <Card>
@@ -1460,7 +1544,8 @@ export default function CreateLead() {
               ← Previous
             </Button>
             <div className="text-sm text-gray-600">
-              Step {currentTabIndex + 1} of {tabs.length}: {tabs[currentTabIndex].label}
+              Step {currentTabIndex + 1} of {tabs.length}:{" "}
+              {tabs[currentTabIndex].label}
             </div>
           </div>
 
@@ -1478,10 +1563,7 @@ export default function CreateLead() {
               Save Progress
             </Button>
             {!isLastTab ? (
-              <Button
-                onClick={handleNextTab}
-                disabled={saving}
-              >
+              <Button onClick={handleNextTab} disabled={saving}>
                 Next →
               </Button>
             ) : (
@@ -1499,8 +1581,6 @@ export default function CreateLead() {
             )}
           </div>
         </div>
-
-
       </div>
 
       {/* Template Preview Modal */}

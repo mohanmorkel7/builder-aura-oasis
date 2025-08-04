@@ -309,17 +309,16 @@ router.get("/with-categories", async (req: Request, res: Response) => {
 router.get("/search", async (req: Request, res: Response) => {
   try {
     if (await isDatabaseAvailable()) {
+      const searchTerm = req.query.q as string;
+      const categoryId = req.query.category
+        ? parseInt(req.query.category as string)
+        : undefined;
 
-    const searchTerm = req.query.q as string;
-    const categoryId = req.query.category
-      ? parseInt(req.query.category as string)
-      : undefined;
+      if (!searchTerm) {
+        return res.status(400).json({ error: "Search term is required" });
+      }
 
-    if (!searchTerm) {
-      return res.status(400).json({ error: "Search term is required" });
-    }
-
-    let query = `
+      let query = `
       SELECT 
         t.*,
         tc.name as category_name,
@@ -334,46 +333,48 @@ router.get("/search", async (req: Request, res: Response) => {
         AND (t.name ILIKE $1 OR t.description ILIKE $1)
     `;
 
-    const params = [`%${searchTerm}%`];
+      const params = [`%${searchTerm}%`];
 
-    if (categoryId) {
-      query += ` AND t.category_id = $2`;
-      params.push(categoryId.toString());
-    }
+      if (categoryId) {
+        query += ` AND t.category_id = $2`;
+        params.push(categoryId.toString());
+      }
 
-    query += ` ORDER BY t.updated_at DESC`;
+      query += ` ORDER BY t.updated_at DESC`;
 
-    const result = await pool.query(query, params);
+      const result = await pool.query(query, params);
 
-    const templates = result.rows.map((row) => ({
-      id: row.id,
-      name: row.name,
-      description: row.description,
-      usage_count: row.usage_count || 0,
-      step_count: parseInt(row.step_count) || 0,
-      is_active: row.is_active,
-      created_at: row.created_at,
-      updated_at: row.updated_at,
-      creator_name: row.creator_name || "Unknown",
-      category_id: row.category_id,
-      category: row.category_name
-        ? {
-            id: row.category_id,
-            name: row.category_name,
-            color: row.category_color,
-            icon: row.category_icon,
-          }
-        : null,
-    }));
+      const templates = result.rows.map((row) => ({
+        id: row.id,
+        name: row.name,
+        description: row.description,
+        usage_count: row.usage_count || 0,
+        step_count: parseInt(row.step_count) || 0,
+        is_active: row.is_active,
+        created_at: row.created_at,
+        updated_at: row.updated_at,
+        creator_name: row.creator_name || "Unknown",
+        category_id: row.category_id,
+        category: row.category_name
+          ? {
+              id: row.category_id,
+              name: row.category_name,
+              color: row.category_color,
+              icon: row.category_icon,
+            }
+          : null,
+      }));
 
-    res.json(templates);
+      res.json(templates);
     } else {
       console.log("Database unavailable, searching mock templates");
       const searchTerm = req.query.q as string;
       const filteredTemplates = mockTemplates.filter(
         (template) =>
           template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          template.description?.toLowerCase().includes(searchTerm.toLowerCase()),
+          template.description
+            ?.toLowerCase()
+            .includes(searchTerm.toLowerCase()),
       );
       res.json(filteredTemplates);
     }
@@ -469,84 +470,118 @@ router.get("/stats", async (req: Request, res: Response) => {
 router.get("/step-categories", async (req: Request, res: Response) => {
   try {
     if (await isDatabaseAvailable()) {
-
-    const query = `
+      const query = `
       SELECT * FROM step_categories 
       ORDER BY name ASC
     `;
 
-    const result = await pool.query(query);
+      const result = await pool.query(query);
 
-    // If no step categories exist, create default ones
-    if (result.rows.length === 0) {
-      const defaultStepCategories = [
-        {
-          name: "Initial Setup",
-          description: "Initial setup steps",
-          color: "#3B82F6",
-        },
-        {
-          name: "Documentation",
-          description: "Documentation steps",
-          color: "#8B5CF6",
-        },
-        {
-          name: "Review & Approval",
-          description: "Review and approval steps",
-          color: "#F59E0B",
-        },
-        {
-          name: "Communication",
-          description: "Communication steps",
-          color: "#10B981",
-        },
-        {
-          name: "Technical",
-          description: "Technical implementation",
-          color: "#EF4444",
-        },
-        {
-          name: "Financial",
-          description: "Financial processes",
-          color: "#EC4899",
-        },
-        {
-          name: "Final Steps",
-          description: "Completion steps",
-          color: "#6B7280",
-        },
-      ];
+      // If no step categories exist, create default ones
+      if (result.rows.length === 0) {
+        const defaultStepCategories = [
+          {
+            name: "Initial Setup",
+            description: "Initial setup steps",
+            color: "#3B82F6",
+          },
+          {
+            name: "Documentation",
+            description: "Documentation steps",
+            color: "#8B5CF6",
+          },
+          {
+            name: "Review & Approval",
+            description: "Review and approval steps",
+            color: "#F59E0B",
+          },
+          {
+            name: "Communication",
+            description: "Communication steps",
+            color: "#10B981",
+          },
+          {
+            name: "Technical",
+            description: "Technical implementation",
+            color: "#EF4444",
+          },
+          {
+            name: "Financial",
+            description: "Financial processes",
+            color: "#EC4899",
+          },
+          {
+            name: "Final Steps",
+            description: "Completion steps",
+            color: "#6B7280",
+          },
+        ];
 
-      const insertQuery = `
+        const insertQuery = `
         INSERT INTO step_categories (name, description, color)
         VALUES ($1, $2, $3)
         RETURNING *
       `;
 
-      const insertedCategories = [];
-      for (const category of defaultStepCategories) {
-        const insertResult = await pool.query(insertQuery, [
-          category.name,
-          category.description,
-          category.color,
-        ]);
-        insertedCategories.push(insertResult.rows[0]);
-      }
+        const insertedCategories = [];
+        for (const category of defaultStepCategories) {
+          const insertResult = await pool.query(insertQuery, [
+            category.name,
+            category.description,
+            category.color,
+          ]);
+          insertedCategories.push(insertResult.rows[0]);
+        }
 
-      res.json(insertedCategories);
-    } else {
-      res.json(result.rows);
-    }
+        res.json(insertedCategories);
+      } else {
+        res.json(result.rows);
+      }
     } else {
       console.log("Database unavailable, using mock step categories");
       const mockStepCategories = [
-        { id: 1, name: "Initial Setup", description: "Initial setup steps", color: "#3B82F6" },
-        { id: 2, name: "Documentation", description: "Documentation steps", color: "#8B5CF6" },
-        { id: 3, name: "Review & Approval", description: "Review and approval steps", color: "#F59E0B" },
-        { id: 4, name: "Communication", description: "Communication steps", color: "#10B981" },
-        { id: 5, name: "Technical", description: "Technical implementation", color: "#EF4444" },
-        { id: 6, name: "Financial", description: "Financial processes", color: "#EC4899" },
-        { id: 7, name: "Final Steps", description: "Completion steps", color: "#6B7280" }
+        {
+          id: 1,
+          name: "Initial Setup",
+          description: "Initial setup steps",
+          color: "#3B82F6",
+        },
+        {
+          id: 2,
+          name: "Documentation",
+          description: "Documentation steps",
+          color: "#8B5CF6",
+        },
+        {
+          id: 3,
+          name: "Review & Approval",
+          description: "Review and approval steps",
+          color: "#F59E0B",
+        },
+        {
+          id: 4,
+          name: "Communication",
+          description: "Communication steps",
+          color: "#10B981",
+        },
+        {
+          id: 5,
+          name: "Technical",
+          description: "Technical implementation",
+          color: "#EF4444",
+        },
+        {
+          id: 6,
+          name: "Financial",
+          description: "Financial processes",
+          color: "#EC4899",
+        },
+        {
+          id: 7,
+          name: "Final Steps",
+          description: "Completion steps",
+          color: "#6B7280",
+        },
       ];
       res.json(mockStepCategories);
     }
@@ -554,13 +589,48 @@ router.get("/step-categories", async (req: Request, res: Response) => {
     console.error("Error fetching step categories:", error);
     // Fallback to mock data
     const mockStepCategories = [
-      { id: 1, name: "Initial Setup", description: "Initial setup steps", color: "#3B82F6" },
-      { id: 2, name: "Documentation", description: "Documentation steps", color: "#8B5CF6" },
-      { id: 3, name: "Review & Approval", description: "Review and approval steps", color: "#F59E0B" },
-      { id: 4, name: "Communication", description: "Communication steps", color: "#10B981" },
-      { id: 5, name: "Technical", description: "Technical implementation", color: "#EF4444" },
-      { id: 6, name: "Financial", description: "Financial processes", color: "#EC4899" },
-      { id: 7, name: "Final Steps", description: "Completion steps", color: "#6B7280" }
+      {
+        id: 1,
+        name: "Initial Setup",
+        description: "Initial setup steps",
+        color: "#3B82F6",
+      },
+      {
+        id: 2,
+        name: "Documentation",
+        description: "Documentation steps",
+        color: "#8B5CF6",
+      },
+      {
+        id: 3,
+        name: "Review & Approval",
+        description: "Review and approval steps",
+        color: "#F59E0B",
+      },
+      {
+        id: 4,
+        name: "Communication",
+        description: "Communication steps",
+        color: "#10B981",
+      },
+      {
+        id: 5,
+        name: "Technical",
+        description: "Technical implementation",
+        color: "#EF4444",
+      },
+      {
+        id: 6,
+        name: "Financial",
+        description: "Financial processes",
+        color: "#EC4899",
+      },
+      {
+        id: 7,
+        name: "Final Steps",
+        description: "Completion steps",
+        color: "#6B7280",
+      },
     ];
     res.json(mockStepCategories);
   }
@@ -570,13 +640,12 @@ router.get("/step-categories", async (req: Request, res: Response) => {
 router.get("/category/:categoryId", async (req: Request, res: Response) => {
   try {
     if (await isDatabaseAvailable()) {
+      const categoryId = parseInt(req.params.categoryId);
+      if (isNaN(categoryId)) {
+        return res.status(400).json({ error: "Invalid category ID" });
+      }
 
-    const categoryId = parseInt(req.params.categoryId);
-    if (isNaN(categoryId)) {
-      return res.status(400).json({ error: "Invalid category ID" });
-    }
-
-    const query = `
+      const query = `
       SELECT 
         t.*,
         tc.name as category_name,
@@ -591,41 +660,45 @@ router.get("/category/:categoryId", async (req: Request, res: Response) => {
       ORDER BY t.updated_at DESC
     `;
 
-    const result = await pool.query(query, [categoryId]);
+      const result = await pool.query(query, [categoryId]);
 
-    const templates = result.rows.map((row) => ({
-      id: row.id,
-      name: row.name,
-      description: row.description,
-      usage_count: row.usage_count || 0,
-      step_count: parseInt(row.step_count) || 0,
-      is_active: row.is_active,
-      created_at: row.created_at,
-      updated_at: row.updated_at,
-      creator_name: row.creator_name || "Unknown",
-      category_id: row.category_id,
-      category: row.category_name
-        ? {
-            id: row.category_id,
-            name: row.category_name,
-            color: row.category_color,
-            icon: row.category_icon,
-          }
-        : null,
-    }));
+      const templates = result.rows.map((row) => ({
+        id: row.id,
+        name: row.name,
+        description: row.description,
+        usage_count: row.usage_count || 0,
+        step_count: parseInt(row.step_count) || 0,
+        is_active: row.is_active,
+        created_at: row.created_at,
+        updated_at: row.updated_at,
+        creator_name: row.creator_name || "Unknown",
+        category_id: row.category_id,
+        category: row.category_name
+          ? {
+              id: row.category_id,
+              name: row.category_name,
+              color: row.category_color,
+              icon: row.category_icon,
+            }
+          : null,
+      }));
 
-    res.json(templates);
+      res.json(templates);
     } else {
       console.log("Database unavailable, filtering mock templates by category");
       const categoryId = parseInt(req.params.categoryId);
-      const filteredTemplates = mockTemplates.filter(t => t.category?.id === categoryId);
+      const filteredTemplates = mockTemplates.filter(
+        (t) => t.category?.id === categoryId,
+      );
       res.json(filteredTemplates);
     }
   } catch (error) {
     console.error("Error fetching templates by category:", error);
     // Fallback to mock data
     const categoryId = parseInt(req.params.categoryId);
-    const filteredTemplates = mockTemplates.filter(t => t.category?.id === categoryId);
+    const filteredTemplates = mockTemplates.filter(
+      (t) => t.category?.id === categoryId,
+    );
     res.json(filteredTemplates);
   }
 });
@@ -648,7 +721,7 @@ router.get("/:id", async (req: Request, res: Response) => {
       res.json(template);
     } else {
       console.log("Database unavailable, using mock template lookup");
-      const mockTemplate = mockTemplates.find(t => t.id === id);
+      const mockTemplate = mockTemplates.find((t) => t.id === id);
       if (!mockTemplate) {
         return res.status(404).json({ error: "Template not found" });
       }
@@ -657,7 +730,7 @@ router.get("/:id", async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error fetching template:", error);
     // Fallback to mock data
-    const mockTemplate = mockTemplates.find(t => t.id === id);
+    const mockTemplate = mockTemplates.find((t) => t.id === id);
     if (!mockTemplate) {
       return res.status(404).json({ error: "Template not found" });
     }
