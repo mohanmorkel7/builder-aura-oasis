@@ -745,11 +745,18 @@ export default function ClientBasedFinOpsTaskManager() {
   const getClientSummary = () => {
     const clientSummary: { [key: string]: any } = {};
 
-    filteredTasks.forEach((task: ClientBasedFinOpsTask) => {
-      // Only show clients that have actual client names, skip "Unknown Client"
-      if (!task.client_name || task.client_name === "Unknown Client") return;
+    console.log("Filtered tasks for client summary:", filteredTasks);
 
-      const clientName = task.client_name;
+    filteredTasks.forEach((task: ClientBasedFinOpsTask) => {
+      console.log("Processing task:", task.task_name, "Client:", task.client_name, "Client ID:", task.client_id);
+
+      // Show all clients, including unknown ones for debugging
+      const clientName = task.client_name ||
+                        clients.find((c: any) => c.id.toString() === task.client_id?.toString())?.company_name ||
+                        clients.find((c: any) => c.id.toString() === task.client_id?.toString())?.client_name ||
+                        `Client ${task.client_id}` ||
+                        "Unknown Client";
+
       if (!clientSummary[clientName]) {
         clientSummary[clientName] = {
           total_tasks: 0,
@@ -770,6 +777,7 @@ export default function ClientBasedFinOpsTaskManager() {
       });
     });
 
+    console.log("Client summary result:", clientSummary);
     return clientSummary;
   };
 
