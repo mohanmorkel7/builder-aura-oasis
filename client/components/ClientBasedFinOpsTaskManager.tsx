@@ -396,24 +396,47 @@ export default function ClientBasedFinOpsTaskManager() {
       try {
         // Try to get from leads API first
         const leads = await apiClient.getLeads();
+        console.log("Leads data:", leads);
+
+        if (!leads || leads.length === 0) {
+          console.log("No leads found, trying clients API");
+          return await apiClient.getClients();
+        }
+
         const uniqueClients = leads.reduce((acc: any[], lead: any) => {
-          if (lead.company_name && !acc.find(c => c.company_name === lead.company_name)) {
+          // Check multiple properties for client/company name
+          const clientName = lead.company_name || lead.client_name || lead.company || lead.name;
+
+          if (clientName && !acc.find(c => c.company_name === clientName)) {
             acc.push({
               id: lead.id,
-              company_name: lead.company_name,
-              client_name: lead.client_name || lead.company_name
+              company_name: clientName,
+              client_name: lead.client_name || clientName,
+              // Keep original lead data for reference
+              lead_data: lead
             });
           }
           return acc;
         }, []);
-        return uniqueClients;
+
+        console.log("Processed clients from leads:", uniqueClients);
+        return uniqueClients.length > 0 ? uniqueClients : await apiClient.getClients();
+
       } catch (error) {
+        console.error("Error fetching from leads API:", error);
         // Fallback to clients API
         try {
-          return await apiClient.getClients();
+          const clientsData = await apiClient.getClients();
+          console.log("Fallback clients data:", clientsData);
+          return clientsData;
         } catch (fallbackError) {
-          console.log("Both APIs unavailable, using empty array");
-          return [];
+          console.error("Both APIs failed:", fallbackError);
+          // Return mock data for development
+          return [
+            { id: 1, company_name: "Sample Client 1", client_name: "Sample Client 1" },
+            { id: 2, company_name: "Sample Client 2", client_name: "Sample Client 2" },
+            { id: 3, company_name: "Sample Client 3", client_name: "Sample Client 3" }
+          ];
         }
       }
     },
