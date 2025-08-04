@@ -20,7 +20,8 @@ const mockNotifications = [
     id: "1",
     type: "overdue",
     title: "Overdue: Client Onboarding - Step 1",
-    description: "Initial Contact for 'Acme Corp' is 2 days overdue. Action required.",
+    description:
+      "Initial Contact for 'Acme Corp' is 2 days overdue. Action required.",
     user_id: 1,
     client_id: 1,
     client_name: "Acme Corp",
@@ -29,13 +30,14 @@ const mockNotifications = [
     priority: "high",
     read: false,
     created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
-    action_url: "/leads/1"
+    action_url: "/leads/1",
   },
   {
     id: "2",
-    type: "followup", 
+    type: "followup",
     title: "New Follow-up: Project Alpha",
-    description: "A new follow-up note has been added to 'Project Alpha' by Jane Smith.",
+    description:
+      "A new follow-up note has been added to 'Project Alpha' by Jane Smith.",
     user_id: 1,
     client_id: 2,
     client_name: "Beta Corp",
@@ -44,13 +46,14 @@ const mockNotifications = [
     priority: "medium",
     read: false,
     created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
-    action_url: "/leads/2"
+    action_url: "/leads/2",
   },
   {
     id: "3",
     type: "completed",
     title: "Onboarding Complete: Global Solutions",
-    description: "Client 'Global Solutions' has successfully completed their onboarding process.",
+    description:
+      "Client 'Global Solutions' has successfully completed their onboarding process.",
     user_id: 1,
     client_id: 3,
     client_name: "Global Solutions",
@@ -59,8 +62,8 @@ const mockNotifications = [
     priority: "low",
     read: true,
     created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days ago
-    action_url: "/clients/3"
-  }
+    action_url: "/clients/3",
+  },
 ];
 
 // ===== NOTIFICATIONS ROUTES =====
@@ -68,13 +71,7 @@ const mockNotifications = [
 // Get notifications with filtering
 router.get("/", async (req: Request, res: Response) => {
   try {
-    const {
-      user_id,
-      type,
-      read,
-      limit = 50,
-      offset = 0
-    } = req.query;
+    const { user_id, type, read, limit = 50, offset = 0 } = req.query;
 
     if (await isDatabaseAvailable()) {
       let whereConditions = [];
@@ -94,10 +91,13 @@ router.get("/", async (req: Request, res: Response) => {
 
       if (read !== undefined) {
         whereConditions.push(`n.read = $${paramIndex++}`);
-        params.push(read === 'true');
+        params.push(read === "true");
       }
 
-      const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
+      const whereClause =
+        whereConditions.length > 0
+          ? `WHERE ${whereConditions.join(" AND ")}`
+          : "";
 
       const query = `
         SELECT 
@@ -130,7 +130,7 @@ router.get("/", async (req: Request, res: Response) => {
       const unreadQuery = `
         SELECT COUNT(*) as unread_count
         FROM notifications
-        WHERE read = false ${user_id ? 'AND user_id = $1' : ''}
+        WHERE read = false ${user_id ? "AND user_id = $1" : ""}
       `;
 
       const unreadParams = user_id ? [parseInt(user_id as string)] : [];
@@ -143,34 +143,44 @@ router.get("/", async (req: Request, res: Response) => {
           total,
           limit: parseInt(limit as string),
           offset: parseInt(offset as string),
-          has_more: parseInt(offset as string) + parseInt(limit as string) < total
+          has_more:
+            parseInt(offset as string) + parseInt(limit as string) < total,
         },
-        unread_count: unreadCount
+        unread_count: unreadCount,
       });
     } else {
       console.log("Database unavailable, using mock notifications");
-      
+
       // Filter mock notifications
       let filteredNotifications = mockNotifications;
-      
+
       if (user_id) {
-        filteredNotifications = filteredNotifications.filter(n => n.user_id === parseInt(user_id as string));
+        filteredNotifications = filteredNotifications.filter(
+          (n) => n.user_id === parseInt(user_id as string),
+        );
       }
-      
+
       if (type) {
-        filteredNotifications = filteredNotifications.filter(n => n.type === type);
+        filteredNotifications = filteredNotifications.filter(
+          (n) => n.type === type,
+        );
       }
-      
+
       if (read !== undefined) {
-        filteredNotifications = filteredNotifications.filter(n => n.read === (read === 'true'));
+        filteredNotifications = filteredNotifications.filter(
+          (n) => n.read === (read === "true"),
+        );
       }
 
       const total = filteredNotifications.length;
-      const unreadCount = filteredNotifications.filter(n => !n.read).length;
+      const unreadCount = filteredNotifications.filter((n) => !n.read).length;
       const limitNum = parseInt(limit as string);
       const offsetNum = parseInt(offset as string);
-      
-      const paginatedNotifications = filteredNotifications.slice(offsetNum, offsetNum + limitNum);
+
+      const paginatedNotifications = filteredNotifications.slice(
+        offsetNum,
+        offsetNum + limitNum,
+      );
 
       res.json({
         notifications: paginatedNotifications,
@@ -178,9 +188,9 @@ router.get("/", async (req: Request, res: Response) => {
           total,
           limit: limitNum,
           offset: offsetNum,
-          has_more: offsetNum + limitNum < total
+          has_more: offsetNum + limitNum < total,
         },
-        unread_count: unreadCount
+        unread_count: unreadCount,
       });
     }
   } catch (error) {
@@ -192,9 +202,9 @@ router.get("/", async (req: Request, res: Response) => {
         total: mockNotifications.length,
         limit: parseInt(req.query.limit as string) || 50,
         offset: parseInt(req.query.offset as string) || 0,
-        has_more: false
+        has_more: false,
       },
-      unread_count: mockNotifications.filter(n => !n.read).length
+      unread_count: mockNotifications.filter((n) => !n.read).length,
     });
   }
 });
@@ -212,14 +222,14 @@ router.post("/", async (req: Request, res: Response) => {
         entity_type,
         entity_id,
         action_url,
-        priority = 'medium'
+        priority = "medium",
       } = req.body;
 
       // Validate required fields
       if (!type || !title || !user_id) {
         return res.status(400).json({
           error: "Missing required fields",
-          required: ["type", "title", "user_id"]
+          required: ["type", "title", "user_id"],
         });
       }
 
@@ -240,7 +250,7 @@ router.post("/", async (req: Request, res: Response) => {
         entity_type || null,
         entity_id || null,
         action_url || null,
-        priority
+        priority,
       ]);
 
       res.status(201).json(result.rows[0]);
@@ -259,7 +269,7 @@ router.post("/", async (req: Request, res: Response) => {
         action_url: req.body.action_url || null,
         priority: req.body.priority || "medium",
         read: false,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
       };
       res.status(201).json(mockCreated);
     }
@@ -298,7 +308,7 @@ router.put("/:id/read", async (req: Request, res: Response) => {
       res.json({
         id: req.params.id,
         read: true,
-        read_at: new Date().toISOString()
+        read_at: new Date().toISOString(),
       });
     }
   } catch (error) {
@@ -331,13 +341,13 @@ router.put("/read-all", async (req: Request, res: Response) => {
 
       res.json({
         message: "All notifications marked as read",
-        updated_count: result.rows.length
+        updated_count: result.rows.length,
       });
     } else {
       console.log("Database unavailable, returning mock read-all update");
       res.json({
         message: "All notifications marked as read",
-        updated_count: mockNotifications.filter(n => !n.read).length
+        updated_count: mockNotifications.filter((n) => !n.read).length,
       });
     }
   } catch (error) {
@@ -371,7 +381,7 @@ router.delete("/:id", async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error deleting notification:", error);
     res.status(500).json({
-      error: "Failed to delete notification", 
+      error: "Failed to delete notification",
       message: error.message,
     });
   }
@@ -409,9 +419,24 @@ router.get("/types/summary", async (req: Request, res: Response) => {
       console.log("Database unavailable, using mock notification types");
       // Mock summary from mock data
       const summary = [
-        { type: "overdue", total_count: 1, unread_count: 1, high_priority_count: 1 },
-        { type: "followup", total_count: 1, unread_count: 1, high_priority_count: 0 },
-        { type: "completed", total_count: 1, unread_count: 0, high_priority_count: 0 }
+        {
+          type: "overdue",
+          total_count: 1,
+          unread_count: 1,
+          high_priority_count: 1,
+        },
+        {
+          type: "followup",
+          total_count: 1,
+          unread_count: 1,
+          high_priority_count: 0,
+        },
+        {
+          type: "completed",
+          total_count: 1,
+          unread_count: 0,
+          high_priority_count: 0,
+        },
       ];
       res.json(summary);
     }

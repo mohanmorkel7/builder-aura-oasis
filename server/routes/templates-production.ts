@@ -31,7 +31,7 @@ const mockCategories = [
     sort_order: 1,
     is_active: true,
     created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    updated_at: new Date().toISOString(),
   },
   {
     id: 2,
@@ -42,7 +42,7 @@ const mockCategories = [
     sort_order: 2,
     is_active: true,
     created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    updated_at: new Date().toISOString(),
   },
   {
     id: 3,
@@ -53,7 +53,7 @@ const mockCategories = [
     sort_order: 3,
     is_active: true,
     created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    updated_at: new Date().toISOString(),
   },
   {
     id: 4,
@@ -64,7 +64,7 @@ const mockCategories = [
     sort_order: 4,
     is_active: true,
     created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    updated_at: new Date().toISOString(),
   },
   {
     id: 5,
@@ -75,8 +75,8 @@ const mockCategories = [
     sort_order: 5,
     is_active: true,
     created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  }
+    updated_at: new Date().toISOString(),
+  },
 ];
 
 const mockTemplates = [
@@ -95,8 +95,8 @@ const mockTemplates = [
       id: 2,
       name: "Leads",
       color: "#10B981",
-      icon: "Target"
-    }
+      icon: "Target",
+    },
   },
   {
     id: 2,
@@ -113,8 +113,8 @@ const mockTemplates = [
       id: 2,
       name: "Leads",
       color: "#10B981",
-      icon: "Target"
-    }
+      icon: "Target",
+    },
   },
   {
     id: 3,
@@ -131,9 +131,9 @@ const mockTemplates = [
       id: 1,
       name: "Product",
       color: "#3B82F6",
-      icon: "Package"
-    }
-  }
+      icon: "Package",
+    },
+  },
 ];
 
 // ===== TEMPLATE ROUTES =====
@@ -181,11 +181,41 @@ router.get("/categories", async (req: Request, res: Response) => {
       // If no categories exist in database, create default ones
       if (result.rows.length === 0) {
         const defaultCategories = [
-          { name: "Product", description: "Product development templates", color: "#3B82F6", icon: "Package", sort_order: 1 },
-          { name: "Leads", description: "Lead management templates", color: "#10B981", icon: "Target", sort_order: 2 },
-          { name: "FinOps", description: "Financial operations templates", color: "#F59E0B", icon: "DollarSign", sort_order: 3 },
-          { name: "Onboarding", description: "Onboarding templates", color: "#8B5CF6", icon: "UserPlus", sort_order: 4 },
-          { name: "Support", description: "Customer support templates", color: "#EF4444", icon: "Headphones", sort_order: 5 },
+          {
+            name: "Product",
+            description: "Product development templates",
+            color: "#3B82F6",
+            icon: "Package",
+            sort_order: 1,
+          },
+          {
+            name: "Leads",
+            description: "Lead management templates",
+            color: "#10B981",
+            icon: "Target",
+            sort_order: 2,
+          },
+          {
+            name: "FinOps",
+            description: "Financial operations templates",
+            color: "#F59E0B",
+            icon: "DollarSign",
+            sort_order: 3,
+          },
+          {
+            name: "Onboarding",
+            description: "Onboarding templates",
+            color: "#8B5CF6",
+            icon: "UserPlus",
+            sort_order: 4,
+          },
+          {
+            name: "Support",
+            description: "Customer support templates",
+            color: "#EF4444",
+            icon: "Headphones",
+            sort_order: 5,
+          },
         ];
 
         const insertQuery = `
@@ -201,7 +231,7 @@ router.get("/categories", async (req: Request, res: Response) => {
             category.description,
             category.color,
             category.icon,
-            category.sort_order
+            category.sort_order,
           ]);
           insertedCategories.push(insertResult.rows[0]);
         }
@@ -242,7 +272,7 @@ router.get("/with-categories", async (req: Request, res: Response) => {
 
       const result = await pool.query(query);
 
-      const templatesWithCategories = result.rows.map(row => ({
+      const templatesWithCategories = result.rows.map((row) => ({
         id: row.id,
         name: row.name,
         description: row.description,
@@ -253,12 +283,14 @@ router.get("/with-categories", async (req: Request, res: Response) => {
         updated_at: row.updated_at,
         creator_name: row.creator_name || "Unknown",
         category_id: row.category_id,
-        category: row.category_name ? {
-          id: row.category_id,
-          name: row.category_name,
-          color: row.category_color,
-          icon: row.category_icon
-        } : null
+        category: row.category_name
+          ? {
+              id: row.category_id,
+              name: row.category_name,
+              color: row.category_color,
+              icon: row.category_icon,
+            }
+          : null,
       }));
 
       res.json(templatesWithCategories);
@@ -277,9 +309,11 @@ router.get("/with-categories", async (req: Request, res: Response) => {
 router.get("/search", async (req: Request, res: Response) => {
   try {
     await requireDatabase();
-    
+
     const searchTerm = req.query.q as string;
-    const categoryId = req.query.category ? parseInt(req.query.category as string) : undefined;
+    const categoryId = req.query.category
+      ? parseInt(req.query.category as string)
+      : undefined;
 
     if (!searchTerm) {
       return res.status(400).json({ error: "Search term is required" });
@@ -299,19 +333,19 @@ router.get("/search", async (req: Request, res: Response) => {
       WHERE t.is_active = true 
         AND (t.name ILIKE $1 OR t.description ILIKE $1)
     `;
-    
+
     const params = [`%${searchTerm}%`];
-    
+
     if (categoryId) {
       query += ` AND t.category_id = $2`;
       params.push(categoryId.toString());
     }
-    
+
     query += ` ORDER BY t.updated_at DESC`;
-    
+
     const result = await pool.query(query, params);
-    
-    const templates = result.rows.map(row => ({
+
+    const templates = result.rows.map((row) => ({
       id: row.id,
       name: row.name,
       description: row.description,
@@ -322,14 +356,16 @@ router.get("/search", async (req: Request, res: Response) => {
       updated_at: row.updated_at,
       creator_name: row.creator_name || "Unknown",
       category_id: row.category_id,
-      category: row.category_name ? {
-        id: row.category_id,
-        name: row.category_name,
-        color: row.category_color,
-        icon: row.category_icon
-      } : null
+      category: row.category_name
+        ? {
+            id: row.category_id,
+            name: row.category_name,
+            color: row.category_color,
+            icon: row.category_icon,
+          }
+        : null,
     }));
-    
+
     res.json(templates);
   } catch (error) {
     console.error("Error searching templates:", error);
@@ -378,10 +414,13 @@ router.get("/stats", async (req: Request, res: Response) => {
       console.log("Database unavailable, using mock stats");
       // Calculate stats from mock data
       const totalTemplates = mockTemplates.length;
-      const activeTemplates = mockTemplates.filter(t => t.is_active).length;
-      const totalUsage = mockTemplates.reduce((sum, t) => sum + t.usage_count, 0);
+      const activeTemplates = mockTemplates.filter((t) => t.is_active).length;
+      const totalUsage = mockTemplates.reduce(
+        (sum, t) => sum + t.usage_count,
+        0,
+      );
       const mostUsed = mockTemplates.reduce((prev, current) =>
-        (prev.usage_count > current.usage_count) ? prev : current
+        prev.usage_count > current.usage_count ? prev : current,
       );
 
       res.json({
@@ -396,10 +435,10 @@ router.get("/stats", async (req: Request, res: Response) => {
     console.error("Error fetching template stats:", error);
     // Fallback to mock stats
     const totalTemplates = mockTemplates.length;
-    const activeTemplates = mockTemplates.filter(t => t.is_active).length;
+    const activeTemplates = mockTemplates.filter((t) => t.is_active).length;
     const totalUsage = mockTemplates.reduce((sum, t) => sum + t.usage_count, 0);
     const mostUsed = mockTemplates.reduce((prev, current) =>
-      (prev.usage_count > current.usage_count) ? prev : current
+      prev.usage_count > current.usage_count ? prev : current,
     );
 
     res.json({
@@ -416,24 +455,52 @@ router.get("/stats", async (req: Request, res: Response) => {
 router.get("/step-categories", async (req: Request, res: Response) => {
   try {
     await requireDatabase();
-    
+
     const query = `
       SELECT * FROM step_categories 
       ORDER BY name ASC
     `;
-    
+
     const result = await pool.query(query);
-    
+
     // If no step categories exist, create default ones
     if (result.rows.length === 0) {
       const defaultStepCategories = [
-        { name: "Initial Setup", description: "Initial setup steps", color: "#3B82F6" },
-        { name: "Documentation", description: "Documentation steps", color: "#8B5CF6" },
-        { name: "Review & Approval", description: "Review and approval steps", color: "#F59E0B" },
-        { name: "Communication", description: "Communication steps", color: "#10B981" },
-        { name: "Technical", description: "Technical implementation", color: "#EF4444" },
-        { name: "Financial", description: "Financial processes", color: "#EC4899" },
-        { name: "Final Steps", description: "Completion steps", color: "#6B7280" },
+        {
+          name: "Initial Setup",
+          description: "Initial setup steps",
+          color: "#3B82F6",
+        },
+        {
+          name: "Documentation",
+          description: "Documentation steps",
+          color: "#8B5CF6",
+        },
+        {
+          name: "Review & Approval",
+          description: "Review and approval steps",
+          color: "#F59E0B",
+        },
+        {
+          name: "Communication",
+          description: "Communication steps",
+          color: "#10B981",
+        },
+        {
+          name: "Technical",
+          description: "Technical implementation",
+          color: "#EF4444",
+        },
+        {
+          name: "Financial",
+          description: "Financial processes",
+          color: "#EC4899",
+        },
+        {
+          name: "Final Steps",
+          description: "Completion steps",
+          color: "#6B7280",
+        },
       ];
 
       const insertQuery = `
@@ -447,11 +514,11 @@ router.get("/step-categories", async (req: Request, res: Response) => {
         const insertResult = await pool.query(insertQuery, [
           category.name,
           category.description,
-          category.color
+          category.color,
         ]);
         insertedCategories.push(insertResult.rows[0]);
       }
-      
+
       res.json(insertedCategories);
     } else {
       res.json(result.rows);
@@ -469,7 +536,7 @@ router.get("/step-categories", async (req: Request, res: Response) => {
 router.get("/category/:categoryId", async (req: Request, res: Response) => {
   try {
     await requireDatabase();
-    
+
     const categoryId = parseInt(req.params.categoryId);
     if (isNaN(categoryId)) {
       return res.status(400).json({ error: "Invalid category ID" });
@@ -489,10 +556,10 @@ router.get("/category/:categoryId", async (req: Request, res: Response) => {
       WHERE t.category_id = $1 AND t.is_active = true
       ORDER BY t.updated_at DESC
     `;
-    
+
     const result = await pool.query(query, [categoryId]);
-    
-    const templates = result.rows.map(row => ({
+
+    const templates = result.rows.map((row) => ({
       id: row.id,
       name: row.name,
       description: row.description,
@@ -503,14 +570,16 @@ router.get("/category/:categoryId", async (req: Request, res: Response) => {
       updated_at: row.updated_at,
       creator_name: row.creator_name || "Unknown",
       category_id: row.category_id,
-      category: row.category_name ? {
-        id: row.category_id,
-        name: row.category_name,
-        color: row.category_color,
-        icon: row.category_icon
-      } : null
+      category: row.category_name
+        ? {
+            id: row.category_id,
+            name: row.category_name,
+            color: row.category_color,
+            icon: row.category_icon,
+          }
+        : null,
     }));
-    
+
     res.json(templates);
   } catch (error) {
     console.error("Error fetching templates by category:", error);
@@ -525,7 +594,7 @@ router.get("/category/:categoryId", async (req: Request, res: Response) => {
 router.get("/:id", async (req: Request, res: Response) => {
   try {
     await requireDatabase();
-    
+
     const id = parseInt(req.params.id);
     if (isNaN(id)) {
       return res.status(400).json({ error: "Invalid template ID" });
@@ -551,33 +620,39 @@ router.get("/:id", async (req: Request, res: Response) => {
 router.post("/", async (req: Request, res: Response) => {
   try {
     await requireDatabase();
-    
+
     const templateData: CreateTemplateData = req.body;
-    console.log("Creating template with data:", JSON.stringify(templateData, null, 2));
+    console.log(
+      "Creating template with data:",
+      JSON.stringify(templateData, null, 2),
+    );
 
     // Validate required fields
     if (!templateData.name || !templateData.created_by) {
       return res.status(400).json({
-        error: "Template name and created_by are required"
+        error: "Template name and created_by are required",
       });
     }
 
     // Validate type if provided
-    if (templateData.type && !["standard", "enterprise", "smb"].includes(templateData.type)) {
+    if (
+      templateData.type &&
+      !["standard", "enterprise", "smb"].includes(templateData.type)
+    ) {
       return res.status(400).json({ error: "Invalid template type" });
     }
 
     // Validate steps
     if (!templateData.steps || templateData.steps.length === 0) {
       return res.status(400).json({
-        error: "Template must have at least one step"
+        error: "Template must have at least one step",
       });
     }
 
     for (const step of templateData.steps) {
       if (!step.name || step.default_eta_days < 1) {
         return res.status(400).json({
-          error: "Each step must have a name and valid ETA days"
+          error: "Each step must have a name and valid ETA days",
         });
       }
     }
@@ -598,7 +673,7 @@ router.post("/", async (req: Request, res: Response) => {
 router.put("/:id", async (req: Request, res: Response) => {
   try {
     await requireDatabase();
-    
+
     const id = parseInt(req.params.id);
     if (isNaN(id)) {
       return res.status(400).json({ error: "Invalid template ID" });
@@ -607,7 +682,10 @@ router.put("/:id", async (req: Request, res: Response) => {
     const templateData: UpdateTemplateData = req.body;
 
     // Validate type if provided
-    if (templateData.type && !["standard", "enterprise", "smb"].includes(templateData.type)) {
+    if (
+      templateData.type &&
+      !["standard", "enterprise", "smb"].includes(templateData.type)
+    ) {
       return res.status(400).json({ error: "Invalid template type" });
     }
 
@@ -615,14 +693,14 @@ router.put("/:id", async (req: Request, res: Response) => {
     if (templateData.steps) {
       if (templateData.steps.length === 0) {
         return res.status(400).json({
-          error: "Template must have at least one step"
+          error: "Template must have at least one step",
         });
       }
 
       for (const step of templateData.steps) {
         if (!step.name || step.default_eta_days < 1) {
           return res.status(400).json({
-            error: "Each step must have a name and valid ETA days"
+            error: "Each step must have a name and valid ETA days",
           });
         }
       }
@@ -647,7 +725,7 @@ router.put("/:id", async (req: Request, res: Response) => {
 router.delete("/:id", async (req: Request, res: Response) => {
   try {
     await requireDatabase();
-    
+
     const id = parseInt(req.params.id);
     if (isNaN(id)) {
       return res.status(400).json({ error: "Invalid template ID" });
@@ -657,7 +735,7 @@ router.delete("/:id", async (req: Request, res: Response) => {
     if (!success) {
       return res.status(404).json({ error: "Template not found" });
     }
-    
+
     res.status(204).send();
   } catch (error) {
     console.error("Error deleting template:", error);
@@ -672,7 +750,7 @@ router.delete("/:id", async (req: Request, res: Response) => {
 router.post("/:id/duplicate", async (req: Request, res: Response) => {
   try {
     await requireDatabase();
-    
+
     const id = parseInt(req.params.id);
     if (isNaN(id)) {
       return res.status(400).json({ error: "Invalid template ID" });
@@ -680,11 +758,14 @@ router.post("/:id/duplicate", async (req: Request, res: Response) => {
 
     const created_by = parseInt(req.body.created_by || req.body.userId || "1");
 
-    const duplicatedTemplate = await TemplateRepository.duplicate(id, created_by);
+    const duplicatedTemplate = await TemplateRepository.duplicate(
+      id,
+      created_by,
+    );
     if (!duplicatedTemplate) {
       return res.status(404).json({ error: "Template not found" });
     }
-    
+
     res.status(201).json(duplicatedTemplate);
   } catch (error) {
     console.error("Error duplicating template:", error);

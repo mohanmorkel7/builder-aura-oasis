@@ -20,11 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from "@/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Activity,
   Download,
@@ -41,12 +37,25 @@ import {
   RefreshCw,
   Search,
 } from "lucide-react";
-import { format, parseISO, isAfter, isBefore, startOfDay, endOfDay } from "date-fns";
+import {
+  format,
+  parseISO,
+  isAfter,
+  isBefore,
+  startOfDay,
+  endOfDay,
+} from "date-fns";
 
 interface ActivityLogEntry {
   id: string;
   timestamp: string;
-  action: "task_created" | "task_updated" | "subtask_status_changed" | "task_assigned" | "sla_alert" | "delay_reported";
+  action:
+    | "task_created"
+    | "task_updated"
+    | "subtask_status_changed"
+    | "task_assigned"
+    | "sla_alert"
+    | "delay_reported";
   entity_type: "task" | "subtask";
   entity_id: string;
   entity_name: string;
@@ -65,7 +74,7 @@ export default function FinOpsActivityLog() {
     entity_type: "all",
     action: "all",
     days: 7,
-    search: ""
+    search: "",
   });
 
   // Fetch activity logs
@@ -73,10 +82,14 @@ export default function FinOpsActivityLog() {
     queryKey: ["activity-logs", filters],
     queryFn: () => {
       const params = new URLSearchParams();
-      if (filters.entity_type !== "all") params.append("entity_type", filters.entity_type);
+      if (filters.entity_type !== "all")
+        params.append("entity_type", filters.entity_type);
       if (filters.action !== "all") params.append("action", filters.action);
       params.append("limit", "50");
-      params.append("start_date", new Date(Date.now() - filters.days * 24 * 60 * 60 * 1000).toISOString());
+      params.append(
+        "start_date",
+        new Date(Date.now() - filters.days * 24 * 60 * 60 * 1000).toISOString(),
+      );
       return apiClient.request(`/activity?${params.toString()}`);
     },
     refetchInterval: 30000, // Refresh every 30 seconds
@@ -151,7 +164,15 @@ export default function FinOpsActivityLog() {
 
   const exportActivityLog = () => {
     const csvContent = [
-      ["Timestamp", "Action", "Entity Type", "Entity Name", "User", "Client", "Details"],
+      [
+        "Timestamp",
+        "Action",
+        "Entity Type",
+        "Entity Name",
+        "User",
+        "Client",
+        "Details",
+      ],
       ...filteredLogs.map((log: ActivityLogEntry) => [
         format(new Date(log.timestamp), "yyyy-MM-dd HH:mm:ss"),
         log.action,
@@ -159,9 +180,11 @@ export default function FinOpsActivityLog() {
         log.entity_name,
         log.user_name,
         log.client_name || "",
-        log.details
-      ])
-    ].map(row => row.map(cell => `"${cell}"`).join(",")).join("\n");
+        log.details,
+      ]),
+    ]
+      .map((row) => row.map((cell) => `"${cell}"`).join(","))
+      .join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
@@ -177,12 +200,18 @@ export default function FinOpsActivityLog() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">FinOps Activity Log</h2>
+          <h2 className="text-2xl font-bold text-gray-900">
+            FinOps Activity Log
+          </h2>
           <p className="text-gray-600 mt-1">
             Track all FinOps task activities and status changes
           </p>
         </div>
-        <Button onClick={exportActivityLog} variant="outline" disabled={filteredLogs.length === 0}>
+        <Button
+          onClick={exportActivityLog}
+          variant="outline"
+          disabled={filteredLogs.length === 0}
+        >
           <Download className="w-4 h-4 mr-2" />
           Export CSV
         </Button>
@@ -203,7 +232,9 @@ export default function FinOpsActivityLog() {
               <Label htmlFor="entity_type">Entity Type</Label>
               <Select
                 value={filters.entity_type}
-                onValueChange={(value) => setFilters(prev => ({ ...prev, entity_type: value }))}
+                onValueChange={(value) =>
+                  setFilters((prev) => ({ ...prev, entity_type: value }))
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="All Types" />
@@ -221,7 +252,9 @@ export default function FinOpsActivityLog() {
               <Label htmlFor="action">Action</Label>
               <Select
                 value={filters.action}
-                onValueChange={(value) => setFilters(prev => ({ ...prev, action: value }))}
+                onValueChange={(value) =>
+                  setFilters((prev) => ({ ...prev, action: value }))
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="All Actions" />
@@ -230,7 +263,9 @@ export default function FinOpsActivityLog() {
                   <SelectItem value="all">All Actions</SelectItem>
                   <SelectItem value="task_created">Task Created</SelectItem>
                   <SelectItem value="task_updated">Task Updated</SelectItem>
-                  <SelectItem value="subtask_status_changed">Status Changed</SelectItem>
+                  <SelectItem value="subtask_status_changed">
+                    Status Changed
+                  </SelectItem>
                   <SelectItem value="task_assigned">Task Assigned</SelectItem>
                   <SelectItem value="sla_alert">SLA Alert</SelectItem>
                   <SelectItem value="delay_reported">Delay Reported</SelectItem>
@@ -243,7 +278,9 @@ export default function FinOpsActivityLog() {
               <Label htmlFor="days">Time Range</Label>
               <Select
                 value={filters.days.toString()}
-                onValueChange={(value) => setFilters(prev => ({ ...prev, days: parseInt(value) }))}
+                onValueChange={(value) =>
+                  setFilters((prev) => ({ ...prev, days: parseInt(value) }))
+                }
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -266,7 +303,9 @@ export default function FinOpsActivityLog() {
                   id="search"
                   placeholder="Search activities..."
                   value={filters.search}
-                  onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+                  onChange={(e) =>
+                    setFilters((prev) => ({ ...prev, search: e.target.value }))
+                  }
                   className="pl-9"
                 />
               </div>
@@ -283,21 +322,23 @@ export default function FinOpsActivityLog() {
               <Activity className="w-5 h-5" />
               Recent Activity
             </CardTitle>
-            <Badge variant="secondary">
-              {filteredLogs.length} activities
-            </Badge>
+            <Badge variant="secondary">{filteredLogs.length} activities</Badge>
           </div>
         </CardHeader>
         <CardContent>
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
               <RefreshCw className="w-8 h-8 animate-spin text-gray-400" />
-              <span className="ml-2 text-gray-600">Loading activity log...</span>
+              <span className="ml-2 text-gray-600">
+                Loading activity log...
+              </span>
             </div>
           ) : filteredLogs.length === 0 ? (
             <div className="text-center py-8">
               <Activity className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No Activity Found</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                No Activity Found
+              </h3>
               <p className="text-gray-600">
                 No activities match your current filters.
               </p>
@@ -330,16 +371,18 @@ export default function FinOpsActivityLog() {
                               {log.entity_type}
                             </Badge>
                             {log.status && (
-                              <Badge className={`text-xs ${getStatusColor(log.status)}`}>
+                              <Badge
+                                className={`text-xs ${getStatusColor(log.status)}`}
+                              >
                                 {log.status}
                               </Badge>
                             )}
                           </div>
-                          
+
                           <p className="text-sm text-gray-600 mb-2">
                             {log.details}
                           </p>
-                          
+
                           <div className="flex items-center gap-4 text-xs text-gray-500">
                             <div className="flex items-center gap-1">
                               <User className="w-3 h-3" />
@@ -353,16 +396,28 @@ export default function FinOpsActivityLog() {
                             )}
                             <div className="flex items-center gap-1">
                               <Calendar className="w-3 h-3" />
-                              <span>{format(new Date(log.timestamp), "MMM d, h:mm a")}</span>
+                              <span>
+                                {format(
+                                  new Date(log.timestamp),
+                                  "MMM d, h:mm a",
+                                )}
+                              </span>
                             </div>
                           </div>
 
                           {/* Show status transition */}
                           {log.previous_status && log.status && (
                             <div className="mt-2 text-xs text-gray-500">
-                              Status: <span className={`px-1 rounded ${getStatusColor(log.previous_status)}`}>
+                              Status:{" "}
+                              <span
+                                className={`px-1 rounded ${getStatusColor(log.previous_status)}`}
+                              >
                                 {log.previous_status}
-                              </span> → <span className={`px-1 rounded ${getStatusColor(log.status)}`}>
+                              </span>{" "}
+                              →{" "}
+                              <span
+                                className={`px-1 rounded ${getStatusColor(log.status)}`}
+                              >
                                 {log.status}
                               </span>
                             </div>
@@ -371,7 +426,10 @@ export default function FinOpsActivityLog() {
                           {/* Show delay reason */}
                           {log.delay_reason && (
                             <div className="mt-2">
-                              <Badge variant="outline" className="text-xs text-yellow-700 bg-yellow-50">
+                              <Badge
+                                variant="outline"
+                                className="text-xs text-yellow-700 bg-yellow-50"
+                              >
                                 Delay: {log.delay_reason}
                               </Badge>
                             </div>

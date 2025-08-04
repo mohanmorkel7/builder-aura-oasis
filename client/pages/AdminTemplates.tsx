@@ -99,12 +99,16 @@ export default function AdminTemplates() {
     queryKey: ["templates-admin", selectedCategory, searchTerm],
     queryFn: () => {
       if (searchTerm) {
-        return apiClient.request(`/templates-production/search?q=${encodeURIComponent(searchTerm)}${selectedCategory !== "all" ? `&category=${selectedCategory}` : ""}`);
+        return apiClient.request(
+          `/templates-production/search?q=${encodeURIComponent(searchTerm)}${selectedCategory !== "all" ? `&category=${selectedCategory}` : ""}`,
+        );
       }
       if (selectedCategory === "all") {
         return apiClient.request("/templates-production/with-categories");
       }
-      return apiClient.request(`/templates-production/category/${selectedCategory}`);
+      return apiClient.request(
+        `/templates-production/category/${selectedCategory}`,
+      );
     },
   });
 
@@ -115,7 +119,10 @@ export default function AdminTemplates() {
   });
 
   const deleteTemplateMutation = useMutation({
-    mutationFn: (templateId: number) => apiClient.request(`/templates-production/${templateId}`, { method: "DELETE" }),
+    mutationFn: (templateId: number) =>
+      apiClient.request(`/templates-production/${templateId}`, {
+        method: "DELETE",
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["templates-admin"] });
       queryClient.invalidateQueries({ queryKey: ["template-stats"] });
@@ -123,10 +130,11 @@ export default function AdminTemplates() {
   });
 
   const duplicateTemplateMutation = useMutation({
-    mutationFn: (templateId: number) => apiClient.request(`/templates-production/${templateId}/duplicate`, {
-      method: "POST",
-      body: JSON.stringify({ created_by: user?.id || 1 })
-    }),
+    mutationFn: (templateId: number) =>
+      apiClient.request(`/templates-production/${templateId}/duplicate`, {
+        method: "POST",
+        body: JSON.stringify({ created_by: user?.id || 1 }),
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["templates-admin"] });
     },

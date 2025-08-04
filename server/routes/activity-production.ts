@@ -29,7 +29,7 @@ const mockActivityLogs = [
     client_id: 1,
     details: "Subtask status changed from 'in_progress' to 'completed'",
     status: "completed",
-    previous_status: "in_progress"
+    previous_status: "in_progress",
   },
   {
     id: "2",
@@ -45,7 +45,7 @@ const mockActivityLogs = [
     details: "Subtask marked as delayed due to external dependency",
     status: "delayed",
     previous_status: "in_progress",
-    delay_reason: "External Dependency"
+    delay_reason: "External Dependency",
   },
   {
     id: "3",
@@ -59,7 +59,7 @@ const mockActivityLogs = [
     user_id: null,
     client_id: 1,
     details: "SLA warning - Task will breach SLA in 15 minutes",
-    status: "in_progress"
+    status: "in_progress",
   },
   {
     id: "4",
@@ -73,8 +73,8 @@ const mockActivityLogs = [
     user_id: 1,
     client_id: 1,
     details: "New FinOps task created for daily reconciliation",
-    status: "active"
-  }
+    status: "active",
+  },
 ];
 
 // ===== ACTIVITY LOG ROUTES =====
@@ -91,7 +91,7 @@ router.get("/", async (req: Request, res: Response) => {
       limit = 50,
       offset = 0,
       start_date,
-      end_date
+      end_date,
     } = req.query;
 
     if (await isDatabaseAvailable()) {
@@ -135,7 +135,10 @@ router.get("/", async (req: Request, res: Response) => {
         params.push(end_date);
       }
 
-      const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
+      const whereClause =
+        whereConditions.length > 0
+          ? `WHERE ${whereConditions.join(" AND ")}`
+          : "";
 
       const query = `
         SELECT 
@@ -170,49 +173,62 @@ router.get("/", async (req: Request, res: Response) => {
           total,
           limit: parseInt(limit as string),
           offset: parseInt(offset as string),
-          has_more: parseInt(offset as string) + parseInt(limit as string) < total
-        }
+          has_more:
+            parseInt(offset as string) + parseInt(limit as string) < total,
+        },
       });
     } else {
       console.log("Database unavailable, using mock activity logs");
-      
+
       // Filter mock activity logs
       let filteredLogs = mockActivityLogs;
-      
+
       if (entity_type) {
-        filteredLogs = filteredLogs.filter(log => log.entity_type === entity_type);
+        filteredLogs = filteredLogs.filter(
+          (log) => log.entity_type === entity_type,
+        );
       }
-      
+
       if (entity_id) {
-        filteredLogs = filteredLogs.filter(log => log.entity_id === entity_id);
+        filteredLogs = filteredLogs.filter(
+          (log) => log.entity_id === entity_id,
+        );
       }
-      
+
       if (action) {
-        filteredLogs = filteredLogs.filter(log => log.action === action);
+        filteredLogs = filteredLogs.filter((log) => log.action === action);
       }
-      
+
       if (user_id) {
-        filteredLogs = filteredLogs.filter(log => log.user_id === parseInt(user_id as string));
+        filteredLogs = filteredLogs.filter(
+          (log) => log.user_id === parseInt(user_id as string),
+        );
       }
-      
+
       if (client_id) {
-        filteredLogs = filteredLogs.filter(log => log.client_id === parseInt(client_id as string));
+        filteredLogs = filteredLogs.filter(
+          (log) => log.client_id === parseInt(client_id as string),
+        );
       }
 
       if (start_date) {
         const startTime = new Date(start_date as string).getTime();
-        filteredLogs = filteredLogs.filter(log => new Date(log.timestamp).getTime() >= startTime);
+        filteredLogs = filteredLogs.filter(
+          (log) => new Date(log.timestamp).getTime() >= startTime,
+        );
       }
 
       if (end_date) {
         const endTime = new Date(end_date as string).getTime();
-        filteredLogs = filteredLogs.filter(log => new Date(log.timestamp).getTime() <= endTime);
+        filteredLogs = filteredLogs.filter(
+          (log) => new Date(log.timestamp).getTime() <= endTime,
+        );
       }
 
       const total = filteredLogs.length;
       const limitNum = parseInt(limit as string);
       const offsetNum = parseInt(offset as string);
-      
+
       const paginatedLogs = filteredLogs.slice(offsetNum, offsetNum + limitNum);
 
       res.json({
@@ -221,8 +237,8 @@ router.get("/", async (req: Request, res: Response) => {
           total,
           limit: limitNum,
           offset: offsetNum,
-          has_more: offsetNum + limitNum < total
-        }
+          has_more: offsetNum + limitNum < total,
+        },
       });
     }
   } catch (error) {
@@ -234,8 +250,8 @@ router.get("/", async (req: Request, res: Response) => {
         total: mockActivityLogs.length,
         limit: parseInt(req.query.limit as string) || 50,
         offset: parseInt(req.query.offset as string) || 0,
-        has_more: false
-      }
+        has_more: false,
+      },
     });
   }
 });
@@ -255,14 +271,14 @@ router.post("/", async (req: Request, res: Response) => {
         changes,
         status,
         previous_status,
-        delay_reason
+        delay_reason,
       } = req.body;
 
       // Validate required fields
       if (!action || !entity_type || !entity_id || !user_id) {
         return res.status(400).json({
           error: "Missing required fields",
-          required: ["action", "entity_type", "entity_id", "user_id"]
+          required: ["action", "entity_type", "entity_id", "user_id"],
         });
       }
 
@@ -285,7 +301,7 @@ router.post("/", async (req: Request, res: Response) => {
         changes ? JSON.stringify(changes) : null,
         status || null,
         previous_status || null,
-        delay_reason || null
+        delay_reason || null,
       ]);
 
       res.status(201).json(result.rows[0]);
@@ -305,7 +321,7 @@ router.post("/", async (req: Request, res: Response) => {
         status: req.body.status || null,
         previous_status: req.body.previous_status || null,
         delay_reason: req.body.delay_reason || null,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
       res.status(201).json(mockCreated);
     }
@@ -344,7 +360,7 @@ router.get("/:id", async (req: Request, res: Response) => {
       res.json(result.rows[0]);
     } else {
       console.log("Database unavailable, using mock activity log lookup");
-      const mockLog = mockActivityLogs.find(log => log.id === req.params.id);
+      const mockLog = mockActivityLogs.find((log) => log.id === req.params.id);
       if (!mockLog) {
         return res.status(404).json({ error: "Activity log not found" });
       }
@@ -394,30 +410,37 @@ router.get("/stats/summary", async (req: Request, res: Response) => {
       res.json({
         daily_breakdown: result.rows,
         action_totals: totalsResult.rows,
-        period_days: parseInt(days as string)
+        period_days: parseInt(days as string),
       });
     } else {
       console.log("Database unavailable, using mock activity stats");
-      
+
       // Generate mock stats from mock data
       const daysNum = parseInt(days as string);
-      const cutoffTime = Date.now() - (daysNum * 24 * 60 * 60 * 1000);
-      const recentLogs = mockActivityLogs.filter(log => new Date(log.timestamp).getTime() >= cutoffTime);
-      
-      const actionTotals = recentLogs.reduce((acc, log) => {
-        acc[log.action] = (acc[log.action] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>);
+      const cutoffTime = Date.now() - daysNum * 24 * 60 * 60 * 1000;
+      const recentLogs = mockActivityLogs.filter(
+        (log) => new Date(log.timestamp).getTime() >= cutoffTime,
+      );
 
-      const actionTotalsArray = Object.entries(actionTotals).map(([action, total_count]) => ({
-        action,
-        total_count
-      }));
+      const actionTotals = recentLogs.reduce(
+        (acc, log) => {
+          acc[log.action] = (acc[log.action] || 0) + 1;
+          return acc;
+        },
+        {} as Record<string, number>,
+      );
+
+      const actionTotalsArray = Object.entries(actionTotals).map(
+        ([action, total_count]) => ({
+          action,
+          total_count,
+        }),
+      );
 
       res.json({
         daily_breakdown: [],
         action_totals: actionTotalsArray,
-        period_days: daysNum
+        period_days: daysNum,
       });
     }
   } catch (error) {

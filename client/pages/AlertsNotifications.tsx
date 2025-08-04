@@ -12,7 +12,14 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Eye, Clock, AlertTriangle, CheckCircle, Users, RefreshCw } from "lucide-react";
+import {
+  Eye,
+  Clock,
+  AlertTriangle,
+  CheckCircle,
+  Users,
+  RefreshCw,
+} from "lucide-react";
 import { format } from "date-fns";
 
 // Notification icon mapping
@@ -82,8 +89,10 @@ export default function AlertsNotifications() {
 
   // Mark as read mutation
   const markAsReadMutation = useMutation({
-    mutationFn: (notificationId: string) => 
-      apiClient.request(`/notifications/${notificationId}/read`, { method: "PUT" }),
+    mutationFn: (notificationId: string) =>
+      apiClient.request(`/notifications/${notificationId}/read`, {
+        method: "PUT",
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
     },
@@ -91,10 +100,10 @@ export default function AlertsNotifications() {
 
   // Mark all as read mutation
   const markAllAsReadMutation = useMutation({
-    mutationFn: () => 
-      apiClient.request("/notifications/read-all", { 
-        method: "PUT", 
-        body: JSON.stringify({ user_id: user?.id })
+    mutationFn: () =>
+      apiClient.request("/notifications/read-all", {
+        method: "PUT",
+        body: JSON.stringify({ user_id: user?.id }),
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
@@ -122,7 +131,7 @@ export default function AlertsNotifications() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button 
+          <Button
             onClick={handleMarkAllAsRead}
             disabled={markAllAsReadMutation.isPending || unreadCount === 0}
             variant="outline"
@@ -157,7 +166,9 @@ export default function AlertsNotifications() {
             <Card>
               <CardContent className="p-8 text-center">
                 <CheckCircle className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No Notifications</h3>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  No Notifications
+                </h3>
                 <p className="text-gray-600">
                   {activeTab === "unread"
                     ? "You're all caught up!"
@@ -169,9 +180,12 @@ export default function AlertsNotifications() {
             <div className="space-y-4">
               {notifications.map((notification: any) => {
                 const Icon = getNotificationIcon(notification.type);
-                const colorClasses = getNotificationColor(notification.type, notification.priority);
+                const colorClasses = getNotificationColor(
+                  notification.type,
+                  notification.priority,
+                );
                 const isRead = notification.read;
-                
+
                 return (
                   <Card
                     key={notification.id}
@@ -181,8 +195,12 @@ export default function AlertsNotifications() {
                   >
                     <CardContent className="p-4">
                       <div className="flex items-start space-x-4">
-                        <div className={`p-2 rounded-full ${colorClasses.split(' ')[1]}`}>
-                          <Icon className={`w-5 h-5 ${colorClasses.split(' ')[0]}`} />
+                        <div
+                          className={`p-2 rounded-full ${colorClasses.split(" ")[1]}`}
+                        >
+                          <Icon
+                            className={`w-5 h-5 ${colorClasses.split(" ")[0]}`}
+                          />
                         </div>
                         <div className="flex-1">
                           <div className="flex items-start justify-between">
@@ -195,13 +213,18 @@ export default function AlertsNotifications() {
                               </p>
                               <div className="flex items-center gap-4 mt-2">
                                 <span className="text-sm text-gray-500">
-                                  {format(new Date(notification.created_at), "MMM d, h:mm a")}
+                                  {format(
+                                    new Date(notification.created_at),
+                                    "MMM d, h:mm a",
+                                  )}
                                 </span>
                                 <Badge variant="outline">
                                   {notification.type}
                                 </Badge>
                                 {notification.priority === "high" && (
-                                  <Badge variant="destructive">High Priority</Badge>
+                                  <Badge variant="destructive">
+                                    High Priority
+                                  </Badge>
                                 )}
                               </div>
                             </div>
@@ -210,7 +233,9 @@ export default function AlertsNotifications() {
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  onClick={() => handleMarkAsRead(notification.id)}
+                                  onClick={() =>
+                                    handleMarkAsRead(notification.id)
+                                  }
                                   disabled={markAsReadMutation.isPending}
                                 >
                                   <Eye className="w-4 h-4" />

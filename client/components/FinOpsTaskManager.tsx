@@ -54,9 +54,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import {
-  useSortable,
-} from "@dnd-kit/sortable";
+import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
   Plus,
@@ -86,14 +84,14 @@ interface SortableSubTaskItemProps {
   onRemove: (index: number) => void;
 }
 
-function SortableSubTaskItem({ subtask, index, onUpdate, onRemove }: SortableSubTaskItemProps) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-  } = useSortable({ id: subtask.id });
+function SortableSubTaskItem({
+  subtask,
+  index,
+  onUpdate,
+  onRemove,
+}: SortableSubTaskItemProps) {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: subtask.id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -101,7 +99,11 @@ function SortableSubTaskItem({ subtask, index, onUpdate, onRemove }: SortableSub
   };
 
   return (
-    <div ref={setNodeRef} style={style} className="border rounded-lg p-4 bg-gray-50">
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="border rounded-lg p-4 bg-gray-50"
+    >
       <div className="flex items-start gap-3">
         <div {...attributes} {...listeners} className="mt-2 cursor-grab">
           <GripVertical className="w-4 h-4 text-gray-400" />
@@ -113,7 +115,7 @@ function SortableSubTaskItem({ subtask, index, onUpdate, onRemove }: SortableSub
               <Label>Subtask Name *</Label>
               <Input
                 value={subtask.name}
-                onChange={(e) => onUpdate(index, 'name', e.target.value)}
+                onChange={(e) => onUpdate(index, "name", e.target.value)}
                 placeholder="e.g., RBL DUMP VS TCP DATA (DAILY ALERT MAIL)"
                 required
               />
@@ -126,7 +128,9 @@ function SortableSubTaskItem({ subtask, index, onUpdate, onRemove }: SortableSub
                   type="number"
                   min="0"
                   value={subtask.sla_hours}
-                  onChange={(e) => onUpdate(index, 'sla_hours', parseInt(e.target.value) || 0)}
+                  onChange={(e) =>
+                    onUpdate(index, "sla_hours", parseInt(e.target.value) || 0)
+                  }
                 />
               </div>
               <div>
@@ -136,7 +140,13 @@ function SortableSubTaskItem({ subtask, index, onUpdate, onRemove }: SortableSub
                   min="0"
                   max="59"
                   value={subtask.sla_minutes}
-                  onChange={(e) => onUpdate(index, 'sla_minutes', parseInt(e.target.value) || 0)}
+                  onChange={(e) =>
+                    onUpdate(
+                      index,
+                      "sla_minutes",
+                      parseInt(e.target.value) || 0,
+                    )
+                  }
                 />
               </div>
             </div>
@@ -145,8 +155,8 @@ function SortableSubTaskItem({ subtask, index, onUpdate, onRemove }: SortableSub
           <div>
             <Label>Description (Optional)</Label>
             <Textarea
-              value={subtask.description || ''}
-              onChange={(e) => onUpdate(index, 'description', e.target.value)}
+              value={subtask.description || ""}
+              onChange={(e) => onUpdate(index, "description", e.target.value)}
               placeholder="Additional details about this subtask..."
               rows={2}
             />
@@ -204,7 +214,9 @@ interface FinOpsTaskManagerProps {
   onTaskSelect?: (task: FinOpsTask) => void;
 }
 
-export default function FinOpsTaskManager({ onTaskSelect }: FinOpsTaskManagerProps) {
+export default function FinOpsTaskManager({
+  onTaskSelect,
+}: FinOpsTaskManagerProps) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -219,7 +231,7 @@ export default function FinOpsTaskManager({ onTaskSelect }: FinOpsTaskManagerPro
     assigned_to: "",
     reporting_managers: [] as string[],
     escalation_managers: [] as string[],
-    effective_from: new Date().toISOString().split('T')[0],
+    effective_from: new Date().toISOString().split("T")[0],
     duration: "daily" as "daily" | "weekly" | "monthly",
     is_active: true,
     subtasks: [] as FinOpsSubTask[],
@@ -266,8 +278,15 @@ export default function FinOpsTaskManager({ onTaskSelect }: FinOpsTaskManagerPro
   });
 
   const updateSubTaskMutation = useMutation({
-    mutationFn: ({ taskId, subTaskId, status }: { taskId: number; subTaskId: string; status: string }) =>
-      apiClient.updateFinOpsSubTask(taskId, subTaskId, status),
+    mutationFn: ({
+      taskId,
+      subTaskId,
+      status,
+    }: {
+      taskId: number;
+      subTaskId: string;
+      status: string;
+    }) => apiClient.updateFinOpsSubTask(taskId, subTaskId, status),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["finops-tasks"] });
     },
@@ -280,7 +299,7 @@ export default function FinOpsTaskManager({ onTaskSelect }: FinOpsTaskManagerPro
       assigned_to: "",
       reporting_managers: [],
       escalation_managers: [],
-      effective_from: new Date().toISOString().split('T')[0],
+      effective_from: new Date().toISOString().split("T")[0],
       duration: "daily",
       is_active: true,
       subtasks: [],
@@ -297,23 +316,23 @@ export default function FinOpsTaskManager({ onTaskSelect }: FinOpsTaskManagerPro
       order_position: taskForm.subtasks.length,
       status: "pending",
     };
-    setTaskForm(prev => ({
+    setTaskForm((prev) => ({
       ...prev,
       subtasks: [...prev.subtasks, newSubTask],
     }));
   };
 
   const updateSubTask = (index: number, field: string, value: any) => {
-    setTaskForm(prev => ({
+    setTaskForm((prev) => ({
       ...prev,
       subtasks: prev.subtasks.map((subtask, i) =>
-        i === index ? { ...subtask, [field]: value } : subtask
+        i === index ? { ...subtask, [field]: value } : subtask,
       ),
     }));
   };
 
   const removeSubTask = (index: number) => {
-    setTaskForm(prev => ({
+    setTaskForm((prev) => ({
       ...prev,
       subtasks: prev.subtasks.filter((_, i) => i !== index),
     }));
@@ -323,16 +342,20 @@ export default function FinOpsTaskManager({ onTaskSelect }: FinOpsTaskManagerPro
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   );
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
     if (active.id !== over?.id) {
-      setTaskForm(prev => {
-        const oldIndex = prev.subtasks.findIndex(item => item.id === active.id);
-        const newIndex = prev.subtasks.findIndex(item => item.id === over?.id);
+      setTaskForm((prev) => {
+        const oldIndex = prev.subtasks.findIndex(
+          (item) => item.id === active.id,
+        );
+        const newIndex = prev.subtasks.findIndex(
+          (item) => item.id === over?.id,
+        );
 
         const reorderedSubtasks = arrayMove(prev.subtasks, oldIndex, newIndex);
 
@@ -349,7 +372,7 @@ export default function FinOpsTaskManager({ onTaskSelect }: FinOpsTaskManagerPro
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const taskData = {
       ...taskForm,
       created_by: user?.id || 1,
@@ -370,7 +393,9 @@ export default function FinOpsTaskManager({ onTaskSelect }: FinOpsTaskManagerPro
       assigned_to: task.assigned_to,
       reporting_managers: task.reporting_managers,
       escalation_managers: task.escalation_managers,
-      effective_from: task.effective_from ? new Date(task.effective_from).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+      effective_from: task.effective_from
+        ? new Date(task.effective_from).toISOString().split("T")[0]
+        : new Date().toISOString().split("T")[0],
       duration: task.duration,
       is_active: task.is_active,
       subtasks: task.subtasks,
@@ -406,8 +431,12 @@ export default function FinOpsTaskManager({ onTaskSelect }: FinOpsTaskManagerPro
 
   const getSLAStatus = (task: FinOpsTask) => {
     // Calculate SLA status based on subtasks
-    const overdueTasks = task.subtasks.filter(st => st.status === "overdue").length;
-    const completedTasks = task.subtasks.filter(st => st.status === "completed").length;
+    const overdueTasks = task.subtasks.filter(
+      (st) => st.status === "overdue",
+    ).length;
+    const completedTasks = task.subtasks.filter(
+      (st) => st.status === "completed",
+    ).length;
     const totalTasks = task.subtasks.length;
 
     if (overdueTasks > 0) return "overdue";
@@ -421,7 +450,9 @@ export default function FinOpsTaskManager({ onTaskSelect }: FinOpsTaskManagerPro
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">FinOps Task Management</h2>
+          <h2 className="text-2xl font-bold text-gray-900">
+            FinOps Task Management
+          </h2>
           <p className="text-gray-600 mt-1">
             Create and manage automated FinOps processes with SLA tracking
           </p>
@@ -445,7 +476,9 @@ export default function FinOpsTaskManager({ onTaskSelect }: FinOpsTaskManagerPro
           <Card>
             <CardContent className="p-8 text-center">
               <Activity className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No FinOps Tasks</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                No FinOps Tasks
+              </h3>
               <p className="text-gray-600 mb-4">
                 Create your first automated FinOps process to get started.
               </p>
@@ -466,20 +499,23 @@ export default function FinOpsTaskManager({ onTaskSelect }: FinOpsTaskManagerPro
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <CardTitle className="text-lg">{task.task_name}</CardTitle>
-                        <Badge variant={task.is_active ? "default" : "secondary"}>
+                        <CardTitle className="text-lg">
+                          {task.task_name}
+                        </CardTitle>
+                        <Badge
+                          variant={task.is_active ? "default" : "secondary"}
+                        >
                           {task.is_active ? "Active" : "Inactive"}
                         </Badge>
                         <Badge className={getStatusColor(slaStatus)}>
                           <StatusIcon className="w-3 h-3 mr-1" />
-                          {slaStatus.charAt(0).toUpperCase() + slaStatus.slice(1)}
+                          {slaStatus.charAt(0).toUpperCase() +
+                            slaStatus.slice(1)}
                         </Badge>
-                        <Badge variant="outline">
-                          {task.duration}
-                        </Badge>
+                        <Badge variant="outline">{task.duration}</Badge>
                       </div>
                       <CardDescription>{task.description}</CardDescription>
-                      
+
                       <div className="flex items-center gap-6 mt-3 text-sm text-gray-600">
                         <div className="flex items-center gap-1">
                           <User className="w-4 h-4" />
@@ -487,7 +523,12 @@ export default function FinOpsTaskManager({ onTaskSelect }: FinOpsTaskManagerPro
                         </div>
                         <div className="flex items-center gap-1">
                           <Calendar className="w-4 h-4" />
-                          <span>Next run: {task.next_run ? format(new Date(task.next_run), "MMM d, h:mm a") : "Not scheduled"}</span>
+                          <span>
+                            Next run:{" "}
+                            {task.next_run
+                              ? format(new Date(task.next_run), "MMM d, h:mm a")
+                              : "Not scheduled"}
+                          </span>
                         </div>
                         <div className="flex items-center gap-1">
                           <Timer className="w-4 h-4" />
@@ -520,7 +561,11 @@ export default function FinOpsTaskManager({ onTaskSelect }: FinOpsTaskManagerPro
                         variant="outline"
                         size="sm"
                         onClick={() => {
-                          if (confirm(`Are you sure you want to delete "${task.task_name}"?`)) {
+                          if (
+                            confirm(
+                              `Are you sure you want to delete "${task.task_name}"?`,
+                            )
+                          ) {
                             deleteTaskMutation.mutate(task.id);
                           }
                         }}
@@ -538,20 +583,36 @@ export default function FinOpsTaskManager({ onTaskSelect }: FinOpsTaskManagerPro
                     <div className="border-t pt-4">
                       <h4 className="font-medium mb-3 flex items-center gap-2">
                         <CheckCircle className="w-4 h-4" />
-                        Subtasks ({task.subtasks.filter(st => st.status === "completed").length}/{task.subtasks.length} completed)
+                        Subtasks (
+                        {
+                          task.subtasks.filter(
+                            (st) => st.status === "completed",
+                          ).length
+                        }
+                        /{task.subtasks.length} completed)
                       </h4>
                       <div className="grid gap-2">
                         {task.subtasks.slice(0, 3).map((subtask) => {
-                          const SubTaskStatusIcon = getStatusIcon(subtask.status);
+                          const SubTaskStatusIcon = getStatusIcon(
+                            subtask.status,
+                          );
                           return (
-                            <div key={subtask.id} className="flex items-center justify-between text-sm">
+                            <div
+                              key={subtask.id}
+                              className="flex items-center justify-between text-sm"
+                            >
                               <div className="flex items-center gap-2">
-                                <SubTaskStatusIcon className={`w-3 h-3 ${getStatusColor(subtask.status).split(' ')[0]}`} />
+                                <SubTaskStatusIcon
+                                  className={`w-3 h-3 ${getStatusColor(subtask.status).split(" ")[0]}`}
+                                />
                                 <span>{subtask.name}</span>
                               </div>
                               <div className="flex items-center gap-2 text-xs text-gray-500">
                                 <Timer className="w-3 h-3" />
-                                <span>SLA: {subtask.sla_hours}h {subtask.sla_minutes}m</span>
+                                <span>
+                                  SLA: {subtask.sla_hours}h{" "}
+                                  {subtask.sla_minutes}m
+                                </span>
                               </div>
                             </div>
                           );
@@ -572,20 +633,24 @@ export default function FinOpsTaskManager({ onTaskSelect }: FinOpsTaskManagerPro
       </div>
 
       {/* Create/Edit Task Dialog */}
-      <Dialog open={isCreateDialogOpen} onOpenChange={(open) => {
-        setIsCreateDialogOpen(open);
-        if (!open) {
-          setEditingTask(null);
-          resetForm();
-        }
-      }}>
+      <Dialog
+        open={isCreateDialogOpen}
+        onOpenChange={(open) => {
+          setIsCreateDialogOpen(open);
+          if (!open) {
+            setEditingTask(null);
+            resetForm();
+          }
+        }}
+      >
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {editingTask ? "Edit FinOps Task" : "Create New FinOps Task"}
             </DialogTitle>
             <DialogDescription>
-              Configure automated FinOps processes with SLA tracking and team assignments.
+              Configure automated FinOps processes with SLA tracking and team
+              assignments.
             </DialogDescription>
           </DialogHeader>
 
@@ -597,7 +662,12 @@ export default function FinOpsTaskManager({ onTaskSelect }: FinOpsTaskManagerPro
                 <Input
                   id="task_name"
                   value={taskForm.task_name}
-                  onChange={(e) => setTaskForm(prev => ({ ...prev, task_name: e.target.value }))}
+                  onChange={(e) =>
+                    setTaskForm((prev) => ({
+                      ...prev,
+                      task_name: e.target.value,
+                    }))
+                  }
                   placeholder="e.g., CLEARING - FILE TRANSFER AND VALIDATION"
                   required
                 />
@@ -607,7 +677,9 @@ export default function FinOpsTaskManager({ onTaskSelect }: FinOpsTaskManagerPro
                 <Label htmlFor="duration">Duration *</Label>
                 <Select
                   value={taskForm.duration}
-                  onValueChange={(value) => setTaskForm(prev => ({ ...prev, duration: value as any }))}
+                  onValueChange={(value) =>
+                    setTaskForm((prev) => ({ ...prev, duration: value as any }))
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -625,7 +697,12 @@ export default function FinOpsTaskManager({ onTaskSelect }: FinOpsTaskManagerPro
                 <Textarea
                   id="description"
                   value={taskForm.description}
-                  onChange={(e) => setTaskForm(prev => ({ ...prev, description: e.target.value }))}
+                  onChange={(e) =>
+                    setTaskForm((prev) => ({
+                      ...prev,
+                      description: e.target.value,
+                    }))
+                  }
                   placeholder="e.g., clearing daily steps for file transfer"
                   required
                 />
@@ -635,14 +712,19 @@ export default function FinOpsTaskManager({ onTaskSelect }: FinOpsTaskManagerPro
                 <Label htmlFor="assigned_to">Assigned To *</Label>
                 <Select
                   value={taskForm.assigned_to}
-                  onValueChange={(value) => setTaskForm(prev => ({ ...prev, assigned_to: value }))}
+                  onValueChange={(value) =>
+                    setTaskForm((prev) => ({ ...prev, assigned_to: value }))
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select assignee" />
                   </SelectTrigger>
                   <SelectContent>
                     {users.map((user: any) => (
-                      <SelectItem key={user.id} value={`${user.first_name} ${user.last_name}`}>
+                      <SelectItem
+                        key={user.id}
+                        value={`${user.first_name} ${user.last_name}`}
+                      >
                         {user.first_name} {user.last_name}
                       </SelectItem>
                     ))}
@@ -656,7 +738,12 @@ export default function FinOpsTaskManager({ onTaskSelect }: FinOpsTaskManagerPro
                   id="effective_from"
                   type="date"
                   value={taskForm.effective_from}
-                  onChange={(e) => setTaskForm(prev => ({ ...prev, effective_from: e.target.value }))}
+                  onChange={(e) =>
+                    setTaskForm((prev) => ({
+                      ...prev,
+                      effective_from: e.target.value,
+                    }))
+                  }
                   required
                 />
               </div>
@@ -665,22 +752,30 @@ export default function FinOpsTaskManager({ onTaskSelect }: FinOpsTaskManagerPro
             {/* Team Management */}
             <div className="space-y-4">
               <h3 className="text-lg font-medium">Team & Escalation</h3>
-              
+
               <div>
                 <Label>Reporting Managers</Label>
                 <div className="flex gap-2 mt-1">
                   <Input
                     placeholder="Add reporting manager (press Enter)"
                     onKeyPress={(e) => {
-                      if (e.key === 'Enter') {
+                      if (e.key === "Enter") {
                         e.preventDefault();
-                        const value = (e.target as HTMLInputElement).value.trim();
-                        if (value && !taskForm.reporting_managers.includes(value)) {
-                          setTaskForm(prev => ({
+                        const value = (
+                          e.target as HTMLInputElement
+                        ).value.trim();
+                        if (
+                          value &&
+                          !taskForm.reporting_managers.includes(value)
+                        ) {
+                          setTaskForm((prev) => ({
                             ...prev,
-                            reporting_managers: [...prev.reporting_managers, value]
+                            reporting_managers: [
+                              ...prev.reporting_managers,
+                              value,
+                            ],
                           }));
-                          (e.target as HTMLInputElement).value = '';
+                          (e.target as HTMLInputElement).value = "";
                         }
                       }
                     }}
@@ -692,10 +787,14 @@ export default function FinOpsTaskManager({ onTaskSelect }: FinOpsTaskManagerPro
                       {manager}
                       <X
                         className="w-3 h-3 cursor-pointer"
-                        onClick={() => setTaskForm(prev => ({
-                          ...prev,
-                          reporting_managers: prev.reporting_managers.filter((_, i) => i !== index)
-                        }))}
+                        onClick={() =>
+                          setTaskForm((prev) => ({
+                            ...prev,
+                            reporting_managers: prev.reporting_managers.filter(
+                              (_, i) => i !== index,
+                            ),
+                          }))
+                        }
                       />
                     </Badge>
                   ))}
@@ -708,15 +807,23 @@ export default function FinOpsTaskManager({ onTaskSelect }: FinOpsTaskManagerPro
                   <Input
                     placeholder="Add escalation manager (press Enter)"
                     onKeyPress={(e) => {
-                      if (e.key === 'Enter') {
+                      if (e.key === "Enter") {
                         e.preventDefault();
-                        const value = (e.target as HTMLInputElement).value.trim();
-                        if (value && !taskForm.escalation_managers.includes(value)) {
-                          setTaskForm(prev => ({
+                        const value = (
+                          e.target as HTMLInputElement
+                        ).value.trim();
+                        if (
+                          value &&
+                          !taskForm.escalation_managers.includes(value)
+                        ) {
+                          setTaskForm((prev) => ({
                             ...prev,
-                            escalation_managers: [...prev.escalation_managers, value]
+                            escalation_managers: [
+                              ...prev.escalation_managers,
+                              value,
+                            ],
                           }));
-                          (e.target as HTMLInputElement).value = '';
+                          (e.target as HTMLInputElement).value = "";
                         }
                       }
                     }}
@@ -728,10 +835,15 @@ export default function FinOpsTaskManager({ onTaskSelect }: FinOpsTaskManagerPro
                       {manager}
                       <X
                         className="w-3 h-3 cursor-pointer"
-                        onClick={() => setTaskForm(prev => ({
-                          ...prev,
-                          escalation_managers: prev.escalation_managers.filter((_, i) => i !== index)
-                        }))}
+                        onClick={() =>
+                          setTaskForm((prev) => ({
+                            ...prev,
+                            escalation_managers:
+                              prev.escalation_managers.filter(
+                                (_, i) => i !== index,
+                              ),
+                          }))
+                        }
                       />
                     </Badge>
                   ))}
@@ -741,7 +853,9 @@ export default function FinOpsTaskManager({ onTaskSelect }: FinOpsTaskManagerPro
               <div className="flex items-center space-x-2">
                 <Switch
                   checked={taskForm.is_active}
-                  onCheckedChange={(checked) => setTaskForm(prev => ({ ...prev, is_active: checked }))}
+                  onCheckedChange={(checked) =>
+                    setTaskForm((prev) => ({ ...prev, is_active: checked }))
+                  }
                 />
                 <Label>Task is active</Label>
               </div>
@@ -751,7 +865,12 @@ export default function FinOpsTaskManager({ onTaskSelect }: FinOpsTaskManagerPro
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-medium">Subtasks with SLA</h3>
-                <Button type="button" onClick={addSubTask} variant="outline" size="sm">
+                <Button
+                  type="button"
+                  onClick={addSubTask}
+                  variant="outline"
+                  size="sm"
+                >
                   <Plus className="w-4 h-4 mr-1" />
                   Add Subtask
                 </Button>
@@ -763,7 +882,7 @@ export default function FinOpsTaskManager({ onTaskSelect }: FinOpsTaskManagerPro
                 onDragEnd={handleDragEnd}
               >
                 <SortableContext
-                  items={taskForm.subtasks.map(st => st.id)}
+                  items={taskForm.subtasks.map((st) => st.id)}
                   strategy={verticalListSortingStrategy}
                 >
                   <div className="space-y-3">
@@ -784,7 +903,9 @@ export default function FinOpsTaskManager({ onTaskSelect }: FinOpsTaskManagerPro
                 <div className="text-center py-8 text-gray-500 border-2 border-dashed border-gray-300 rounded-lg">
                   <Timer className="w-12 h-12 mx-auto mb-2 text-gray-300" />
                   <p>No subtasks added yet</p>
-                  <p className="text-sm">Add subtasks to break down your FinOps process</p>
+                  <p className="text-sm">
+                    Add subtasks to break down your FinOps process
+                  </p>
                 </div>
               )}
             </div>
@@ -797,7 +918,12 @@ export default function FinOpsTaskManager({ onTaskSelect }: FinOpsTaskManagerPro
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={createTaskMutation.isPending || updateTaskMutation.isPending}>
+              <Button
+                type="submit"
+                disabled={
+                  createTaskMutation.isPending || updateTaskMutation.isPending
+                }
+              >
                 <Save className="w-4 h-4 mr-2" />
                 {editingTask ? "Update Task" : "Create Task"}
               </Button>
