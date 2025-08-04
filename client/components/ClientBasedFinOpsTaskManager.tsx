@@ -891,9 +891,13 @@ export default function ClientBasedFinOpsTaskManager() {
 
             <div className="min-w-[150px]">
               <Label>Filter by Client</Label>
-              <Select value={selectedClient} onValueChange={setSelectedClient}>
+              <Select
+                value={selectedClientFromSummary ? "summary-selected" : selectedClient}
+                onValueChange={selectedClientFromSummary ? undefined : setSelectedClient}
+                disabled={!!selectedClientFromSummary}
+              >
                 <SelectTrigger>
-                  <SelectValue />
+                  <SelectValue placeholder={selectedClientFromSummary ? `Selected: ${selectedClientFromSummary}` : "Select client"} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Clients</SelectItem>
@@ -910,6 +914,11 @@ export default function ClientBasedFinOpsTaskManager() {
                   )}
                 </SelectContent>
               </Select>
+              {selectedClientFromSummary && (
+                <p className="text-xs text-blue-600 mt-1">
+                  Client selected from summary above
+                </p>
+              )}
             </div>
 
             <div className="min-w-[150px]">
