@@ -1,5 +1,7 @@
 import { Router, Request, Response } from "express";
 import { pool } from "../database/connection";
+import finopsAlertService from "../services/finopsAlertService";
+import finopsScheduler from "../services/finopsScheduler";
 
 const router = Router();
 
@@ -422,35 +424,62 @@ router.delete("/tasks/:id", async (req: Request, res: Response) => {
   }
 });
 
-// Update subtask status
+// Update subtask status with enhanced logging
 router.patch("/tasks/:taskId/subtasks/:subtaskId", async (req: Request, res: Response) => {
   try {
     const taskId = parseInt(req.params.taskId);
     const subtaskId = req.params.subtaskId;
-    const { status } = req.body;
+    const { status, user_name } = req.body;
+    const userName = user_name || 'Unknown User';
 
     if (await isDatabaseAvailable()) {
+      // Get current subtask status for logging
+      const currentSubtask = await pool.query(
+        'SELECT status, name FROM finops_subtasks WHERE task_id = $1 AND id = $2',
+        [taskId, subtaskId]
+      );
+
+      if (currentSubtask.rows.length === 0) {
+        return res.status(404).json({ error: "Subtask not found" });
+      }
+
+      const oldStatus = currentSubtask.rows[0].status;
+      const subtaskName = currentSubtask.rows[0].name;
+
       const query = `
-        UPDATE finops_subtasks 
+        UPDATE finops_subtasks
         SET status = $1,
             ${status === 'completed' ? 'completed_at = CURRENT_TIMESTAMP,' : ''}
             ${status === 'in_progress' ? 'started_at = CURRENT_TIMESTAMP,' : ''}
             updated_at = CURRENT_TIMESTAMP
         WHERE task_id = $2 AND id = $3
       `;
-      
+
       await pool.query(query, [status, taskId, subtaskId]);
-      
-      // Log activity
-      await logActivity(taskId, subtaskId, 'status_changed', 'User', `Status changed to ${status}`);
-      
-      res.json({ message: "Subtask status updated successfully" });
+
+      // Enhanced activity logging with more details
+      const logDetails = `Subtask "${subtaskName}" status changed from "${oldStatus}" to "${status}"`;
+      await logActivity(taskId, subtaskId, 'status_changed', userName, logDetails);
+
+      // Log user login activity if this is their first action today
+      await logUserActivity(userName, taskId);
+
+      // Check if task completion status changed
+      await checkAndUpdateTaskStatus(taskId, userName);
+
+      res.json({
+        message: "Subtask status updated successfully",
+        previous_status: oldStatus,
+        new_status: status,
+        updated_at: new Date().toISOString()
+      });
     } else {
       // Mock response
       const task = mockFinOpsTasks.find(t => t.id === taskId);
       if (task) {
         const subtask = task.subtasks.find(st => st.id === subtaskId);
         if (subtask) {
+          const oldStatus = subtask.status;
           subtask.status = status;
           if (status === 'completed') {
             subtask.completed_at = new Date().toISOString();
@@ -458,7 +487,11 @@ router.patch("/tasks/:taskId/subtasks/:subtaskId", async (req: Request, res: Res
           if (status === 'in_progress') {
             subtask.started_at = new Date().toISOString();
           }
-          res.json({ message: "Subtask status updated successfully (mock)" });
+          res.json({
+            message: "Subtask status updated successfully (mock)",
+            previous_status: oldStatus,
+            new_status: status
+          });
         } else {
           res.status(404).json({ error: "Subtask not found" });
         }
@@ -543,5 +576,262 @@ async function logActivity(taskId: number, subtaskId: string | null, action: str
     console.error("Error logging activity:", error);
   }
 }
+
+// Enhanced helper function to log activities with more detail
+async function logActivity(taskId: number, subtaskId: string | null, action: string, userName: string, details: string) {
+  try {
+    if (await isDatabaseAvailable()) {
+      const query = `
+        INSERT INTO finops_activity_log (task_id, subtask_id, action, user_name, details, ip_address, user_agent)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
+      `;
+
+      await pool.query(query, [taskId, subtaskId, action, userName, details, 'system', 'finops-api']);
+    } else {
+      // Mock logging
+      mockActivityLog.push({
+        id: Date.now(),
+        task_id: taskId,
+        subtask_id: subtaskId,
+        action,
+        user_name: userName,
+        timestamp: new Date().toISOString(),
+        details
+      });
+    }
+  } catch (error) {
+    console.error("Error logging activity:", error);
+  }
+}
+
+// Log user activity for daily login tracking
+async function logUserActivity(userName: string, taskId: number) {
+  try {
+    if (await isDatabaseAvailable()) {
+      const today = new Date().toISOString().split('T')[0];
+
+      // Check if user already has activity logged today
+      const existingActivity = await pool.query(`
+        SELECT COUNT(*) as count FROM finops_activity_log
+        WHERE user_name = $1 AND DATE(timestamp) = $2
+      `, [userName, today]);
+
+      if (existingActivity.rows[0].count === '0') {
+        await pool.query(`
+          INSERT INTO finops_activity_log (task_id, subtask_id, action, user_name, details)
+          VALUES ($1, NULL, 'daily_login', $2, 'User first activity of the day')
+        `, [taskId, userName]);
+      }
+    }
+  } catch (error) {
+    console.error("Error logging user activity:", error);
+  }
+}
+
+// Check and update task status based on subtask completion
+async function checkAndUpdateTaskStatus(taskId: number, userName: string) {
+  try {
+    if (await isDatabaseAvailable()) {
+      const subtasks = await pool.query(`
+        SELECT status FROM finops_subtasks WHERE task_id = $1
+      `, [taskId]);
+
+      const totalSubtasks = subtasks.rows.length;
+      const completedSubtasks = subtasks.rows.filter(st => st.status === 'completed').length;
+      const overdueSubtasks = subtasks.rows.filter(st => st.status === 'overdue').length;
+
+      let newTaskStatus = 'active';
+      let statusDetails = '';
+
+      if (overdueSubtasks > 0) {
+        newTaskStatus = 'overdue';
+        statusDetails = `Task marked as overdue due to ${overdueSubtasks} overdue subtasks`;
+      } else if (completedSubtasks === totalSubtasks && totalSubtasks > 0) {
+        newTaskStatus = 'completed';
+        statusDetails = `Task completed - all ${totalSubtasks} subtasks finished`;
+      } else if (completedSubtasks > 0) {
+        newTaskStatus = 'in_progress';
+        statusDetails = `Task in progress - ${completedSubtasks}/${totalSubtasks} subtasks completed`;
+      }
+
+      // Update task status
+      await pool.query(`
+        UPDATE finops_tasks
+        SET status = $1, updated_at = CURRENT_TIMESTAMP
+        WHERE id = $2
+      `, [newTaskStatus, taskId]);
+
+      // Log the task status change
+      await logActivity(taskId, null, 'task_status_updated', userName, statusDetails);
+    }
+  } catch (error) {
+    console.error("Error checking task status:", error);
+  }
+}
+
+// Get daily task list for monitoring
+router.get("/daily-tasks", async (req: Request, res: Response) => {
+  try {
+    const { date } = req.query;
+    const targetDate = date ? new Date(date as string) : new Date();
+    const dateStr = targetDate.toISOString().split('T')[0];
+
+    if (await isDatabaseAvailable()) {
+      const query = `
+        SELECT
+          t.*,
+          json_agg(
+            json_build_object(
+              'id', st.id,
+              'name', st.name,
+              'description', st.description,
+              'sla_hours', st.sla_hours,
+              'sla_minutes', st.sla_minutes,
+              'order_position', st.order_position,
+              'status', st.status,
+              'started_at', st.started_at,
+              'completed_at', st.completed_at
+            ) ORDER BY st.order_position
+          ) FILTER (WHERE st.id IS NOT NULL) as subtasks
+        FROM finops_tasks t
+        LEFT JOIN finops_subtasks st ON t.id = st.task_id
+        WHERE t.is_active = true
+        AND t.deleted_at IS NULL
+        AND (
+          (t.duration = 'daily' AND t.effective_from <= $1)
+          OR (t.duration = 'weekly' AND EXTRACT(DOW FROM $1::date) = EXTRACT(DOW FROM t.effective_from::date))
+          OR (t.duration = 'monthly' AND EXTRACT(DAY FROM $1::date) = EXTRACT(DAY FROM t.effective_from::date))
+        )
+        GROUP BY t.id
+        ORDER BY t.created_at DESC
+      `;
+
+      const result = await pool.query(query, [dateStr]);
+      const tasks = result.rows.map(row => ({
+        ...row,
+        subtasks: row.subtasks || []
+      }));
+
+      res.json({
+        date: dateStr,
+        tasks: tasks,
+        summary: {
+          total_tasks: tasks.length,
+          completed_tasks: tasks.filter(t => t.status === 'completed').length,
+          overdue_tasks: tasks.filter(t => t.status === 'overdue').length,
+          in_progress_tasks: tasks.filter(t => t.status === 'in_progress').length
+        }
+      });
+    } else {
+      res.json({
+        date: dateStr,
+        tasks: mockFinOpsTasks,
+        summary: {
+          total_tasks: mockFinOpsTasks.length,
+          completed_tasks: 0,
+          overdue_tasks: 0,
+          in_progress_tasks: 1
+        }
+      });
+    }
+  } catch (error) {
+    console.error("Error fetching daily tasks:", error);
+    res.status(500).json({ error: "Failed to fetch daily tasks" });
+  }
+});
+
+// Trigger manual SLA check
+router.post("/check-sla", async (req: Request, res: Response) => {
+  try {
+    await finopsAlertService.checkSLAAlerts();
+    res.json({ message: "SLA check triggered successfully" });
+  } catch (error) {
+    console.error("Error triggering SLA check:", error);
+    res.status(500).json({ error: "Failed to trigger SLA check" });
+  }
+});
+
+// Trigger manual daily execution
+router.post("/trigger-daily", async (req: Request, res: Response) => {
+  try {
+    await finopsScheduler.triggerDailyExecution();
+    res.json({ message: "Daily execution triggered successfully" });
+  } catch (error) {
+    console.error("Error triggering daily execution:", error);
+    res.status(500).json({ error: "Failed to trigger daily execution" });
+  }
+});
+
+// Get scheduler status
+router.get("/scheduler-status", async (req: Request, res: Response) => {
+  try {
+    const status = finopsScheduler.getStatus();
+    res.json(status);
+  } catch (error) {
+    console.error("Error getting scheduler status:", error);
+    res.status(500).json({ error: "Failed to get scheduler status" });
+  }
+});
+
+// Get activity log with enhanced filtering
+router.get("/activity-log", async (req: Request, res: Response) => {
+  try {
+    const { taskId, userId, action, date, limit = 100 } = req.query;
+
+    if (await isDatabaseAvailable()) {
+      let query = `
+        SELECT al.*, t.task_name, st.name as subtask_name
+        FROM finops_activity_log al
+        LEFT JOIN finops_tasks t ON al.task_id = t.id
+        LEFT JOIN finops_subtasks st ON al.subtask_id = st.id
+        WHERE 1=1
+      `;
+      const params: any[] = [];
+      let paramCount = 0;
+
+      if (taskId) {
+        paramCount++;
+        query += ` AND al.task_id = $${paramCount}`;
+        params.push(parseInt(taskId as string));
+      }
+
+      if (userId) {
+        paramCount++;
+        query += ` AND al.user_name ILIKE $${paramCount}`;
+        params.push(`%${userId}%`);
+      }
+
+      if (action) {
+        paramCount++;
+        query += ` AND al.action = $${paramCount}`;
+        params.push(action);
+      }
+
+      if (date) {
+        paramCount++;
+        query += ` AND DATE(al.timestamp) = $${paramCount}`;
+        params.push(date);
+      }
+
+      query += ` ORDER BY al.timestamp DESC LIMIT $${paramCount + 1}`;
+      params.push(parseInt(limit as string));
+
+      const result = await pool.query(query, params);
+      res.json(result.rows);
+    } else {
+      // Mock response with filtering
+      let filteredLog = [...mockActivityLog];
+
+      if (taskId) {
+        filteredLog = filteredLog.filter(log => log.task_id === parseInt(taskId as string));
+      }
+
+      res.json(filteredLog.slice(0, parseInt(limit as string)));
+    }
+  } catch (error) {
+    console.error("Error fetching activity log:", error);
+    res.json(mockActivityLog);
+  }
+});
 
 export default router;
