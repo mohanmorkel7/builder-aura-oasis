@@ -867,8 +867,8 @@ INSERT INTO finops_tasks (
     1
 ) ON CONFLICT DO NOTHING;
 
--- Insert sample subtasks for the main task
-INSERT INTO finops_subtasks (task_id, name, description, sla_hours, sla_minutes, order_position)
+-- Insert sample subtasks for the main task with enhanced tracking
+INSERT INTO finops_subtasks (task_id, name, description, sla_hours, sla_minutes, start_time, order_position, status, assigned_to)
 SELECT
     t.id,
     unnest(ARRAY[
@@ -893,7 +893,10 @@ SELECT
     ]),
     unnest(ARRAY[2, 1, 0, 0, 1, 2, 0, 1]),
     unnest(ARRAY[30, 0, 45, 30, 30, 0, 30, 0]),
-    unnest(ARRAY[0, 1, 2, 3, 4, 5, 6, 7])
+    unnest(ARRAY['05:00:00'::TIME, '05:30:00'::TIME, '06:00:00'::TIME, '06:30:00'::TIME, '07:00:00'::TIME, '08:00:00'::TIME, '09:00:00'::TIME, '09:30:00'::TIME]),
+    unnest(ARRAY[0, 1, 2, 3, 4, 5, 6, 7]),
+    unnest(ARRAY['completed', 'in_progress', 'pending', 'pending', 'pending', 'pending', 'pending', 'pending']),
+    t.assigned_to
 FROM finops_tasks t
 WHERE t.task_name = 'CLEARING - FILE TRANSFER AND VALIDATION'
 AND NOT EXISTS (SELECT 1 FROM finops_subtasks WHERE task_id = t.id);
