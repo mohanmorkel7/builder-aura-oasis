@@ -391,7 +391,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                     className="w-full text-xs"
                     onClick={() => navigate("/alerts")}
                   >
-                    View All Follow-ups
+                    View All Notifications
                   </Button>
                 </div>
               )}
