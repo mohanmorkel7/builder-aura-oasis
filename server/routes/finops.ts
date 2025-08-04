@@ -550,33 +550,6 @@ router.post("/tasks/:id/run", async (req: Request, res: Response) => {
   }
 });
 
-// Helper function to log activities
-async function logActivity(taskId: number, subtaskId: string | null, action: string, userName: string, details: string) {
-  try {
-    if (await isDatabaseAvailable()) {
-      const query = `
-        INSERT INTO finops_activity_log (task_id, subtask_id, action, user_name, details)
-        VALUES ($1, $2, $3, $4, $5)
-      `;
-      
-      await pool.query(query, [taskId, subtaskId, action, userName, details]);
-    } else {
-      // Mock logging
-      mockActivityLog.push({
-        id: Date.now(),
-        task_id: taskId,
-        subtask_id: subtaskId,
-        action,
-        user_name: userName,
-        timestamp: new Date().toISOString(),
-        details
-      });
-    }
-  } catch (error) {
-    console.error("Error logging activity:", error);
-  }
-}
-
 // Enhanced helper function to log activities with more detail
 async function logActivity(taskId: number, subtaskId: string | null, action: string, userName: string, details: string) {
   try {
