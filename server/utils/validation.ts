@@ -379,7 +379,7 @@ export const ValidationSchemas = {
       "notes",
     ],
     enums: {
-      role: ["admin", "sales", "product"],
+      role: ["admin", "sales", "product", "development", "db", "finops", "finance", "hr_management", "infra", "switch_team"],
       status: ["active", "inactive", "pending"],
     },
   },
