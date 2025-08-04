@@ -15,6 +15,12 @@ import ticketsRouter from "./routes/tickets";
 import finopsRouter from "./routes/finops";
 import workflowRouter from "./routes/workflow";
 
+// Production routes (database-only, no mock fallback)
+import templatesProductionRouter from "./routes/templates-production";
+import activityProductionRouter from "./routes/activity-production";
+import notificationsProductionRouter from "./routes/notifications-production";
+import adminProductionRouter from "./routes/admin-production";
+
 export function createServer() {
   const app = express();
 
