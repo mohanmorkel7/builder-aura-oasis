@@ -1221,9 +1221,23 @@ export default function ClientBasedFinOpsTaskManager() {
                   </SelectContent>
                 </Select>
                 {clients.length === 0 && (
-                  <p className="text-sm text-red-600 mt-1">
-                    No clients found. Please add clients first.
-                  </p>
+                  <div className="mt-2">
+                    <p className="text-sm text-red-600">
+                      No clients found. Clients are automatically loaded from leads.
+                    </p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="mt-2"
+                      onClick={() => {
+                        queryClient.invalidateQueries({ queryKey: ["clients"] });
+                      }}
+                    >
+                      <RefreshCw className="w-3 h-3 mr-1" />
+                      Refresh Clients
+                    </Button>
+                  </div>
                 )}
               </div>
 
