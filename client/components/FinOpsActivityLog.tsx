@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api";
+import { useAuth } from "@/lib/auth-context";
 import {
   Card,
   CardContent,
@@ -58,176 +59,56 @@ interface ActivityLogEntry {
   delay_reason?: string;
 }
 
-// Mock activity log data
-const mockActivityLogs: ActivityLogEntry[] = [
-  {
-    id: "1",
-    timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(), // 30 minutes ago
-    action: "subtask_status_changed",
-    entity_type: "subtask",
-    entity_id: "st_001",
-    entity_name: "MASTER AND VISA FILE VALIDATION",
-    client_name: "ABC Corporation",
-    user_name: "John Durairaj",
-    details: "Subtask status changed from 'in_progress' to 'completed'",
-    status: "completed",
-    previous_status: "in_progress"
-  },
-  {
-    id: "2",
-    timestamp: new Date(Date.now() - 45 * 60 * 1000).toISOString(), // 45 minutes ago
-    action: "delay_reported",
-    entity_type: "subtask",
-    entity_id: "st_002",
-    entity_name: "SHARING OF THE FILE TO M2P",
-    client_name: "ABC Corporation",
-    user_name: "John Durairaj",
-    details: "Subtask marked as delayed due to external dependency",
-    status: "delayed",
-    previous_status: "in_progress",
-    delay_reason: "External Dependency"
-  },
-  {
-    id: "3",
-    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
-    action: "sla_alert",
-    entity_type: "subtask",
-    entity_id: "st_003",
-    entity_name: "VISA - VALIDATION OF THE BASE 2 FILE",
-    client_name: "ABC Corporation",
-    user_name: "System",
-    details: "SLA warning - Task will breach SLA in 15 minutes",
-    status: "in_progress"
-  },
-  {
-    id: "4",
-    timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(), // 3 hours ago
-    action: "task_created",
-    entity_type: "task",
-    entity_id: "t_001",
-    entity_name: "CLEARING - FILE TRANSFER AND VALIDATION",
-    client_name: "ABC Corporation",
-    user_name: "Admin User",
-    details: "New FinOps task created with 5 subtasks",
-    changes: {
-      assigned_to: "John Durairaj",
-      duration: "daily",
-      subtask_count: 5
-    }
-  },
-  {
-    id: "5",
-    timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(), // 4 hours ago
-    action: "task_assigned",
-    entity_type: "task",
-    entity_id: "t_002",
-    entity_name: "DATA RECONCILIATION PROCESS",
-    client_name: "XYZ Industries",
-    user_name: "Admin User",
-    details: "Task reassigned to Sarah Wilson",
-    changes: {
-      old_assignee: "Mike Johnson",
-      new_assignee: "Sarah Wilson"
-    }
-  },
-  {
-    id: "6",
-    timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(), // 6 hours ago
-    action: "subtask_status_changed",
-    entity_type: "subtask",
-    entity_id: "st_004",
-    entity_name: "RBL DUMP VS TCP DATA (DAILY ALERT MAIL)",
-    client_name: "ABC Corporation",
-    user_name: "John Durairaj",
-    details: "Subtask started - status changed from 'pending' to 'in_progress'",
-    status: "in_progress",
-    previous_status: "pending"
-  },
-  {
-    id: "7",
-    timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
-    action: "task_updated",
-    entity_type: "task",
-    entity_id: "t_003",
-    entity_name: "CLIENT REPORTING AND PRESENTATION",
-    client_name: "LMN Enterprises",
-    user_name: "Admin User",
-    details: "Task configuration updated - reporting managers added",
-    changes: {
-      reporting_managers_added: ["Jennifer", "Robert"]
-    }
-  }
-];
-
 export default function FinOpsActivityLog() {
-  const [logs, setLogs] = useState<ActivityLogEntry[]>(mockActivityLogs);
-  const [dateFrom, setDateFrom] = useState("");
-  const [dateTo, setDateTo] = useState("");
-  const [clientFilter, setClientFilter] = useState<string>("all");
-  const [taskFilter, setTaskFilter] = useState<string>("all");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [actionFilter, setActionFilter] = useState<string>("all");
-  const [searchTerm, setSearchTerm] = useState("");
-
-  // Fetch clients for filter
-  const { data: clients = [] } = useQuery({
-    queryKey: ["clients"],
-    queryFn: () => apiClient.getClients(),
+  const { user } = useAuth();
+  const [filters, setFilters] = useState({
+    entity_type: "all",
+    action: "all",
+    days: 7,
+    search: ""
   });
 
-  // Filter logs
-  const filteredLogs = logs.filter((log) => {
-    // Date filter
-    if (dateFrom) {
-      const fromDate = startOfDay(parseISO(dateFrom));
-      if (isBefore(parseISO(log.timestamp), fromDate)) return false;
-    }
-    if (dateTo) {
-      const toDate = endOfDay(parseISO(dateTo));
-      if (isAfter(parseISO(log.timestamp), toDate)) return false;
-    }
-
-    // Client filter
-    if (clientFilter !== "all" && log.client_name !== clientFilter) return false;
-
-    // Status filter
-    if (statusFilter !== "all" && log.status !== statusFilter) return false;
-
-    // Action filter
-    if (actionFilter !== "all" && log.action !== actionFilter) return false;
-
-    // Search filter
-    if (searchTerm) {
-      const searchLower = searchTerm.toLowerCase();
-      if (
-        !log.entity_name.toLowerCase().includes(searchLower) &&
-        !log.details.toLowerCase().includes(searchLower) &&
-        !log.user_name.toLowerCase().includes(searchLower)
-      ) {
-        return false;
-      }
-    }
-
-    return true;
+  // Fetch activity logs
+  const { data: activityData, isLoading } = useQuery({
+    queryKey: ["activity-logs", filters],
+    queryFn: () => {
+      const params = new URLSearchParams();
+      if (filters.entity_type !== "all") params.append("entity_type", filters.entity_type);
+      if (filters.action !== "all") params.append("action", filters.action);
+      params.append("limit", "50");
+      params.append("start_date", new Date(Date.now() - filters.days * 24 * 60 * 60 * 1000).toISOString());
+      return apiClient.request(`/activity?${params.toString()}`);
+    },
+    refetchInterval: 30000, // Refresh every 30 seconds
   });
 
-  // Get unique clients, tasks, and statuses for filters
-  const uniqueClients = [...new Set(logs.map(log => log.client_name).filter(Boolean))];
-  const uniqueTasks = [...new Set(logs.map(log => log.entity_name))];
-  const uniqueStatuses = [...new Set(logs.map(log => log.status).filter(Boolean))];
+  const activityLogs = activityData?.activity_logs || [];
+
+  // Filter logs based on search term
+  const filteredLogs = activityLogs.filter((log: ActivityLogEntry) => {
+    if (!filters.search) return true;
+    const searchTerm = filters.search.toLowerCase();
+    return (
+      log.entity_name?.toLowerCase().includes(searchTerm) ||
+      log.client_name?.toLowerCase().includes(searchTerm) ||
+      log.user_name?.toLowerCase().includes(searchTerm) ||
+      log.details?.toLowerCase().includes(searchTerm)
+    );
+  });
 
   const getActionIcon = (action: string) => {
     switch (action) {
       case "task_created":
         return Target;
       case "task_updated":
-      case "task_assigned":
-        return Activity;
+        return FileText;
       case "subtask_status_changed":
         return CheckCircle;
-      case "delay_reported":
-        return AlertTriangle;
+      case "task_assigned":
+        return User;
       case "sla_alert":
+        return AlertTriangle;
+      case "delay_reported":
         return Clock;
       default:
         return Activity;
@@ -239,14 +120,15 @@ export default function FinOpsActivityLog() {
       case "task_created":
         return "text-green-600 bg-green-100";
       case "task_updated":
-      case "task_assigned":
         return "text-blue-600 bg-blue-100";
       case "subtask_status_changed":
         return "text-purple-600 bg-purple-100";
-      case "delay_reported":
-        return "text-yellow-600 bg-yellow-100";
+      case "task_assigned":
+        return "text-indigo-600 bg-indigo-100";
       case "sla_alert":
         return "text-red-600 bg-red-100";
+      case "delay_reported":
+        return "text-yellow-600 bg-yellow-100";
       default:
         return "text-gray-600 bg-gray-100";
     }
@@ -255,149 +137,55 @@ export default function FinOpsActivityLog() {
   const getStatusColor = (status?: string) => {
     switch (status) {
       case "completed":
-        return "text-green-600 bg-green-100";
+        return "bg-green-100 text-green-800";
       case "in_progress":
-        return "text-blue-600 bg-blue-100";
+        return "bg-blue-100 text-blue-800";
       case "delayed":
-        return "text-yellow-600 bg-yellow-100";
+        return "bg-yellow-100 text-yellow-800";
       case "overdue":
-        return "text-red-600 bg-red-100";
+        return "bg-red-100 text-red-800";
       default:
-        return "text-gray-600 bg-gray-100";
+        return "bg-gray-100 text-gray-800";
     }
   };
 
-  const getRelativeTime = (timestamp: string) => {
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
-    
-    if (diffInMinutes < 60) {
-      return `${diffInMinutes} minutes ago`;
-    } else if (diffInMinutes < 1440) {
-      const hours = Math.floor(diffInMinutes / 60);
-      return `${hours} hour${hours > 1 ? 's' : ''} ago`;
-    } else {
-      const days = Math.floor(diffInMinutes / 1440);
-      return `${days} day${days > 1 ? 's' : ''} ago`;
-    }
-  };
-
-  const exportToCSV = () => {
-    const headers = ["Timestamp", "Action", "Entity", "Client", "User", "Details", "Status"];
+  const exportActivityLog = () => {
     const csvContent = [
-      headers.join(","),
-      ...filteredLogs.map(log => [
-        `"${format(parseISO(log.timestamp), "yyyy-MM-dd HH:mm:ss")}"`,
-        `"${log.action.replace(/_/g, ' ')}"`,
-        `"${log.entity_name}"`,
-        `"${log.client_name || 'N/A'}"`,
-        `"${log.user_name}"`,
-        `"${log.details.replace(/"/g, '""')}"`,
-        `"${log.status || 'N/A'}"`
-      ].join(","))
-    ].join("\n");
+      ["Timestamp", "Action", "Entity Type", "Entity Name", "User", "Client", "Details"],
+      ...filteredLogs.map((log: ActivityLogEntry) => [
+        format(new Date(log.timestamp), "yyyy-MM-dd HH:mm:ss"),
+        log.action,
+        log.entity_type,
+        log.entity_name,
+        log.user_name,
+        log.client_name || "",
+        log.details
+      ])
+    ].map(row => row.map(cell => `"${cell}"`).join(",")).join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv" });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `finops-activity-log-${format(new Date(), "yyyy-MM-dd")}.csv`;
-    link.click();
-    window.URL.revokeObjectURL(url);
-  };
-
-  const exportToText = () => {
-    const textContent = filteredLogs.map(log => {
-      return `[${format(parseISO(log.timestamp), "yyyy-MM-dd HH:mm:ss")}] ${log.action.replace(/_/g, ' ').toUpperCase()}\n` +
-             `Entity: ${log.entity_name}\n` +
-             `Client: ${log.client_name || 'N/A'}\n` +
-             `User: ${log.user_name}\n` +
-             `Details: ${log.details}\n` +
-             `Status: ${log.status || 'N/A'}\n` +
-             `${'-'.repeat(80)}\n`;
-    }).join('\n');
-
-    const blob = new Blob([textContent], { type: "text/plain" });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `finops-activity-log-${format(new Date(), "yyyy-MM-dd")}.txt`;
-    link.click();
-    window.URL.revokeObjectURL(url);
-  };
-
-  const clearFilters = () => {
-    setDateFrom("");
-    setDateTo("");
-    setClientFilter("all");
-    setTaskFilter("all");
-    setStatusFilter("all");
-    setActionFilter("all");
-    setSearchTerm("");
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `finops-activity-log-${format(new Date(), "yyyy-MM-dd")}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <Activity className="w-6 h-6" />
-            Activity Log
-          </h2>
+          <h2 className="text-2xl font-bold text-gray-900">FinOps Activity Log</h2>
           <p className="text-gray-600 mt-1">
-            Comprehensive log of all FinOps task activities and changes
+            Track all FinOps task activities and status changes
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={clearFilters}>
-            <RefreshCw className="w-4 h-4 mr-1" />
-            Clear Filters
-          </Button>
-          <Button variant="outline" size="sm" onClick={exportToCSV}>
-            <Download className="w-4 h-4 mr-1" />
-            Export CSV
-          </Button>
-          <Button variant="outline" size="sm" onClick={exportToText}>
-            <FileText className="w-4 h-4 mr-1" />
-            Export TXT
-          </Button>
-        </div>
-      </div>
-
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-blue-600">{filteredLogs.length}</div>
-            <div className="text-xs text-gray-600">Filtered Entries</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-green-600">
-              {filteredLogs.filter(log => log.action === "task_created").length}
-            </div>
-            <div className="text-xs text-gray-600">Tasks Created</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-purple-600">
-              {filteredLogs.filter(log => log.action === "subtask_status_changed").length}
-            </div>
-            <div className="text-xs text-gray-600">Status Changes</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-red-600">
-              {filteredLogs.filter(log => log.action === "sla_alert" || log.action === "delay_reported").length}
-            </div>
-            <div className="text-xs text-gray-600">Alerts & Delays</div>
-          </CardContent>
-        </Card>
+        <Button onClick={exportActivityLog} variant="outline" disabled={filteredLogs.length === 0}>
+          <Download className="w-4 h-4 mr-2" />
+          Export CSV
+        </Button>
       </div>
 
       {/* Filters */}
@@ -409,83 +197,77 @@ export default function FinOpsActivityLog() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {/* Entity Type Filter */}
             <div>
-              <Label>Date From</Label>
-              <Input
-                type="date"
-                value={dateFrom}
-                onChange={(e) => setDateFrom(e.target.value)}
-              />
-            </div>
-            <div>
-              <Label>Date To</Label>
-              <Input
-                type="date"
-                value={dateTo}
-                onChange={(e) => setDateTo(e.target.value)}
-              />
-            </div>
-            <div>
-              <Label>Client</Label>
-              <Select value={clientFilter} onValueChange={setClientFilter}>
+              <Label htmlFor="entity_type">Entity Type</Label>
+              <Select
+                value={filters.entity_type}
+                onValueChange={(value) => setFilters(prev => ({ ...prev, entity_type: value }))}
+              >
                 <SelectTrigger>
-                  <SelectValue />
+                  <SelectValue placeholder="All Types" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Clients</SelectItem>
-                  {uniqueClients.map((client) => (
-                    <SelectItem key={client} value={client!}>
-                      {client}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="all">All Types</SelectItem>
+                  <SelectItem value="task">Tasks</SelectItem>
+                  <SelectItem value="subtask">Subtasks</SelectItem>
                 </SelectContent>
               </Select>
             </div>
+
+            {/* Action Filter */}
             <div>
-              <Label>Action Type</Label>
-              <Select value={actionFilter} onValueChange={setActionFilter}>
+              <Label htmlFor="action">Action</Label>
+              <Select
+                value={filters.action}
+                onValueChange={(value) => setFilters(prev => ({ ...prev, action: value }))}
+              >
                 <SelectTrigger>
-                  <SelectValue />
+                  <SelectValue placeholder="All Actions" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Actions</SelectItem>
                   <SelectItem value="task_created">Task Created</SelectItem>
                   <SelectItem value="task_updated">Task Updated</SelectItem>
-                  <SelectItem value="task_assigned">Task Assigned</SelectItem>
                   <SelectItem value="subtask_status_changed">Status Changed</SelectItem>
-                  <SelectItem value="delay_reported">Delay Reported</SelectItem>
+                  <SelectItem value="task_assigned">Task Assigned</SelectItem>
                   <SelectItem value="sla_alert">SLA Alert</SelectItem>
+                  <SelectItem value="delay_reported">Delay Reported</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+            {/* Time Range Filter */}
             <div>
-              <Label>Status</Label>
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <Label htmlFor="days">Time Range</Label>
+              <Select
+                value={filters.days.toString()}
+                onValueChange={(value) => setFilters(prev => ({ ...prev, days: parseInt(value) }))}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Statuses</SelectItem>
-                  {uniqueStatuses.map((status) => (
-                    <SelectItem key={status} value={status!}>
-                      {status}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="1">Last 24 hours</SelectItem>
+                  <SelectItem value="7">Last 7 days</SelectItem>
+                  <SelectItem value="30">Last 30 days</SelectItem>
+                  <SelectItem value="90">Last 90 days</SelectItem>
                 </SelectContent>
               </Select>
             </div>
+
+            {/* Search Filter */}
             <div>
-              <Label>Search</Label>
+              <Label htmlFor="search">Search</Label>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                 <Input
-                  placeholder="Search tasks, users, details..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
+                  id="search"
+                  placeholder="Search activities..."
+                  value={filters.search}
+                  onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+                  className="pl-9"
                 />
               </div>
             </div>
@@ -493,96 +275,117 @@ export default function FinOpsActivityLog() {
         </CardContent>
       </Card>
 
-      {/* Activity Log Entries */}
-      <div className="space-y-3">
-        {filteredLogs.length === 0 ? (
-          <Card>
-            <CardContent className="p-8 text-center">
+      {/* Activity Log */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <Activity className="w-5 h-5" />
+              Recent Activity
+            </CardTitle>
+            <Badge variant="secondary">
+              {filteredLogs.length} activities
+            </Badge>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <RefreshCw className="w-8 h-8 animate-spin text-gray-400" />
+              <span className="ml-2 text-gray-600">Loading activity log...</span>
+            </div>
+          ) : filteredLogs.length === 0 ? (
+            <div className="text-center py-8">
               <Activity className="w-16 h-16 mx-auto text-gray-400 mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">No Activity Found</h3>
               <p className="text-gray-600">
-                {logs.length === 0 
-                  ? "No activity logs yet. Activity will appear here as tasks are created and modified."
-                  : "No activity matches your current filters."}
+                No activities match your current filters.
               </p>
-            </CardContent>
-          </Card>
-        ) : (
-          filteredLogs.map((log) => {
-            const ActionIcon = getActionIcon(log.action);
-            return (
-              <Card key={log.id} className="hover:shadow-md transition-shadow">
-                <CardContent className="p-4">
-                  <div className="flex items-start gap-4">
-                    <div className={`p-2 rounded-full ${getActionColor(log.action)}`}>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {filteredLogs.map((log: ActivityLogEntry) => {
+                const ActionIcon = getActionIcon(log.action);
+                const actionColor = getActionColor(log.action);
+
+                return (
+                  <div
+                    key={log.id}
+                    className="flex items-start space-x-4 p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    {/* Action Icon */}
+                    <div className={`p-2 rounded-full ${actionColor}`}>
                       <ActionIcon className="w-4 h-4" />
                     </div>
-                    
+
+                    {/* Activity Details */}
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between mb-2">
-                        <div>
-                          <h4 className="font-medium text-sm">
-                            {log.action.replace(/_/g, ' ').toUpperCase()}
-                          </h4>
-                          <p className="text-sm text-gray-700 mt-1 break-words">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h4 className="font-medium text-gray-900">
+                              {log.entity_name}
+                            </h4>
+                            <Badge variant="outline" className="text-xs">
+                              {log.entity_type}
+                            </Badge>
+                            {log.status && (
+                              <Badge className={`text-xs ${getStatusColor(log.status)}`}>
+                                {log.status}
+                              </Badge>
+                            )}
+                          </div>
+                          
+                          <p className="text-sm text-gray-600 mb-2">
                             {log.details}
                           </p>
-                        </div>
-                        <div className="flex items-center gap-2 ml-3">
-                          {log.status && (
-                            <Badge className={getStatusColor(log.status)}>
-                              {log.status}
-                            </Badge>
+                          
+                          <div className="flex items-center gap-4 text-xs text-gray-500">
+                            <div className="flex items-center gap-1">
+                              <User className="w-3 h-3" />
+                              <span>{log.user_name}</span>
+                            </div>
+                            {log.client_name && (
+                              <div className="flex items-center gap-1">
+                                <Building2 className="w-3 h-3" />
+                                <span>{log.client_name}</span>
+                              </div>
+                            )}
+                            <div className="flex items-center gap-1">
+                              <Calendar className="w-3 h-3" />
+                              <span>{format(new Date(log.timestamp), "MMM d, h:mm a")}</span>
+                            </div>
+                          </div>
+
+                          {/* Show status transition */}
+                          {log.previous_status && log.status && (
+                            <div className="mt-2 text-xs text-gray-500">
+                              Status: <span className={`px-1 rounded ${getStatusColor(log.previous_status)}`}>
+                                {log.previous_status}
+                              </span> → <span className={`px-1 rounded ${getStatusColor(log.status)}`}>
+                                {log.status}
+                              </span>
+                            </div>
                           )}
-                          <span className="text-xs text-gray-500 whitespace-nowrap">
-                            {getRelativeTime(log.timestamp)}
-                          </span>
+
+                          {/* Show delay reason */}
+                          {log.delay_reason && (
+                            <div className="mt-2">
+                              <Badge variant="outline" className="text-xs text-yellow-700 bg-yellow-50">
+                                Delay: {log.delay_reason}
+                              </Badge>
+                            </div>
+                          )}
                         </div>
                       </div>
-                      
-                      <div className="flex flex-wrap gap-4 text-xs text-gray-600">
-                        <span className="flex items-center gap-1">
-                          <Target className="w-3 h-3" />
-                          {log.entity_name}
-                        </span>
-                        {log.client_name && (
-                          <span className="flex items-center gap-1">
-                            <Building2 className="w-3 h-3" />
-                            {log.client_name}
-                          </span>
-                        )}
-                        <span className="flex items-center gap-1">
-                          <User className="w-3 h-3" />
-                          {log.user_name}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Calendar className="w-3 h-3" />
-                          {format(parseISO(log.timestamp), "MMM d, yyyy h:mm a")}
-                        </span>
-                      </div>
-
-                      {log.delay_reason && (
-                        <Alert className="mt-3 p-2 border-yellow-200 bg-yellow-50">
-                          <AlertTriangle className="h-3 w-3 text-yellow-600" />
-                          <AlertDescription className="text-xs text-yellow-700 ml-1">
-                            <strong>Delay Reason:</strong> {log.delay_reason}
-                          </AlertDescription>
-                        </Alert>
-                      )}
-
-                      {log.changes && (
-                        <div className="mt-2 p-2 bg-gray-50 rounded text-xs">
-                          <strong>Changes:</strong> {JSON.stringify(log.changes, null, 2).replace(/[{}",]/g, ' ').trim()}
-                        </div>
-                      )}
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            );
-          })
-        )}
-      </div>
+                );
+              })}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
