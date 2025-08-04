@@ -20,6 +20,15 @@ async function isDatabaseAvailable() {
   }
 }
 
+// Production database availability check - fail fast if no database
+async function requireDatabase() {
+  try {
+    await pool.query("SELECT 1");
+  } catch (error) {
+    throw new Error(`Database connection required but unavailable: ${error.message}`);
+  }
+}
+
 // Mock data for fallback when database is unavailable
 const mockCategories = [
   {
