@@ -99,6 +99,13 @@ function MetricCard({
   );
 }
 
+// Helper function to safely format dates
+const formatSafeDate = (dateValue: any, formatString: string = "MMM d, yyyy"): string => {
+  if (!dateValue) return "N/A";
+  const date = new Date(dateValue);
+  return isNaN(date.getTime()) ? "N/A" : format(date, formatString);
+};
+
 export default function FinOpsDashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
