@@ -84,6 +84,13 @@ export class ApiClient {
         error instanceof Error ? error.message : String(error);
       console.error("API request failed:", errorMessage, "URL:", url);
 
+      // Retry logic for network errors
+      if (error instanceof TypeError && error.message.includes("Failed to fetch") && retryCount < 2) {
+        console.log(`Retrying request ${retryCount + 1}/2 for ${url}`);
+        await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1))); // Exponential backoff
+        return this.request(endpoint, options, retryCount + 1);
+      }
+
       if (error instanceof TypeError) {
         if (error.message.includes("Failed to fetch")) {
           throw new Error(
