@@ -94,7 +94,10 @@ export class ApiClient {
       }
 
       try {
-        return await response.json();
+        const result = await response.json();
+        // Reset failure count on successful request
+        this.failureCount = 0;
+        return result;
       } catch (jsonError) {
         throw new Error("Invalid JSON response from server");
       }
