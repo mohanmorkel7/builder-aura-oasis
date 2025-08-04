@@ -10,6 +10,13 @@ export class ApiClient {
     options: RequestInit = {},
     retryCount = 0
   ): Promise<T> {
+    // Circuit breaker check
+    const now = Date.now();
+    if (this.failureCount >= this.CIRCUIT_BREAKER_THRESHOLD &&
+        now - this.lastFailureTime < this.CIRCUIT_BREAKER_TIMEOUT) {
+      throw new Error("Circuit breaker: Too many failures, please wait before retrying");
+    }
+
     const url = `${API_BASE_URL}${endpoint}`;
 
     const config: RequestInit = {
