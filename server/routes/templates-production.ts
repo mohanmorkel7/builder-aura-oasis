@@ -25,7 +25,9 @@ async function requireDatabase() {
   try {
     await pool.query("SELECT 1");
   } catch (error) {
-    throw new Error(`Database connection required but unavailable: ${error.message}`);
+    throw new Error(
+      `Database connection required but unavailable: ${error.message}`,
+    );
   }
 }
 
@@ -728,7 +730,9 @@ router.get("/category/:categoryId", async (req: Request, res: Response) => {
     `;
 
       const result = await pool.query(query, [categoryId]);
-      console.log(`Database query returned ${result.rows.length} templates for category ${categoryId}`);
+      console.log(
+        `Database query returned ${result.rows.length} templates for category ${categoryId}`,
+      );
 
       const templates = result.rows.map((row) => ({
         id: row.id,
@@ -756,7 +760,15 @@ router.get("/category/:categoryId", async (req: Request, res: Response) => {
       console.log("Database unavailable, filtering mock templates by category");
       const categoryId = parseInt(req.params.categoryId);
       console.log(`Filtering for category ID: ${categoryId}`);
-      console.log(`Available templates:`, mockTemplates.map(t => ({ id: t.id, name: t.name, category_id: t.category_id, category: t.category })));
+      console.log(
+        `Available templates:`,
+        mockTemplates.map((t) => ({
+          id: t.id,
+          name: t.name,
+          category_id: t.category_id,
+          category: t.category,
+        })),
+      );
       const filteredTemplates = mockTemplates.filter(
         (t) => t.category?.id === categoryId,
       );
@@ -767,11 +779,15 @@ router.get("/category/:categoryId", async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error fetching templates by category:", error);
     // Fallback to mock data
-    console.log(`Error occurred, falling back to mock data for category ${categoryId}`);
+    console.log(
+      `Error occurred, falling back to mock data for category ${categoryId}`,
+    );
     const filteredTemplates = mockTemplates.filter(
       (t) => t.category?.id === categoryId,
     );
-    console.log(`Mock fallback found ${filteredTemplates.length} templates for category ${categoryId}`);
+    console.log(
+      `Mock fallback found ${filteredTemplates.length} templates for category ${categoryId}`,
+    );
     res.json(filteredTemplates);
   }
 });
@@ -814,7 +830,6 @@ router.get("/:id", async (req: Request, res: Response) => {
 // Create new template
 router.post("/", async (req: Request, res: Response) => {
   try {
-
     const templateData: CreateTemplateData = req.body;
     console.log(
       "Creating template with data:",
@@ -856,7 +871,9 @@ router.post("/", async (req: Request, res: Response) => {
       console.log("Template created successfully:", template);
       res.status(201).json(template);
     } else {
-      console.log("Database unavailable, simulating template creation with mock data");
+      console.log(
+        "Database unavailable, simulating template creation with mock data",
+      );
       // For mock data, simulate a successful creation
       const mockCreatedTemplate = {
         id: Math.floor(Math.random() * 1000) + 100, // Generate random ID
@@ -864,15 +881,18 @@ router.post("/", async (req: Request, res: Response) => {
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         usage_count: 0,
-        is_active: templateData.is_active !== undefined ? templateData.is_active : true,
+        is_active:
+          templateData.is_active !== undefined ? templateData.is_active : true,
         step_count: templateData.steps ? templateData.steps.length : 0,
         creator_name: "Mock User",
-        category: templateData.category_id ? {
-          id: templateData.category_id,
-          name: templateData.category_id === 2 ? "Leads" : "Unknown",
-          color: "#10B981",
-          icon: "Target"
-        } : null
+        category: templateData.category_id
+          ? {
+              id: templateData.category_id,
+              name: templateData.category_id === 2 ? "Leads" : "Unknown",
+              color: "#10B981",
+              icon: "Target",
+            }
+          : null,
       };
 
       res.status(201).json(mockCreatedTemplate);
@@ -928,7 +948,9 @@ router.put("/:id", async (req: Request, res: Response) => {
       }
       res.json(template);
     } else {
-      console.log("Database unavailable, simulating template update with mock data");
+      console.log(
+        "Database unavailable, simulating template update with mock data",
+      );
       // For mock data, simulate a successful update by returning the updated template data
       const mockUpdatedTemplate = {
         id: id,
@@ -937,15 +959,18 @@ router.put("/:id", async (req: Request, res: Response) => {
         // Add default fields that would be in a real template
         created_at: new Date().toISOString(),
         usage_count: 0,
-        is_active: templateData.is_active !== undefined ? templateData.is_active : true,
+        is_active:
+          templateData.is_active !== undefined ? templateData.is_active : true,
         step_count: templateData.steps ? templateData.steps.length : 0,
         creator_name: "Mock User",
-        category: templateData.category_id ? {
-          id: templateData.category_id,
-          name: templateData.category_id === 2 ? "Leads" : "Unknown",
-          color: "#10B981",
-          icon: "Target"
-        } : null
+        category: templateData.category_id
+          ? {
+              id: templateData.category_id,
+              name: templateData.category_id === 2 ? "Leads" : "Unknown",
+              color: "#10B981",
+              icon: "Target",
+            }
+          : null,
       };
 
       res.json(mockUpdatedTemplate);
@@ -962,7 +987,6 @@ router.put("/:id", async (req: Request, res: Response) => {
 // Delete template (soft delete)
 router.delete("/:id", async (req: Request, res: Response) => {
   try {
-
     const id = parseInt(req.params.id);
     if (isNaN(id)) {
       return res.status(400).json({ error: "Invalid template ID" });
@@ -991,7 +1015,6 @@ router.delete("/:id", async (req: Request, res: Response) => {
 // Duplicate template
 router.post("/:id/duplicate", async (req: Request, res: Response) => {
   try {
-
     const id = parseInt(req.params.id);
     if (isNaN(id)) {
       return res.status(400).json({ error: "Invalid template ID" });
@@ -1022,7 +1045,7 @@ router.post("/:id/duplicate", async (req: Request, res: Response) => {
         name: `Copy of ${originalTemplate.name}`,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-        usage_count: 0
+        usage_count: 0,
       };
 
       res.status(201).json(duplicatedTemplate);
