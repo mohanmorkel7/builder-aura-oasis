@@ -249,13 +249,10 @@ export default function FinOpsAutomation() {
       )}
 
       <Tabs defaultValue="monitoring" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6">
-          <TabsTrigger value="monitoring">Live Monitoring</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="task-management">Task Management</TabsTrigger>
-          <TabsTrigger value="daily-processes">Daily Processes</TabsTrigger>
-          <TabsTrigger value="automations">Automations</TabsTrigger>
+          <TabsTrigger value="monitoring">Live Monitoring</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
-          <TabsTrigger value="lead-integration">Lead Integration</TabsTrigger>
         </TabsList>
 
         {/* Live Monitoring Tab */}
