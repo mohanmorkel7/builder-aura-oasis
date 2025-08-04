@@ -42,8 +42,7 @@ import {
   BarChart3,
 } from "lucide-react";
 import { format } from "date-fns";
-import EnhancedFinOpsTaskManager from "@/components/EnhancedFinOpsTaskManager";
-import FinOpsMonitoringDashboard from "@/components/FinOpsMonitoringDashboard";
+import ClientBasedFinOpsTaskManager from "@/components/ClientBasedFinOpsTaskManager";
 
 interface AutomationTask {
   id: number;
