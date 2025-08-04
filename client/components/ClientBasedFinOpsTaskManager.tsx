@@ -357,6 +357,9 @@ export default function ClientBasedFinOpsTaskManager() {
   // Show more/less states for subtasks
   const [expandedTasks, setExpandedTasks] = useState<Set<number>>(new Set());
 
+  // Selected client from summary
+  const [selectedClientFromSummary, setSelectedClientFromSummary] = useState<string | null>(null);
+
   // Real-time timer state
   const [currentTime, setCurrentTime] = useState(new Date());
 
@@ -938,12 +941,37 @@ export default function ClientBasedFinOpsTaskManager() {
           <CardContent>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {Object.entries(clientSummary).map(([clientName, summary]: [string, any]) => (
-                <div key={clientName} className="border rounded-lg p-4 bg-gray-50">
-                  <h4 className="font-medium text-sm mb-2">{clientName}</h4>
-                  <div className="grid grid-cols-4 gap-2 text-center">
+                <div
+                  key={clientName}
+                  className={`border rounded-lg p-4 cursor-pointer transition-all hover:shadow-md ${
+                    selectedClientFromSummary === clientName
+                      ? "bg-blue-50 border-blue-300 shadow-md"
+                      : "bg-gray-50 hover:bg-gray-100"
+                  }`}
+                  onClick={() => {
+                    if (selectedClientFromSummary === clientName) {
+                      setSelectedClientFromSummary(null);
+                    } else {
+                      setSelectedClientFromSummary(clientName);
+                    }
+                  }}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="font-medium text-sm">{clientName}</h4>
+                    {selectedClientFromSummary === clientName && (
+                      <Badge variant="secondary" className="text-xs">
+                        Selected
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-5 gap-2 text-center">
                     <div>
                       <div className="text-lg font-bold text-blue-600">{summary.total_tasks}</div>
                       <div className="text-xs text-gray-600">Tasks</div>
+                    </div>
+                    <div>
+                      <div className="text-lg font-bold text-gray-900">{summary.total_subtasks}</div>
+                      <div className="text-xs text-gray-600">Subtasks</div>
                     </div>
                     <div>
                       <div className="text-lg font-bold text-green-600">{summary.completed_subtasks}</div>
@@ -958,6 +986,9 @@ export default function ClientBasedFinOpsTaskManager() {
                       <div className="text-xs text-gray-600">Overdue</div>
                     </div>
                   </div>
+                  <div className="mt-2 text-xs text-gray-500 text-center">
+                    Click to {selectedClientFromSummary === clientName ? 'show all' : 'filter'} tasks
+                  </div>
                 </div>
               ))}
             </div>
@@ -966,6 +997,30 @@ export default function ClientBasedFinOpsTaskManager() {
       )}
 
       {/* Tasks List */}
+      {selectedClientFromSummary && (
+        <Card className="border-blue-200 bg-blue-50">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Filter className="w-4 h-4 text-blue-600" />
+                <span className="text-sm font-medium text-blue-800">
+                  Showing tasks for: <strong>{selectedClientFromSummary}</strong>
+                </span>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setSelectedClientFromSummary(null)}
+                className="text-blue-600 border-blue-300 hover:bg-blue-100"
+              >
+                <X className="w-3 h-3 mr-1" />
+                Show All
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <div className="grid gap-4">
         {isLoading ? (
           <Card>
