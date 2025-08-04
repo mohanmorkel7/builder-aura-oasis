@@ -27,6 +27,14 @@ app.listen(port, () => {
   console.log(`🚀 Fusion Starter server running on port ${port}`);
   console.log(`📱 Frontend: http://localhost:${port}`);
   console.log(`🔧 API: http://localhost:${port}/api`);
+
+  // Initialize FinOps scheduler for automated task execution and SLA monitoring
+  try {
+    finopsScheduler.initialize();
+    console.log(`⏰ FinOps Scheduler initialized successfully`);
+  } catch (error) {
+    console.error(`❌ Failed to initialize FinOps Scheduler:`, error);
+  }
 });
 
 // Graceful shutdown
