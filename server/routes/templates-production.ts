@@ -758,10 +758,11 @@ router.get("/category/:categoryId", async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error fetching templates by category:", error);
     // Fallback to mock data
-    const categoryId = parseInt(req.params.categoryId);
+    console.log(`Error occurred, falling back to mock data for category ${categoryId}`);
     const filteredTemplates = mockTemplates.filter(
       (t) => t.category?.id === categoryId,
     );
+    console.log(`Mock fallback found ${filteredTemplates.length} templates for category ${categoryId}`);
     res.json(filteredTemplates);
   }
 });
