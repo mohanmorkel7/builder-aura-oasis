@@ -1040,6 +1040,17 @@ export default function ClientBasedFinOpsTaskManager() {
                           <Activity className="w-4 h-4" />
                           <span>{completedSubtasks}/{totalSubtasks} completed</span>
                         </div>
+                        {viewMode === "daily" && task.duration === "daily" && (
+                          <div className="flex items-center gap-1">
+                            <Timer className="w-4 h-4" />
+                            <span>
+                              {task.subtasks && task.subtasks.length > 0
+                                ? `Starts: ${task.subtasks.sort((a, b) => a.start_time.localeCompare(b.start_time))[0].start_time}`
+                                : "No schedule set"
+                              }
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </div>
 
