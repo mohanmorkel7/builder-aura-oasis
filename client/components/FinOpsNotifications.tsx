@@ -536,8 +536,3 @@ export default function FinOpsNotifications() {
     </div>
   );
 }
-
-// Helper component for missing Label
-function Label({ children }: { children: React.ReactNode }) {
-  return <label className="text-sm font-medium text-gray-700 mb-1 block">{children}</label>;
-}
