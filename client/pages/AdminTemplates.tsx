@@ -111,7 +111,7 @@ export default function AdminTemplates() {
   // Fetch template stats
   const { data: stats } = useQuery({
     queryKey: ["template-stats"],
-    queryFn: () => apiClient.getTemplateStats(),
+    queryFn: () => apiClient.request("/templates-production/stats"),
   });
 
   const deleteTemplateMutation = useMutation({
