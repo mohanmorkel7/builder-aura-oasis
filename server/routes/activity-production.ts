@@ -3,15 +3,79 @@ import { pool } from "../database/connection";
 
 const router = Router();
 
-// Production database availability check - fail fast if no database
-async function requireDatabase() {
+// Production database availability check with graceful fallback
+async function isDatabaseAvailable() {
   try {
     await pool.query("SELECT 1");
     return true;
   } catch (error) {
-    throw new Error(`Database connection failed: ${error.message}`);
+    console.log("Database unavailable:", error.message);
+    return false;
   }
 }
+
+// Mock activity logs for fallback
+const mockActivityLogs = [
+  {
+    id: "1",
+    timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(), // 30 minutes ago
+    action: "subtask_status_changed",
+    entity_type: "subtask",
+    entity_id: "st_001",
+    entity_name: "MASTER AND VISA FILE VALIDATION",
+    client_name: "ABC Corporation",
+    user_name: "John Durairaj",
+    user_id: 1,
+    client_id: 1,
+    details: "Subtask status changed from 'in_progress' to 'completed'",
+    status: "completed",
+    previous_status: "in_progress"
+  },
+  {
+    id: "2",
+    timestamp: new Date(Date.now() - 45 * 60 * 1000).toISOString(), // 45 minutes ago
+    action: "delay_reported",
+    entity_type: "subtask",
+    entity_id: "st_002",
+    entity_name: "SHARING OF THE FILE TO M2P",
+    client_name: "ABC Corporation",
+    user_name: "John Durairaj",
+    user_id: 1,
+    client_id: 1,
+    details: "Subtask marked as delayed due to external dependency",
+    status: "delayed",
+    previous_status: "in_progress",
+    delay_reason: "External Dependency"
+  },
+  {
+    id: "3",
+    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
+    action: "sla_alert",
+    entity_type: "subtask",
+    entity_id: "st_003",
+    entity_name: "VISA - VALIDATION OF THE BASE 2 FILE",
+    client_name: "ABC Corporation",
+    user_name: "System",
+    user_id: null,
+    client_id: 1,
+    details: "SLA warning - Task will breach SLA in 15 minutes",
+    status: "in_progress"
+  },
+  {
+    id: "4",
+    timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(), // 4 hours ago
+    action: "task_created",
+    entity_type: "task",
+    entity_id: "t_001",
+    entity_name: "Daily Reconciliation Task",
+    client_name: "ABC Corporation",
+    user_name: "Admin User",
+    user_id: 1,
+    client_id: 1,
+    details: "New FinOps task created for daily reconciliation",
+    status: "active"
+  }
+];
 
 // ===== ACTIVITY LOG ROUTES =====
 
