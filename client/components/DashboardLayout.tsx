@@ -54,12 +54,7 @@ const navigationItems: NavigationItem[] = [
     icon: DollarSign,
     roles: ["admin", "finance"],
   },
-  {
-    name: "Sales Dashboard",
-    href: "/sales",
-    icon: BarChart3,
-    roles: ["admin", "sales"],
-  },
+
   {
     name: "Leads",
     href: "/leads",
@@ -247,11 +242,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       <div className="w-64 bg-white border-r border-gray-200 flex flex-col">
         {/* Logo */}
         <div className="p-6 border-b border-gray-200">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <Grid3X3 className="w-5 h-5 text-white" />
-            </div>
-            <h1 className="text-xl font-bold text-gray-900">Banani App</h1>
+          <div className="flex items-center justify-center">
+            <img
+              src="https://cdn.builder.io/api/v1/image/assets%2F9f68bdced9274939b0bcd49e09efd146%2F17959db31c554dfdaeddef5d5757085c?format=webp&width=800"
+              alt="Mylapay"
+              className="h-8 object-contain"
+            />
           </div>
         </div>
 
