@@ -172,7 +172,7 @@ export default function CreateLead() {
   // Get only Lead templates (category ID 2 based on our mock data)
   const { data: templates = [] } = useQuery({
     queryKey: ["templates-by-category", 2],
-    queryFn: () => apiClient.getTemplatesByCategory(2),
+    queryFn: () => apiClient.request("/templates-production/category/2"),
   });
 
   const [selectedTemplate, setSelectedTemplate] = useState<string>("");
