@@ -822,13 +822,15 @@ export default function FinOpsDashboard() {
                         </td>
                         <td className="p-4">{invoice.client_name || "N/A"}</td>
                         <td className="p-4">
-                          {format(
-                            new Date(invoice.invoice_date),
-                            "MMM d, yyyy",
-                          )}
+                          {invoice.invoice_date ?
+                            format(
+                              new Date(invoice.invoice_date),
+                              "MMM d, yyyy",
+                            ) : "N/A"}
                         </td>
                         <td className="p-4">
-                          {format(new Date(invoice.due_date), "MMM d, yyyy")}
+                          {invoice.due_date ?
+                            format(new Date(invoice.due_date), "MMM d, yyyy") : "N/A"}
                         </td>
                         <td className="p-4 text-right font-medium">
                           ₹{invoice.total_amount?.toLocaleString()}
