@@ -776,18 +776,10 @@ export default function ClientBasedFinOpsTaskManager() {
         <div className="flex justify-between items-center">
           <div>
             <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-              Client-Based FinOps Task Management
-              {viewMode === "daily" && (
-                <Badge variant="secondary" className="ml-2">
-                  Daily Process {dateFilter ? `- ${format(new Date(dateFilter), "MMM d, yyyy")}` : "View"}
-                </Badge>
-              )}
+              FinOps Daily Process - {format(new Date(dateFilter), "MMM d, yyyy")}
             </h2>
             <p className="text-gray-600 mt-1">
-              {viewMode === "daily"
-                ? "Daily process tracking with date-based filtering for task execution monitoring"
-                : "Manage tasks and subtasks organized by client with real-time status tracking"
-              }
+              Daily process tracking and task execution monitoring for the selected date
             </p>
           </div>
           <Button onClick={() => setIsCreateDialogOpen(true)}>
