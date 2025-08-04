@@ -685,11 +685,7 @@ export default function FinOpsDashboard() {
                         className="border-b hover:bg-gray-50"
                       >
                         <td className="p-4">
-                          {(() => {
-                            if (!transaction.transaction_date) return "N/A";
-                            const date = new Date(transaction.transaction_date);
-                            return isNaN(date.getTime()) ? "N/A" : format(date, "MMM d, yyyy");
-                          })()}
+                          {formatSafeDate(transaction.transaction_date)}
                         </td>
                         <td className="p-4">{transaction.description}</td>
                         <td className="p-4">
