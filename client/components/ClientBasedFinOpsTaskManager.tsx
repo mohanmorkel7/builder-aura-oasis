@@ -840,87 +840,63 @@ export default function ClientBasedFinOpsTaskManager() {
       {/* Filters */}
       <Card>
         <CardContent className="p-4">
-          <div className="space-y-4">
-            {/* View Mode Toggle */}
-            <div className="flex items-center gap-4">
-              <Label>View Mode:</Label>
-              <div className="flex gap-2">
-                <Button
-                  variant={viewMode === "all" ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setViewMode("all")}
-                >
-                  All Tasks
-                </Button>
-                <Button
-                  variant={viewMode === "daily" ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setViewMode("daily")}
-                >
-                  Daily Process
-                </Button>
-              </div>
+          <div className="flex flex-wrap gap-4 items-end">
+            <div className="min-w-[150px]">
+              <Label>Date</Label>
+              <Input
+                type="date"
+                value={dateFilter}
+                onChange={(e) => setDateFilter(e.target.value)}
+                className="font-medium"
+              />
             </div>
 
-            <div className="flex flex-wrap gap-4 items-end">
-              <div className="flex-1 min-w-[200px]">
-                <Label>Search Tasks</Label>
-                <Input
-                  placeholder="Search by task name or client..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
+            <div className="flex-1 min-w-[200px]">
+              <Label>Search Tasks</Label>
+              <Input
+                placeholder="Search by task name or client..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
 
-              {viewMode === "daily" && (
-                <div className="min-w-[150px]">
-                  <Label>Filter by Date</Label>
-                  <Input
-                    type="date"
-                    value={dateFilter}
-                    onChange={(e) => setDateFilter(e.target.value)}
-                  />
-                </div>
-              )}
-
-              <div className="min-w-[150px]">
-                <Label>Filter by Client</Label>
-                <Select value={selectedClient} onValueChange={setSelectedClient}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Clients</SelectItem>
-                    {clients.length > 0 ? (
-                      clients.map((client: any) => (
-                        <SelectItem key={client.id} value={client.id.toString()}>
-                          {client.company_name || client.client_name || `Client ${client.id}`}
-                        </SelectItem>
-                      ))
-                    ) : (
-                      <SelectItem value="no-clients" disabled>
-                        No clients available
+            <div className="min-w-[150px]">
+              <Label>Filter by Client</Label>
+              <Select value={selectedClient} onValueChange={setSelectedClient}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Clients</SelectItem>
+                  {clients.length > 0 ? (
+                    clients.map((client: any) => (
+                      <SelectItem key={client.id} value={client.id.toString()}>
+                        {client.company_name || client.client_name || `Client ${client.id}`}
                       </SelectItem>
-                    )}
-                  </SelectContent>
-                </Select>
-              </div>
+                    ))
+                  ) : (
+                    <SelectItem value="no-clients" disabled>
+                      No clients available
+                    </SelectItem>
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
 
-              <div className="min-w-[150px]">
-                <Label>Filter by Status</Label>
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="completed">Completed</SelectItem>
-                    <SelectItem value="delayed">Delayed</SelectItem>
-                    <SelectItem value="overdue">Overdue</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="min-w-[150px]">
+              <Label>Filter by Status</Label>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Status</SelectItem>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
+                  <SelectItem value="delayed">Delayed</SelectItem>
+                  <SelectItem value="overdue">Overdue</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </CardContent>
