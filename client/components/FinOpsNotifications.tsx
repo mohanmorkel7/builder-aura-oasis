@@ -513,7 +513,16 @@ export default function FinOpsNotifications() {
                       >
                         <Trash2 className="w-3 h-3" />
                       </Button>
-                      <Button variant="ghost" size="sm" className="h-8 px-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 px-2"
+                        onClick={() => {
+                          // Handle view action - could open task details
+                          console.log("View notification:", notification.id);
+                        }}
+                        title="View Details"
+                      >
                         <ExternalLink className="w-3 h-3" />
                       </Button>
                     </div>
