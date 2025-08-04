@@ -949,7 +949,7 @@ export default function ClientBasedFinOpsTaskManager() {
       </Card>
 
       {/* Client-wise Summary */}
-      {Object.keys(clientSummary).length > 0 && (
+      {filteredTasks.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
