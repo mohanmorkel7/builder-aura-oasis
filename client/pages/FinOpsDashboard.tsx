@@ -340,6 +340,146 @@ export default function FinOpsDashboard() {
         />
       </div>
 
+      {/* FinOps Daily Process Metrics */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Clock className="w-5 h-5" />
+            FinOps Daily Process - Real-time Tracking
+          </CardTitle>
+          <CardDescription>
+            Track daily financial operations tasks and SLA compliance with month/day wise breakdowns
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Today's Performance */}
+            <div className="space-y-4">
+              <h4 className="font-semibold text-lg text-gray-800 flex items-center gap-2">
+                <Calendar className="w-4 h-4" />
+                Today ({format(new Date(), "MMM dd, yyyy")})
+              </h4>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    <span className="text-sm font-medium">Tasks Completed</span>
+                  </div>
+                  <Badge className="bg-green-100 text-green-700">
+                    {processData.tasks_completed_today || 0}
+                  </Badge>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-orange-600" />
+                    <span className="text-sm font-medium">Tasks Pending</span>
+                  </div>
+                  <Badge className="bg-orange-100 text-orange-700">
+                    {processData.tasks_pending_today || 0}
+                  </Badge>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 text-red-600" />
+                    <span className="text-sm font-medium">SLA Breaches</span>
+                  </div>
+                  <Badge className="bg-red-100 text-red-700">
+                    {processData.sla_breaches_today || 0}
+                  </Badge>
+                </div>
+              </div>
+            </div>
+
+            {/* This Month's Performance */}
+            <div className="space-y-4">
+              <h4 className="font-semibold text-lg text-gray-800 flex items-center gap-2">
+                <BarChart3 className="w-4 h-4" />
+                This Month ({format(new Date(), "MMMM yyyy")})
+              </h4>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    <span className="text-sm font-medium">Tasks Completed</span>
+                  </div>
+                  <Badge className="bg-green-100 text-green-700">
+                    {processData.tasks_completed_this_month || 0}
+                  </Badge>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-orange-600" />
+                    <span className="text-sm font-medium">Tasks Pending</span>
+                  </div>
+                  <Badge className="bg-orange-100 text-orange-700">
+                    {processData.tasks_pending_this_month || 0}
+                  </Badge>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 text-red-600" />
+                    <span className="text-sm font-medium">SLA Breaches</span>
+                  </div>
+                  <Badge className="bg-red-100 text-red-700">
+                    {processData.sla_breaches_this_month || 0}
+                  </Badge>
+                </div>
+              </div>
+            </div>
+
+            {/* Performance Summary & Actions */}
+            <div className="space-y-4">
+              <h4 className="font-semibold text-lg text-gray-800 flex items-center gap-2">
+                <Target className="w-4 h-4" />
+                Performance Summary
+              </h4>
+              <div className="space-y-3">
+                <div className="p-3 bg-blue-50 rounded-lg">
+                  <div className="text-sm font-medium text-blue-800 mb-1">
+                    Daily Success Rate
+                  </div>
+                  <div className="text-lg font-bold text-blue-900">
+                    {processData.tasks_completed_today && processData.tasks_pending_today
+                      ? Math.round((processData.tasks_completed_today / (processData.tasks_completed_today + processData.tasks_pending_today)) * 100)
+                      : 0}%
+                  </div>
+                </div>
+                <div className="p-3 bg-purple-50 rounded-lg">
+                  <div className="text-sm font-medium text-purple-800 mb-1">
+                    Monthly Success Rate
+                  </div>
+                  <div className="text-lg font-bold text-purple-900">
+                    {processData.tasks_completed_this_month && processData.tasks_pending_this_month
+                      ? Math.round((processData.tasks_completed_this_month / (processData.tasks_completed_this_month + processData.tasks_pending_this_month)) * 100)
+                      : 0}%
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                    onClick={() => navigate("/finops/automation")}
+                  >
+                    <FileText className="w-4 h-4 mr-2" />
+                    View Detailed Process
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                    onClick={() => navigate("/alerts")}
+                  >
+                    <Bell className="w-4 h-4 mr-2" />
+                    View Notifications
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Main Content Tabs */}
       <Tabs defaultValue="overview" className="space-y-6">
         <TabsList className="grid w-full grid-cols-6">
