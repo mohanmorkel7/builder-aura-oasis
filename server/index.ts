@@ -20,6 +20,7 @@ import templatesProductionRouter from "./routes/templates-production";
 import activityProductionRouter from "./routes/activity-production";
 import notificationsProductionRouter from "./routes/notifications-production";
 import adminProductionRouter from "./routes/admin-production";
+import finopsProductionRouter from "./routes/finops-production";
 
 export function createServer() {
   const app = express();
