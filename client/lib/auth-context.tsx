@@ -30,16 +30,56 @@ export interface User {
 }
 
 export const roleGroups = {
-  admin: { label: "Admin", color: "bg-red-100 text-red-800", permissions: ["all"] },
-  sales: { label: "Sales", color: "bg-blue-100 text-blue-800", permissions: ["leads", "clients", "reports"] },
-  product: { label: "Product", color: "bg-green-100 text-green-800", permissions: ["templates", "features", "analytics"] },
-  development: { label: "Development", color: "bg-purple-100 text-purple-800", permissions: ["technical", "deployment"] },
-  db: { label: "Database", color: "bg-gray-100 text-gray-800", permissions: ["database", "data_management"] },
-  finops: { label: "FinOps", color: "bg-yellow-100 text-yellow-800", permissions: ["financial", "operations"] },
-  finance: { label: "Finance", color: "bg-green-100 text-green-700", permissions: ["financial", "accounting", "budgets"] },
-  hr_management: { label: "HR Management", color: "bg-pink-100 text-pink-800", permissions: ["users", "roles", "hr"] },
-  infra: { label: "Infrastructure", color: "bg-indigo-100 text-indigo-800", permissions: ["infrastructure", "monitoring"] },
-  switch_team: { label: "Switch Team", color: "bg-orange-100 text-orange-800", permissions: ["switch", "integration"] },
+  admin: {
+    label: "Admin",
+    color: "bg-red-100 text-red-800",
+    permissions: ["all"],
+  },
+  sales: {
+    label: "Sales",
+    color: "bg-blue-100 text-blue-800",
+    permissions: ["leads", "clients", "reports"],
+  },
+  product: {
+    label: "Product",
+    color: "bg-green-100 text-green-800",
+    permissions: ["templates", "features", "analytics"],
+  },
+  development: {
+    label: "Development",
+    color: "bg-purple-100 text-purple-800",
+    permissions: ["technical", "deployment"],
+  },
+  db: {
+    label: "Database",
+    color: "bg-gray-100 text-gray-800",
+    permissions: ["database", "data_management"],
+  },
+  finops: {
+    label: "FinOps",
+    color: "bg-yellow-100 text-yellow-800",
+    permissions: ["financial", "operations"],
+  },
+  finance: {
+    label: "Finance",
+    color: "bg-green-100 text-green-700",
+    permissions: ["financial", "accounting", "budgets"],
+  },
+  hr_management: {
+    label: "HR Management",
+    color: "bg-pink-100 text-pink-800",
+    permissions: ["users", "roles", "hr"],
+  },
+  infra: {
+    label: "Infrastructure",
+    color: "bg-indigo-100 text-indigo-800",
+    permissions: ["infrastructure", "monitoring"],
+  },
+  switch_team: {
+    label: "Switch Team",
+    color: "bg-orange-100 text-orange-800",
+    permissions: ["switch", "integration"],
+  },
 };
 
 interface MicrosoftProfile {
@@ -138,23 +178,77 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         let userData: User | null = null;
 
         if (email === "admin@banani.com") {
-          userData = { id: "1", name: "John Doe", email, role: "admin", department: "Administration" };
+          userData = {
+            id: "1",
+            name: "John Doe",
+            email,
+            role: "admin",
+            department: "Administration",
+          };
         } else if (email === "sales@banani.com") {
-          userData = { id: "2", name: "Jane Smith", email, role: "sales", department: "Sales" };
+          userData = {
+            id: "2",
+            name: "Jane Smith",
+            email,
+            role: "sales",
+            department: "Sales",
+          };
         } else if (email === "product@banani.com") {
-          userData = { id: "3", name: "Mike Johnson", email, role: "product", department: "Product" };
+          userData = {
+            id: "3",
+            name: "Mike Johnson",
+            email,
+            role: "product",
+            department: "Product",
+          };
         } else if (email === "dev@banani.com") {
-          userData = { id: "4", name: "Alex Chen", email, role: "development", department: "Development" };
+          userData = {
+            id: "4",
+            name: "Alex Chen",
+            email,
+            role: "development",
+            department: "Development",
+          };
         } else if (email === "db@banani.com") {
-          userData = { id: "5", name: "Sarah Wilson", email, role: "db", department: "Database" };
+          userData = {
+            id: "5",
+            name: "Sarah Wilson",
+            email,
+            role: "db",
+            department: "Database",
+          };
         } else if (email === "finops@banani.com") {
-          userData = { id: "6", name: "David Brown", email, role: "finops", department: "FinOps" };
+          userData = {
+            id: "6",
+            name: "David Brown",
+            email,
+            role: "finops",
+            department: "FinOps",
+          };
         } else if (email === "hr@banani.com") {
-          userData = { id: "7", name: "Lisa Garcia", email, role: "hr_management", department: "HR" };
+          userData = {
+            id: "7",
+            name: "Lisa Garcia",
+            email,
+            role: "hr_management",
+            department: "HR",
+          };
         } else if (email === "infra@banani.com") {
-          userData = { id: "8", name: "Tom Martinez", email, role: "infra", department: "Infrastructure" };
+          userData = {
+            id: "8",
+            name: "Tom Martinez",
+            email,
+            role: "infra",
+            department: "Infrastructure",
+          };
         } else if (email === "switch@banani.com") {
-          userData = { id: "9", name: "Emma Davis", email, role: "switch_team", department: "Switch Team" };
+          userData = {
+            id: "9",
+            name: "Emma Davis",
+            email,
+            role: "switch_team",
+            department: "Switch Team",
+          };
         }
 
         if (userData) {
@@ -198,11 +292,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const profile: MicrosoftProfile = await graphResponse.json();
 
           // Get user's Azure AD groups to determine role
-          const groupsResponse = await fetch(`${graphConfig.graphMeEndpoint}/memberOf`, {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
+          const groupsResponse = await fetch(
+            `${graphConfig.graphMeEndpoint}/memberOf`,
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
             },
-          });
+          );
 
           const groups = await groupsResponse.json();
           const userRole = extractRoleFromGroups(groups.value || []);
