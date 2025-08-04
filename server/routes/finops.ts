@@ -1,626 +1,547 @@
 import { Router, Request, Response } from "express";
-import {
-  FinOpsRepository,
-  CreateFinOpsAccountData,
-  CreateFinOpsTransactionData,
-  CreateFinOpsBudgetData,
-  CreateFinOpsInvoiceData,
-  FinOpsCost,
-} from "../models/FinOps";
+import { pool } from "../database/connection";
 
 const router = Router();
 
-// Helper function to check if database is available (for fallback to mock data)
+// Database availability check
 async function isDatabaseAvailable() {
   try {
-    await FinOpsRepository.getAllAccounts();
+    await pool.query('SELECT 1');
     return true;
   } catch (error) {
-    console.log("FinOps database not available:", error.message);
+    console.log("Database availability check failed:", error.message);
     return false;
   }
 }
 
-// Mock data service for development/testing
-const FinOpsMockData = {
-  accounts: [
-    {
-      id: 1,
-      account_code: "1000",
-      account_name: "Cash and Bank",
-      account_type: "asset",
-      balance_type: "debit",
-      balance: 150000,
-      is_active: true,
-    },
-    {
-      id: 2,
-      account_code: "4000",
-      account_name: "Service Revenue",
-      account_type: "revenue",
-      balance_type: "credit",
-      balance: 500000,
-      is_active: true,
-    },
-    {
-      id: 3,
-      account_code: "5100",
-      account_name: "Salaries and Wages",
-      account_type: "expense",
-      balance_type: "debit",
-      balance: 120000,
-      is_active: true,
-    },
-    {
-      id: 4,
-      account_code: "5700",
-      account_name: "Technology Expenses",
-      account_type: "expense",
-      balance_type: "debit",
-      balance: 25000,
-      is_active: true,
-    },
-  ],
-  transactions: [
-    {
-      id: 1,
-      transaction_number: "TXN001",
-      transaction_date: "2024-01-15",
-      description: "Client payment received",
-      total_amount: 50000,
-      transaction_type: "income",
-      status: "posted",
-    },
-    {
-      id: 2,
-      transaction_number: "TXN002",
-      transaction_date: "2024-01-10",
-      description: "Office supplies purchase",
-      total_amount: 2500,
-      transaction_type: "expense",
-      status: "posted",
-    },
-  ],
-  budgets: [
-    {
-      id: 1,
-      budget_name: "Q1 2024 Marketing",
-      budget_type: "quarterly",
-      total_budget: 50000,
-      spent_amount: 15000,
-      status: "active",
-      utilization_percentage: 30,
-    },
-    {
-      id: 2,
-      budget_name: "Annual Operations 2024",
-      budget_type: "annual",
-      total_budget: 500000,
-      spent_amount: 125000,
-      status: "active",
-      utilization_percentage: 25,
-    },
-  ],
-  invoices: [
-    {
-      id: 1,
-      invoice_number: "INV001",
-      client_name: "Acme Corp",
-      total_amount: 75000,
-      status: "paid",
-      invoice_date: "2024-01-01",
-      due_date: "2024-01-31",
-      paid_amount: 75000,
-      outstanding_amount: 0,
-    },
-    {
-      id: 2,
-      invoice_number: "INV002",
-      client_name: "TechStart Inc",
-      total_amount: 45000,
-      status: "sent",
-      invoice_date: "2024-01-15",
-      due_date: "2024-02-15",
-      paid_amount: 0,
-      outstanding_amount: 45000,
-    },
-  ],
-  costs: [
-    {
-      id: 1,
-      cost_category: "infrastructure",
-      description: "AWS cloud services",
-      cost_amount: 5000,
-      cost_date: "2024-01-15",
-      reference_type: "deployment",
-      reference_id: 1,
-    },
-    {
-      id: 2,
-      cost_category: "marketing",
-      description: "Google Ads campaign",
-      cost_amount: 3000,
-      cost_date: "2024-01-10",
-      reference_type: "lead",
-      reference_id: 1,
-    },
-  ],
-  dashboardMetrics: {
-    total_revenue: 120000,
-    total_costs: 45000,
-    profit: 75000,
-    profit_margin: 62.5,
-    total_budgets: 550000,
-    active_budgets: 2,
-    overdue_invoices: { overdue_count: 1, overdue_amount: 15000 },
-    recent_transactions: [],
-    budget_utilization: [
+// Mock data for development when database is unavailable
+const mockFinOpsTasks = [
+  {
+    id: 1,
+    task_name: "CLEARING - FILE TRANSFER AND VALIDATION",
+    description: "clearing daily steps for file transfer",
+    assigned_to: "John Durairaj",
+    reporting_managers: ["Albert", "Hari"],
+    escalation_managers: ["Albert", "Hari"],
+    effective_from: "2024-01-01",
+    duration: "daily",
+    is_active: true,
+    status: "active",
+    created_at: "2024-01-01T00:00:00Z",
+    updated_at: "2024-01-01T00:00:00Z",
+    created_by: "Admin",
+    next_run: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+    subtasks: [
       {
-        budget_name: "Q1 2024 Marketing",
-        total_budget: 50000,
-        spent_amount: 15000,
-        utilization_percentage: 30,
+        id: "1",
+        name: "RBL DUMP VS TCP DATA (DAILY ALERT MAIL) VS DAILY STATUS FILE COUNT",
+        description: "Daily reconciliation check",
+        sla_hours: 2,
+        sla_minutes: 30,
+        order_position: 0,
+        status: "completed",
+        started_at: "2024-01-26T05:00:00Z",
+        completed_at: "2024-01-26T06:15:00Z"
       },
       {
-        budget_name: "Annual Operations 2024",
-        total_budget: 500000,
-        spent_amount: 125000,
-        utilization_percentage: 25,
+        id: "2",
+        name: "MASTER AND VISA FILE VALIDATION",
+        description: "Validate master and visa files",
+        sla_hours: 1,
+        sla_minutes: 0,
+        order_position: 1,
+        status: "in_progress",
+        started_at: "2024-01-26T06:15:00Z"
       },
-    ],
-  },
-};
+      {
+        id: "3",
+        name: "VISA - VALIDATION OF THE BASE 2 FILE",
+        description: "Base 2 file validation for Visa",
+        sla_hours: 0,
+        sla_minutes: 45,
+        order_position: 2,
+        status: "pending"
+      },
+      {
+        id: "4",
+        name: "SHARING OF THE FILE TO M2P",
+        description: "Share validated files to M2P",
+        sla_hours: 0,
+        sla_minutes: 30,
+        order_position: 3,
+        status: "pending"
+      },
+      {
+        id: "5",
+        name: "MASTER - IPM FILE - upload the file in TDG, count check, change format as clearing upload tool",
+        description: "IPM file processing in TDG",
+        sla_hours: 1,
+        sla_minutes: 30,
+        order_position: 4,
+        status: "pending"
+      },
+      {
+        id: "6",
+        name: "MASTER - IPM FILE - upload in clearing optimizer and run, report check if rejections present validation to be done and run again",
+        description: "Clearing optimizer processing",
+        sla_hours: 2,
+        sla_minutes: 0,
+        order_position: 5,
+        status: "pending"
+      },
+      {
+        id: "7",
+        name: "MASTER - IPM FILE - saving no error file in TDG in original format and paste it in end point folder",
+        description: "Save processed files to endpoint",
+        sla_hours: 0,
+        sla_minutes: 30,
+        order_position: 6,
+        status: "pending"
+      },
+      {
+        id: "8",
+        name: "MASTER - IPM FILE - login MFE, check for no error file and delete in endpoint folder and transfer the file to network",
+        description: "Final file transfer to network",
+        sla_hours: 1,
+        sla_minutes: 0,
+        order_position: 7,
+        status: "pending"
+      }
+    ]
+  }
+];
 
-// Dashboard endpoint - overview of financial data
-router.get("/dashboard", async (req: Request, res: Response) => {
+const mockActivityLog = [
+  {
+    id: 1,
+    task_id: 1,
+    subtask_id: "1",
+    action: "started",
+    user_name: "System",
+    timestamp: "2024-01-26T05:00:00Z",
+    details: "Task automatically started based on schedule"
+  },
+  {
+    id: 2,
+    task_id: 1,
+    subtask_id: "1",
+    action: "completed",
+    user_name: "John Durairaj",
+    timestamp: "2024-01-26T06:15:00Z",
+    details: "RBL DUMP validation completed successfully"
+  },
+  {
+    id: 3,
+    task_id: 1,
+    subtask_id: "2",
+    action: "started",
+    user_name: "John Durairaj",
+    timestamp: "2024-01-26T06:15:00Z",
+    details: "Started MASTER AND VISA FILE VALIDATION"
+  }
+];
+
+// Get all FinOps tasks
+router.get("/tasks", async (req: Request, res: Response) => {
   try {
     if (await isDatabaseAvailable()) {
-      const dashboardData = await FinOpsRepository.getDashboardData();
-      res.json(dashboardData);
+      // Real database query
+      const query = `
+        SELECT 
+          t.*,
+          json_agg(
+            json_build_object(
+              'id', st.id,
+              'name', st.name,
+              'description', st.description,
+              'sla_hours', st.sla_hours,
+              'sla_minutes', st.sla_minutes,
+              'order_position', st.order_position,
+              'status', st.status,
+              'started_at', st.started_at,
+              'completed_at', st.completed_at
+            ) ORDER BY st.order_position
+          ) FILTER (WHERE st.id IS NOT NULL) as subtasks
+        FROM finops_tasks t
+        LEFT JOIN finops_subtasks st ON t.id = st.task_id
+        WHERE t.deleted_at IS NULL
+        GROUP BY t.id
+        ORDER BY t.created_at DESC
+      `;
+      
+      const result = await pool.query(query);
+      const tasks = result.rows.map(row => ({
+        ...row,
+        subtasks: row.subtasks || []
+      }));
+      
+      res.json(tasks);
     } else {
-      // Return mock dashboard data
-      res.json(FinOpsMockData.dashboardMetrics);
+      console.log("Database unavailable, returning mock FinOps tasks");
+      res.json(mockFinOpsTasks);
     }
   } catch (error) {
-    console.error("Error fetching FinOps dashboard data:", error);
-    res.json(FinOpsMockData.dashboardMetrics);
+    console.error("Error fetching FinOps tasks:", error);
+    res.json(mockFinOpsTasks);
   }
 });
 
-// Financial metrics endpoint
-router.get("/metrics", async (req: Request, res: Response) => {
+// Create new FinOps task
+router.post("/tasks", async (req: Request, res: Response) => {
   try {
-    const { period = "monthly", start_date, end_date } = req.query;
-
-    // Default to current month if dates not provided
-    const now = new Date();
-    const defaultStartDate =
-      (start_date as string) ||
-      `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, "0")}-01`;
-    const defaultEndDate =
-      (end_date as string) ||
-      new Date(now.getFullYear(), now.getMonth() + 1, 0)
-        .toISOString()
-        .split("T")[0];
+    const {
+      task_name,
+      description,
+      assigned_to,
+      reporting_managers,
+      escalation_managers,
+      effective_from,
+      duration,
+      is_active,
+      subtasks,
+      created_by
+    } = req.body;
 
     if (await isDatabaseAvailable()) {
-      const metrics = await FinOpsRepository.getFinancialMetrics(
-        period as string,
-        defaultStartDate,
-        defaultEndDate,
-      );
-      res.json(metrics);
+      const client = await pool.connect();
+      
+      try {
+        await client.query('BEGIN');
+        
+        // Insert main task
+        const taskQuery = `
+          INSERT INTO finops_tasks (
+            task_name, description, assigned_to, reporting_managers, 
+            escalation_managers, effective_from, duration, is_active, created_by
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+          RETURNING id
+        `;
+        
+        const taskResult = await client.query(taskQuery, [
+          task_name,
+          description,
+          assigned_to,
+          JSON.stringify(reporting_managers),
+          JSON.stringify(escalation_managers),
+          effective_from,
+          duration,
+          is_active,
+          created_by
+        ]);
+        
+        const taskId = taskResult.rows[0].id;
+        
+        // Insert subtasks
+        if (subtasks && subtasks.length > 0) {
+          for (const subtask of subtasks) {
+            const subtaskQuery = `
+              INSERT INTO finops_subtasks (
+                task_id, name, description, sla_hours, sla_minutes, order_position
+              ) VALUES ($1, $2, $3, $4, $5, $6)
+            `;
+            
+            await client.query(subtaskQuery, [
+              taskId,
+              subtask.name,
+              subtask.description || null,
+              subtask.sla_hours,
+              subtask.sla_minutes,
+              subtask.order_position
+            ]);
+          }
+        }
+        
+        await client.query('COMMIT');
+        
+        // Log activity
+        await logActivity(taskId, null, 'created', `User ${created_by}`, 'Task created');
+        
+        res.status(201).json({ id: taskId, message: "FinOps task created successfully" });
+        
+      } catch (error) {
+        await client.query('ROLLBACK');
+        throw error;
+      } finally {
+        client.release();
+      }
     } else {
-      // Return mock metrics
-      res.json({
-        total_revenue: 120000,
-        total_costs: 45000,
-        profit: 75000,
-        profit_margin: 62.5,
-        period: { start: defaultStartDate, end: defaultEndDate },
+      // Mock response
+      const newTask = {
+        id: Date.now(),
+        ...req.body,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        status: 'active'
+      };
+      mockFinOpsTasks.push(newTask);
+      res.status(201).json({ id: newTask.id, message: "FinOps task created successfully (mock)" });
+    }
+  } catch (error) {
+    console.error("Error creating FinOps task:", error);
+    res.status(500).json({ error: "Failed to create FinOps task" });
+  }
+});
+
+// Update FinOps task
+router.put("/tasks/:id", async (req: Request, res: Response) => {
+  try {
+    const taskId = parseInt(req.params.id);
+    const {
+      task_name,
+      description,
+      assigned_to,
+      reporting_managers,
+      escalation_managers,
+      effective_from,
+      duration,
+      is_active,
+      subtasks
+    } = req.body;
+
+    if (await isDatabaseAvailable()) {
+      const client = await pool.connect();
+      
+      try {
+        await client.query('BEGIN');
+        
+        // Update main task
+        const taskQuery = `
+          UPDATE finops_tasks SET
+            task_name = $1,
+            description = $2,
+            assigned_to = $3,
+            reporting_managers = $4,
+            escalation_managers = $5,
+            effective_from = $6,
+            duration = $7,
+            is_active = $8,
+            updated_at = CURRENT_TIMESTAMP
+          WHERE id = $9
+        `;
+        
+        await client.query(taskQuery, [
+          task_name,
+          description,
+          assigned_to,
+          JSON.stringify(reporting_managers),
+          JSON.stringify(escalation_managers),
+          effective_from,
+          duration,
+          is_active,
+          taskId
+        ]);
+        
+        // Delete existing subtasks and recreate
+        await client.query('DELETE FROM finops_subtasks WHERE task_id = $1', [taskId]);
+        
+        // Insert updated subtasks
+        if (subtasks && subtasks.length > 0) {
+          for (const subtask of subtasks) {
+            const subtaskQuery = `
+              INSERT INTO finops_subtasks (
+                task_id, name, description, sla_hours, sla_minutes, order_position
+              ) VALUES ($1, $2, $3, $4, $5, $6)
+            `;
+            
+            await client.query(subtaskQuery, [
+              taskId,
+              subtask.name,
+              subtask.description || null,
+              subtask.sla_hours,
+              subtask.sla_minutes,
+              subtask.order_position
+            ]);
+          }
+        }
+        
+        await client.query('COMMIT');
+        
+        // Log activity
+        await logActivity(taskId, null, 'updated', 'User', 'Task updated');
+        
+        res.json({ message: "FinOps task updated successfully" });
+        
+      } catch (error) {
+        await client.query('ROLLBACK');
+        throw error;
+      } finally {
+        client.release();
+      }
+    } else {
+      // Mock response
+      const taskIndex = mockFinOpsTasks.findIndex(t => t.id === taskId);
+      if (taskIndex !== -1) {
+        mockFinOpsTasks[taskIndex] = {
+          ...mockFinOpsTasks[taskIndex],
+          ...req.body,
+          updated_at: new Date().toISOString()
+        };
+        res.json({ message: "FinOps task updated successfully (mock)" });
+      } else {
+        res.status(404).json({ error: "Task not found" });
+      }
+    }
+  } catch (error) {
+    console.error("Error updating FinOps task:", error);
+    res.status(500).json({ error: "Failed to update FinOps task" });
+  }
+});
+
+// Delete FinOps task
+router.delete("/tasks/:id", async (req: Request, res: Response) => {
+  try {
+    const taskId = parseInt(req.params.id);
+
+    if (await isDatabaseAvailable()) {
+      // Soft delete
+      const query = `
+        UPDATE finops_tasks 
+        SET deleted_at = CURRENT_TIMESTAMP 
+        WHERE id = $1
+      `;
+      
+      await pool.query(query, [taskId]);
+      
+      // Log activity
+      await logActivity(taskId, null, 'deleted', 'User', 'Task deleted');
+      
+      res.json({ message: "FinOps task deleted successfully" });
+    } else {
+      // Mock response
+      const taskIndex = mockFinOpsTasks.findIndex(t => t.id === taskId);
+      if (taskIndex !== -1) {
+        mockFinOpsTasks.splice(taskIndex, 1);
+        res.json({ message: "FinOps task deleted successfully (mock)" });
+      } else {
+        res.status(404).json({ error: "Task not found" });
+      }
+    }
+  } catch (error) {
+    console.error("Error deleting FinOps task:", error);
+    res.status(500).json({ error: "Failed to delete FinOps task" });
+  }
+});
+
+// Update subtask status
+router.patch("/tasks/:taskId/subtasks/:subtaskId", async (req: Request, res: Response) => {
+  try {
+    const taskId = parseInt(req.params.taskId);
+    const subtaskId = req.params.subtaskId;
+    const { status } = req.body;
+
+    if (await isDatabaseAvailable()) {
+      const query = `
+        UPDATE finops_subtasks 
+        SET status = $1,
+            ${status === 'completed' ? 'completed_at = CURRENT_TIMESTAMP,' : ''}
+            ${status === 'in_progress' ? 'started_at = CURRENT_TIMESTAMP,' : ''}
+            updated_at = CURRENT_TIMESTAMP
+        WHERE task_id = $2 AND id = $3
+      `;
+      
+      await pool.query(query, [status, taskId, subtaskId]);
+      
+      // Log activity
+      await logActivity(taskId, subtaskId, 'status_changed', 'User', `Status changed to ${status}`);
+      
+      res.json({ message: "Subtask status updated successfully" });
+    } else {
+      // Mock response
+      const task = mockFinOpsTasks.find(t => t.id === taskId);
+      if (task) {
+        const subtask = task.subtasks.find(st => st.id === subtaskId);
+        if (subtask) {
+          subtask.status = status;
+          if (status === 'completed') {
+            subtask.completed_at = new Date().toISOString();
+          }
+          if (status === 'in_progress') {
+            subtask.started_at = new Date().toISOString();
+          }
+          res.json({ message: "Subtask status updated successfully (mock)" });
+        } else {
+          res.status(404).json({ error: "Subtask not found" });
+        }
+      } else {
+        res.status(404).json({ error: "Task not found" });
+      }
+    }
+  } catch (error) {
+    console.error("Error updating subtask status:", error);
+    res.status(500).json({ error: "Failed to update subtask status" });
+  }
+});
+
+// Get activity log
+router.get("/activity-log", async (req: Request, res: Response) => {
+  try {
+    const { taskId } = req.query;
+
+    if (await isDatabaseAvailable()) {
+      const query = taskId 
+        ? `SELECT * FROM finops_activity_log WHERE task_id = $1 ORDER BY timestamp DESC`
+        : `SELECT * FROM finops_activity_log ORDER BY timestamp DESC LIMIT 100`;
+      
+      const result = taskId 
+        ? await pool.query(query, [parseInt(taskId as string)])
+        : await pool.query(query);
+      
+      res.json(result.rows);
+    } else {
+      // Mock response
+      const filteredLog = taskId 
+        ? mockActivityLog.filter(log => log.task_id === parseInt(taskId as string))
+        : mockActivityLog;
+      
+      res.json(filteredLog);
+    }
+  } catch (error) {
+    console.error("Error fetching activity log:", error);
+    res.json(mockActivityLog);
+  }
+});
+
+// Run task manually
+router.post("/tasks/:id/run", async (req: Request, res: Response) => {
+  try {
+    const taskId = parseInt(req.params.id);
+
+    // Log activity
+    await logActivity(taskId, null, 'manual_run', 'User', 'Task manually triggered');
+    
+    // In a real implementation, this would trigger the actual task execution
+    res.json({ message: "Task execution triggered successfully" });
+  } catch (error) {
+    console.error("Error running task:", error);
+    res.status(500).json({ error: "Failed to run task" });
+  }
+});
+
+// Helper function to log activities
+async function logActivity(taskId: number, subtaskId: string | null, action: string, userName: string, details: string) {
+  try {
+    if (await isDatabaseAvailable()) {
+      const query = `
+        INSERT INTO finops_activity_log (task_id, subtask_id, action, user_name, details)
+        VALUES ($1, $2, $3, $4, $5)
+      `;
+      
+      await pool.query(query, [taskId, subtaskId, action, userName, details]);
+    } else {
+      // Mock logging
+      mockActivityLog.push({
+        id: Date.now(),
+        task_id: taskId,
+        subtask_id: subtaskId,
+        action,
+        user_name: userName,
+        timestamp: new Date().toISOString(),
+        details
       });
     }
   } catch (error) {
-    console.error("Error fetching financial metrics:", error);
-    res.status(500).json({ error: "Failed to fetch financial metrics" });
+    console.error("Error logging activity:", error);
   }
-});
-
-// ACCOUNTS ENDPOINTS
-
-// Get all accounts
-router.get("/accounts", async (req: Request, res: Response) => {
-  try {
-    if (await isDatabaseAvailable()) {
-      const accounts = await FinOpsRepository.getAllAccounts();
-      res.json(accounts);
-    } else {
-      res.json(FinOpsMockData.accounts);
-    }
-  } catch (error) {
-    console.error("Error fetching accounts:", error);
-    res.json(FinOpsMockData.accounts);
-  }
-});
-
-// Create new account
-router.post("/accounts", async (req: Request, res: Response) => {
-  try {
-    const accountData: CreateFinOpsAccountData = req.body;
-
-    // Validate required fields
-    if (
-      !accountData.account_code ||
-      !accountData.account_name ||
-      !accountData.account_type ||
-      !accountData.balance_type
-    ) {
-      return res.status(400).json({ error: "Missing required fields" });
-    }
-
-    if (await isDatabaseAvailable()) {
-      const newAccount = await FinOpsRepository.createAccount(accountData);
-      res.status(201).json(newAccount);
-    } else {
-      // Return mock created account
-      const mockAccount = {
-        id: Math.floor(Math.random() * 1000) + 100,
-        ...accountData,
-        balance: 0,
-        is_active: true,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
-      res.status(201).json(mockAccount);
-    }
-  } catch (error) {
-    console.error("Error creating account:", error);
-    res.status(500).json({ error: "Failed to create account" });
-  }
-});
-
-// TRANSACTIONS ENDPOINTS
-
-// Get all transactions
-router.get("/transactions", async (req: Request, res: Response) => {
-  try {
-    const limit = parseInt(req.query.limit as string) || 50;
-    const offset = parseInt(req.query.offset as string) || 0;
-
-    if (await isDatabaseAvailable()) {
-      const transactions = await FinOpsRepository.getAllTransactions(
-        limit,
-        offset,
-      );
-      res.json(transactions);
-    } else {
-      res.json(FinOpsMockData.transactions);
-    }
-  } catch (error) {
-    console.error("Error fetching transactions:", error);
-    res.json(FinOpsMockData.transactions);
-  }
-});
-
-// Get transaction by ID
-router.get("/transactions/:id", async (req: Request, res: Response) => {
-  try {
-    const id = parseInt(req.params.id);
-    if (isNaN(id)) {
-      return res.status(400).json({ error: "Invalid transaction ID" });
-    }
-
-    if (await isDatabaseAvailable()) {
-      const transaction = await FinOpsRepository.getTransactionById(id);
-      if (!transaction) {
-        return res.status(404).json({ error: "Transaction not found" });
-      }
-      res.json(transaction);
-    } else {
-      const mockTransaction = FinOpsMockData.transactions.find(
-        (t) => t.id === id,
-      );
-      if (!mockTransaction) {
-        return res.status(404).json({ error: "Transaction not found" });
-      }
-      res.json(mockTransaction);
-    }
-  } catch (error) {
-    console.error("Error fetching transaction:", error);
-    res.status(500).json({ error: "Failed to fetch transaction" });
-  }
-});
-
-// Create new transaction
-router.post("/transactions", async (req: Request, res: Response) => {
-  try {
-    const transactionData: CreateFinOpsTransactionData = req.body;
-
-    // Validate required fields
-    if (
-      !transactionData.transaction_number ||
-      !transactionData.description ||
-      !transactionData.transaction_lines
-    ) {
-      return res.status(400).json({ error: "Missing required fields" });
-    }
-
-    // Validate that debits equal credits
-    const totalDebits = transactionData.transaction_lines.reduce(
-      (sum, line) => sum + line.debit_amount,
-      0,
-    );
-    const totalCredits = transactionData.transaction_lines.reduce(
-      (sum, line) => sum + line.credit_amount,
-      0,
-    );
-
-    if (Math.abs(totalDebits - totalCredits) > 0.01) {
-      return res
-        .status(400)
-        .json({ error: "Transaction debits must equal credits" });
-    }
-
-    if (await isDatabaseAvailable()) {
-      const newTransaction =
-        await FinOpsRepository.createTransaction(transactionData);
-      res.status(201).json(newTransaction);
-    } else {
-      // Return mock created transaction
-      const mockTransaction = {
-        id: Math.floor(Math.random() * 1000) + 100,
-        ...transactionData,
-        status: "pending",
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
-      res.status(201).json(mockTransaction);
-    }
-  } catch (error) {
-    console.error("Error creating transaction:", error);
-    res.status(500).json({ error: "Failed to create transaction" });
-  }
-});
-
-// BUDGETS ENDPOINTS
-
-// Get all budgets
-router.get("/budgets", async (req: Request, res: Response) => {
-  try {
-    if (await isDatabaseAvailable()) {
-      const budgets = await FinOpsRepository.getAllBudgets();
-      res.json(budgets);
-    } else {
-      res.json(FinOpsMockData.budgets);
-    }
-  } catch (error) {
-    console.error("Error fetching budgets:", error);
-    res.json(FinOpsMockData.budgets);
-  }
-});
-
-// Create new budget
-router.post("/budgets", async (req: Request, res: Response) => {
-  try {
-    const budgetData: CreateFinOpsBudgetData = req.body;
-
-    // Validate required fields
-    if (
-      !budgetData.budget_name ||
-      !budgetData.total_budget ||
-      !budgetData.start_date ||
-      !budgetData.end_date
-    ) {
-      return res.status(400).json({ error: "Missing required fields" });
-    }
-
-    // For now, return mock data (budget creation logic would be implemented similar to transactions)
-    const mockBudget = {
-      id: Math.floor(Math.random() * 1000) + 100,
-      ...budgetData,
-      spent_amount: 0,
-      status: "draft",
-      utilization_percentage: 0,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
-    res.status(201).json(mockBudget);
-  } catch (error) {
-    console.error("Error creating budget:", error);
-    res.status(500).json({ error: "Failed to create budget" });
-  }
-});
-
-// INVOICES ENDPOINTS
-
-// Get all invoices
-router.get("/invoices", async (req: Request, res: Response) => {
-  try {
-    if (await isDatabaseAvailable()) {
-      const invoices = await FinOpsRepository.getAllInvoices();
-      res.json(invoices);
-    } else {
-      res.json(FinOpsMockData.invoices);
-    }
-  } catch (error) {
-    console.error("Error fetching invoices:", error);
-    res.json(FinOpsMockData.invoices);
-  }
-});
-
-// Create new invoice
-router.post("/invoices", async (req: Request, res: Response) => {
-  try {
-    const invoiceData: CreateFinOpsInvoiceData = req.body;
-
-    // Validate required fields
-    if (
-      !invoiceData.invoice_number ||
-      !invoiceData.invoice_lines ||
-      invoiceData.invoice_lines.length === 0
-    ) {
-      return res.status(400).json({ error: "Missing required fields" });
-    }
-
-    // Calculate totals
-    const lineTotal = invoiceData.invoice_lines.reduce(
-      (sum, line) => sum + line.quantity * line.unit_price,
-      0,
-    );
-    const taxAmount = invoiceData.tax_amount || 0;
-    const discountAmount = invoiceData.discount_amount || 0;
-    const totalAmount = lineTotal + taxAmount - discountAmount;
-
-    // For now, return mock data
-    const mockInvoice = {
-      id: Math.floor(Math.random() * 1000) + 100,
-      ...invoiceData,
-      subtotal: lineTotal,
-      tax_amount: taxAmount,
-      discount_amount: discountAmount,
-      total_amount: totalAmount,
-      status: "draft",
-      paid_amount: 0,
-      outstanding_amount: totalAmount,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
-    res.status(201).json(mockInvoice);
-  } catch (error) {
-    console.error("Error creating invoice:", error);
-    res.status(500).json({ error: "Failed to create invoice" });
-  }
-});
-
-// COSTS ENDPOINTS
-
-// Get costs by reference
-router.get("/costs", async (req: Request, res: Response) => {
-  try {
-    const { reference_type, reference_id } = req.query;
-
-    if (reference_type && reference_id) {
-      if (await isDatabaseAvailable()) {
-        const costs = await FinOpsRepository.getCostsByReference(
-          reference_type as string,
-          parseInt(reference_id as string),
-        );
-        res.json(costs);
-      } else {
-        const filteredCosts = FinOpsMockData.costs.filter(
-          (cost) =>
-            cost.reference_type === reference_type &&
-            cost.reference_id === parseInt(reference_id as string),
-        );
-        res.json(filteredCosts);
-      }
-    } else {
-      // Return all costs if no filter
-      res.json(FinOpsMockData.costs);
-    }
-  } catch (error) {
-    console.error("Error fetching costs:", error);
-    res.json(FinOpsMockData.costs);
-  }
-});
-
-// Create new cost entry
-router.post("/costs", async (req: Request, res: Response) => {
-  try {
-    const costData: Omit<FinOpsCost, "id" | "created_at" | "updated_at"> =
-      req.body;
-
-    // Validate required fields
-    if (
-      !costData.cost_category ||
-      !costData.reference_type ||
-      !costData.reference_id ||
-      !costData.description ||
-      !costData.cost_amount
-    ) {
-      return res.status(400).json({ error: "Missing required fields" });
-    }
-
-    if (await isDatabaseAvailable()) {
-      const newCost = await FinOpsRepository.createCost(costData);
-      res.status(201).json(newCost);
-    } else {
-      // Return mock created cost
-      const mockCost = {
-        id: Math.floor(Math.random() * 1000) + 100,
-        ...costData,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
-      res.status(201).json(mockCost);
-    }
-  } catch (error) {
-    console.error("Error creating cost entry:", error);
-    res.status(500).json({ error: "Failed to create cost entry" });
-  }
-});
-
-// REPORTS ENDPOINTS
-
-// Generate financial report
-router.post("/reports/generate", async (req: Request, res: Response) => {
-  try {
-    const { report_type, start_date, end_date, parameters } = req.body;
-
-    if (!report_type || !start_date || !end_date) {
-      return res
-        .status(400)
-        .json({ error: "Missing required fields for report generation" });
-    }
-
-    // For now, return mock report data
-    const mockReport = {
-      id: Math.floor(Math.random() * 1000) + 100,
-      report_name: `${report_type.replace("_", " ").toUpperCase()} Report`,
-      report_type,
-      report_period_start: start_date,
-      report_period_end: end_date,
-      status: "completed",
-      generated_data: {
-        summary: {
-          total_revenue: 120000,
-          total_expenses: 45000,
-          net_profit: 75000,
-        },
-        details: [
-          { account: "Service Revenue", amount: 120000, type: "revenue" },
-          { account: "Salaries and Wages", amount: 30000, type: "expense" },
-          { account: "Technology Expenses", amount: 15000, type: "expense" },
-        ],
-      },
-      created_at: new Date().toISOString(),
-    };
-
-    res.json(mockReport);
-  } catch (error) {
-    console.error("Error generating report:", error);
-    res.status(500).json({ error: "Failed to generate report" });
-  }
-});
-
-// Export data endpoints
-router.get("/export/:type", async (req: Request, res: Response) => {
-  try {
-    const { type } = req.params;
-    const { format = "csv", start_date, end_date } = req.query;
-
-    // For now, return mock export confirmation
-    res.json({
-      message: `${type} export initiated`,
-      format,
-      period: { start_date, end_date },
-      estimated_completion: new Date(Date.now() + 30000).toISOString(), // 30 seconds from now
-      download_url: `/api/finops/downloads/${Math.random().toString(36).substr(2, 9)}`,
-    });
-  } catch (error) {
-    console.error("Error initiating export:", error);
-    res.status(500).json({ error: "Failed to initiate export" });
-  }
-});
+}
 
 export default router;
