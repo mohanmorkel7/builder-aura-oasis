@@ -38,7 +38,13 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900">Banani App</h1>
+          <div className="flex justify-center mb-4">
+            <img
+              src="https://cdn.builder.io/api/v1/image/assets%2F9f68bdced9274939b0bcd49e09efd146%2F17959db31c554dfdaeddef5d5757085c?format=webp&width=800"
+              alt="Mylapay"
+              className="h-12 object-contain"
+            />
+          </div>
           <p className="mt-2 text-gray-600">Sign in to your account</p>
         </div>
 
