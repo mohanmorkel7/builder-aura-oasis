@@ -259,11 +259,6 @@ export default function FinOpsAutomation() {
           <EnhancedFinOpsTaskManager />
         </TabsContent>
 
-        {/* Live Monitoring Tab */}
-        <TabsContent value="monitoring" className="space-y-6">
-          <FinOpsMonitoringDashboard />
-        </TabsContent>
-
 
         {/* Notifications Tab */}
         <TabsContent value="notifications" className="space-y-6">
