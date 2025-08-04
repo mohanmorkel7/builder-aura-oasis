@@ -484,7 +484,7 @@ export const ValidationSchemas = {
       "assigned_to",
     ],
     enums: {
-      status: ["pending", "in_progress", "completed", "cancelled"],
+      status: ["pending", "in_progress", "completed", "cancelled", "blocked"],
     },
   },
 
