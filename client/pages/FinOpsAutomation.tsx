@@ -43,6 +43,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import FinOpsTaskManager from "@/components/FinOpsTaskManager";
+import FinOpsMonitoringDashboard from "@/components/FinOpsMonitoringDashboard";
 
 interface AutomationTask {
   id: number;
