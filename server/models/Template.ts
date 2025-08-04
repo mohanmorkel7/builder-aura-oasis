@@ -66,6 +66,7 @@ export interface TemplateStep {
   parallel_execution: boolean;
   dependencies?: string[];
   custom_fields?: Record<string, any>;
+  probability_percent?: number;
   created_at: string;
   step_category?: StepCategory;
 }
