@@ -1010,7 +1010,7 @@ export default function ClientBasedFinOpsTaskManager() {
                           <Activity className="w-4 h-4" />
                           <span>{completedSubtasks}/{totalSubtasks} completed</span>
                         </div>
-                        {viewMode === "daily" && task.duration === "daily" && (
+                        {task.duration === "daily" && (
                           <div className="flex items-center gap-1">
                             <Timer className="w-4 h-4" />
                             <span>
