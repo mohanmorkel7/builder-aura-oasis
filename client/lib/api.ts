@@ -372,6 +372,49 @@ export class ApiClient {
     return this.request(`/leads/template-step/${templateId}/${stepId}/${status}`);
   }
 
+  // FinOps Task Management methods
+  async getFinOpsTasks() {
+    return this.request("/finops/tasks");
+  }
+
+  async createFinOpsTask(taskData: any) {
+    return this.request("/finops/tasks", {
+      method: "POST",
+      body: JSON.stringify(taskData),
+    });
+  }
+
+  async updateFinOpsTask(id: number, taskData: any) {
+    return this.request(`/finops/tasks/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(taskData),
+    });
+  }
+
+  async deleteFinOpsTask(id: number) {
+    return this.request(`/finops/tasks/${id}`, {
+      method: "DELETE",
+    });
+  }
+
+  async updateFinOpsSubTask(taskId: number, subTaskId: string, status: string) {
+    return this.request(`/finops/tasks/${taskId}/subtasks/${subTaskId}`, {
+      method: "PATCH",
+      body: JSON.stringify({ status }),
+    });
+  }
+
+  async getFinOpsActivityLog(taskId?: number) {
+    const params = taskId ? `?taskId=${taskId}` : "";
+    return this.request(`/finops/activity-log${params}`);
+  }
+
+  async runFinOpsTask(taskId: number) {
+    return this.request(`/finops/tasks/${taskId}/run`, {
+      method: "POST",
+    });
+  }
+
   // Lead steps methods
   async getLeadSteps(leadId: number) {
     return this.request(`/leads/${leadId}/steps`);
