@@ -521,4 +521,49 @@ export const ValidationSchemas = {
       type: ["standard", "enterprise", "smb"],
     },
   },
+
+  finopsTask: {
+    required: ["task_name", "assigned_to", "effective_from", "duration", "created_by"],
+    optional: ["description", "reporting_managers", "escalation_managers", "is_active", "status"],
+    enums: {
+      duration: ["daily", "weekly", "monthly"],
+      status: ["active", "inactive", "completed", "overdue"],
+    },
+  },
+
+  finopsSubtask: {
+    required: ["task_id", "name"],
+    optional: ["description", "sla_hours", "sla_minutes", "order_position", "status", "assigned_to", "delay_reason", "delay_notes"],
+    enums: {
+      status: ["pending", "in_progress", "completed", "overdue", "delayed"],
+    },
+  },
+
+  followUp: {
+    required: ["title"],
+    optional: ["description", "due_date", "status", "follow_up_type", "assigned_to", "created_by", "client_id", "lead_id", "ticket_id"],
+    enums: {
+      status: ["pending", "completed", "overdue"],
+      follow_up_type: ["call", "email", "meeting", "document", "proposal", "contract", "onboarding", "general", "sales", "support", "other"],
+    },
+  },
+
+  ticket: {
+    required: ["subject", "created_by"],
+    optional: ["description", "priority_id", "status_id", "category_id", "assigned_to", "related_lead_id", "related_client_id"],
+    enums: {
+      // Ticket enums are handled by separate tables (ticket_priorities, ticket_statuses, ticket_categories)
+    },
+  },
+
+  workflow: {
+    required: ["name", "project_type", "created_by"],
+    optional: ["description", "source_type", "source_id", "status", "priority", "assigned_team", "project_manager_id"],
+    enums: {
+      source_type: ["lead", "manual"],
+      project_type: ["product_development", "finops_process", "integration"],
+      status: ["created", "in_progress", "review", "completed", "on_hold", "cancelled"],
+      priority: ["low", "medium", "high", "critical"],
+    },
+  },
 };
