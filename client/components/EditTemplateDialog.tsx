@@ -103,7 +103,10 @@ export default function EditTemplateDialog({
 
   // Update template mutation
   const updateTemplateMutation = useMutation({
-    mutationFn: (data: any) => apiClient.updateTemplate(templateId!, data),
+    mutationFn: (data: any) => apiClient.request(`/templates-production/${templateId}`, {
+      method: "PUT",
+      body: JSON.stringify(data)
+    }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["templates-admin"] });
       queryClient.invalidateQueries({ queryKey: ["template", templateId] });
