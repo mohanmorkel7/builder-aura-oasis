@@ -102,8 +102,14 @@ const mockPermissions = {
 export default function UserDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { data: user, isLoading, error } = useUser(parseInt(id || "0"));
+
+  // Handle both numeric IDs and string IDs (like azure-1)
+  const userId = id && !isNaN(parseInt(id)) ? parseInt(id) : 0;
+  const { data: user, isLoading, error } = useUser(userId);
   const [resetError, setResetError] = React.useState<string | null>(null);
+
+  // If ID is not numeric, show appropriate error
+  const isInvalidId = id && isNaN(parseInt(id));
 
   const resetPassword = async () => {
     if (!id) return;
