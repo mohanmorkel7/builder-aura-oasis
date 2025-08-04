@@ -59,6 +59,63 @@ interface FinOpsNotification {
 }
 
 // Mock notifications data
+// Transform database notifications to match our interface
+const transformDbNotifications = (dbNotifications: any[]): FinOpsNotification[] => {
+  return dbNotifications.map((dbNotif) => ({
+    id: dbNotif.id.toString(),
+    type: mapDbTypeToFinOpsType(dbNotif.type),
+    title: dbNotif.title || "FinOps Notification",
+    message: dbNotif.description || dbNotif.message || "",
+    task_name: dbNotif.entity_type === "task" ? `Task #${dbNotif.entity_id}` : "Unknown Task",
+    client_name: dbNotif.client_name,
+    subtask_name: dbNotif.subtask_name,
+    assigned_to: dbNotif.assigned_to || "Unassigned",
+    reporting_managers: dbNotif.reporting_managers || [],
+    priority: mapDbPriorityToFinOpsPriority(dbNotif.priority),
+    status: dbNotif.read ? "read" : "unread",
+    created_at: dbNotif.created_at,
+    action_required: dbNotif.priority === "high" || dbNotif.priority === "critical",
+    delay_reason: dbNotif.delay_reason,
+    sla_remaining: dbNotif.sla_remaining,
+  }));
+};
+
+// Map database notification types to FinOps types
+const mapDbTypeToFinOpsType = (dbType: string): FinOpsNotification["type"] => {
+  switch (dbType) {
+    case "overdue":
+      return "sla_overdue";
+    case "warning":
+      return "sla_warning";
+    case "reminder":
+      return "daily_reminder";
+    case "completed":
+      return "task_completed";
+    case "delayed":
+      return "task_delayed";
+    case "escalation":
+      return "escalation";
+    default:
+      return "daily_reminder";
+  }
+};
+
+// Map database priority to FinOps priority
+const mapDbPriorityToFinOpsPriority = (dbPriority: string): FinOpsNotification["priority"] => {
+  switch (dbPriority) {
+    case "high":
+      return "high";
+    case "medium":
+      return "medium";
+    case "low":
+      return "low";
+    case "critical":
+      return "critical";
+    default:
+      return "medium";
+  }
+};
+
 const mockNotifications: FinOpsNotification[] = [
   {
     id: "1",
