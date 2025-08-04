@@ -490,9 +490,13 @@ CREATE TABLE IF NOT EXISTS finops_subtasks (
     description TEXT,
     sla_hours INTEGER DEFAULT 1,
     sla_minutes INTEGER DEFAULT 0,
+    start_time TIME DEFAULT '05:00:00', -- Daily start time
     order_position INTEGER DEFAULT 0,
-    status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'in_progress', 'completed', 'overdue', 'cancelled')),
+    status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'in_progress', 'completed', 'overdue', 'delayed')),
     assigned_to VARCHAR(255),
+    delay_reason VARCHAR(100), -- Reason for delay
+    delay_notes TEXT, -- Additional delay notes
+    alerts_sent TEXT[], -- Array of alert types sent
     started_at TIMESTAMP,
     completed_at TIMESTAMP,
     due_at TIMESTAMP, -- Calculated based on SLA
