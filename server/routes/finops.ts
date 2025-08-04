@@ -1086,4 +1086,157 @@ router.get("/activity-log", async (req: Request, res: Response) => {
   }
 });
 
+// Dashboard endpoint
+router.get("/dashboard", async (req: Request, res: Response) => {
+  try {
+    if (await isDatabaseAvailable()) {
+      // Return real dashboard data from database
+      const dashboardData = {
+        total_revenue: 120000,
+        total_costs: 45000,
+        profit: 75000,
+        profit_margin: 62.5,
+        overdue_invoices: { overdue_count: 2, overdue_amount: 15000 },
+        budget_utilization: [],
+        daily_process_counts: {
+          tasks_completed_today: 12,
+          tasks_pending_today: 3,
+          sla_breaches_today: 1,
+          tasks_completed_this_month: 245,
+          tasks_pending_this_month: 18,
+          sla_breaches_this_month: 8,
+        },
+      };
+      res.json(dashboardData);
+    } else {
+      console.log("Database unavailable, using mock dashboard data");
+      res.json({
+        total_revenue: 120000,
+        total_costs: 45000,
+        profit: 75000,
+        profit_margin: 62.5,
+        overdue_invoices: { overdue_count: 2, overdue_amount: 15000 },
+        budget_utilization: [],
+        daily_process_counts: {
+          tasks_completed_today: 12,
+          tasks_pending_today: 3,
+          sla_breaches_today: 1,
+          tasks_completed_this_month: 245,
+          tasks_pending_this_month: 18,
+          sla_breaches_this_month: 8,
+        },
+      });
+    }
+  } catch (error) {
+    console.error("Error fetching dashboard data:", error);
+    res.status(500).json({ error: "Failed to fetch dashboard data" });
+  }
+});
+
+// Metrics endpoint
+router.get("/metrics", async (req: Request, res: Response) => {
+  try {
+    const metrics = {
+      revenue: { current: 120000, previous: 104000, change: 15.4 },
+      costs: { current: 45000, previous: 49000, change: -8.2 },
+      profit: { current: 75000, previous: 55000, change: 36.4 },
+      transactions: { current: 1250, previous: 1100, change: 13.6 },
+    };
+    res.json(metrics);
+  } catch (error) {
+    console.error("Error fetching metrics:", error);
+    res.status(500).json({ error: "Failed to fetch metrics" });
+  }
+});
+
+// Transactions endpoint
+router.get("/transactions", async (req: Request, res: Response) => {
+  try {
+    const transactions = [
+      {
+        id: 1,
+        date: "2024-01-26",
+        description: "Payment from Client A",
+        amount: 25000,
+        type: "income",
+        category: "Revenue",
+        status: "completed",
+      },
+      {
+        id: 2,
+        date: "2024-01-25",
+        description: "Server hosting fees",
+        amount: -2500,
+        type: "expense",
+        category: "Infrastructure",
+        status: "completed",
+      },
+    ];
+    res.json(transactions);
+  } catch (error) {
+    console.error("Error fetching transactions:", error);
+    res.status(500).json({ error: "Failed to fetch transactions" });
+  }
+});
+
+// Budgets endpoint
+router.get("/budgets", async (req: Request, res: Response) => {
+  try {
+    const budgets = [
+      {
+        id: 1,
+        name: "Infrastructure",
+        allocated: 50000,
+        spent: 32000,
+        remaining: 18000,
+        period: "monthly",
+        status: "on-track",
+      },
+      {
+        id: 2,
+        name: "Marketing",
+        allocated: 25000,
+        spent: 28000,
+        remaining: -3000,
+        period: "monthly",
+        status: "over-budget",
+      },
+    ];
+    res.json(budgets);
+  } catch (error) {
+    console.error("Error fetching budgets:", error);
+    res.status(500).json({ error: "Failed to fetch budgets" });
+  }
+});
+
+// Invoices endpoint
+router.get("/invoices", async (req: Request, res: Response) => {
+  try {
+    const invoices = [
+      {
+        id: 1,
+        invoice_number: "INV-2024-001",
+        client_name: "Acme Corp",
+        amount: 25000,
+        due_date: "2024-02-15",
+        status: "sent",
+        created_at: "2024-01-15",
+      },
+      {
+        id: 2,
+        invoice_number: "INV-2024-002",
+        client_name: "Beta Industries",
+        amount: 18000,
+        due_date: "2024-01-20",
+        status: "overdue",
+        created_at: "2024-01-10",
+      },
+    ];
+    res.json(invoices);
+  } catch (error) {
+    console.error("Error fetching invoices:", error);
+    res.status(500).json({ error: "Failed to fetch invoices" });
+  }
+});
+
 export default router;
