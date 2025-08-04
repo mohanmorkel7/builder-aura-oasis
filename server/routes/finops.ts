@@ -704,6 +704,8 @@ async function checkAndUpdateTaskStatus(taskId: number, userName: string) {
       const totalSubtasks = subtasks.rows.length;
       const completedSubtasks = subtasks.rows.filter(st => st.status === 'completed').length;
       const overdueSubtasks = subtasks.rows.filter(st => st.status === 'overdue').length;
+      const delayedSubtasks = subtasks.rows.filter(st => st.status === 'delayed').length;
+      const inProgressSubtasks = subtasks.rows.filter(st => st.status === 'in_progress').length;
 
       let newTaskStatus = 'active';
       let statusDetails = '';
@@ -711,12 +713,15 @@ async function checkAndUpdateTaskStatus(taskId: number, userName: string) {
       if (overdueSubtasks > 0) {
         newTaskStatus = 'overdue';
         statusDetails = `Task marked as overdue due to ${overdueSubtasks} overdue subtasks`;
+      } else if (delayedSubtasks > 0) {
+        newTaskStatus = 'delayed';
+        statusDetails = `Task marked as delayed due to ${delayedSubtasks} delayed subtasks`;
       } else if (completedSubtasks === totalSubtasks && totalSubtasks > 0) {
         newTaskStatus = 'completed';
         statusDetails = `Task completed - all ${totalSubtasks} subtasks finished`;
-      } else if (completedSubtasks > 0) {
+      } else if (inProgressSubtasks > 0 || completedSubtasks > 0) {
         newTaskStatus = 'in_progress';
-        statusDetails = `Task in progress - ${completedSubtasks}/${totalSubtasks} subtasks completed`;
+        statusDetails = `Task in progress - ${completedSubtasks}/${totalSubtasks} completed, ${inProgressSubtasks} in progress, ${delayedSubtasks} delayed`;
       }
 
       // Update task status
