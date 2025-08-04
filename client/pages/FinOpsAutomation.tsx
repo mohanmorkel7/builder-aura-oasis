@@ -222,14 +222,7 @@ export default function FinOpsAutomation() {
             <BarChart3 className="w-4 h-4 mr-2" />
             Dashboard
           </Button>
-          <Button variant="outline">
-            <Settings className="w-4 h-4 mr-2" />
-            Configure
-          </Button>
-          <Button>
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Refresh Status
-          </Button>
+
         </div>
       </div>
 
