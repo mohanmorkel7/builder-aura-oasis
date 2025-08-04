@@ -350,6 +350,8 @@ export default function ClientBasedFinOpsTaskManager() {
   const [selectedClient, setSelectedClient] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
+  const [dateFilter, setDateFilter] = useState("");
+  const [viewMode, setViewMode] = useState<"all" | "daily">("all");
 
   // Show more/less states for subtasks
   const [expandedTasks, setExpandedTasks] = useState<Set<number>>(new Set());
@@ -613,8 +615,9 @@ export default function ClientBasedFinOpsTaskManager() {
     setIsCreateDialogOpen(true);
   };
 
-  // Filter tasks based on client, status, and search
+  // Filter tasks based on client, status, search, and date
   const filteredTasks = finopsTasks.filter((task: ClientBasedFinOpsTask) => {
+    // Client filter
     if (selectedClient !== "all") {
       if (selectedClient === "unknown") {
         if (task.client_id && task.client_name && task.client_name !== "Unknown Client") return false;
@@ -622,9 +625,29 @@ export default function ClientBasedFinOpsTaskManager() {
         if (task.client_id?.toString() !== selectedClient) return false;
       }
     }
+
+    // Status filter
     if (statusFilter !== "all" && task.status !== statusFilter) return false;
+
+    // Search filter
     if (searchTerm && !task.task_name.toLowerCase().includes(searchTerm.toLowerCase()) &&
         !task.client_name?.toLowerCase().includes(searchTerm.toLowerCase())) return false;
+
+    // Date filter for daily tasks
+    if (viewMode === "daily" && dateFilter) {
+      const filterDate = new Date(dateFilter);
+      const today = new Date();
+      const taskDate = new Date(task.effective_from);
+
+      // For daily tasks, check if task should run on the selected date
+      if (task.duration === "daily") {
+        if (taskDate > filterDate) return false; // Task hasn't started yet
+      } else {
+        // For non-daily tasks, just check if the date matches
+        if (taskDate.toDateString() !== filterDate.toDateString()) return false;
+      }
+    }
+
     return true;
   });
 
@@ -660,9 +683,12 @@ export default function ClientBasedFinOpsTaskManager() {
   // Get client-wise summary
   const getClientSummary = () => {
     const clientSummary: { [key: string]: any } = {};
-    
+
     filteredTasks.forEach((task: ClientBasedFinOpsTask) => {
-      const clientName = task.client_name || "Unknown Client";
+      // Only show clients that have actual client names, skip "Unknown Client"
+      if (!task.client_name || task.client_name === "Unknown Client") return;
+
+      const clientName = task.client_name;
       if (!clientSummary[clientName]) {
         clientSummary[clientName] = {
           total_tasks: 0,
@@ -672,17 +698,17 @@ export default function ClientBasedFinOpsTaskManager() {
           overdue_subtasks: 0,
         };
       }
-      
+
       clientSummary[clientName].total_tasks++;
       clientSummary[clientName].total_subtasks += task.subtasks?.length || 0;
-      
+
       task.subtasks?.forEach(subtask => {
         if (subtask.status === 'completed') clientSummary[clientName].completed_subtasks++;
         if (subtask.status === 'delayed') clientSummary[clientName].delayed_subtasks++;
         if (subtask.status === 'overdue') clientSummary[clientName].overdue_subtasks++;
       });
     });
-    
+
     return clientSummary;
   };
 
@@ -780,46 +806,87 @@ export default function ClientBasedFinOpsTaskManager() {
       {/* Filters */}
       <Card>
         <CardContent className="p-4">
-          <div className="flex flex-wrap gap-4 items-end">
-            <div className="flex-1 min-w-[200px]">
-              <Label>Search Tasks</Label>
-              <Input
-                placeholder="Search by task name or client..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+          <div className="space-y-4">
+            {/* View Mode Toggle */}
+            <div className="flex items-center gap-4">
+              <Label>View Mode:</Label>
+              <div className="flex gap-2">
+                <Button
+                  variant={viewMode === "all" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setViewMode("all")}
+                >
+                  All Tasks
+                </Button>
+                <Button
+                  variant={viewMode === "daily" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setViewMode("daily")}
+                >
+                  Daily Process
+                </Button>
+              </div>
             </div>
-            <div className="min-w-[150px]">
-              <Label>Filter by Client</Label>
-              <Select value={selectedClient} onValueChange={setSelectedClient}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Clients</SelectItem>
-                  <SelectItem value="unknown">Unknown Client</SelectItem>
-                  {clients.map((client: any) => (
-                    <SelectItem key={client.id} value={client.id.toString()}>
-                      {client.company_name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="min-w-[150px]">
-              <Label>Filter by Status</Label>
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="completed">Completed</SelectItem>
-                  <SelectItem value="delayed">Delayed</SelectItem>
-                  <SelectItem value="overdue">Overdue</SelectItem>
-                </SelectContent>
-              </Select>
+
+            <div className="flex flex-wrap gap-4 items-end">
+              <div className="flex-1 min-w-[200px]">
+                <Label>Search Tasks</Label>
+                <Input
+                  placeholder="Search by task name or client..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+
+              {viewMode === "daily" && (
+                <div className="min-w-[150px]">
+                  <Label>Filter by Date</Label>
+                  <Input
+                    type="date"
+                    value={dateFilter}
+                    onChange={(e) => setDateFilter(e.target.value)}
+                  />
+                </div>
+              )}
+
+              <div className="min-w-[150px]">
+                <Label>Filter by Client</Label>
+                <Select value={selectedClient} onValueChange={setSelectedClient}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Clients</SelectItem>
+                    {clients.length > 0 ? (
+                      clients.map((client: any) => (
+                        <SelectItem key={client.id} value={client.id.toString()}>
+                          {client.company_name || client.client_name || `Client ${client.id}`}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <SelectItem value="no-clients" disabled>
+                        No clients available
+                      </SelectItem>
+                    )}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="min-w-[150px]">
+                <Label>Filter by Status</Label>
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Status</SelectItem>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="completed">Completed</SelectItem>
+                    <SelectItem value="delayed">Delayed</SelectItem>
+                    <SelectItem value="overdue">Overdue</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
         </CardContent>
@@ -911,9 +978,11 @@ export default function ClientBasedFinOpsTaskManager() {
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
                         <CardTitle className="text-lg break-words">{task.task_name}</CardTitle>
-                        <Badge variant="outline" className="text-blue-600">
-                          {task.client_name || "No Client"}
-                        </Badge>
+                        {task.client_name && task.client_name !== "Unknown Client" && (
+                          <Badge variant="outline" className="text-blue-600">
+                            {task.client_name}
+                          </Badge>
+                        )}
                         <Badge variant={task.is_active ? "default" : "secondary"}>
                           {task.is_active ? "Active" : "Inactive"}
                         </Badge>
