@@ -1225,11 +1225,16 @@ export default function ClientBasedFinOpsTaskManager() {
                     )}
                   </SelectContent>
                 </Select>
-                {clients.length === 0 && (
+                {!clientsLoading && clients.length === 0 && (
                   <div className="mt-2">
                     <p className="text-sm text-red-600">
                       No clients found. Clients are automatically loaded from leads.
                     </p>
+                    {clientsError && (
+                      <p className="text-xs text-gray-500 mt-1">
+                        Error: {clientsError.message}
+                      </p>
+                    )}
                     <Button
                       type="button"
                       variant="outline"
