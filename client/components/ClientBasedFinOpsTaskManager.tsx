@@ -465,6 +465,7 @@ export default function ClientBasedFinOpsTaskManager() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["client-finops-tasks"] });
       setEditingTask(null);
+      setIsCreateDialogOpen(false);
       resetForm();
     },
   });
