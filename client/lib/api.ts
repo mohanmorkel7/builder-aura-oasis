@@ -117,6 +117,35 @@ export class ApiClient {
     }
   }
 
+  private xmlHttpRequestFallback(url: string, config: RequestInit): Promise<Response> {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open(config.method || 'GET', url);
+
+      // Set headers
+      if (config.headers) {
+        Object.entries(config.headers).forEach(([key, value]) => {
+          xhr.setRequestHeader(key, value as string);
+        });
+      }
+
+      xhr.onload = () => {
+        const response = new Response(xhr.responseText, {
+          status: xhr.status,
+          statusText: xhr.statusText,
+          headers: new Headers()
+        });
+        resolve(response);
+      };
+
+      xhr.onerror = () => {
+        reject(new Error('Network error'));
+      };
+
+      xhr.send(config.body as string || null);
+    });
+  }
+
   // Auth methods
   async login(email: string, password: string) {
     return this.request("/users/auth/login", {
