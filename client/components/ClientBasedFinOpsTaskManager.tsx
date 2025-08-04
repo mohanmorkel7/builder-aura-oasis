@@ -231,7 +231,7 @@ function SortableSubTaskItem({ subtask, index, onUpdate, onRemove, onStatusChang
                 <div>
                   <Label>Subtask Name *</Label>
                   <Input
-                    value={subtask.name}
+                    value={subtask.name || ''}
                     onChange={(e) => onUpdate(index, 'name', e.target.value)}
                     placeholder="e.g., RBL DUMP VS TCP DATA (DAILY ALERT MAIL)"
                     required
@@ -242,7 +242,7 @@ function SortableSubTaskItem({ subtask, index, onUpdate, onRemove, onStatusChang
                   <Label>Daily Start Time *</Label>
                   <Input
                     type="time"
-                    value={subtask.start_time}
+                    value={subtask.start_time || ''}
                     onChange={(e) => onUpdate(index, 'start_time', e.target.value)}
                     required
                   />
