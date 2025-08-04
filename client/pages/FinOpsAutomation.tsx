@@ -266,6 +266,11 @@ export default function FinOpsAutomation() {
           <FinOpsNotifications />
         </TabsContent>
 
+        {/* Activity Log Tab */}
+        <TabsContent value="activity-log" className="space-y-6">
+          <FinOpsActivityLog />
+        </TabsContent>
+
 
         {/* Notifications Tab */}
         <TabsContent value="notifications" className="space-y-6">
