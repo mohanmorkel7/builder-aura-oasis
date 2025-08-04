@@ -106,21 +106,21 @@ export default function FinOpsMonitoringDashboard() {
   // Fetch daily tasks
   const { data: dailyTasksData, isLoading: tasksLoading, refetch: refetchTasks } = useQuery<DailyTasksResponse>({
     queryKey: ["finops-daily-tasks", selectedDate],
-    queryFn: () => apiClient.get(`/finops/daily-tasks?date=${selectedDate}`).then(res => res.data),
+    queryFn: () => apiClient.getFinOpsDailyTasks(selectedDate),
     refetchInterval: autoRefresh ? refreshInterval : false,
   });
 
   // Fetch activity log
   const { data: activityLog = [], isLoading: activityLoading, refetch: refetchActivity } = useQuery<ActivityLogEntry[]>({
     queryKey: ["finops-activity-log"],
-    queryFn: () => apiClient.get('/finops/activity-log?limit=50').then(res => res.data),
+    queryFn: () => apiClient.getFinOpsActivityLog({ limit: 50 }),
     refetchInterval: autoRefresh ? refreshInterval : false,
   });
 
   // Fetch scheduler status
   const { data: schedulerStatus, refetch: refetchScheduler } = useQuery({
     queryKey: ["finops-scheduler-status"],
-    queryFn: () => apiClient.get('/finops/scheduler-status').then(res => res.data),
+    queryFn: () => apiClient.getFinOpsSchedulerStatus(),
     refetchInterval: autoRefresh ? 60000 : false, // 1 minute
   });
 
