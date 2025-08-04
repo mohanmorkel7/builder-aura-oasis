@@ -546,9 +546,15 @@ export default function ClientBasedFinOpsTaskManager() {
 
   // Filter tasks based on client, status, and search
   const filteredTasks = finopsTasks.filter((task: ClientBasedFinOpsTask) => {
-    if (selectedClient !== "all" && task.client_id?.toString() !== selectedClient) return false;
+    if (selectedClient !== "all") {
+      if (selectedClient === "unknown") {
+        if (task.client_id && task.client_name && task.client_name !== "Unknown Client") return false;
+      } else {
+        if (task.client_id?.toString() !== selectedClient) return false;
+      }
+    }
     if (statusFilter !== "all" && task.status !== statusFilter) return false;
-    if (searchTerm && !task.task_name.toLowerCase().includes(searchTerm.toLowerCase()) && 
+    if (searchTerm && !task.task_name.toLowerCase().includes(searchTerm.toLowerCase()) &&
         !task.client_name?.toLowerCase().includes(searchTerm.toLowerCase())) return false;
     return true;
   });
@@ -722,6 +728,7 @@ export default function ClientBasedFinOpsTaskManager() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Clients</SelectItem>
+                  <SelectItem value="unknown">Unknown Client</SelectItem>
                   {clients.map((client: any) => (
                     <SelectItem key={client.id} value={client.id.toString()}>
                       {client.company_name}
@@ -958,18 +965,30 @@ export default function ClientBasedFinOpsTaskManager() {
                 <Select
                   value={taskForm.client_id}
                   onValueChange={(value) => setTaskForm(prev => ({ ...prev, client_id: value }))}
+                  required
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select client" />
                   </SelectTrigger>
                   <SelectContent>
-                    {clients.map((client: any) => (
-                      <SelectItem key={client.id} value={client.id.toString()}>
-                        {client.company_name}
+                    {clients.length > 0 ? (
+                      clients.map((client: any) => (
+                        <SelectItem key={client.id} value={client.id.toString()}>
+                          {client.company_name || `Client ${client.id}`}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <SelectItem value="" disabled>
+                        No clients available
                       </SelectItem>
-                    ))}
+                    )}
                   </SelectContent>
                 </Select>
+                {clients.length === 0 && (
+                  <p className="text-sm text-red-600 mt-1">
+                    No clients found. Please add clients first.
+                  </p>
+                )}
               </div>
 
               <div>
@@ -1046,22 +1065,28 @@ export default function ClientBasedFinOpsTaskManager() {
               <div>
                 <Label>Reporting Managers</Label>
                 <div className="flex gap-2 mt-1">
-                  <Input
-                    placeholder="Add reporting manager (press Enter)"
-                    onKeyPress={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault();
-                        const value = (e.target as HTMLInputElement).value.trim();
-                        if (value && !taskForm.reporting_managers.includes(value)) {
-                          setTaskForm(prev => ({
-                            ...prev,
-                            reporting_managers: [...prev.reporting_managers, value]
-                          }));
-                          (e.target as HTMLInputElement).value = '';
-                        }
+                  <Select
+                    value=""
+                    onValueChange={(value) => {
+                      if (value && !taskForm.reporting_managers.includes(value)) {
+                        setTaskForm(prev => ({
+                          ...prev,
+                          reporting_managers: [...prev.reporting_managers, value]
+                        }));
                       }
                     }}
-                  />
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select reporting manager" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {users.map((user: any) => (
+                        <SelectItem key={user.id} value={`${user.first_name} ${user.last_name}`}>
+                          {user.first_name} {user.last_name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {taskForm.reporting_managers.map((manager, index) => (
@@ -1082,22 +1107,28 @@ export default function ClientBasedFinOpsTaskManager() {
               <div>
                 <Label>Escalation Managers</Label>
                 <div className="flex gap-2 mt-1">
-                  <Input
-                    placeholder="Add escalation manager (press Enter)"
-                    onKeyPress={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault();
-                        const value = (e.target as HTMLInputElement).value.trim();
-                        if (value && !taskForm.escalation_managers.includes(value)) {
-                          setTaskForm(prev => ({
-                            ...prev,
-                            escalation_managers: [...prev.escalation_managers, value]
-                          }));
-                          (e.target as HTMLInputElement).value = '';
-                        }
+                  <Select
+                    value=""
+                    onValueChange={(value) => {
+                      if (value && !taskForm.escalation_managers.includes(value)) {
+                        setTaskForm(prev => ({
+                          ...prev,
+                          escalation_managers: [...prev.escalation_managers, value]
+                        }));
                       }
                     }}
-                  />
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select escalation manager" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {users.map((user: any) => (
+                        <SelectItem key={user.id} value={`${user.first_name} ${user.last_name}`}>
+                          {user.first_name} {user.last_name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {taskForm.escalation_managers.map((manager, index) => (
