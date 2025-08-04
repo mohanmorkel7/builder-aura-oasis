@@ -687,9 +687,13 @@ router.get("/category/:categoryId", async (req: Request, res: Response) => {
     } else {
       console.log("Database unavailable, filtering mock templates by category");
       const categoryId = parseInt(req.params.categoryId);
+      console.log(`Filtering for category ID: ${categoryId}`);
+      console.log(`Available templates:`, mockTemplates.map(t => ({ id: t.id, name: t.name, category_id: t.category_id, category: t.category })));
       const filteredTemplates = mockTemplates.filter(
         (t) => t.category?.id === categoryId,
       );
+      console.log(`Filtered templates found: ${filteredTemplates.length}`);
+      console.log(`Filtered templates:`, filteredTemplates);
       res.json(filteredTemplates);
     }
   } catch (error) {
