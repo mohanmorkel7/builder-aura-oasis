@@ -96,6 +96,7 @@ export interface CreateTemplateStepData {
   parallel_execution?: boolean;
   dependencies?: string[];
   custom_fields?: Record<string, any>;
+  probability_percent?: number;
 }
 
 export interface UpdateTemplateData {
