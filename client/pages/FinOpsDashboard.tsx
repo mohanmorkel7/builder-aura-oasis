@@ -825,18 +825,10 @@ export default function FinOpsDashboard() {
                         </td>
                         <td className="p-4">{invoice.client_name || "N/A"}</td>
                         <td className="p-4">
-                          {(() => {
-                            if (!invoice.invoice_date) return "N/A";
-                            const date = new Date(invoice.invoice_date);
-                            return isNaN(date.getTime()) ? "N/A" : format(date, "MMM d, yyyy");
-                          })()}
+                          {formatSafeDate(invoice.invoice_date)}
                         </td>
                         <td className="p-4">
-                          {(() => {
-                            if (!invoice.due_date) return "N/A";
-                            const date = new Date(invoice.due_date);
-                            return isNaN(date.getTime()) ? "N/A" : format(date, "MMM d, yyyy");
-                          })()}
+                          {formatSafeDate(invoice.due_date)}
                         </td>
                         <td className="p-4 text-right font-medium">
                           ₹{invoice.total_amount?.toLocaleString()}
