@@ -247,8 +247,9 @@ export default function FinOpsAutomation() {
         </Alert>
       )}
 
-      <Tabs defaultValue="daily-processes" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+      <Tabs defaultValue="task-management" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-5">
+          <TabsTrigger value="task-management">Task Management</TabsTrigger>
           <TabsTrigger value="daily-processes">Daily Processes</TabsTrigger>
           <TabsTrigger value="automations">Automations</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
