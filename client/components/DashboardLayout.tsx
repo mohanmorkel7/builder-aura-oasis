@@ -160,7 +160,8 @@ const getNotificationsFromFollowUps = async (
           type: "follow_up_overdue",
           title: "Follow-up Overdue",
           message: `Overdue: ${followUp.title}`,
-          follow_up_id: followUp.id,
+          entity_id: followUp.id,
+          entity_type: "follow_up",
           created_at: followUp.updated_at,
           read: false,
         });
