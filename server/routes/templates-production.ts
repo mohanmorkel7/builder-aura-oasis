@@ -693,7 +693,11 @@ router.get("/step-categories", async (req: Request, res: Response) => {
 // Get templates by category
 router.get("/category/:categoryId", async (req: Request, res: Response) => {
   try {
+    const categoryId = parseInt(req.params.categoryId);
+    console.log(`Fetching templates for category ID: ${categoryId}`);
+
     if (await isDatabaseAvailable()) {
+      console.log("Database is available, querying real data");
       const categoryId = parseInt(req.params.categoryId);
       if (isNaN(categoryId)) {
         return res.status(400).json({ error: "Invalid category ID" });
