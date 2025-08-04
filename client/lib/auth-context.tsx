@@ -61,6 +61,7 @@ const azureGroupMappings: Record<string, UserRole> = {
   "Development Team": "development",
   "Database Team": "db",
   "FinOps Team": "finops",
+  "Finance Team": "finance",
   "HR Management": "hr_management",
   "Infrastructure Team": "infra",
   "Switch Team": "switch_team",
