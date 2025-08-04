@@ -674,6 +674,7 @@ export default function ClientBasedFinOpsTaskManager() {
 
   // Filter tasks based on client, status, search, and date
   const filteredTasks = finopsTasks.filter((task: ClientBasedFinOpsTask) => {
+    console.log("Processing task:", task.task_name, "for filtering");
     // Client filter from summary (takes priority)
     if (selectedClientFromSummary) {
       if (task.client_name !== selectedClientFromSummary) return false;
