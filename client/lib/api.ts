@@ -22,7 +22,15 @@ export class ApiClient {
 
       // Use native fetch to avoid third-party interceptors
       const nativeFetch = window.fetch.bind(window);
-      const response = await nativeFetch(url, config);
+      let response: Response;
+
+      try {
+        response = await nativeFetch(url, config);
+      } catch (fetchError) {
+        // Fallback to XMLHttpRequest if fetch is blocked
+        console.log("Fetch failed, trying XMLHttpRequest fallback");
+        response = await this.xmlHttpRequestFallback(url, config);
+      }
 
       if (!response.ok) {
         console.log("API Response not OK. Status:", response.status, "StatusText:", response.statusText);
