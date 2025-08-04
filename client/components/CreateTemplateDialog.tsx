@@ -48,7 +48,6 @@ interface TemplateStep {
   auto_alert: boolean;
   email_reminder: boolean;
   step_category_id?: number;
-  assigned_role?: string;
   required_documents?: string[];
   approval_required: boolean;
   parallel_execution: boolean;
@@ -70,7 +69,7 @@ const iconMap = {
   Settings,
 };
 
-const roles = ["admin", "sales", "product", "support", "finance"];
+
 
 export default function CreateTemplateDialog({
   onSuccess,
@@ -128,7 +127,7 @@ export default function CreateTemplateDialog({
         auto_alert: step.auto_alert,
         email_reminder: step.email_reminder,
         step_category_id: step.step_category_id,
-        assigned_role: step.assigned_role,
+
         required_documents: step.required_documents,
         approval_required: step.approval_required,
         parallel_execution: step.parallel_execution,
@@ -392,37 +391,15 @@ export default function CreateTemplateDialog({
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label>Step Name *</Label>
-                      <Input
-                        value={step.name}
-                        onChange={(e) =>
-                          updateStep(step.id, { name: e.target.value })
-                        }
-                        placeholder="Enter step name"
-                      />
-                    </div>
-                    <div>
-                      <Label>Assigned Role</Label>
-                      <Select
-                        value={step.assigned_role || ""}
-                        onValueChange={(value) =>
-                          updateStep(step.id, { assigned_role: value })
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select role" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {roles.map((role) => (
-                            <SelectItem key={role} value={role}>
-                              {role.charAt(0).toUpperCase() + role.slice(1)}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                  <div>
+                    <Label>Step Name *</Label>
+                    <Input
+                      value={step.name}
+                      onChange={(e) =>
+                        updateStep(step.id, { name: e.target.value })
+                      }
+                      placeholder="Enter step name"
+                    />
                   </div>
 
                   <div>
@@ -530,11 +507,7 @@ export default function CreateTemplateDialog({
                       <span className="text-gray-500">
                         {step.default_eta_days}d
                       </span>
-                      {step.assigned_role && (
-                        <Badge variant="secondary" className="text-xs">
-                          {step.assigned_role}
-                        </Badge>
-                      )}
+
                     </div>
                   ))}
                   {steps.length === 0 && (
