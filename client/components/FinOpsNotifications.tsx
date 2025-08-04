@@ -28,6 +28,7 @@ import {
   CheckCircle,
   Clock,
   Users,
+  User,
   Calendar,
   MessageSquare,
   Filter,
