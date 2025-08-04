@@ -132,6 +132,7 @@ export default function LeadDashboard() {
     try {
       await deleteLead.mutateAsync(partialSaveId);
       console.log(`Draft ${partialSaveName} deleted successfully`);
+      // Refresh both partial saves and main leads to ensure clean state
       refetchPartialSaves();
     } catch (error) {
       console.error("Failed to delete draft:", error);
