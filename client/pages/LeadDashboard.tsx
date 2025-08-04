@@ -155,8 +155,18 @@ export default function LeadDashboard() {
     }
   };
 
-  // Filter leads based on search and filters
+  // Filter leads based on search and filters, excluding partial saves
   const filteredLeads = leads.filter((lead: any) => {
+    // Exclude partial saves from main leads list
+    const isPartialSave = lead.client_name === 'PARTIAL_SAVE_IN_PROGRESS' ||
+                         (lead.notes && typeof lead.notes === 'string' &&
+                          JSON.parse(lead.notes).isPartialSave === true) ||
+                         lead.is_partial === true;
+
+    if (isPartialSave) {
+      return false;
+    }
+
     const matchesSearch =
       lead.client_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       lead.lead_id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
