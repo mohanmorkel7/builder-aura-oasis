@@ -230,20 +230,32 @@ export default function FinOpsTaskManager({ onTaskSelect }: FinOpsTaskManagerPro
     }));
   };
 
-  const handleDragEnd = (result: DropResult) => {
-    if (!result.destination) return;
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
-    const items = Array.from(taskForm.subtasks);
-    const [reorderedItem] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, reorderedItem);
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
 
-    // Update order positions
-    const updatedItems = items.map((item, index) => ({
-      ...item,
-      order_position: index,
-    }));
+    if (active.id !== over?.id) {
+      setTaskForm(prev => {
+        const oldIndex = prev.subtasks.findIndex(item => item.id === active.id);
+        const newIndex = prev.subtasks.findIndex(item => item.id === over?.id);
 
-    setTaskForm(prev => ({ ...prev, subtasks: updatedItems }));
+        const reorderedSubtasks = arrayMove(prev.subtasks, oldIndex, newIndex);
+
+        // Update order positions
+        const updatedItems = reorderedSubtasks.map((item, index) => ({
+          ...item,
+          order_position: index,
+        }));
+
+        return { ...prev, subtasks: updatedItems };
+      });
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
