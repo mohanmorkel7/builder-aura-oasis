@@ -370,7 +370,7 @@ export default function FinOpsTaskManager({ onTaskSelect }: FinOpsTaskManagerPro
       assigned_to: task.assigned_to,
       reporting_managers: task.reporting_managers,
       escalation_managers: task.escalation_managers,
-      effective_from: task.effective_from,
+      effective_from: task.effective_from ? new Date(task.effective_from).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
       duration: task.duration,
       is_active: task.is_active,
       subtasks: task.subtasks,
