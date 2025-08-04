@@ -40,10 +40,12 @@ app.listen(port, () => {
 // Graceful shutdown
 process.on("SIGTERM", () => {
   console.log("🛑 Received SIGTERM, shutting down gracefully");
+  finopsScheduler.stop();
   process.exit(0);
 });
 
 process.on("SIGINT", () => {
   console.log("🛑 Received SIGINT, shutting down gracefully");
+  finopsScheduler.stop();
   process.exit(0);
 });
