@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(255) UNIQUE NOT NULL,
     phone VARCHAR(20),
     password_hash VARCHAR(255) NOT NULL,
-    role VARCHAR(20) NOT NULL CHECK (role IN ('admin', 'sales', 'product')),
+    role VARCHAR(20) NOT NULL CHECK (role IN ('admin', 'sales', 'product', 'development', 'db', 'finops', 'finance', 'hr_management', 'infra', 'switch_team')),
     department VARCHAR(100),
     manager_id INTEGER REFERENCES users(id),
     status VARCHAR(20) DEFAULT 'active' CHECK (status IN ('active', 'inactive', 'pending')),
