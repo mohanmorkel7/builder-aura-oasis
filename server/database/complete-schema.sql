@@ -846,3 +846,50 @@ VALUES
     1
 )
 ON CONFLICT DO NOTHING;
+
+-- Insert sample FinOps task data
+INSERT INTO finops_tasks (
+    task_name, description, assigned_to, reporting_managers, escalation_managers,
+    effective_from, duration, is_active, created_by
+) VALUES (
+    'CLEARING - FILE TRANSFER AND VALIDATION',
+    'clearing daily steps for file transfer',
+    'John Durairaj',
+    '["Albert", "Hari"]'::jsonb,
+    '["Albert", "Hari"]'::jsonb,
+    CURRENT_DATE,
+    'daily',
+    true,
+    1
+) ON CONFLICT DO NOTHING;
+
+-- Insert sample subtasks for the main task
+INSERT INTO finops_subtasks (task_id, name, description, sla_hours, sla_minutes, order_position)
+SELECT
+    t.id,
+    unnest(ARRAY[
+        'RBL DUMP VS TCP DATA (DAILY ALERT MAIL) VS DAILY STATUS FILE COUNT',
+        'MASTER AND VISA FILE VALIDATION',
+        'VISA - VALIDATION OF THE BASE 2 FILE',
+        'SHARING OF THE FILE TO M2P',
+        'MASTER - IPM FILE - upload the file in TDG, count check, change format as clearing upload tool',
+        'MASTER - IPM FILE - upload in clearing optimizer and run, report check if rejections present validation to be done and run again',
+        'MASTER - IPM FILE - saving no error file in TDG in original format and paste it in end point folder',
+        'MASTER - IPM FILE - login MFE, check for no error file and delete in endpoint folder and transfer the file to network'
+    ]),
+    unnest(ARRAY[
+        'Daily reconciliation check',
+        'Validate master and visa files',
+        'Base 2 file validation for Visa',
+        'Share validated files to M2P',
+        'IPM file processing in TDG',
+        'Clearing optimizer processing',
+        'Save processed files to endpoint',
+        'Final file transfer to network'
+    ]),
+    unnest(ARRAY[2, 1, 0, 0, 1, 2, 0, 1]),
+    unnest(ARRAY[30, 0, 45, 30, 30, 0, 30, 0]),
+    unnest(ARRAY[0, 1, 2, 3, 4, 5, 6, 7])
+FROM finops_tasks t
+WHERE t.task_name = 'CLEARING - FILE TRANSFER AND VALIDATION'
+AND NOT EXISTS (SELECT 1 FROM finops_subtasks WHERE task_id = t.id);
