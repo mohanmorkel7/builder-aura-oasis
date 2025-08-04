@@ -700,13 +700,29 @@ export default function ClientBasedFinOpsTaskManager() {
       const filterDate = new Date(dateFilter);
       const taskDate = new Date(task.effective_from);
 
+      console.log("Date filtering:", {
+        filterDate: filterDate.toDateString(),
+        taskDate: taskDate.toDateString(),
+        taskName: task.task_name,
+        duration: task.duration,
+        effective_from: task.effective_from
+      });
+
       // For daily tasks, check if task should run on the selected date
       if (task.duration === "daily") {
-        if (taskDate > filterDate) return false; // Task hasn't started yet
+        // Daily task should show if it started on or before the selected date
+        if (taskDate > filterDate) {
+          console.log("Filtering out daily task - not started yet");
+          return false; // Task hasn't started yet
+        }
       } else {
-        // For non-daily tasks, just check if the date matches
-        if (taskDate.toDateString() !== filterDate.toDateString()) return false;
+        // For non-daily tasks, check if the date matches exactly
+        if (taskDate.toDateString() !== filterDate.toDateString()) {
+          console.log("Filtering out non-daily task - date doesn't match");
+          return false;
+        }
       }
+      console.log("Task passed date filter");
     }
 
     return true;
