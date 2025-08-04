@@ -169,10 +169,19 @@ const mockNotifications: FinOpsNotification[] = [
 ];
 
 export default function FinOpsNotifications() {
-  const [notifications, setNotifications] = useState<FinOpsNotification[]>(mockNotifications);
   const [filterType, setFilterType] = useState<string>("all");
   const [filterPriority, setFilterPriority] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
+
+  // Fetch notifications from database
+  const { data: dbNotifications = [], isLoading, refetch } = useQuery({
+    queryKey: ["finops-notifications"],
+    queryFn: () => apiClient.request("/notifications-production"),
+    refetchInterval: 30000, // Refresh every 30 seconds
+  });
+
+  // Transform database notifications to match our interface or fallback to mock
+  const notifications = dbNotifications.length > 0 ? transformDbNotifications(dbNotifications) : mockNotifications;
 
   // Filter notifications
   const filteredNotifications = notifications.filter(notification => {
@@ -182,30 +191,43 @@ export default function FinOpsNotifications() {
     return true;
   });
 
-  const markAsRead = (notificationId: string) => {
-    setNotifications(prev => 
-      prev.map(notification => 
-        notification.id === notificationId 
-          ? { ...notification, status: "read" as const }
-          : notification
-      )
-    );
+  const markAsRead = async (notificationId: string) => {
+    try {
+      await apiClient.request(`/notifications-production/${notificationId}/read`, {
+        method: "PUT"
+      });
+      refetch(); // Refresh the data
+    } catch (error) {
+      console.error("Failed to mark notification as read:", error);
+    }
   };
 
-  const markAsArchived = (notificationId: string) => {
-    setNotifications(prev => 
-      prev.map(notification => 
-        notification.id === notificationId 
-          ? { ...notification, status: "archived" as const }
-          : notification
-      )
-    );
+  const markAsArchived = async (notificationId: string) => {
+    try {
+      await apiClient.request(`/notifications-production/${notificationId}`, {
+        method: "DELETE"
+      });
+      refetch(); // Refresh the data
+    } catch (error) {
+      console.error("Failed to archive notification:", error);
+    }
   };
 
-  const markAllAsRead = () => {
-    setNotifications(prev => 
-      prev.map(notification => ({ ...notification, status: "read" as const }))
-    );
+  const markAllAsRead = async () => {
+    try {
+      // Mark all unread notifications as read
+      const unreadNotifications = notifications.filter(n => n.status === "unread");
+      await Promise.all(
+        unreadNotifications.map(notification =>
+          apiClient.request(`/notifications-production/${notification.id}/read`, {
+            method: "PUT"
+          })
+        )
+      );
+      refetch(); // Refresh the data
+    } catch (error) {
+      console.error("Failed to mark all notifications as read:", error);
+    }
   };
 
   const getNotificationIcon = (type: string) => {
@@ -290,8 +312,8 @@ export default function FinOpsNotifications() {
             <CheckCircle className="w-4 h-4 mr-1" />
             Mark All Read
           </Button>
-          <Button variant="outline" size="sm">
-            <RefreshCw className="w-4 h-4 mr-1" />
+          <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isLoading}>
+            <RefreshCw className={`w-4 h-4 mr-1 ${isLoading ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
         </div>
