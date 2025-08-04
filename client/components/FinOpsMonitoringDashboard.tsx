@@ -173,7 +173,7 @@ export default function FinOpsMonitoringDashboard() {
 
   const triggerSLACheck = async () => {
     try {
-      await apiClient.post('/finops/check-sla');
+      await apiClient.triggerFinOpsSLACheck();
       alert('SLA check triggered successfully');
       refetchTasks();
     } catch (error) {
@@ -184,7 +184,7 @@ export default function FinOpsMonitoringDashboard() {
 
   const triggerDailyExecution = async () => {
     try {
-      await apiClient.post('/finops/trigger-daily');
+      await apiClient.triggerFinOpsDailyExecution();
       alert('Daily execution triggered successfully');
       refetchTasks();
     } catch (error) {
