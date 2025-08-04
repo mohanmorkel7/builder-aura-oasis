@@ -44,6 +44,7 @@ import {
 import { format } from "date-fns";
 import ClientBasedFinOpsTaskManager from "@/components/ClientBasedFinOpsTaskManager";
 import FinOpsNotifications from "@/components/FinOpsNotifications";
+import FinOpsActivityLog from "@/components/FinOpsActivityLog";
 
 interface AutomationTask {
   id: number;
