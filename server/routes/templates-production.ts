@@ -719,6 +719,7 @@ router.get("/category/:categoryId", async (req: Request, res: Response) => {
     `;
 
       const result = await pool.query(query, [categoryId]);
+      console.log(`Database query returned ${result.rows.length} templates for category ${categoryId}`);
 
       const templates = result.rows.map((row) => ({
         id: row.id,
