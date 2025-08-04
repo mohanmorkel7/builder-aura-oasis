@@ -108,9 +108,6 @@ export default function CreateTicketForm({
       assigned_to: formData.assigned_to
         ? parseInt(formData.assigned_to)
         : undefined,
-      estimated_hours: formData.estimated_hours
-        ? parseFloat(formData.estimated_hours)
-        : undefined,
       created_by: currentUser?.id || "1",
       related_lead_id: relatedLeadId,
       related_client_id: relatedClientId,
