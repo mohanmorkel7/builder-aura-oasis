@@ -25,7 +25,7 @@ export default function ViewTemplateDialog({
 }: ViewTemplateDialogProps) {
   const { data: template, isLoading } = useQuery({
     queryKey: ["template", templateId],
-    queryFn: () => (templateId ? apiClient.getTemplate(templateId) : null),
+    queryFn: () => (templateId ? apiClient.request(`/templates-production/${templateId}`) : null),
     enabled: !!templateId && isOpen,
   });
 
