@@ -87,7 +87,10 @@ export default function CreateTemplateDialog({
   const [activeTab, setActiveTab] = useState("basic");
 
   const createTemplateMutation = useMutation({
-    mutationFn: (data: any) => apiClient.createTemplate(data),
+    mutationFn: (data: any) => apiClient.request("/templates-production", {
+      method: "POST",
+      body: JSON.stringify(data)
+    }),
     onSuccess: () => {
       onSuccess();
       resetForm();
