@@ -462,4 +462,125 @@ router.get("/health", async (req: Request, res: Response) => {
   }
 });
 
+// Dashboard endpoint for FinOps dashboard
+router.post("/dashboard", async (req: Request, res: Response) => {
+  try {
+    await requireDatabase();
+
+    const { period, start_date, end_date } = req.body;
+
+    // Get task statistics from database
+    const tasksQuery = `
+      SELECT
+        COUNT(*) as total_tasks,
+        COUNT(CASE WHEN status = 'active' THEN 1 END) as active_tasks,
+        COUNT(CASE WHEN status = 'completed' THEN 1 END) as completed_tasks,
+        COUNT(CASE WHEN status = 'overdue' THEN 1 END) as overdue_tasks
+      FROM finops_tasks
+      WHERE deleted_at IS NULL
+    `;
+
+    const subtasksQuery = `
+      SELECT
+        COUNT(*) as total_subtasks,
+        COUNT(CASE WHEN status = 'completed' THEN 1 END) as completed_subtasks,
+        COUNT(CASE WHEN status = 'pending' THEN 1 END) as pending_subtasks,
+        COUNT(CASE WHEN status = 'overdue' THEN 1 END) as overdue_subtasks,
+        COUNT(CASE WHEN DATE(created_at) = CURRENT_DATE THEN 1 END) as tasks_today,
+        COUNT(CASE WHEN status = 'completed' AND DATE(completed_at) = CURRENT_DATE THEN 1 END) as completed_today,
+        COUNT(CASE WHEN status = 'pending' AND DATE(created_at) = CURRENT_DATE THEN 1 END) as pending_today,
+        COUNT(CASE WHEN status = 'overdue' AND DATE(updated_at) = CURRENT_DATE THEN 1 END) as sla_breaches_today,
+        COUNT(CASE WHEN status = 'completed' AND DATE(completed_at) >= DATE_TRUNC('month', CURRENT_DATE) THEN 1 END) as completed_this_month,
+        COUNT(CASE WHEN status = 'pending' AND DATE(created_at) >= DATE_TRUNC('month', CURRENT_DATE) THEN 1 END) as pending_this_month,
+        COUNT(CASE WHEN status = 'overdue' AND DATE(updated_at) >= DATE_TRUNC('month', CURRENT_DATE) THEN 1 END) as sla_breaches_this_month
+      FROM finops_subtasks
+    `;
+
+    const [tasksResult, subtasksResult] = await Promise.all([
+      pool.query(tasksQuery),
+      pool.query(subtasksQuery)
+    ]);
+
+    const taskStats = tasksResult.rows[0];
+    const subtaskStats = subtasksResult.rows[0];
+
+    const dashboardData = {
+      total_revenue: 120000,
+      total_costs: 45000,
+      profit: 75000,
+      profit_margin: 62.5,
+      overdue_invoices: { overdue_count: parseInt(subtaskStats.overdue_subtasks) || 0, overdue_amount: 15000 },
+      budget_utilization: [],
+      daily_process_counts: {
+        tasks_completed_today: parseInt(subtaskStats.completed_today) || 0,
+        tasks_pending_today: parseInt(subtaskStats.pending_today) || 0,
+        sla_breaches_today: parseInt(subtaskStats.sla_breaches_today) || 0,
+        tasks_completed_this_month: parseInt(subtaskStats.completed_this_month) || 0,
+        tasks_pending_this_month: parseInt(subtaskStats.pending_this_month) || 0,
+        sla_breaches_this_month: parseInt(subtaskStats.sla_breaches_this_month) || 0,
+      },
+      task_summary: {
+        total_tasks: parseInt(taskStats.total_tasks) || 0,
+        active_tasks: parseInt(taskStats.active_tasks) || 0,
+        completed_tasks: parseInt(taskStats.completed_tasks) || 0,
+        overdue_tasks: parseInt(taskStats.overdue_tasks) || 0,
+      },
+      subtask_summary: {
+        total_subtasks: parseInt(subtaskStats.total_subtasks) || 0,
+        completed_subtasks: parseInt(subtaskStats.completed_subtasks) || 0,
+        pending_subtasks: parseInt(subtaskStats.pending_subtasks) || 0,
+        overdue_subtasks: parseInt(subtaskStats.overdue_subtasks) || 0,
+      }
+    };
+
+    res.json(dashboardData);
+  } catch (error) {
+    console.error("Error fetching FinOps dashboard data:", error);
+    res.status(500).json({
+      error: "Failed to fetch dashboard data",
+      message: error.message,
+    });
+  }
+});
+
+// Daily process stats endpoint for real-time tracking
+router.post("/daily-process-stats", async (req: Request, res: Response) => {
+  try {
+    await requireDatabase();
+
+    const { period, start_date, end_date } = req.body;
+
+    const statsQuery = `
+      SELECT
+        COUNT(CASE WHEN status = 'completed' AND DATE(completed_at) = CURRENT_DATE THEN 1 END) as tasks_completed_today,
+        COUNT(CASE WHEN status = 'pending' AND DATE(created_at) = CURRENT_DATE THEN 1 END) as tasks_pending_today,
+        COUNT(CASE WHEN status = 'overdue' AND DATE(updated_at) = CURRENT_DATE THEN 1 END) as sla_breaches_today,
+        COUNT(CASE WHEN status = 'completed' AND DATE(completed_at) >= DATE_TRUNC('month', CURRENT_DATE) THEN 1 END) as tasks_completed_this_month,
+        COUNT(CASE WHEN status = 'pending' AND DATE(created_at) >= DATE_TRUNC('month', CURRENT_DATE) THEN 1 END) as tasks_pending_this_month,
+        COUNT(CASE WHEN status = 'overdue' AND DATE(updated_at) >= DATE_TRUNC('month', CURRENT_DATE) THEN 1 END) as sla_breaches_this_month
+      FROM finops_subtasks
+    `;
+
+    const result = await pool.query(statsQuery);
+    const stats = result.rows[0];
+
+    const processData = {
+      tasks_completed_today: parseInt(stats.tasks_completed_today) || 0,
+      tasks_pending_today: parseInt(stats.tasks_pending_today) || 0,
+      sla_breaches_today: parseInt(stats.sla_breaches_today) || 0,
+      tasks_completed_this_month: parseInt(stats.tasks_completed_this_month) || 0,
+      tasks_pending_this_month: parseInt(stats.tasks_pending_this_month) || 0,
+      sla_breaches_this_month: parseInt(stats.sla_breaches_this_month) || 0,
+    };
+
+    res.json(processData);
+  } catch (error) {
+    console.error("Error fetching daily process stats:", error);
+    res.status(500).json({
+      error: "Failed to fetch daily process stats",
+      message: error.message,
+    });
+  }
+});
+
 export default router;
