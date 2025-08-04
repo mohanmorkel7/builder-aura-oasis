@@ -726,8 +726,11 @@ export default function ClientBasedFinOpsTaskManager() {
       console.log("Task passed date filter");
     }
 
+    console.log("Task passed all filters:", task.task_name);
     return true;
   });
+
+  console.log("Total tasks:", finopsTasks.length, "Filtered tasks:", filteredTasks.length, "Date filter:", dateFilter);
 
   // Calculate summary statistics
   const getOverallSummary = () => {
