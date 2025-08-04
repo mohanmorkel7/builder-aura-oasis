@@ -36,6 +36,7 @@ export const roleGroups = {
   development: { label: "Development", color: "bg-purple-100 text-purple-800", permissions: ["technical", "deployment"] },
   db: { label: "Database", color: "bg-gray-100 text-gray-800", permissions: ["database", "data_management"] },
   finops: { label: "FinOps", color: "bg-yellow-100 text-yellow-800", permissions: ["financial", "operations"] },
+  finance: { label: "Finance", color: "bg-green-100 text-green-700", permissions: ["financial", "accounting", "budgets"] },
   hr_management: { label: "HR Management", color: "bg-pink-100 text-pink-800", permissions: ["users", "roles", "hr"] },
   infra: { label: "Infrastructure", color: "bg-indigo-100 text-indigo-800", permissions: ["infrastructure", "monitoring"] },
   switch_team: { label: "Switch Team", color: "bg-orange-100 text-orange-800", permissions: ["switch", "integration"] },
