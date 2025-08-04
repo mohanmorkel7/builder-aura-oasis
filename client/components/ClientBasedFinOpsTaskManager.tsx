@@ -392,7 +392,31 @@ export default function ClientBasedFinOpsTaskManager() {
   // Fetch clients (from leads)
   const { data: clients = [] } = useQuery({
     queryKey: ["clients"],
-    queryFn: () => apiClient.getClients(),
+    queryFn: async () => {
+      try {
+        // Try to get from leads API first
+        const leads = await apiClient.getLeads();
+        const uniqueClients = leads.reduce((acc: any[], lead: any) => {
+          if (lead.company_name && !acc.find(c => c.company_name === lead.company_name)) {
+            acc.push({
+              id: lead.id,
+              company_name: lead.company_name,
+              client_name: lead.client_name || lead.company_name
+            });
+          }
+          return acc;
+        }, []);
+        return uniqueClients;
+      } catch (error) {
+        // Fallback to clients API
+        try {
+          return await apiClient.getClients();
+        } catch (fallbackError) {
+          console.log("Both APIs unavailable, using empty array");
+          return [];
+        }
+      }
+    },
   });
 
   // Fetch users for assignment
