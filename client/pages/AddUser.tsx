@@ -392,9 +392,9 @@ export default function AddUser() {
               <Save className="w-4 h-4 mr-2" />
               Save Draft
             </Button>
-            <Button type="submit">
+            <Button type="submit" disabled={createUserMutation.isPending}>
               <Send className="w-4 h-4 mr-2" />
-              Create User
+              {createUserMutation.isPending ? "Creating..." : "Create User"}
             </Button>
           </div>
         </div>
