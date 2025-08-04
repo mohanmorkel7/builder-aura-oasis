@@ -81,6 +81,7 @@ import {
   BarChart3,
 } from "lucide-react";
 import { format, formatDistanceToNow, addHours, addMinutes, isBefore, isAfter } from "date-fns";
+import { useEffect } from "react";
 
 // Enhanced interfaces with client integration
 interface ClientBasedFinOpsSubTask {
@@ -345,11 +346,17 @@ export default function ClientBasedFinOpsTaskManager() {
   const queryClient = useQueryClient();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<ClientBasedFinOpsTask | null>(null);
-  
+
   // Filter states
   const [selectedClient, setSelectedClient] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
+
+  // Show more/less states for subtasks
+  const [expandedTasks, setExpandedTasks] = useState<Set<number>>(new Set());
+
+  // Real-time timer state
+  const [currentTime, setCurrentTime] = useState(new Date());
 
   // Form state for creating/editing tasks
   const [taskForm, setTaskForm] = useState({
@@ -371,6 +378,15 @@ export default function ClientBasedFinOpsTaskManager() {
     queryFn: () => apiClient.getFinOpsTasks(),
     refetchInterval: 30000,
   });
+
+  // Real-time updates for SLA warnings
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000); // Update every minute
+
+    return () => clearInterval(timer);
+  }, []);
 
   // Fetch clients (from leads)
   const { data: clients = [] } = useQuery({
@@ -480,6 +496,58 @@ export default function ClientBasedFinOpsTaskManager() {
       delayReason,
       delayNotes,
     });
+  };
+
+  const toggleTaskExpansion = (taskId: number) => {
+    setExpandedTasks(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(taskId)) {
+        newSet.delete(taskId);
+      } else {
+        newSet.add(taskId);
+      }
+      return newSet;
+    });
+  };
+
+  const getTimeSinceStart = (startTime: string) => {
+    const [hours, minutes] = startTime.split(':').map(Number);
+    const taskStartTime = new Date();
+    taskStartTime.setHours(hours, minutes, 0, 0);
+
+    const diffMs = currentTime.getTime() - taskStartTime.getTime();
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+
+    if (diffMinutes < 0) {
+      const remaining = Math.abs(diffMinutes);
+      return `Starts in ${remaining} min`;
+    } else if (diffMinutes < 60) {
+      return `${diffMinutes} min ago`;
+    } else {
+      const hours = Math.floor(diffMinutes / 60);
+      return `${hours}h ${diffMinutes % 60}m ago`;
+    }
+  };
+
+  const getSLAWarning = (startTime: string, status: string) => {
+    if (status === "completed") return null;
+
+    const [hours, minutes] = startTime.split(':').map(Number);
+    const taskStartTime = new Date();
+    taskStartTime.setHours(hours, minutes, 0, 0);
+
+    // Add 15 minutes SLA buffer
+    const slaDeadline = new Date(taskStartTime.getTime() + 15 * 60 * 1000);
+    const diffMs = slaDeadline.getTime() - currentTime.getTime();
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+
+    if (diffMinutes <= 0) {
+      return { type: "overdue", message: `Overdue by ${Math.abs(diffMinutes)} min` };
+    } else if (diffMinutes <= 15) {
+      return { type: "warning", message: `SLA Warning - ${diffMinutes} min remaining` };
+    }
+
+    return null;
   };
 
   const sensors = useSensors(
@@ -900,24 +968,79 @@ export default function ClientBasedFinOpsTaskManager() {
                 {task.subtasks && task.subtasks.length > 0 && (
                   <CardContent className="pt-0">
                     <div className="border-t pt-4">
-                      <h4 className="font-medium mb-3 flex items-center gap-2">
-                        <Activity className="w-4 h-4" />
-                        Subtasks ({completedSubtasks}/{totalSubtasks} completed)
-                      </h4>
+                      <div className="flex items-center justify-between mb-3">
+                        <h4 className="font-medium flex items-center gap-2">
+                          <Activity className="w-4 h-4" />
+                          Subtasks ({completedSubtasks}/{totalSubtasks} completed)
+                        </h4>
+                        {task.subtasks.length > 3 && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => toggleTaskExpansion(task.id)}
+                            className="text-blue-600 hover:text-blue-800"
+                          >
+                            {expandedTasks.has(task.id) ? "Show Less" : "Show More"}
+                          </Button>
+                        )}
+                      </div>
                       <div className="space-y-3">
-                        {task.subtasks.map((subtask) => (
-                          <SortableSubTaskItem
-                            key={subtask.id}
-                            subtask={subtask}
-                            index={0}
-                            onUpdate={() => {}}
-                            onRemove={() => {}}
-                            onStatusChange={(subtaskId, status, delayReason, delayNotes) => 
-                              handleInlineSubTaskStatusChange(task.id, subtaskId, status, delayReason, delayNotes)
-                            }
-                            isInline={true}
-                          />
-                        ))}
+                        {(() => {
+                          const inProgressSubtasks = task.subtasks.filter(st => st.status === "in_progress");
+                          const otherSubtasks = task.subtasks.filter(st => st.status !== "in_progress");
+                          const isExpanded = expandedTasks.has(task.id);
+
+                          // Always show in-progress subtasks
+                          let subtasksToShow = [...inProgressSubtasks];
+
+                          if (isExpanded) {
+                            // Show all subtasks when expanded
+                            subtasksToShow = task.subtasks;
+                          } else {
+                            // Show in-progress + up to 2 others
+                            subtasksToShow = [...inProgressSubtasks, ...otherSubtasks.slice(0, Math.max(0, 3 - inProgressSubtasks.length))];
+                          }
+
+                          return subtasksToShow.map((subtask) => {
+                            const slaWarning = getSLAWarning(subtask.start_time, subtask.status);
+                            return (
+                              <div key={subtask.id}>
+                                <SortableSubTaskItem
+                                  subtask={subtask}
+                                  index={0}
+                                  onUpdate={() => {}}
+                                  onRemove={() => {}}
+                                  onStatusChange={(subtaskId, status, delayReason, delayNotes) =>
+                                    handleInlineSubTaskStatusChange(task.id, subtaskId, status, delayReason, delayNotes)
+                                  }
+                                  isInline={true}
+                                />
+                                {slaWarning && (
+                                  <Alert className={`mt-2 p-2 ${
+                                    slaWarning.type === "overdue" ? "border-red-200 bg-red-50" : "border-orange-200 bg-orange-50"
+                                  }`}>
+                                    <Clock className={`h-3 w-3 ${
+                                      slaWarning.type === "overdue" ? "text-red-600" : "text-orange-600"
+                                    }`} />
+                                    <AlertDescription className={`text-xs ml-1 ${
+                                      slaWarning.type === "overdue" ? "text-red-700" : "text-orange-700"
+                                    }`}>
+                                      {slaWarning.message} • {getTimeSinceStart(subtask.start_time)}
+                                    </AlertDescription>
+                                  </Alert>
+                                )}
+                              </div>
+                            );
+                          });
+                        })()}
+
+                        {!expandedTasks.has(task.id) && task.subtasks.length > 3 && (
+                          <div className="text-center py-2">
+                            <span className="text-sm text-gray-500">
+                              {task.subtasks.length - Math.min(3, task.subtasks.filter(st => st.status === "in_progress").length + Math.max(0, 3 - task.subtasks.filter(st => st.status === "in_progress").length))} more subtasks hidden
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </CardContent>
