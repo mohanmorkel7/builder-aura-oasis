@@ -911,7 +911,10 @@ export function usePartialSaveLead() {
       return await apiClient.createLead(partialData);
     },
     onSuccess: () => {
+      // Invalidate all lead-related queries
       queryClient.invalidateQueries({ queryKey: ["leads"] });
+      queryClient.invalidateQueries({ queryKey: ["partial-leads"] });
+      queryClient.invalidateQueries({ queryKey: ["my-partial-saves"] });
     },
   });
 }
