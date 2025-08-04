@@ -498,7 +498,7 @@ router.post("/dashboard", async (req: Request, res: Response) => {
 
     const [tasksResult, subtasksResult] = await Promise.all([
       pool.query(tasksQuery),
-      pool.query(subtasksQuery)
+      pool.query(subtasksQuery),
     ]);
 
     const taskStats = tasksResult.rows[0];
@@ -509,15 +509,21 @@ router.post("/dashboard", async (req: Request, res: Response) => {
       total_costs: 45000,
       profit: 75000,
       profit_margin: 62.5,
-      overdue_invoices: { overdue_count: parseInt(subtaskStats.overdue_subtasks) || 0, overdue_amount: 15000 },
+      overdue_invoices: {
+        overdue_count: parseInt(subtaskStats.overdue_subtasks) || 0,
+        overdue_amount: 15000,
+      },
       budget_utilization: [],
       daily_process_counts: {
         tasks_completed_today: parseInt(subtaskStats.completed_today) || 0,
         tasks_pending_today: parseInt(subtaskStats.pending_today) || 0,
         sla_breaches_today: parseInt(subtaskStats.sla_breaches_today) || 0,
-        tasks_completed_this_month: parseInt(subtaskStats.completed_this_month) || 0,
-        tasks_pending_this_month: parseInt(subtaskStats.pending_this_month) || 0,
-        sla_breaches_this_month: parseInt(subtaskStats.sla_breaches_this_month) || 0,
+        tasks_completed_this_month:
+          parseInt(subtaskStats.completed_this_month) || 0,
+        tasks_pending_this_month:
+          parseInt(subtaskStats.pending_this_month) || 0,
+        sla_breaches_this_month:
+          parseInt(subtaskStats.sla_breaches_this_month) || 0,
       },
       task_summary: {
         total_tasks: parseInt(taskStats.total_tasks) || 0,
@@ -530,7 +536,7 @@ router.post("/dashboard", async (req: Request, res: Response) => {
         completed_subtasks: parseInt(subtaskStats.completed_subtasks) || 0,
         pending_subtasks: parseInt(subtaskStats.pending_subtasks) || 0,
         overdue_subtasks: parseInt(subtaskStats.overdue_subtasks) || 0,
-      }
+      },
     };
 
     res.json(dashboardData);
@@ -568,7 +574,8 @@ router.post("/daily-process-stats", async (req: Request, res: Response) => {
       tasks_completed_today: parseInt(stats.tasks_completed_today) || 0,
       tasks_pending_today: parseInt(stats.tasks_pending_today) || 0,
       sla_breaches_today: parseInt(stats.sla_breaches_today) || 0,
-      tasks_completed_this_month: parseInt(stats.tasks_completed_this_month) || 0,
+      tasks_completed_this_month:
+        parseInt(stats.tasks_completed_this_month) || 0,
       tasks_pending_this_month: parseInt(stats.tasks_pending_this_month) || 0,
       sla_breaches_this_month: parseInt(stats.sla_breaches_this_month) || 0,
     };

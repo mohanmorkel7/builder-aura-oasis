@@ -222,7 +222,6 @@ export default function FinOpsAutomation() {
             <BarChart3 className="w-4 h-4 mr-2" />
             Dashboard
           </Button>
-
         </div>
       </div>
 
@@ -263,7 +262,6 @@ export default function FinOpsAutomation() {
         <TabsContent value="activity-log" className="space-y-6">
           <FinOpsActivityLog />
         </TabsContent>
-
 
         {/* Notifications Tab */}
         <TabsContent value="notifications" className="space-y-6">
@@ -349,8 +347,6 @@ export default function FinOpsAutomation() {
             </CardContent>
           </Card>
         </TabsContent>
-
-
       </Tabs>
     </div>
   );

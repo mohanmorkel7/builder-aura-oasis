@@ -95,7 +95,14 @@ const navigationItems: NavigationItem[] = [
 
 interface Notification {
   id: number;
-  type: "follow_up_assigned" | "follow_up_mentioned" | "follow_up_overdue" | "finops_sla_warning" | "finops_overdue" | "ticket_assigned" | "lead_updated";
+  type:
+    | "follow_up_assigned"
+    | "follow_up_mentioned"
+    | "follow_up_overdue"
+    | "finops_sla_warning"
+    | "finops_overdue"
+    | "ticket_assigned"
+    | "lead_updated";
   title: string;
   message: string;
   entity_id: number;
@@ -344,11 +351,13 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                                 : "bg-yellow-100"
                           }`}
                         >
-                          {notification.type === "follow_up_assigned" || notification.type === "follow_up_mentioned" ? (
+                          {notification.type === "follow_up_assigned" ||
+                          notification.type === "follow_up_mentioned" ? (
                             <MessageCircle className="w-4 h-4 text-blue-600" />
                           ) : notification.type === "follow_up_overdue" ? (
                             <AlertCircle className="w-4 h-4 text-yellow-600" />
-                          ) : notification.type === "finops_sla_warning" || notification.type === "finops_overdue" ? (
+                          ) : notification.type === "finops_sla_warning" ||
+                            notification.type === "finops_overdue" ? (
                             <DollarSign className="w-4 h-4 text-orange-600" />
                           ) : notification.type === "ticket_assigned" ? (
                             <Ticket className="w-4 h-4 text-green-600" />

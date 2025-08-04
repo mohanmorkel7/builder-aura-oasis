@@ -8,7 +8,7 @@ const router = Router();
 // Database availability check
 async function isDatabaseAvailable() {
   try {
-    await pool.query('SELECT 1');
+    await pool.query("SELECT 1");
     return true;
   } catch (error) {
     console.log("Database availability check failed:", error.message);
@@ -43,7 +43,7 @@ const mockFinOpsTasks = [
         order_position: 0,
         status: "completed",
         started_at: "2024-01-26T05:00:00Z",
-        completed_at: "2024-01-26T06:15:00Z"
+        completed_at: "2024-01-26T06:15:00Z",
       },
       {
         id: "2",
@@ -53,7 +53,7 @@ const mockFinOpsTasks = [
         sla_minutes: 0,
         order_position: 1,
         status: "in_progress",
-        started_at: "2024-01-26T06:15:00Z"
+        started_at: "2024-01-26T06:15:00Z",
       },
       {
         id: "3",
@@ -62,7 +62,7 @@ const mockFinOpsTasks = [
         sla_hours: 0,
         sla_minutes: 45,
         order_position: 2,
-        status: "pending"
+        status: "pending",
       },
       {
         id: "4",
@@ -71,7 +71,7 @@ const mockFinOpsTasks = [
         sla_hours: 0,
         sla_minutes: 30,
         order_position: 3,
-        status: "pending"
+        status: "pending",
       },
       {
         id: "5",
@@ -80,7 +80,7 @@ const mockFinOpsTasks = [
         sla_hours: 1,
         sla_minutes: 30,
         order_position: 4,
-        status: "pending"
+        status: "pending",
       },
       {
         id: "6",
@@ -89,7 +89,7 @@ const mockFinOpsTasks = [
         sla_hours: 2,
         sla_minutes: 0,
         order_position: 5,
-        status: "pending"
+        status: "pending",
       },
       {
         id: "7",
@@ -98,7 +98,7 @@ const mockFinOpsTasks = [
         sla_hours: 0,
         sla_minutes: 30,
         order_position: 6,
-        status: "pending"
+        status: "pending",
       },
       {
         id: "8",
@@ -107,10 +107,10 @@ const mockFinOpsTasks = [
         sla_hours: 1,
         sla_minutes: 0,
         order_position: 7,
-        status: "pending"
-      }
-    ]
-  }
+        status: "pending",
+      },
+    ],
+  },
 ];
 
 const mockActivityLog = [
@@ -121,7 +121,7 @@ const mockActivityLog = [
     action: "started",
     user_name: "System",
     timestamp: "2024-01-26T05:00:00Z",
-    details: "Task automatically started based on schedule"
+    details: "Task automatically started based on schedule",
   },
   {
     id: 2,
@@ -130,7 +130,7 @@ const mockActivityLog = [
     action: "completed",
     user_name: "John Durairaj",
     timestamp: "2024-01-26T06:15:00Z",
-    details: "RBL DUMP validation completed successfully"
+    details: "RBL DUMP validation completed successfully",
   },
   {
     id: 3,
@@ -139,8 +139,8 @@ const mockActivityLog = [
     action: "started",
     user_name: "John Durairaj",
     timestamp: "2024-01-26T06:15:00Z",
-    details: "Started MASTER AND VISA FILE VALIDATION"
-  }
+    details: "Started MASTER AND VISA FILE VALIDATION",
+  },
 ];
 
 // Get all FinOps tasks
@@ -170,13 +170,13 @@ router.get("/tasks", async (req: Request, res: Response) => {
         GROUP BY t.id
         ORDER BY t.created_at DESC
       `;
-      
+
       const result = await pool.query(query);
-      const tasks = result.rows.map(row => ({
+      const tasks = result.rows.map((row) => ({
         ...row,
-        subtasks: row.subtasks || []
+        subtasks: row.subtasks || [],
       }));
-      
+
       res.json(tasks);
     } else {
       console.log("Database unavailable, returning mock FinOps tasks");
@@ -201,15 +201,15 @@ router.post("/tasks", async (req: Request, res: Response) => {
       duration,
       is_active,
       subtasks,
-      created_by
+      created_by,
     } = req.body;
 
     if (await isDatabaseAvailable()) {
       const client = await pool.connect();
-      
+
       try {
-        await client.query('BEGIN');
-        
+        await client.query("BEGIN");
+
         // Insert main task
         const taskQuery = `
           INSERT INTO finops_tasks (
@@ -218,7 +218,7 @@ router.post("/tasks", async (req: Request, res: Response) => {
           ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
           RETURNING id
         `;
-        
+
         const taskResult = await client.query(taskQuery, [
           task_name,
           description,
@@ -228,11 +228,11 @@ router.post("/tasks", async (req: Request, res: Response) => {
           effective_from,
           duration,
           is_active,
-          created_by
+          created_by,
         ]);
-        
+
         const taskId = taskResult.rows[0].id;
-        
+
         // Insert subtasks
         if (subtasks && subtasks.length > 0) {
           for (const subtask of subtasks) {
@@ -241,27 +241,34 @@ router.post("/tasks", async (req: Request, res: Response) => {
                 task_id, name, description, sla_hours, sla_minutes, order_position
               ) VALUES ($1, $2, $3, $4, $5, $6)
             `;
-            
+
             await client.query(subtaskQuery, [
               taskId,
               subtask.name,
               subtask.description || null,
               subtask.sla_hours,
               subtask.sla_minutes,
-              subtask.order_position
+              subtask.order_position,
             ]);
           }
         }
-        
-        await client.query('COMMIT');
-        
+
+        await client.query("COMMIT");
+
         // Log activity
-        await logActivity(taskId, null, 'created', `User ${created_by}`, 'Task created');
-        
-        res.status(201).json({ id: taskId, message: "FinOps task created successfully" });
-        
+        await logActivity(
+          taskId,
+          null,
+          "created",
+          `User ${created_by}`,
+          "Task created",
+        );
+
+        res
+          .status(201)
+          .json({ id: taskId, message: "FinOps task created successfully" });
       } catch (error) {
-        await client.query('ROLLBACK');
+        await client.query("ROLLBACK");
         throw error;
       } finally {
         client.release();
@@ -273,10 +280,15 @@ router.post("/tasks", async (req: Request, res: Response) => {
         ...req.body,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-        status: 'active'
+        status: "active",
       };
       mockFinOpsTasks.push(newTask);
-      res.status(201).json({ id: newTask.id, message: "FinOps task created successfully (mock)" });
+      res
+        .status(201)
+        .json({
+          id: newTask.id,
+          message: "FinOps task created successfully (mock)",
+        });
     }
   } catch (error) {
     console.error("Error creating FinOps task:", error);
@@ -297,15 +309,15 @@ router.put("/tasks/:id", async (req: Request, res: Response) => {
       effective_from,
       duration,
       is_active,
-      subtasks
+      subtasks,
     } = req.body;
 
     if (await isDatabaseAvailable()) {
       const client = await pool.connect();
-      
+
       try {
-        await client.query('BEGIN');
-        
+        await client.query("BEGIN");
+
         // Update main task
         const taskQuery = `
           UPDATE finops_tasks SET
@@ -320,7 +332,7 @@ router.put("/tasks/:id", async (req: Request, res: Response) => {
             updated_at = CURRENT_TIMESTAMP
           WHERE id = $9
         `;
-        
+
         await client.query(taskQuery, [
           task_name,
           description,
@@ -330,12 +342,14 @@ router.put("/tasks/:id", async (req: Request, res: Response) => {
           effective_from,
           duration,
           is_active,
-          taskId
+          taskId,
         ]);
-        
+
         // Delete existing subtasks and recreate
-        await client.query('DELETE FROM finops_subtasks WHERE task_id = $1', [taskId]);
-        
+        await client.query("DELETE FROM finops_subtasks WHERE task_id = $1", [
+          taskId,
+        ]);
+
         // Insert updated subtasks
         if (subtasks && subtasks.length > 0) {
           for (const subtask of subtasks) {
@@ -344,39 +358,38 @@ router.put("/tasks/:id", async (req: Request, res: Response) => {
                 task_id, name, description, sla_hours, sla_minutes, order_position
               ) VALUES ($1, $2, $3, $4, $5, $6)
             `;
-            
+
             await client.query(subtaskQuery, [
               taskId,
               subtask.name,
               subtask.description || null,
               subtask.sla_hours,
               subtask.sla_minutes,
-              subtask.order_position
+              subtask.order_position,
             ]);
           }
         }
-        
-        await client.query('COMMIT');
-        
+
+        await client.query("COMMIT");
+
         // Log activity
-        await logActivity(taskId, null, 'updated', 'User', 'Task updated');
-        
+        await logActivity(taskId, null, "updated", "User", "Task updated");
+
         res.json({ message: "FinOps task updated successfully" });
-        
       } catch (error) {
-        await client.query('ROLLBACK');
+        await client.query("ROLLBACK");
         throw error;
       } finally {
         client.release();
       }
     } else {
       // Mock response
-      const taskIndex = mockFinOpsTasks.findIndex(t => t.id === taskId);
+      const taskIndex = mockFinOpsTasks.findIndex((t) => t.id === taskId);
       if (taskIndex !== -1) {
         mockFinOpsTasks[taskIndex] = {
           ...mockFinOpsTasks[taskIndex],
           ...req.body,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         };
         res.json({ message: "FinOps task updated successfully (mock)" });
       } else {
@@ -401,16 +414,16 @@ router.delete("/tasks/:id", async (req: Request, res: Response) => {
         SET deleted_at = CURRENT_TIMESTAMP 
         WHERE id = $1
       `;
-      
+
       await pool.query(query, [taskId]);
-      
+
       // Log activity
-      await logActivity(taskId, null, 'deleted', 'User', 'Task deleted');
-      
+      await logActivity(taskId, null, "deleted", "User", "Task deleted");
+
       res.json({ message: "FinOps task deleted successfully" });
     } else {
       // Mock response
-      const taskIndex = mockFinOpsTasks.findIndex(t => t.id === taskId);
+      const taskIndex = mockFinOpsTasks.findIndex((t) => t.id === taskId);
       if (taskIndex !== -1) {
         mockFinOpsTasks.splice(taskIndex, 1);
         res.json({ message: "FinOps task deleted successfully (mock)" });
@@ -425,116 +438,133 @@ router.delete("/tasks/:id", async (req: Request, res: Response) => {
 });
 
 // Enhanced subtask status update with delay tracking and notifications
-router.patch("/tasks/:taskId/subtasks/:subtaskId", async (req: Request, res: Response) => {
-  try {
-    const taskId = parseInt(req.params.taskId);
-    const subtaskId = req.params.subtaskId;
-    const { status, user_name, delay_reason, delay_notes } = req.body;
-    const userName = user_name || 'Unknown User';
+router.patch(
+  "/tasks/:taskId/subtasks/:subtaskId",
+  async (req: Request, res: Response) => {
+    try {
+      const taskId = parseInt(req.params.taskId);
+      const subtaskId = req.params.subtaskId;
+      const { status, user_name, delay_reason, delay_notes } = req.body;
+      const userName = user_name || "Unknown User";
 
-    if (await isDatabaseAvailable()) {
-      // Get current subtask and task information
-      const currentSubtask = await pool.query(`
+      if (await isDatabaseAvailable()) {
+        // Get current subtask and task information
+        const currentSubtask = await pool.query(
+          `
         SELECT st.*, t.task_name, t.reporting_managers, t.escalation_managers, t.assigned_to
         FROM finops_subtasks st
         JOIN finops_tasks t ON st.task_id = t.id
         WHERE st.task_id = $1 AND st.id = $2
-      `, [taskId, subtaskId]);
+      `,
+          [taskId, subtaskId],
+        );
 
-      if (currentSubtask.rows.length === 0) {
-        return res.status(404).json({ error: "Subtask not found" });
-      }
+        if (currentSubtask.rows.length === 0) {
+          return res.status(404).json({ error: "Subtask not found" });
+        }
 
-      const subtaskData = currentSubtask.rows[0];
-      const oldStatus = subtaskData.status;
-      const subtaskName = subtaskData.name;
+        const subtaskData = currentSubtask.rows[0];
+        const oldStatus = subtaskData.status;
+        const subtaskName = subtaskData.name;
 
-      // Build dynamic update query
-      let updateFields = ['status = $1', 'updated_at = CURRENT_TIMESTAMP'];
-      let queryParams = [status, taskId, subtaskId];
-      let paramIndex = 4;
+        // Build dynamic update query
+        let updateFields = ["status = $1", "updated_at = CURRENT_TIMESTAMP"];
+        let queryParams = [status, taskId, subtaskId];
+        let paramIndex = 4;
 
-      if (status === 'completed') {
-        updateFields.push('completed_at = CURRENT_TIMESTAMP');
-      }
-      if (status === 'in_progress' && !subtaskData.started_at) {
-        updateFields.push('started_at = CURRENT_TIMESTAMP');
-      }
-      if (status === 'delayed' && delay_reason) {
-        updateFields.push(`delay_reason = $${paramIndex++}`);
-        updateFields.push(`delay_notes = $${paramIndex++}`);
-        queryParams.push(delay_reason, delay_notes || '');
-      }
+        if (status === "completed") {
+          updateFields.push("completed_at = CURRENT_TIMESTAMP");
+        }
+        if (status === "in_progress" && !subtaskData.started_at) {
+          updateFields.push("started_at = CURRENT_TIMESTAMP");
+        }
+        if (status === "delayed" && delay_reason) {
+          updateFields.push(`delay_reason = $${paramIndex++}`);
+          updateFields.push(`delay_notes = $${paramIndex++}`);
+          queryParams.push(delay_reason, delay_notes || "");
+        }
 
-      const query = `
+        const query = `
         UPDATE finops_subtasks
-        SET ${updateFields.join(', ')}
+        SET ${updateFields.join(", ")}
         WHERE task_id = $2 AND id = $3
       `;
 
-      await pool.query(query, queryParams);
+        await pool.query(query, queryParams);
 
-      // Enhanced activity logging
-      let logDetails = `Subtask "${subtaskName}" status changed from "${oldStatus}" to "${status}"`;
-      if (status === 'delayed' && delay_reason) {
-        logDetails += ` (Reason: ${delay_reason})`;
-      }
-      await logActivity(taskId, subtaskId, 'status_changed', userName, logDetails);
-
-      // Send notifications based on status
-      await handleStatusChangeNotifications(subtaskData, status, delay_reason, delay_notes);
-
-      // Log user activity and update task status
-      await logUserActivity(userName, taskId);
-      await checkAndUpdateTaskStatus(taskId, userName);
-
-      res.json({
-        message: "Subtask status updated successfully",
-        previous_status: oldStatus,
-        new_status: status,
-        delay_reason: delay_reason || null,
-        delay_notes: delay_notes || null,
-        updated_at: new Date().toISOString()
-      });
-    } else {
-      // Enhanced mock response
-      const task = mockFinOpsTasks.find(t => t.id === taskId);
-      if (task) {
-        const subtask = task.subtasks.find(st => st.id === subtaskId);
-        if (subtask) {
-          const oldStatus = subtask.status;
-          subtask.status = status;
-
-          if (status === 'completed') {
-            subtask.completed_at = new Date().toISOString();
-          }
-          if (status === 'in_progress') {
-            subtask.started_at = new Date().toISOString();
-          }
-          if (status === 'delayed') {
-            (subtask as any).delay_reason = delay_reason;
-            (subtask as any).delay_notes = delay_notes;
-          }
-
-          res.json({
-            message: "Subtask status updated successfully (mock)",
-            previous_status: oldStatus,
-            new_status: status,
-            delay_reason: delay_reason || null,
-            delay_notes: delay_notes || null
-          });
-        } else {
-          res.status(404).json({ error: "Subtask not found" });
+        // Enhanced activity logging
+        let logDetails = `Subtask "${subtaskName}" status changed from "${oldStatus}" to "${status}"`;
+        if (status === "delayed" && delay_reason) {
+          logDetails += ` (Reason: ${delay_reason})`;
         }
+        await logActivity(
+          taskId,
+          subtaskId,
+          "status_changed",
+          userName,
+          logDetails,
+        );
+
+        // Send notifications based on status
+        await handleStatusChangeNotifications(
+          subtaskData,
+          status,
+          delay_reason,
+          delay_notes,
+        );
+
+        // Log user activity and update task status
+        await logUserActivity(userName, taskId);
+        await checkAndUpdateTaskStatus(taskId, userName);
+
+        res.json({
+          message: "Subtask status updated successfully",
+          previous_status: oldStatus,
+          new_status: status,
+          delay_reason: delay_reason || null,
+          delay_notes: delay_notes || null,
+          updated_at: new Date().toISOString(),
+        });
       } else {
-        res.status(404).json({ error: "Task not found" });
+        // Enhanced mock response
+        const task = mockFinOpsTasks.find((t) => t.id === taskId);
+        if (task) {
+          const subtask = task.subtasks.find((st) => st.id === subtaskId);
+          if (subtask) {
+            const oldStatus = subtask.status;
+            subtask.status = status;
+
+            if (status === "completed") {
+              subtask.completed_at = new Date().toISOString();
+            }
+            if (status === "in_progress") {
+              subtask.started_at = new Date().toISOString();
+            }
+            if (status === "delayed") {
+              (subtask as any).delay_reason = delay_reason;
+              (subtask as any).delay_notes = delay_notes;
+            }
+
+            res.json({
+              message: "Subtask status updated successfully (mock)",
+              previous_status: oldStatus,
+              new_status: status,
+              delay_reason: delay_reason || null,
+              delay_notes: delay_notes || null,
+            });
+          } else {
+            res.status(404).json({ error: "Subtask not found" });
+          }
+        } else {
+          res.status(404).json({ error: "Task not found" });
+        }
       }
+    } catch (error) {
+      console.error("Error updating subtask status:", error);
+      res.status(500).json({ error: "Failed to update subtask status" });
     }
-  } catch (error) {
-    console.error("Error updating subtask status:", error);
-    res.status(500).json({ error: "Failed to update subtask status" });
-  }
-});
+  },
+);
 
 // Get activity log
 router.get("/activity-log", async (req: Request, res: Response) => {
@@ -542,21 +572,23 @@ router.get("/activity-log", async (req: Request, res: Response) => {
     const { taskId } = req.query;
 
     if (await isDatabaseAvailable()) {
-      const query = taskId 
+      const query = taskId
         ? `SELECT * FROM finops_activity_log WHERE task_id = $1 ORDER BY timestamp DESC`
         : `SELECT * FROM finops_activity_log ORDER BY timestamp DESC LIMIT 100`;
-      
-      const result = taskId 
+
+      const result = taskId
         ? await pool.query(query, [parseInt(taskId as string)])
         : await pool.query(query);
-      
+
       res.json(result.rows);
     } else {
       // Mock response
-      const filteredLog = taskId 
-        ? mockActivityLog.filter(log => log.task_id === parseInt(taskId as string))
+      const filteredLog = taskId
+        ? mockActivityLog.filter(
+            (log) => log.task_id === parseInt(taskId as string),
+          )
         : mockActivityLog;
-      
+
       res.json(filteredLog);
     }
   } catch (error) {
@@ -571,8 +603,14 @@ router.post("/tasks/:id/run", async (req: Request, res: Response) => {
     const taskId = parseInt(req.params.id);
 
     // Log activity
-    await logActivity(taskId, null, 'manual_run', 'User', 'Task manually triggered');
-    
+    await logActivity(
+      taskId,
+      null,
+      "manual_run",
+      "User",
+      "Task manually triggered",
+    );
+
     // In a real implementation, this would trigger the actual task execution
     res.json({ message: "Task execution triggered successfully" });
   } catch (error) {
@@ -582,7 +620,13 @@ router.post("/tasks/:id/run", async (req: Request, res: Response) => {
 });
 
 // Enhanced helper function to log activities with more detail
-async function logActivity(taskId: number, subtaskId: string | null, action: string, userName: string, details: string) {
+async function logActivity(
+  taskId: number,
+  subtaskId: string | null,
+  action: string,
+  userName: string,
+  details: string,
+) {
   try {
     if (await isDatabaseAvailable()) {
       const query = `
@@ -590,7 +634,15 @@ async function logActivity(taskId: number, subtaskId: string | null, action: str
         VALUES ($1, $2, $3, $4, $5, $6, $7)
       `;
 
-      await pool.query(query, [taskId, subtaskId, action, userName, details, 'system', 'finops-api']);
+      await pool.query(query, [
+        taskId,
+        subtaskId,
+        action,
+        userName,
+        details,
+        "system",
+        "finops-api",
+      ]);
     } else {
       // Mock logging
       mockActivityLog.push({
@@ -600,7 +652,7 @@ async function logActivity(taskId: number, subtaskId: string | null, action: str
         action,
         user_name: userName,
         timestamp: new Date().toISOString(),
-        details
+        details,
       });
     }
   } catch (error) {
@@ -612,19 +664,25 @@ async function logActivity(taskId: number, subtaskId: string | null, action: str
 async function logUserActivity(userName: string, taskId: number) {
   try {
     if (await isDatabaseAvailable()) {
-      const today = new Date().toISOString().split('T')[0];
+      const today = new Date().toISOString().split("T")[0];
 
       // Check if user already has activity logged today
-      const existingActivity = await pool.query(`
+      const existingActivity = await pool.query(
+        `
         SELECT COUNT(*) as count FROM finops_activity_log
         WHERE user_name = $1 AND DATE(timestamp) = $2
-      `, [userName, today]);
+      `,
+        [userName, today],
+      );
 
-      if (existingActivity.rows[0].count === '0') {
-        await pool.query(`
+      if (existingActivity.rows[0].count === "0") {
+        await pool.query(
+          `
           INSERT INTO finops_activity_log (task_id, subtask_id, action, user_name, details)
           VALUES ($1, NULL, 'daily_login', $2, 'User first activity of the day')
-        `, [taskId, userName]);
+        `,
+          [taskId, userName],
+        );
       }
     }
   } catch (error) {
@@ -633,61 +691,72 @@ async function logUserActivity(userName: string, taskId: number) {
 }
 
 // Handle notifications for status changes
-async function handleStatusChangeNotifications(subtaskData: any, newStatus: string, delayReason?: string, delayNotes?: string) {
+async function handleStatusChangeNotifications(
+  subtaskData: any,
+  newStatus: string,
+  delayReason?: string,
+  delayNotes?: string,
+) {
   try {
-    const reportingManagers = JSON.parse(subtaskData.reporting_managers || '[]');
-    const escalationManagers = JSON.parse(subtaskData.escalation_managers || '[]');
+    const reportingManagers = JSON.parse(
+      subtaskData.reporting_managers || "[]",
+    );
+    const escalationManagers = JSON.parse(
+      subtaskData.escalation_managers || "[]",
+    );
 
     // Send delay notifications
-    if (newStatus === 'delayed') {
+    if (newStatus === "delayed") {
       const notificationData = {
         task_name: subtaskData.task_name,
         subtask_name: subtaskData.name,
         assigned_to: subtaskData.assigned_to,
         delay_reason: delayReason,
         delay_notes: delayNotes,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
 
       // Log notification activity
       await logActivity(
         subtaskData.task_id,
         subtaskData.id,
-        'delay_notification_sent',
-        'System',
-        `Delay notification sent to reporting managers: ${reportingManagers.join(', ')}`
+        "delay_notification_sent",
+        "System",
+        `Delay notification sent to reporting managers: ${reportingManagers.join(", ")}`,
       );
 
-      console.log('Delay notification would be sent to:', reportingManagers);
-      console.log('Notification data:', notificationData);
+      console.log("Delay notification would be sent to:", reportingManagers);
+      console.log("Notification data:", notificationData);
     }
 
     // Send completion notifications
-    if (newStatus === 'completed') {
+    if (newStatus === "completed") {
       await logActivity(
         subtaskData.task_id,
         subtaskData.id,
-        'completion_notification_sent',
-        'System',
-        `Completion notification sent to reporting managers: ${reportingManagers.join(', ')}`
+        "completion_notification_sent",
+        "System",
+        `Completion notification sent to reporting managers: ${reportingManagers.join(", ")}`,
       );
 
-      console.log('Completion notification would be sent to:', reportingManagers);
+      console.log(
+        "Completion notification would be sent to:",
+        reportingManagers,
+      );
     }
 
     // Send overdue notifications
-    if (newStatus === 'overdue') {
+    if (newStatus === "overdue") {
       await logActivity(
         subtaskData.task_id,
         subtaskData.id,
-        'overdue_notification_sent',
-        'System',
-        `Overdue notification sent to escalation managers: ${escalationManagers.join(', ')}`
+        "overdue_notification_sent",
+        "System",
+        `Overdue notification sent to escalation managers: ${escalationManagers.join(", ")}`,
       );
 
-      console.log('Overdue escalation would be sent to:', escalationManagers);
+      console.log("Overdue escalation would be sent to:", escalationManagers);
     }
-
   } catch (error) {
     console.error("Error handling status change notifications:", error);
   }
@@ -697,42 +766,62 @@ async function handleStatusChangeNotifications(subtaskData: any, newStatus: stri
 async function checkAndUpdateTaskStatus(taskId: number, userName: string) {
   try {
     if (await isDatabaseAvailable()) {
-      const subtasks = await pool.query(`
+      const subtasks = await pool.query(
+        `
         SELECT status FROM finops_subtasks WHERE task_id = $1
-      `, [taskId]);
+      `,
+        [taskId],
+      );
 
       const totalSubtasks = subtasks.rows.length;
-      const completedSubtasks = subtasks.rows.filter(st => st.status === 'completed').length;
-      const overdueSubtasks = subtasks.rows.filter(st => st.status === 'overdue').length;
-      const delayedSubtasks = subtasks.rows.filter(st => st.status === 'delayed').length;
-      const inProgressSubtasks = subtasks.rows.filter(st => st.status === 'in_progress').length;
+      const completedSubtasks = subtasks.rows.filter(
+        (st) => st.status === "completed",
+      ).length;
+      const overdueSubtasks = subtasks.rows.filter(
+        (st) => st.status === "overdue",
+      ).length;
+      const delayedSubtasks = subtasks.rows.filter(
+        (st) => st.status === "delayed",
+      ).length;
+      const inProgressSubtasks = subtasks.rows.filter(
+        (st) => st.status === "in_progress",
+      ).length;
 
-      let newTaskStatus = 'active';
-      let statusDetails = '';
+      let newTaskStatus = "active";
+      let statusDetails = "";
 
       if (overdueSubtasks > 0) {
-        newTaskStatus = 'overdue';
+        newTaskStatus = "overdue";
         statusDetails = `Task marked as overdue due to ${overdueSubtasks} overdue subtasks`;
       } else if (delayedSubtasks > 0) {
-        newTaskStatus = 'delayed';
+        newTaskStatus = "delayed";
         statusDetails = `Task marked as delayed due to ${delayedSubtasks} delayed subtasks`;
       } else if (completedSubtasks === totalSubtasks && totalSubtasks > 0) {
-        newTaskStatus = 'completed';
+        newTaskStatus = "completed";
         statusDetails = `Task completed - all ${totalSubtasks} subtasks finished`;
       } else if (inProgressSubtasks > 0 || completedSubtasks > 0) {
-        newTaskStatus = 'in_progress';
+        newTaskStatus = "in_progress";
         statusDetails = `Task in progress - ${completedSubtasks}/${totalSubtasks} completed, ${inProgressSubtasks} in progress, ${delayedSubtasks} delayed`;
       }
 
       // Update task status
-      await pool.query(`
+      await pool.query(
+        `
         UPDATE finops_tasks
         SET status = $1, updated_at = CURRENT_TIMESTAMP
         WHERE id = $2
-      `, [newTaskStatus, taskId]);
+      `,
+        [newTaskStatus, taskId],
+      );
 
       // Log the task status change
-      await logActivity(taskId, null, 'task_status_updated', userName, statusDetails);
+      await logActivity(
+        taskId,
+        null,
+        "task_status_updated",
+        userName,
+        statusDetails,
+      );
     }
   } catch (error) {
     console.error("Error checking task status:", error);
@@ -744,7 +833,7 @@ router.get("/daily-tasks", async (req: Request, res: Response) => {
   try {
     const { date } = req.query;
     const targetDate = date ? new Date(date as string) : new Date();
-    const dateStr = targetDate.toISOString().split('T')[0];
+    const dateStr = targetDate.toISOString().split("T")[0];
 
     if (await isDatabaseAvailable()) {
       const query = `
@@ -777,9 +866,9 @@ router.get("/daily-tasks", async (req: Request, res: Response) => {
       `;
 
       const result = await pool.query(query, [dateStr]);
-      const tasks = result.rows.map(row => ({
+      const tasks = result.rows.map((row) => ({
         ...row,
-        subtasks: row.subtasks || []
+        subtasks: row.subtasks || [],
       }));
 
       res.json({
@@ -787,10 +876,11 @@ router.get("/daily-tasks", async (req: Request, res: Response) => {
         tasks: tasks,
         summary: {
           total_tasks: tasks.length,
-          completed_tasks: tasks.filter(t => t.status === 'completed').length,
-          overdue_tasks: tasks.filter(t => t.status === 'overdue').length,
-          in_progress_tasks: tasks.filter(t => t.status === 'in_progress').length
-        }
+          completed_tasks: tasks.filter((t) => t.status === "completed").length,
+          overdue_tasks: tasks.filter((t) => t.status === "overdue").length,
+          in_progress_tasks: tasks.filter((t) => t.status === "in_progress")
+            .length,
+        },
       });
     } else {
       res.json({
@@ -800,8 +890,8 @@ router.get("/daily-tasks", async (req: Request, res: Response) => {
           total_tasks: mockFinOpsTasks.length,
           completed_tasks: 0,
           overdue_tasks: 0,
-          in_progress_tasks: 1
-        }
+          in_progress_tasks: 1,
+        },
       });
     }
   } catch (error) {
@@ -885,12 +975,22 @@ router.get("/tasks/:id/summary", async (req: Request, res: Response) => {
       // Calculate enhanced summary
       const summary = {
         total_subtasks: subtasks.length,
-        completed: subtasks.filter((st: any) => st.status === 'completed').length,
-        in_progress: subtasks.filter((st: any) => st.status === 'in_progress').length,
-        pending: subtasks.filter((st: any) => st.status === 'pending').length,
-        delayed: subtasks.filter((st: any) => st.status === 'delayed').length,
-        overdue: subtasks.filter((st: any) => st.status === 'overdue').length,
-        completion_percentage: subtasks.length > 0 ? Math.round((subtasks.filter((st: any) => st.status === 'completed').length / subtasks.length) * 100) : 0
+        completed: subtasks.filter((st: any) => st.status === "completed")
+          .length,
+        in_progress: subtasks.filter((st: any) => st.status === "in_progress")
+          .length,
+        pending: subtasks.filter((st: any) => st.status === "pending").length,
+        delayed: subtasks.filter((st: any) => st.status === "delayed").length,
+        overdue: subtasks.filter((st: any) => st.status === "overdue").length,
+        completion_percentage:
+          subtasks.length > 0
+            ? Math.round(
+                (subtasks.filter((st: any) => st.status === "completed")
+                  .length /
+                  subtasks.length) *
+                  100,
+              )
+            : 0,
       };
 
       // Get recent alerts
@@ -906,31 +1006,40 @@ router.get("/tasks/:id/summary", async (req: Request, res: Response) => {
         task: task,
         summary: summary,
         recent_alerts: alertsResult.rows,
-        sla_status: calculateSLAStatus(subtasks)
+        sla_status: calculateSLAStatus(subtasks),
       });
-
     } else {
       // Mock response
-      const task = mockFinOpsTasks.find(t => t.id === taskId);
+      const task = mockFinOpsTasks.find((t) => t.id === taskId);
       if (!task) {
         return res.status(404).json({ error: "Task not found" });
       }
 
       const summary = {
         total_subtasks: task.subtasks.length,
-        completed: task.subtasks.filter(st => st.status === 'completed').length,
-        in_progress: task.subtasks.filter(st => st.status === 'in_progress').length,
-        pending: task.subtasks.filter(st => st.status === 'pending').length,
+        completed: task.subtasks.filter((st) => st.status === "completed")
+          .length,
+        in_progress: task.subtasks.filter((st) => st.status === "in_progress")
+          .length,
+        pending: task.subtasks.filter((st) => st.status === "pending").length,
         delayed: 0,
         overdue: 0,
-        completion_percentage: task.subtasks.length > 0 ? Math.round((task.subtasks.filter(st => st.status === 'completed').length / task.subtasks.length) * 100) : 0
+        completion_percentage:
+          task.subtasks.length > 0
+            ? Math.round(
+                (task.subtasks.filter((st) => st.status === "completed")
+                  .length /
+                  task.subtasks.length) *
+                  100,
+              )
+            : 0,
       };
 
       res.json({
         task: task,
         summary: summary,
         recent_alerts: [],
-        sla_status: "normal"
+        sla_status: "normal",
       });
     }
   } catch (error) {
@@ -940,15 +1049,17 @@ router.get("/tasks/:id/summary", async (req: Request, res: Response) => {
 });
 
 // Send manual alert for subtask
-router.post("/tasks/:taskId/subtasks/:subtaskId/alert", async (req: Request, res: Response) => {
-  try {
-    const taskId = parseInt(req.params.taskId);
-    const subtaskId = req.params.subtaskId;
-    const { alert_type, message } = req.body;
+router.post(
+  "/tasks/:taskId/subtasks/:subtaskId/alert",
+  async (req: Request, res: Response) => {
+    try {
+      const taskId = parseInt(req.params.taskId);
+      const subtaskId = req.params.subtaskId;
+      const { alert_type, message } = req.body;
 
-    if (await isDatabaseAvailable()) {
-      // Get task and subtask information
-      const taskQuery = `
+      if (await isDatabaseAvailable()) {
+        // Get task and subtask information
+        const taskQuery = `
         SELECT
           t.task_name, t.reporting_managers, t.escalation_managers, t.assigned_to,
           st.name as subtask_name, st.status
@@ -957,44 +1068,46 @@ router.post("/tasks/:taskId/subtasks/:subtaskId/alert", async (req: Request, res
         WHERE t.id = $1 AND st.id = $2
       `;
 
-      const result = await pool.query(taskQuery, [taskId, subtaskId]);
+        const result = await pool.query(taskQuery, [taskId, subtaskId]);
 
-      if (result.rows.length === 0) {
-        return res.status(404).json({ error: "Task or subtask not found" });
+        if (result.rows.length === 0) {
+          return res.status(404).json({ error: "Task or subtask not found" });
+        }
+
+        const taskData = result.rows[0];
+
+        // Log manual alert
+        await logActivity(
+          taskId,
+          subtaskId,
+          "manual_alert_sent",
+          "User",
+          `Manual ${alert_type} alert sent: ${message}`,
+        );
+
+        // In a real implementation, this would send actual notifications
+        console.log(
+          `Manual alert sent for task ${taskData.task_name}, subtask ${taskData.subtask_name}`,
+        );
+        console.log(`Alert type: ${alert_type}, Message: ${message}`);
+
+        res.json({
+          message: "Manual alert sent successfully",
+          alert_type: alert_type,
+          recipients: JSON.parse(taskData.reporting_managers || "[]"),
+        });
+      } else {
+        res.json({
+          message: "Manual alert sent successfully (mock)",
+          alert_type: alert_type,
+        });
       }
-
-      const taskData = result.rows[0];
-
-      // Log manual alert
-      await logActivity(
-        taskId,
-        subtaskId,
-        'manual_alert_sent',
-        'User',
-        `Manual ${alert_type} alert sent: ${message}`
-      );
-
-      // In a real implementation, this would send actual notifications
-      console.log(`Manual alert sent for task ${taskData.task_name}, subtask ${taskData.subtask_name}`);
-      console.log(`Alert type: ${alert_type}, Message: ${message}`);
-
-      res.json({
-        message: "Manual alert sent successfully",
-        alert_type: alert_type,
-        recipients: JSON.parse(taskData.reporting_managers || '[]')
-      });
-
-    } else {
-      res.json({
-        message: "Manual alert sent successfully (mock)",
-        alert_type: alert_type
-      });
+    } catch (error) {
+      console.error("Error sending manual alert:", error);
+      res.status(500).json({ error: "Failed to send manual alert" });
     }
-  } catch (error) {
-    console.error("Error sending manual alert:", error);
-    res.status(500).json({ error: "Failed to send manual alert" });
-  }
-});
+  },
+);
 
 // Helper function to calculate SLA status
 function calculateSLAStatus(subtasks: any[]) {
@@ -1002,15 +1115,18 @@ function calculateSLAStatus(subtasks: any[]) {
   let overallStatus = "normal";
 
   for (const subtask of subtasks) {
-    if (subtask.status === 'overdue') {
+    if (subtask.status === "overdue") {
       return "overdue";
     }
-    if (subtask.status === 'delayed') {
+    if (subtask.status === "delayed") {
       overallStatus = "delayed";
     }
-    if (subtask.started_at && subtask.status === 'in_progress') {
+    if (subtask.started_at && subtask.status === "in_progress") {
       const startTime = new Date(subtask.started_at);
-      const slaTime = new Date(startTime.getTime() + (subtask.sla_hours * 60 + subtask.sla_minutes) * 60000);
+      const slaTime = new Date(
+        startTime.getTime() +
+          (subtask.sla_hours * 60 + subtask.sla_minutes) * 60000,
+      );
       const timeRemaining = slaTime.getTime() - now.getTime();
       const minutesRemaining = Math.floor(timeRemaining / (1000 * 60));
 
@@ -1075,7 +1191,9 @@ router.get("/activity-log", async (req: Request, res: Response) => {
       let filteredLog = [...mockActivityLog];
 
       if (taskId) {
-        filteredLog = filteredLog.filter(log => log.task_id === parseInt(taskId as string));
+        filteredLog = filteredLog.filter(
+          (log) => log.task_id === parseInt(taskId as string),
+        );
       }
 
       res.json(filteredLog.slice(0, parseInt(limit as string)));

@@ -18,11 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from "@/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Bell,
   AlertTriangle,
@@ -42,7 +38,13 @@ import { format, formatDistanceToNow, isToday, isYesterday } from "date-fns";
 
 interface FinOpsNotification {
   id: string;
-  type: "sla_warning" | "sla_overdue" | "task_delayed" | "task_completed" | "daily_reminder" | "escalation";
+  type:
+    | "sla_warning"
+    | "sla_overdue"
+    | "task_delayed"
+    | "task_completed"
+    | "daily_reminder"
+    | "escalation";
   title: string;
   message: string;
   task_name: string;
@@ -60,13 +62,18 @@ interface FinOpsNotification {
 
 // Mock notifications data
 // Transform database notifications to match our interface
-const transformDbNotifications = (dbNotifications: any[]): FinOpsNotification[] => {
+const transformDbNotifications = (
+  dbNotifications: any[],
+): FinOpsNotification[] => {
   return dbNotifications.map((dbNotif) => ({
     id: dbNotif.id.toString(),
     type: mapDbTypeToFinOpsType(dbNotif.type),
     title: dbNotif.title || "FinOps Notification",
     message: dbNotif.description || dbNotif.message || "",
-    task_name: dbNotif.entity_type === "task" ? `Task #${dbNotif.entity_id}` : "Unknown Task",
+    task_name:
+      dbNotif.entity_type === "task"
+        ? `Task #${dbNotif.entity_id}`
+        : "Unknown Task",
     client_name: dbNotif.client_name,
     subtask_name: dbNotif.subtask_name,
     assigned_to: dbNotif.assigned_to || "Unassigned",
@@ -74,7 +81,8 @@ const transformDbNotifications = (dbNotifications: any[]): FinOpsNotification[] 
     priority: mapDbPriorityToFinOpsPriority(dbNotif.priority),
     status: dbNotif.read ? "read" : "unread",
     created_at: dbNotif.created_at,
-    action_required: dbNotif.priority === "high" || dbNotif.priority === "critical",
+    action_required:
+      dbNotif.priority === "high" || dbNotif.priority === "critical",
     delay_reason: dbNotif.delay_reason,
     sla_remaining: dbNotif.sla_remaining,
   }));
@@ -101,7 +109,9 @@ const mapDbTypeToFinOpsType = (dbType: string): FinOpsNotification["type"] => {
 };
 
 // Map database priority to FinOps priority
-const mapDbPriorityToFinOpsPriority = (dbPriority: string): FinOpsNotification["priority"] => {
+const mapDbPriorityToFinOpsPriority = (
+  dbPriority: string,
+): FinOpsNotification["priority"] => {
   switch (dbPriority) {
     case "high":
       return "high";
@@ -131,13 +141,14 @@ const mockNotifications: FinOpsNotification[] = [
     status: "unread",
     created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
     action_required: true,
-    sla_remaining: "-2 hours"
+    sla_remaining: "-2 hours",
   },
   {
     id: "2",
     type: "sla_warning",
     title: "SLA Warning - 15 Minutes Remaining",
-    message: "VISA - VALIDATION OF THE BASE 2 FILE will breach SLA in 15 minutes",
+    message:
+      "VISA - VALIDATION OF THE BASE 2 FILE will breach SLA in 15 minutes",
     task_name: "CLEARING - FILE TRANSFER AND VALIDATION",
     client_name: "ABC Corporation",
     subtask_name: "VISA - VALIDATION OF THE BASE 2 FILE",
@@ -147,13 +158,14 @@ const mockNotifications: FinOpsNotification[] = [
     status: "unread",
     created_at: new Date(Date.now() - 15 * 60 * 1000).toISOString(), // 15 minutes ago
     action_required: true,
-    sla_remaining: "15 minutes"
+    sla_remaining: "15 minutes",
   },
   {
     id: "3",
     type: "task_delayed",
     title: "Task Marked as Delayed",
-    message: "SHARING OF THE FILE TO M2P has been marked as delayed due to external dependency",
+    message:
+      "SHARING OF THE FILE TO M2P has been marked as delayed due to external dependency",
     task_name: "CLEARING - FILE TRANSFER AND VALIDATION",
     client_name: "ABC Corporation",
     subtask_name: "SHARING OF THE FILE TO M2P",
@@ -163,28 +175,31 @@ const mockNotifications: FinOpsNotification[] = [
     status: "read",
     created_at: new Date(Date.now() - 45 * 60 * 1000).toISOString(), // 45 minutes ago
     action_required: false,
-    delay_reason: "External Dependency"
+    delay_reason: "External Dependency",
   },
   {
     id: "4",
     type: "task_completed",
     title: "Task Completed Successfully",
-    message: "RBL DUMP VS TCP DATA (DAILY ALERT MAIL) has been completed on time",
+    message:
+      "RBL DUMP VS TCP DATA (DAILY ALERT MAIL) has been completed on time",
     task_name: "CLEARING - FILE TRANSFER AND VALIDATION",
     client_name: "ABC Corporation",
-    subtask_name: "RBL DUMP VS TCP DATA (DAILY ALERT MAIL) VS DAILY STATUS FILE COUNT",
+    subtask_name:
+      "RBL DUMP VS TCP DATA (DAILY ALERT MAIL) VS DAILY STATUS FILE COUNT",
     assigned_to: "John Durairaj",
     reporting_managers: ["Albert", "Hari"],
     priority: "low",
     status: "read",
     created_at: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(), // 3 hours ago
-    action_required: false
+    action_required: false,
   },
   {
     id: "5",
     type: "daily_reminder",
     title: "Daily Process Starting Soon",
-    message: "Daily clearing process will start in 30 minutes. Please ensure all prerequisites are met.",
+    message:
+      "Daily clearing process will start in 30 minutes. Please ensure all prerequisites are met.",
     task_name: "CLEARING - FILE TRANSFER AND VALIDATION",
     client_name: "ABC Corporation",
     assigned_to: "John Durairaj",
@@ -192,13 +207,14 @@ const mockNotifications: FinOpsNotification[] = [
     priority: "medium",
     status: "unread",
     created_at: new Date(Date.now() - 30 * 60 * 1000).toISOString(), // 30 minutes ago
-    action_required: true
+    action_required: true,
   },
   {
     id: "6",
     type: "escalation",
     title: "Escalation Required",
-    message: "Multiple subtasks are overdue. Escalation managers have been notified.",
+    message:
+      "Multiple subtasks are overdue. Escalation managers have been notified.",
     task_name: "DATA RECONCILIATION PROCESS",
     client_name: "XYZ Industries",
     assigned_to: "Sarah Wilson",
@@ -206,7 +222,7 @@ const mockNotifications: FinOpsNotification[] = [
     priority: "critical",
     status: "unread",
     created_at: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(), // 6 hours ago
-    action_required: true
+    action_required: true,
   },
   {
     id: "7",
@@ -221,8 +237,8 @@ const mockNotifications: FinOpsNotification[] = [
     status: "read",
     created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
     action_required: true,
-    sla_remaining: "1 hour"
-  }
+    sla_remaining: "1 hour",
+  },
 ];
 
 export default function FinOpsNotifications() {
@@ -231,28 +247,40 @@ export default function FinOpsNotifications() {
   const [filterStatus, setFilterStatus] = useState<string>("all");
 
   // Fetch notifications from database
-  const { data: dbNotifications = [], isLoading, refetch } = useQuery({
+  const {
+    data: dbNotifications = [],
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ["finops-notifications"],
     queryFn: () => apiClient.request("/notifications-production"),
     refetchInterval: 30000, // Refresh every 30 seconds
   });
 
   // Transform database notifications to match our interface or fallback to mock
-  const notifications = dbNotifications.length > 0 ? transformDbNotifications(dbNotifications) : mockNotifications;
+  const notifications =
+    dbNotifications.length > 0
+      ? transformDbNotifications(dbNotifications)
+      : mockNotifications;
 
   // Filter notifications
-  const filteredNotifications = notifications.filter(notification => {
+  const filteredNotifications = notifications.filter((notification) => {
     if (filterType !== "all" && notification.type !== filterType) return false;
-    if (filterPriority !== "all" && notification.priority !== filterPriority) return false;
-    if (filterStatus !== "all" && notification.status !== filterStatus) return false;
+    if (filterPriority !== "all" && notification.priority !== filterPriority)
+      return false;
+    if (filterStatus !== "all" && notification.status !== filterStatus)
+      return false;
     return true;
   });
 
   const markAsRead = async (notificationId: string) => {
     try {
-      await apiClient.request(`/notifications-production/${notificationId}/read`, {
-        method: "PUT"
-      });
+      await apiClient.request(
+        `/notifications-production/${notificationId}/read`,
+        {
+          method: "PUT",
+        },
+      );
       refetch(); // Refresh the data
     } catch (error) {
       console.error("Failed to mark notification as read:", error);
@@ -262,7 +290,7 @@ export default function FinOpsNotifications() {
   const markAsArchived = async (notificationId: string) => {
     try {
       await apiClient.request(`/notifications-production/${notificationId}`, {
-        method: "DELETE"
+        method: "DELETE",
       });
       refetch(); // Refresh the data
     } catch (error) {
@@ -273,13 +301,18 @@ export default function FinOpsNotifications() {
   const markAllAsRead = async () => {
     try {
       // Mark all unread notifications as read
-      const unreadNotifications = notifications.filter(n => n.status === "unread");
+      const unreadNotifications = notifications.filter(
+        (n) => n.status === "unread",
+      );
       await Promise.all(
-        unreadNotifications.map(notification =>
-          apiClient.request(`/notifications-production/${notification.id}/read`, {
-            method: "PUT"
-          })
-        )
+        unreadNotifications.map((notification) =>
+          apiClient.request(
+            `/notifications-production/${notification.id}/read`,
+            {
+              method: "PUT",
+            },
+          ),
+        ),
       );
       refetch(); // Refresh the data
     } catch (error) {
@@ -347,9 +380,13 @@ export default function FinOpsNotifications() {
   };
 
   // Calculate summary statistics
-  const unreadCount = notifications.filter(n => n.status === "unread").length;
-  const criticalCount = notifications.filter(n => n.priority === "critical" && n.status !== "archived").length;
-  const actionRequiredCount = notifications.filter(n => n.action_required && n.status !== "archived").length;
+  const unreadCount = notifications.filter((n) => n.status === "unread").length;
+  const criticalCount = notifications.filter(
+    (n) => n.priority === "critical" && n.status !== "archived",
+  ).length;
+  const actionRequiredCount = notifications.filter(
+    (n) => n.action_required && n.status !== "archived",
+  ).length;
 
   return (
     <div className="space-y-6">
@@ -361,7 +398,8 @@ export default function FinOpsNotifications() {
             FinOps Notifications
           </h2>
           <p className="text-gray-600 mt-1">
-            Stay updated with task progress, SLA alerts, and important notifications
+            Stay updated with task progress, SLA alerts, and important
+            notifications
           </p>
         </div>
         <div className="flex gap-2">
@@ -369,8 +407,15 @@ export default function FinOpsNotifications() {
             <CheckCircle className="w-4 h-4 mr-1" />
             Mark All Read
           </Button>
-          <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isLoading}>
-            <RefreshCw className={`w-4 h-4 mr-1 ${isLoading ? 'animate-spin' : ''}`} />
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => refetch()}
+            disabled={isLoading}
+          >
+            <RefreshCw
+              className={`w-4 h-4 mr-1 ${isLoading ? "animate-spin" : ""}`}
+            />
             Refresh
           </Button>
         </div>
@@ -380,25 +425,33 @@ export default function FinOpsNotifications() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-blue-600">{notifications.length}</div>
+            <div className="text-2xl font-bold text-blue-600">
+              {notifications.length}
+            </div>
             <div className="text-xs text-gray-600">Total Notifications</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-orange-600">{unreadCount}</div>
+            <div className="text-2xl font-bold text-orange-600">
+              {unreadCount}
+            </div>
             <div className="text-xs text-gray-600">Unread</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-red-600">{criticalCount}</div>
+            <div className="text-2xl font-bold text-red-600">
+              {criticalCount}
+            </div>
             <div className="text-xs text-gray-600">Critical</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-purple-600">{actionRequiredCount}</div>
+            <div className="text-2xl font-bold text-purple-600">
+              {actionRequiredCount}
+            </div>
             <div className="text-xs text-gray-600">Action Required</div>
           </CardContent>
         </Card>
@@ -464,7 +517,8 @@ export default function FinOpsNotifications() {
           <AlertTriangle className="h-4 w-4 text-red-600" />
           <AlertTitle className="text-red-800">Critical Alerts</AlertTitle>
           <AlertDescription className="text-red-700">
-            You have {criticalCount} critical notification(s) that require immediate attention.
+            You have {criticalCount} critical notification(s) that require
+            immediate attention.
           </AlertDescription>
         </Alert>
       )}
@@ -475,9 +529,11 @@ export default function FinOpsNotifications() {
           <Card>
             <CardContent className="p-8 text-center">
               <Bell className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No Notifications</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                No Notifications
+              </h3>
               <p className="text-gray-600">
-                {notifications.length === 0 
+                {notifications.length === 0
                   ? "No notifications yet. You'll receive updates about task progress and alerts here."
                   : "No notifications match your current filters."}
               </p>
@@ -487,8 +543,8 @@ export default function FinOpsNotifications() {
           filteredNotifications.map((notification) => {
             const Icon = getNotificationIcon(notification.type);
             return (
-              <Card 
-                key={notification.id} 
+              <Card
+                key={notification.id}
                 className={`${getNotificationColor(notification.priority)} border-l-4 ${
                   notification.status === "unread" ? "shadow-md" : ""
                 }`}
@@ -496,18 +552,28 @@ export default function FinOpsNotifications() {
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between">
                     <div className="flex gap-3 flex-1">
-                      <Icon className={`w-5 h-5 mt-0.5 ${
-                        notification.priority === "critical" ? "text-red-600" :
-                        notification.priority === "high" ? "text-orange-600" :
-                        notification.priority === "medium" ? "text-blue-600" : "text-green-600"
-                      }`} />
-                      
+                      <Icon
+                        className={`w-5 h-5 mt-0.5 ${
+                          notification.priority === "critical"
+                            ? "text-red-600"
+                            : notification.priority === "high"
+                              ? "text-orange-600"
+                              : notification.priority === "medium"
+                                ? "text-blue-600"
+                                : "text-green-600"
+                        }`}
+                      />
+
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between mb-2">
                           <div>
-                            <h4 className={`font-medium text-sm ${
-                              notification.status === "unread" ? "font-semibold" : ""
-                            }`}>
+                            <h4
+                              className={`font-medium text-sm ${
+                                notification.status === "unread"
+                                  ? "font-semibold"
+                                  : ""
+                              }`}
+                            >
                               {notification.title}
                             </h4>
                             <p className="text-sm text-gray-700 mt-1 break-words">
@@ -515,7 +581,11 @@ export default function FinOpsNotifications() {
                             </p>
                           </div>
                           <div className="flex items-center gap-2 ml-3">
-                            <Badge className={getPriorityColor(notification.priority)}>
+                            <Badge
+                              className={getPriorityColor(
+                                notification.priority,
+                              )}
+                            >
                               {notification.priority}
                             </Badge>
                             {notification.status === "unread" && (
@@ -523,7 +593,7 @@ export default function FinOpsNotifications() {
                             )}
                           </div>
                         </div>
-                        
+
                         <div className="flex flex-wrap gap-4 text-xs text-gray-600 mb-3">
                           <span className="flex items-center gap-1">
                             <Calendar className="w-3 h-3" />
@@ -539,26 +609,35 @@ export default function FinOpsNotifications() {
                             <User className="w-3 h-3" />
                             {notification.assigned_to}
                           </span>
-                          <span>{getRelativeTime(notification.created_at)}</span>
+                          <span>
+                            {getRelativeTime(notification.created_at)}
+                          </span>
                         </div>
 
                         {notification.subtask_name && (
                           <div className="text-xs text-gray-600 mb-2">
-                            <strong>Subtask:</strong> {notification.subtask_name}
+                            <strong>Subtask:</strong>{" "}
+                            {notification.subtask_name}
                           </div>
                         )}
 
                         {notification.delay_reason && (
                           <div className="text-xs text-yellow-700 mb-2">
-                            <strong>Delay Reason:</strong> {notification.delay_reason}
+                            <strong>Delay Reason:</strong>{" "}
+                            {notification.delay_reason}
                           </div>
                         )}
 
                         {notification.sla_remaining && (
-                          <div className={`text-xs mb-2 ${
-                            notification.type === "sla_overdue" ? "text-red-600" : "text-orange-600"
-                          }`}>
-                            <strong>SLA Status:</strong> {notification.sla_remaining}
+                          <div
+                            className={`text-xs mb-2 ${
+                              notification.type === "sla_overdue"
+                                ? "text-red-600"
+                                : "text-orange-600"
+                            }`}
+                          >
+                            <strong>SLA Status:</strong>{" "}
+                            {notification.sla_remaining}
                           </div>
                         )}
 
@@ -566,7 +645,8 @@ export default function FinOpsNotifications() {
                           <Alert className="mt-3 p-2 border-orange-200 bg-orange-50">
                             <AlertCircle className="h-3 w-3 text-orange-600" />
                             <AlertDescription className="text-xs text-orange-700 ml-1">
-                              Action required - Please review and take necessary steps
+                              Action required - Please review and take necessary
+                              steps
                             </AlertDescription>
                           </Alert>
                         )}
@@ -575,18 +655,18 @@ export default function FinOpsNotifications() {
 
                     <div className="flex flex-col gap-1 ml-3">
                       {notification.status === "unread" && (
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={() => markAsRead(notification.id)}
                           className="h-8 px-2"
                         >
                           <CheckCircle className="w-3 h-3" />
                         </Button>
                       )}
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={() => markAsArchived(notification.id)}
                         className="h-8 px-2"
                       >

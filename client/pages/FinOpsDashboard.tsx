@@ -100,7 +100,10 @@ function MetricCard({
 }
 
 // Helper function to safely format dates
-const formatSafeDate = (dateValue: any, formatString: string = "MMM d, yyyy"): string => {
+const formatSafeDate = (
+  dateValue: any,
+  formatString: string = "MMM d, yyyy",
+): string => {
   if (!dateValue) return "N/A";
   const date = new Date(dateValue);
   return isNaN(date.getTime()) ? "N/A" : format(date, formatString);
@@ -344,7 +347,8 @@ export default function FinOpsDashboard() {
             FinOps Daily Process - Real-time Tracking
           </CardTitle>
           <CardDescription>
-            Track daily financial operations tasks and SLA compliance with month/day wise breakdowns
+            Track daily financial operations tasks and SLA compliance with
+            month/day wise breakdowns
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -435,9 +439,16 @@ export default function FinOpsDashboard() {
                     Daily Success Rate
                   </div>
                   <div className="text-lg font-bold text-blue-900">
-                    {processData.tasks_completed_today && processData.tasks_pending_today
-                      ? Math.round((processData.tasks_completed_today / (processData.tasks_completed_today + processData.tasks_pending_today)) * 100)
-                      : 0}%
+                    {processData.tasks_completed_today &&
+                    processData.tasks_pending_today
+                      ? Math.round(
+                          (processData.tasks_completed_today /
+                            (processData.tasks_completed_today +
+                              processData.tasks_pending_today)) *
+                            100,
+                        )
+                      : 0}
+                    %
                   </div>
                 </div>
                 <div className="p-3 bg-purple-50 rounded-lg">
@@ -445,9 +456,16 @@ export default function FinOpsDashboard() {
                     Monthly Success Rate
                   </div>
                   <div className="text-lg font-bold text-purple-900">
-                    {processData.tasks_completed_this_month && processData.tasks_pending_this_month
-                      ? Math.round((processData.tasks_completed_this_month / (processData.tasks_completed_this_month + processData.tasks_pending_this_month)) * 100)
-                      : 0}%
+                    {processData.tasks_completed_this_month &&
+                    processData.tasks_pending_this_month
+                      ? Math.round(
+                          (processData.tasks_completed_this_month /
+                            (processData.tasks_completed_this_month +
+                              processData.tasks_pending_this_month)) *
+                            100,
+                        )
+                      : 0}
+                    %
                   </div>
                 </div>
                 <div className="space-y-2">

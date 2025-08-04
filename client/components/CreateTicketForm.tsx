@@ -260,8 +260,6 @@ export default function CreateTicketForm({
             </SelectContent>
           </Select>
         </div>
-
-
       </div>
 
       {/* Tags */}
