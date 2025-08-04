@@ -132,5 +132,34 @@ export function createServer() {
     console.error("Error loading Workflow router:", error);
   }
 
+  // Production routes (database-only, no mock fallback)
+  try {
+    app.use("/api/admin", adminProductionRouter);
+    console.log("Admin production router loaded successfully");
+  } catch (error) {
+    console.error("Error loading Admin production router:", error);
+  }
+
+  try {
+    app.use("/api/templates-production", templatesProductionRouter);
+    console.log("Templates production router loaded successfully");
+  } catch (error) {
+    console.error("Error loading Templates production router:", error);
+  }
+
+  try {
+    app.use("/api/activity", activityProductionRouter);
+    console.log("Activity production router loaded successfully");
+  } catch (error) {
+    console.error("Error loading Activity production router:", error);
+  }
+
+  try {
+    app.use("/api/notifications", notificationsProductionRouter);
+    console.log("Notifications production router loaded successfully");
+  } catch (error) {
+    console.error("Error loading Notifications production router:", error);
+  }
+
   return app;
 }
