@@ -43,6 +43,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import ClientBasedFinOpsTaskManager from "@/components/ClientBasedFinOpsTaskManager";
+import FinOpsNotifications from "@/components/FinOpsNotifications";
 
 interface AutomationTask {
   id: number;
