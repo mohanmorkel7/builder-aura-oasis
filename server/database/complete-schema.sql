@@ -458,6 +458,92 @@ DROP TRIGGER IF EXISTS update_onboarding_templates_updated_at ON onboarding_temp
 CREATE TRIGGER update_onboarding_templates_updated_at BEFORE UPDATE ON onboarding_templates FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- ===============================
+-- FINOPS TASK MANAGEMENT TABLES
+-- ===============================
+
+-- FinOps Tasks table - Main task definitions
+CREATE TABLE IF NOT EXISTS finops_tasks (
+    id SERIAL PRIMARY KEY,
+    task_name VARCHAR(255) NOT NULL,
+    description TEXT,
+    assigned_to VARCHAR(255) NOT NULL,
+    reporting_managers JSONB DEFAULT '[]'::jsonb, -- Array of manager names
+    escalation_managers JSONB DEFAULT '[]'::jsonb, -- Array of escalation manager names
+    effective_from DATE NOT NULL,
+    duration VARCHAR(20) NOT NULL CHECK (duration IN ('daily', 'weekly', 'monthly')),
+    is_active BOOLEAN DEFAULT true,
+    status VARCHAR(20) DEFAULT 'active' CHECK (status IN ('active', 'inactive', 'completed', 'overdue')),
+    last_run_at TIMESTAMP,
+    next_run_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP NULL,
+    created_by INTEGER NOT NULL,
+    FOREIGN KEY (created_by) REFERENCES users(id)
+);
+
+-- FinOps SubTasks table - Individual steps within a task
+CREATE TABLE IF NOT EXISTS finops_subtasks (
+    id SERIAL PRIMARY KEY,
+    task_id INTEGER NOT NULL,
+    name VARCHAR(500) NOT NULL,
+    description TEXT,
+    sla_hours INTEGER DEFAULT 1,
+    sla_minutes INTEGER DEFAULT 0,
+    order_position INTEGER DEFAULT 0,
+    status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'in_progress', 'completed', 'overdue', 'cancelled')),
+    assigned_to VARCHAR(255),
+    started_at TIMESTAMP,
+    completed_at TIMESTAMP,
+    due_at TIMESTAMP, -- Calculated based on SLA
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (task_id) REFERENCES finops_tasks(id) ON DELETE CASCADE
+);
+
+-- FinOps Activity Log table - Track all activities and changes
+CREATE TABLE IF NOT EXISTS finops_activity_log (
+    id SERIAL PRIMARY KEY,
+    task_id INTEGER NOT NULL,
+    subtask_id INTEGER NULL,
+    action VARCHAR(50) NOT NULL, -- 'created', 'started', 'completed', 'overdue', 'updated', 'deleted', 'manual_run'
+    user_name VARCHAR(255) NOT NULL,
+    user_id INTEGER,
+    details TEXT,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    metadata JSONB DEFAULT '{}'::jsonb,
+    FOREIGN KEY (task_id) REFERENCES finops_tasks(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+-- FinOps Alerts table - SLA breach and escalation alerts
+CREATE TABLE IF NOT EXISTS finops_alerts (
+    id SERIAL PRIMARY KEY,
+    task_id INTEGER NOT NULL,
+    subtask_id INTEGER,
+    alert_type VARCHAR(50) NOT NULL, -- 'sla_warning', 'sla_breach', 'escalation', 'completion'
+    alert_level VARCHAR(20) NOT NULL CHECK (alert_level IN ('info', 'warning', 'critical', 'escalation')),
+    message TEXT NOT NULL,
+    recipients JSONB DEFAULT '[]'::jsonb, -- Array of email addresses or user names
+    sent_at TIMESTAMP,
+    acknowledged_at TIMESTAMP,
+    acknowledged_by VARCHAR(255),
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    metadata JSONB DEFAULT '{}'::jsonb,
+    FOREIGN KEY (task_id) REFERENCES finops_tasks(id) ON DELETE CASCADE,
+    FOREIGN KEY (subtask_id) REFERENCES finops_subtasks(id) ON DELETE CASCADE
+);
+
+-- Create indexes for FinOps tables
+CREATE INDEX IF NOT EXISTS idx_finops_tasks_active ON finops_tasks(is_active, effective_from);
+CREATE INDEX IF NOT EXISTS idx_finops_tasks_next_run ON finops_tasks(next_run_at);
+CREATE INDEX IF NOT EXISTS idx_finops_subtasks_task ON finops_subtasks(task_id);
+CREATE INDEX IF NOT EXISTS idx_finops_subtasks_status ON finops_subtasks(status);
+CREATE INDEX IF NOT EXISTS idx_finops_subtasks_due ON finops_subtasks(due_at);
+CREATE INDEX IF NOT EXISTS idx_finops_activity_log_task ON finops_activity_log(task_id);
+
+-- ===============================
 -- WORKFLOW INTEGRATION TABLES
 -- ===============================
 
