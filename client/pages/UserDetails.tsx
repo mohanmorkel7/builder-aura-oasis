@@ -154,11 +154,45 @@ export default function UserDetails() {
     );
   }
 
+  if (isInvalidId) {
+    return (
+      <div className="p-6">
+        <div className="max-w-2xl mx-auto">
+          <Button
+            variant="outline"
+            onClick={handleBack}
+            className="mb-4"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Users
+          </Button>
+          <Alert>
+            <AlertDescription>
+              Invalid user ID "{id}". User IDs must be numeric. If you're looking for a specific user, please use the user management page to find them.
+            </AlertDescription>
+          </Alert>
+        </div>
+      </div>
+    );
+  }
+
   if (error || !user) {
     return (
       <div className="p-6">
-        <div className="text-center text-red-600">
-          Error loading user details
+        <div className="max-w-2xl mx-auto">
+          <Button
+            variant="outline"
+            onClick={handleBack}
+            className="mb-4"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Users
+          </Button>
+          <Alert>
+            <AlertDescription>
+              Error loading user details. The user may not exist or there may be a connection issue.
+            </AlertDescription>
+          </Alert>
         </div>
       </div>
     );
