@@ -258,6 +258,11 @@ export default function FinOpsAutomation() {
           <TabsTrigger value="lead-integration">Lead Integration</TabsTrigger>
         </TabsList>
 
+        {/* Live Monitoring Tab */}
+        <TabsContent value="monitoring" className="space-y-6">
+          <FinOpsMonitoringDashboard />
+        </TabsContent>
+
         {/* Task Management Tab */}
         <TabsContent value="task-management" className="space-y-6">
           <FinOpsTaskManager />
