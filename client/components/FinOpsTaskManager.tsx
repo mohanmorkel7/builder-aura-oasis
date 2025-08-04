@@ -757,88 +757,28 @@ export default function FinOpsTaskManager({ onTaskSelect }: FinOpsTaskManagerPro
                 </Button>
               </div>
 
-              <DragDropContext onDragEnd={handleDragEnd}>
-                <Droppable droppableId="subtasks">
-                  {(provided) => (
-                    <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-3">
-                      {taskForm.subtasks.map((subtask, index) => (
-                        <Draggable key={subtask.id} draggableId={subtask.id} index={index}>
-                          {(provided) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              className="border rounded-lg p-4 bg-gray-50"
-                            >
-                              <div className="flex items-start gap-3">
-                                <div {...provided.dragHandleProps} className="mt-2">
-                                  <GripVertical className="w-4 h-4 text-gray-400" />
-                                </div>
-                                
-                                <div className="flex-1 space-y-3">
-                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                    <div>
-                                      <Label>Subtask Name *</Label>
-                                      <Input
-                                        value={subtask.name}
-                                        onChange={(e) => updateSubTask(index, 'name', e.target.value)}
-                                        placeholder="e.g., RBL DUMP VS TCP DATA (DAILY ALERT MAIL)"
-                                        required
-                                      />
-                                    </div>
-                                    
-                                    <div className="grid grid-cols-2 gap-2">
-                                      <div>
-                                        <Label>SLA Hours</Label>
-                                        <Input
-                                          type="number"
-                                          min="0"
-                                          value={subtask.sla_hours}
-                                          onChange={(e) => updateSubTask(index, 'sla_hours', parseInt(e.target.value) || 0)}
-                                        />
-                                      </div>
-                                      <div>
-                                        <Label>SLA Minutes</Label>
-                                        <Input
-                                          type="number"
-                                          min="0"
-                                          max="59"
-                                          value={subtask.sla_minutes}
-                                          onChange={(e) => updateSubTask(index, 'sla_minutes', parseInt(e.target.value) || 0)}
-                                        />
-                                      </div>
-                                    </div>
-                                  </div>
-                                  
-                                  <div>
-                                    <Label>Description (Optional)</Label>
-                                    <Textarea
-                                      value={subtask.description || ''}
-                                      onChange={(e) => updateSubTask(index, 'description', e.target.value)}
-                                      placeholder="Additional details about this subtask..."
-                                      rows={2}
-                                    />
-                                  </div>
-                                </div>
-
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => removeSubTask(index)}
-                                  className="text-red-600"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </Button>
-                              </div>
-                            </div>
-                          )}
-                        </Draggable>
-                      ))}
-                      {provided.placeholder}
-                    </div>
-                  )}
-                </Droppable>
-              </DragDropContext>
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext
+                  items={taskForm.subtasks.map(st => st.id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  <div className="space-y-3">
+                    {taskForm.subtasks.map((subtask, index) => (
+                      <SortableSubTaskItem
+                        key={subtask.id}
+                        subtask={subtask}
+                        index={index}
+                        onUpdate={updateSubTask}
+                        onRemove={removeSubTask}
+                      />
+                    ))}
+                  </div>
+                </SortableContext>
+              </DndContext>
 
               {taskForm.subtasks.length === 0 && (
                 <div className="text-center py-8 text-gray-500 border-2 border-dashed border-gray-300 rounded-lg">
