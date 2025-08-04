@@ -90,7 +90,7 @@ export default function FinOpsActivityLog() {
         "start_date",
         new Date(Date.now() - filters.days * 24 * 60 * 60 * 1000).toISOString(),
       );
-      return apiClient.request(`/activity?${params.toString()}`);
+      return apiClient.request(`/activity-production?${params.toString()}`);
     },
     refetchInterval: 30000, // Refresh every 30 seconds
   });
