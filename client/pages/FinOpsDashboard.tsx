@@ -110,18 +110,10 @@ export default function FinOpsDashboard() {
     end: new Date().toISOString().split("T")[0],
   });
 
-  // Fetch dashboard data from production route with real-time data
+  // Fetch dashboard data
   const { data: dashboardData, isLoading } = useQuery({
-    queryKey: ["finops-dashboard", selectedPeriod, dateRange],
-    queryFn: () => apiClient.request("/finops-production/dashboard", {
-      method: "POST",
-      body: JSON.stringify({
-        period: selectedPeriod,
-        start_date: dateRange.start,
-        end_date: dateRange.end,
-      }),
-    }),
-    refetchInterval: 30000, // Refresh every 30 seconds for real-time data
+    queryKey: ["finops-dashboard"],
+    queryFn: () => apiClient.getFinOpsDashboard(),
   });
 
   // Fetch financial metrics
