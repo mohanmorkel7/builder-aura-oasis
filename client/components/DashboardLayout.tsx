@@ -95,10 +95,11 @@ const navigationItems: NavigationItem[] = [
 
 interface Notification {
   id: number;
-  type: "follow_up_assigned" | "follow_up_mentioned" | "follow_up_overdue";
+  type: "follow_up_assigned" | "follow_up_mentioned" | "follow_up_overdue" | "finops_sla_warning" | "finops_overdue" | "ticket_assigned" | "lead_updated";
   title: string;
   message: string;
-  follow_up_id: number;
+  entity_id: number;
+  entity_type: "follow_up" | "finops_task" | "ticket" | "lead";
   created_at: string;
   read: boolean;
 }
