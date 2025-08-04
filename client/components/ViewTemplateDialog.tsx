@@ -25,7 +25,10 @@ export default function ViewTemplateDialog({
 }: ViewTemplateDialogProps) {
   const { data: template, isLoading } = useQuery({
     queryKey: ["template", templateId],
-    queryFn: () => (templateId ? apiClient.request(`/templates-production/${templateId}`) : null),
+    queryFn: () =>
+      templateId
+        ? apiClient.request(`/templates-production/${templateId}`)
+        : null,
     enabled: !!templateId && isOpen,
   });
 
@@ -80,18 +83,33 @@ export default function ViewTemplateDialog({
                     <FileText className="w-4 h-4 text-gray-500" />
                     <span>{template.step_count || 0} steps</span>
                   </div>
-                  {template.steps && template.steps.some((step: any) => step.probability_percent !== undefined) && (
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-gray-500" />
-                      <span className={`${
-                        template.steps.reduce((sum: number, step: any) => sum + (step.probability_percent || 0), 0) === 100
-                          ? 'text-green-600 font-medium'
-                          : 'text-orange-600 font-medium'
-                      }`}>
-                        Total: {template.steps.reduce((sum: number, step: any) => sum + (step.probability_percent || 0), 0)}% probability
-                      </span>
-                    </div>
-                  )}
+                  {template.steps &&
+                    template.steps.some(
+                      (step: any) => step.probability_percent !== undefined,
+                    ) && (
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="w-4 h-4 text-gray-500" />
+                        <span
+                          className={`${
+                            template.steps.reduce(
+                              (sum: number, step: any) =>
+                                sum + (step.probability_percent || 0),
+                              0,
+                            ) === 100
+                              ? "text-green-600 font-medium"
+                              : "text-orange-600 font-medium"
+                          }`}
+                        >
+                          Total:{" "}
+                          {template.steps.reduce(
+                            (sum: number, step: any) =>
+                              sum + (step.probability_percent || 0),
+                            0,
+                          )}
+                          % probability
+                        </span>
+                      </div>
+                    )}
                 </div>
               </CardContent>
             </Card>
@@ -101,54 +119,76 @@ export default function ViewTemplateDialog({
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle>Template Steps</CardTitle>
-                  {template.steps && template.steps.some((step: any) => step.probability_percent !== undefined) && (
-                    <div className="text-sm">
-                      <span className="text-gray-600">Total Probability: </span>
-                      <span className={`font-medium ${
-                        template.steps.reduce((sum: number, step: any) => sum + (step.probability_percent || 0), 0) === 100
-                          ? 'text-green-600' : 'text-orange-600'
-                      }`}>
-                        {template.steps.reduce((sum: number, step: any) => sum + (step.probability_percent || 0), 0)}%
-                      </span>
-                      <span className="text-gray-500 ml-1">/ 100%</span>
-                    </div>
-                  )}
+                  {template.steps &&
+                    template.steps.some(
+                      (step: any) => step.probability_percent !== undefined,
+                    ) && (
+                      <div className="text-sm">
+                        <span className="text-gray-600">
+                          Total Probability:{" "}
+                        </span>
+                        <span
+                          className={`font-medium ${
+                            template.steps.reduce(
+                              (sum: number, step: any) =>
+                                sum + (step.probability_percent || 0),
+                              0,
+                            ) === 100
+                              ? "text-green-600"
+                              : "text-orange-600"
+                          }`}
+                        >
+                          {template.steps.reduce(
+                            (sum: number, step: any) =>
+                              sum + (step.probability_percent || 0),
+                            0,
+                          )}
+                          %
+                        </span>
+                        <span className="text-gray-500 ml-1">/ 100%</span>
+                      </div>
+                    )}
                 </div>
               </CardHeader>
               <CardContent>
                 {template.steps && template.steps.length > 0 ? (
                   <div className="space-y-4">
                     {template.steps
-                      .sort((a: any, b: any) => (a.step_order || a.order_position || 0) - (b.step_order || b.order_position || 0))
+                      .sort(
+                        (a: any, b: any) =>
+                          (a.step_order || a.order_position || 0) -
+                          (b.step_order || b.order_position || 0),
+                      )
                       .map((step: any, index: number) => (
-                      <div
-                        key={step.id || index}
-                        className="border rounded-lg p-4"
-                      >
-                        <div className="flex items-start justify-between mb-2">
-                          <div className="flex items-center gap-2">
-                            <div className="flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-800 rounded-full font-semibold text-sm">
-                              {index + 1}
+                        <div
+                          key={step.id || index}
+                          className="border rounded-lg p-4"
+                        >
+                          <div className="flex items-start justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              <div className="flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-800 rounded-full font-semibold text-sm">
+                                {index + 1}
+                              </div>
+                              <h4 className="font-medium">{step.name}</h4>
                             </div>
-                            <h4 className="font-medium">{step.name}</h4>
+                            {step.probability_percent !== undefined &&
+                              step.probability_percent !== null && (
+                                <Badge
+                                  variant="secondary"
+                                  className="bg-blue-100 text-blue-700"
+                                >
+                                  {step.probability_percent}%
+                                </Badge>
+                              )}
                           </div>
-                          {(step.probability_percent !== undefined && step.probability_percent !== null) && (
-                            <Badge
-                              variant="secondary"
-                              className="bg-blue-100 text-blue-700"
-                            >
-                              {step.probability_percent}%
-                            </Badge>
+
+                          {step.description && (
+                            <p className="text-gray-600 mb-3 ml-10">
+                              {step.description}
+                            </p>
                           )}
                         </div>
-
-                        {step.description && (
-                          <p className="text-gray-600 mb-3 ml-10">
-                            {step.description}
-                          </p>
-                        )}
-                      </div>
-                    ))}
+                      ))}
                   </div>
                 ) : (
                   <div className="text-center py-8 text-gray-500">
