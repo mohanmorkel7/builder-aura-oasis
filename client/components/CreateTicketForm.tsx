@@ -325,7 +325,7 @@ export default function CreateTicketForm({
                 <p className="text-gray-500"> or drag and drop</p>
               </div>
               <p className="text-xs text-gray-500 mt-1">
-                PNG, JPG, PDF, DOC up to 10MB each
+                PNG, JPG, PDF, DOC up to 50MB each
               </p>
             </div>
 
