@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useLeads, useLeadStats, useDeleteLead, useMyPartialSaves } from "@/hooks/useApi";
+import {
+  useLeads,
+  useLeadStats,
+  useDeleteLead,
+  useMyPartialSaves,
+} from "@/hooks/useApi";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -99,7 +104,11 @@ export default function LeadDashboard() {
   } = useLeadStats();
   const deleteLead = useDeleteLead();
   const userId = user?.id ? parseInt(user.id) : undefined;
-  const { data: partialSaves = [], isLoading: partialSavesLoading, refetch: refetchPartialSaves } = useMyPartialSaves(userId);
+  const {
+    data: partialSaves = [],
+    isLoading: partialSavesLoading,
+    refetch: refetchPartialSaves,
+  } = useMyPartialSaves(userId);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -128,7 +137,10 @@ export default function LeadDashboard() {
     navigate("/leads/new", { state: { resumeData: partialData } });
   };
 
-  const handleDeletePartialSave = async (partialSaveId: number, partialSaveName: string) => {
+  const handleDeletePartialSave = async (
+    partialSaveId: number,
+    partialSaveName: string,
+  ) => {
     try {
       await deleteLead.mutateAsync(partialSaveId);
       console.log(`Draft ${partialSaveName} deleted successfully`);
@@ -141,17 +153,17 @@ export default function LeadDashboard() {
 
   const getPartialSaveInfo = (partialSave: any) => {
     try {
-      const notes = JSON.parse(partialSave.notes || '{}');
+      const notes = JSON.parse(partialSave.notes || "{}");
       return {
         lastSaved: notes.lastSaved,
         completedTabs: notes.completedTabs || [],
-        originalData: notes.originalData || {}
+        originalData: notes.originalData || {},
       };
     } catch {
       return {
         lastSaved: partialSave.created_at,
         completedTabs: [],
-        originalData: {}
+        originalData: {},
       };
     }
   };
@@ -162,14 +174,17 @@ export default function LeadDashboard() {
     let isPartialSave = false;
 
     try {
-      isPartialSave = lead.client_name === 'PARTIAL_SAVE_IN_PROGRESS' ||
-                     lead.is_partial === true ||
-                     (lead.notes && typeof lead.notes === 'string' &&
-                      JSON.parse(lead.notes).isPartialSave === true);
+      isPartialSave =
+        lead.client_name === "PARTIAL_SAVE_IN_PROGRESS" ||
+        lead.is_partial === true ||
+        (lead.notes &&
+          typeof lead.notes === "string" &&
+          JSON.parse(lead.notes).isPartialSave === true);
     } catch (error) {
       // If JSON parsing fails, check for string indicators
-      isPartialSave = lead.client_name === 'PARTIAL_SAVE_IN_PROGRESS' ||
-                     lead.is_partial === true;
+      isPartialSave =
+        lead.client_name === "PARTIAL_SAVE_IN_PROGRESS" ||
+        lead.is_partial === true;
     }
 
     if (isPartialSave) {
@@ -388,7 +403,9 @@ export default function LeadDashboard() {
                   No leads found
                 </h3>
                 <p className="text-gray-600 mb-4">
-                  {searchTerm || statusFilter !== "all" || sourceFilter !== "all"
+                  {searchTerm ||
+                  statusFilter !== "all" ||
+                  sourceFilter !== "all"
                     ? "Try adjusting your search criteria"
                     : "Get started by creating your first lead"}
                 </p>
@@ -401,7 +418,8 @@ export default function LeadDashboard() {
           ) : (
             filteredLeads.map((lead: any) => {
               const SourceIcon =
-                sourceIcons[lead.lead_source as keyof typeof sourceIcons] || Zap;
+                sourceIcons[lead.lead_source as keyof typeof sourceIcons] ||
+                Zap;
 
               return (
                 <Card
@@ -409,242 +427,252 @@ export default function LeadDashboard() {
                   className="hover:shadow-md transition-shadow cursor-pointer"
                   onClick={() => handleLeadClick(lead.id)}
                 >
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <h3 className="text-lg font-semibold text-gray-900">
-                          {lead.client_name}
-                        </h3>
-                        <Badge className="text-xs">{lead.lead_id}</Badge>
-                        <Badge
-                          className={
-                            statusColors[
-                              lead.status as keyof typeof statusColors
-                            ]
-                          }
-                        >
-                          {lead.status.replace("-", " ")}
-                        </Badge>
-                        <Badge
-                          className={
-                            priorityColors[
-                              lead.priority as keyof typeof priorityColors
-                            ]
-                          }
-                        >
-                          {lead.priority}
-                        </Badge>
-                      </div>
-
-                      <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
-                        <span className="flex items-center space-x-1">
-                          <div
-                            className={`p-1 rounded ${sourceColors[lead.lead_source as keyof typeof sourceColors]}`}
-                          >
-                            <SourceIcon className="w-3 h-3" />
-                          </div>
-                          <div className="flex flex-col">
-                            <span className="capitalize">
-                              {lead.lead_source.replace("-", " ")}
-                            </span>
-                            {lead.lead_source_value && (
-                              <span
-                                className="text-xs text-blue-600 hover:underline cursor-pointer"
-                                title={lead.lead_source_value}
-                              >
-                                {lead.lead_source === "email" ? (
-                                  <a href={`mailto:${lead.lead_source_value}`}>
-                                    {lead.lead_source_value.length > 20
-                                      ? `${lead.lead_source_value.substring(0, 20)}...`
-                                      : lead.lead_source_value}
-                                  </a>
-                                ) : lead.lead_source === "phone" ||
-                                  lead.lead_source === "cold-call" ? (
-                                  <a href={`tel:${lead.lead_source_value}`}>
-                                    {lead.lead_source_value}
-                                  </a>
-                                ) : lead.lead_source === "website" ? (
-                                  <a
-                                    href={
-                                      lead.lead_source_value.startsWith("http")
-                                        ? lead.lead_source_value
-                                        : `https://${lead.lead_source_value}`
-                                    }
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                  >
-                                    {lead.lead_source_value.length > 20
-                                      ? `${lead.lead_source_value.substring(0, 20)}...`
-                                      : lead.lead_source_value}
-                                  </a>
-                                ) : lead.lead_source_value.length > 20 ? (
-                                  `${lead.lead_source_value.substring(0, 20)}...`
-                                ) : (
-                                  lead.lead_source_value
-                                )}
-                              </span>
-                            )}
-                          </div>
-                        </span>
-                        {lead.contacts && lead.contacts.length > 0 && (
-                          <>
-                            <span>•</span>
-                            <span>{lead.contacts[0].contact_name}</span>
-                            <span>•</span>
-                            <span>{lead.contacts[0].email}</span>
-                          </>
-                        )}
-                        {lead.probability && (
-                          <>
-                            <span>•</span>
-                            <span>{lead.probability}% probability</span>
-                          </>
-                        )}
-                      </div>
-
-                      {lead.project_title && (
-                        <div className="mb-3">
-                          <h4 className="font-medium text-gray-900 mb-1">
-                            {lead.project_title}
-                          </h4>
-                          {lead.project_description && (
-                            <p className="text-sm text-gray-600 line-clamp-2">
-                              {lead.project_description}
-                            </p>
-                          )}
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="text-right flex flex-col items-end space-y-2">
-                      {lead.expected_close_date && (
-                        <div className="text-sm text-gray-500">
-                          Expected: {formatToIST(lead.expected_close_date)}
-                        </div>
-                      )}
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                            }}
-                          >
-                            <Trash2 className="w-3 h-3 mr-1" />
-                            Delete
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Delete Lead</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Are you sure you want to delete "
-                              {lead.client_name}"? This action cannot be undone.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={() =>
-                                handleDeleteLead(lead.id, lead.client_name)
-                              }
-                              className="bg-red-600 hover:bg-red-700"
-                            >
-                              Delete
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between text-sm text-gray-500">
-                    <div className="flex items-center space-x-4">
-                      {lead.company && <span>Company: {lead.company}</span>}
-                      {lead.category && <span>Category: {lead.category}</span>}
-                    </div>
-                    <div>Created: {formatToIST(lead.created_at)}</div>
-                  </div>
-                  </CardContent>
-                </Card>
-              );
-            })
-          )
-        ) : (
-          /* Saved Drafts Tab */
-          partialSavesLoading ? (
-            <Card>
-              <CardContent className="p-12 text-center">
-                <div className="text-center">Loading saved drafts...</div>
-              </CardContent>
-            </Card>
-          ) : partialSaves.length === 0 ? (
-            <Card>
-              <CardContent className="p-12 text-center">
-                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <FileText className="w-8 h-8 text-gray-400" />
-                </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  No saved drafts
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  Start creating a lead and use "Save Progress" to save your work.
-                </p>
-                <Button onClick={handleCreateLead}>
-                  <Plus className="w-4 h-4 mr-2" />
-                  Create Lead
-                </Button>
-              </CardContent>
-            </Card>
-          ) : (
-            partialSaves.map((partialSave: any) => {
-              const info = getPartialSaveInfo(partialSave);
-              const lastSaved = new Date(info.lastSaved);
-              const timeSince = Math.floor((Date.now() - lastSaved.getTime()) / (1000 * 60 * 60)); // hours
-
-              return (
-                <Card
-                  key={partialSave.id}
-                  className="hover:shadow-md transition-shadow"
-                >
                   <CardContent className="p-6">
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex-1">
                         <div className="flex items-center space-x-3 mb-2">
                           <h3 className="text-lg font-semibold text-gray-900">
-                            {partialSave.client_name === 'PARTIAL_SAVE_IN_PROGRESS'
-                              ? 'Unsaved Lead Draft'
-                              : partialSave.client_name || 'Untitled Draft'}
+                            {lead.client_name}
                           </h3>
-                          <Badge className="text-xs bg-yellow-100 text-yellow-700">
-                            DRAFT
+                          <Badge className="text-xs">{lead.lead_id}</Badge>
+                          <Badge
+                            className={
+                              statusColors[
+                                lead.status as keyof typeof statusColors
+                              ]
+                            }
+                          >
+                            {lead.status.replace("-", " ")}
                           </Badge>
-                          {info.completedTabs.length > 0 && (
-                            <Badge variant="secondary" className="text-xs">
-                              {info.completedTabs[0]} tab
-                            </Badge>
-                          )}
+                          <Badge
+                            className={
+                              priorityColors[
+                                lead.priority as keyof typeof priorityColors
+                              ]
+                            }
+                          >
+                            {lead.priority}
+                          </Badge>
                         </div>
 
                         <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
                           <span className="flex items-center space-x-1">
-                            <Clock className="w-4 h-4" />
-                            <span>
-                              {timeSince < 1
-                                ? 'Saved less than 1 hour ago'
-                                : timeSince < 24
-                                ? `Saved ${timeSince} hours ago`
-                                : `Saved ${Math.floor(timeSince / 24)} days ago`
-                              }
-                            </span>
+                            <div
+                              className={`p-1 rounded ${sourceColors[lead.lead_source as keyof typeof sourceColors]}`}
+                            >
+                              <SourceIcon className="w-3 h-3" />
+                            </div>
+                            <div className="flex flex-col">
+                              <span className="capitalize">
+                                {lead.lead_source.replace("-", " ")}
+                              </span>
+                              {lead.lead_source_value && (
+                                <span
+                                  className="text-xs text-blue-600 hover:underline cursor-pointer"
+                                  title={lead.lead_source_value}
+                                >
+                                  {lead.lead_source === "email" ? (
+                                    <a
+                                      href={`mailto:${lead.lead_source_value}`}
+                                    >
+                                      {lead.lead_source_value.length > 20
+                                        ? `${lead.lead_source_value.substring(0, 20)}...`
+                                        : lead.lead_source_value}
+                                    </a>
+                                  ) : lead.lead_source === "phone" ||
+                                    lead.lead_source === "cold-call" ? (
+                                    <a href={`tel:${lead.lead_source_value}`}>
+                                      {lead.lead_source_value}
+                                    </a>
+                                  ) : lead.lead_source === "website" ? (
+                                    <a
+                                      href={
+                                        lead.lead_source_value.startsWith(
+                                          "http",
+                                        )
+                                          ? lead.lead_source_value
+                                          : `https://${lead.lead_source_value}`
+                                      }
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                    >
+                                      {lead.lead_source_value.length > 20
+                                        ? `${lead.lead_source_value.substring(0, 20)}...`
+                                        : lead.lead_source_value}
+                                    </a>
+                                  ) : lead.lead_source_value.length > 20 ? (
+                                    `${lead.lead_source_value.substring(0, 20)}...`
+                                  ) : (
+                                    lead.lead_source_value
+                                  )}
+                                </span>
+                              )}
+                            </div>
                           </span>
+                          {lead.contacts && lead.contacts.length > 0 && (
+                            <>
+                              <span>•</span>
+                              <span>{lead.contacts[0].contact_name}</span>
+                              <span>•</span>
+                              <span>{lead.contacts[0].email}</span>
+                            </>
+                          )}
+                          {lead.probability && (
+                            <>
+                              <span>•</span>
+                              <span>{lead.probability}% probability</span>
+                            </>
+                          )}
+                        </div>
 
-                          {partialSave.project_title && partialSave.project_title !== 'Partial Save - In Progress' && (
+                        {lead.project_title && (
+                          <div className="mb-3">
+                            <h4 className="font-medium text-gray-900 mb-1">
+                              {lead.project_title}
+                            </h4>
+                            {lead.project_description && (
+                              <p className="text-sm text-gray-600 line-clamp-2">
+                                {lead.project_description}
+                              </p>
+                            )}
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="text-right flex flex-col items-end space-y-2">
+                        {lead.expected_close_date && (
+                          <div className="text-sm text-gray-500">
+                            Expected: {formatToIST(lead.expected_close_date)}
+                          </div>
+                        )}
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                              }}
+                            >
+                              <Trash2 className="w-3 h-3 mr-1" />
+                              Delete
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Delete Lead</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Are you sure you want to delete "
+                                {lead.client_name}"? This action cannot be
+                                undone.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() =>
+                                  handleDeleteLead(lead.id, lead.client_name)
+                                }
+                                className="bg-red-600 hover:bg-red-700"
+                              >
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between text-sm text-gray-500">
+                      <div className="flex items-center space-x-4">
+                        {lead.company && <span>Company: {lead.company}</span>}
+                        {lead.category && (
+                          <span>Category: {lead.category}</span>
+                        )}
+                      </div>
+                      <div>Created: {formatToIST(lead.created_at)}</div>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })
+          )
+        ) : /* Saved Drafts Tab */
+        partialSavesLoading ? (
+          <Card>
+            <CardContent className="p-12 text-center">
+              <div className="text-center">Loading saved drafts...</div>
+            </CardContent>
+          </Card>
+        ) : partialSaves.length === 0 ? (
+          <Card>
+            <CardContent className="p-12 text-center">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <FileText className="w-8 h-8 text-gray-400" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                No saved drafts
+              </h3>
+              <p className="text-gray-600 mb-4">
+                Start creating a lead and use "Save Progress" to save your work.
+              </p>
+              <Button onClick={handleCreateLead}>
+                <Plus className="w-4 h-4 mr-2" />
+                Create Lead
+              </Button>
+            </CardContent>
+          </Card>
+        ) : (
+          partialSaves.map((partialSave: any) => {
+            const info = getPartialSaveInfo(partialSave);
+            const lastSaved = new Date(info.lastSaved);
+            const timeSince = Math.floor(
+              (Date.now() - lastSaved.getTime()) / (1000 * 60 * 60),
+            ); // hours
+
+            return (
+              <Card
+                key={partialSave.id}
+                className="hover:shadow-md transition-shadow"
+              >
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-3 mb-2">
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          {partialSave.client_name ===
+                          "PARTIAL_SAVE_IN_PROGRESS"
+                            ? "Unsaved Lead Draft"
+                            : partialSave.client_name || "Untitled Draft"}
+                        </h3>
+                        <Badge className="text-xs bg-yellow-100 text-yellow-700">
+                          DRAFT
+                        </Badge>
+                        {info.completedTabs.length > 0 && (
+                          <Badge variant="secondary" className="text-xs">
+                            {info.completedTabs[0]} tab
+                          </Badge>
+                        )}
+                      </div>
+
+                      <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
+                        <span className="flex items-center space-x-1">
+                          <Clock className="w-4 h-4" />
+                          <span>
+                            {timeSince < 1
+                              ? "Saved less than 1 hour ago"
+                              : timeSince < 24
+                                ? `Saved ${timeSince} hours ago`
+                                : `Saved ${Math.floor(timeSince / 24)} days ago`}
+                          </span>
+                        </span>
+
+                        {partialSave.project_title &&
+                          partialSave.project_title !==
+                            "Partial Save - In Progress" && (
                             <>
                               <span>•</span>
                               <span className="text-blue-600">
@@ -653,106 +681,126 @@ export default function LeadDashboard() {
                             </>
                           )}
 
-                          {partialSave.lead_source && (
-                            <>
-                              <span>•</span>
-                              <span className="capitalize">
-                                {partialSave.lead_source.replace("-", " ")}
-                              </span>
-                            </>
-                          )}
-                        </div>
-
-                        {partialSave.project_description && (
-                          <div className="mb-3">
-                            <p className="text-sm text-gray-600 line-clamp-2">
-                              {partialSave.project_description}
-                            </p>
-                          </div>
+                        {partialSave.lead_source && (
+                          <>
+                            <span>•</span>
+                            <span className="capitalize">
+                              {partialSave.lead_source.replace("-", " ")}
+                            </span>
+                          </>
                         )}
                       </div>
 
-                      <div className="text-right flex flex-col items-end space-y-2">
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              try {
-                                const notes = JSON.parse(partialSave.notes || '{}');
-                                const originalData = notes.originalData || {};
+                      {partialSave.project_description && (
+                        <div className="mb-3">
+                          <p className="text-sm text-gray-600 line-clamp-2">
+                            {partialSave.project_description}
+                          </p>
+                        </div>
+                      )}
+                    </div>
 
-                                const resumeData = {
-                                  ...originalData,
-                                  lead_source: partialSave.lead_source,
-                                  client_name: partialSave.client_name === 'PARTIAL_SAVE_IN_PROGRESS' ? '' : partialSave.client_name,
-                                  project_title: partialSave.project_title === 'Partial Save - In Progress' ? '' : partialSave.project_title,
-                                  project_description: partialSave.project_description,
-                                  _resumeFromId: partialSave.id,
-                                  _lastSaved: notes.lastSaved,
-                                  _completedTabs: notes.completedTabs,
-                                };
+                    <div className="text-right flex flex-col items-end space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            try {
+                              const notes = JSON.parse(
+                                partialSave.notes || "{}",
+                              );
+                              const originalData = notes.originalData || {};
 
-                                handleResumePartialSave(resumeData);
-                              } catch (error) {
-                                console.error('Error resuming partial save:', error);
-                                alert('Error loading saved data. Please try again.');
-                              }
-                            }}
-                            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-                          >
-                            <Play className="w-4 h-4 mr-1" />
-                            Resume
-                          </Button>
+                              const resumeData = {
+                                ...originalData,
+                                lead_source: partialSave.lead_source,
+                                client_name:
+                                  partialSave.client_name ===
+                                  "PARTIAL_SAVE_IN_PROGRESS"
+                                    ? ""
+                                    : partialSave.client_name,
+                                project_title:
+                                  partialSave.project_title ===
+                                  "Partial Save - In Progress"
+                                    ? ""
+                                    : partialSave.project_title,
+                                project_description:
+                                  partialSave.project_description,
+                                _resumeFromId: partialSave.id,
+                                _lastSaved: notes.lastSaved,
+                                _completedTabs: notes.completedTabs,
+                              };
 
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                              handleResumePartialSave(resumeData);
+                            } catch (error) {
+                              console.error(
+                                "Error resuming partial save:",
+                                error,
+                              );
+                              alert(
+                                "Error loading saved data. Please try again.",
+                              );
+                            }
+                          }}
+                          className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                        >
+                          <Play className="w-4 h-4 mr-1" />
+                          Resume
+                        </Button>
+
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                            >
+                              <Trash2 className="w-3 h-3 mr-1" />
+                              Delete
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>
+                                Delete Saved Draft
+                              </AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Are you sure you want to delete this saved
+                                draft? This action cannot be undone.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() =>
+                                  handleDeletePartialSave(
+                                    partialSave.id,
+                                    partialSave.client_name ===
+                                      "PARTIAL_SAVE_IN_PROGRESS"
+                                      ? "Unsaved Lead Draft"
+                                      : partialSave.client_name ||
+                                          "Untitled Draft",
+                                  )
+                                }
+                                className="bg-red-600 hover:bg-red-700"
                               >
-                                <Trash2 className="w-3 h-3 mr-1" />
-                                Delete
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>Delete Saved Draft</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  Are you sure you want to delete this saved draft? This action cannot be undone.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction
-                                  onClick={() =>
-                                    handleDeletePartialSave(
-                                      partialSave.id,
-                                      partialSave.client_name === 'PARTIAL_SAVE_IN_PROGRESS'
-                                        ? 'Unsaved Lead Draft'
-                                        : partialSave.client_name || 'Untitled Draft'
-                                    )
-                                  }
-                                  className="bg-red-600 hover:bg-red-700"
-                                >
-                                  Delete Draft
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </div>
+                                Delete Draft
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
 
-                        <div className="text-sm text-gray-500">
-                          Created: {formatToIST(partialSave.created_at)}
-                        </div>
+                      <div className="text-sm text-gray-500">
+                        Created: {formatToIST(partialSave.created_at)}
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-              );
-            })
-          )
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })
         )}
       </div>
     </div>
