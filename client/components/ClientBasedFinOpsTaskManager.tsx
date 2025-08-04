@@ -81,7 +81,6 @@ import {
   BarChart3,
 } from "lucide-react";
 import { format, formatDistanceToNow, addHours, addMinutes, isBefore, isAfter } from "date-fns";
-import { useEffect } from "react";
 
 // Enhanced interfaces with client integration
 interface ClientBasedFinOpsSubTask {
