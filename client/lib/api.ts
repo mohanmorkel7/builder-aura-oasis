@@ -4,6 +4,7 @@ export class ApiClient {
   private async request<T>(
     endpoint: string,
     options: RequestInit = {},
+    retryCount = 0
   ): Promise<T> {
     const url = `${API_BASE_URL}${endpoint}`;
 
@@ -18,7 +19,10 @@ export class ApiClient {
     try {
       console.log("Making API request to:", url);
       console.log("Request config:", JSON.stringify(config, null, 2));
-      const response = await fetch(url, config);
+
+      // Use native fetch to avoid third-party interceptors
+      const nativeFetch = window.fetch.bind(window);
+      const response = await nativeFetch(url, config);
 
       if (!response.ok) {
         console.log("API Response not OK. Status:", response.status, "StatusText:", response.statusText);
