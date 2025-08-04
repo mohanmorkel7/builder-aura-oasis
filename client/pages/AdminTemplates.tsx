@@ -99,15 +99,12 @@ export default function AdminTemplates() {
     queryKey: ["templates-admin", selectedCategory, searchTerm],
     queryFn: () => {
       if (searchTerm) {
-        return apiClient.searchTemplates(
-          searchTerm,
-          selectedCategory === "all" ? undefined : parseInt(selectedCategory),
-        );
+        return apiClient.request(`/templates-production/search?q=${encodeURIComponent(searchTerm)}${selectedCategory !== "all" ? `&category=${selectedCategory}` : ""}`);
       }
       if (selectedCategory === "all") {
-        return apiClient.getTemplatesWithCategories();
+        return apiClient.request("/templates-production/with-categories");
       }
-      return apiClient.getTemplatesByCategory(parseInt(selectedCategory));
+      return apiClient.request(`/templates-production/category/${selectedCategory}`);
     },
   });
 
