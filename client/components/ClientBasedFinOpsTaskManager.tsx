@@ -657,10 +657,9 @@ export default function ClientBasedFinOpsTaskManager() {
     if (searchTerm && !task.task_name.toLowerCase().includes(searchTerm.toLowerCase()) &&
         !task.client_name?.toLowerCase().includes(searchTerm.toLowerCase())) return false;
 
-    // Date filter for daily tasks
-    if (viewMode === "daily" && dateFilter) {
+    // Date filter for daily tasks (always enabled)
+    if (dateFilter) {
       const filterDate = new Date(dateFilter);
-      const today = new Date();
       const taskDate = new Date(task.effective_from);
 
       // For daily tasks, check if task should run on the selected date
