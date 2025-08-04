@@ -78,6 +78,95 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 
+// Sortable SubTask Item Component
+interface SortableSubTaskItemProps {
+  subtask: FinOpsSubTask;
+  index: number;
+  onUpdate: (index: number, field: string, value: any) => void;
+  onRemove: (index: number) => void;
+}
+
+function SortableSubTaskItem({ subtask, index, onUpdate, onRemove }: SortableSubTaskItemProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({ id: subtask.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} className="border rounded-lg p-4 bg-gray-50">
+      <div className="flex items-start gap-3">
+        <div {...attributes} {...listeners} className="mt-2 cursor-grab">
+          <GripVertical className="w-4 h-4 text-gray-400" />
+        </div>
+
+        <div className="flex-1 space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <Label>Subtask Name *</Label>
+              <Input
+                value={subtask.name}
+                onChange={(e) => onUpdate(index, 'name', e.target.value)}
+                placeholder="e.g., RBL DUMP VS TCP DATA (DAILY ALERT MAIL)"
+                required
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <Label>SLA Hours</Label>
+                <Input
+                  type="number"
+                  min="0"
+                  value={subtask.sla_hours}
+                  onChange={(e) => onUpdate(index, 'sla_hours', parseInt(e.target.value) || 0)}
+                />
+              </div>
+              <div>
+                <Label>SLA Minutes</Label>
+                <Input
+                  type="number"
+                  min="0"
+                  max="59"
+                  value={subtask.sla_minutes}
+                  onChange={(e) => onUpdate(index, 'sla_minutes', parseInt(e.target.value) || 0)}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <Label>Description (Optional)</Label>
+            <Textarea
+              value={subtask.description || ''}
+              onChange={(e) => onUpdate(index, 'description', e.target.value)}
+              placeholder="Additional details about this subtask..."
+              rows={2}
+            />
+          </div>
+        </div>
+
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => onRemove(index)}
+          className="text-red-600"
+        >
+          <Trash2 className="w-4 h-4" />
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 interface FinOpsSubTask {
   id: string;
   name: string;
