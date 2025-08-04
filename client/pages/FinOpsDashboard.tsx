@@ -207,7 +207,31 @@ export default function FinOpsDashboard() {
     profit_margin: 62.5,
     overdue_invoices: { overdue_count: 2, overdue_amount: 15000 },
     budget_utilization: [],
+    daily_process_counts: {
+      tasks_completed_today: 12,
+      tasks_pending_today: 3,
+      sla_breaches_today: 1,
+      tasks_completed_this_month: 245,
+      tasks_pending_this_month: 18,
+      sla_breaches_this_month: 8,
+    },
   };
+
+  // Fetch real-time FinOps daily process data
+  const { data: dailyProcessData } = useQuery({
+    queryKey: ["finops-daily-process", dateRange],
+    queryFn: () => apiClient.request("/finops-production/daily-process-stats", {
+      method: "POST",
+      body: JSON.stringify({
+        period: selectedPeriod,
+        start_date: dateRange.start,
+        end_date: dateRange.end,
+      }),
+    }),
+    refetchInterval: 60000, // Refresh every minute for real-time daily process data
+  });
+
+  const processData = dailyProcessData || data.daily_process_counts;
 
   const overdueInvoices = invoices.filter(
     (invoice: any) =>
