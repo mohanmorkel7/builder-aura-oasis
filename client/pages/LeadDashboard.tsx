@@ -159,10 +159,18 @@ export default function LeadDashboard() {
   // Filter leads based on search and filters, excluding partial saves
   const filteredLeads = leads.filter((lead: any) => {
     // Exclude partial saves from main leads list
-    const isPartialSave = lead.client_name === 'PARTIAL_SAVE_IN_PROGRESS' ||
-                         (lead.notes && typeof lead.notes === 'string' &&
-                          JSON.parse(lead.notes).isPartialSave === true) ||
-                         lead.is_partial === true;
+    let isPartialSave = false;
+
+    try {
+      isPartialSave = lead.client_name === 'PARTIAL_SAVE_IN_PROGRESS' ||
+                     lead.is_partial === true ||
+                     (lead.notes && typeof lead.notes === 'string' &&
+                      JSON.parse(lead.notes).isPartialSave === true);
+    } catch (error) {
+      // If JSON parsing fails, check for string indicators
+      isPartialSave = lead.client_name === 'PARTIAL_SAVE_IN_PROGRESS' ||
+                     lead.is_partial === true;
+    }
 
     if (isPartialSave) {
       return false;
