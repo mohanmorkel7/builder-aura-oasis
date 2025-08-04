@@ -203,7 +203,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       if (user) {
         try {
           console.log("Fetching notifications for user:", user.name);
-          const realNotifications = await getAllNotifications(
+          const realNotifications = await getNotificationsFromFollowUps(
             user.id,
             user.name,
           );
