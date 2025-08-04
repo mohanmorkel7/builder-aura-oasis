@@ -264,7 +264,7 @@ CREATE TABLE IF NOT EXISTS lead_steps (
     lead_id INTEGER REFERENCES leads(id) ON DELETE CASCADE,
     name VARCHAR(255) NOT NULL,
     description TEXT,
-    status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'in_progress', 'completed', 'cancelled')),
+    status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'in_progress', 'completed', 'cancelled', 'blocked')),
     step_order INTEGER DEFAULT 1,
     due_date DATE,
     completed_date TIMESTAMP,
