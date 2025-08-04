@@ -259,6 +259,11 @@ export default function FinOpsAutomation() {
           <ClientBasedFinOpsTaskManager />
         </TabsContent>
 
+        {/* Notifications Tab */}
+        <TabsContent value="notifications" className="space-y-6">
+          <FinOpsNotifications />
+        </TabsContent>
+
 
         {/* Notifications Tab */}
         <TabsContent value="notifications" className="space-y-6">
