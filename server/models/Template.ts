@@ -181,9 +181,9 @@ export class TemplateRepository {
         const stepQueries = templateData.steps.map((step, index) => {
           return client.query(
             `
-            INSERT INTO template_steps (template_id, step_order, name, description, 
-                                      default_eta_days, auto_alert, email_reminder)
-            VALUES ($1, $2, $3, $4, $5, $6, $7)
+            INSERT INTO template_steps (template_id, step_order, name, description,
+                                      default_eta_days, auto_alert, email_reminder, probability_percent)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
             RETURNING *
           `,
             [
@@ -194,6 +194,7 @@ export class TemplateRepository {
               step.default_eta_days,
               step.auto_alert,
               step.email_reminder,
+              step.probability_percent || 0,
             ],
           );
         });
@@ -261,9 +262,9 @@ export class TemplateRepository {
           const stepQueries = templateData.steps.map((step, index) => {
             return client.query(
               `
-              INSERT INTO template_steps (template_id, step_order, name, description, 
-                                        default_eta_days, auto_alert, email_reminder)
-              VALUES ($1, $2, $3, $4, $5, $6, $7)
+              INSERT INTO template_steps (template_id, step_order, name, description,
+                                        default_eta_days, auto_alert, email_reminder, probability_percent)
+              VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
             `,
               [
                 id,
@@ -273,6 +274,7 @@ export class TemplateRepository {
                 step.default_eta_days,
                 step.auto_alert,
                 step.email_reminder,
+                step.probability_percent || 0,
               ],
             );
           });
