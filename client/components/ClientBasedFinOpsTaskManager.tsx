@@ -674,12 +674,17 @@ export default function ClientBasedFinOpsTaskManager() {
 
   // Filter tasks based on client, status, search, and date
   const filteredTasks = finopsTasks.filter((task: ClientBasedFinOpsTask) => {
-    // Client filter
-    if (selectedClient !== "all") {
-      if (selectedClient === "unknown") {
-        if (task.client_id && task.client_name && task.client_name !== "Unknown Client") return false;
-      } else {
-        if (task.client_id?.toString() !== selectedClient) return false;
+    // Client filter from summary (takes priority)
+    if (selectedClientFromSummary) {
+      if (task.client_name !== selectedClientFromSummary) return false;
+    } else {
+      // Regular client filter
+      if (selectedClient !== "all") {
+        if (selectedClient === "unknown") {
+          if (task.client_id && task.client_name && task.client_name !== "Unknown Client") return false;
+        } else {
+          if (task.client_id?.toString() !== selectedClient) return false;
+        }
       }
     }
 
