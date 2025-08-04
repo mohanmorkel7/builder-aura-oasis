@@ -391,7 +391,7 @@ export default function ClientBasedFinOpsTaskManager() {
   }, []);
 
   // Fetch clients (from leads)
-  const { data: clients = [] } = useQuery({
+  const { data: clients = [], isLoading: clientsLoading, error: clientsError } = useQuery({
     queryKey: ["clients"],
     queryFn: async () => {
       try {
