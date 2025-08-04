@@ -102,6 +102,10 @@ export class ApiClient {
         throw new Error("Invalid JSON response from server");
       }
     } catch (error) {
+      // Track failure for circuit breaker
+      this.failureCount++;
+      this.lastFailureTime = Date.now();
+
       const errorMessage =
         error instanceof Error ? error.message : String(error);
       console.error("API request failed:", errorMessage, "URL:", url);
