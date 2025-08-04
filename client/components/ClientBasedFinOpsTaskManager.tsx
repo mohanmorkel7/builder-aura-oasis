@@ -1208,10 +1208,14 @@ export default function ClientBasedFinOpsTaskManager() {
                     <SelectValue placeholder="Select client" />
                   </SelectTrigger>
                   <SelectContent>
-                    {clients.length > 0 ? (
+                    {clientsLoading ? (
+                      <SelectItem value="loading" disabled>
+                        Loading clients...
+                      </SelectItem>
+                    ) : clients.length > 0 ? (
                       clients.map((client: any) => (
                         <SelectItem key={client.id} value={client.id.toString()}>
-                          {client.company_name || `Client ${client.id}`}
+                          {client.company_name || client.client_name || `Client ${client.id}`}
                         </SelectItem>
                       ))
                     ) : (
