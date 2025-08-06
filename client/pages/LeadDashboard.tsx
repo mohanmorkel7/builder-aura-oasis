@@ -133,6 +133,11 @@ export default function LeadDashboard() {
   };
 
   const handleResumePartialSave = (partialData: any) => {
+    console.log("Navigating to CreateLead with resumeData:", {
+      id: partialData.id,
+      _resumeFromId: partialData._resumeFromId,
+      clientName: partialData.client_name
+    });
     // Navigate to create lead page with partial data
     navigate("/leads/new", { state: { resumeData: partialData } });
   };
