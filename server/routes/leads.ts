@@ -1134,18 +1134,8 @@ router.post("/steps/:stepId/chats", async (req: Request, res: Response) => {
         const chat = await LeadChatRepository.create(chatData);
         res.status(201).json(chat);
       } else {
-        const mockChat = {
-          id: Date.now(),
-          step_id: stepId,
-          user_id: chatData.user_id || null,
-          user_name: chatData.user_name,
-          message: chatData.message,
-          message_type: chatData.message_type || "text",
-          is_rich_text: chatData.is_rich_text || false,
-          created_at: new Date().toISOString(),
-          attachments: chatData.attachments || [],
-        };
-        console.log("Database unavailable, returning mock chat response");
+        const mockChat = await MockDataService.createStepChat(stepId, chatData);
+        console.log("Database unavailable, created mock chat:", mockChat);
         res.status(201).json(mockChat);
       }
     } catch (dbError) {
