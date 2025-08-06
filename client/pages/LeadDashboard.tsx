@@ -732,9 +732,14 @@ export default function LeadDashboard() {
                               // Helper function to convert ISO date to YYYY-MM-DD format
                               const formatDateForInput = (dateValue: any) => {
                                 if (!dateValue) return "";
-                                if (typeof dateValue === "string" && dateValue.includes("T")) {
+                                if (
+                                  typeof dateValue === "string" &&
+                                  dateValue.includes("T")
+                                ) {
                                   // ISO format, convert to YYYY-MM-DD
-                                  return new Date(dateValue).toISOString().split("T")[0];
+                                  return new Date(dateValue)
+                                    .toISOString()
+                                    .split("T")[0];
                                 }
                                 return dateValue; // Already in correct format
                               };
@@ -791,15 +796,15 @@ export default function LeadDashboard() {
                                   originalData.priority_level,
                                 start_date: formatDateForInput(
                                   partialSave.start_date ||
-                                  originalData.start_date
+                                    originalData.start_date,
                                 ),
                                 targeted_end_date: formatDateForInput(
                                   partialSave.targeted_end_date ||
-                                  originalData.targeted_end_date
+                                    originalData.targeted_end_date,
                                 ),
                                 expected_close_date: formatDateForInput(
                                   partialSave.expected_close_date ||
-                                  originalData.expected_close_date
+                                    originalData.expected_close_date,
                                 ),
                                 expected_daily_txn_volume:
                                   partialSave.expected_daily_txn_volume ||
