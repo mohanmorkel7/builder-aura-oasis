@@ -673,10 +673,21 @@ export default function CreateLead() {
       };
 
       // Filter out metadata fields that shouldn't go to database
-      const { _resumeFromId, _lastSaved, _completedTabs, id, ...cleanDataForDb } = cleanedData;
+      const {
+        _resumeFromId,
+        _lastSaved,
+        _completedTabs,
+        id,
+        ...cleanDataForDb
+      } = cleanedData;
 
       if (_resumeFromId || _lastSaved || _completedTabs) {
-        console.log("Filtered out metadata fields:", { _resumeFromId, _lastSaved, _completedTabs, id });
+        console.log("Filtered out metadata fields:", {
+          _resumeFromId,
+          _lastSaved,
+          _completedTabs,
+          id,
+        });
       }
 
       // Prepare partial data for database save
@@ -716,7 +727,11 @@ export default function CreateLead() {
         // Don't log full notes as it contains large originalData
         hasNotes: !!partialData.notes,
         // Show that metadata fields were filtered out
-        metadataFieldsFiltered: { _resumeFromId, _lastSaved, _completedTabs: _completedTabs?.length || 0 }
+        metadataFieldsFiltered: {
+          _resumeFromId,
+          _lastSaved,
+          _completedTabs: _completedTabs?.length || 0,
+        },
       });
 
       // If we have a draft ID, update the existing draft instead of creating a new one
