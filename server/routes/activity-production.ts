@@ -289,7 +289,7 @@ router.get("/", jsonResponse(async (req: Request, res: Response) => {
       const total = filteredLogs.length;
       const paginatedLogs = filteredLogs.slice(offsetNum, offsetNum + limitNum);
 
-      res.json({
+      const response = {
         activity_logs: paginatedLogs,
         pagination: {
           total,
@@ -297,7 +297,14 @@ router.get("/", jsonResponse(async (req: Request, res: Response) => {
           offset: offsetNum,
           has_more: offsetNum + limitNum < total,
         },
+      };
+
+      console.log('Activity logs: Sending mock response:', {
+        activity_logs_count: response.activity_logs.length,
+        pagination: response.pagination
       });
+
+      res.json(response);
     }
   } catch (error) {
     console.error("Error fetching activity logs:", error);
