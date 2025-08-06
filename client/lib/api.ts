@@ -144,10 +144,11 @@ export class ApiClient {
       console.error("API request failed:", errorMessage, "URL:", url);
 
       // Only track actual network failures for circuit breaker, not server responses
-      const isNetworkError = error instanceof TypeError &&
+      const isNetworkError =
+        error instanceof TypeError &&
         (error.message.includes("Failed to fetch") ||
-         error.message.includes("Network error") ||
-         error.message.includes("body stream"));
+          error.message.includes("Network error") ||
+          error.message.includes("body stream"));
 
       if (isNetworkError) {
         // Track failure for circuit breaker only for network errors
