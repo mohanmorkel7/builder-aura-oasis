@@ -271,6 +271,7 @@ export default function CreateLead() {
   const [isPartialSaved, setIsPartialSaved] = useState(false);
   const [isResumedFromDraft, setIsResumedFromDraft] = useState(false);
   const [draftId, setDraftId] = useState<number | null>(null);
+  const [hasSavedDraftInSession, setHasSavedDraftInSession] = useState(false);
 
   // Handle resume data from location state (when coming from dashboard)
   useEffect(() => {
