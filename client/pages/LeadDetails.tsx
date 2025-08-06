@@ -722,7 +722,10 @@ export default function LeadDetails() {
               {templateData?.steps && templateData.steps.length > 0 && (
                 <div className="mb-6 space-y-3">
                   <div className="flex items-center gap-2 mb-4">
-                    <Badge variant="outline" className="bg-blue-50 text-blue-700">
+                    <Badge
+                      variant="outline"
+                      className="bg-blue-50 text-blue-700"
+                    >
                       Template: {templateData.name}
                     </Badge>
                     <span className="text-sm text-gray-600">
@@ -731,22 +734,26 @@ export default function LeadDetails() {
                   </div>
 
                   {templateData.steps.map((step: any, index: number) => (
-                    <div
-                      key={step.id}
-                      className="border rounded-lg bg-white"
-                    >
+                    <div key={step.id} className="border rounded-lg bg-white">
                       <div className="flex items-center space-x-4 p-4">
                         {/* Step Icon */}
                         <div className="flex-shrink-0">
                           <div className="w-6 h-6 border-2 border-blue-300 bg-blue-50 rounded-full flex items-center justify-center">
-                            <span className="text-xs text-blue-700 font-medium">{index + 1}</span>
+                            <span className="text-xs text-blue-700 font-medium">
+                              {index + 1}
+                            </span>
                           </div>
                         </div>
 
                         <div className="flex-1">
                           <div className="flex items-center space-x-2">
-                            <span className="font-medium text-gray-900">{step.name}</span>
-                            <Badge variant="outline" className="text-xs bg-blue-100 text-blue-700">
+                            <span className="font-medium text-gray-900">
+                              {step.name}
+                            </span>
+                            <Badge
+                              variant="outline"
+                              className="text-xs bg-blue-100 text-blue-700"
+                            >
                               Template Step
                             </Badge>
                             {step.probability_percent && (
@@ -779,8 +786,7 @@ export default function LeadDetails() {
                   <p className="text-gray-600 mb-4">
                     {templateData?.steps && templateData.steps.length > 0
                       ? "Add custom steps specific to this lead to complement the template steps above"
-                      : "Create custom steps to track your sales process for this lead"
-                    }
+                      : "Create custom steps to track your sales process for this lead"}
                   </p>
                   <Button onClick={() => setNewStepDialog(true)}>
                     <Plus className="w-4 h-4 mr-2" />
