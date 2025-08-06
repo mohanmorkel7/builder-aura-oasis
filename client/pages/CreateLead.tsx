@@ -277,6 +277,12 @@ export default function CreateLead() {
   useEffect(() => {
     if (location.state?.resumeData) {
       const resumeData = location.state.resumeData;
+      console.log("Resuming from draft with data:", {
+        id: resumeData.id,
+        _resumeFromId: resumeData._resumeFromId,
+        clientName: resumeData.client_name
+      });
+
       // Ensure lead_created_by is set if not already present
       if (!resumeData.lead_created_by && user?.email) {
         resumeData.lead_created_by = user.email;
@@ -285,8 +291,11 @@ export default function CreateLead() {
       setIsResumedFromDraft(true);
       // Set draft ID if resuming from an existing draft
       if (resumeData.id) {
+        console.log("Setting draftId to:", resumeData.id);
         setDraftId(resumeData.id);
         setHasSavedDraftInSession(true);
+      } else {
+        console.log("No draft ID found in resumeData");
       }
 
       // Set the active tab to the first incomplete tab if available
