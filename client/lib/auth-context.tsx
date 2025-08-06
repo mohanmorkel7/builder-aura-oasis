@@ -131,7 +131,11 @@ interface AuthContextType {
   isLoading: boolean;
 }
 
+// Create stable context to prevent HMR issues
 const AuthContext = React.createContext<AuthContextType | undefined>(undefined);
+
+// Set display name for better debugging
+AuthContext.displayName = 'AuthContext';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = React.useState<User | null>(null);
