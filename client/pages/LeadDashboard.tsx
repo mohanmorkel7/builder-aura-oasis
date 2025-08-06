@@ -727,6 +727,7 @@ export default function LeadDashboard() {
                                     : partialSave.project_title,
                                 project_description:
                                   partialSave.project_description,
+                                id: partialSave.id, // This is the key field that CreateLead looks for
                                 _resumeFromId: partialSave.id,
                                 _lastSaved: notes.lastSaved,
                                 _completedTabs: notes.completedTabs,
