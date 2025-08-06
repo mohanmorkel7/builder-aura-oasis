@@ -46,9 +46,15 @@ router.get("/", async (req: Request, res: Response) => {
         if (isPartialSavesOnly) {
           leads = leads.filter((lead: any) => {
             try {
-              const notes = JSON.parse(lead.notes || '{}');
+              // Sanitize notes field before parsing
+              const notesStr = lead.notes || '{}';
+              if (typeof notesStr !== 'string') return false;
+
+              const notes = JSON.parse(notesStr);
               return notes.isPartialSave === true;
-            } catch {
+            } catch (jsonError) {
+              console.log(`Invalid JSON in notes for lead ${lead.id}:`, jsonError.message);
+              // Skip leads with invalid JSON instead of crashing
               return false;
             }
           });
