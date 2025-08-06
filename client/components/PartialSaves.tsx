@@ -154,6 +154,12 @@ export default function PartialSaves({
         _completedTabs: notes.completedTabs,
       };
 
+      console.log("Final resumeData date fields:", {
+        start_date: resumeData.start_date,
+        targeted_end_date: resumeData.targeted_end_date,
+        expected_close_date: resumeData.expected_close_date,
+      });
+
       onResumePartialSave(resumeData);
     } catch (error) {
       console.error("Error resuming partial save:", error);
