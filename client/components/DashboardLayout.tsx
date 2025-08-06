@@ -124,10 +124,17 @@ const getNotificationsFromFollowUps = async (
       userName,
     );
 
-    const followUps = await apiClient.getAllFollowUps({
+    // Add timeout to prevent hanging requests
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error("Request timeout")), 10000);
+    });
+
+    const followUpsPromise = apiClient.getAllFollowUps({
       userId,
       userRole: "all",
     });
+
+    const followUps = await Promise.race([followUpsPromise, timeoutPromise]);
 
     if (!Array.isArray(followUps)) {
       console.warn("Follow-ups response is not an array:", followUps);
