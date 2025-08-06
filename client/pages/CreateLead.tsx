@@ -1510,7 +1510,7 @@ export default function CreateLead() {
                                   {period.flatFees.length > 0 && (
                                     <>
                                       <TableRow className="bg-blue-50">
-                                        <TableCell colSpan={5} className="font-semibold text-blue-800">
+                                        <TableCell colSpan={period.label === "Current" ? 5 : 6} className="font-semibold text-blue-800">
                                           Flat Fees
                                         </TableCell>
                                       </TableRow>
@@ -1518,7 +1518,14 @@ export default function CreateLead() {
                                         <TableRow key={`flat-${index}`}>
                                           <TableCell className="font-medium">{flatFee.component_name}</TableCell>
                                           <TableCell>{flatFee.description}</TableCell>
-                                          <TableCell>-</TableCell>
+                                          {period.label === "Current" ? (
+                                            <TableCell>-</TableCell>
+                                          ) : (
+                                            <>
+                                              <TableCell>-</TableCell>
+                                              <TableCell>-</TableCell>
+                                            </>
+                                          )}
                                           <TableCell>
                                             ₹{convertCurrency(flatFee.totalValue, flatFee.currency, "INR").toLocaleString(undefined, { maximumFractionDigits: 2 })}
                                           </TableCell>
