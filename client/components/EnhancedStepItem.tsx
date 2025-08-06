@@ -170,7 +170,7 @@ export function EnhancedStepItem({
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const files = event.target.files;
-    if (!files || files.length === 0 || !user || step.isTemplate) return;
+    if (!files || files.length === 0 || !user) return;
 
     try {
       // First, upload the actual files to the server
