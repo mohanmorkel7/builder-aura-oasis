@@ -270,16 +270,14 @@ export function EnhancedStepItem({
     >
       <Collapsible open={isExpanded} onOpenChange={onToggleExpansion}>
         <div className="flex items-center space-x-4 p-4">
-          {/* Drag Handle - hidden for template steps */}
-          {!step.isTemplate && (
-            <div
-              {...attributes}
-              {...listeners}
-              className="flex-shrink-0 cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600"
-            >
-              <GripVertical className="w-5 h-5" />
-            </div>
-          )}
+          {/* Drag Handle */}
+          <div
+            {...(step.isTemplate ? {} : attributes)}
+            {...(step.isTemplate ? {} : listeners)}
+            className={`flex-shrink-0 ${step.isTemplate ? 'text-gray-300' : 'cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600'}`}
+          >
+            <GripVertical className="w-5 h-5" />
+          </div>
 
           {/* Status Icon */}
           <div className="flex-shrink-0">
@@ -343,21 +341,22 @@ export function EnhancedStepItem({
             )}
           </CollapsibleTrigger>
 
-          {!step.isTemplate && (
-            <div className="flex items-center space-x-2">
-              <Select
-                value={step.status}
-                onValueChange={(value) => onUpdateStatus(step.id, value)}
-              >
-                <SelectTrigger className="w-32">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="in_progress">In Progress</SelectItem>
-                  <SelectItem value="completed">Completed</SelectItem>
-                </SelectContent>
-              </Select>
+          <div className="flex items-center space-x-2">
+            <Select
+              value={step.status}
+              onValueChange={step.isTemplate ? undefined : (value) => onUpdateStatus(step.id, value)}
+              disabled={step.isTemplate}
+            >
+              <SelectTrigger className={`w-32 ${step.isTemplate ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="in_progress">In Progress</SelectItem>
+                <SelectItem value="completed">Completed</SelectItem>
+              </SelectContent>
+            </Select>
+            {!step.isTemplate && (
               <Button
                 variant="ghost"
                 size="sm"
@@ -366,12 +365,11 @@ export function EnhancedStepItem({
               >
                 <Trash2 className="w-4 h-4" />
               </Button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
-        {!step.isTemplate && (
-          <CollapsibleContent>
+        <CollapsibleContent>
             <div className="border-t bg-gray-50">
               <div className="p-4">
                 {/* Chat Section */}
@@ -724,8 +722,7 @@ export function EnhancedStepItem({
                 </Card>
               </div>
             </div>
-          </CollapsibleContent>
-        )}
+        </CollapsibleContent>
       </Collapsible>
     </div>
   );
