@@ -154,6 +154,7 @@ export interface CreateLeadData {
     | "event"
     | "other";
   lead_source_value?: string;
+  lead_created_by?: string;
 
   // Project Information
   project_title?: string;
