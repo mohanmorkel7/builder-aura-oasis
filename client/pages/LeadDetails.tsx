@@ -364,7 +364,7 @@ export default function LeadDetails() {
                               ) : step.status === "in_progress" ? (
                                 <span className="text-blue-600">⋯</span>
                               ) : (
-                                <span className="text-gray-400">���</span>
+                                <span className="text-gray-400">○</span>
                               )}
                               <span
                                 className={
@@ -836,6 +836,16 @@ export default function LeadDetails() {
                     isTemplate: false,
                   });
                 });
+
+                // Show loading state if steps are still loading
+                if (stepsLoading) {
+                  return (
+                    <div className="text-center py-8 text-gray-500">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                      <p>Loading pipeline steps...</p>
+                    </div>
+                  );
+                }
 
                 // Show the unified pipeline
                 if (allSteps.length === 0) {
