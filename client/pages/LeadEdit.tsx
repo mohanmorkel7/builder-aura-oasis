@@ -817,7 +817,10 @@ export default function LeadEdit() {
           ? parseInt(leadData.probability)
           : undefined,
         billing_currency: leadData.billing_currency,
-        template_id: selectedTemplate === "manual" ? null : parseInt(selectedTemplate) || null,
+        template_id:
+          selectedTemplate === "manual"
+            ? null
+            : parseInt(selectedTemplate) || null,
         solutions: JSON.stringify(leadData.solutions),
         contacts: JSON.stringify(leadData.contacts),
         flat_fee_config: JSON.stringify(leadData.flat_fee_config),
