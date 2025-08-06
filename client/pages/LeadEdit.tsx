@@ -160,6 +160,13 @@ export default function LeadEdit() {
   const [selectedTemplate, setSelectedTemplate] = useState<string>("");
   const [showTemplatePreview, setShowTemplatePreview] = useState(false);
 
+  // Always call useTemplate with a consistent number to avoid conditional hooks
+  const selectedTemplateId =
+    selectedTemplate && selectedTemplate !== "manual" && !isNaN(parseInt(selectedTemplate))
+      ? parseInt(selectedTemplate)
+      : 0;
+  const { data: templateData } = useTemplate(selectedTemplateId);
+
   // State hooks
   const [leadData, setLeadData] = useState({
     // Lead Source & Status
