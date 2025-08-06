@@ -378,13 +378,21 @@ export default function LeadEdit() {
         expected_daily_txn_volume:
           lead.expected_daily_txn_volume?.toString() || "",
         expected_daily_txn_volume_year1:
-          lead.expected_daily_txn_volume_year1?.toString() || "",
+          lead.expected_daily_txn_volume_year1 !== null && lead.expected_daily_txn_volume_year1 !== undefined
+            ? lead.expected_daily_txn_volume_year1.toString()
+            : "",
         expected_daily_txn_volume_year2:
-          lead.expected_daily_txn_volume_year2?.toString() || "",
+          lead.expected_daily_txn_volume_year2 !== null && lead.expected_daily_txn_volume_year2 !== undefined
+            ? lead.expected_daily_txn_volume_year2.toString()
+            : "",
         expected_daily_txn_volume_year3:
-          lead.expected_daily_txn_volume_year3?.toString() || "",
+          lead.expected_daily_txn_volume_year3 !== null && lead.expected_daily_txn_volume_year3 !== undefined
+            ? lead.expected_daily_txn_volume_year3.toString()
+            : "",
         expected_daily_txn_volume_year5:
-          lead.expected_daily_txn_volume_year5?.toString() || "",
+          lead.expected_daily_txn_volume_year5 !== null && lead.expected_daily_txn_volume_year5 !== undefined
+            ? lead.expected_daily_txn_volume_year5.toString()
+            : "",
         spoc: lead.spoc || "",
 
         // Commercials
