@@ -609,6 +609,13 @@ export default function CreateLead() {
     // Update the form with the resumed data
     setLeadData(formData);
 
+    // Restore selected template if template_id exists
+    if (formData.template_id) {
+      setSelectedTemplate(formData.template_id.toString());
+    } else {
+      setSelectedTemplate("manual");
+    }
+
     // Set the current tab to the last completed tab or first tab
     if (_completedTabs && _completedTabs.length > 0) {
       setCurrentTab(_completedTabs[0]);
