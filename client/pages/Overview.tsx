@@ -320,45 +320,56 @@ export default function Overview() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="flex justify-center items-end space-x-8 h-32">
+              <div className="space-y-4">
                 {templatesArray.map((templateGroup: any) => {
                   const totalProgress = templateGroup.total_leads > 0
                     ? (templateGroup.total_completed / templateGroup.total_leads) * 100
                     : 0;
 
                   return (
-                    <div key={templateGroup.template_id} className="flex flex-col items-center space-y-2">
-                      <div className="text-sm font-semibold text-gray-900">
-                        {totalProgress.toFixed(1)}%
-                      </div>
-                      <div
-                        className={`rounded-t-lg w-20 transition-all duration-500 flex items-end justify-center text-white text-xs font-medium ${
-                          templateGroup.template_id === 1 ? 'bg-blue-500 hover:bg-blue-600' :
-                          templateGroup.template_id === 2 ? 'bg-purple-500 hover:bg-purple-600' :
-                          'bg-green-500 hover:bg-green-600'
-                        }`}
-                        style={{ height: `${Math.max(totalProgress * 0.8, 8)}px` }}
-                        title={`${templateGroup.total_completed}/${templateGroup.total_leads} leads completed`}
-                      >
-                        {totalProgress > 25 && (
-                          <span className="mb-1">{templateGroup.total_completed}</span>
-                        )}
-                      </div>
-                      <div className="text-center">
-                        <div className={`w-4 h-4 rounded-full mx-auto mb-1 ${
-                          templateGroup.template_id === 1 ? 'bg-blue-500' :
-                          templateGroup.template_id === 2 ? 'bg-purple-500' :
-                          'bg-green-500'
-                        }`}></div>
-                        <div className="text-xs font-medium text-gray-900 max-w-20 break-words">
-                          {templateGroup.template_name}
+                    <div key={templateGroup.template_id} className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center space-x-3">
+                          <div className={`w-4 h-4 rounded-full ${
+                            templateGroup.template_id === 1 ? 'bg-blue-500' :
+                            templateGroup.template_id === 2 ? 'bg-purple-500' :
+                            'bg-green-500'
+                          }`}></div>
+                          <span className="font-medium text-gray-900">
+                            {templateGroup.template_name}
+                          </span>
+                          <Badge variant="outline" className="text-xs">
+                            {templateGroup.steps.length} steps
+                          </Badge>
                         </div>
-                        <Badge variant="outline" className="text-xs mt-1">
-                          {templateGroup.steps.length} steps
-                        </Badge>
-                        <div className="text-xs text-gray-500 mt-1">
-                          {templateGroup.total_completed}/{templateGroup.total_leads}
+                        <div className="text-right">
+                          <div className="text-sm font-semibold text-gray-900">
+                            {templateGroup.total_completed}/{templateGroup.total_leads} Complete
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {totalProgress.toFixed(1)}%
+                          </div>
                         </div>
+                      </div>
+
+                      <div className="w-full bg-gray-200 rounded-full h-4">
+                        <div
+                          className={`h-4 rounded-full transition-all duration-500 flex items-center justify-center text-white text-xs font-medium ${
+                            templateGroup.template_id === 1 ? 'bg-blue-500' :
+                            templateGroup.template_id === 2 ? 'bg-purple-500' :
+                            'bg-green-500'
+                          }`}
+                          style={{ width: `${totalProgress}%` }}
+                        >
+                          {totalProgress > 15 && (
+                            <span>{templateGroup.total_completed}/{templateGroup.total_leads}</span>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex justify-between text-xs text-gray-500">
+                        <span>{templateGroup.total_in_progress} in progress</span>
+                        <span>{templateGroup.total_pending} pending</span>
                       </div>
                     </div>
                   );
@@ -450,149 +461,127 @@ export default function Overview() {
                 </AccordionTrigger>
 
                 <AccordionContent className="px-6 pb-6">
-                  {/* Lead Step-wise Bar Chart */}
+                  {/* Consolidated Lead Step Progress Chart */}
                   <div className="mb-8">
                     <h4 className="text-lg font-semibold text-gray-900 mb-4">Lead Step Progress Chart</h4>
                     <div className="bg-white border rounded-lg p-6">
-                      <div className="space-y-4">
-                        {templateGroup.steps.map((stepData: any, index: number) => {
-                          const total = stepData.total_leads;
-                          const completedPercent = total > 0 ? (stepData.completed_count / total) * 100 : 0;
-                          const inProgressPercent = total > 0 ? (stepData.in_progress_count / total) * 100 : 0;
-                          const pendingPercent = total > 0 ? (stepData.pending_count / total) * 100 : 0;
+                      {/* Find max total for consistent scaling */}
+                      {(() => {
+                        const maxTotal = Math.max(...templateGroup.steps.map((step: any) => step.total_leads));
 
-                          return (
-                            <div key={stepData.step_id} className="space-y-2">
-                              {/* Step Info */}
-                              <div className="flex justify-between items-center">
-                                <div className="flex items-center space-x-3">
-                                  <span className="text-sm font-medium text-gray-900 min-w-[200px]">
-                                    Step {stepData.step_order}: {stepData.step_name}
-                                  </span>
-                                  <span className="text-xs text-gray-500">
-                                    ({stepData.probability_percent}% weight)
-                                  </span>
-                                </div>
-                                <div className="text-sm text-gray-600">
-                                  {total} total leads
-                                </div>
-                              </div>
-
-                              {/* Vertical Bar Chart */}
-                              <div className="flex items-end justify-center space-x-8 h-40 relative">
-                                {/* Completed Bar */}
-                                <div className="flex flex-col items-center space-y-2">
-                                  <div className="text-xs font-medium text-green-700">
-                                    {stepData.completed_count}
-                                  </div>
-                                  <div
-                                    className="bg-green-500 hover:bg-green-600 transition-colors cursor-pointer rounded-t-lg w-16 flex items-end justify-center text-white text-xs font-medium"
-                                    style={{ height: `${Math.max(completedPercent * 1.2, 8)}px` }}
-                                    onClick={() => handleStepStatusClick(stepData, 'completed')}
-                                    title={`${stepData.completed_count} completed (${completedPercent.toFixed(1)}%)`}
-                                  >
-                                    {completedPercent > 20 && (
-                                      <span className="mb-1">{stepData.completed_count}</span>
-                                    )}
-                                  </div>
-                                  <div className="text-xs text-green-700 font-medium text-center">
-                                    Completed
-                                  </div>
-                                </div>
-
-                                {/* In Progress Bar */}
-                                <div className="flex flex-col items-center space-y-2">
-                                  <div className="text-xs font-medium text-blue-700">
-                                    {stepData.in_progress_count}
-                                  </div>
-                                  <div
-                                    className="bg-blue-500 hover:bg-blue-600 transition-colors cursor-pointer rounded-t-lg w-16 flex items-end justify-center text-white text-xs font-medium"
-                                    style={{ height: `${Math.max(inProgressPercent * 1.2, 8)}px` }}
-                                    onClick={() => handleStepStatusClick(stepData, 'in_progress')}
-                                    title={`${stepData.in_progress_count} in progress (${inProgressPercent.toFixed(1)}%)`}
-                                  >
-                                    {inProgressPercent > 20 && (
-                                      <span className="mb-1">{stepData.in_progress_count}</span>
-                                    )}
-                                  </div>
-                                  <div className="text-xs text-blue-700 font-medium text-center">
-                                    In Progress
-                                  </div>
-                                </div>
-
-                                {/* Pending Bar */}
-                                <div className="flex flex-col items-center space-y-2">
-                                  <div className="text-xs font-medium text-gray-700">
-                                    {stepData.pending_count}
-                                  </div>
-                                  <div
-                                    className="bg-gray-400 hover:bg-gray-500 transition-colors cursor-pointer rounded-t-lg w-16 flex items-end justify-center text-white text-xs font-medium"
-                                    style={{ height: `${Math.max(pendingPercent * 1.2, 8)}px` }}
-                                    onClick={() => handleStepStatusClick(stepData, 'pending')}
-                                    title={`${stepData.pending_count} pending (${pendingPercent.toFixed(1)}%)`}
-                                  >
-                                    {pendingPercent > 20 && (
-                                      <span className="mb-1">{stepData.pending_count}</span>
-                                    )}
-                                  </div>
-                                  <div className="text-xs text-gray-700 font-medium text-center">
-                                    Pending
-                                  </div>
-                                </div>
-
-                                {/* Y-axis labels */}
-                                <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-gray-500">
-                                  <span>{total}</span>
-                                  <span>{Math.round(total * 0.75)}</span>
-                                  <span>{Math.round(total * 0.5)}</span>
-                                  <span>{Math.round(total * 0.25)}</span>
-                                  <span>0</span>
-                                </div>
-                              </div>
-
-                              {/* Progress Summary */}
-                              <div className="text-center mt-4">
-                                <div className="text-green-600 font-semibold text-sm">
-                                  {completedPercent.toFixed(1)}% Complete ({stepData.completed_count}/{total})
-                                </div>
-                              </div>
+                        return (
+                          <div className="relative">
+                            {/* Y-axis labels */}
+                            <div className="absolute left-0 top-0 h-64 flex flex-col justify-between text-xs text-gray-500 pr-4">
+                              <span>{maxTotal}</span>
+                              <span>{Math.round(maxTotal * 0.75)}</span>
+                              <span>{Math.round(maxTotal * 0.5)}</span>
+                              <span>{Math.round(maxTotal * 0.25)}</span>
+                              <span>0</span>
                             </div>
-                          );
-                        })}
-                      </div>
 
-                      {/* Overall Template Progress - Vertical Summary */}
-                      <div className="mt-6 pt-6 border-t border-gray-200">
-                        <h5 className="text-md font-semibold text-gray-900 mb-4">Overall Template Progress</h5>
-                        <div className="flex justify-center">
-                          <div className="flex flex-col items-center space-y-2">
-                            <div className="text-lg font-bold text-gray-900">
-                              {templateGroup.total_leads > 0
-                                ? Math.round((templateGroup.total_completed / templateGroup.total_leads) * 100)
-                                : 0
-                              }%
+                            {/* Chart Area */}
+                            <div className="ml-12 flex items-end justify-center space-x-6 h-64 border-l border-b border-gray-200">
+                              {templateGroup.steps.map((stepData: any, index: number) => {
+                                const total = stepData.total_leads;
+                                const completedHeight = maxTotal > 0 ? (stepData.completed_count / maxTotal) * 240 : 0;
+                                const inProgressHeight = maxTotal > 0 ? (stepData.in_progress_count / maxTotal) * 240 : 0;
+                                const pendingHeight = maxTotal > 0 ? (stepData.pending_count / maxTotal) * 240 : 0;
+
+                                return (
+                                  <div key={stepData.step_id} className="flex flex-col items-center space-y-3">
+                                    {/* Step bars grouped together */}
+                                    <div className="flex items-end space-x-2">
+                                      {/* Completed Bar */}
+                                      <div className="flex flex-col items-center space-y-1">
+                                        <div className="text-xs font-medium text-green-700">
+                                          {stepData.completed_count}
+                                        </div>
+                                        <div
+                                          className="bg-green-500 hover:bg-green-600 transition-colors cursor-pointer rounded-t w-8 flex items-end justify-center text-white text-xs font-medium"
+                                          style={{ height: `${Math.max(completedHeight, 4)}px` }}
+                                          onClick={() => handleStepStatusClick(stepData, 'completed')}
+                                          title={`Step ${stepData.step_order}: ${stepData.completed_count} completed`}
+                                        >
+                                          {completedHeight > 20 && stepData.completed_count > 0 && (
+                                            <span className="mb-1 rotate-90 text-xs">{stepData.completed_count}</span>
+                                          )}
+                                        </div>
+                                      </div>
+
+                                      {/* In Progress Bar */}
+                                      <div className="flex flex-col items-center space-y-1">
+                                        <div className="text-xs font-medium text-blue-700">
+                                          {stepData.in_progress_count}
+                                        </div>
+                                        <div
+                                          className="bg-blue-500 hover:bg-blue-600 transition-colors cursor-pointer rounded-t w-8 flex items-end justify-center text-white text-xs font-medium"
+                                          style={{ height: `${Math.max(inProgressHeight, 4)}px` }}
+                                          onClick={() => handleStepStatusClick(stepData, 'in_progress')}
+                                          title={`Step ${stepData.step_order}: ${stepData.in_progress_count} in progress`}
+                                        >
+                                          {inProgressHeight > 20 && stepData.in_progress_count > 0 && (
+                                            <span className="mb-1 rotate-90 text-xs">{stepData.in_progress_count}</span>
+                                          )}
+                                        </div>
+                                      </div>
+
+                                      {/* Pending Bar */}
+                                      <div className="flex flex-col items-center space-y-1">
+                                        <div className="text-xs font-medium text-gray-700">
+                                          {stepData.pending_count}
+                                        </div>
+                                        <div
+                                          className="bg-gray-400 hover:bg-gray-500 transition-colors cursor-pointer rounded-t w-8 flex items-end justify-center text-white text-xs font-medium"
+                                          style={{ height: `${Math.max(pendingHeight, 4)}px` }}
+                                          onClick={() => handleStepStatusClick(stepData, 'pending')}
+                                          title={`Step ${stepData.step_order}: ${stepData.pending_count} pending`}
+                                        >
+                                          {pendingHeight > 20 && stepData.pending_count > 0 && (
+                                            <span className="mb-1 rotate-90 text-xs">{stepData.pending_count}</span>
+                                          )}
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    {/* Step Label */}
+                                    <div className="text-center max-w-16">
+                                      <div className="text-xs font-medium text-gray-900 leading-tight">
+                                        Step {stepData.step_order}
+                                      </div>
+                                      <div className="text-xs text-gray-600 leading-tight break-words">
+                                        {stepData.step_name.length > 15
+                                          ? stepData.step_name.substring(0, 15) + '...'
+                                          : stepData.step_name
+                                        }
+                                      </div>
+                                      <div className="text-xs text-purple-600 font-medium">
+                                        {stepData.probability_percent}%
+                                      </div>
+                                    </div>
+                                  </div>
+                                );
+                              })}
                             </div>
-                            <div
-                              className="bg-gradient-to-t from-green-400 to-green-600 rounded-lg w-20 flex items-end justify-center text-white text-xs font-medium transition-all duration-500"
-                              style={{
-                                height: `${Math.max(
-                                  templateGroup.total_leads > 0
-                                    ? (templateGroup.total_completed / templateGroup.total_leads) * 80
-                                    : 0,
-                                  8
-                                )}px`
-                              }}
-                            >
-                              {templateGroup.total_completed > 0 && (
-                                <span className="mb-1">{templateGroup.total_completed}</span>
-                              )}
-                            </div>
-                            <div className="text-xs text-gray-600 text-center">
-                              {templateGroup.total_completed}/{templateGroup.total_leads} Complete
+
+                            {/* Legend */}
+                            <div className="flex justify-center items-center space-x-6 mt-4 text-xs">
+                              <div className="flex items-center space-x-1">
+                                <div className="w-3 h-3 bg-green-500 rounded"></div>
+                                <span className="text-green-700 font-medium">Completed</span>
+                              </div>
+                              <div className="flex items-center space-x-1">
+                                <div className="w-3 h-3 bg-blue-500 rounded"></div>
+                                <span className="text-blue-700 font-medium">In Progress</span>
+                              </div>
+                              <div className="flex items-center space-x-1">
+                                <div className="w-3 h-3 bg-gray-400 rounded"></div>
+                                <span className="text-gray-700 font-medium">Pending</span>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </div>
+                        );
+                      })()}
                     </div>
                   </div>
 
