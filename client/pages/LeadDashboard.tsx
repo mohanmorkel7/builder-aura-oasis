@@ -788,6 +788,19 @@ export default function LeadDashboard() {
                                 expected_daily_txn_volume:
                                   partialSave.expected_daily_txn_volume ||
                                   originalData.expected_daily_txn_volume,
+                                expected_daily_txn_volume_year1:
+                                  partialSave.expected_daily_txn_volume_year1 ||
+                                  originalData.expected_daily_txn_volume_year1,
+                                expected_daily_txn_volume_year2:
+                                  partialSave.expected_daily_txn_volume_year2 ||
+                                  originalData.expected_daily_txn_volume_year2,
+                                expected_daily_txn_volume_year3:
+                                  partialSave.expected_daily_txn_volume_year3 ||
+                                  originalData.expected_daily_txn_volume_year3,
+                                expected_daily_txn_volume_year5:
+                                  partialSave.expected_daily_txn_volume_year5 ||
+                                  originalData.expected_daily_txn_volume_year5,
+                                spoc: partialSave.spoc || originalData.spoc,
                                 billing_currency:
                                   partialSave.billing_currency ||
                                   originalData.billing_currency,
