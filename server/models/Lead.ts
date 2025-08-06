@@ -15,6 +15,7 @@ export interface Lead {
     | "event"
     | "other";
   lead_source_value?: string;
+  lead_created_by?: string;
 
   // Status
   status: "in-progress" | "won" | "lost" | "completed";
