@@ -146,6 +146,7 @@ export default function PartialSaves({
         category: partialSave.category || originalData.category,
         country: partialSave.country || originalData.country,
         probability: partialSave.probability || originalData.probability,
+        template_id: partialSave.template_id || originalData.template_id,
         notes: originalData.notes, // Keep the original notes for form use
 
         // Include the partial save metadata
