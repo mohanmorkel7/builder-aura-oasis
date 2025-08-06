@@ -1506,7 +1506,7 @@ export default function CreateLead() {
                                           <TableCell>{flatFee.description}</TableCell>
                                           <TableCell>-</TableCell>
                                           <TableCell>
-                                            {flatFee.totalValue.toLocaleString(undefined, { maximumFractionDigits: 2 })} {flatFee.currency}
+                                            ₹{convertCurrency(flatFee.totalValue, flatFee.currency, "INR").toLocaleString(undefined, { maximumFractionDigits: 2 })}
                                           </TableCell>
                                           <TableCell>
                                             ${flatFee.totalValueUSD.toLocaleString(undefined, { maximumFractionDigits: 2 })}
