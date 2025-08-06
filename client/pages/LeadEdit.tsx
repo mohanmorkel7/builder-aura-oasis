@@ -396,6 +396,24 @@ export default function LeadEdit() {
 
   // === END OF ALL HOOKS - NO MORE HOOKS AFTER THIS POINT ===
 
+  // Safe date formatting function to handle invalid dates
+  const formatDateSafely = (dateStr: string | null | undefined): string => {
+    if (!dateStr || dateStr.trim() === '') {
+      return '';
+    }
+    try {
+      const date = new Date(dateStr + 'T00:00:00');
+      if (isNaN(date.getTime())) {
+        console.warn('Invalid date value:', dateStr);
+        return '';
+      }
+      return date.toISOString().split('T')[0];
+    } catch (error) {
+      console.warn('Error formatting date:', dateStr, error);
+      return '';
+    }
+  };
+
   const tabs = [
     { value: "basic", label: "Lead Info", icon: "📋" },
     { value: "project", label: "Project Details", icon: "🎯" },
