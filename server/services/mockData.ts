@@ -1306,6 +1306,20 @@ export class MockDataService {
     ];
   }
 
+  static async updateLeadStep(stepId: number, stepData: any) {
+    console.log(`MockDataService.updateLeadStep: Updating step ${stepId} with:`, stepData);
+
+    // Return mock updated step - for demo purposes, we just return the new data
+    const updatedStep = {
+      id: stepId,
+      ...stepData,
+      updated_at: new Date().toISOString(),
+    };
+
+    console.log(`MockDataService.updateLeadStep: Updated step:`, updatedStep);
+    return updatedStep;
+  }
+
   static async getStepChats(stepId: number) {
     // Initialize with some default chats if none exist
     if (this.chatMessages.length === 0) {
