@@ -242,15 +242,15 @@ router.get("/", async (req: Request, res: Response) => {
         );
       }
 
-      if (start_date) {
-        const startTime = new Date(start_date as string).getTime();
+      if (validStartDate) {
+        const startTime = validStartDate.getTime();
         filteredLogs = filteredLogs.filter(
           (log) => new Date(log.timestamp).getTime() >= startTime,
         );
       }
 
-      if (end_date) {
-        const endTime = new Date(end_date as string).getTime();
+      if (validEndDate) {
+        const endTime = validEndDate.getTime();
         filteredLogs = filteredLogs.filter(
           (log) => new Date(log.timestamp).getTime() <= endTime,
         );
