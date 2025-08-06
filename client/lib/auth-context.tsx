@@ -29,7 +29,8 @@ export interface User {
   employeeId?: string;
 }
 
-export const roleGroups = {
+// Stable export to prevent HMR issues
+const ROLE_GROUPS = {
   admin: {
     label: "Admin",
     color: "bg-red-100 text-red-800",
@@ -80,7 +81,9 @@ export const roleGroups = {
     color: "bg-orange-100 text-orange-800",
     permissions: ["switch", "integration"],
   },
-};
+} as const;
+
+export const roleGroups = ROLE_GROUPS;
 
 interface MicrosoftProfile {
   id: string;
