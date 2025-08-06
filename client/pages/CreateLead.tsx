@@ -316,7 +316,7 @@ export default function CreateLead() {
     { value: "project", label: "Project Details", icon: "🎯" },
     { value: "commercials", label: "Commercials", icon: "��" },
     { value: "client", label: "Client & Contact", icon: "🏢" },
-    { value: "additional", label: "Additional", icon: "📝" },
+    { value: "additional", label: "Additional", icon: "���" },
   ];
 
   const currentTabIndex = tabs.findIndex((tab) => tab.value === currentTab);
@@ -365,11 +365,26 @@ export default function CreateLead() {
           existing || {
             solution,
             value: 0,
-            currency: "INR" as const,
+            currency: leadData.billing_currency,
           }
         );
       });
       newData.transaction_fee_config = newConfig;
+    }
+
+    // If billing currency is updated, update all related currency fields
+    if (field === "billing_currency") {
+      // Update transaction fee configs to new currency
+      newData.transaction_fee_config = leadData.transaction_fee_config.map(config => ({
+        ...config,
+        currency: value
+      }));
+
+      // Update flat fee configs to new currency
+      newData.flat_fee_config = leadData.flat_fee_config.map(config => ({
+        ...config,
+        currency: value
+      }));
     }
 
     setLeadData(newData);
@@ -468,8 +483,15 @@ export default function CreateLead() {
         totalValue: period.volume * period.multiplier * config.value,
         totalValueUSD: convertCurrency(period.volume * period.multiplier * config.value, config.currency, "USD"),
       })),
-      // Flat fees
-      flatFees: leadData.flat_fee_config.map(config => {
+      // Flat fees - only show if applicable for this period
+      flatFees: leadData.flat_fee_config.filter(config => {
+        // One-time fees only show in first period (Current)
+        if (config.type === "one_time") {
+          return period.label === "Current";
+        }
+        // Recurring fees show in all periods
+        return config.type === "recurring";
+      }).map(config => {
         let multiplier = 1;
         let description = "One time";
 
@@ -1501,7 +1523,29 @@ export default function CreateLead() {
                                       {period.solutions.reduce((sum, s) => sum + s.value, 0).toLocaleString(undefined, { maximumFractionDigits: 2 })} {leadData.billing_currency} (txn rate)
                                     </TableCell>
                                     <TableCell>{period.totalTransactions.toLocaleString()}</TableCell>
-                                    <TableCell>Mixed currencies</TableCell>
+                                    <TableCell>
+                                      {/* Check if all currencies are the same */}
+                                      {(() => {
+                                        const allCurrencies = [
+                                          ...period.solutions.map(s => s.currency),
+                                          ...period.flatFees.map(f => f.currency)
+                                        ];
+                                        const uniqueCurrencies = [...new Set(allCurrencies)];
+
+                                        if (uniqueCurrencies.length === 1 && uniqueCurrencies[0]) {
+                                          // All same currency - show total in that currency
+                                          const currency = uniqueCurrencies[0];
+                                          const totalValue = period.solutions.reduce((sum, s) => sum + s.totalValue, 0) +
+                                                           period.flatFees.reduce((sum, f) => sum + f.totalValue, 0);
+                                          return `${totalValue.toLocaleString(undefined, { maximumFractionDigits: 2 })} ${currency}`;
+                                        } else if (allCurrencies.length === 0) {
+                                          return "No fees configured";
+                                        } else {
+                                          return "Mixed currencies";
+                                        }
+                                      })()
+                                      }
+                                    </TableCell>
                                     <TableCell>
                                       ${(period.solutions.reduce((sum, s) => sum + s.totalValueUSD, 0) + period.flatFees.reduce((sum, f) => sum + f.totalValueUSD, 0)).toLocaleString(undefined, { maximumFractionDigits: 2 })}
                                     </TableCell>
