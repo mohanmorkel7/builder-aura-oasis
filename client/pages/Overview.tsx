@@ -464,20 +464,27 @@ export default function Overview() {
                   {/* Consolidated Lead Step Progress Chart */}
                   <div className="mb-8">
                     <h4 className="text-lg font-semibold text-gray-900 mb-4">Lead Step Progress Chart</h4>
-                    <div className="bg-white border rounded-lg p-6">
+                    <div className="bg-white border rounded-lg p-4 md:p-6">
                       {/* Find max total for consistent scaling */}
                       {(() => {
                         const maxTotal = Math.max(...templateGroup.steps.map((step: any) => step.total_leads));
 
                         return (
                           <div className="relative">
+                            {/* Scroll hint for mobile */}
+                            {templateGroup.steps.length > 3 && (
+                              <div className="block sm:hidden text-xs text-gray-500 mb-2 text-center">
+                                ← Scroll horizontally to view all steps →
+                              </div>
+                            )}
+
                             {/* Y-axis labels */}
-                            <div className="absolute left-0 top-0 h-64 flex flex-col justify-between text-xs text-gray-500 pr-2 md:pr-4">
-                              <span className="text-xs">{maxTotal}</span>
-                              <span className="text-xs">{Math.round(maxTotal * 0.75)}</span>
-                              <span className="text-xs">{Math.round(maxTotal * 0.5)}</span>
-                              <span className="text-xs">{Math.round(maxTotal * 0.25)}</span>
-                              <span className="text-xs">0</span>
+                            <div className="absolute left-0 top-0 h-64 flex flex-col justify-between text-xs text-gray-500 pr-2 md:pr-4 z-10">
+                              <span className="text-xs bg-white">{maxTotal}</span>
+                              <span className="text-xs bg-white">{Math.round(maxTotal * 0.75)}</span>
+                              <span className="text-xs bg-white">{Math.round(maxTotal * 0.5)}</span>
+                              <span className="text-xs bg-white">{Math.round(maxTotal * 0.25)}</span>
+                              <span className="text-xs bg-white">0</span>
                             </div>
 
                             {/* Chart Area - Responsive Container */}
