@@ -97,6 +97,10 @@ router.get("/", async (req: Request, res: Response) => {
       end_date,
     } = req.query;
 
+    // Validate numeric parameters
+    const limitNum = Math.max(1, Math.min(parseInt(limit as string) || 50, 1000)); // Cap at 1000
+    const offsetNum = Math.max(0, parseInt(offset as string) || 0);
+
     // Validate and sanitize date parameters
     let validStartDate = null;
     let validEndDate = null;
