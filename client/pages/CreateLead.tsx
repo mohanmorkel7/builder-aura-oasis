@@ -270,6 +270,7 @@ export default function CreateLead() {
   const [currentTab, setCurrentTab] = useState("basic");
   const [isPartialSaved, setIsPartialSaved] = useState(false);
   const [isResumedFromDraft, setIsResumedFromDraft] = useState(false);
+  const [draftId, setDraftId] = useState<number | null>(null);
 
   // Handle resume data from location state (when coming from dashboard)
   useEffect(() => {
@@ -281,6 +282,10 @@ export default function CreateLead() {
       }
       setLeadData(resumeData);
       setIsResumedFromDraft(true);
+      // Set draft ID if resuming from an existing draft
+      if (resumeData.id) {
+        setDraftId(resumeData.id);
+      }
 
       // Set the active tab to the first incomplete tab if available
       if (resumeData._completedTabs && resumeData._completedTabs.length > 0) {
@@ -738,10 +743,28 @@ export default function CreateLead() {
             : null,
       };
 
-      const result = await createLeadMutation.mutateAsync(submitData);
+      // If this was a draft, we need to either update it or create a new complete lead
+      let result;
+      if (draftId) {
+        // Update existing draft to be a complete lead
+        const completeData = {
+          ...submitData,
+          notes: null, // Clear the partial save metadata
+        };
+        try {
+          result = await apiClient.updateLead(draftId, completeData);
+          console.log('Draft converted to complete lead successfully');
+        } catch (error) {
+          console.error('Failed to update draft, creating new lead:', error);
+          result = await createLeadMutation.mutateAsync(submitData);
+        }
+      } else {
+        // Create new complete lead
+        result = await createLeadMutation.mutateAsync(submitData);
+      }
+
       // Navigate to the created lead details page
       navigate(`/leads/${result.id}`);
-      navigate("/leads");
     } catch (error) {
       console.error("Failed to create lead:", error);
       setErrors(["Failed to create lead. Please try again."]);
