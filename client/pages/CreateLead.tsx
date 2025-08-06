@@ -258,6 +258,10 @@ export default function CreateLead() {
   useEffect(() => {
     if (location.state?.resumeData) {
       const resumeData = location.state.resumeData;
+      // Ensure lead_created_by is set if not already present
+      if (!resumeData.lead_created_by && user?.email) {
+        resumeData.lead_created_by = user.email;
+      }
       setLeadData(resumeData);
       setIsResumedFromDraft(true);
 
