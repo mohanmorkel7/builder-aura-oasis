@@ -675,6 +675,10 @@ export default function CreateLead() {
       // Filter out metadata fields that shouldn't go to database
       const { _resumeFromId, _lastSaved, _completedTabs, id, ...cleanDataForDb } = cleanedData;
 
+      if (_resumeFromId || _lastSaved || _completedTabs) {
+        console.log("Filtered out metadata fields:", { _resumeFromId, _lastSaved, _completedTabs, id });
+      }
+
       // Prepare partial data for database save
       const partialData = {
         ...cleanDataForDb,
