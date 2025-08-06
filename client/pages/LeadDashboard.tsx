@@ -718,9 +718,12 @@ export default function LeadDashboard() {
                               const originalData = notes.originalData || {};
 
                               // Helper function to safely parse JSON strings
-                              const safeJsonParse = (jsonString: string, fallback: any = []) => {
+                              const safeJsonParse = (
+                                jsonString: string,
+                                fallback: any = [],
+                              ) => {
                                 try {
-                                  return JSON.parse(jsonString || '[]');
+                                  return JSON.parse(jsonString || "[]");
                                 } catch {
                                   return fallback;
                                 }
@@ -729,38 +732,75 @@ export default function LeadDashboard() {
                               const resumeData = {
                                 ...originalData,
                                 // Override with database saved values, properly deserializing JSON fields
-                                lead_source: partialSave.lead_source || originalData.lead_source,
+                                lead_source:
+                                  partialSave.lead_source ||
+                                  originalData.lead_source,
                                 client_name:
                                   partialSave.client_name ===
                                   "PARTIAL_SAVE_IN_PROGRESS"
                                     ? ""
-                                    : partialSave.client_name || originalData.client_name,
+                                    : partialSave.client_name ||
+                                      originalData.client_name,
                                 project_title:
                                   partialSave.project_title ===
                                   "Partial Save - In Progress"
                                     ? ""
-                                    : partialSave.project_title || originalData.project_title,
+                                    : partialSave.project_title ||
+                                      originalData.project_title,
                                 project_description:
-                                  partialSave.project_description || originalData.project_description,
+                                  partialSave.project_description ||
+                                  originalData.project_description,
 
                                 // Deserialize JSON fields from database
-                                solutions: safeJsonParse(partialSave.solutions, originalData.solutions || []),
-                                contacts: safeJsonParse(partialSave.contacts, originalData.contacts || []),
-                                flat_fee_config: safeJsonParse(partialSave.flat_fee_config, originalData.flat_fee_config || []),
-                                transaction_fee_config: safeJsonParse(partialSave.transaction_fee_config, originalData.transaction_fee_config || []),
+                                solutions: safeJsonParse(
+                                  partialSave.solutions,
+                                  originalData.solutions || [],
+                                ),
+                                contacts: safeJsonParse(
+                                  partialSave.contacts,
+                                  originalData.contacts || [],
+                                ),
+                                flat_fee_config: safeJsonParse(
+                                  partialSave.flat_fee_config,
+                                  originalData.flat_fee_config || [],
+                                ),
+                                transaction_fee_config: safeJsonParse(
+                                  partialSave.transaction_fee_config,
+                                  originalData.transaction_fee_config || [],
+                                ),
 
                                 // Include other database fields
-                                lead_created_by: partialSave.lead_created_by || originalData.lead_created_by,
-                                priority_level: partialSave.priority_level || originalData.priority_level,
-                                start_date: partialSave.start_date || originalData.start_date,
-                                targeted_end_date: partialSave.targeted_end_date || originalData.targeted_end_date,
-                                expected_daily_txn_volume: partialSave.expected_daily_txn_volume || originalData.expected_daily_txn_volume,
-                                billing_currency: partialSave.billing_currency || originalData.billing_currency,
-                                client_type: partialSave.client_type || originalData.client_type,
-                                company_location: partialSave.company_location || originalData.company_location,
-                                category: partialSave.category || originalData.category,
-                                country: partialSave.country || originalData.country,
-                                probability: partialSave.probability || originalData.probability,
+                                lead_created_by:
+                                  partialSave.lead_created_by ||
+                                  originalData.lead_created_by,
+                                priority_level:
+                                  partialSave.priority_level ||
+                                  originalData.priority_level,
+                                start_date:
+                                  partialSave.start_date ||
+                                  originalData.start_date,
+                                targeted_end_date:
+                                  partialSave.targeted_end_date ||
+                                  originalData.targeted_end_date,
+                                expected_daily_txn_volume:
+                                  partialSave.expected_daily_txn_volume ||
+                                  originalData.expected_daily_txn_volume,
+                                billing_currency:
+                                  partialSave.billing_currency ||
+                                  originalData.billing_currency,
+                                client_type:
+                                  partialSave.client_type ||
+                                  originalData.client_type,
+                                company_location:
+                                  partialSave.company_location ||
+                                  originalData.company_location,
+                                category:
+                                  partialSave.category || originalData.category,
+                                country:
+                                  partialSave.country || originalData.country,
+                                probability:
+                                  partialSave.probability ||
+                                  originalData.probability,
                                 notes: originalData.notes, // Keep the original notes for form use
 
                                 id: partialSave.id, // This is the key field that CreateLead looks for

@@ -56,7 +56,7 @@ export default function PartialSaves({
       // Helper function to safely parse JSON strings
       const safeJsonParse = (jsonString: string, fallback: any = []) => {
         try {
-          return JSON.parse(jsonString || '[]');
+          return JSON.parse(jsonString || "[]");
         } catch {
           return fallback;
         }
@@ -75,28 +75,56 @@ export default function PartialSaves({
           partialSave.project_title === "Partial Save - In Progress"
             ? ""
             : partialSave.project_title || originalData.project_title,
-        project_description: partialSave.project_description || originalData.project_description,
+        project_description:
+          partialSave.project_description || originalData.project_description,
 
         // Deserialize JSON fields from database
-        solutions: safeJsonParse(partialSave.solutions, originalData.solutions || []),
-        contacts: safeJsonParse(partialSave.contacts, originalData.contacts || []),
-        flat_fee_config: safeJsonParse(partialSave.flat_fee_config, originalData.flat_fee_config || []),
-        transaction_fee_config: safeJsonParse(partialSave.transaction_fee_config, originalData.transaction_fee_config || []),
+        solutions: safeJsonParse(
+          partialSave.solutions,
+          originalData.solutions || [],
+        ),
+        contacts: safeJsonParse(
+          partialSave.contacts,
+          originalData.contacts || [],
+        ),
+        flat_fee_config: safeJsonParse(
+          partialSave.flat_fee_config,
+          originalData.flat_fee_config || [],
+        ),
+        transaction_fee_config: safeJsonParse(
+          partialSave.transaction_fee_config,
+          originalData.transaction_fee_config || [],
+        ),
 
         // Include other database fields
-        lead_created_by: partialSave.lead_created_by || originalData.lead_created_by,
-        priority_level: partialSave.priority_level || originalData.priority_level,
+        lead_created_by:
+          partialSave.lead_created_by || originalData.lead_created_by,
+        priority_level:
+          partialSave.priority_level || originalData.priority_level,
         start_date: partialSave.start_date || originalData.start_date,
-        targeted_end_date: partialSave.targeted_end_date || originalData.targeted_end_date,
-        expected_daily_txn_volume: partialSave.expected_daily_txn_volume || originalData.expected_daily_txn_volume,
-        expected_daily_txn_volume_year1: partialSave.expected_daily_txn_volume_year1 || originalData.expected_daily_txn_volume_year1,
-        expected_daily_txn_volume_year2: partialSave.expected_daily_txn_volume_year2 || originalData.expected_daily_txn_volume_year2,
-        expected_daily_txn_volume_year3: partialSave.expected_daily_txn_volume_year3 || originalData.expected_daily_txn_volume_year3,
-        expected_daily_txn_volume_year5: partialSave.expected_daily_txn_volume_year5 || originalData.expected_daily_txn_volume_year5,
+        targeted_end_date:
+          partialSave.targeted_end_date || originalData.targeted_end_date,
+        expected_daily_txn_volume:
+          partialSave.expected_daily_txn_volume ||
+          originalData.expected_daily_txn_volume,
+        expected_daily_txn_volume_year1:
+          partialSave.expected_daily_txn_volume_year1 ||
+          originalData.expected_daily_txn_volume_year1,
+        expected_daily_txn_volume_year2:
+          partialSave.expected_daily_txn_volume_year2 ||
+          originalData.expected_daily_txn_volume_year2,
+        expected_daily_txn_volume_year3:
+          partialSave.expected_daily_txn_volume_year3 ||
+          originalData.expected_daily_txn_volume_year3,
+        expected_daily_txn_volume_year5:
+          partialSave.expected_daily_txn_volume_year5 ||
+          originalData.expected_daily_txn_volume_year5,
         spoc: partialSave.spoc || originalData.spoc,
-        billing_currency: partialSave.billing_currency || originalData.billing_currency,
+        billing_currency:
+          partialSave.billing_currency || originalData.billing_currency,
         client_type: partialSave.client_type || originalData.client_type,
-        company_location: partialSave.company_location || originalData.company_location,
+        company_location:
+          partialSave.company_location || originalData.company_location,
         category: partialSave.category || originalData.category,
         country: partialSave.country || originalData.country,
         probability: partialSave.probability || originalData.probability,

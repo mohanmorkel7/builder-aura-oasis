@@ -642,7 +642,9 @@ export default function CreateLead() {
             : leadData.expected_daily_txn_volume,
         billing_currency: leadData.billing_currency,
         flat_fee_config: JSON.stringify(leadData.flat_fee_config || []),
-        transaction_fee_config: JSON.stringify(leadData.transaction_fee_config || []),
+        transaction_fee_config: JSON.stringify(
+          leadData.transaction_fee_config || [],
+        ),
         expected_daily_txn_volume_year1:
           leadData.expected_daily_txn_volume_year1 === ""
             ? null
@@ -678,10 +680,10 @@ export default function CreateLead() {
         lead_source: cleanedData.lead_source || "other", // Ensure we have a lead_source
         client_name: draftId
           ? cleanedData.client_name // For updates, use actual data
-          : (cleanedData.client_name || "PARTIAL_SAVE_IN_PROGRESS"), // For new drafts, use placeholder if empty
+          : cleanedData.client_name || "PARTIAL_SAVE_IN_PROGRESS", // For new drafts, use placeholder if empty
         project_title: draftId
           ? cleanedData.project_title // For updates, use actual data
-          : (cleanedData.project_title || "Partial Save - In Progress"), // For new drafts, use placeholder if empty
+          : cleanedData.project_title || "Partial Save - In Progress", // For new drafts, use placeholder if empty
         notes: JSON.stringify({
           isPartialSave: true,
           lastSaved: new Date().toISOString(),
@@ -704,7 +706,7 @@ export default function CreateLead() {
         lead_source: partialData.lead_source,
         solutions: partialData.solutions,
         contacts: partialData.contacts,
-        notes: partialData.notes
+        notes: partialData.notes,
       });
 
       // If we have a draft ID, update the existing draft instead of creating a new one
