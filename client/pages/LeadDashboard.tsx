@@ -115,6 +115,14 @@ export default function LeadDashboard() {
   const [sourceFilter, setSourceFilter] = useState<string>("all");
   const [activeTab, setActiveTab] = useState<"leads" | "drafts">("leads");
 
+  // Refresh partial saves when component mounts
+  useEffect(() => {
+    if (userId) {
+      console.log("Refreshing partial saves for user:", userId);
+      refetchPartialSaves();
+    }
+  }, [userId, refetchPartialSaves]);
+
   const handleCreateLead = () => {
     navigate("/leads/new");
   };
