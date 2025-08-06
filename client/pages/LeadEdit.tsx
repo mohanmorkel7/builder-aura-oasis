@@ -406,15 +406,32 @@ export default function LeadEdit() {
         })(),
 
         // Contacts
-        contacts: lead.contacts || [
-          {
-            contact_name: "",
-            designation: "",
-            phone: "",
-            email: "",
-            linkedin: "",
-          },
-        ],
+        contacts: (() => {
+          try {
+            if (typeof lead.contacts === 'string' && lead.contacts.trim() !== '') {
+              return JSON.parse(lead.contacts);
+            }
+            return Array.isArray(lead.contacts) ? lead.contacts : [
+              {
+                contact_name: "",
+                designation: "",
+                phone: "",
+                email: "",
+                linkedin: "",
+              },
+            ];
+          } catch {
+            return [
+              {
+                contact_name: "",
+                designation: "",
+                phone: "",
+                email: "",
+                linkedin: "",
+              },
+            ];
+          }
+        })(),
 
         client_name: lead.client_name || "",
         client_type: lead.client_type || "",
