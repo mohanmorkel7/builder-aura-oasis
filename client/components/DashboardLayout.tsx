@@ -242,7 +242,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       }
     };
 
-    fetchNotifications();
+    // Add a small delay to ensure auth context is stable
+    const timeoutId = setTimeout(() => {
+      fetchNotifications();
+    }, 100);
+
+    return () => clearTimeout(timeoutId);
 
     // Refresh notifications every 30 seconds
     const interval = setInterval(fetchNotifications, 30000);
