@@ -610,9 +610,13 @@ export default function CreateLead() {
     setLeadData(formData);
 
     // Restore selected template if template_id exists
+    console.log("Template restoration - template_id from formData:", formData.template_id);
     if (formData.template_id) {
-      setSelectedTemplate(formData.template_id.toString());
+      const templateIdString = formData.template_id.toString();
+      console.log("Setting selectedTemplate to:", templateIdString);
+      setSelectedTemplate(templateIdString);
     } else {
+      console.log("No template_id found, setting to manual");
       setSelectedTemplate("manual");
     }
 
