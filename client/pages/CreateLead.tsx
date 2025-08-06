@@ -602,6 +602,12 @@ export default function CreateLead() {
   const handlePartialSave = async () => {
     try {
       setSaving(true);
+      console.log("handlePartialSave called - Current state:", {
+        currentTab,
+        draftId,
+        hasSavedDraftInSession,
+        clientName: leadData.client_name
+      });
 
       // Clean form data - convert empty strings to null for numeric fields
       const cleanedData = {
