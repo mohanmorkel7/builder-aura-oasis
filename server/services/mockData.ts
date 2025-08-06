@@ -1363,6 +1363,25 @@ export class MockDataService {
       },
     ];
 
-    return chats.filter((chat) => chat.step_id === stepId);
+    const filteredChats = chats.filter((chat) => chat.step_id === stepId);
+
+    // If no existing chats for this step, return a sample chat for testing
+    if (filteredChats.length === 0) {
+      return [
+        {
+          id: Date.now(),
+          step_id: stepId,
+          user_id: 2,
+          user_name: "Jane Smith",
+          message: `This is a sample message for step ${stepId}. Chat functionality is working!`,
+          message_type: "text",
+          is_rich_text: false,
+          created_at: new Date().toISOString(),
+          attachments: [],
+        },
+      ];
+    }
+
+    return filteredChats;
   }
 }
