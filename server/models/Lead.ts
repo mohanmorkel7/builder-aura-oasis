@@ -32,10 +32,10 @@ export interface Lead {
   start_date?: string; // expected or confirmed
   targeted_end_date?: string;
   expected_daily_txn_volume?: number;
-  project_value?: number; // current project value
-  project_value_12m?: number; // expected value after 12 months
-  project_value_24m?: number; // expected value after 24 months
-  project_value_36m?: number; // expected value after 36 months
+  expected_daily_txn_volume_year1?: number;
+  expected_daily_txn_volume_year2?: number;
+  expected_daily_txn_volume_year3?: number;
+  expected_daily_txn_volume_year5?: number;
   spoc?: string; // Single Point of Contact
 
   // Commercials
