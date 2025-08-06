@@ -316,7 +316,7 @@ export default function CreateLead() {
     { value: "project", label: "Project Details", icon: "🎯" },
     { value: "commercials", label: "Commercials", icon: "��" },
     { value: "client", label: "Client & Contact", icon: "🏢" },
-    { value: "additional", label: "Additional", icon: "���" },
+    { value: "additional", label: "Additional", icon: "📝" },
   ];
 
   const currentTabIndex = tabs.findIndex((tab) => tab.value === currentTab);
@@ -1474,7 +1474,7 @@ export default function CreateLead() {
                                     <TableHead>Solution</TableHead>
                                     <TableHead>Rate</TableHead>
                                     <TableHead>Total Transaction Count</TableHead>
-                                    <TableHead>Total Value</TableHead>
+                                    <TableHead>INR Value</TableHead>
                                     <TableHead>USD Value</TableHead>
                                   </TableRow>
                                 </TableHeader>
