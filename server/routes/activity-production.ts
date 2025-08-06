@@ -485,10 +485,19 @@ router.get("/stats/summary", async (req: Request, res: Response) => {
     }
   } catch (error) {
     console.error("Error fetching activity stats:", error);
-    res.status(500).json({
-      error: "Failed to fetch activity stats",
-      message: error.message,
-    });
+
+    try {
+      res.status(500).json({
+        error: "Failed to fetch activity stats",
+        message: error instanceof Error ? error.message : "Unknown error",
+        daily_breakdown: [],
+        action_totals: [],
+        period_days: parseInt(req.query.days as string) || 7,
+      });
+    } catch (jsonError) {
+      console.error("Failed to send JSON response:", jsonError);
+      res.status(500).send('{"error": "Internal server error", "daily_breakdown": [], "action_totals": [], "period_days": 7}');
+    }
   }
 });
 
