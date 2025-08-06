@@ -679,6 +679,23 @@ export default function CreateLead() {
                 </Select>
               </div>
 
+              {/* Lead Created By */}
+              <div>
+                <Label htmlFor="lead_created_by">Lead Created By</Label>
+                <div className="relative mt-1">
+                  <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Input
+                    id="lead_created_by"
+                    value={leadData.lead_created_by}
+                    onChange={(e) =>
+                      updateField("lead_created_by", e.target.value)
+                    }
+                    className="pl-10"
+                    placeholder="Enter email address of lead creator"
+                  />
+                </div>
+              </div>
+
               {/* Dynamic Lead Source Value */}
               {leadData.lead_source && (
                 <div>
