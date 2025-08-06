@@ -796,6 +796,17 @@ export default function LeadDetails() {
             <CardContent>
               {/* Combine template steps and lead steps into one unified pipeline */}
               {(() => {
+                // Debug logging to see what data we have
+                console.log("LeadDetails Debug:", {
+                  leadSteps,
+                  leadStepsLength: leadSteps?.length,
+                  templateData,
+                  templateSteps: templateData?.steps,
+                  templateStepsLength: templateData?.steps?.length,
+                  stepsLoading,
+                  templateLoading
+                });
+
                 // Create combined steps array with template steps first, then lead steps
                 const allSteps = [];
 
