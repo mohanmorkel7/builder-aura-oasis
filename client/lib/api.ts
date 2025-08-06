@@ -53,11 +53,11 @@ export class ApiClient {
 
         let errorText: string = "";
         try {
-          // Clone the response to avoid consuming the stream
-          const clonedResponse = response.clone();
-          errorText = await clonedResponse.text();
+          // Read the response text directly (no cloning needed for error cases)
+          errorText = await response.text();
           console.log("Server error response:", errorText);
         } catch (textError) {
+          console.error("Could not read error response body:", textError);
           // If we can't read the response body, provide a status-specific error
           if (response.status === 400) {
             throw new Error(`Bad Request (${response.status}): Invalid data provided`);
