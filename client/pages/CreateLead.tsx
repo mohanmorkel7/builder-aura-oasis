@@ -774,7 +774,9 @@ export default function CreateLead() {
           queryClient.invalidateQueries({ queryKey: ["leads"] });
           queryClient.invalidateQueries({ queryKey: ["leads", draftId] });
           queryClient.invalidateQueries({ queryKey: ["my-partial-saves"] });
-          queryClient.invalidateQueries({ queryKey: ["my-partial-saves", user?.id] });
+          queryClient.invalidateQueries({
+            queryKey: ["my-partial-saves", user?.id],
+          });
         } catch (error) {
           console.error("Failed to update draft:", error);
           // Log the specific error to understand why update is failing
