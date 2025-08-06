@@ -767,14 +767,6 @@ export default function CreateLead() {
           }
 
           // Try to update the existing draft
-          console.log("About to call updateLead API with partialData:", {
-            id: draftId,
-            start_date: partialData.start_date,
-            targeted_end_date: partialData.targeted_end_date,
-            expected_close_date: partialData.expected_close_date,
-            client_name: partialData.client_name,
-            project_title: partialData.project_title,
-          });
           const result = await apiClient.updateLead(draftId, partialData);
           console.log("Draft updated successfully:", result);
 
