@@ -149,7 +149,7 @@ export function createServer() {
   }
 
   try {
-    app.use("/api/activity", activityProductionRouter);
+    app.use("/api/activity-production", activityProductionRouter);
     console.log("Activity production router loaded successfully");
   } catch (error) {
     console.error("Error loading Activity production router:", error);
