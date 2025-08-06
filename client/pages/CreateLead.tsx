@@ -295,11 +295,8 @@ export default function CreateLead() {
 
       // Restore selected template if template_id exists
       if (resumeData.template_id) {
-        const templateIdString = resumeData.template_id.toString();
-        console.log("Restoring template from location.state:", templateIdString);
-        setSelectedTemplate(templateIdString);
+        setSelectedTemplate(resumeData.template_id.toString());
       } else {
-        console.log("No template_id in location.state, setting to manual");
         setSelectedTemplate("manual");
       }
 
