@@ -104,6 +104,12 @@ router.get("/", jsonResponse(async (req: Request, res: Response) => {
     // Set proper JSON headers
     res.setHeader('Content-Type', 'application/json');
 
+    console.log('Activity logs request received:', {
+      query: req.query,
+      url: req.url,
+      method: req.method
+    });
+
     const {
       entity_type,
       entity_id,
