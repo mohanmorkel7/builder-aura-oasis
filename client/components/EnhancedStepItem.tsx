@@ -279,9 +279,6 @@ export function EnhancedStepItem({
             {...attributes}
             {...listeners}
             className="flex-shrink-0 cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600"
-            style={
-              step.isTemplate ? { pointerEvents: "none", opacity: 0.5 } : {}
-            }
           >
             <GripVertical className="w-5 h-5" />
           </div>
