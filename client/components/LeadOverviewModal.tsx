@@ -278,7 +278,7 @@ export function LeadOverviewModal({
                   )}
                   <div>
                     <Label className="text-sm font-medium">Probability</Label>
-                    <p className="text-sm">{lead.probability || 50}%</p>
+                    <p className="text-sm">{lead.probability || 0}%</p>
                   </div>
                 </div>
               </div>

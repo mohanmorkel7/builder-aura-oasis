@@ -372,9 +372,9 @@ export default function LeadEdit() {
           }
         })(),
         priority_level: lead.priority_level || "",
-        start_date: lead.start_date ? lead.start_date.split("T")[0] : "",
+        start_date: lead.start_date ? new Date(lead.start_date + 'T00:00:00').toISOString().split('T')[0] : "",
         targeted_end_date: lead.targeted_end_date
-          ? lead.targeted_end_date.split("T")[0]
+          ? new Date(lead.targeted_end_date + 'T00:00:00').toISOString().split('T')[0]
           : "",
         expected_daily_txn_volume:
           lead.expected_daily_txn_volume?.toString() || "",
@@ -463,7 +463,7 @@ export default function LeadEdit() {
 
         priority: lead.priority || "",
         expected_close_date: lead.expected_close_date
-          ? lead.expected_close_date.split("T")[0]
+          ? new Date(lead.expected_close_date + 'T00:00:00').toISOString().split('T')[0]
           : "",
         probability: lead.probability?.toString() || "",
         notes: lead.notes || "",
