@@ -654,10 +654,13 @@ export class MockDataService {
   private static clients = [...mockClients];
   private static templates = [...mockTemplates];
   private static deployments = [...mockDeployments];
+  private static chatMessages: any[] = []; // In-memory storage for chat messages
+  private static leadSteps: any[] = []; // In-memory storage for lead steps
   private static nextUserId = 6;
   private static nextClientId = 5;
   private static nextTemplateId = 4;
   private static nextDeploymentId = 5;
+  private static nextChatId = 1;
 
   // User operations
   static async findUserByEmail(email: string) {
