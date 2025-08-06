@@ -267,9 +267,7 @@ export function EnhancedStepItem({
       ref={setNodeRef}
       style={style}
       className={`border rounded-lg ${
-        step.isTemplate
-          ? "bg-blue-50/50 border-blue-200"
-          : "bg-white"
+        step.isTemplate ? "bg-blue-50/50 border-blue-200" : "bg-white"
       } ${isDragOverlay ? "shadow-2xl" : ""}`}
     >
       <Collapsible open={isExpanded} onOpenChange={onToggleExpansion}>
@@ -299,12 +297,17 @@ export function EnhancedStepItem({
           <CollapsibleTrigger className="flex-1 flex items-center justify-between text-left">
             <div className="flex-1">
               <div className="flex items-center space-x-2">
-                <span className={`font-medium ${step.isTemplate ? 'text-blue-900' : 'text-gray-900'}`}>
+                <span
+                  className={`font-medium ${step.isTemplate ? "text-blue-900" : "text-gray-900"}`}
+                >
                   {step.name}
                 </span>
                 <div className="flex items-center space-x-2">
                   {step.isTemplate && (
-                    <Badge variant="outline" className="text-xs bg-blue-100 text-blue-700 border-blue-300">
+                    <Badge
+                      variant="outline"
+                      className="text-xs bg-blue-100 text-blue-700 border-blue-300"
+                    >
                       Template Step
                     </Badge>
                   )}
@@ -313,12 +316,14 @@ export function EnhancedStepItem({
                       {step.probability_percent}% weight
                     </Badge>
                   )}
-                  {!step.isTemplate && !chatLoading && sortedMessages.length > 0 && (
-                    <Badge variant="outline" className="text-xs">
-                      {sortedMessages.length} message
-                      {sortedMessages.length !== 1 ? "s" : ""}
-                    </Badge>
-                  )}
+                  {!step.isTemplate &&
+                    !chatLoading &&
+                    sortedMessages.length > 0 && (
+                      <Badge variant="outline" className="text-xs">
+                        {sortedMessages.length} message
+                        {sortedMessages.length !== 1 ? "s" : ""}
+                      </Badge>
+                    )}
                 </div>
               </div>
               <div className="text-sm text-gray-600 mt-1">
@@ -369,345 +374,358 @@ export function EnhancedStepItem({
 
         {!step.isTemplate && (
           <CollapsibleContent>
-          <div className="border-t bg-gray-50">
-            <div className="p-4">
-              {/* Chat Section */}
-              <Card className="border-0 shadow-lg">
-                <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 pb-4 rounded-t-lg">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle className="text-lg flex items-center gap-2">
-                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                        Team Chat
-                      </CardTitle>
-                      <CardDescription className="text-gray-600">
-                        Real-time collaboration for this step
-                      </CardDescription>
+            <div className="border-t bg-gray-50">
+              <div className="p-4">
+                {/* Chat Section */}
+                <Card className="border-0 shadow-lg">
+                  <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 pb-4 rounded-t-lg">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <CardTitle className="text-lg flex items-center gap-2">
+                          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                          Team Chat
+                        </CardTitle>
+                        <CardDescription className="text-gray-600">
+                          Real-time collaboration for this step
+                        </CardDescription>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        {sortedMessages.length > 0 && (
+                          <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
+                            {sortedMessages.length} messages
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex items-center space-x-1">
-                      {sortedMessages.length > 0 && (
-                        <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
-                          {sortedMessages.length} messages
-                        </span>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {/* Chat Messages */}
+                    <div
+                      ref={messagesContainerRef}
+                      className="space-y-3 max-h-96 overflow-y-auto"
+                    >
+                      {chatLoading && (
+                        <div className="text-center py-4 text-gray-500">
+                          Loading messages...
+                        </div>
                       )}
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {/* Chat Messages */}
-                  <div
-                    ref={messagesContainerRef}
-                    className="space-y-3 max-h-96 overflow-y-auto"
-                  >
-                    {chatLoading && (
-                      <div className="text-center py-4 text-gray-500">
-                        Loading messages...
-                      </div>
-                    )}
-                    {chatError && (
-                      <div className="text-center py-4 text-red-500">
-                        Error loading messages: {chatError.message}
-                      </div>
-                    )}
-                    {!chatLoading &&
-                      !chatError &&
-                      sortedMessages.map((message) => (
-                        <div
-                          key={message.id}
-                          className={`flex space-x-3 p-3 rounded border ${
-                            message.message_type === "system"
-                              ? "bg-blue-50 border-blue-200"
-                              : message.user_id === parseInt(user.id)
-                                ? "bg-green-50 border-green-200"
-                                : "bg-white"
-                          }`}
-                        >
+                      {chatError && (
+                        <div className="text-center py-4 text-red-500">
+                          Error loading messages: {chatError.message}
+                        </div>
+                      )}
+                      {!chatLoading &&
+                        !chatError &&
+                        sortedMessages.map((message) => (
                           <div
-                            className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium ${
+                            key={message.id}
+                            className={`flex space-x-3 p-3 rounded border ${
                               message.message_type === "system"
-                                ? "bg-orange-500"
-                                : "bg-blue-500"
+                                ? "bg-blue-50 border-blue-200"
+                                : message.user_id === parseInt(user.id)
+                                  ? "bg-green-50 border-green-200"
+                                  : "bg-white"
                             }`}
                           >
-                            {message.message_type === "system"
-                              ? "���"
-                              : message.user_name.charAt(0)}
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center justify-between mb-1">
-                              <span className="text-sm font-medium text-gray-900">
-                                {message.user_id === parseInt(user.id)
-                                  ? "Me"
-                                  : message.user_name}
-                              </span>
-                              <div className="flex items-center space-x-2">
-                                <span className="text-xs text-gray-500">
-                                  {formatToISTDateTime(message.created_at)}
+                            <div
+                              className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium ${
+                                message.message_type === "system"
+                                  ? "bg-orange-500"
+                                  : "bg-blue-500"
+                              }`}
+                            >
+                              {message.message_type === "system"
+                                ? "���"
+                                : message.user_name.charAt(0)}
+                            </div>
+                            <div className="flex-1">
+                              <div className="flex items-center justify-between mb-1">
+                                <span className="text-sm font-medium text-gray-900">
+                                  {message.user_id === parseInt(user.id)
+                                    ? "Me"
+                                    : message.user_name}
                                 </span>
-                                {message.message_type !== "system" && (
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    onClick={() => handleFollowUp(message.id)}
-                                    className="text-blue-600 hover:text-blue-700"
-                                  >
-                                    <Reply className="w-3 h-3 mr-1" />
-                                    Follow-up
-                                  </Button>
-                                )}
-                              </div>
-                            </div>
-                            <div className="text-sm text-gray-700">
-                              {message.is_rich_text ? (
-                                <div
-                                  dangerouslySetInnerHTML={{
-                                    __html: processMessageContent(
-                                      message.message,
-                                    ),
-                                  }}
-                                />
-                              ) : (
-                                <div
-                                  dangerouslySetInnerHTML={{
-                                    __html: processMessageContent(
-                                      message.message,
-                                    ),
-                                  }}
-                                />
-                              )}
-                            </div>
-                            {message.attachments &&
-                              message.attachments.length > 0 && (
-                                <div className="mt-3 space-y-2">
-                                  {message.attachments.map(
-                                    (attachment, index) => (
-                                      <div
-                                        key={index}
-                                        className="flex items-center space-x-3 p-2 bg-gray-50 rounded-lg border"
-                                      >
-                                        <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                                          <Paperclip className="w-4 h-4 text-blue-600" />
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                          <p className="text-sm font-medium text-gray-900 truncate">
-                                            {attachment.file_name}
-                                          </p>
-                                          <p className="text-xs text-gray-500">
-                                            {formatFileSize(
-                                              attachment.file_size,
-                                            )}
-                                          </p>
-                                        </div>
-                                        <Button
-                                          size="sm"
-                                          variant="outline"
-                                          className="h-8 px-3 text-xs"
-                                          onClick={async () => {
-                                            try {
-                                              const fileToDownload =
-                                                attachment.server_filename ||
-                                                attachment.file_name;
-                                              console.log(
-                                                `Attempting to download: ${fileToDownload}`,
-                                              );
-
-                                              // First try the API endpoint
-                                              const response = await fetch(
-                                                `/api/files/download/${fileToDownload}`,
-                                              );
-
-                                              if (response.ok) {
-                                                const blob =
-                                                  await response.blob();
-                                                const url =
-                                                  window.URL.createObjectURL(
-                                                    blob,
-                                                  );
-                                                const link =
-                                                  document.createElement("a");
-                                                link.href = url;
-                                                link.download =
-                                                  attachment.file_name; // Use original name for download
-                                                document.body.appendChild(link);
-                                                link.click();
-                                                document.body.removeChild(link);
-                                                window.URL.revokeObjectURL(url);
-                                                console.log(
-                                                  `Successfully downloaded: ${attachment.file_name}`,
-                                                );
-                                                return;
-                                              }
-
-                                              // If API fails, try direct file access
-                                              console.log(
-                                                `API download failed (${response.status}), trying direct access...`,
-                                              );
-
-                                              const directResponse =
-                                                await fetch(
-                                                  `/uploads/${fileToDownload}`,
-                                                );
-                                              if (directResponse.ok) {
-                                                const blob =
-                                                  await directResponse.blob();
-                                                const url =
-                                                  window.URL.createObjectURL(
-                                                    blob,
-                                                  );
-                                                const link =
-                                                  document.createElement("a");
-                                                link.href = url;
-                                                link.download =
-                                                  attachment.file_name; // Use original name for download
-                                                document.body.appendChild(link);
-                                                link.click();
-                                                document.body.removeChild(link);
-                                                window.URL.revokeObjectURL(url);
-                                                console.log(
-                                                  `Successfully downloaded via direct access: ${attachment.file_name}`,
-                                                );
-                                                return;
-                                              }
-
-                                              // If both fail, show user-friendly error
-                                              throw new Error(
-                                                `File '${attachment.file_name}' not found on server`,
-                                              );
-                                            } catch (error) {
-                                              console.error(
-                                                "Download failed:",
-                                                error,
-                                              );
-
-                                              // Show user-friendly error message
-                                              alert(
-                                                `Download failed: ${error.message || "File not found"}\n\nThe file may have been moved or deleted.`,
-                                              );
-
-                                              // As a last resort, try to open the file in a new tab
-                                              const fallbackLink =
-                                                document.createElement("a");
-                                              fallbackLink.href = `/uploads/${fileToDownload}`;
-                                              fallbackLink.target = "_blank";
-                                              fallbackLink.click();
-                                            }
-                                          }}
-                                        >
-                                          <Download className="w-3 h-3 mr-1" />
-                                          Download
-                                        </Button>
-                                      </div>
-                                    ),
+                                <div className="flex items-center space-x-2">
+                                  <span className="text-xs text-gray-500">
+                                    {formatToISTDateTime(message.created_at)}
+                                  </span>
+                                  {message.message_type !== "system" && (
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      onClick={() => handleFollowUp(message.id)}
+                                      className="text-blue-600 hover:text-blue-700"
+                                    >
+                                      <Reply className="w-3 h-3 mr-1" />
+                                      Follow-up
+                                    </Button>
                                   )}
                                 </div>
-                              )}
+                              </div>
+                              <div className="text-sm text-gray-700">
+                                {message.is_rich_text ? (
+                                  <div
+                                    dangerouslySetInnerHTML={{
+                                      __html: processMessageContent(
+                                        message.message,
+                                      ),
+                                    }}
+                                  />
+                                ) : (
+                                  <div
+                                    dangerouslySetInnerHTML={{
+                                      __html: processMessageContent(
+                                        message.message,
+                                      ),
+                                    }}
+                                  />
+                                )}
+                              </div>
+                              {message.attachments &&
+                                message.attachments.length > 0 && (
+                                  <div className="mt-3 space-y-2">
+                                    {message.attachments.map(
+                                      (attachment, index) => (
+                                        <div
+                                          key={index}
+                                          className="flex items-center space-x-3 p-2 bg-gray-50 rounded-lg border"
+                                        >
+                                          <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                            <Paperclip className="w-4 h-4 text-blue-600" />
+                                          </div>
+                                          <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-medium text-gray-900 truncate">
+                                              {attachment.file_name}
+                                            </p>
+                                            <p className="text-xs text-gray-500">
+                                              {formatFileSize(
+                                                attachment.file_size,
+                                              )}
+                                            </p>
+                                          </div>
+                                          <Button
+                                            size="sm"
+                                            variant="outline"
+                                            className="h-8 px-3 text-xs"
+                                            onClick={async () => {
+                                              try {
+                                                const fileToDownload =
+                                                  attachment.server_filename ||
+                                                  attachment.file_name;
+                                                console.log(
+                                                  `Attempting to download: ${fileToDownload}`,
+                                                );
+
+                                                // First try the API endpoint
+                                                const response = await fetch(
+                                                  `/api/files/download/${fileToDownload}`,
+                                                );
+
+                                                if (response.ok) {
+                                                  const blob =
+                                                    await response.blob();
+                                                  const url =
+                                                    window.URL.createObjectURL(
+                                                      blob,
+                                                    );
+                                                  const link =
+                                                    document.createElement("a");
+                                                  link.href = url;
+                                                  link.download =
+                                                    attachment.file_name; // Use original name for download
+                                                  document.body.appendChild(
+                                                    link,
+                                                  );
+                                                  link.click();
+                                                  document.body.removeChild(
+                                                    link,
+                                                  );
+                                                  window.URL.revokeObjectURL(
+                                                    url,
+                                                  );
+                                                  console.log(
+                                                    `Successfully downloaded: ${attachment.file_name}`,
+                                                  );
+                                                  return;
+                                                }
+
+                                                // If API fails, try direct file access
+                                                console.log(
+                                                  `API download failed (${response.status}), trying direct access...`,
+                                                );
+
+                                                const directResponse =
+                                                  await fetch(
+                                                    `/uploads/${fileToDownload}`,
+                                                  );
+                                                if (directResponse.ok) {
+                                                  const blob =
+                                                    await directResponse.blob();
+                                                  const url =
+                                                    window.URL.createObjectURL(
+                                                      blob,
+                                                    );
+                                                  const link =
+                                                    document.createElement("a");
+                                                  link.href = url;
+                                                  link.download =
+                                                    attachment.file_name; // Use original name for download
+                                                  document.body.appendChild(
+                                                    link,
+                                                  );
+                                                  link.click();
+                                                  document.body.removeChild(
+                                                    link,
+                                                  );
+                                                  window.URL.revokeObjectURL(
+                                                    url,
+                                                  );
+                                                  console.log(
+                                                    `Successfully downloaded via direct access: ${attachment.file_name}`,
+                                                  );
+                                                  return;
+                                                }
+
+                                                // If both fail, show user-friendly error
+                                                throw new Error(
+                                                  `File '${attachment.file_name}' not found on server`,
+                                                );
+                                              } catch (error) {
+                                                console.error(
+                                                  "Download failed:",
+                                                  error,
+                                                );
+
+                                                // Show user-friendly error message
+                                                alert(
+                                                  `Download failed: ${error.message || "File not found"}\n\nThe file may have been moved or deleted.`,
+                                                );
+
+                                                // As a last resort, try to open the file in a new tab
+                                                const fallbackLink =
+                                                  document.createElement("a");
+                                                fallbackLink.href = `/uploads/${fileToDownload}`;
+                                                fallbackLink.target = "_blank";
+                                                fallbackLink.click();
+                                              }
+                                            }}
+                                          >
+                                            <Download className="w-3 h-3 mr-1" />
+                                            Download
+                                          </Button>
+                                        </div>
+                                      ),
+                                    )}
+                                  </div>
+                                )}
+                            </div>
+                          </div>
+                        ))}
+                      {!chatLoading &&
+                        !chatError &&
+                        sortedMessages.length === 0 && (
+                          <p className="text-sm text-gray-500 text-center py-8">
+                            No messages yet. Start the conversation!
+                          </p>
+                        )}
+                    </div>
+
+                    {/* Rich Text Editor */}
+                    <div className="border-t bg-white p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center space-x-2">
+                          <span className="text-sm text-gray-700 font-medium">
+                            💬 Compose Message
+                          </span>
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            className="hidden"
+                            onChange={handleFileUpload}
+                            multiple
+                          />
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => fileInputRef.current?.click()}
+                            title="Upload documents"
+                            className="h-8 px-3 text-xs"
+                          >
+                            <Upload className="w-3 h-3 mr-1" />
+                            Attach
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* Staged Attachments Display */}
+                      {stagedAttachments.length > 0 && (
+                        <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                          <div className="text-sm font-medium text-blue-800 mb-2">
+                            Files ready to send:
+                          </div>
+                          <div className="space-y-2">
+                            {stagedAttachments.map((attachment, index) => (
+                              <div
+                                key={index}
+                                className="flex items-center justify-between p-2 bg-white border rounded"
+                              >
+                                <div className="flex items-center space-x-2">
+                                  <div className="w-6 h-6 bg-blue-100 rounded flex items-center justify-center">
+                                    📎
+                                  </div>
+                                  <span className="text-sm text-gray-700">
+                                    {attachment.file_name}
+                                  </span>
+                                  <span className="text-xs text-gray-500">
+                                    ({Math.round(attachment.file_size / 1024)}{" "}
+                                    KB)
+                                  </span>
+                                </div>
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => removeStagedAttachment(index)}
+                                  className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                                >
+                                  <X className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            ))}
                           </div>
                         </div>
-                      ))}
-                    {!chatLoading &&
-                      !chatError &&
-                      sortedMessages.length === 0 && (
-                        <p className="text-sm text-gray-500 text-center py-8">
-                          No messages yet. Start the conversation!
-                        </p>
                       )}
-                  </div>
 
-                  {/* Rich Text Editor */}
-                  <div className="border-t bg-white p-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm text-gray-700 font-medium">
-                          💬 Compose Message
-                        </span>
-                        <input
-                          ref={fileInputRef}
-                          type="file"
-                          className="hidden"
-                          onChange={handleFileUpload}
-                          multiple
+                      <div className="mb-3">
+                        <RichTextEditor
+                          value={newMessage}
+                          onChange={setNewMessage}
+                          placeholder="Type your message with rich formatting..."
+                          className="min-h-[80px] border-gray-200"
                         />
+                      </div>
+
+                      <div className="flex justify-between items-center">
+                        <div className="text-xs text-gray-500">
+                          Press Ctrl+Enter to send
+                        </div>
                         <Button
                           size="sm"
-                          variant="outline"
-                          onClick={() => fileInputRef.current?.click()}
-                          title="Upload documents"
-                          className="h-8 px-3 text-xs"
+                          onClick={handleSendMessage}
+                          disabled={
+                            !newMessage.trim() && stagedAttachments.length === 0
+                          }
+                          className="bg-blue-500 hover:bg-blue-600 text-white px-4"
                         >
-                          <Upload className="w-3 h-3 mr-1" />
-                          Attach
+                          <Send className="w-4 h-4 mr-2" />
+                          Send Message
                         </Button>
                       </div>
                     </div>
-
-                    {/* Staged Attachments Display */}
-                    {stagedAttachments.length > 0 && (
-                      <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                        <div className="text-sm font-medium text-blue-800 mb-2">
-                          Files ready to send:
-                        </div>
-                        <div className="space-y-2">
-                          {stagedAttachments.map((attachment, index) => (
-                            <div
-                              key={index}
-                              className="flex items-center justify-between p-2 bg-white border rounded"
-                            >
-                              <div className="flex items-center space-x-2">
-                                <div className="w-6 h-6 bg-blue-100 rounded flex items-center justify-center">
-                                  📎
-                                </div>
-                                <span className="text-sm text-gray-700">
-                                  {attachment.file_name}
-                                </span>
-                                <span className="text-xs text-gray-500">
-                                  ({Math.round(attachment.file_size / 1024)} KB)
-                                </span>
-                              </div>
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => removeStagedAttachment(index)}
-                                className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
-                              >
-                                <X className="h-3 w-3" />
-                              </Button>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="mb-3">
-                      <RichTextEditor
-                        value={newMessage}
-                        onChange={setNewMessage}
-                        placeholder="Type your message with rich formatting..."
-                        className="min-h-[80px] border-gray-200"
-                      />
-                    </div>
-
-                    <div className="flex justify-between items-center">
-                      <div className="text-xs text-gray-500">
-                        Press Ctrl+Enter to send
-                      </div>
-                      <Button
-                        size="sm"
-                        onClick={handleSendMessage}
-                        disabled={
-                          !newMessage.trim() && stagedAttachments.length === 0
-                        }
-                        className="bg-blue-500 hover:bg-blue-600 text-white px-4"
-                      >
-                        <Send className="w-4 h-4 mr-2" />
-                        Send Message
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
-          </div>
           </CollapsibleContent>
         )}
       </Collapsible>
