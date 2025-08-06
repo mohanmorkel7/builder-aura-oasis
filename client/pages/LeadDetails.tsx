@@ -502,7 +502,7 @@ export default function LeadDetails() {
                         Probability:
                       </span>
                       <span className="text-gray-900">
-                        {leadData.probability || 50}%
+                        {leadData.probability || 0}%
                       </span>
                     </div>
                   </div>
