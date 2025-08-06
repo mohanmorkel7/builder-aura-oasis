@@ -1196,10 +1196,34 @@ export default function CreateLead() {
         <TabsContent value="commercials" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Commercials Configuration</CardTitle>
-              <CardDescription>
-                Configure flat fees and transaction-based pricing for this lead
-              </CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Commercials Configuration</CardTitle>
+                  <CardDescription>
+                    Configure flat fees and transaction-based pricing for this lead
+                  </CardDescription>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Label htmlFor="billing_currency" className="text-sm font-medium">
+                    Billing Currency:
+                  </Label>
+                  <Select
+                    value={leadData.billing_currency}
+                    onValueChange={(value: "INR" | "USD" | "AED") =>
+                      updateField("billing_currency", value)
+                    }
+                  >
+                    <SelectTrigger className="w-40">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="INR">INR (₹)</SelectItem>
+                      <SelectItem value="USD">USD ($)</SelectItem>
+                      <SelectItem value="AED">AED (د.إ)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
               <Accordion type="single" collapsible className="w-full">
