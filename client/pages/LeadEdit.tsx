@@ -310,23 +310,32 @@ export default function LeadEdit() {
         // Commercials
         billing_currency: lead.billing_currency || "INR",
         flat_fee_config: (() => {
-          try {
-            return lead.flat_fee_config && lead.flat_fee_config.trim() !== ""
-              ? JSON.parse(lead.flat_fee_config)
-              : [];
-          } catch {
-            return [];
+          // Handle both string and already-parsed array cases
+          if (Array.isArray(lead.flat_fee_config)) {
+            return lead.flat_fee_config;
           }
+          if (typeof lead.flat_fee_config === 'string' && lead.flat_fee_config.trim() !== "") {
+            try {
+              return JSON.parse(lead.flat_fee_config);
+            } catch {
+              return [];
+            }
+          }
+          return [];
         })(),
         transaction_fee_config: (() => {
-          try {
-            return lead.transaction_fee_config &&
-              lead.transaction_fee_config.trim() !== ""
-              ? JSON.parse(lead.transaction_fee_config)
-              : [];
-          } catch {
-            return [];
+          // Handle both string and already-parsed array cases
+          if (Array.isArray(lead.transaction_fee_config)) {
+            return lead.transaction_fee_config;
           }
+          if (typeof lead.transaction_fee_config === 'string' && lead.transaction_fee_config.trim() !== "") {
+            try {
+              return JSON.parse(lead.transaction_fee_config);
+            } catch {
+              return [];
+            }
+          }
+          return [];
         })(),
 
         // Contacts
