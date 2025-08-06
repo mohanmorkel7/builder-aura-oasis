@@ -106,6 +106,8 @@ export default function PartialSaves({
         start_date: partialSave.start_date || originalData.start_date,
         targeted_end_date:
           partialSave.targeted_end_date || originalData.targeted_end_date,
+        expected_close_date:
+          partialSave.expected_close_date || originalData.expected_close_date,
         expected_daily_txn_volume:
           partialSave.expected_daily_txn_volume ||
           originalData.expected_daily_txn_volume,
