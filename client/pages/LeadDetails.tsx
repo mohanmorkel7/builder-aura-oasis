@@ -804,7 +804,7 @@ export default function LeadDetails() {
                   templateSteps: templateData?.steps,
                   templateStepsLength: templateData?.steps?.length,
                   stepsLoading,
-                  templateLoading
+                  templateLoading,
                 });
 
                 // Create combined steps array with template steps first, then lead steps
