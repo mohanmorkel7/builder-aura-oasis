@@ -358,8 +358,13 @@ export class LeadRepository {
     }
 
     if (isPartialSavesOnly) {
+      // Add JSON validation to prevent parsing errors
       whereConditions.push(
-        `l.notes::jsonb ? 'isPartialSave' AND (l.notes::jsonb->>'isPartialSave')::boolean = true`,
+        `l.notes IS NOT NULL AND
+         l.notes != '' AND
+         l.notes ~ '^\\s*[{[]' AND
+         (l.notes::jsonb ? 'isPartialSave') AND
+         (l.notes::jsonb->>'isPartialSave')::boolean = true`,
       );
     }
 
