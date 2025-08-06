@@ -62,6 +62,7 @@ export default function PartialSaves({ onResumePartialSave }: PartialSavesProps)
         project_title: partialSave.project_title === 'Partial Save - In Progress' ? '' : partialSave.project_title,
         project_description: partialSave.project_description,
         // Include the partial save metadata
+        id: partialSave.id, // This is the key field that CreateLead looks for
         _resumeFromId: partialSave.id,
         _lastSaved: notes.lastSaved,
         _completedTabs: notes.completedTabs,
