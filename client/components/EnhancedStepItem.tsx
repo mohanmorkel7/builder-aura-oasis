@@ -208,11 +208,7 @@ export function EnhancedStepItem({
   };
 
   const handleSendMessage = async () => {
-    if (
-      (!newMessage.trim() && stagedAttachments.length === 0) ||
-      !user
-    )
-      return;
+    if ((!newMessage.trim() && stagedAttachments.length === 0) || !user) return;
 
     const messageText = newMessage.trim() || "📎 File attachment";
 
@@ -516,16 +512,10 @@ export function EnhancedStepItem({
                                                 link.href = url;
                                                 link.download =
                                                   attachment.file_name; // Use original name for download
-                                                document.body.appendChild(
-                                                  link,
-                                                );
+                                                document.body.appendChild(link);
                                                 link.click();
-                                                document.body.removeChild(
-                                                  link,
-                                                );
-                                                window.URL.revokeObjectURL(
-                                                  url,
-                                                );
+                                                document.body.removeChild(link);
+                                                window.URL.revokeObjectURL(url);
                                                 console.log(
                                                   `Successfully downloaded: ${attachment.file_name}`,
                                                 );
@@ -553,16 +543,10 @@ export function EnhancedStepItem({
                                                 link.href = url;
                                                 link.download =
                                                   attachment.file_name; // Use original name for download
-                                                document.body.appendChild(
-                                                  link,
-                                                );
+                                                document.body.appendChild(link);
                                                 link.click();
-                                                document.body.removeChild(
-                                                  link,
-                                                );
-                                                window.URL.revokeObjectURL(
-                                                  url,
-                                                );
+                                                document.body.removeChild(link);
+                                                window.URL.revokeObjectURL(url);
                                                 console.log(
                                                   `Successfully downloaded via direct access: ${attachment.file_name}`,
                                                 );
@@ -660,8 +644,7 @@ export function EnhancedStepItem({
                                   {attachment.file_name}
                                 </span>
                                 <span className="text-xs text-gray-500">
-                                  ({Math.round(attachment.file_size / 1024)}{" "}
-                                  KB)
+                                  ({Math.round(attachment.file_size / 1024)} KB)
                                 </span>
                               </div>
                               <Button
