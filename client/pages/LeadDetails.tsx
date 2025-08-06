@@ -725,26 +725,28 @@ export default function LeadDetails() {
 
                 // Add template steps as template-flagged steps
                 if (templateData?.steps && templateData.steps.length > 0) {
-                  templateData.steps.forEach((templateStep: any, index: number) => {
-                    allSteps.push({
-                      ...templateStep,
-                      id: `template-${templateStep.id}`,
-                      isTemplate: true,
-                      step_order: index + 1,
-                      lead_id: leadId,
-                      status: 'pending',
-                      completed_at: null,
-                      notes: '',
-                      due_date: null
-                    });
-                  });
+                  templateData.steps.forEach(
+                    (templateStep: any, index: number) => {
+                      allSteps.push({
+                        ...templateStep,
+                        id: `template-${templateStep.id}`,
+                        isTemplate: true,
+                        step_order: index + 1,
+                        lead_id: leadId,
+                        status: "pending",
+                        completed_at: null,
+                        notes: "",
+                        due_date: null,
+                      });
+                    },
+                  );
                 }
 
                 // Add actual lead steps after template steps
                 leadSteps.forEach((leadStep: any) => {
                   allSteps.push({
                     ...leadStep,
-                    isTemplate: false
+                    isTemplate: false,
                   });
                 });
 
@@ -757,7 +759,8 @@ export default function LeadDetails() {
                         No pipeline steps yet
                       </h3>
                       <p className="text-gray-600 mb-4">
-                        Create custom steps to track your sales process for this lead
+                        Create custom steps to track your sales process for this
+                        lead
                       </p>
                       <Button onClick={() => setNewStepDialog(true)}>
                         <Plus className="w-4 h-4 mr-2" />
