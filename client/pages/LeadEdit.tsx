@@ -407,19 +407,19 @@ export default function LeadEdit() {
       });
 
       // Restore selected template if template_id exists
-      console.log('Template loading debug:', {
+      console.log("Template loading debug:", {
         template_id: lead.template_id,
         template_id_type: typeof lead.template_id,
         template_id_string: lead.template_id?.toString(),
-        available_templates: templates.map(t => ({id: t.id, name: t.name}))
+        available_templates: templates.map((t) => ({ id: t.id, name: t.name })),
       });
 
       if (lead.template_id && lead.template_id !== null) {
         const templateIdString = lead.template_id.toString();
-        console.log('Setting selectedTemplate to:', templateIdString);
+        console.log("Setting selectedTemplate to:", templateIdString);
         setSelectedTemplate(templateIdString);
       } else {
-        console.log('No template_id found, setting to manual');
+        console.log("No template_id found, setting to manual");
         setSelectedTemplate("manual");
       }
     }
@@ -1143,7 +1143,7 @@ export default function LeadEdit() {
                     <Select
                       value={selectedTemplate}
                       onValueChange={(value) => {
-                        console.log('Template selection changed to:', value);
+                        console.log("Template selection changed to:", value);
                         setSelectedTemplate(value);
                       }}
                     >
