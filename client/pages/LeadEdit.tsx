@@ -350,7 +350,8 @@ export default function LeadEdit() {
       setLeadData({
         lead_source: lead.lead_source || "",
         lead_source_value: lead.lead_source_value || "",
-        lead_created_by: lead.lead_created_by || (lead as any).creator_name || "",
+        lead_created_by:
+          lead.lead_created_by || (lead as any).creator_name || "",
         status: lead.status || "",
         project_title: lead.project_title || "",
         project_description: lead.project_description || "",
@@ -378,19 +379,23 @@ export default function LeadEdit() {
         expected_daily_txn_volume:
           lead.expected_daily_txn_volume?.toString() || "",
         expected_daily_txn_volume_year1:
-          lead.expected_daily_txn_volume_year1 !== null && lead.expected_daily_txn_volume_year1 !== undefined
+          lead.expected_daily_txn_volume_year1 !== null &&
+          lead.expected_daily_txn_volume_year1 !== undefined
             ? lead.expected_daily_txn_volume_year1.toString()
             : "",
         expected_daily_txn_volume_year2:
-          lead.expected_daily_txn_volume_year2 !== null && lead.expected_daily_txn_volume_year2 !== undefined
+          lead.expected_daily_txn_volume_year2 !== null &&
+          lead.expected_daily_txn_volume_year2 !== undefined
             ? lead.expected_daily_txn_volume_year2.toString()
             : "",
         expected_daily_txn_volume_year3:
-          lead.expected_daily_txn_volume_year3 !== null && lead.expected_daily_txn_volume_year3 !== undefined
+          lead.expected_daily_txn_volume_year3 !== null &&
+          lead.expected_daily_txn_volume_year3 !== undefined
             ? lead.expected_daily_txn_volume_year3.toString()
             : "",
         expected_daily_txn_volume_year5:
-          lead.expected_daily_txn_volume_year5 !== null && lead.expected_daily_txn_volume_year5 !== undefined
+          lead.expected_daily_txn_volume_year5 !== null &&
+          lead.expected_daily_txn_volume_year5 !== undefined
             ? lead.expected_daily_txn_volume_year5.toString()
             : "",
         spoc: lead.spoc || "",
@@ -471,7 +476,6 @@ export default function LeadEdit() {
       } else {
         setSelectedTemplate("manual");
       }
-
     }
   }, [originalLead]);
 
