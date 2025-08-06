@@ -189,6 +189,7 @@ export default function CreateLead() {
     // Lead Source
     lead_source: "",
     lead_source_value: "", // Dynamic field based on lead source selection
+    lead_created_by: user?.email || "", // Capture login email, editable
 
     // Project Information
     project_title: "",
