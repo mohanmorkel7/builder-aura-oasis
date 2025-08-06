@@ -266,18 +266,24 @@ export function EnhancedStepItem({
     <div
       ref={setNodeRef}
       style={style}
-      className={`border rounded-lg bg-white ${isDragOverlay ? "shadow-2xl" : ""}`}
+      className={`border rounded-lg ${
+        step.isTemplate
+          ? "bg-blue-50/50 border-blue-200"
+          : "bg-white"
+      } ${isDragOverlay ? "shadow-2xl" : ""}`}
     >
       <Collapsible open={isExpanded} onOpenChange={onToggleExpansion}>
         <div className="flex items-center space-x-4 p-4">
-          {/* Drag Handle */}
-          <div
-            {...attributes}
-            {...listeners}
-            className="flex-shrink-0 cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600"
-          >
-            <GripVertical className="w-5 h-5" />
-          </div>
+          {/* Drag Handle - hidden for template steps */}
+          {!step.isTemplate && (
+            <div
+              {...attributes}
+              {...listeners}
+              className="flex-shrink-0 cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600"
+            >
+              <GripVertical className="w-5 h-5" />
+            </div>
+          )}
 
           {/* Status Icon */}
           <div className="flex-shrink-0">
