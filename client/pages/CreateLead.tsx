@@ -259,6 +259,7 @@ export default function CreateLead() {
     }>,
 
     // Additional Information
+    expected_close_date: "",
     probability: "0",
     notes: "",
   });
