@@ -737,9 +737,11 @@ export default function LeadDashboard() {
                                   dateValue.includes("T")
                                 ) {
                                   // ISO format, convert to YYYY-MM-DD
-                                  return new Date(dateValue)
+                                  const formatted = new Date(dateValue)
                                     .toISOString()
                                     .split("T")[0];
+                                  console.log(`Date conversion: ${dateValue} → ${formatted}`);
+                                  return formatted;
                                 }
                                 return dateValue; // Already in correct format
                               };
