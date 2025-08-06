@@ -960,21 +960,10 @@ router.put("/steps/:id", async (req: Request, res: Response) => {
         }
         res.json(step);
       } else {
-        const mockStep = {
-          id: id,
-          lead_id: 1,
-          name: stepData.name || "Mock Step",
-          description: stepData.description || null,
-          status: stepData.status || "pending",
-          step_order: stepData.step_order || 1,
-          due_date: stepData.due_date || null,
-          completed_date: stepData.completed_date || null,
-          estimated_days: stepData.estimated_days || 1,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        };
+        const mockStep = await MockDataService.updateLeadStep(id, stepData);
         console.log(
-          "Database unavailable, returning mock step update response",
+          "Database unavailable, returning mock step update response:",
+          mockStep,
         );
         res.json(mockStep);
       }
