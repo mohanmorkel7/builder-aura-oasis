@@ -278,7 +278,7 @@ export default function LeadDetails() {
               </Badge>
             </div>
             <p className="text-gray-600 mt-1">
-              Lead Details & {templateData?.name ? `${templateData.name} Pipeline` : 'Custom Sales Pipeline'}
+              Lead Details & {templateLoading ? 'Loading...' : (templateData?.name ? `${templateData.name} Pipeline` : 'Custom Sales Pipeline')}
             </p>
             {/* Enhanced Progress Bar */}
             <div className="mt-3">
