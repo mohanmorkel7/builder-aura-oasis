@@ -750,36 +750,97 @@ export default function LeadDetails() {
               </div>
             </CardHeader>
             <CardContent>
-              {leadSteps.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
-                  <Target className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    No pipeline steps yet
-                  </h3>
-                  <p className="text-gray-600 mb-4">
-                    {templateData?.steps && templateData.steps.length > 0
-                      ? `Initialize your pipeline with ${templateData.steps.length} steps from the ${templateData.name} template, or create custom steps.`
-                      : "Create custom steps to track your sales process for this lead"
-                    }
-                  </p>
-                  <div className="flex flex-col sm:flex-row gap-2 justify-center">
-                    {templateData?.steps && templateData.steps.length > 0 && (
-                      <Button
-                        onClick={handleCopyTemplateSteps}
-                        className="bg-blue-600 hover:bg-blue-700"
-                      >
-                        <Plus className="w-4 h-4 mr-2" />
-                        Copy Template Steps ({templateData.steps.length})
-                      </Button>
-                    )}
+              {/* Show template steps if template is assigned, otherwise show lead steps or empty state */}
+              {templateData?.steps && templateData.steps.length > 0 ? (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline" className="bg-blue-50 text-blue-700">
+                        Template Steps
+                      </Badge>
+                      <span className="text-sm text-gray-600">
+                        Following {templateData.name} template
+                      </span>
+                    </div>
                     <Button
                       variant="outline"
+                      size="sm"
                       onClick={() => setNewStepDialog(true)}
                     >
                       <Plus className="w-4 h-4 mr-2" />
                       Add Custom Step
                     </Button>
                   </div>
+
+                  {/* Display template steps */}
+                  <div className="space-y-3">
+                    {templateData.steps.map((step: any, index: number) => (
+                      <div
+                        key={step.id}
+                        className="bg-blue-50/50 border border-blue-200 rounded-lg p-4"
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Badge variant="secondary" className="text-xs">
+                                Step {index + 1}
+                              </Badge>
+                              <Badge variant="outline" className="text-xs">
+                                {step.probability_percent || 0}% completion
+                              </Badge>
+                            </div>
+                            <h4 className="font-medium text-gray-900 mb-1">
+                              {step.name}
+                            </h4>
+                            <p className="text-sm text-gray-600 mb-2">
+                              {step.description}
+                            </p>
+                            {step.estimated_days && (
+                              <div className="text-xs text-gray-500">
+                                Estimated: {step.estimated_days} days
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Show any additional lead-specific steps */}
+                  {leadSteps.length > 0 && (
+                    <div className="mt-6">
+                      <div className="flex items-center gap-2 mb-4">
+                        <Badge variant="outline" className="bg-green-50 text-green-700">
+                          Custom Steps
+                        </Badge>
+                        <span className="text-sm text-gray-600">
+                          Lead-specific additions
+                        </span>
+                      </div>
+                      <DraggableStepsList
+                        leadId={leadId}
+                        steps={leadSteps}
+                        expandedSteps={expandedSteps}
+                        onToggleExpansion={handleToggleExpansion}
+                        onDeleteStep={handleDeleteStep}
+                        onReorderSteps={handleReorderSteps}
+                      />
+                    </div>
+                  )}
+                </div>
+              ) : leadSteps.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  <Target className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    No pipeline steps yet
+                  </h3>
+                  <p className="text-gray-600 mb-4">
+                    Create custom steps to track your sales process for this lead
+                  </p>
+                  <Button onClick={() => setNewStepDialog(true)}>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add First Step
+                  </Button>
                 </div>
               ) : (
                 <DraggableStepsList
