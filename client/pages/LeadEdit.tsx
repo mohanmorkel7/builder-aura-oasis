@@ -268,17 +268,18 @@ export default function LeadEdit() {
 
         // Enhanced Project Info
         solutions: (() => {
-          try {
-            if (
-              typeof lead.solutions === "string" &&
-              lead.solutions.trim() !== ""
-            ) {
-              return JSON.parse(lead.solutions);
-            }
-            return Array.isArray(lead.solutions) ? lead.solutions : [];
-          } catch {
-            return [];
+          // Handle both string and already-parsed array cases
+          if (Array.isArray(lead.solutions)) {
+            return lead.solutions;
           }
+          if (typeof lead.solutions === "string" && lead.solutions.trim() !== "") {
+            try {
+              return JSON.parse(lead.solutions);
+            } catch {
+              return [];
+            }
+          }
+          return [];
         })(),
         priority_level: lead.priority_level || "",
         start_date: formatDateSafely(lead.start_date),
