@@ -118,17 +118,9 @@ export default function LeadDashboard() {
   // Refresh partial saves when component mounts
   useEffect(() => {
     if (userId) {
-      console.log("Refreshing partial saves for user:", userId);
       refetchPartialSaves();
     }
   }, [userId, refetchPartialSaves]);
-
-  // Debug partial saves data
-  useEffect(() => {
-    console.log("LeadDashboard - partialSaves:", partialSaves);
-    console.log("LeadDashboard - partialSaves.length:", partialSaves.length);
-    console.log("LeadDashboard - userId:", userId);
-  }, [partialSaves, userId]);
 
   const handleCreateLead = () => {
     navigate("/leads/new");
