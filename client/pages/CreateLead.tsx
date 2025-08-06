@@ -718,6 +718,11 @@ export default function CreateLead() {
       setTimeout(() => setIsPartialSaved(false), 2000);
     } catch (error) {
       console.error("Error saving partial data:", error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to save draft';
+      setSaveError(errorMessage);
+
+      // Clear error after 5 seconds
+      setTimeout(() => setSaveError(null), 5000);
     } finally {
       setSaving(false);
     }
