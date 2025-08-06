@@ -642,6 +642,12 @@ export default function CreateLead() {
         draftId,
         hasSavedDraftInSession,
         clientName: leadData.client_name,
+        // Debug current date values in leadData
+        currentDates: {
+          start_date: leadData.start_date,
+          targeted_end_date: leadData.targeted_end_date,
+          expected_close_date: leadData.expected_close_date,
+        },
       });
 
       // Clean form data - convert empty strings to null for numeric fields
