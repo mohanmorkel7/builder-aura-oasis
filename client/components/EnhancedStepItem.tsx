@@ -350,10 +350,6 @@ export function EnhancedStepItem({
               size="sm"
               onClick={() => onDeleteStep(step.id)}
               className="text-red-600 hover:text-red-700"
-              disabled={step.isTemplate}
-              style={
-                step.isTemplate ? { opacity: 0.5, pointerEvents: "none" } : {}
-              }
             >
               <Trash2 className="w-4 h-4" />
             </Button>
