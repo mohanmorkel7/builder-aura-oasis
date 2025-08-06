@@ -294,11 +294,7 @@ export function EnhancedStepItem({
           <CollapsibleTrigger className="flex-1 flex items-center justify-between text-left">
             <div className="flex-1">
               <div className="flex items-center space-x-2">
-                <span
-                  className={`font-medium ${step.isTemplate ? "text-blue-900" : "text-gray-900"}`}
-                >
-                  {step.name}
-                </span>
+                <span className="font-medium text-gray-900">{step.name}</span>
                 <div className="flex items-center space-x-2">
                   {step.isTemplate && (
                     <Badge
@@ -308,7 +304,7 @@ export function EnhancedStepItem({
                       Template Step
                     </Badge>
                   )}
-                  {step.probability_percent && (
+                  {step.isTemplate && step.probability_percent && (
                     <Badge variant="outline" className="text-xs">
                       {step.probability_percent}% weight
                     </Badge>
