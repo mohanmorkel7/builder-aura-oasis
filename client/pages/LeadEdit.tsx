@@ -466,7 +466,7 @@ export default function LeadEdit() {
       });
 
       // Restore selected template if template_id exists
-      if (lead.template_id) {
+      if (lead.template_id && lead.template_id !== null) {
         setSelectedTemplate(lead.template_id.toString());
       } else {
         setSelectedTemplate("manual");
