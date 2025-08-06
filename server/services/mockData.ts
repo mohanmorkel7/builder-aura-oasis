@@ -1307,7 +1307,10 @@ export class MockDataService {
   }
 
   static async updateLeadStep(stepId: number, stepData: any) {
-    console.log(`MockDataService.updateLeadStep: Updating step ${stepId} with:`, stepData);
+    console.log(
+      `MockDataService.updateLeadStep: Updating step ${stepId} with:`,
+      stepData,
+    );
 
     // Return mock updated step - for demo purposes, we just return the new data
     const updatedStep = {
@@ -1383,9 +1386,13 @@ export class MockDataService {
       ];
     }
 
-    const filteredChats = this.chatMessages.filter((chat) => chat.step_id === stepId);
+    const filteredChats = this.chatMessages.filter(
+      (chat) => chat.step_id === stepId,
+    );
 
-    console.log(`MockDataService.getStepChats: returning ${filteredChats.length} messages for step ${stepId}`);
+    console.log(
+      `MockDataService.getStepChats: returning ${filteredChats.length} messages for step ${stepId}`,
+    );
     return filteredChats;
   }
 
@@ -1403,8 +1410,12 @@ export class MockDataService {
     };
 
     this.chatMessages.push(newChat);
-    console.log(`MockDataService.createStepChat: Created message ${newChat.id} for step ${stepId}`);
-    console.log(`MockDataService.createStepChat: Total messages now: ${this.chatMessages.length}`);
+    console.log(
+      `MockDataService.createStepChat: Created message ${newChat.id} for step ${stepId}`,
+    );
+    console.log(
+      `MockDataService.createStepChat: Total messages now: ${this.chatMessages.length}`,
+    );
     return newChat;
   }
 }
