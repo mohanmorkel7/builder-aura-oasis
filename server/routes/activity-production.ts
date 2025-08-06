@@ -274,16 +274,25 @@ router.get("/", async (req: Request, res: Response) => {
     }
   } catch (error) {
     console.error("Error fetching activity logs:", error);
-    // Fallback to mock data
-    res.json({
-      activity_logs: mockActivityLogs,
-      pagination: {
-        total: mockActivityLogs.length,
-        limit: parseInt(req.query.limit as string) || 50,
-        offset: parseInt(req.query.offset as string) || 0,
-        has_more: false,
-      },
-    });
+
+    // Ensure we always return a valid JSON response
+    try {
+      res.status(500).json({
+        error: "Failed to fetch activity logs",
+        message: error instanceof Error ? error.message : "Unknown error",
+        activity_logs: mockActivityLogs.slice(0, 10), // Return limited mock data as fallback
+        pagination: {
+          total: mockActivityLogs.length,
+          limit: parseInt(req.query.limit as string) || 50,
+          offset: parseInt(req.query.offset as string) || 0,
+          has_more: false,
+        },
+      });
+    } catch (jsonError) {
+      console.error("Failed to send JSON response:", jsonError);
+      // Last resort: send a simple JSON error
+      res.status(500).send('{"error": "Internal server error", "activity_logs": [], "pagination": {"total": 0, "limit": 50, "offset": 0, "has_more": false}}');
+    }
   }
 });
 
