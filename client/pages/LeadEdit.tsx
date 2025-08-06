@@ -147,29 +147,18 @@ const countries = [
 ];
 
 export default function LeadEdit() {
+  // === ALL HOOKS MUST BE CALLED FIRST - NO VARIABLES OR LOGIC BEFORE HOOKS ===
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
-  // ALL HOOKS MUST BE CALLED FIRST, BEFORE ANY CONDITIONAL LOGIC
   const leadId = parseInt(id || "0");
-
-  // Move all hooks to the top before any conditional logic
   const { data: originalLead, isLoading, error } = useLead(leadId);
   const updateLeadMutation = useUpdateLead();
   const { data: templates = [] } = useTemplates();
 
   const [selectedTemplate, setSelectedTemplate] = useState<string>("");
   const [showTemplatePreview, setShowTemplatePreview] = useState(false);
-
-  // Get selected template data - always call useTemplate with a number to ensure consistent hook calls
-  const selectedTemplateId =
-    selectedTemplate && selectedTemplate !== "manual" && !isNaN(parseInt(selectedTemplate))
-      ? parseInt(selectedTemplate)
-      : 0;
-  const { data: templateData } = useTemplate(selectedTemplateId);
-
-  // Get auth context - useAuth has built-in error handling and fallbacks
-  const { user } = useAuth();
 
   // State hooks
   const [leadData, setLeadData] = useState({
