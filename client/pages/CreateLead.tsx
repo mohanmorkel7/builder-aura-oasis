@@ -201,6 +201,7 @@ export default function CreateLead() {
     priority_level: "medium",
     start_date: new Date().toISOString().split("T")[0], // Current date
     targeted_end_date: "",
+    expected_daily_txn_volume: "",
     expected_daily_txn_volume_year1: "",
     expected_daily_txn_volume_year2: "",
     expected_daily_txn_volume_year3: "",
@@ -429,6 +430,10 @@ export default function CreateLead() {
       const cleanedData = {
         ...leadData,
         // Convert empty strings to null for numeric fields
+        expected_daily_txn_volume:
+          leadData.expected_daily_txn_volume === ""
+            ? null
+            : leadData.expected_daily_txn_volume,
         expected_daily_txn_volume_year1:
           leadData.expected_daily_txn_volume_year1 === ""
             ? null
@@ -523,6 +528,11 @@ export default function CreateLead() {
         project_budget:
           leadData.project_budget && leadData.project_budget !== ""
             ? parseFloat(leadData.project_budget)
+            : undefined,
+        expected_daily_txn_volume:
+          leadData.expected_daily_txn_volume &&
+          leadData.expected_daily_txn_volume !== ""
+            ? parseInt(leadData.expected_daily_txn_volume)
             : undefined,
         expected_daily_txn_volume_year1:
           leadData.expected_daily_txn_volume_year1 &&
@@ -951,6 +961,22 @@ export default function CreateLead() {
                       className="mt-1"
                     />
                   </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="expected_daily_txn_volume">
+                    Expected Daily Txn Volume
+                  </Label>
+                  <Input
+                    id="expected_daily_txn_volume"
+                    type="number"
+                    value={leadData.expected_daily_txn_volume}
+                    onChange={(e) =>
+                      updateField("expected_daily_txn_volume", e.target.value)
+                    }
+                    className="mt-1"
+                    placeholder="Current daily transaction volume"
+                  />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
