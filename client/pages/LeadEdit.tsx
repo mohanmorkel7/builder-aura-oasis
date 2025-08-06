@@ -388,11 +388,7 @@ export default function LeadEdit() {
 
   // Safe date formatting function to handle invalid dates
   const formatDateSafely = (dateStr: string | null | undefined): string => {
-    console.log("formatDateSafely called with:", dateStr);
     if (!dateStr || dateStr.trim() === "") {
-      console.log(
-        "formatDateSafely: empty or null date, returning empty string",
-      );
       return "";
     }
     try {
@@ -401,9 +397,7 @@ export default function LeadEdit() {
         console.warn("Invalid date value:", dateStr);
         return "";
       }
-      const result = date.toISOString().split("T")[0];
-      console.log("formatDateSafely result:", result);
-      return result;
+      return date.toISOString().split("T")[0];
     } catch (error) {
       console.warn("Error formatting date:", dateStr, error);
       return "";
