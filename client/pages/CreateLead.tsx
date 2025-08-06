@@ -1202,6 +1202,33 @@ export default function CreateLead() {
               </CardDescription>
             </CardHeader>
             <CardContent>
+              {/* Billing Currency - Prominent position */}
+              <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <div className="flex items-center space-x-3">
+                  <Label htmlFor="billing_currency" className="text-sm font-semibold text-blue-800">
+                    Billing Currency:
+                  </Label>
+                  <Select
+                    value={leadData.billing_currency}
+                    onValueChange={(value: "INR" | "USD" | "AED") =>
+                      updateField("billing_currency", value)
+                    }
+                  >
+                    <SelectTrigger className="w-48">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="INR">INR (₹)</SelectItem>
+                      <SelectItem value="USD">USD ($)</SelectItem>
+                      <SelectItem value="AED">AED (د.إ)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <span className="text-xs text-blue-600">
+                    This currency will be used as default for all pricing configurations
+                  </span>
+                </div>
+              </div>
+
               <Accordion type="single" collapsible className="w-full">
                 {/* Commercials Config */}
                 <AccordionItem value="commercials-config">
@@ -1209,27 +1236,6 @@ export default function CreateLead() {
                     Commercials Config
                   </AccordionTrigger>
                   <AccordionContent className="space-y-6">
-                    {/* Billing Currency */}
-                    <div className="pb-4 border-b">
-                      <div className="flex items-center space-x-2">
-                        <Label htmlFor="billing_currency" className="text-sm font-medium">Billing Currency:</Label>
-                        <Select
-                          value={leadData.billing_currency}
-                          onValueChange={(value: "INR" | "USD" | "AED") =>
-                            updateField("billing_currency", value)
-                          }
-                        >
-                          <SelectTrigger className="w-40">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="INR">INR (₹)</SelectItem>
-                            <SelectItem value="USD">USD ($)</SelectItem>
-                            <SelectItem value="AED">AED (د.إ)</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
 
                     {/* Flat Fee Config */}
                     <div className="border-t pt-6">
