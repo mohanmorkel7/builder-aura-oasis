@@ -260,9 +260,6 @@ router.get("/", async (req: Request, res: Response) => {
       }
 
       const total = filteredLogs.length;
-      const limitNum = parseInt(limit as string);
-      const offsetNum = parseInt(offset as string);
-
       const paginatedLogs = filteredLogs.slice(offsetNum, offsetNum + limitNum);
 
       res.json({
