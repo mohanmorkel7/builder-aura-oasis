@@ -109,6 +109,14 @@ export default function LeadDetails() {
   const { data: templateData, isLoading: templateLoading } = useTemplate(
     templateId || 0,
   );
+
+  // Debug template loading
+  console.log("Template Debug:", {
+    templateId,
+    templateData,
+    templateLoading,
+    leadHasTemplateId: !!(lead as any)?.template_id,
+  });
   const createStepMutation = useCreateLeadStep();
   const reorderStepsMutation = useReorderLeadSteps();
 
