@@ -123,6 +123,13 @@ export default function LeadDashboard() {
     }
   }, [userId, refetchPartialSaves]);
 
+  // Debug partial saves data
+  useEffect(() => {
+    console.log("LeadDashboard - partialSaves:", partialSaves);
+    console.log("LeadDashboard - partialSaves.length:", partialSaves.length);
+    console.log("LeadDashboard - userId:", userId);
+  }, [partialSaves, userId]);
+
   const handleCreateLead = () => {
     navigate("/leads/new");
   };
