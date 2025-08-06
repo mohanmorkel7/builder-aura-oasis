@@ -472,12 +472,12 @@ export default function Overview() {
                         return (
                           <div className="relative">
                             {/* Y-axis labels */}
-                            <div className="absolute left-0 top-0 h-64 flex flex-col justify-between text-xs text-gray-500 pr-4">
-                              <span>{maxTotal}</span>
-                              <span>{Math.round(maxTotal * 0.75)}</span>
-                              <span>{Math.round(maxTotal * 0.5)}</span>
-                              <span>{Math.round(maxTotal * 0.25)}</span>
-                              <span>0</span>
+                            <div className="absolute left-0 top-0 h-64 flex flex-col justify-between text-xs text-gray-500 pr-2 md:pr-4">
+                              <span className="text-xs">{maxTotal}</span>
+                              <span className="text-xs">{Math.round(maxTotal * 0.75)}</span>
+                              <span className="text-xs">{Math.round(maxTotal * 0.5)}</span>
+                              <span className="text-xs">{Math.round(maxTotal * 0.25)}</span>
+                              <span className="text-xs">0</span>
                             </div>
 
                             {/* Chart Area - Responsive Container */}
