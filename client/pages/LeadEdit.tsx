@@ -272,7 +272,10 @@ export default function LeadEdit() {
           if (Array.isArray(lead.solutions)) {
             return lead.solutions;
           }
-          if (typeof lead.solutions === "string" && lead.solutions.trim() !== "") {
+          if (
+            typeof lead.solutions === "string" &&
+            lead.solutions.trim() !== ""
+          ) {
             try {
               return JSON.parse(lead.solutions);
             } catch {
@@ -315,7 +318,10 @@ export default function LeadEdit() {
           if (Array.isArray(lead.flat_fee_config)) {
             return lead.flat_fee_config;
           }
-          if (typeof lead.flat_fee_config === 'string' && lead.flat_fee_config.trim() !== "") {
+          if (
+            typeof lead.flat_fee_config === "string" &&
+            lead.flat_fee_config.trim() !== ""
+          ) {
             try {
               return JSON.parse(lead.flat_fee_config);
             } catch {
@@ -329,7 +335,10 @@ export default function LeadEdit() {
           if (Array.isArray(lead.transaction_fee_config)) {
             return lead.transaction_fee_config;
           }
-          if (typeof lead.transaction_fee_config === 'string' && lead.transaction_fee_config.trim() !== "") {
+          if (
+            typeof lead.transaction_fee_config === "string" &&
+            lead.transaction_fee_config.trim() !== ""
+          ) {
             try {
               return JSON.parse(lead.transaction_fee_config);
             } catch {
@@ -343,17 +352,22 @@ export default function LeadEdit() {
         contacts: (() => {
           // Handle both string and already-parsed array cases
           if (Array.isArray(lead.contacts)) {
-            return lead.contacts.length > 0 ? lead.contacts : [
-              {
-                contact_name: "",
-                designation: "",
-                phone: "",
-                email: "",
-                linkedin: "",
-              },
-            ];
+            return lead.contacts.length > 0
+              ? lead.contacts
+              : [
+                  {
+                    contact_name: "",
+                    designation: "",
+                    phone: "",
+                    email: "",
+                    linkedin: "",
+                  },
+                ];
           }
-          if (typeof lead.contacts === "string" && lead.contacts.trim() !== "") {
+          if (
+            typeof lead.contacts === "string" &&
+            lead.contacts.trim() !== ""
+          ) {
             try {
               return JSON.parse(lead.contacts);
             } catch {
