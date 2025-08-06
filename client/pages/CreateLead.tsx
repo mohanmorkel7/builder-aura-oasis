@@ -601,9 +601,23 @@ export default function CreateLead() {
   };
 
   const handleResumePartialSave = (resumeData: any) => {
+    console.log("=== Resume Debug Info ===");
+    console.log("Full resumeData:", resumeData);
+    console.log("Date fields in resumeData:", {
+      start_date: resumeData.start_date,
+      targeted_end_date: resumeData.targeted_end_date,
+      expected_close_date: resumeData.expected_close_date,
+    });
+
     // Extract metadata
     const { _resumeFromId, _lastSaved, _completedTabs, ...formData } =
       resumeData;
+
+    console.log("Date fields in formData:", {
+      start_date: formData.start_date,
+      targeted_end_date: formData.targeted_end_date,
+      expected_close_date: formData.expected_close_date,
+    });
 
     // Update the form with the resumed data
     setLeadData(formData);
