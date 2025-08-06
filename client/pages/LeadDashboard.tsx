@@ -740,7 +740,9 @@ export default function LeadDashboard() {
                                   const formatted = new Date(dateValue)
                                     .toISOString()
                                     .split("T")[0];
-                                  console.log(`Date conversion: ${dateValue} → ${formatted}`);
+                                  console.log(
+                                    `Date conversion: ${dateValue} → ${formatted}`,
+                                  );
                                   return formatted;
                                 }
                                 return dateValue; // Already in correct format
