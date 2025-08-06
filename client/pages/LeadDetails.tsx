@@ -107,33 +107,37 @@ export default function LeadDetails() {
 
   const [newStepDialog, setNewStepDialog] = useState(false);
 
-  // Calculate completion percentage based on template probability values
+  // Calculate completion percentage based on template probability values or lead probability
   const calculateCompletionPercentage = () => {
-    if (!lead?.template_id || !leadSteps || leadSteps.length === 0) return 0;
+    // If we have template steps, calculate based on step completion
+    if (lead?.template_id && leadSteps && leadSteps.length > 0) {
+      // Enhanced calculation using step probability weights
+      let totalCompletedProbability = 0;
+      let totalPossibleProbability = 0;
 
-    // Enhanced calculation using step probability weights
-    let totalCompletedProbability = 0;
-    let totalPossibleProbability = 0;
+      leadSteps.forEach((step, index) => {
+        // Use step probability if available, otherwise distribute evenly
+        const stepProbability = step.probability_percent || (100 / leadSteps.length);
+        totalPossibleProbability += stepProbability;
 
-    leadSteps.forEach((step, index) => {
-      // Use step probability if available, otherwise distribute evenly
-      const stepProbability = step.probability_percent || (100 / leadSteps.length);
-      totalPossibleProbability += stepProbability;
+        if (step.status === 'completed') {
+          totalCompletedProbability += stepProbability;
+        } else if (step.status === 'in_progress') {
+          // Give partial credit for in-progress steps
+          totalCompletedProbability += stepProbability * 0.5;
+        }
+      });
 
-      if (step.status === 'completed') {
-        totalCompletedProbability += stepProbability;
-      } else if (step.status === 'in_progress') {
-        // Give partial credit for in-progress steps
-        totalCompletedProbability += stepProbability * 0.5;
-      }
-    });
+      // Ensure we don't exceed 100% due to probability distribution issues
+      const percentage = totalPossibleProbability > 0
+        ? Math.min(100, Math.round((totalCompletedProbability / totalPossibleProbability) * 100))
+        : 0;
 
-    // Ensure we don't exceed 100% due to probability distribution issues
-    const percentage = totalPossibleProbability > 0
-      ? Math.min(100, Math.round((totalCompletedProbability / totalPossibleProbability) * 100))
-      : 0;
+      return percentage;
+    }
 
-    return percentage;
+    // If no template steps, use the lead's probability value
+    return lead?.probability || 0;
   };
 
   const completionPercentage = calculateCompletionPercentage();
