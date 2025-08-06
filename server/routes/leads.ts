@@ -1143,17 +1143,8 @@ router.post("/steps/:stepId/chats", async (req: Request, res: Response) => {
         "Database error, returning mock chat response:",
         dbError.message,
       );
-      const mockChat = {
-        id: Date.now(),
-        step_id: stepId,
-        user_id: chatData.user_id || null,
-        user_name: chatData.user_name,
-        message: chatData.message,
-        message_type: chatData.message_type || "text",
-        is_rich_text: chatData.is_rich_text || false,
-        created_at: new Date().toISOString(),
-        attachments: chatData.attachments || [],
-      };
+      const mockChat = await MockDataService.createStepChat(stepId, chatData);
+      console.log("Database error, created mock chat:", mockChat);
       res.status(201).json(mockChat);
     }
   } catch (error) {
