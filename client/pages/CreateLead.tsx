@@ -1490,7 +1490,14 @@ export default function CreateLead() {
                                     <TableRow key={solution.solution}>
                                       <TableCell className="font-medium">{solution.solution}</TableCell>
                                       <TableCell>{solution.value} {solution.currency}</TableCell>
-                                      <TableCell>{period.totalTransactions.toLocaleString()}</TableCell>
+                                      {period.label === "Current" ? (
+                                        <TableCell>{period.totalTransactions.toLocaleString()}</TableCell>
+                                      ) : (
+                                        <>
+                                          <TableCell>{(period.volume * 30).toLocaleString()}</TableCell>
+                                          <TableCell>{period.totalTransactions.toLocaleString()}</TableCell>
+                                        </>
+                                      )}
                                       <TableCell>
                                         ₹{convertCurrency(solution.totalValue, solution.currency, "INR").toLocaleString(undefined, { maximumFractionDigits: 2 })}
                                       </TableCell>
