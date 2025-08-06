@@ -30,14 +30,19 @@ router.get("/", async (req: Request, res: Response) => {
   try {
     const { salesRep, partial, created_by, partial_saves_only } = req.query;
     const salesRepId = salesRep ? parseInt(salesRep as string) : undefined;
-    const isPartialOnly = partial === 'true';
+    const isPartialOnly = partial === "true";
     const createdById = created_by ? parseInt(created_by as string) : undefined;
-    const isPartialSavesOnly = partial_saves_only === 'true';
+    const isPartialSavesOnly = partial_saves_only === "true";
 
     let leads;
     try {
       if (await isDatabaseAvailable()) {
-        leads = await LeadRepository.findAll(salesRepId, isPartialOnly, createdById, isPartialSavesOnly);
+        leads = await LeadRepository.findAll(
+          salesRepId,
+          isPartialOnly,
+          createdById,
+          isPartialSavesOnly,
+        );
       } else {
         leads = await MockDataService.getAllLeads(salesRepId);
         if (isPartialOnly) {
@@ -47,13 +52,16 @@ router.get("/", async (req: Request, res: Response) => {
           leads = leads.filter((lead: any) => {
             try {
               // Sanitize notes field before parsing
-              const notesStr = lead.notes || '{}';
-              if (typeof notesStr !== 'string') return false;
+              const notesStr = lead.notes || "{}";
+              if (typeof notesStr !== "string") return false;
 
               const notes = JSON.parse(notesStr);
               return notes.isPartialSave === true;
             } catch (jsonError) {
-              console.log(`Invalid JSON in notes for lead ${lead.id}:`, jsonError.message);
+              console.log(
+                `Invalid JSON in notes for lead ${lead.id}:`,
+                jsonError.message,
+              );
               // Skip leads with invalid JSON instead of crashing
               return false;
             }
@@ -72,7 +80,7 @@ router.get("/", async (req: Request, res: Response) => {
       if (isPartialSavesOnly) {
         leads = leads.filter((lead: any) => {
           try {
-            const notes = JSON.parse(lead.notes || '{}');
+            const notes = JSON.parse(lead.notes || "{}");
             return notes.isPartialSave === true;
           } catch {
             return false;
@@ -174,7 +182,7 @@ router.get("/template-step-dashboard", async (req: Request, res: Response) => {
           const statsResult = await pool.query(stepStatsQuery, [
             templateStep.step_name,
             templateStep.step_order,
-            templateStep.template_id
+            templateStep.template_id,
           ]);
 
           const stats = statsResult.rows[0];
@@ -190,41 +198,109 @@ router.get("/template-step-dashboard", async (req: Request, res: Response) => {
             pending_count: parseInt(stats.pending_count) || 0,
             in_progress_count: parseInt(stats.in_progress_count) || 0,
             completed_count: parseInt(stats.completed_count) || 0,
-            blocked_count: parseInt(stats.blocked_count) || 0
+            blocked_count: parseInt(stats.blocked_count) || 0,
           });
         }
       } else {
         throw new Error("Database not available");
       }
     } catch (dbError) {
-      console.log("Database error, falling back to mock data:", dbError.message);
+      console.log(
+        "Database error, falling back to mock data:",
+        dbError.message,
+      );
       // Mock data with realistic numbers for demonstration
       const mockTemplates = [
         {
           id: 1,
           name: "Standard Client Onboarding",
           steps: [
-            { id: 1, name: "Initial Contact", step_order: 1, probability_percent: 10 },
-            { id: 2, name: "Requirement Analysis", step_order: 2, probability_percent: 25 },
-            { id: 3, name: "Proposal Submission", step_order: 3, probability_percent: 40 },
-            { id: 4, name: "Contract Negotiation", step_order: 4, probability_percent: 70 },
-            { id: 5, name: "Project Kickoff", step_order: 5, probability_percent: 100 }
-          ]
+            {
+              id: 1,
+              name: "Initial Contact",
+              step_order: 1,
+              probability_percent: 10,
+            },
+            {
+              id: 2,
+              name: "Requirement Analysis",
+              step_order: 2,
+              probability_percent: 25,
+            },
+            {
+              id: 3,
+              name: "Proposal Submission",
+              step_order: 3,
+              probability_percent: 40,
+            },
+            {
+              id: 4,
+              name: "Contract Negotiation",
+              step_order: 4,
+              probability_percent: 70,
+            },
+            {
+              id: 5,
+              name: "Project Kickoff",
+              step_order: 5,
+              probability_percent: 100,
+            },
+          ],
         },
         {
           id: 2,
           name: "Enterprise Client Onboarding",
           steps: [
-            { id: 6, name: "Discovery Call", step_order: 1, probability_percent: 5 },
-            { id: 7, name: "Technical Review", step_order: 2, probability_percent: 15 },
-            { id: 8, name: "Security Assessment", step_order: 3, probability_percent: 30 },
-            { id: 9, name: "Stakeholder Meeting", step_order: 4, probability_percent: 45 },
-            { id: 10, name: "Pilot Program", step_order: 5, probability_percent: 60 },
-            { id: 11, name: "Implementation Plan", step_order: 6, probability_percent: 75 },
-            { id: 12, name: "Contract Finalization", step_order: 7, probability_percent: 90 },
-            { id: 13, name: "Go Live", step_order: 8, probability_percent: 100 }
-          ]
-        }
+            {
+              id: 6,
+              name: "Discovery Call",
+              step_order: 1,
+              probability_percent: 5,
+            },
+            {
+              id: 7,
+              name: "Technical Review",
+              step_order: 2,
+              probability_percent: 15,
+            },
+            {
+              id: 8,
+              name: "Security Assessment",
+              step_order: 3,
+              probability_percent: 30,
+            },
+            {
+              id: 9,
+              name: "Stakeholder Meeting",
+              step_order: 4,
+              probability_percent: 45,
+            },
+            {
+              id: 10,
+              name: "Pilot Program",
+              step_order: 5,
+              probability_percent: 60,
+            },
+            {
+              id: 11,
+              name: "Implementation Plan",
+              step_order: 6,
+              probability_percent: 75,
+            },
+            {
+              id: 12,
+              name: "Contract Finalization",
+              step_order: 7,
+              probability_percent: 90,
+            },
+            {
+              id: 13,
+              name: "Go Live",
+              step_order: 8,
+              probability_percent: 100,
+            },
+          ],
+        },
       ];
 
       for (const template of mockTemplates) {
@@ -240,23 +316,33 @@ router.get("/template-step-dashboard", async (req: Request, res: Response) => {
             pending_count = Math.ceil(baseLeads * 0.6);
             in_progress_count = Math.ceil(baseLeads * 0.25);
             completed_count = Math.floor(baseLeads * 0.1);
-            blocked_count = Math.max(0, baseLeads - pending_count - in_progress_count - completed_count);
+            blocked_count = Math.max(
+              0,
+              baseLeads - pending_count - in_progress_count - completed_count,
+            );
           } else if (stepProgress < 0.7) {
             // Middle steps: more in progress
             pending_count = Math.ceil(baseLeads * 0.3);
             in_progress_count = Math.ceil(baseLeads * 0.45);
             completed_count = Math.ceil(baseLeads * 0.2);
-            blocked_count = Math.max(0, baseLeads - pending_count - in_progress_count - completed_count);
+            blocked_count = Math.max(
+              0,
+              baseLeads - pending_count - in_progress_count - completed_count,
+            );
           } else {
             // Later steps: more completed
             pending_count = Math.ceil(baseLeads * 0.15);
             in_progress_count = Math.ceil(baseLeads * 0.25);
             completed_count = Math.ceil(baseLeads * 0.55);
-            blocked_count = Math.max(0, baseLeads - pending_count - in_progress_count - completed_count);
+            blocked_count = Math.max(
+              0,
+              baseLeads - pending_count - in_progress_count - completed_count,
+            );
           }
 
           // Ensure totals match
-          const total = pending_count + in_progress_count + completed_count + blocked_count;
+          const total =
+            pending_count + in_progress_count + completed_count + blocked_count;
 
           dashboardData.push({
             template_id: template.id,
@@ -269,7 +355,7 @@ router.get("/template-step-dashboard", async (req: Request, res: Response) => {
             pending_count,
             in_progress_count,
             completed_count,
-            blocked_count
+            blocked_count,
           });
         }
       }
@@ -279,33 +365,47 @@ router.get("/template-step-dashboard", async (req: Request, res: Response) => {
     res.json(dashboardData);
   } catch (error) {
     console.error("Error fetching template step dashboard:", error);
-    res.status(500).json({ error: "Failed to fetch template step dashboard data" });
+    res
+      .status(500)
+      .json({ error: "Failed to fetch template step dashboard data" });
   }
 });
 
 // Get leads for a specific template step and status
-router.get("/template-step/:templateId/:stepId/:status", async (req: Request, res: Response) => {
-  try {
-    const templateId = parseInt(req.params.templateId);
-    const stepId = parseInt(req.params.stepId);
-    const status = req.params.status;
-
-    if (isNaN(templateId) || isNaN(stepId)) {
-      return res.status(400).json({ error: "Invalid template or step ID" });
-    }
-
-    if (!['pending', 'in_progress', 'completed', 'blocked', 'cancelled'].includes(status)) {
-      return res.status(400).json({ error: "Invalid status" });
-    }
-
-    console.log(`Getting leads for template ${templateId}, step ${stepId}, status ${status}`);
-
-    let leads = [];
-
+router.get(
+  "/template-step/:templateId/:stepId/:status",
+  async (req: Request, res: Response) => {
     try {
-      if (await isDatabaseAvailable()) {
-        // Query leads that have this specific step with the requested status
-        const query = `
+      const templateId = parseInt(req.params.templateId);
+      const stepId = parseInt(req.params.stepId);
+      const status = req.params.status;
+
+      if (isNaN(templateId) || isNaN(stepId)) {
+        return res.status(400).json({ error: "Invalid template or step ID" });
+      }
+
+      if (
+        ![
+          "pending",
+          "in_progress",
+          "completed",
+          "blocked",
+          "cancelled",
+        ].includes(status)
+      ) {
+        return res.status(400).json({ error: "Invalid status" });
+      }
+
+      console.log(
+        `Getting leads for template ${templateId}, step ${stepId}, status ${status}`,
+      );
+
+      let leads = [];
+
+      try {
+        if (await isDatabaseAvailable()) {
+          // Query leads that have this specific step with the requested status
+          const query = `
           SELECT DISTINCT l.*, ls.status as step_status
           FROM leads l
           JOIN lead_steps ls ON l.id = ls.lead_id
@@ -317,56 +417,81 @@ router.get("/template-step/:templateId/:stepId/:status", async (req: Request, re
           ORDER BY l.created_at DESC
         `;
 
-        const result = await pool.query(query, [templateId, stepId, status]);
-        leads = result.rows;
-        console.log(`Found ${leads.length} leads with status ${status}`);
-      } else {
-        // Generate realistic mock leads for this step and status
-        const allLeads = await MockDataService.getAllLeads();
-        const templateLeads = allLeads.filter((lead: any) =>
-          lead.template_id === templateId || Math.random() > 0.5 // Include some mock leads
-        );
+          const result = await pool.query(query, [templateId, stepId, status]);
+          leads = result.rows;
+          console.log(`Found ${leads.length} leads with status ${status}`);
+        } else {
+          // Generate realistic mock leads for this step and status
+          const allLeads = await MockDataService.getAllLeads();
+          const templateLeads = allLeads.filter(
+            (lead: any) =>
+              lead.template_id === templateId || Math.random() > 0.5, // Include some mock leads
+          );
 
-        // Generate realistic count based on status
-        let targetCount = 0;
-        const stepProgress = Math.random(); // Mock step progression
+          // Generate realistic count based on status
+          let targetCount = 0;
+          const stepProgress = Math.random(); // Mock step progression
 
-        switch (status) {
-          case 'pending':
-            targetCount = Math.ceil(templateLeads.length * (stepProgress < 0.3 ? 0.6 : stepProgress < 0.7 ? 0.3 : 0.15));
-            break;
-          case 'in_progress':
-            targetCount = Math.ceil(templateLeads.length * (stepProgress < 0.3 ? 0.25 : stepProgress < 0.7 ? 0.45 : 0.25));
-            break;
-          case 'completed':
-            targetCount = Math.ceil(templateLeads.length * (stepProgress < 0.3 ? 0.1 : stepProgress < 0.7 ? 0.2 : 0.55));
-            break;
-          case 'blocked':
-          case 'cancelled':
-            targetCount = Math.max(0, Math.floor(templateLeads.length * 0.05)); // 5% blocked/cancelled
-            break;
+          switch (status) {
+            case "pending":
+              targetCount = Math.ceil(
+                templateLeads.length *
+                  (stepProgress < 0.3 ? 0.6 : stepProgress < 0.7 ? 0.3 : 0.15),
+              );
+              break;
+            case "in_progress":
+              targetCount = Math.ceil(
+                templateLeads.length *
+                  (stepProgress < 0.3
+                    ? 0.25
+                    : stepProgress < 0.7
+                      ? 0.45
+                      : 0.25),
+              );
+              break;
+            case "completed":
+              targetCount = Math.ceil(
+                templateLeads.length *
+                  (stepProgress < 0.3 ? 0.1 : stepProgress < 0.7 ? 0.2 : 0.55),
+              );
+              break;
+            case "blocked":
+            case "cancelled":
+              targetCount = Math.max(
+                0,
+                Math.floor(templateLeads.length * 0.05),
+              ); // 5% blocked/cancelled
+              break;
+          }
+
+          leads = templateLeads
+            .slice(0, Math.max(1, targetCount))
+            .map((lead: any) => ({
+              ...lead,
+              step_status: status,
+            }));
+
+          console.log(
+            `Generated ${leads.length} mock leads for status ${status}`,
+          );
         }
-
-        leads = templateLeads.slice(0, Math.max(1, targetCount)).map((lead: any) => ({
-          ...lead,
-          step_status: status
-        }));
-
-        console.log(`Generated ${leads.length} mock leads for status ${status}`);
+      } catch (dbError) {
+        console.log("Database error, using mock data:", dbError.message);
+        // Fallback mock data
+        const mockLeads = await MockDataService.getAllLeads();
+        leads = mockLeads.slice(
+          0,
+          Math.max(1, Math.floor(Math.random() * 5) + 1),
+        );
       }
-    } catch (dbError) {
-      console.log("Database error, using mock data:", dbError.message);
-      // Fallback mock data
-      const mockLeads = await MockDataService.getAllLeads();
-      leads = mockLeads.slice(0, Math.max(1, Math.floor(Math.random() * 5) + 1));
-    }
 
-    res.json(leads);
-  } catch (error) {
-    console.error("Error fetching leads for step:", error);
-    res.status(500).json({ error: "Failed to fetch leads for step" });
-  }
-});
+      res.json(leads);
+    } catch (error) {
+      console.error("Error fetching leads for step:", error);
+      res.status(500).json({ error: "Failed to fetch leads for step" });
+    }
+  },
+);
 
 // Get lead by ID
 router.get("/:id", async (req: Request, res: Response) => {
@@ -403,7 +528,10 @@ router.get("/:id", async (req: Request, res: Response) => {
 router.post("/", async (req: Request, res: Response) => {
   try {
     const leadData: CreateLeadData = req.body;
-    console.log("Received lead creation request. Body:", JSON.stringify(req.body, null, 2));
+    console.log(
+      "Received lead creation request. Body:",
+      JSON.stringify(req.body, null, 2),
+    );
 
     // Minimal validation - only check for absolutely required fields
     if (!leadData.created_by) {
@@ -414,28 +542,41 @@ router.post("/", async (req: Request, res: Response) => {
 
     // Ensure basic required fields have defaults
     if (!leadData.client_name) {
-      leadData.client_name = 'New Lead';
+      leadData.client_name = "New Lead";
     }
 
     if (!leadData.lead_source) {
-      leadData.lead_source = 'other';
+      leadData.lead_source = "other";
     }
 
     // Basic enum validation with defaults
-    if (leadData.lead_source && !ValidationSchemas.lead.enums.lead_source.includes(leadData.lead_source)) {
-      leadData.lead_source = 'other';
+    if (
+      leadData.lead_source &&
+      !ValidationSchemas.lead.enums.lead_source.includes(leadData.lead_source)
+    ) {
+      leadData.lead_source = "other";
     }
 
-    if (leadData.status && !ValidationSchemas.lead.enums.status.includes(leadData.status)) {
-      leadData.status = 'in-progress';
+    if (
+      leadData.status &&
+      !ValidationSchemas.lead.enums.status.includes(leadData.status)
+    ) {
+      leadData.status = "in-progress";
     }
 
-    if (leadData.priority && !ValidationSchemas.lead.enums.priority.includes(leadData.priority)) {
-      leadData.priority = 'medium';
+    if (
+      leadData.priority &&
+      !ValidationSchemas.lead.enums.priority.includes(leadData.priority)
+    ) {
+      leadData.priority = "medium";
     }
 
     // Validate numeric fields only when they have actual numeric values
-    if (leadData.probability !== undefined && leadData.probability !== null && leadData.probability !== "") {
+    if (
+      leadData.probability !== undefined &&
+      leadData.probability !== null &&
+      leadData.probability !== ""
+    ) {
       if (!DatabaseValidator.isValidNumber(leadData.probability, 0, 100)) {
         return res
           .status(400)
@@ -443,7 +584,11 @@ router.post("/", async (req: Request, res: Response) => {
       }
     }
 
-    if (leadData.project_value !== undefined && leadData.project_value !== null && leadData.project_value !== "") {
+    if (
+      leadData.project_value !== undefined &&
+      leadData.project_value !== null &&
+      leadData.project_value !== ""
+    ) {
       if (!DatabaseValidator.isValidNumber(leadData.project_value, 0)) {
         return res
           .status(400)
@@ -451,7 +596,11 @@ router.post("/", async (req: Request, res: Response) => {
       }
     }
 
-    if (leadData.expected_daily_txn_volume !== undefined && leadData.expected_daily_txn_volume !== null && leadData.expected_daily_txn_volume !== "") {
+    if (
+      leadData.expected_daily_txn_volume !== undefined &&
+      leadData.expected_daily_txn_volume !== null &&
+      leadData.expected_daily_txn_volume !== ""
+    ) {
       if (
         !DatabaseValidator.isValidNumber(leadData.expected_daily_txn_volume, 0)
       ) {
@@ -462,7 +611,11 @@ router.post("/", async (req: Request, res: Response) => {
     }
 
     // Validate dates only when they have actual values
-    if (leadData.expected_close_date && leadData.expected_close_date !== "" && leadData.expected_close_date !== null) {
+    if (
+      leadData.expected_close_date &&
+      leadData.expected_close_date !== "" &&
+      leadData.expected_close_date !== null
+    ) {
       if (!DatabaseValidator.isValidFutureDate(leadData.expected_close_date)) {
         return res
           .status(400)
@@ -470,7 +623,11 @@ router.post("/", async (req: Request, res: Response) => {
       }
     }
 
-    if (leadData.targeted_end_date && leadData.targeted_end_date !== "" && leadData.targeted_end_date !== null) {
+    if (
+      leadData.targeted_end_date &&
+      leadData.targeted_end_date !== "" &&
+      leadData.targeted_end_date !== null
+    ) {
       if (!DatabaseValidator.isValidFutureDate(leadData.targeted_end_date)) {
         return res
           .status(400)
@@ -567,7 +724,7 @@ router.post("/", async (req: Request, res: Response) => {
     console.error("Error stack:", error.stack);
     res.status(500).json({
       error: "Failed to create lead",
-      details: error.message
+      details: error.message,
     });
   }
 });
