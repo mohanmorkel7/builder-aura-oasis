@@ -670,11 +670,13 @@ export default function CreateLead() {
           // If update fails, create a new draft
           const result = await partialSaveMutation.mutateAsync(partialData);
           setDraftId(result.id);
+          setHasSavedDraftInSession(true);
         }
       } else {
-        // Create new draft
+        // Create new draft only if we haven't saved one in this session
         const result = await partialSaveMutation.mutateAsync(partialData);
         setDraftId(result.id);
+        setHasSavedDraftInSession(true);
         console.log("Draft created successfully");
       }
 
@@ -1427,7 +1429,7 @@ export default function CreateLead() {
                                     </SelectTrigger>
                                     <SelectContent>
                                       <SelectItem value="INR">
-                                        INR (₹)
+                                        INR (���)
                                       </SelectItem>
                                       <SelectItem value="USD">
                                         USD ($)
