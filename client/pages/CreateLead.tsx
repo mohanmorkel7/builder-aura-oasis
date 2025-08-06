@@ -287,6 +287,13 @@ export default function CreateLead() {
     }
   }, [location.state]);
 
+  // Initialize lead_created_by with user email when user loads or changes
+  useEffect(() => {
+    if (user?.email && !leadData.lead_created_by) {
+      updateField("lead_created_by", user.email);
+    }
+  }, [user?.email]);
+
   const tabs = [
     { value: "basic", label: "Lead Info", icon: "📋" },
     { value: "project", label: "Project Details", icon: "🎯" },
