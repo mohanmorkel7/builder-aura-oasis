@@ -729,7 +729,7 @@ export default function LeadDetails() {
                     (templateStep: any, index: number) => {
                       allSteps.push({
                         ...templateStep,
-                        id: `template-${templateStep.id}`,
+                        id: templateStep.id, // Use the original numeric template step ID
                         isTemplate: true,
                         step_order: index + 1,
                         lead_id: leadId,
