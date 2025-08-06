@@ -137,7 +137,8 @@ const AuthContext = React.createContext<AuthContextType | undefined>(undefined);
 // Set display name for better debugging
 AuthContext.displayName = 'AuthContext';
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+// Use React.memo to prevent unnecessary re-renders during HMR
+export const AuthProvider = React.memo(function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = React.useState<User | null>(null);
   const [isLoading, setIsLoading] = React.useState(true);
 
@@ -393,7 +394,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       {children}
     </AuthContext.Provider>
   );
-}
+});
 
 export function useAuth() {
   try {
