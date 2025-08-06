@@ -247,17 +247,16 @@ export interface UpdateLeadData {
   start_date?: string;
   targeted_end_date?: string;
   expected_daily_txn_volume?: number;
-  project_value?: number;
+  expected_daily_txn_volume_year1?: number;
+  expected_daily_txn_volume_year2?: number;
+  expected_daily_txn_volume_year3?: number;
+  expected_daily_txn_volume_year5?: number;
   spoc?: string;
 
   // Commercials
-  commercials?: string[];
-  commercial_pricing?: Array<{
-    solution: string;
-    value: number;
-    unit: "paisa" | "cents";
-    currency: "INR" | "USD" | "Dubai";
-  }>;
+  billing_currency?: "INR" | "USD" | "AED";
+  flat_fee_config?: string; // JSON string
+  transaction_fee_config?: string; // JSON string
 
   // Client Information
   client_name?: string;
