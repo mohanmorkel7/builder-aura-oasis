@@ -314,7 +314,18 @@ router.get("/", jsonResponse(async (req: Request, res: Response) => {
         pagination: response.pagination
       });
 
-      res.json(response);
+      // Ensure the response is JSON serializable
+      try {
+        JSON.stringify(response);
+        res.json(response);
+      } catch (serializationError) {
+        console.error('Response serialization error:', serializationError);
+        res.status(500).json({
+          error: 'Response serialization failed',
+          activity_logs: [],
+          pagination: { total: 0, limit: 50, offset: 0, has_more: false }
+        });
+      }
     }
   } catch (error) {
     console.error("Error fetching activity logs:", error);
