@@ -456,6 +456,13 @@ export default function LeadEdit() {
         notes: lead.notes || "",
         assigned_to: lead.assigned_to || undefined,
       });
+
+      // Restore selected template if template_id exists
+      if (lead.template_id) {
+        setSelectedTemplate(lead.template_id.toString());
+      } else {
+        setSelectedTemplate("manual");
+      }
     }
   }, [originalLead]);
 
