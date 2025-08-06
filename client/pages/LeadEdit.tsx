@@ -1133,10 +1133,7 @@ export default function LeadEdit() {
                   <div className="flex items-center space-x-2 mt-1">
                     <Select
                       value={selectedTemplate}
-                      onValueChange={(value) => {
-                        console.log("Template selection changed to:", value);
-                        setSelectedTemplate(value);
-                      }}
+                      onValueChange={setSelectedTemplate}
                     >
                       <SelectTrigger className="flex-1">
                         <SelectValue placeholder="Select a template or use manual" />
