@@ -703,13 +703,16 @@ export default function CreateLead() {
       };
 
       console.log("Final partialData being saved:", {
-        id: draftId,
+        draftId: draftId,
         client_name: partialData.client_name,
         project_title: partialData.project_title,
         lead_source: partialData.lead_source,
         solutions: partialData.solutions,
         contacts: partialData.contacts,
-        notes: partialData.notes,
+        // Don't log full notes as it contains large originalData
+        hasNotes: !!partialData.notes,
+        // Show that metadata fields were filtered out
+        metadataFieldsFiltered: { _resumeFromId, _lastSaved, _completedTabs: _completedTabs?.length || 0 }
       });
 
       // If we have a draft ID, update the existing draft instead of creating a new one
