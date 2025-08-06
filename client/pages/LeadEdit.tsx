@@ -779,6 +779,7 @@ export default function LeadEdit() {
           : undefined,
         billing_currency: leadData.billing_currency,
         solutions: JSON.stringify(leadData.solutions),
+        contacts: JSON.stringify(leadData.contacts),
         flat_fee_config: JSON.stringify(leadData.flat_fee_config),
         transaction_fee_config: JSON.stringify(leadData.transaction_fee_config),
       };
