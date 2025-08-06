@@ -80,19 +80,39 @@ export default function FinOpsActivityLog() {
   // Fetch activity logs
   const { data: activityData, isLoading } = useQuery({
     queryKey: ["activity-logs", filters],
-    queryFn: () => {
-      const params = new URLSearchParams();
-      if (filters.entity_type !== "all")
-        params.append("entity_type", filters.entity_type);
-      if (filters.action !== "all") params.append("action", filters.action);
-      params.append("limit", "50");
-      params.append(
-        "start_date",
-        new Date(Date.now() - filters.days * 24 * 60 * 60 * 1000).toISOString(),
-      );
-      return apiClient.request(`/activity-production?${params.toString()}`);
+    queryFn: async () => {
+      try {
+        const params = new URLSearchParams();
+        if (filters.entity_type !== "all")
+          params.append("entity_type", filters.entity_type);
+        if (filters.action !== "all") params.append("action", filters.action);
+        params.append("limit", "50");
+
+        const startDate = new Date(Date.now() - filters.days * 24 * 60 * 60 * 1000).toISOString();
+        params.append("start_date", startDate);
+
+        const url = `/activity-production?${params.toString()}`;
+        console.log('Activity API request URL:', url);
+
+        return await apiClient.request(url);
+      } catch (error) {
+        console.error('Activity API request failed:', error);
+        // Return empty data structure on error
+        return {
+          activity_logs: [],
+          pagination: { total: 0, limit: 50, offset: 0, has_more: false }
+        };
+      }
     },
     refetchInterval: 30000, // Refresh every 30 seconds
+    retry: (failureCount, error) => {
+      // Don't retry if it's a JSON parsing error
+      if (error?.message?.includes('Invalid JSON')) {
+        console.error('JSON parsing error - not retrying:', error);
+        return false;
+      }
+      return failureCount < 3;
+    },
   });
 
   const activityLogs = activityData?.activity_logs || [];
