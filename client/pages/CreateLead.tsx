@@ -380,15 +380,17 @@ export default function CreateLead() {
     // If billing currency is updated, update all related currency fields
     if (field === "billing_currency") {
       // Update transaction fee configs to new currency
-      newData.transaction_fee_config = leadData.transaction_fee_config.map(config => ({
-        ...config,
-        currency: value
-      }));
+      newData.transaction_fee_config = leadData.transaction_fee_config.map(
+        (config) => ({
+          ...config,
+          currency: value,
+        }),
+      );
 
       // Update flat fee configs to new currency
-      newData.flat_fee_config = leadData.flat_fee_config.map(config => ({
+      newData.flat_fee_config = leadData.flat_fee_config.map((config) => ({
         ...config,
-        currency: value
+        currency: value,
       }));
     }
 
@@ -423,11 +425,7 @@ export default function CreateLead() {
     }));
   };
 
-  const updateFlatFeeConfig = (
-    index: number,
-    field: string,
-    value: any,
-  ) => {
+  const updateFlatFeeConfig = (index: number, field: string, value: any) => {
     const newConfig = [...leadData.flat_fee_config];
     newConfig[index] = { ...newConfig[index], [field]: value };
     setLeadData((prev) => ({ ...prev, flat_fee_config: newConfig }));
@@ -451,92 +449,102 @@ export default function CreateLead() {
         label: "Current",
         volume: currentVolume,
         multiplier: 30,
-        description: `(${currentVolume.toLocaleString()} daily txns × 30 days = ${(currentVolume * 30).toLocaleString()} total txns)`
+        description: `(${currentVolume.toLocaleString()} daily txns × 30 days = ${(currentVolume * 30).toLocaleString()} total txns)`,
       },
       {
         label: "First Year",
         volume: year1Volume,
         multiplier: 30 * 12,
-        description: `(${year1Volume.toLocaleString()} daily txns × 30 days × 12 months = ${(year1Volume * 360).toLocaleString()} total txns)`
+        description: `(${year1Volume.toLocaleString()} daily txns × 30 days × 12 months = ${(year1Volume * 360).toLocaleString()} total txns)`,
       },
       {
         label: "Second Year",
         volume: year2Volume,
         multiplier: 30 * 12,
-        description: `(${year2Volume.toLocaleString()} daily txns × 30 days × 12 months = ${(year2Volume * 360).toLocaleString()} total txns)`
+        description: `(${year2Volume.toLocaleString()} daily txns × 30 days × 12 months = ${(year2Volume * 360).toLocaleString()} total txns)`,
       },
       {
         label: "Third Year",
         volume: year3Volume,
         multiplier: 30 * 12,
-        description: `(${year3Volume.toLocaleString()} daily txns × 30 days × 12 months = ${(year3Volume * 360).toLocaleString()} total txns)`
+        description: `(${year3Volume.toLocaleString()} daily txns × 30 days × 12 months = ${(year3Volume * 360).toLocaleString()} total txns)`,
       },
       {
         label: "Fifth Year",
         volume: year5Volume,
         multiplier: 30 * 12,
-        description: `(${year5Volume.toLocaleString()} daily txns × 30 days × 12 months = ${(year5Volume * 360).toLocaleString()} total txns)`
+        description: `(${year5Volume.toLocaleString()} daily txns × 30 days × 12 months = ${(year5Volume * 360).toLocaleString()} total txns)`,
       },
     ];
 
-    return periods.map(period => ({
+    return periods.map((period) => ({
       ...period,
       totalTransactions: period.volume * period.multiplier,
       // Transaction fees
-      solutions: leadData.transaction_fee_config.map(config => ({
+      solutions: leadData.transaction_fee_config.map((config) => ({
         ...config,
         totalValue: period.volume * period.multiplier * config.value,
-        totalValueUSD: convertCurrency(period.volume * period.multiplier * config.value, config.currency, "USD"),
+        totalValueUSD: convertCurrency(
+          period.volume * period.multiplier * config.value,
+          config.currency,
+          "USD",
+        ),
       })),
       // Flat fees - only show if applicable for this period
-      flatFees: leadData.flat_fee_config.filter(config => {
-        // One-time fees only show in first period (Current)
-        if (config.type === "one_time") {
-          return period.label === "Current";
-        }
-        // Recurring fees show in all periods
-        return config.type === "recurring";
-      }).map(config => {
-        let multiplier = 1;
-        let description = "One time";
-
-        if (config.type === "recurring" && config.recurring_period) {
-          switch (config.recurring_period) {
-            case "monthly":
-              if (period.label === "Current") multiplier = 1;
-              else if (period.label === "First Year") multiplier = 12;
-              else if (period.label === "Second Year") multiplier = 24;
-              else if (period.label === "Third Year") multiplier = 36;
-              else if (period.label === "Fifth Year") multiplier = 60;
-              description = `Monthly (×${multiplier})`;
-              break;
-            case "quarterly":
-              if (period.label === "Current") multiplier = 1;
-              else if (period.label === "First Year") multiplier = 4;
-              else if (period.label === "Second Year") multiplier = 8;
-              else if (period.label === "Third Year") multiplier = 12;
-              else if (period.label === "Fifth Year") multiplier = 20;
-              description = `Quarterly (×${multiplier})`;
-              break;
-            case "yearly":
-              if (period.label === "Current") multiplier = 1;
-              else if (period.label === "First Year") multiplier = 1;
-              else if (period.label === "Second Year") multiplier = 2;
-              else if (period.label === "Third Year") multiplier = 3;
-              else if (period.label === "Fifth Year") multiplier = 5;
-              description = `Yearly (×${multiplier})`;
-              break;
+      flatFees: leadData.flat_fee_config
+        .filter((config) => {
+          // One-time fees only show in first period (Current)
+          if (config.type === "one_time") {
+            return period.label === "Current";
           }
-        }
+          // Recurring fees show in all periods
+          return config.type === "recurring";
+        })
+        .map((config) => {
+          let multiplier = 1;
+          let description = "One time";
 
-        return {
-          ...config,
-          multiplier,
-          description,
-          totalValue: config.value * multiplier,
-          totalValueUSD: convertCurrency(config.value * multiplier, config.currency, "USD"),
-        };
-      })
+          if (config.type === "recurring" && config.recurring_period) {
+            switch (config.recurring_period) {
+              case "monthly":
+                if (period.label === "Current") multiplier = 1;
+                else if (period.label === "First Year") multiplier = 12;
+                else if (period.label === "Second Year") multiplier = 24;
+                else if (period.label === "Third Year") multiplier = 36;
+                else if (period.label === "Fifth Year") multiplier = 60;
+                description = `Monthly (×${multiplier})`;
+                break;
+              case "quarterly":
+                if (period.label === "Current") multiplier = 1;
+                else if (period.label === "First Year") multiplier = 4;
+                else if (period.label === "Second Year") multiplier = 8;
+                else if (period.label === "Third Year") multiplier = 12;
+                else if (period.label === "Fifth Year") multiplier = 20;
+                description = `Quarterly (×${multiplier})`;
+                break;
+              case "yearly":
+                if (period.label === "Current") multiplier = 1;
+                else if (period.label === "First Year") multiplier = 1;
+                else if (period.label === "Second Year") multiplier = 2;
+                else if (period.label === "Third Year") multiplier = 3;
+                else if (period.label === "Fifth Year") multiplier = 5;
+                description = `Yearly (×${multiplier})`;
+                break;
+            }
+          }
+
+          return {
+            ...config,
+            multiplier,
+            description,
+            totalValue: config.value * multiplier,
+            totalValueUSD: convertCurrency(
+              config.value * multiplier,
+              config.currency,
+              "USD",
+            ),
+          };
+        }),
     }));
   };
 
@@ -655,7 +663,7 @@ export default function CreateLead() {
       if (draftId) {
         try {
           await apiClient.updateLead(draftId, partialData);
-          console.log('Draft updated successfully');
+          console.log("Draft updated successfully");
         } catch (error) {
           console.error("Failed to update draft, creating new one:", error);
           // If update fails, create a new draft
@@ -666,7 +674,7 @@ export default function CreateLead() {
         // Create new draft
         const result = await partialSaveMutation.mutateAsync(partialData);
         setDraftId(result.id);
-        console.log('Draft created successfully');
+        console.log("Draft created successfully");
       }
 
       setIsPartialSaved(true);
@@ -774,9 +782,9 @@ export default function CreateLead() {
         };
         try {
           result = await apiClient.updateLead(draftId, completeData);
-          console.log('Draft converted to complete lead successfully');
+          console.log("Draft converted to complete lead successfully");
         } catch (error) {
-          console.error('Failed to update draft, creating new lead:', error);
+          console.error("Failed to update draft, creating new lead:", error);
           result = await createLeadMutation.mutateAsync(submitData);
         }
       } else {
@@ -1198,7 +1206,10 @@ export default function CreateLead() {
                       type="number"
                       value={leadData.expected_daily_txn_volume_year1}
                       onChange={(e) =>
-                        updateField("expected_daily_txn_volume_year1", e.target.value)
+                        updateField(
+                          "expected_daily_txn_volume_year1",
+                          e.target.value,
+                        )
                       }
                       className="mt-1"
                       placeholder="Daily transactions in year 1"
@@ -1213,7 +1224,10 @@ export default function CreateLead() {
                       type="number"
                       value={leadData.expected_daily_txn_volume_year2}
                       onChange={(e) =>
-                        updateField("expected_daily_txn_volume_year2", e.target.value)
+                        updateField(
+                          "expected_daily_txn_volume_year2",
+                          e.target.value,
+                        )
                       }
                       className="mt-1"
                       placeholder="Daily transactions in year 2"
@@ -1231,7 +1245,10 @@ export default function CreateLead() {
                       type="number"
                       value={leadData.expected_daily_txn_volume_year3}
                       onChange={(e) =>
-                        updateField("expected_daily_txn_volume_year3", e.target.value)
+                        updateField(
+                          "expected_daily_txn_volume_year3",
+                          e.target.value,
+                        )
                       }
                       className="mt-1"
                       placeholder="Daily transactions in year 3"
@@ -1246,7 +1263,10 @@ export default function CreateLead() {
                       type="number"
                       value={leadData.expected_daily_txn_volume_year5}
                       onChange={(e) =>
-                        updateField("expected_daily_txn_volume_year5", e.target.value)
+                        updateField(
+                          "expected_daily_txn_volume_year5",
+                          e.target.value,
+                        )
                       }
                       className="mt-1"
                       placeholder="Daily transactions in year 5"
@@ -1266,11 +1286,15 @@ export default function CreateLead() {
                 <div>
                   <CardTitle>Commercials Configuration</CardTitle>
                   <CardDescription>
-                    Configure flat fees and transaction-based pricing for this lead
+                    Configure flat fees and transaction-based pricing for this
+                    lead
                   </CardDescription>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Label htmlFor="billing_currency" className="text-sm font-medium">
+                  <Label
+                    htmlFor="billing_currency"
+                    className="text-sm font-medium"
+                  >
                     Billing Currency:
                   </Label>
                   <Select
@@ -1299,7 +1323,6 @@ export default function CreateLead() {
                     Commercials Config
                   </AccordionTrigger>
                   <AccordionContent className="space-y-6">
-
                     {/* Flat Fee Config */}
                     <div className="border-t pt-6">
                       <div className="flex items-center justify-between mb-4">
@@ -1317,14 +1340,20 @@ export default function CreateLead() {
 
                       {leadData.flat_fee_config.length === 0 ? (
                         <p className="text-gray-500 text-center py-4">
-                          No flat fees configured. Click "Add Flat Fee" to add one.
+                          No flat fees configured. Click "Add Flat Fee" to add
+                          one.
                         </p>
                       ) : (
                         <div className="space-y-4">
                           {leadData.flat_fee_config.map((config, index) => (
-                            <div key={config.id} className="border rounded-lg p-4 space-y-4">
+                            <div
+                              key={config.id}
+                              className="border rounded-lg p-4 space-y-4"
+                            >
                               <div className="flex items-center justify-between">
-                                <h5 className="font-medium">Flat Fee #{index + 1}</h5>
+                                <h5 className="font-medium">
+                                  Flat Fee #{index + 1}
+                                </h5>
                                 <Button
                                   type="button"
                                   variant="outline"
@@ -1342,7 +1371,11 @@ export default function CreateLead() {
                                   <Input
                                     value={config.component_name}
                                     onChange={(e) =>
-                                      updateFlatFeeConfig(index, "component_name", e.target.value)
+                                      updateFlatFeeConfig(
+                                        index,
+                                        "component_name",
+                                        e.target.value,
+                                      )
                                     }
                                     placeholder="e.g., Setup Fee"
                                     className="mt-1"
@@ -1355,7 +1388,11 @@ export default function CreateLead() {
                                     type="number"
                                     value={config.value}
                                     onChange={(e) =>
-                                      updateFlatFeeConfig(index, "value", parseFloat(e.target.value) || 0)
+                                      updateFlatFeeConfig(
+                                        index,
+                                        "value",
+                                        parseFloat(e.target.value) || 0,
+                                      )
                                     }
                                     placeholder="0"
                                     className="mt-1"
@@ -1367,16 +1404,26 @@ export default function CreateLead() {
                                   <Select
                                     value={config.currency}
                                     onValueChange={(value) =>
-                                      updateFlatFeeConfig(index, "currency", value)
+                                      updateFlatFeeConfig(
+                                        index,
+                                        "currency",
+                                        value,
+                                      )
                                     }
                                   >
                                     <SelectTrigger className="mt-1">
                                       <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                      <SelectItem value="INR">INR (₹)</SelectItem>
-                                      <SelectItem value="USD">USD ($)</SelectItem>
-                                      <SelectItem value="AED">AED (د.إ)</SelectItem>
+                                      <SelectItem value="INR">
+                                        INR (₹)
+                                      </SelectItem>
+                                      <SelectItem value="USD">
+                                        USD ($)
+                                      </SelectItem>
+                                      <SelectItem value="AED">
+                                        AED (د.إ)
+                                      </SelectItem>
                                     </SelectContent>
                                   </Select>
                                 </div>
@@ -1393,8 +1440,12 @@ export default function CreateLead() {
                                       <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                      <SelectItem value="one_time">One Time</SelectItem>
-                                      <SelectItem value="recurring">Recurring</SelectItem>
+                                      <SelectItem value="one_time">
+                                        One Time
+                                      </SelectItem>
+                                      <SelectItem value="recurring">
+                                        Recurring
+                                      </SelectItem>
                                     </SelectContent>
                                   </Select>
                                 </div>
@@ -1406,16 +1457,26 @@ export default function CreateLead() {
                                   <Select
                                     value={config.recurring_period || ""}
                                     onValueChange={(value) =>
-                                      updateFlatFeeConfig(index, "recurring_period", value)
+                                      updateFlatFeeConfig(
+                                        index,
+                                        "recurring_period",
+                                        value,
+                                      )
                                     }
                                   >
                                     <SelectTrigger className="mt-1">
                                       <SelectValue placeholder="Select period" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                      <SelectItem value="monthly">Monthly</SelectItem>
-                                      <SelectItem value="quarterly">Quarterly</SelectItem>
-                                      <SelectItem value="yearly">Yearly</SelectItem>
+                                      <SelectItem value="monthly">
+                                        Monthly
+                                      </SelectItem>
+                                      <SelectItem value="quarterly">
+                                        Quarterly
+                                      </SelectItem>
+                                      <SelectItem value="yearly">
+                                        Yearly
+                                      </SelectItem>
                                     </SelectContent>
                                   </Select>
                                 </div>
@@ -1428,11 +1489,16 @@ export default function CreateLead() {
 
                     {/* Transaction Fee Config */}
                     <div className="border-t pt-6">
-                      <h4 className="text-lg font-medium mb-4">Transaction Fee Config</h4>
+                      <h4 className="text-lg font-medium mb-4">
+                        Transaction Fee Config
+                      </h4>
 
-                      {!leadData.solutions || leadData.solutions.length === 0 ? (
+                      {!leadData.solutions ||
+                      leadData.solutions.length === 0 ? (
                         <p className="text-gray-500 text-center py-4">
-                          No solutions selected in Project Details tab. Go to Project Details tab and select solutions to configure transaction fees.
+                          No solutions selected in Project Details tab. Go to
+                          Project Details tab and select solutions to configure
+                          transaction fees.
                         </p>
                       ) : (
                         <Table>
@@ -1444,46 +1510,58 @@ export default function CreateLead() {
                             </TableRow>
                           </TableHeader>
                           <TableBody>
-                            {leadData.transaction_fee_config.map((config, index) => (
-                              <TableRow key={config.solution}>
-                                <TableCell className="font-medium">
-                                  {config.solution}
-                                </TableCell>
-                                <TableCell>
-                                  <Select
-                                    value={config.currency}
-                                    onValueChange={(value) =>
-                                      updateTransactionFeeConfig(index, "currency", value)
-                                    }
-                                  >
-                                    <SelectTrigger className="w-28">
-                                      <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value="INR">INR (₹)</SelectItem>
-                                      <SelectItem value="USD">USD ($)</SelectItem>
-                                      <SelectItem value="AED">AED (د.إ)</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                </TableCell>
-                                <TableCell>
-                                  <Input
-                                    type="number"
-                                    step="0.01"
-                                    value={config.value}
-                                    onChange={(e) =>
-                                      updateTransactionFeeConfig(
-                                        index,
-                                        "value",
-                                        parseFloat(e.target.value) || 0
-                                      )
-                                    }
-                                    placeholder="0.00"
-                                    className="w-24"
-                                  />
-                                </TableCell>
-                              </TableRow>
-                            ))}
+                            {leadData.transaction_fee_config.map(
+                              (config, index) => (
+                                <TableRow key={config.solution}>
+                                  <TableCell className="font-medium">
+                                    {config.solution}
+                                  </TableCell>
+                                  <TableCell>
+                                    <Select
+                                      value={config.currency}
+                                      onValueChange={(value) =>
+                                        updateTransactionFeeConfig(
+                                          index,
+                                          "currency",
+                                          value,
+                                        )
+                                      }
+                                    >
+                                      <SelectTrigger className="w-28">
+                                        <SelectValue />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="INR">
+                                          INR (₹)
+                                        </SelectItem>
+                                        <SelectItem value="USD">
+                                          USD ($)
+                                        </SelectItem>
+                                        <SelectItem value="AED">
+                                          AED (د.إ)
+                                        </SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </TableCell>
+                                  <TableCell>
+                                    <Input
+                                      type="number"
+                                      step="0.01"
+                                      value={config.value}
+                                      onChange={(e) =>
+                                        updateTransactionFeeConfig(
+                                          index,
+                                          "value",
+                                          parseFloat(e.target.value) || 0,
+                                        )
+                                      }
+                                      placeholder="0.00"
+                                      className="w-24"
+                                    />
+                                  </TableCell>
+                                </TableRow>
+                              ),
+                            )}
                           </TableBody>
                         </Table>
                       )}
@@ -1504,13 +1582,18 @@ export default function CreateLead() {
                     ) : (
                       <div className="space-y-6">
                         {calculateSummary().map((period, periodIndex) => (
-                          <div key={period.label} className="border rounded-lg p-4">
+                          <div
+                            key={period.label}
+                            className="border rounded-lg p-4"
+                          >
                             <h5 className="font-semibold mb-3">
                               {period.label} {period.description}
                             </h5>
 
                             {period.solutions.length === 0 ? (
-                              <p className="text-gray-500">No transaction fees configured</p>
+                              <p className="text-gray-500">
+                                No transaction fees configured
+                              </p>
                             ) : (
                               <Table>
                                 <TableHeader>
@@ -1518,11 +1601,17 @@ export default function CreateLead() {
                                     <TableHead>Solution</TableHead>
                                     <TableHead>Rate</TableHead>
                                     {period.label === "Current" ? (
-                                      <TableHead>Total Transaction Count (month)</TableHead>
+                                      <TableHead>
+                                        Total Transaction Count (month)
+                                      </TableHead>
                                     ) : (
                                       <>
-                                        <TableHead>Total Transaction Count (month)</TableHead>
-                                        <TableHead>Total Transaction Count (year)</TableHead>
+                                        <TableHead>
+                                          Total Transaction Count (month)
+                                        </TableHead>
+                                        <TableHead>
+                                          Total Transaction Count (year)
+                                        </TableHead>
                                       </>
                                     )}
                                     <TableHead>INR Value</TableHead>
@@ -1532,21 +1621,44 @@ export default function CreateLead() {
                                 <TableBody>
                                   {period.solutions.map((solution, index) => (
                                     <TableRow key={solution.solution}>
-                                      <TableCell className="font-medium">{solution.solution}</TableCell>
-                                      <TableCell>{solution.value} {solution.currency}</TableCell>
+                                      <TableCell className="font-medium">
+                                        {solution.solution}
+                                      </TableCell>
+                                      <TableCell>
+                                        {solution.value} {solution.currency}
+                                      </TableCell>
                                       {period.label === "Current" ? (
-                                        <TableCell>{period.totalTransactions.toLocaleString()}</TableCell>
+                                        <TableCell>
+                                          {period.totalTransactions.toLocaleString()}
+                                        </TableCell>
                                       ) : (
                                         <>
-                                          <TableCell>{(period.volume * 30).toLocaleString()}</TableCell>
-                                          <TableCell>{period.totalTransactions.toLocaleString()}</TableCell>
+                                          <TableCell>
+                                            {(
+                                              period.volume * 30
+                                            ).toLocaleString()}
+                                          </TableCell>
+                                          <TableCell>
+                                            {period.totalTransactions.toLocaleString()}
+                                          </TableCell>
                                         </>
                                       )}
                                       <TableCell>
-                                        ₹{convertCurrency(solution.totalValue, solution.currency, "INR").toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                                        ₹
+                                        {convertCurrency(
+                                          solution.totalValue,
+                                          solution.currency,
+                                          "INR",
+                                        ).toLocaleString(undefined, {
+                                          maximumFractionDigits: 2,
+                                        })}
                                       </TableCell>
                                       <TableCell>
-                                        ${solution.totalValueUSD.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                                        $
+                                        {solution.totalValueUSD.toLocaleString(
+                                          undefined,
+                                          { maximumFractionDigits: 2 },
+                                        )}
                                       </TableCell>
                                     </TableRow>
                                   ))}
@@ -1554,14 +1666,23 @@ export default function CreateLead() {
                                   {period.flatFees.length > 0 && (
                                     <>
                                       <TableRow className="bg-blue-50">
-                                        <TableCell colSpan={period.label === "Current" ? 5 : 6} className="font-semibold text-blue-800">
+                                        <TableCell
+                                          colSpan={
+                                            period.label === "Current" ? 5 : 6
+                                          }
+                                          className="font-semibold text-blue-800"
+                                        >
                                           Flat Fees
                                         </TableCell>
                                       </TableRow>
                                       {period.flatFees.map((flatFee, index) => (
                                         <TableRow key={`flat-${index}`}>
-                                          <TableCell className="font-medium">{flatFee.component_name}</TableCell>
-                                          <TableCell>{flatFee.description}</TableCell>
+                                          <TableCell className="font-medium">
+                                            {flatFee.component_name}
+                                          </TableCell>
+                                          <TableCell>
+                                            {flatFee.description}
+                                          </TableCell>
                                           {period.label === "Current" ? (
                                             <TableCell>-</TableCell>
                                           ) : (
@@ -1571,10 +1692,21 @@ export default function CreateLead() {
                                             </>
                                           )}
                                           <TableCell>
-                                            ₹{convertCurrency(flatFee.totalValue, flatFee.currency, "INR").toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                                            ₹
+                                            {convertCurrency(
+                                              flatFee.totalValue,
+                                              flatFee.currency,
+                                              "INR",
+                                            ).toLocaleString(undefined, {
+                                              maximumFractionDigits: 2,
+                                            })}
                                           </TableCell>
                                           <TableCell>
-                                            ${flatFee.totalValueUSD.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                                            $
+                                            {flatFee.totalValueUSD.toLocaleString(
+                                              undefined,
+                                              { maximumFractionDigits: 2 },
+                                            )}
                                           </TableCell>
                                         </TableRow>
                                       ))}
@@ -1585,24 +1717,70 @@ export default function CreateLead() {
                                   <TableRow className="font-bold bg-gray-50">
                                     <TableCell>Total</TableCell>
                                     <TableCell>
-                                      {period.solutions.reduce((sum, s) => sum + s.value, 0).toLocaleString(undefined, { maximumFractionDigits: 2 })} {leadData.billing_currency} (txn rate)
+                                      {period.solutions
+                                        .reduce((sum, s) => sum + s.value, 0)
+                                        .toLocaleString(undefined, {
+                                          maximumFractionDigits: 2,
+                                        })}{" "}
+                                      {leadData.billing_currency} (txn rate)
                                     </TableCell>
                                     {period.label === "Current" ? (
-                                      <TableCell>{period.totalTransactions.toLocaleString()}</TableCell>
+                                      <TableCell>
+                                        {period.totalTransactions.toLocaleString()}
+                                      </TableCell>
                                     ) : (
                                       <>
-                                        <TableCell>{(period.volume * 30).toLocaleString()}</TableCell>
-                                        <TableCell>{period.totalTransactions.toLocaleString()}</TableCell>
+                                        <TableCell>
+                                          {(
+                                            period.volume * 30
+                                          ).toLocaleString()}
+                                        </TableCell>
+                                        <TableCell>
+                                          {period.totalTransactions.toLocaleString()}
+                                        </TableCell>
                                       </>
                                     )}
                                     <TableCell>
-                                      ₹{(
-                                        period.solutions.reduce((sum, s) => sum + convertCurrency(s.totalValue, s.currency, "INR"), 0) +
-                                        period.flatFees.reduce((sum, f) => sum + convertCurrency(f.totalValue, f.currency, "INR"), 0)
-                                      ).toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                                      ₹
+                                      {(
+                                        period.solutions.reduce(
+                                          (sum, s) =>
+                                            sum +
+                                            convertCurrency(
+                                              s.totalValue,
+                                              s.currency,
+                                              "INR",
+                                            ),
+                                          0,
+                                        ) +
+                                        period.flatFees.reduce(
+                                          (sum, f) =>
+                                            sum +
+                                            convertCurrency(
+                                              f.totalValue,
+                                              f.currency,
+                                              "INR",
+                                            ),
+                                          0,
+                                        )
+                                      ).toLocaleString(undefined, {
+                                        maximumFractionDigits: 2,
+                                      })}
                                     </TableCell>
                                     <TableCell>
-                                      ${(period.solutions.reduce((sum, s) => sum + s.totalValueUSD, 0) + period.flatFees.reduce((sum, f) => sum + f.totalValueUSD, 0)).toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                                      $
+                                      {(
+                                        period.solutions.reduce(
+                                          (sum, s) => sum + s.totalValueUSD,
+                                          0,
+                                        ) +
+                                        period.flatFees.reduce(
+                                          (sum, f) => sum + f.totalValueUSD,
+                                          0,
+                                        )
+                                      ).toLocaleString(undefined, {
+                                        maximumFractionDigits: 2,
+                                      })}
                                     </TableCell>
                                   </TableRow>
                                 </TableBody>
@@ -1913,7 +2091,7 @@ export default function CreateLead() {
           <div className="flex items-center space-x-3">
             {isPartialSaved && (
               <span className="text-sm text-green-600 bg-green-50 px-3 py-1 rounded-full">
-                ✓ {draftId ? 'Draft updated' : 'Draft saved'}
+                ✓ {draftId ? "Draft updated" : "Draft saved"}
               </span>
             )}
             <Button
@@ -1921,7 +2099,7 @@ export default function CreateLead() {
               onClick={handlePartialSave}
               disabled={saving}
             >
-              {draftId ? 'Update Draft' : 'Save Progress'}
+              {draftId ? "Update Draft" : "Save Progress"}
             </Button>
             {!isLastTab ? (
               <Button onClick={handleNextTab} disabled={saving}>

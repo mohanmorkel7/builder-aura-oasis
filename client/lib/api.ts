@@ -8,13 +8,17 @@ export class ApiClient {
   private async request<T>(
     endpoint: string,
     options: RequestInit = {},
-    retryCount = 0
+    retryCount = 0,
   ): Promise<T> {
     // Circuit breaker check
     const now = Date.now();
-    if (this.failureCount >= this.CIRCUIT_BREAKER_THRESHOLD &&
-        now - this.lastFailureTime < this.CIRCUIT_BREAKER_TIMEOUT) {
-      throw new Error("Circuit breaker: Too many failures, please wait before retrying");
+    if (
+      this.failureCount >= this.CIRCUIT_BREAKER_THRESHOLD &&
+      now - this.lastFailureTime < this.CIRCUIT_BREAKER_TIMEOUT
+    ) {
+      throw new Error(
+        "Circuit breaker: Too many failures, please wait before retrying",
+      );
     }
 
     const url = `${API_BASE_URL}${endpoint}`;
@@ -44,7 +48,12 @@ export class ApiClient {
       }
 
       if (!response.ok) {
-        console.log("API Response not OK. Status:", response.status, "StatusText:", response.statusText);
+        console.log(
+          "API Response not OK. Status:",
+          response.status,
+          "StatusText:",
+          response.statusText,
+        );
 
         // Handle specific status codes
         if (response.status === 401) {
@@ -60,13 +69,19 @@ export class ApiClient {
           console.error("Could not read error response body:", textError);
           // If we can't read the response body, provide a status-specific error
           if (response.status === 400) {
-            throw new Error(`Bad Request (${response.status}): Invalid data provided`);
+            throw new Error(
+              `Bad Request (${response.status}): Invalid data provided`,
+            );
           } else if (response.status === 403) {
             throw new Error(`Forbidden (${response.status}): Access denied`);
           } else if (response.status === 404) {
-            throw new Error(`Not Found (${response.status}): Resource not found`);
+            throw new Error(
+              `Not Found (${response.status}): Resource not found`,
+            );
           } else if (response.status >= 500) {
-            throw new Error(`Server Error (${response.status}): Internal server error`);
+            throw new Error(
+              `Server Error (${response.status}): Internal server error`,
+            );
           } else {
             throw new Error(`HTTP Error (${response.status}): Request failed`);
           }
@@ -98,7 +113,7 @@ export class ApiClient {
       try {
         responseText = await response.text();
       } catch (textError) {
-        console.error('Could not read response body:', textError);
+        console.error("Could not read response body:", textError);
         throw new Error(`Could not read response from server URL: ${url}`);
       }
 
@@ -109,8 +124,11 @@ export class ApiClient {
         this.failureCount = 0;
         return result;
       } catch (jsonError) {
-        console.error('Invalid JSON response body:', responseText.substring(0, 500)); // Log first 500 chars
-        console.error('JSON parse error:', jsonError);
+        console.error(
+          "Invalid JSON response body:",
+          responseText.substring(0, 500),
+        ); // Log first 500 chars
+        console.error("JSON parse error:", jsonError);
         throw new Error(`Invalid JSON response from server URL: ${url}`);
       }
     } catch (error) {
@@ -123,9 +141,15 @@ export class ApiClient {
       console.error("API request failed:", errorMessage, "URL:", url);
 
       // Retry logic for network errors
-      if (error instanceof TypeError && error.message.includes("Failed to fetch") && retryCount < 2) {
+      if (
+        error instanceof TypeError &&
+        error.message.includes("Failed to fetch") &&
+        retryCount < 2
+      ) {
         console.log(`Retrying request ${retryCount + 1}/2 for ${url}`);
-        await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1))); // Exponential backoff
+        await new Promise((resolve) =>
+          setTimeout(resolve, 1000 * (retryCount + 1)),
+        ); // Exponential backoff
         return this.request(endpoint, options, retryCount + 1);
       }
 
@@ -147,10 +171,13 @@ export class ApiClient {
     }
   }
 
-  private xmlHttpRequestFallback(url: string, config: RequestInit): Promise<Response> {
+  private xmlHttpRequestFallback(
+    url: string,
+    config: RequestInit,
+  ): Promise<Response> {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
-      xhr.open(config.method || 'GET', url);
+      xhr.open(config.method || "GET", url);
 
       // Set headers
       if (config.headers) {
@@ -163,16 +190,16 @@ export class ApiClient {
         const response = new Response(xhr.responseText, {
           status: xhr.status,
           statusText: xhr.statusText,
-          headers: new Headers()
+          headers: new Headers(),
         });
         resolve(response);
       };
 
       xhr.onerror = () => {
-        reject(new Error('Network error'));
+        reject(new Error("Network error"));
       };
 
-      xhr.send(config.body as string || null);
+      xhr.send((config.body as string) || null);
     });
   }
 
@@ -404,12 +431,16 @@ export class ApiClient {
   }
 
   async getPartialLeads(salesRepId?: number) {
-    const params = salesRepId ? `?salesRep=${salesRepId}&partial=true` : "?partial=true";
+    const params = salesRepId
+      ? `?salesRep=${salesRepId}&partial=true`
+      : "?partial=true";
     return this.request(`/leads${params}`);
   }
 
   async getMyPartialSaves(userId?: number) {
-    const params = userId ? `?created_by=${userId}&partial_saves_only=true` : "?partial_saves_only=true";
+    const params = userId
+      ? `?created_by=${userId}&partial_saves_only=true`
+      : "?partial_saves_only=true";
     return this.request(`/leads${params}`);
   }
 
@@ -446,8 +477,14 @@ export class ApiClient {
     return this.request("/leads/template-step-dashboard");
   }
 
-  async getLeadsForTemplateStep(templateId: number, stepId: number, status: string) {
-    return this.request(`/leads/template-step/${templateId}/${stepId}/${status}`);
+  async getLeadsForTemplateStep(
+    templateId: number,
+    stepId: number,
+    status: string,
+  ) {
+    return this.request(
+      `/leads/template-step/${templateId}/${stepId}/${status}`,
+    );
   }
 
   // FinOps Task Management methods
@@ -475,23 +512,34 @@ export class ApiClient {
     });
   }
 
-  async updateFinOpsSubTask(taskId: number, subTaskId: string, status: string, userName?: string) {
+  async updateFinOpsSubTask(
+    taskId: number,
+    subTaskId: string,
+    status: string,
+    userName?: string,
+  ) {
     return this.request(`/finops/tasks/${taskId}/subtasks/${subTaskId}`, {
       method: "PATCH",
       body: JSON.stringify({
         status,
-        user_name: userName
+        user_name: userName,
       }),
     });
   }
 
-  async getFinOpsActivityLog(filters?: { taskId?: number; userId?: string; action?: string; date?: string; limit?: number }) {
+  async getFinOpsActivityLog(filters?: {
+    taskId?: number;
+    userId?: string;
+    action?: string;
+    date?: string;
+    limit?: number;
+  }) {
     const params = new URLSearchParams();
-    if (filters?.taskId) params.append('taskId', filters.taskId.toString());
-    if (filters?.userId) params.append('userId', filters.userId);
-    if (filters?.action) params.append('action', filters.action);
-    if (filters?.date) params.append('date', filters.date);
-    if (filters?.limit) params.append('limit', filters.limit.toString());
+    if (filters?.taskId) params.append("taskId", filters.taskId.toString());
+    if (filters?.userId) params.append("userId", filters.userId);
+    if (filters?.action) params.append("action", filters.action);
+    if (filters?.date) params.append("date", filters.date);
+    if (filters?.limit) params.append("limit", filters.limit.toString());
 
     return this.request(`/finops/activity-log?${params.toString()}`);
   }
@@ -503,7 +551,7 @@ export class ApiClient {
   }
 
   async getFinOpsDailyTasks(date?: string) {
-    const params = date ? `?date=${date}` : '';
+    const params = date ? `?date=${date}` : "";
     return this.request(`/finops/daily-tasks${params}`);
   }
 
@@ -527,12 +575,17 @@ export class ApiClient {
     return this.request(`/finops/tasks/${taskId}/summary`);
   }
 
-  async sendFinOpsManualAlert(taskId: number, subtaskId: string, alertType: string, message: string) {
+  async sendFinOpsManualAlert(
+    taskId: number,
+    subtaskId: string,
+    alertType: string,
+    message: string,
+  ) {
     return this.request(`/finops/tasks/${taskId}/subtasks/${subtaskId}/alert`, {
       method: "POST",
       body: JSON.stringify({
         alert_type: alertType,
-        message: message
+        message: message,
       }),
     });
   }
@@ -1038,8 +1091,6 @@ export class ApiClient {
     const query = params.toString();
     return this.request(`/workflow/notifications?${query}`);
   }
-
-
 
   async getWorkflowAutomations() {
     return this.request("/workflow/automations");

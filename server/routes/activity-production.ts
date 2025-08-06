@@ -8,14 +8,14 @@ function jsonResponse(handler: (req: Request, res: Response) => Promise<void>) {
   return async (req: Request, res: Response) => {
     try {
       // Set JSON headers early
-      res.setHeader('Content-Type', 'application/json');
+      res.setHeader("Content-Type", "application/json");
       await handler(req, res);
     } catch (error) {
-      console.error('Unhandled error in route:', error);
+      console.error("Unhandled error in route:", error);
       if (!res.headersSent) {
         res.status(500).json({
-          error: 'Internal server error',
-          message: error instanceof Error ? error.message : 'Unknown error'
+          error: "Internal server error",
+          message: error instanceof Error ? error.message : "Unknown error",
         });
       }
     }
@@ -99,120 +99,132 @@ const mockActivityLogs = [
 // ===== ACTIVITY LOG ROUTES =====
 
 // Get activity logs with filtering
-router.get("/", jsonResponse(async (req: Request, res: Response) => {
-  try {
-    // Set proper JSON headers
-    res.setHeader('Content-Type', 'application/json');
+router.get(
+  "/",
+  jsonResponse(async (req: Request, res: Response) => {
+    try {
+      // Set proper JSON headers
+      res.setHeader("Content-Type", "application/json");
 
-    console.log('Activity logs request received:', {
-      query: req.query,
-      url: req.url,
-      method: req.method
-    });
+      console.log("Activity logs request received:", {
+        query: req.query,
+        url: req.url,
+        method: req.method,
+      });
 
-    const {
-      entity_type,
-      entity_id,
-      action,
-      user_id,
-      client_id,
-      limit = 50,
-      offset = 0,
-      start_date,
-      end_date,
-    } = req.query;
+      const {
+        entity_type,
+        entity_id,
+        action,
+        user_id,
+        client_id,
+        limit = 50,
+        offset = 0,
+        start_date,
+        end_date,
+      } = req.query;
 
-    // Validate numeric parameters
-    const limitNum = Math.max(1, Math.min(parseInt(limit as string) || 50, 1000)); // Cap at 1000
-    const offsetNum = Math.max(0, parseInt(offset as string) || 0);
+      // Validate numeric parameters
+      const limitNum = Math.max(
+        1,
+        Math.min(parseInt(limit as string) || 50, 1000),
+      ); // Cap at 1000
+      const offsetNum = Math.max(0, parseInt(offset as string) || 0);
 
-    // Validate and sanitize date parameters
-    let validStartDate = null;
-    let validEndDate = null;
+      // Validate and sanitize date parameters
+      let validStartDate = null;
+      let validEndDate = null;
 
-    if (start_date) {
-      try {
-        validStartDate = new Date(start_date as string);
-        if (isNaN(validStartDate.getTime())) {
-          console.warn('Invalid start_date parameter (NaN):', start_date);
-          validStartDate = null;
-        } else {
-          // Check if date is too far in the future (more than 1 day)
-          const now = new Date();
-          const oneDayFromNow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-          if (validStartDate > oneDayFromNow) {
-            console.warn('start_date is in the future:', start_date, 'Using current time instead');
-            validStartDate = now;
+      if (start_date) {
+        try {
+          validStartDate = new Date(start_date as string);
+          if (isNaN(validStartDate.getTime())) {
+            console.warn("Invalid start_date parameter (NaN):", start_date);
+            validStartDate = null;
+          } else {
+            // Check if date is too far in the future (more than 1 day)
+            const now = new Date();
+            const oneDayFromNow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+            if (validStartDate > oneDayFromNow) {
+              console.warn(
+                "start_date is in the future:",
+                start_date,
+                "Using current time instead",
+              );
+              validStartDate = now;
+            }
+            console.log(
+              "Activity logs: Using start_date:",
+              validStartDate.toISOString(),
+            );
           }
-          console.log('Activity logs: Using start_date:', validStartDate.toISOString());
+        } catch (e) {
+          console.warn("Invalid start_date parameter (error):", start_date, e);
+          validStartDate = null;
         }
-      } catch (e) {
-        console.warn('Invalid start_date parameter (error):', start_date, e);
-        validStartDate = null;
       }
-    }
 
-    if (end_date) {
-      try {
-        validEndDate = new Date(end_date as string);
-        if (isNaN(validEndDate.getTime())) {
+      if (end_date) {
+        try {
+          validEndDate = new Date(end_date as string);
+          if (isNaN(validEndDate.getTime())) {
+            validEndDate = null;
+          }
+        } catch (e) {
+          console.warn("Invalid end_date parameter:", end_date);
           validEndDate = null;
         }
-      } catch (e) {
-        console.warn('Invalid end_date parameter:', end_date);
-        validEndDate = null;
-      }
-    }
-
-    console.log('Activity logs: Checking database availability...');
-    if (await isDatabaseAvailable()) {
-      console.log('Activity logs: Using database');
-      let whereConditions = [];
-      let params = [];
-      let paramIndex = 1;
-
-      // Build dynamic WHERE clause
-      if (entity_type) {
-        whereConditions.push(`al.entity_type = $${paramIndex++}`);
-        params.push(entity_type);
       }
 
-      if (entity_id) {
-        whereConditions.push(`al.entity_id = $${paramIndex++}`);
-        params.push(entity_id);
-      }
+      console.log("Activity logs: Checking database availability...");
+      if (await isDatabaseAvailable()) {
+        console.log("Activity logs: Using database");
+        let whereConditions = [];
+        let params = [];
+        let paramIndex = 1;
 
-      if (action) {
-        whereConditions.push(`al.action = $${paramIndex++}`);
-        params.push(action);
-      }
+        // Build dynamic WHERE clause
+        if (entity_type) {
+          whereConditions.push(`al.entity_type = $${paramIndex++}`);
+          params.push(entity_type);
+        }
 
-      if (user_id) {
-        whereConditions.push(`al.user_id = $${paramIndex++}`);
-        params.push(parseInt(user_id as string));
-      }
+        if (entity_id) {
+          whereConditions.push(`al.entity_id = $${paramIndex++}`);
+          params.push(entity_id);
+        }
 
-      if (client_id) {
-        whereConditions.push(`al.client_id = $${paramIndex++}`);
-        params.push(parseInt(client_id as string));
-      }
+        if (action) {
+          whereConditions.push(`al.action = $${paramIndex++}`);
+          params.push(action);
+        }
 
-      if (validStartDate) {
-        whereConditions.push(`al.timestamp >= $${paramIndex++}`);
-        params.push(validStartDate.toISOString());
-      }
+        if (user_id) {
+          whereConditions.push(`al.user_id = $${paramIndex++}`);
+          params.push(parseInt(user_id as string));
+        }
 
-      if (validEndDate) {
-        whereConditions.push(`al.timestamp <= $${paramIndex++}`);
-        params.push(validEndDate.toISOString());
-      }
+        if (client_id) {
+          whereConditions.push(`al.client_id = $${paramIndex++}`);
+          params.push(parseInt(client_id as string));
+        }
 
-      const whereClause =
-        whereConditions.length > 0
-          ? `WHERE ${whereConditions.join(" AND ")}`
-          : "";
+        if (validStartDate) {
+          whereConditions.push(`al.timestamp >= $${paramIndex++}`);
+          params.push(validStartDate.toISOString());
+        }
 
-      const query = `
+        if (validEndDate) {
+          whereConditions.push(`al.timestamp <= $${paramIndex++}`);
+          params.push(validEndDate.toISOString());
+        }
+
+        const whereClause =
+          whereConditions.length > 0
+            ? `WHERE ${whereConditions.join(" AND ")}`
+            : "";
+
+        const query = `
         SELECT 
           al.*,
           u.first_name || ' ' || u.last_name as user_name,
@@ -225,131 +237,141 @@ router.get("/", jsonResponse(async (req: Request, res: Response) => {
         LIMIT $${paramIndex++} OFFSET $${paramIndex++}
       `;
 
-      params.push(limitNum, offsetNum);
+        params.push(limitNum, offsetNum);
 
-      const result = await pool.query(query, params);
+        const result = await pool.query(query, params);
 
-      // Get total count for pagination
-      const countQuery = `
+        // Get total count for pagination
+        const countQuery = `
         SELECT COUNT(*) as total
         FROM activity_logs al
         ${whereClause}
       `;
 
-      const countResult = await pool.query(countQuery, params.slice(0, -2)); // Remove limit and offset params
-      const total = parseInt(countResult.rows[0].total);
+        const countResult = await pool.query(countQuery, params.slice(0, -2)); // Remove limit and offset params
+        const total = parseInt(countResult.rows[0].total);
 
-      res.json({
-        activity_logs: result.rows,
-        pagination: {
-          total,
-          limit: limitNum,
-          offset: offsetNum,
-          has_more: offsetNum + limitNum < total,
-        },
-      });
-    } else {
-      console.log("Activity logs: Database unavailable, using mock activity logs");
-
-      // Filter mock activity logs
-      let filteredLogs = mockActivityLogs;
-
-      if (entity_type) {
-        filteredLogs = filteredLogs.filter(
-          (log) => log.entity_type === entity_type,
-        );
-      }
-
-      if (entity_id) {
-        filteredLogs = filteredLogs.filter(
-          (log) => log.entity_id === entity_id,
-        );
-      }
-
-      if (action) {
-        filteredLogs = filteredLogs.filter((log) => log.action === action);
-      }
-
-      if (user_id) {
-        filteredLogs = filteredLogs.filter(
-          (log) => log.user_id === parseInt(user_id as string),
-        );
-      }
-
-      if (client_id) {
-        filteredLogs = filteredLogs.filter(
-          (log) => log.client_id === parseInt(client_id as string),
-        );
-      }
-
-      if (validStartDate) {
-        const startTime = validStartDate.getTime();
-        filteredLogs = filteredLogs.filter(
-          (log) => new Date(log.timestamp).getTime() >= startTime,
-        );
-      }
-
-      if (validEndDate) {
-        const endTime = validEndDate.getTime();
-        filteredLogs = filteredLogs.filter(
-          (log) => new Date(log.timestamp).getTime() <= endTime,
-        );
-      }
-
-      const total = filteredLogs.length;
-      const paginatedLogs = filteredLogs.slice(offsetNum, offsetNum + limitNum);
-
-      const response = {
-        activity_logs: paginatedLogs,
-        pagination: {
-          total,
-          limit: limitNum,
-          offset: offsetNum,
-          has_more: offsetNum + limitNum < total,
-        },
-      };
-
-      console.log('Activity logs: Sending mock response:', {
-        activity_logs_count: response.activity_logs.length,
-        pagination: response.pagination
-      });
-
-      // Ensure the response is JSON serializable
-      try {
-        JSON.stringify(response);
-        res.json(response);
-      } catch (serializationError) {
-        console.error('Response serialization error:', serializationError);
-        res.status(500).json({
-          error: 'Response serialization failed',
-          activity_logs: [],
-          pagination: { total: 0, limit: 50, offset: 0, has_more: false }
+        res.json({
+          activity_logs: result.rows,
+          pagination: {
+            total,
+            limit: limitNum,
+            offset: offsetNum,
+            has_more: offsetNum + limitNum < total,
+          },
         });
+      } else {
+        console.log(
+          "Activity logs: Database unavailable, using mock activity logs",
+        );
+
+        // Filter mock activity logs
+        let filteredLogs = mockActivityLogs;
+
+        if (entity_type) {
+          filteredLogs = filteredLogs.filter(
+            (log) => log.entity_type === entity_type,
+          );
+        }
+
+        if (entity_id) {
+          filteredLogs = filteredLogs.filter(
+            (log) => log.entity_id === entity_id,
+          );
+        }
+
+        if (action) {
+          filteredLogs = filteredLogs.filter((log) => log.action === action);
+        }
+
+        if (user_id) {
+          filteredLogs = filteredLogs.filter(
+            (log) => log.user_id === parseInt(user_id as string),
+          );
+        }
+
+        if (client_id) {
+          filteredLogs = filteredLogs.filter(
+            (log) => log.client_id === parseInt(client_id as string),
+          );
+        }
+
+        if (validStartDate) {
+          const startTime = validStartDate.getTime();
+          filteredLogs = filteredLogs.filter(
+            (log) => new Date(log.timestamp).getTime() >= startTime,
+          );
+        }
+
+        if (validEndDate) {
+          const endTime = validEndDate.getTime();
+          filteredLogs = filteredLogs.filter(
+            (log) => new Date(log.timestamp).getTime() <= endTime,
+          );
+        }
+
+        const total = filteredLogs.length;
+        const paginatedLogs = filteredLogs.slice(
+          offsetNum,
+          offsetNum + limitNum,
+        );
+
+        const response = {
+          activity_logs: paginatedLogs,
+          pagination: {
+            total,
+            limit: limitNum,
+            offset: offsetNum,
+            has_more: offsetNum + limitNum < total,
+          },
+        };
+
+        console.log("Activity logs: Sending mock response:", {
+          activity_logs_count: response.activity_logs.length,
+          pagination: response.pagination,
+        });
+
+        // Ensure the response is JSON serializable
+        try {
+          JSON.stringify(response);
+          res.json(response);
+        } catch (serializationError) {
+          console.error("Response serialization error:", serializationError);
+          res.status(500).json({
+            error: "Response serialization failed",
+            activity_logs: [],
+            pagination: { total: 0, limit: 50, offset: 0, has_more: false },
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching activity logs:", error);
+
+      // Ensure we always return a valid JSON response
+      try {
+        res.status(500).json({
+          error: "Failed to fetch activity logs",
+          message: error instanceof Error ? error.message : "Unknown error",
+          activity_logs: mockActivityLogs.slice(0, 10), // Return limited mock data as fallback
+          pagination: {
+            total: mockActivityLogs.length,
+            limit: parseInt(req.query.limit as string) || 50,
+            offset: parseInt(req.query.offset as string) || 0,
+            has_more: false,
+          },
+        });
+      } catch (jsonError) {
+        console.error("Failed to send JSON response:", jsonError);
+        // Last resort: send a simple JSON error
+        res
+          .status(500)
+          .send(
+            '{"error": "Internal server error", "activity_logs": [], "pagination": {"total": 0, "limit": 50, "offset": 0, "has_more": false}}',
+          );
       }
     }
-  } catch (error) {
-    console.error("Error fetching activity logs:", error);
-
-    // Ensure we always return a valid JSON response
-    try {
-      res.status(500).json({
-        error: "Failed to fetch activity logs",
-        message: error instanceof Error ? error.message : "Unknown error",
-        activity_logs: mockActivityLogs.slice(0, 10), // Return limited mock data as fallback
-        pagination: {
-          total: mockActivityLogs.length,
-          limit: parseInt(req.query.limit as string) || 50,
-          offset: parseInt(req.query.offset as string) || 0,
-          has_more: false,
-        },
-      });
-    } catch (jsonError) {
-      console.error("Failed to send JSON response:", jsonError);
-      // Last resort: send a simple JSON error
-      res.status(500).send('{"error": "Internal server error", "activity_logs": [], "pagination": {"total": 0, "limit": 50, "offset": 0, "has_more": false}}');
-    }
-  }
-}));
+  }),
+);
 
 // Create activity log entry
 router.post("/", async (req: Request, res: Response) => {
@@ -500,7 +522,9 @@ router.get("/stats/summary", async (req: Request, res: Response) => {
         ORDER BY total_count DESC
       `;
 
-      const totalsResult = await pool.query(totalsQuery, [parseInt(days as string)]);
+      const totalsResult = await pool.query(totalsQuery, [
+        parseInt(days as string),
+      ]);
 
       res.json({
         daily_breakdown: result.rows,
@@ -551,15 +575,22 @@ router.get("/stats/summary", async (req: Request, res: Response) => {
       });
     } catch (jsonError) {
       console.error("Failed to send JSON response:", jsonError);
-      res.status(500).send('{"error": "Internal server error", "daily_breakdown": [], "action_totals": [], "period_days": 7}');
+      res
+        .status(500)
+        .send(
+          '{"error": "Internal server error", "daily_breakdown": [], "action_totals": [], "period_days": 7}',
+        );
     }
   }
 });
 
 // Test route to verify routing is working
 router.get("/test", (req: Request, res: Response) => {
-  console.log('TEST ROUTE HIT: /api/activity-production/test');
-  res.json({ message: "Activity production route is working!", timestamp: new Date().toISOString() });
+  console.log("TEST ROUTE HIT: /api/activity-production/test");
+  res.json({
+    message: "Activity production route is working!",
+    timestamp: new Date().toISOString(),
+  });
 });
 
 export default router;

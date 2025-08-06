@@ -329,7 +329,12 @@ export interface CreateLeadChatData {
 }
 
 export class LeadRepository {
-  static async findAll(salesRepId?: number, isPartialOnly?: boolean, createdById?: number, isPartialSavesOnly?: boolean): Promise<Lead[]> {
+  static async findAll(
+    salesRepId?: number,
+    isPartialOnly?: boolean,
+    createdById?: number,
+    isPartialSavesOnly?: boolean,
+  ): Promise<Lead[]> {
     let whereConditions = [];
     let values = [];
     let paramIndex = 1;
@@ -353,10 +358,15 @@ export class LeadRepository {
     }
 
     if (isPartialSavesOnly) {
-      whereConditions.push(`l.notes::jsonb ? 'isPartialSave' AND (l.notes::jsonb->>'isPartialSave')::boolean = true`);
+      whereConditions.push(
+        `l.notes::jsonb ? 'isPartialSave' AND (l.notes::jsonb->>'isPartialSave')::boolean = true`,
+      );
     }
 
-    const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
+    const whereClause =
+      whereConditions.length > 0
+        ? `WHERE ${whereConditions.join(" AND ")}`
+        : "";
 
     const query = `
       SELECT l.*,
@@ -418,7 +428,7 @@ export class LeadRepository {
 
     const values = [
       leadId, // $1
-      leadData.lead_source || 'other', // $2
+      leadData.lead_source || "other", // $2
       leadData.lead_source_value || null, // $3
       leadData.project_title || null, // $4
       leadData.project_description || null, // $5
@@ -432,7 +442,7 @@ export class LeadRepository {
       leadData.spoc || null, // $13
       JSON.stringify(leadData.commercials || []), // $14
       JSON.stringify(leadData.commercial_pricing || []), // $15
-      leadData.client_name || 'New Lead', // $16
+      leadData.client_name || "New Lead", // $16
       leadData.client_type || null, // $17
       leadData.company || null, // $18
       leadData.company_location || null, // $19
