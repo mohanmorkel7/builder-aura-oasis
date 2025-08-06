@@ -693,6 +693,22 @@ export default function CreateLead() {
       if (draftId) {
         try {
           console.log(`Attempting to update existing draft with ID: ${draftId}`);
+
+          // First check if the lead still exists
+          try {
+            await apiClient.getLead(draftId);
+          } catch (checkError) {
+            console.warn("Draft no longer exists, creating new one");
+            // If the draft was deleted, clear the draft ID and create a new one
+            setDraftId(null);
+            const result = await partialSaveMutation.mutateAsync(partialData);
+            setDraftId(result.id);
+            setHasSavedDraftInSession(true);
+            console.log("New draft created after old one was not found:", result);
+            return;
+          }
+
+          // Try to update the existing draft
           const result = await apiClient.updateLead(draftId, partialData);
           console.log("Draft updated successfully:", result);
         } catch (error) {
@@ -702,9 +718,8 @@ export default function CreateLead() {
             console.error("Update error message:", error.message);
           }
 
-          // Instead of creating a new draft, let's try to find out why the update failed
-          // and show an error to the user
-          throw new Error(`Failed to update draft: ${error instanceof Error ? error.message : 'Unknown error'}`);
+          // Show error but don't create duplicates
+          throw new Error(`Failed to update existing draft. Please try again or create a new lead.`);
         }
       } else {
         // Create new draft only if we haven't saved one in this session
