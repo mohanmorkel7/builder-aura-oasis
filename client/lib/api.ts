@@ -5,6 +5,13 @@ export class ApiClient {
   private lastFailureTime = 0;
   private readonly CIRCUIT_BREAKER_THRESHOLD = 5;
   private readonly CIRCUIT_BREAKER_TIMEOUT = 30000; // 30 seconds
+
+  // Method to reset circuit breaker (for development/demo mode)
+  public resetCircuitBreaker() {
+    this.failureCount = 0;
+    this.lastFailureTime = 0;
+    console.log("Circuit breaker reset");
+  }
   private async request<T>(
     endpoint: string,
     options: RequestInit = {},
