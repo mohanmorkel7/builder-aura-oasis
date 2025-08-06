@@ -135,10 +135,14 @@ interface AuthContextType {
 const AuthContext = React.createContext<AuthContextType | undefined>(undefined);
 
 // Set display name for better debugging
-AuthContext.displayName = 'AuthContext';
+AuthContext.displayName = "AuthContext";
 
 // Use React.memo to prevent unnecessary re-renders during HMR
-export const AuthProvider = React.memo(function AuthProvider({ children }: { children: React.ReactNode }) {
+export const AuthProvider = React.memo(function AuthProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [user, setUser] = React.useState<User | null>(null);
   const [isLoading, setIsLoading] = React.useState(true);
 
@@ -404,7 +408,7 @@ export function useAuth() {
         location: window?.location?.pathname || "unknown",
         timestamp: new Date().toISOString(),
         reactVersion: React.version,
-        isHMR: typeof module !== 'undefined' && module.hot,
+        isHMR: typeof module !== "undefined" && module.hot,
       });
 
       // Always provide a fallback to prevent crashes during HMR
