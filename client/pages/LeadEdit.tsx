@@ -388,19 +388,19 @@ export default function LeadEdit() {
 
   // Safe date formatting function to handle invalid dates
   const formatDateSafely = (dateStr: string | null | undefined): string => {
-    if (!dateStr || dateStr.trim() === '') {
-      return '';
+    if (!dateStr || dateStr.trim() === "") {
+      return "";
     }
     try {
-      const date = new Date(dateStr + 'T00:00:00');
+      const date = new Date(dateStr + "T00:00:00");
       if (isNaN(date.getTime())) {
-        console.warn('Invalid date value:', dateStr);
-        return '';
+        console.warn("Invalid date value:", dateStr);
+        return "";
       }
-      return date.toISOString().split('T')[0];
+      return date.toISOString().split("T")[0];
     } catch (error) {
-      console.warn('Error formatting date:', dateStr, error);
-      return '';
+      console.warn("Error formatting date:", dateStr, error);
+      return "";
     }
   };
 
