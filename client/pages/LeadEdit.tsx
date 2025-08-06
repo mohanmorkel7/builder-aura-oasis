@@ -30,6 +30,12 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MultiSelect } from "@/components/ui/multi-select";
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import {
   Table,
   TableBody,
   TableCell,
@@ -106,20 +112,6 @@ const solutionsOptions = [
   "Orchestration",
 ];
 
-const commercialsOptions = [
-  "CardToken",
-  "MylapaySecure",
-  "FRM",
-  "Switch-Cards",
-  "Clearing-Base II",
-  "Optimizer-Cards",
-  "Switch-UPI",
-  "Optimizer-UPI",
-  "Chargeback",
-  "NetworkConnectivity",
-  "Orchestration",
-];
-
 const priorityLevels = [
   { value: "high", label: "High" },
   { value: "medium", label: "Medium" },
@@ -131,31 +123,6 @@ const currencyOptions = [
   { value: "USD", label: "USD ($)" },
   { value: "AED", label: "AED (د.إ)" },
 ];
-
-const getCurrencyUnits = (currency: string) => {
-  switch (currency) {
-    case "INR":
-      return [
-        { value: "rupee", label: "Rupee (₹)" },
-        { value: "paisa", label: "Paisa" },
-      ];
-    case "USD":
-      return [
-        { value: "dollar", label: "Dollar ($)" },
-        { value: "cents", label: "Cents (��)" },
-      ];
-    case "AED":
-      return [
-        { value: "dirham", label: "Dirham (د.إ)" },
-        { value: "fils", label: "Fils" },
-      ];
-    default:
-      return [
-        { value: "paisa", label: "Paisa" },
-        { value: "cents", label: "Cents (¢)" },
-      ];
-  }
-};
 
 const clientTypes = [
   { value: "new", label: "New" },
@@ -205,6 +172,7 @@ export default function LeadEdit() {
     // Lead Source & Status
     lead_source: "",
     lead_source_value: "",
+    lead_created_by: "",
     status: "",
     assigned_to: undefined as number | undefined,
 
@@ -219,18 +187,29 @@ export default function LeadEdit() {
     start_date: "",
     targeted_end_date: "",
     expected_daily_txn_volume: "",
-    project_value: "",
-    project_value_12m: "",
-    project_value_24m: "",
-    project_value_36m: "",
+    expected_daily_txn_volume_year1: "",
+    expected_daily_txn_volume_year2: "",
+    expected_daily_txn_volume_year3: "",
+    expected_daily_txn_volume_year5: "",
     spoc: "",
 
     // Commercials
-    commercials: [] as string[],
-    commercial_pricing: [] as Array<{
+    billing_currency: "INR" as "INR" | "USD" | "AED",
+    
+    // Flat fee config
+    flat_fee_config: [] as Array<{
+      id: string;
+      component_name: string;
+      value: number;
+      currency: "INR" | "USD" | "AED";
+      type: "one_time" | "recurring";
+      recurring_period?: "monthly" | "quarterly" | "yearly";
+    }>,
+    
+    // Transaction fee config
+    transaction_fee_config: [] as Array<{
       solution: string;
       value: number;
-      unit: "rupee" | "paisa" | "dollar" | "cents" | "dirham" | "fils";
       currency: "INR" | "USD" | "AED";
     }>,
 
@@ -268,7 +247,6 @@ export default function LeadEdit() {
   const [hasChanges, setHasChanges] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
-  const [displayCurrency, setDisplayCurrency] = useState<"INR" | "USD" | "AED">("INR");
   const [currentTab, setCurrentTab] = useState("basic");
   const [isPartialSaved, setIsPartialSaved] = useState(false);
 
@@ -331,7 +309,6 @@ export default function LeadEdit() {
     user?.role === "sales" ||
     user?.role === "product";
   const canEditAssignments = user?.role === "admin" || user?.role === "sales";
-  const canViewOnly = false; // All users can edit now
 
   // Update state when lead data is loaded
   React.useEffect(() => {
@@ -340,6 +317,7 @@ export default function LeadEdit() {
       setLeadData({
         lead_source: lead.lead_source || "",
         lead_source_value: lead.lead_source_value || "",
+        lead_created_by: lead.lead_created_by || "",
         status: lead.status || "",
         project_title: lead.project_title || "",
         project_description: lead.project_description || "",
@@ -352,17 +330,17 @@ export default function LeadEdit() {
         targeted_end_date: lead.targeted_end_date
           ? lead.targeted_end_date.split("T")[0]
           : "",
-        expected_daily_txn_volume:
-          lead.expected_daily_txn_volume?.toString() || "",
-        project_value: lead.project_value?.toString() || "",
-        project_value_12m: lead.project_value_12m?.toString() || "",
-        project_value_24m: lead.project_value_24m?.toString() || "",
-        project_value_36m: lead.project_value_36m?.toString() || "",
+        expected_daily_txn_volume: lead.expected_daily_txn_volume?.toString() || "",
+        expected_daily_txn_volume_year1: lead.expected_daily_txn_volume_year1?.toString() || "",
+        expected_daily_txn_volume_year2: lead.expected_daily_txn_volume_year2?.toString() || "",
+        expected_daily_txn_volume_year3: lead.expected_daily_txn_volume_year3?.toString() || "",
+        expected_daily_txn_volume_year5: lead.expected_daily_txn_volume_year5?.toString() || "",
         spoc: lead.spoc || "",
 
         // Commercials
-        commercials: lead.commercials || [],
-        commercial_pricing: lead.commercial_pricing || [],
+        billing_currency: lead.billing_currency || "INR",
+        flat_fee_config: lead.flat_fee_config ? JSON.parse(lead.flat_fee_config) : [],
+        transaction_fee_config: lead.transaction_fee_config ? JSON.parse(lead.transaction_fee_config) : [],
 
         // Contacts
         contacts: lead.contacts || [
@@ -398,37 +376,190 @@ export default function LeadEdit() {
       [field]: value,
     };
 
-    // If solutions are updated, sync with commercial_pricing
+    // Clear lead_source_value when lead_source changes
+    if (field === "lead_source") {
+      newData.lead_source_value = "";
+    }
+
+    // If solutions are updated, sync with transaction_fee_config
     if (field === "solutions") {
-      const existingPricing = leadData.commercial_pricing || [];
-      const newPricing = value.map((solution: string) => {
-        // Keep existing pricing if solution was already selected
-        const existing = existingPricing.find((p) => p.solution === solution);
+      const existingConfig = leadData.transaction_fee_config || [];
+      const newConfig = value.map((solution: string) => {
+        // Keep existing config if solution was already selected
+        const existing = existingConfig.find((c) => c.solution === solution);
         return (
           existing || {
             solution,
             value: 0,
-            unit: "rupee" as const,
-            currency: "INR" as const,
+            currency: leadData.billing_currency,
           }
         );
       });
-      newData.commercial_pricing = newPricing;
+      newData.transaction_fee_config = newConfig;
+    }
+
+    // If billing currency is updated, update all related currency fields
+    if (field === "billing_currency") {
+      // Update transaction fee configs to new currency
+      newData.transaction_fee_config = leadData.transaction_fee_config.map(config => ({
+        ...config,
+        currency: value
+      }));
+      
+      // Update flat fee configs to new currency  
+      newData.flat_fee_config = leadData.flat_fee_config.map(config => ({
+        ...config,
+        currency: value
+      }));
     }
 
     setLeadData(newData);
     setHasChanges(true);
   };
 
-  const updateCommercialPricing = (
+  const updateTransactionFeeConfig = (
     index: number,
     field: string,
     value: any,
   ) => {
-    const newPricing = [...(leadData.commercial_pricing || [])];
-    newPricing[index] = { ...newPricing[index], [field]: value };
-    setLeadData((prev) => ({ ...prev, commercial_pricing: newPricing }));
+    const newConfig = [...(leadData.transaction_fee_config || [])];
+    newConfig[index] = { ...newConfig[index], [field]: value };
+    setLeadData((prev) => ({ ...prev, transaction_fee_config: newConfig }));
     setHasChanges(true);
+  };
+
+  const addFlatFeeConfig = () => {
+    const newConfig = {
+      id: Date.now().toString(),
+      component_name: "",
+      value: 0,
+      currency: leadData.billing_currency,
+      type: "one_time" as const,
+    };
+    setLeadData((prev) => ({
+      ...prev,
+      flat_fee_config: [...prev.flat_fee_config, newConfig],
+    }));
+    setHasChanges(true);
+  };
+
+  const updateFlatFeeConfig = (
+    index: number,
+    field: string,
+    value: any,
+  ) => {
+    const newConfig = [...leadData.flat_fee_config];
+    newConfig[index] = { ...newConfig[index], [field]: value };
+    setLeadData((prev) => ({ ...prev, flat_fee_config: newConfig }));
+    setHasChanges(true);
+  };
+
+  const removeFlatFeeConfig = (index: number) => {
+    const newConfig = leadData.flat_fee_config.filter((_, i) => i !== index);
+    setLeadData((prev) => ({ ...prev, flat_fee_config: newConfig }));
+    setHasChanges(true);
+  };
+
+  // Summary calculations
+  const calculateSummary = () => {
+    const currentVolume = parseInt(leadData.expected_daily_txn_volume) || 0;
+    const year1Volume = parseInt(leadData.expected_daily_txn_volume_year1) || 0;
+    const year2Volume = parseInt(leadData.expected_daily_txn_volume_year2) || 0;
+    const year3Volume = parseInt(leadData.expected_daily_txn_volume_year3) || 0;
+    const year5Volume = parseInt(leadData.expected_daily_txn_volume_year5) || 0;
+
+    const periods = [
+      { 
+        label: "Current", 
+        volume: currentVolume, 
+        multiplier: 30,
+        description: `(${currentVolume.toLocaleString()} daily txns × 30 days = ${(currentVolume * 30).toLocaleString()} total txns)`
+      },
+      { 
+        label: "First Year", 
+        volume: year1Volume, 
+        multiplier: 30 * 12,
+        description: `(${year1Volume.toLocaleString()} daily txns × 30 days × 12 months = ${(year1Volume * 360).toLocaleString()} total txns)`
+      },
+      { 
+        label: "Second Year", 
+        volume: year2Volume, 
+        multiplier: 30 * 12,
+        description: `(${year2Volume.toLocaleString()} daily txns × 30 days × 12 months = ${(year2Volume * 360).toLocaleString()} total txns)`
+      },
+      { 
+        label: "Third Year", 
+        volume: year3Volume, 
+        multiplier: 30 * 12,
+        description: `(${year3Volume.toLocaleString()} daily txns × 30 days × 12 months = ${(year3Volume * 360).toLocaleString()} total txns)`
+      },
+      { 
+        label: "Fifth Year", 
+        volume: year5Volume, 
+        multiplier: 30 * 12,
+        description: `(${year5Volume.toLocaleString()} daily txns × 30 days × 12 months = ${(year5Volume * 360).toLocaleString()} total txns)`
+      },
+    ];
+
+    return periods.map(period => ({
+      ...period,
+      totalTransactions: period.volume * period.multiplier,
+      // Transaction fees
+      solutions: leadData.transaction_fee_config.map(config => ({
+        ...config,
+        totalValue: period.volume * period.multiplier * config.value,
+        totalValueUSD: convertCurrency(period.volume * period.multiplier * config.value, config.currency, "USD"),
+      })),
+      // Flat fees - only show if applicable for this period
+      flatFees: leadData.flat_fee_config.filter(config => {
+        // One-time fees only show in first period (Current)
+        if (config.type === "one_time") {
+          return period.label === "Current";
+        }
+        // Recurring fees show in all periods
+        return config.type === "recurring";
+      }).map(config => {
+        let multiplier = 1;
+        let description = "One time";
+        
+        if (config.type === "recurring" && config.recurring_period) {
+          switch (config.recurring_period) {
+            case "monthly":
+              if (period.label === "Current") multiplier = 1;
+              else if (period.label === "First Year") multiplier = 12;
+              else if (period.label === "Second Year") multiplier = 24;
+              else if (period.label === "Third Year") multiplier = 36;
+              else if (period.label === "Fifth Year") multiplier = 60;
+              description = `Monthly (×${multiplier})`;
+              break;
+            case "quarterly":
+              if (period.label === "Current") multiplier = 1;
+              else if (period.label === "First Year") multiplier = 4;
+              else if (period.label === "Second Year") multiplier = 8;
+              else if (period.label === "Third Year") multiplier = 12;
+              else if (period.label === "Fifth Year") multiplier = 20;
+              description = `Quarterly (×${multiplier})`;
+              break;
+            case "yearly":
+              if (period.label === "Current") multiplier = 1;
+              else if (period.label === "First Year") multiplier = 1;
+              else if (period.label === "Second Year") multiplier = 2;
+              else if (period.label === "Third Year") multiplier = 3;
+              else if (period.label === "Fifth Year") multiplier = 5;
+              description = `Yearly (×${multiplier})`;
+              break;
+          }
+        }
+        
+        return {
+          ...config,
+          multiplier,
+          description,
+          totalValue: config.value * multiplier,
+          totalValueUSD: convertCurrency(config.value * multiplier, config.currency, "USD"),
+        };
+      })
+    }));
   };
 
   const updateContact = (index: number, field: string, value: string) => {
@@ -504,24 +635,27 @@ export default function LeadEdit() {
     try {
       const updateData = {
         ...leadData,
-        project_value: leadData.project_value
-          ? parseFloat(leadData.project_value)
-          : undefined,
-        project_value_12m: leadData.project_value_12m
-          ? parseFloat(leadData.project_value_12m)
-          : undefined,
-        project_value_24m: leadData.project_value_24m
-          ? parseFloat(leadData.project_value_24m)
-          : undefined,
-        project_value_36m: leadData.project_value_36m
-          ? parseFloat(leadData.project_value_36m)
-          : undefined,
         expected_daily_txn_volume: leadData.expected_daily_txn_volume
           ? parseInt(leadData.expected_daily_txn_volume)
+          : undefined,
+        expected_daily_txn_volume_year1: leadData.expected_daily_txn_volume_year1
+          ? parseInt(leadData.expected_daily_txn_volume_year1)
+          : undefined,
+        expected_daily_txn_volume_year2: leadData.expected_daily_txn_volume_year2
+          ? parseInt(leadData.expected_daily_txn_volume_year2)
+          : undefined,
+        expected_daily_txn_volume_year3: leadData.expected_daily_txn_volume_year3
+          ? parseInt(leadData.expected_daily_txn_volume_year3)
+          : undefined,
+        expected_daily_txn_volume_year5: leadData.expected_daily_txn_volume_year5
+          ? parseInt(leadData.expected_daily_txn_volume_year5)
           : undefined,
         probability: leadData.probability
           ? parseInt(leadData.probability)
           : undefined,
+        billing_currency: leadData.billing_currency,
+        flat_fee_config: JSON.stringify(leadData.flat_fee_config),
+        transaction_fee_config: JSON.stringify(leadData.transaction_fee_config),
       };
 
       await updateLeadMutation.mutateAsync({
@@ -545,8 +679,6 @@ export default function LeadEdit() {
   const handleCancel = () => {
     navigate(`/leads/${id}`);
   };
-
-  // No redirection needed - all roles can edit
 
   const isFormValid = leadData.client_name.trim() && leadData.lead_source;
 
@@ -643,48 +775,46 @@ export default function LeadEdit() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="lead_source">Lead Source *</Label>
-                  <Select
-                    value={leadData.lead_source}
-                    onValueChange={(value) => updateField("lead_source", value)}
-                  >
-                    <SelectTrigger className="mt-1">
-                      <SelectValue placeholder="Select lead source" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {leadSources.map((source) => {
-                        const Icon = source.icon;
-                        return (
-                          <SelectItem key={source.value} value={source.value}>
-                            <div className="flex items-center space-x-2">
-                              <Icon className="w-4 h-4" />
-                              <span>{source.label}</span>
-                            </div>
-                          </SelectItem>
-                        );
-                      })}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="status">Lead Status</Label>
-                  <Select
-                    value={leadData.status}
-                    onValueChange={(value) => updateField("status", value)}
-                  >
-                    <SelectTrigger className="mt-1">
-                      <SelectValue placeholder="Select status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {statuses.map((status) => (
-                        <SelectItem key={status.value} value={status.value}>
-                          {status.label}
+              {/* Lead Source */}
+              <div>
+                <Label htmlFor="lead_source">Lead Source *</Label>
+                <Select
+                  value={leadData.lead_source}
+                  onValueChange={(value) => updateField("lead_source", value)}
+                >
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select how you found this lead" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {leadSources.map((source) => {
+                      const Icon = source.icon;
+                      return (
+                        <SelectItem key={source.value} value={source.value}>
+                          <div className="flex items-center space-x-2">
+                            <Icon className="w-4 h-4" />
+                            <span>{source.label}</span>
+                          </div>
                         </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Lead Created By */}
+              <div>
+                <Label htmlFor="lead_created_by">Lead Created By</Label>
+                <div className="relative mt-1">
+                  <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Input
+                    id="lead_created_by"
+                    value={leadData.lead_created_by}
+                    onChange={(e) =>
+                      updateField("lead_created_by", e.target.value)
+                    }
+                    className="pl-10"
+                    placeholder="Enter email address of lead creator"
+                  />
                 </div>
               </div>
 
@@ -742,6 +872,26 @@ export default function LeadEdit() {
                   </div>
                 </div>
               )}
+
+              {/* Status */}
+              <div>
+                <Label htmlFor="status">Lead Status</Label>
+                <Select
+                  value={leadData.status}
+                  onValueChange={(value) => updateField("status", value)}
+                >
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {statuses.map((status) => (
+                      <SelectItem key={status.value} value={status.value}>
+                        {status.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -939,85 +1089,73 @@ export default function LeadEdit() {
                       updateField("expected_daily_txn_volume", e.target.value)
                     }
                     className="mt-1"
-                    placeholder="Number of daily transactions"
+                    placeholder="Current daily transaction volume"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="project_value">
-                      Project Current Value
+                    <Label htmlFor="expected_daily_txn_volume_year1">
+                      Expected Daily Txn Volume First Year
                     </Label>
-                    <div className="relative mt-1">
-                      <DollarSign className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                      <Input
-                        id="project_value"
-                        type="number"
-                        value={leadData.project_value}
-                        onChange={(e) =>
-                          updateField("project_value", e.target.value)
-                        }
-                        className="pl-10"
-                        placeholder="Current project value"
-                      />
-                    </div>
+                    <Input
+                      id="expected_daily_txn_volume_year1"
+                      type="number"
+                      value={leadData.expected_daily_txn_volume_year1}
+                      onChange={(e) =>
+                        updateField("expected_daily_txn_volume_year1", e.target.value)
+                      }
+                      className="mt-1"
+                      placeholder="Daily transactions in year 1"
+                    />
                   </div>
                   <div>
-                    <Label htmlFor="project_value_12m">
-                      Project Value After 12 Months
+                    <Label htmlFor="expected_daily_txn_volume_year2">
+                      Expected Daily Txn Volume Second Year
                     </Label>
-                    <div className="relative mt-1">
-                      <DollarSign className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                      <Input
-                        id="project_value_12m"
-                        type="number"
-                        value={leadData.project_value_12m || ""}
-                        onChange={(e) =>
-                          updateField("project_value_12m", e.target.value)
-                        }
-                        className="pl-10"
-                        placeholder="Expected value after 12 months"
-                      />
-                    </div>
+                    <Input
+                      id="expected_daily_txn_volume_year2"
+                      type="number"
+                      value={leadData.expected_daily_txn_volume_year2}
+                      onChange={(e) =>
+                        updateField("expected_daily_txn_volume_year2", e.target.value)
+                      }
+                      className="mt-1"
+                      placeholder="Daily transactions in year 2"
+                    />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="project_value_24m">
-                      Project Value After 24 Months
+                    <Label htmlFor="expected_daily_txn_volume_year3">
+                      Expected Daily Txn Volume Third Year
                     </Label>
-                    <div className="relative mt-1">
-                      <DollarSign className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                      <Input
-                        id="project_value_24m"
-                        type="number"
-                        value={leadData.project_value_24m || ""}
-                        onChange={(e) =>
-                          updateField("project_value_24m", e.target.value)
-                        }
-                        className="pl-10"
-                        placeholder="Expected value after 24 months"
-                      />
-                    </div>
+                    <Input
+                      id="expected_daily_txn_volume_year3"
+                      type="number"
+                      value={leadData.expected_daily_txn_volume_year3}
+                      onChange={(e) =>
+                        updateField("expected_daily_txn_volume_year3", e.target.value)
+                      }
+                      className="mt-1"
+                      placeholder="Daily transactions in year 3"
+                    />
                   </div>
                   <div>
-                    <Label htmlFor="project_value_36m">
-                      Project Value After 36 Months
+                    <Label htmlFor="expected_daily_txn_volume_year5">
+                      Expected Daily Txn Volume Fifth Year
                     </Label>
-                    <div className="relative mt-1">
-                      <DollarSign className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                      <Input
-                        id="project_value_36m"
-                        type="number"
-                        value={leadData.project_value_36m || ""}
-                        onChange={(e) =>
-                          updateField("project_value_36m", e.target.value)
-                        }
-                        className="pl-10"
-                        placeholder="Expected value after 36 months"
-                      />
-                    </div>
+                    <Input
+                      id="expected_daily_txn_volume_year5"
+                      type="number"
+                      value={leadData.expected_daily_txn_volume_year5}
+                      onChange={(e) =>
+                        updateField("expected_daily_txn_volume_year5", e.target.value)
+                      }
+                      className="mt-1"
+                      placeholder="Daily transactions in year 5"
+                    />
                   </div>
                 </div>
               </div>
@@ -1031,200 +1169,356 @@ export default function LeadEdit() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle>Commercials</CardTitle>
+                  <CardTitle>Commercials Configuration</CardTitle>
                   <CardDescription>
-                    Select the commercial products and services relevant to this
-                    lead
+                    Configure flat fees and transaction-based pricing for this lead
                   </CardDescription>
                 </div>
-                {leadData.commercial_pricing &&
-                  leadData.commercial_pricing.length > 0 && (
-                    <div className="bg-gray-50 rounded-lg p-4 border space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-gray-600">
-                          Total Value by Currency:
-                        </span>
-                        <div className="flex items-center space-x-2">
-                          <span className="text-xs text-gray-500">Convert to:</span>
-                          <Select value={displayCurrency} onValueChange={(value: "INR" | "USD" | "AED") => setDisplayCurrency(value)}>
-                            <SelectTrigger className="w-20 h-7 text-xs">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="INR">INR</SelectItem>
-                              <SelectItem value="USD">USD</SelectItem>
-                              <SelectItem value="AED">AED</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        {/* Original values by currency */}
-                        <div className="flex flex-wrap gap-2">
-                          {Object.entries(
-                            leadData.commercial_pricing.reduce(
-                              (acc: Record<string, { total: number; count: number }>, pricing) => {
-                                const key = `${pricing.currency}_${pricing.unit}`;
-                                if (!acc[key]) {
-                                  acc[key] = { total: 0, count: 0 };
-                                }
-                                acc[key].total += pricing.value || 0;
-                                acc[key].count += 1;
-                                return acc;
-                              },
-                              {},
-                            ),
-                          ).map(([key, data]) => {
-                            const [currency, unit] = key.split("_");
-                            return (
-                              <span
-                                key={key}
-                                className="text-xs bg-white px-2 py-1 rounded border text-gray-700"
-                              >
-                                {data.total.toLocaleString()} {currency} ({unit})
-                              </span>
-                            );
-                          })}
-                        </div>
-
-                        {/* Converted total */}
-                        <div className="border-t pt-2">
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm font-medium text-gray-800">
-                              Total Converted to {displayCurrency}:
-                            </span>
-                            <span className="text-lg font-bold text-blue-600">
-                              {Object.entries(
-                                leadData.commercial_pricing.reduce(
-                                  (acc: Record<string, number>, pricing) => {
-                                    const convertedValue = convertCurrency(
-                                      pricing.value || 0,
-                                      pricing.currency,
-                                      displayCurrency
-                                    );
-                                    acc[displayCurrency] = (acc[displayCurrency] || 0) + convertedValue;
-                                    return acc;
-                                  },
-                                  {},
-                                ),
-                              ).map(([currency, total]) =>
-                                `${total.toLocaleString(undefined, { maximumFractionDigits: 2 })} ${currency}`
-                              ).join(", ")}
-                            </span>
-                          </div>
-                          <div className="text-xs text-gray-500 mt-1">
-                            *Exchange rates are indicative and updated daily
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                <div className="flex items-center space-x-2">
+                  <Label htmlFor="billing_currency" className="text-sm font-medium">
+                    Billing Currency:
+                  </Label>
+                  <Select
+                    value={leadData.billing_currency}
+                    onValueChange={(value: "INR" | "USD" | "AED") =>
+                      updateField("billing_currency", value)
+                    }
+                  >
+                    <SelectTrigger className="w-40">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="INR">INR (₹)</SelectItem>
+                      <SelectItem value="USD">USD ($)</SelectItem>
+                      <SelectItem value="AED">AED (د.إ)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <div>
-                <p className="text-sm text-gray-600 mb-4">
-                  Pricing for solutions selected in the Project Details tab.
-                  Values will auto-populate when you select solutions in the
-                  Project tab.
-                </p>
-
-                {!leadData.solutions || leadData.solutions.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">
-                    <p>No solutions selected in Project Details tab.</p>
-                    <p className="text-sm">
-                      Go to Project Details tab and select solutions to
-                      configure pricing.
-                    </p>
-                  </div>
-                ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Solution Name</TableHead>
-                        <TableHead>Value</TableHead>
-                        <TableHead>Unit</TableHead>
-                        <TableHead>Currency</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {(leadData.commercial_pricing || []).map(
-                        (pricing, index) => (
-                          <TableRow key={pricing.solution}>
-                            <TableCell className="font-medium">
-                              {pricing.solution}
-                            </TableCell>
-                            <TableCell>
-                              <Input
-                                type="number"
-                                value={pricing.value}
-                                onChange={(e) =>
-                                  updateCommercialPricing(
-                                    index,
-                                    "value",
-                                    parseFloat(e.target.value) || 0,
-                                  )
-                                }
-                                placeholder="0"
-                                className="w-20"
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <Select
-                                value={pricing.unit}
-                                onValueChange={(value) =>
-                                  updateCommercialPricing(index, "unit", value)
-                                }
-                              >
-                                <SelectTrigger className="w-24">
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {getCurrencyUnits(pricing.currency).map((unit) => (
-                                    <SelectItem
-                                      key={unit.value}
-                                      value={unit.value}
-                                    >
-                                      {unit.label}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </TableCell>
-                            <TableCell>
-                              <Select
-                                value={pricing.currency}
-                                onValueChange={(value) => {
-                                  // Auto-update unit to the first unit of the selected currency
-                                  const newUnits = getCurrencyUnits(value);
-                                  const defaultUnit = newUnits[0]?.value || "paisa";
-                                  updateCommercialPricing(index, "currency", value);
-                                  updateCommercialPricing(index, "unit", defaultUnit);
-                                }}
-                              >
-                                <SelectTrigger className="w-20">
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {currencyOptions.map((currency) => (
-                                    <SelectItem
-                                      key={currency.value}
-                                      value={currency.value}
-                                    >
-                                      {currency.label}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </TableCell>
-                          </TableRow>
-                        ),
+            <CardContent>
+              <Accordion type="single" collapsible className="w-full">
+                {/* Commercials Config */}
+                <AccordionItem value="commercials-config">
+                  <AccordionTrigger className="text-lg font-semibold">
+                    Commercials Config
+                  </AccordionTrigger>
+                  <AccordionContent className="space-y-6">
+                    {/* Flat Fee Config */}
+                    <div className="border-t pt-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <h4 className="text-lg font-medium">Flat Fee Config</h4>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={addFlatFeeConfig}
+                        >
+                          <Plus className="w-4 h-4 mr-2" />
+                          Add Flat Fee
+                        </Button>
+                      </div>
+                      
+                      {leadData.flat_fee_config.length === 0 ? (
+                        <p className="text-gray-500 text-center py-4">
+                          No flat fees configured. Click "Add Flat Fee" to add one.
+                        </p>
+                      ) : (
+                        <div className="space-y-4">
+                          {leadData.flat_fee_config.map((config, index) => (
+                            <div key={config.id} className="border rounded-lg p-4 space-y-4">
+                              <div className="flex items-center justify-between">
+                                <h5 className="font-medium">Flat Fee #{index + 1}</h5>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => removeFlatFeeConfig(index)}
+                                  className="text-red-600 hover:text-red-700"
+                                >
+                                  Remove
+                                </Button>
+                              </div>
+                              
+                              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <div>
+                                  <Label>Component Name</Label>
+                                  <Input
+                                    value={config.component_name}
+                                    onChange={(e) =>
+                                      updateFlatFeeConfig(index, "component_name", e.target.value)
+                                    }
+                                    placeholder="e.g., Setup Fee"
+                                    className="mt-1"
+                                  />
+                                </div>
+                                
+                                <div>
+                                  <Label>Value</Label>
+                                  <Input
+                                    type="number"
+                                    value={config.value}
+                                    onChange={(e) =>
+                                      updateFlatFeeConfig(index, "value", parseFloat(e.target.value) || 0)
+                                    }
+                                    placeholder="0"
+                                    className="mt-1"
+                                  />
+                                </div>
+                                
+                                <div>
+                                  <Label>Currency</Label>
+                                  <Select
+                                    value={config.currency}
+                                    onValueChange={(value) =>
+                                      updateFlatFeeConfig(index, "currency", value)
+                                    }
+                                  >
+                                    <SelectTrigger className="mt-1">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="INR">INR (₹)</SelectItem>
+                                      <SelectItem value="USD">USD ($)</SelectItem>
+                                      <SelectItem value="AED">AED (د.إ)</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                
+                                <div>
+                                  <Label>Type</Label>
+                                  <Select
+                                    value={config.type}
+                                    onValueChange={(value) =>
+                                      updateFlatFeeConfig(index, "type", value)
+                                    }
+                                  >
+                                    <SelectTrigger className="mt-1">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="one_time">One Time</SelectItem>
+                                      <SelectItem value="recurring">Recurring</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                              </div>
+                              
+                              {config.type === "recurring" && (
+                                <div className="w-40">
+                                  <Label>Recurring Period</Label>
+                                  <Select
+                                    value={config.recurring_period || ""}
+                                    onValueChange={(value) =>
+                                      updateFlatFeeConfig(index, "recurring_period", value)
+                                    }
+                                  >
+                                    <SelectTrigger className="mt-1">
+                                      <SelectValue placeholder="Select period" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="monthly">Monthly</SelectItem>
+                                      <SelectItem value="quarterly">Quarterly</SelectItem>
+                                      <SelectItem value="yearly">Yearly</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
                       )}
-                    </TableBody>
-                  </Table>
-                )}
-              </div>
+                    </div>
+
+                    {/* Transaction Fee Config */}
+                    <div className="border-t pt-6">
+                      <h4 className="text-lg font-medium mb-4">Transaction Fee Config</h4>
+                      
+                      {!leadData.solutions || leadData.solutions.length === 0 ? (
+                        <p className="text-gray-500 text-center py-4">
+                          No solutions selected in Project Details tab. Go to Project Details tab and select solutions to configure transaction fees.
+                        </p>
+                      ) : (
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>Solution Name</TableHead>
+                              <TableHead>Currency</TableHead>
+                              <TableHead>Value (per transaction)</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {leadData.transaction_fee_config.map((config, index) => (
+                              <TableRow key={config.solution}>
+                                <TableCell className="font-medium">
+                                  {config.solution}
+                                </TableCell>
+                                <TableCell>
+                                  <Select
+                                    value={config.currency}
+                                    onValueChange={(value) =>
+                                      updateTransactionFeeConfig(index, "currency", value)
+                                    }
+                                  >
+                                    <SelectTrigger className="w-28">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="INR">INR (₹)</SelectItem>
+                                      <SelectItem value="USD">USD ($)</SelectItem>
+                                      <SelectItem value="AED">AED (د.إ)</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </TableCell>
+                                <TableCell>
+                                  <Input
+                                    type="number"
+                                    step="0.01"
+                                    value={config.value}
+                                    onChange={(e) =>
+                                      updateTransactionFeeConfig(
+                                        index,
+                                        "value",
+                                        parseFloat(e.target.value) || 0
+                                      )
+                                    }
+                                    placeholder="0.00"
+                                    className="w-24"
+                                  />
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      )}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+
+                {/* Summary Config */}
+                <AccordionItem value="summary-config">
+                  <AccordionTrigger className="text-lg font-semibold">
+                    Summary Config
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    {leadData.transaction_fee_config.length === 0 ? (
+                      <p className="text-gray-500 text-center py-4">
+                        Configure transaction fees to see summary calculations.
+                      </p>
+                    ) : (
+                      <div className="space-y-6">
+                        {calculateSummary().map((period, periodIndex) => (
+                          <div key={period.label} className="border rounded-lg p-4">
+                            <h5 className="font-semibold mb-3">
+                              {period.label} {period.description}
+                            </h5>
+                            
+                            {period.solutions.length === 0 ? (
+                              <p className="text-gray-500">No transaction fees configured</p>
+                            ) : (
+                              <Table>
+                                <TableHeader>
+                                  <TableRow>
+                                    <TableHead>Solution</TableHead>
+                                    <TableHead>Rate</TableHead>
+                                    {period.label === "Current" ? (
+                                      <TableHead>Total Transaction Count (month)</TableHead>
+                                    ) : (
+                                      <>
+                                        <TableHead>Total Transaction Count (month)</TableHead>
+                                        <TableHead>Total Transaction Count (year)</TableHead>
+                                      </>
+                                    )}
+                                    <TableHead>INR Value</TableHead>
+                                    <TableHead>USD Value</TableHead>
+                                  </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                  {period.solutions.map((solution, index) => (
+                                    <TableRow key={solution.solution}>
+                                      <TableCell className="font-medium">{solution.solution}</TableCell>
+                                      <TableCell>{solution.value} {solution.currency}</TableCell>
+                                      {period.label === "Current" ? (
+                                        <TableCell>{period.totalTransactions.toLocaleString()}</TableCell>
+                                      ) : (
+                                        <>
+                                          <TableCell>{(period.volume * 30).toLocaleString()}</TableCell>
+                                          <TableCell>{period.totalTransactions.toLocaleString()}</TableCell>
+                                        </>
+                                      )}
+                                      <TableCell>
+                                        ₹{convertCurrency(solution.totalValue, solution.currency, "INR").toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                                      </TableCell>
+                                      <TableCell>
+                                        ${solution.totalValueUSD.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                                      </TableCell>
+                                    </TableRow>
+                                  ))}
+                                  {/* Flat Fees Section */}
+                                  {period.flatFees.length > 0 && (
+                                    <>
+                                      <TableRow className="bg-blue-50">
+                                        <TableCell colSpan={period.label === "Current" ? 5 : 6} className="font-semibold text-blue-800">
+                                          Flat Fees
+                                        </TableCell>
+                                      </TableRow>
+                                      {period.flatFees.map((flatFee, index) => (
+                                        <TableRow key={`flat-${index}`}>
+                                          <TableCell className="font-medium">{flatFee.component_name}</TableCell>
+                                          <TableCell>{flatFee.description}</TableCell>
+                                          {period.label === "Current" ? (
+                                            <TableCell>-</TableCell>
+                                          ) : (
+                                            <>
+                                              <TableCell>-</TableCell>
+                                              <TableCell>-</TableCell>
+                                            </>
+                                          )}
+                                          <TableCell>
+                                            ₹{convertCurrency(flatFee.totalValue, flatFee.currency, "INR").toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                                          </TableCell>
+                                          <TableCell>
+                                            ${flatFee.totalValueUSD.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                                          </TableCell>
+                                        </TableRow>
+                                      ))}
+                                    </>
+                                  )}
+                                  
+                                  {/* Total Row */}
+                                  <TableRow className="font-bold bg-gray-50">
+                                    <TableCell>Total</TableCell>
+                                    <TableCell>
+                                      {period.solutions.reduce((sum, s) => sum + s.value, 0).toLocaleString(undefined, { maximumFractionDigits: 2 })} {leadData.billing_currency} (txn rate)
+                                    </TableCell>
+                                    {period.label === "Current" ? (
+                                      <TableCell>{period.totalTransactions.toLocaleString()}</TableCell>
+                                    ) : (
+                                      <>
+                                        <TableCell>{(period.volume * 30).toLocaleString()}</TableCell>
+                                        <TableCell>{period.totalTransactions.toLocaleString()}</TableCell>
+                                      </>
+                                    )}
+                                    <TableCell>
+                                      ₹{(
+                                        period.solutions.reduce((sum, s) => sum + convertCurrency(s.totalValue, s.currency, "INR"), 0) + 
+                                        period.flatFees.reduce((sum, f) => sum + convertCurrency(f.totalValue, f.currency, "INR"), 0)
+                                      ).toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                                    </TableCell>
+                                    <TableCell>
+                                      ${(period.solutions.reduce((sum, s) => sum + s.totalValueUSD, 0) + period.flatFees.reduce((sum, f) => sum + f.totalValueUSD, 0)).toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                                    </TableCell>
+                                  </TableRow>
+                                </TableBody>
+                              </Table>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </CardContent>
           </Card>
         </TabsContent>
@@ -1451,21 +1745,16 @@ export default function LeadEdit() {
           </Card>
         </TabsContent>
 
-
-
         {/* Additional Information Tab */}
         <TabsContent value="additional" className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle>Additional Information</CardTitle>
               <CardDescription>
-                {canEditLead
-                  ? "Priority, timeline, and additional notes about this lead"
-                  : "Update lead status, assignment, and sales information"}
+                Probability and additional notes about this lead
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Only show probability field */}
               <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
                 <div>
                   <Label htmlFor="probability">Probability (%)</Label>
@@ -1478,7 +1767,6 @@ export default function LeadEdit() {
                     onChange={(e) => updateField("probability", e.target.value)}
                     className="mt-1"
                     placeholder="50"
-                    disabled={!canEditAssignments}
                   />
                 </div>
               </div>
@@ -1492,7 +1780,6 @@ export default function LeadEdit() {
                   className="mt-1"
                   rows={4}
                   placeholder="Any additional notes about this lead..."
-                  disabled={!canEditAssignments}
                 />
               </div>
             </CardContent>
@@ -1551,8 +1838,6 @@ export default function LeadEdit() {
             )}
           </div>
         </div>
-
-
       </div>
 
       {/* Template Preview Modal */}
