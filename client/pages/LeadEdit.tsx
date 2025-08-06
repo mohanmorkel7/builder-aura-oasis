@@ -472,20 +472,6 @@ export default function LeadEdit() {
         setSelectedTemplate("manual");
       }
 
-      // Debug all lead data to see what's available
-      console.log("LeadEdit - Full lead object from API:", lead);
-      console.log("LeadEdit - Specific fields check:", {
-        lead_created_by: lead.lead_created_by,
-        template_id: lead.template_id,
-        expected_daily_txn_volume: lead.expected_daily_txn_volume,
-        expected_daily_txn_volume_year1: lead.expected_daily_txn_volume_year1,
-        expected_daily_txn_volume_year2: lead.expected_daily_txn_volume_year2,
-        expected_daily_txn_volume_year3: lead.expected_daily_txn_volume_year3,
-        expected_daily_txn_volume_year5: lead.expected_daily_txn_volume_year5,
-        billing_currency: lead.billing_currency,
-        flat_fee_config: lead.flat_fee_config,
-        transaction_fee_config: lead.transaction_fee_config,
-      });
     }
   }, [originalLead]);
 
