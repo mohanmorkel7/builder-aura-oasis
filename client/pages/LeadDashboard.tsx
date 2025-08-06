@@ -838,6 +838,9 @@ export default function LeadDashboard() {
                                 probability:
                                   partialSave.probability ||
                                   originalData.probability,
+                                template_id:
+                                  partialSave.template_id ||
+                                  originalData.template_id,
                                 notes: originalData.notes, // Keep the original notes for form use
 
                                 id: partialSave.id, // This is the key field that CreateLead looks for
