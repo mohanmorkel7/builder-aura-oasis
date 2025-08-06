@@ -232,6 +232,7 @@ export interface UpdateLeadData {
     | "event"
     | "other";
   lead_source_value?: string;
+  lead_created_by?: string;
   status?: "in-progress" | "won" | "lost" | "completed";
 
   // Project Information
