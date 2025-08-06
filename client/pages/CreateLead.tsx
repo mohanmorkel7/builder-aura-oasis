@@ -2182,7 +2182,7 @@ export default function CreateLead() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="probability">Probability (%)</Label>
                   <Input
@@ -2194,6 +2194,18 @@ export default function CreateLead() {
                     onChange={(e) => updateField("probability", e.target.value)}
                     className="mt-1"
                     placeholder="0"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="expected_close_date">Expected Close Date</Label>
+                  <Input
+                    id="expected_close_date"
+                    type="date"
+                    value={leadData.expected_close_date}
+                    onChange={(e) =>
+                      updateField("expected_close_date", e.target.value)
+                    }
+                    className="mt-1"
                   />
                 </div>
               </div>
