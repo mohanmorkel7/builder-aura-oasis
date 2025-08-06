@@ -377,12 +377,24 @@ export default function LeadEdit() {
 
         // Commercials
         billing_currency: lead.billing_currency || "INR",
-        flat_fee_config: lead.flat_fee_config
-          ? JSON.parse(lead.flat_fee_config)
-          : [],
-        transaction_fee_config: lead.transaction_fee_config
-          ? JSON.parse(lead.transaction_fee_config)
-          : [],
+        flat_fee_config: (() => {
+          try {
+            return lead.flat_fee_config && lead.flat_fee_config.trim() !== ''
+              ? JSON.parse(lead.flat_fee_config)
+              : [];
+          } catch {
+            return [];
+          }
+        })(),
+        transaction_fee_config: (() => {
+          try {
+            return lead.transaction_fee_config && lead.transaction_fee_config.trim() !== ''
+              ? JSON.parse(lead.transaction_fee_config)
+              : [];
+          } catch {
+            return [];
+          }
+        })(),
 
         // Contacts
         contacts: lead.contacts || [
