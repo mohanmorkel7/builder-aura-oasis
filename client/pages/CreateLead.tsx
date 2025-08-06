@@ -688,21 +688,27 @@ export default function CreateLead() {
       // If we have a draft ID, update the existing draft instead of creating a new one
       if (draftId) {
         try {
-          await apiClient.updateLead(draftId, partialData);
-          console.log("Draft updated successfully");
+          console.log(`Attempting to update existing draft with ID: ${draftId}`);
+          const result = await apiClient.updateLead(draftId, partialData);
+          console.log("Draft updated successfully:", result);
         } catch (error) {
-          console.error("Failed to update draft, creating new one:", error);
-          // If update fails, create a new draft
-          const result = await partialSaveMutation.mutateAsync(partialData);
-          setDraftId(result.id);
-          setHasSavedDraftInSession(true);
+          console.error("Failed to update draft:", error);
+          // Log the specific error to understand why update is failing
+          if (error instanceof Error) {
+            console.error("Update error message:", error.message);
+          }
+
+          // Instead of creating a new draft, let's try to find out why the update failed
+          // and show an error to the user
+          throw new Error(`Failed to update draft: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
       } else {
         // Create new draft only if we haven't saved one in this session
+        console.log("Creating new draft");
         const result = await partialSaveMutation.mutateAsync(partialData);
         setDraftId(result.id);
         setHasSavedDraftInSession(true);
-        console.log("Draft created successfully");
+        console.log("Draft created successfully:", result);
       }
 
       setIsPartialSaved(true);
