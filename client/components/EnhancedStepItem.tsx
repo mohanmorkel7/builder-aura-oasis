@@ -208,7 +208,12 @@ export function EnhancedStepItem({
   };
 
   const handleSendMessage = async () => {
-    if ((!newMessage.trim() && stagedAttachments.length === 0) || !user || step.isTemplate) return;
+    if (
+      (!newMessage.trim() && stagedAttachments.length === 0) ||
+      !user ||
+      step.isTemplate
+    )
+      return;
 
     const messageText = newMessage.trim() || "📎 File attachment";
 
@@ -275,7 +280,9 @@ export function EnhancedStepItem({
             {...attributes}
             {...listeners}
             className="flex-shrink-0 cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600"
-            style={step.isTemplate ? { pointerEvents: 'none', opacity: 0.5 } : {}}
+            style={
+              step.isTemplate ? { pointerEvents: "none", opacity: 0.5 } : {}
+            }
           >
             <GripVertical className="w-5 h-5" />
           </div>
@@ -344,7 +351,9 @@ export function EnhancedStepItem({
               onValueChange={(value) => onUpdateStatus(step.id, value)}
               disabled={step.isTemplate}
             >
-              <SelectTrigger className={`w-32 ${step.isTemplate ? "opacity-50 cursor-not-allowed" : ""}`}>
+              <SelectTrigger
+                className={`w-32 ${step.isTemplate ? "opacity-50 cursor-not-allowed" : ""}`}
+              >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -359,7 +368,9 @@ export function EnhancedStepItem({
               onClick={() => onDeleteStep(step.id)}
               className="text-red-600 hover:text-red-700"
               disabled={step.isTemplate}
-              style={step.isTemplate ? { opacity: 0.5, pointerEvents: 'none' } : {}}
+              style={
+                step.isTemplate ? { opacity: 0.5, pointerEvents: "none" } : {}
+              }
             >
               <Trash2 className="w-4 h-4" />
             </Button>
@@ -375,7 +386,9 @@ export function EnhancedStepItem({
                   <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
                     <span className="text-blue-600 text-sm">📋</span>
                   </div>
-                  <h3 className="text-sm font-medium text-blue-900 mb-2">Template Step</h3>
+                  <h3 className="text-sm font-medium text-blue-900 mb-2">
+                    Template Step
+                  </h3>
                   <p className="text-xs text-blue-700 mb-3">
                     This is a reference step from your selected template
                   </p>
@@ -548,10 +561,16 @@ export function EnhancedStepItem({
                                                   link.href = url;
                                                   link.download =
                                                     attachment.file_name; // Use original name for download
-                                                  document.body.appendChild(link);
+                                                  document.body.appendChild(
+                                                    link,
+                                                  );
                                                   link.click();
-                                                  document.body.removeChild(link);
-                                                  window.URL.revokeObjectURL(url);
+                                                  document.body.removeChild(
+                                                    link,
+                                                  );
+                                                  window.URL.revokeObjectURL(
+                                                    url,
+                                                  );
                                                   console.log(
                                                     `Successfully downloaded: ${attachment.file_name}`,
                                                   );
@@ -579,10 +598,16 @@ export function EnhancedStepItem({
                                                   link.href = url;
                                                   link.download =
                                                     attachment.file_name; // Use original name for download
-                                                  document.body.appendChild(link);
+                                                  document.body.appendChild(
+                                                    link,
+                                                  );
                                                   link.click();
-                                                  document.body.removeChild(link);
-                                                  window.URL.revokeObjectURL(url);
+                                                  document.body.removeChild(
+                                                    link,
+                                                  );
+                                                  window.URL.revokeObjectURL(
+                                                    url,
+                                                  );
                                                   console.log(
                                                     `Successfully downloaded via direct access: ${attachment.file_name}`,
                                                   );
@@ -680,7 +705,8 @@ export function EnhancedStepItem({
                                     {attachment.file_name}
                                   </span>
                                   <span className="text-xs text-gray-500">
-                                    ({Math.round(attachment.file_size / 1024)} KB)
+                                    ({Math.round(attachment.file_size / 1024)}{" "}
+                                    KB)
                                   </span>
                                 </div>
                                 <Button
