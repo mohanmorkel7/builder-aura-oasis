@@ -382,30 +382,30 @@ router.get("/stats/summary", async (req: Request, res: Response) => {
 
     if (await isDatabaseAvailable()) {
       const query = `
-        SELECT 
+        SELECT
           action,
           COUNT(*) as count,
           DATE(timestamp) as date
         FROM activity_logs
-        WHERE timestamp >= NOW() - INTERVAL '${parseInt(days as string)} days'
+        WHERE timestamp >= NOW() - INTERVAL $1 || ' days'
         GROUP BY action, DATE(timestamp)
         ORDER BY date DESC, count DESC
       `;
 
-      const result = await pool.query(query);
+      const result = await pool.query(query, [parseInt(days as string)]);
 
       // Also get total counts by action
       const totalsQuery = `
-        SELECT 
+        SELECT
           action,
           COUNT(*) as total_count
         FROM activity_logs
-        WHERE timestamp >= NOW() - INTERVAL '${parseInt(days as string)} days'
+        WHERE timestamp >= NOW() - INTERVAL $1 || ' days'
         GROUP BY action
         ORDER BY total_count DESC
       `;
 
-      const totalsResult = await pool.query(totalsQuery);
+      const totalsResult = await pool.query(totalsQuery, [parseInt(days as string)]);
 
       res.json({
         daily_breakdown: result.rows,
