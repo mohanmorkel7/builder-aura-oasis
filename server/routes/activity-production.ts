@@ -156,14 +156,14 @@ router.get("/", async (req: Request, res: Response) => {
         params.push(parseInt(client_id as string));
       }
 
-      if (start_date) {
+      if (validStartDate) {
         whereConditions.push(`al.timestamp >= $${paramIndex++}`);
-        params.push(start_date);
+        params.push(validStartDate.toISOString());
       }
 
-      if (end_date) {
+      if (validEndDate) {
         whereConditions.push(`al.timestamp <= $${paramIndex++}`);
-        params.push(end_date);
+        params.push(validEndDate.toISOString());
       }
 
       const whereClause =
