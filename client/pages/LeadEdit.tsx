@@ -629,7 +629,7 @@ export default function LeadEdit() {
         label: "Current",
         volume: currentVolume,
         multiplier: 30,
-        description: `(${currentVolume.toLocaleString()} daily txns × 30 days = ${(currentVolume * 30).toLocaleString()} total txns)`,
+        description: `(${currentVolume.toLocaleString()} daily txns �� 30 days = ${(currentVolume * 30).toLocaleString()} total txns)`,
       },
       {
         label: "First Year",
@@ -692,7 +692,7 @@ export default function LeadEdit() {
                 else if (period.label === "Second Year") multiplier = 24;
                 else if (period.label === "Third Year") multiplier = 36;
                 else if (period.label === "Fifth Year") multiplier = 60;
-                description = `Monthly (×${multiplier})`;
+                description = `Monthly (��${multiplier})`;
                 break;
               case "quarterly":
                 if (period.label === "Current") multiplier = 1;
@@ -1142,7 +1142,10 @@ export default function LeadEdit() {
                   <div className="flex items-center space-x-2 mt-1">
                     <Select
                       value={selectedTemplate}
-                      onValueChange={setSelectedTemplate}
+                      onValueChange={(value) => {
+                        console.log('Template selection changed to:', value);
+                        setSelectedTemplate(value);
+                      }}
                     >
                       <SelectTrigger className="flex-1">
                         <SelectValue placeholder="Select a template or use manual" />
