@@ -725,13 +725,29 @@ export default function LeadDetails() {
                     No pipeline steps yet
                   </h3>
                   <p className="text-gray-600 mb-4">
-                    Create custom steps to track your sales process for this
-                    lead
+                    {templateData?.steps && templateData.steps.length > 0
+                      ? `Initialize your pipeline with ${templateData.steps.length} steps from the ${templateData.name} template, or create custom steps.`
+                      : "Create custom steps to track your sales process for this lead"
+                    }
                   </p>
-                  <Button onClick={() => setNewStepDialog(true)}>
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add First Step
-                  </Button>
+                  <div className="flex flex-col sm:flex-row gap-2 justify-center">
+                    {templateData?.steps && templateData.steps.length > 0 && (
+                      <Button
+                        onClick={handleCopyTemplateSteps}
+                        className="bg-blue-600 hover:bg-blue-700"
+                      >
+                        <Plus className="w-4 h-4 mr-2" />
+                        Copy Template Steps ({templateData.steps.length})
+                      </Button>
+                    )}
+                    <Button
+                      variant="outline"
+                      onClick={() => setNewStepDialog(true)}
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Custom Step
+                    </Button>
+                  </div>
                 </div>
               ) : (
                 <DraggableStepsList
