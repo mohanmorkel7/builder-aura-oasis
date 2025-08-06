@@ -280,7 +280,7 @@ export default function CreateLead() {
       console.log("Resuming from draft with data:", {
         id: resumeData.id,
         _resumeFromId: resumeData._resumeFromId,
-        clientName: resumeData.client_name
+        clientName: resumeData.client_name,
       });
 
       // Ensure lead_created_by is set if not already present
