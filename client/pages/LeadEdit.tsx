@@ -441,7 +441,17 @@ export default function LeadEdit() {
       return "";
     }
     try {
-      const date = new Date(dateStr + "T00:00:00");
+      let date: Date;
+
+      // Check if it's already an ISO datetime string (contains T)
+      if (dateStr.includes('T')) {
+        // It's already a full datetime, parse it directly
+        date = new Date(dateStr);
+      } else {
+        // It's a date-only string, append time for consistent timezone handling
+        date = new Date(dateStr + "T00:00:00");
+      }
+
       if (isNaN(date.getTime())) {
         console.warn("Invalid date value:", dateStr);
         return "";
