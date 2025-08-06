@@ -340,26 +340,9 @@ export default function LeadEdit() {
 
         // Contacts
         contacts: (() => {
-          try {
-            if (
-              typeof lead.contacts === "string" &&
-              lead.contacts.trim() !== ""
-            ) {
-              return JSON.parse(lead.contacts);
-            }
-            return Array.isArray(lead.contacts)
-              ? lead.contacts
-              : [
-                  {
-                    contact_name: "",
-                    designation: "",
-                    phone: "",
-                    email: "",
-                    linkedin: "",
-                  },
-                ];
-          } catch {
-            return [
+          // Handle both string and already-parsed array cases
+          if (Array.isArray(lead.contacts)) {
+            return lead.contacts.length > 0 ? lead.contacts : [
               {
                 contact_name: "",
                 designation: "",
@@ -369,6 +352,30 @@ export default function LeadEdit() {
               },
             ];
           }
+          if (typeof lead.contacts === "string" && lead.contacts.trim() !== "") {
+            try {
+              return JSON.parse(lead.contacts);
+            } catch {
+              return [
+                {
+                  contact_name: "",
+                  designation: "",
+                  phone: "",
+                  email: "",
+                  linkedin: "",
+                },
+              ];
+            }
+          }
+          return [
+            {
+              contact_name: "",
+              designation: "",
+              phone: "",
+              email: "",
+              linkedin: "",
+            },
+          ];
         })(),
 
         client_name: lead.client_name || "",
