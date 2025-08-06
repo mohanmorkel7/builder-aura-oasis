@@ -1485,7 +1485,7 @@ export default function CreateLead() {
                                       <TableCell>{solution.value} {solution.currency}</TableCell>
                                       <TableCell>{period.totalTransactions.toLocaleString()}</TableCell>
                                       <TableCell>
-                                        {solution.totalValue.toLocaleString(undefined, { maximumFractionDigits: 2 })} {solution.currency}
+                                        ₹{convertCurrency(solution.totalValue, solution.currency, "INR").toLocaleString(undefined, { maximumFractionDigits: 2 })}
                                       </TableCell>
                                       <TableCell>
                                         ${solution.totalValueUSD.toLocaleString(undefined, { maximumFractionDigits: 2 })}
