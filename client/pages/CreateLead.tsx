@@ -1206,17 +1206,20 @@ export default function CreateLead() {
                 {/* Commercials Config */}
                 <AccordionItem value="commercials-config">
                   <AccordionTrigger className="text-lg font-semibold">
-                    <div className="flex items-center justify-between w-full mr-4">
-                      <span>Commercials Config</span>
-                      <div className="flex items-center space-x-2" onClick={(e) => e.stopPropagation()}>
-                        <Label htmlFor="billing_currency" className="text-sm">Billing Currency:</Label>
+                    Commercials Config
+                  </AccordionTrigger>
+                  <AccordionContent className="space-y-6">
+                    {/* Billing Currency */}
+                    <div className="pb-4 border-b">
+                      <div className="flex items-center space-x-2">
+                        <Label htmlFor="billing_currency" className="text-sm font-medium">Billing Currency:</Label>
                         <Select
                           value={leadData.billing_currency}
                           onValueChange={(value: "INR" | "USD" | "AED") =>
                             updateField("billing_currency", value)
                           }
                         >
-                          <SelectTrigger className="w-32 h-8">
+                          <SelectTrigger className="w-40">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -1227,8 +1230,6 @@ export default function CreateLead() {
                         </Select>
                       </div>
                     </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="space-y-6">
 
                     {/* Flat Fee Config */}
                     <div className="border-t pt-6">
