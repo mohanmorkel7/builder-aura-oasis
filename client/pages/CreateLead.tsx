@@ -672,18 +672,21 @@ export default function CreateLead() {
         start_date: leadData.start_date === "" ? null : leadData.start_date,
       };
 
+      // Filter out metadata fields that shouldn't go to database
+      const { _resumeFromId, _lastSaved, _completedTabs, id, ...cleanDataForDb } = cleanedData;
+
       // Prepare partial data for database save
       const partialData = {
-        ...cleanedData,
+        ...cleanDataForDb,
         // Only set defaults for required fields if we're creating a new draft
         // For updates, preserve the actual user data
-        lead_source: cleanedData.lead_source || "other", // Ensure we have a lead_source
+        lead_source: cleanDataForDb.lead_source || "other", // Ensure we have a lead_source
         client_name: draftId
-          ? cleanedData.client_name // For updates, use actual data
-          : cleanedData.client_name || "PARTIAL_SAVE_IN_PROGRESS", // For new drafts, use placeholder if empty
+          ? cleanDataForDb.client_name // For updates, use actual data
+          : cleanDataForDb.client_name || "PARTIAL_SAVE_IN_PROGRESS", // For new drafts, use placeholder if empty
         project_title: draftId
-          ? cleanedData.project_title // For updates, use actual data
-          : cleanedData.project_title || "Partial Save - In Progress", // For new drafts, use placeholder if empty
+          ? cleanDataForDb.project_title // For updates, use actual data
+          : cleanDataForDb.project_title || "Partial Save - In Progress", // For new drafts, use placeholder if empty
         notes: JSON.stringify({
           isPartialSave: true,
           lastSaved: new Date().toISOString(),
