@@ -396,23 +396,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 }
 
 export function useAuth() {
-  const context = React.useContext(AuthContext);
-  if (context === undefined) {
-    console.error("useAuth called outside of AuthProvider. Component tree:", {
-      location: window?.location?.pathname || "unknown",
-      timestamp: new Date().toISOString(),
-      stack: new Error().stack,
-    });
+  try {
+    const context = React.useContext(AuthContext);
+    if (context === undefined) {
+      console.error("useAuth called outside of AuthProvider. Component tree:", {
+        location: window?.location?.pathname || "unknown",
+        timestamp: new Date().toISOString(),
+        reactVersion: React.version,
+        isHMR: typeof module !== 'undefined' && module.hot,
+      });
 
-    // Always provide a fallback to prevent crashes during HMR
-    console.warn("Providing fallback auth context (possible HMR issue)");
+      // Always provide a fallback to prevent crashes during HMR
+      console.warn("Providing fallback auth context (possible HMR issue)");
+      return {
+        user: null,
+        login: async () => false,
+        loginWithSSO: async () => false,
+        logout: () => {},
+        isLoading: true, // Show loading state during fallback
+      };
+    }
+    return context;
+  } catch (error) {
+    console.error("Error accessing auth context:", error);
+    // Fallback for any context access errors
     return {
       user: null,
       login: async () => false,
       loginWithSSO: async () => false,
       logout: () => {},
-      isLoading: true, // Show loading state during fallback
+      isLoading: true,
     };
   }
-  return context;
 }
