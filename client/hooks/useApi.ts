@@ -536,6 +536,10 @@ export function useTemplate(id: number) {
   return useQuery({
     queryKey: ["templates", id],
     queryFn: async () => {
+      // Return null early if id is 0 to avoid unnecessary API calls
+      if (!id) {
+        return null;
+      }
       try {
         return await apiClient.request(`/templates-production/${id}`);
       } catch (error) {
@@ -543,7 +547,6 @@ export function useTemplate(id: number) {
         return mockTemplates.find((template) => template.id === id) || null;
       }
     },
-    enabled: !!id,
   });
 }
 
