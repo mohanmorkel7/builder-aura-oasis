@@ -93,22 +93,24 @@ export class ApiClient {
         return {} as T;
       }
 
+      // Read response as text first to avoid "body already used" errors
+      let responseText: string;
       try {
-        const result = await response.json();
+        responseText = await response.text();
+      } catch (textError) {
+        console.error('Could not read response body:', textError);
+        throw new Error(`Could not read response from server URL: ${url}`);
+      }
+
+      // Try to parse as JSON
+      try {
+        const result = JSON.parse(responseText);
         // Reset failure count on successful request
         this.failureCount = 0;
         return result;
       } catch (jsonError) {
-        // Get the actual response text to debug what's being returned
-        let responseText = 'Could not read response';
-        try {
-          const clonedResponse = response.clone();
-          responseText = await clonedResponse.text();
-          console.error('Invalid JSON response body:', responseText.substring(0, 500)); // Log first 500 chars
-        } catch (textError) {
-          console.error('Could not read response body:', textError);
-        }
-
+        console.error('Invalid JSON response body:', responseText.substring(0, 500)); // Log first 500 chars
+        console.error('JSON parse error:', jsonError);
         throw new Error(`Invalid JSON response from server URL: ${url}`);
       }
     } catch (error) {
