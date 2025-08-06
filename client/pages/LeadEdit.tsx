@@ -357,7 +357,16 @@ export default function LeadEdit() {
         project_requirements: lead.project_requirements || "",
 
         // Enhanced Project Info
-        solutions: lead.solutions || [],
+        solutions: (() => {
+          try {
+            if (typeof lead.solutions === 'string' && lead.solutions.trim() !== '') {
+              return JSON.parse(lead.solutions);
+            }
+            return Array.isArray(lead.solutions) ? lead.solutions : [];
+          } catch {
+            return [];
+          }
+        })(),
         priority_level: lead.priority_level || "",
         start_date: lead.start_date ? lead.start_date.split("T")[0] : "",
         targeted_end_date: lead.targeted_end_date
