@@ -162,7 +162,9 @@ export default function LeadEdit() {
 
   // Always call useTemplate with a consistent number to avoid conditional hooks
   const selectedTemplateId =
-    selectedTemplate && selectedTemplate !== "manual" && !isNaN(parseInt(selectedTemplate))
+    selectedTemplate &&
+    selectedTemplate !== "manual" &&
+    !isNaN(parseInt(selectedTemplate))
       ? parseInt(selectedTemplate)
       : 0;
   const { data: templateData } = useTemplate(selectedTemplateId);
@@ -279,9 +281,13 @@ export default function LeadEdit() {
           }
         })(),
         priority_level: lead.priority_level || "",
-        start_date: lead.start_date ? new Date(lead.start_date + 'T00:00:00').toISOString().split('T')[0] : "",
+        start_date: lead.start_date
+          ? new Date(lead.start_date + "T00:00:00").toISOString().split("T")[0]
+          : "",
         targeted_end_date: lead.targeted_end_date
-          ? new Date(lead.targeted_end_date + 'T00:00:00').toISOString().split('T')[0]
+          ? new Date(lead.targeted_end_date + "T00:00:00")
+              .toISOString()
+              .split("T")[0]
           : "",
         expected_daily_txn_volume:
           lead.expected_daily_txn_volume?.toString() || "",
@@ -370,7 +376,9 @@ export default function LeadEdit() {
 
         priority: lead.priority || "",
         expected_close_date: lead.expected_close_date
-          ? new Date(lead.expected_close_date + 'T00:00:00').toISOString().split('T')[0]
+          ? new Date(lead.expected_close_date + "T00:00:00")
+              .toISOString()
+              .split("T")[0]
           : "",
         probability: lead.probability?.toString() || "",
         notes: lead.notes || "",
@@ -454,7 +462,6 @@ export default function LeadEdit() {
     user?.role === "sales" ||
     user?.role === "product";
   const canEditAssignments = user?.role === "admin" || user?.role === "sales";
-
 
   const updateField = (field: string, value: any) => {
     const newData = {
