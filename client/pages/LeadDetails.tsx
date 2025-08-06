@@ -398,15 +398,17 @@ export default function LeadDetails() {
 
                 // Add template steps if available
                 if (templateData?.steps && templateData.steps.length > 0) {
-                  templateData.steps.forEach((templateStep: any, index: number) => {
-                    allSteps.push({
-                      ...templateStep,
-                      id: templateStep.id,
-                      isTemplate: true,
-                      step_order: index + 1,
-                      status: "pending",
-                    });
-                  });
+                  templateData.steps.forEach(
+                    (templateStep: any, index: number) => {
+                      allSteps.push({
+                        ...templateStep,
+                        id: templateStep.id,
+                        isTemplate: true,
+                        step_order: index + 1,
+                        status: "pending",
+                      });
+                    },
+                  );
                 }
 
                 // Add lead steps
@@ -447,7 +449,9 @@ export default function LeadDetails() {
                                 {step.name}
                               </div>
                               {step.isTemplate && (
-                                <div className="text-blue-600 text-xs">Template</div>
+                                <div className="text-blue-600 text-xs">
+                                  Template
+                                </div>
                               )}
                             </div>
                           </div>

@@ -223,7 +223,10 @@ export function EnhancedStepItem({
 
     try {
       console.log("Sending message to step:", step.id, "with data:", chatData);
-      const result = await createChatMutation.mutateAsync({ stepId: step.id, chatData });
+      const result = await createChatMutation.mutateAsync({
+        stepId: step.id,
+        chatData,
+      });
       console.log("Message sent successfully:", result);
       setNewMessage("");
       setStagedAttachments([]);
