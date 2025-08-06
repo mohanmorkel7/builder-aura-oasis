@@ -1913,7 +1913,7 @@ export default function CreateLead() {
           <div className="flex items-center space-x-3">
             {isPartialSaved && (
               <span className="text-sm text-green-600 bg-green-50 px-3 py-1 rounded-full">
-                ✓ Progress saved
+                ✓ {draftId ? 'Draft updated' : 'Draft saved'}
               </span>
             )}
             <Button
