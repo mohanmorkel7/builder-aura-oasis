@@ -697,6 +697,8 @@ export default function CreateLead() {
         // For updates, preserve the actual user data
         lead_source: cleanDataForDb.lead_source || "other", // Ensure we have a lead_source
         category: cleanDataForDb.category || null, // Set to null if empty to avoid constraint violation
+        client_type: cleanDataForDb.client_type || null, // Set to null if empty to avoid constraint violation
+        country: cleanDataForDb.country || null, // Set to null if empty to avoid constraint violation
         client_name: draftId
           ? cleanDataForDb.client_name // For updates, use actual data
           : cleanDataForDb.client_name || "PARTIAL_SAVE_IN_PROGRESS", // For new drafts, use placeholder if empty
