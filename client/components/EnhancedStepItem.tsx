@@ -372,7 +372,39 @@ export function EnhancedStepItem({
         <CollapsibleContent>
             <div className="border-t bg-gray-50">
               <div className="p-4">
-                {/* Chat Section */}
+              {step.isTemplate ? (
+                /* Template Step Info */
+                <Card className="border-0 shadow-lg">
+                  <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 pb-4 rounded-t-lg">
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                      Template Step Details
+                    </CardTitle>
+                    <CardDescription className="text-gray-600">
+                      This is a predefined step from a template
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="text-sm text-gray-700">
+                      <strong>Description:</strong> {step.description}
+                    </div>
+                    {step.estimated_days && (
+                      <div className="text-sm text-gray-700">
+                        <strong>Estimated Duration:</strong> {step.estimated_days} days
+                      </div>
+                    )}
+                    {step.probability_percent && (
+                      <div className="text-sm text-gray-700">
+                        <strong>Success Weight:</strong> {step.probability_percent}%
+                      </div>
+                    )}
+                    <div className="text-xs text-blue-600 bg-blue-50 p-3 rounded">
+                      📋 This is a template step for reference. Create custom lead-specific steps to track actual progress.
+                    </div>
+                  </CardContent>
+                </Card>
+              ) : (
+                /* Regular Step with Chat */
                 <Card className="border-0 shadow-lg">
                   <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 pb-4 rounded-t-lg">
                     <div className="flex items-center justify-between">
@@ -719,8 +751,9 @@ export function EnhancedStepItem({
                       </div>
                     </div>
                   </CardContent>
-                </Card>
-              </div>
+              </Card>
+              )}
+            </div>
             </div>
         </CollapsibleContent>
       </Collapsible>
