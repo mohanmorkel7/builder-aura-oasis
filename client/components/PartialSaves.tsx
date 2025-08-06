@@ -72,19 +72,6 @@ export default function PartialSaves({
         return dateValue; // Already in correct format
       };
 
-      console.log("=== PartialSaves Resume Debug ===");
-      console.log("partialSave from database:", {
-        id: partialSave.id,
-        start_date: partialSave.start_date,
-        targeted_end_date: partialSave.targeted_end_date,
-        expected_close_date: partialSave.expected_close_date,
-      });
-      console.log("originalData from notes:", {
-        start_date: originalData.start_date,
-        targeted_end_date: originalData.targeted_end_date,
-        expected_close_date: originalData.expected_close_date,
-      });
-
       // Merge the original data with the lead data, prioritizing database values
       const resumeData = {
         ...originalData,
