@@ -883,7 +883,10 @@ export function useMyPartialSaves(userId?: number) {
   return useQuery({
     queryKey: ["my-partial-saves", userId],
     queryFn: async () => {
-      return await apiClient.getMyPartialSaves(userId);
+      console.log("Fetching partial saves for userId:", userId);
+      const result = await apiClient.getMyPartialSaves(userId);
+      console.log("Partial saves result:", result);
+      return result;
     },
     enabled: !!userId,
     retry: 2,
