@@ -62,6 +62,16 @@ export default function PartialSaves({
         }
       };
 
+      // Helper function to convert ISO date to YYYY-MM-DD format
+      const formatDateForInput = (dateValue: any) => {
+        if (!dateValue) return "";
+        if (typeof dateValue === "string" && dateValue.includes("T")) {
+          // ISO format, convert to YYYY-MM-DD
+          return new Date(dateValue).toISOString().split("T")[0];
+        }
+        return dateValue; // Already in correct format
+      };
+
       console.log("=== PartialSaves Resume Debug ===");
       console.log("partialSave from database:", {
         id: partialSave.id,
