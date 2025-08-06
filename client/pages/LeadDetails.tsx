@@ -718,91 +718,43 @@ export default function LeadDetails() {
               </div>
             </CardHeader>
             <CardContent>
-              {/* Show template steps if template is assigned, otherwise show lead steps or empty state */}
-              {templateData?.steps && templateData.steps.length > 0 ? (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      <Badge
-                        variant="outline"
-                        className="bg-blue-50 text-blue-700"
-                      >
-                        Template Steps
-                      </Badge>
-                      <span className="text-sm text-gray-600">
-                        Following {templateData.name} template
-                      </span>
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setNewStepDialog(true)}
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Add Custom Step
-                    </Button>
+              {/* Show template info if template is assigned and no lead steps exist */}
+              {templateData?.steps && templateData.steps.length > 0 && leadSteps.length === 0 && (
+                <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Badge variant="outline" className="bg-blue-100 text-blue-700">
+                      Template Available
+                    </Badge>
+                    <span className="text-sm text-blue-700 font-medium">
+                      {templateData.name}
+                    </span>
                   </div>
-
-                  {/* Display template steps */}
-                  <div className="space-y-3">
-                    {templateData.steps.map((step: any, index: number) => (
-                      <div
-                        key={step.id}
-                        className="bg-blue-50/50 border border-blue-200 rounded-lg p-4"
-                      >
-                        <div className="flex items-start justify-between">
+                  <p className="text-sm text-blue-600 mb-3">
+                    This lead is using the "{templateData.name}" template with {templateData.steps.length} predefined steps.
+                    You can create custom lead-specific steps below to track progress for this particular lead.
+                  </p>
+                  <details className="text-sm">
+                    <summary className="cursor-pointer text-blue-700 hover:text-blue-800 font-medium">
+                      View template steps ({templateData.steps.length})
+                    </summary>
+                    <div className="mt-2 space-y-2">
+                      {templateData.steps.map((step: any, index: number) => (
+                        <div key={step.id} className="flex items-start gap-2 p-2 bg-white rounded">
+                          <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
+                            {index + 1}
+                          </span>
                           <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2">
-                              <Badge variant="secondary" className="text-xs">
-                                Step {index + 1}
-                              </Badge>
-                              <Badge variant="outline" className="text-xs">
-                                {step.probability_percent || 0}% completion
-                              </Badge>
-                            </div>
-                            <h4 className="font-medium text-gray-900 mb-1">
-                              {step.name}
-                            </h4>
-                            <p className="text-sm text-gray-600 mb-2">
-                              {step.description}
-                            </p>
-                            {step.estimated_days && (
-                              <div className="text-xs text-gray-500">
-                                Estimated: {step.estimated_days} days
-                              </div>
-                            )}
+                            <div className="font-medium text-sm">{step.name}</div>
+                            <div className="text-xs text-gray-600">{step.description}</div>
                           </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Show any additional lead-specific steps */}
-                  {leadSteps.length > 0 && (
-                    <div className="mt-6">
-                      <div className="flex items-center gap-2 mb-4">
-                        <Badge
-                          variant="outline"
-                          className="bg-green-50 text-green-700"
-                        >
-                          Custom Steps
-                        </Badge>
-                        <span className="text-sm text-gray-600">
-                          Lead-specific additions
-                        </span>
-                      </div>
-                      <DraggableStepsList
-                        leadId={leadId}
-                        steps={leadSteps}
-                        expandedSteps={expandedSteps}
-                        onToggleExpansion={handleToggleExpansion}
-                        onDeleteStep={handleDeleteStep}
-                        onReorderSteps={handleReorderSteps}
-                      />
+                      ))}
                     </div>
-                  )}
+                  </details>
                 </div>
-              ) : leadSteps.length === 0 ? (
+              )}
+
+              {leadSteps.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">
                   <Target className="w-12 h-12 mx-auto mb-4 text-gray-300" />
                   <h3 className="text-lg font-medium text-gray-900 mb-2">
