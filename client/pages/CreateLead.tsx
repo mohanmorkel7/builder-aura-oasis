@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCreateLead, usePartialSaveLead, useTemplate } from "@/hooks/useApi";
 import { useAuth } from "@/lib/auth-context";
 import { apiClient } from "@/lib/api";
