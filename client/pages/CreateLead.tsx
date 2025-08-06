@@ -292,6 +292,17 @@ export default function CreateLead() {
       }
       setLeadData(resumeData);
       setIsResumedFromDraft(true);
+
+      // Restore selected template if template_id exists
+      if (resumeData.template_id) {
+        const templateIdString = resumeData.template_id.toString();
+        console.log("Restoring template from location.state:", templateIdString);
+        setSelectedTemplate(templateIdString);
+      } else {
+        console.log("No template_id in location.state, setting to manual");
+        setSelectedTemplate("manual");
+      }
+
       // Set draft ID if resuming from an existing draft
       if (resumeData.id) {
         console.log("Setting draftId to:", resumeData.id);
