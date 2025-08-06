@@ -1307,84 +1307,90 @@ export class MockDataService {
   }
 
   static async getStepChats(stepId: number) {
-    const chats = [
-      {
-        id: 1,
-        step_id: 1,
-        user_id: 2,
-        user_name: "Jane Smith",
-        message:
-          "Had a great initial call with the client. They're very interested in our e-commerce solution.",
-        message_type: "text",
-        is_rich_text: false,
-        created_at: "2024-01-16T10:30:00Z",
-        attachments: [],
-      },
-      {
-        id: 2,
-        step_id: 1,
-        user_id: 2,
-        user_name: "Jane Smith",
-        message: "Client requirements documented and shared with the team.",
-        message_type: "file",
-        is_rich_text: false,
-        created_at: "2024-01-16T14:15:00Z",
-        attachments: [
-          {
-            id: 1,
-            file_name: "client_requirements.txt",
-            file_path: "/uploads/client_requirements.txt",
-            file_size: 2048,
-            file_type: "text/plain",
-            uploaded_at: "2024-01-16T14:15:00Z",
-          },
-        ],
-      },
-      {
-        id: 3,
-        step_id: 2,
-        user_id: 1,
-        user_name: "John Doe",
-        message:
-          "<p><strong>Demo went excellent!</strong> Client was particularly impressed with:</p><ul><li>Real-time inventory management</li><li>Advanced reporting features</li><li>Mobile-responsive design</li></ul><p><em>Next steps: Prepare detailed proposal</em></p>",
-        message_type: "text",
-        is_rich_text: true,
-        created_at: "2024-01-20T15:45:00Z",
-        attachments: [],
-      },
-      {
-        id: 4,
-        step_id: 3,
-        user_id: 2,
-        user_name: "Jane Smith",
-        message:
-          "Working on the proposal. Need technical specifications from the development team.",
-        message_type: "text",
-        is_rich_text: false,
-        created_at: "2024-01-21T09:00:00Z",
-        attachments: [],
-      },
-    ];
-
-    const filteredChats = chats.filter((chat) => chat.step_id === stepId);
-
-    // If no existing chats for this step, return a sample chat for testing
-    if (filteredChats.length === 0) {
-      return [
+    // Initialize with some default chats if none exist
+    if (this.chatMessages.length === 0) {
+      this.chatMessages = [
         {
-          id: Date.now(),
-          step_id: stepId,
+          id: 1,
+          step_id: 1,
           user_id: 2,
           user_name: "Jane Smith",
-          message: `This is a sample message for step ${stepId}. Chat functionality is working!`,
+          message:
+            "Had a great initial call with the client. They're very interested in our e-commerce solution.",
           message_type: "text",
           is_rich_text: false,
-          created_at: new Date().toISOString(),
+          created_at: "2024-01-16T10:30:00Z",
+          attachments: [],
+        },
+        {
+          id: 2,
+          step_id: 1,
+          user_id: 2,
+          user_name: "Jane Smith",
+          message: "Client requirements documented and shared with the team.",
+          message_type: "file",
+          is_rich_text: false,
+          created_at: "2024-01-16T14:15:00Z",
+          attachments: [
+            {
+              id: 1,
+              file_name: "client_requirements.txt",
+              file_path: "/uploads/client_requirements.txt",
+              file_size: 2048,
+              file_type: "text/plain",
+              uploaded_at: "2024-01-16T14:15:00Z",
+            },
+          ],
+        },
+        {
+          id: 3,
+          step_id: 2,
+          user_id: 1,
+          user_name: "John Doe",
+          message:
+            "<p><strong>Demo went excellent!</strong> Client was particularly impressed with:</p><ul><li>Real-time inventory management</li><li>Advanced reporting features</li><li>Mobile-responsive design</li></ul><p><em>Next steps: Prepare detailed proposal</em></p>",
+          message_type: "text",
+          is_rich_text: true,
+          created_at: "2024-01-20T15:45:00Z",
+          attachments: [],
+        },
+        {
+          id: 4,
+          step_id: 3,
+          user_id: 2,
+          user_name: "Jane Smith",
+          message:
+            "Working on the proposal. Need technical specifications from the development team.",
+          message_type: "text",
+          is_rich_text: false,
+          created_at: "2024-01-21T09:00:00Z",
           attachments: [],
         },
       ];
     }
 
+    const filteredChats = this.chatMessages.filter((chat) => chat.step_id === stepId);
+
+    console.log(`MockDataService.getStepChats: returning ${filteredChats.length} messages for step ${stepId}`);
     return filteredChats;
+  }
+
+  static async createStepChat(stepId: number, chatData: any) {
+    const newChat = {
+      id: this.nextChatId++,
+      step_id: stepId,
+      user_id: chatData.user_id || null,
+      user_name: chatData.user_name,
+      message: chatData.message,
+      message_type: chatData.message_type || "text",
+      is_rich_text: chatData.is_rich_text || false,
+      created_at: new Date().toISOString(),
+      attachments: chatData.attachments || [],
+    };
+
+    this.chatMessages.push(newChat);
+    console.log(`MockDataService.createStepChat: Created message ${newChat.id} for step ${stepId}`);
+    console.log(`MockDataService.createStepChat: Total messages now: ${this.chatMessages.length}`);
+    return newChat;
   }
 }
