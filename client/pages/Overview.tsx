@@ -320,52 +320,45 @@ export default function Overview() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
+              <div className="flex justify-center items-end space-x-8 h-32">
                 {templatesArray.map((templateGroup: any) => {
                   const totalProgress = templateGroup.total_leads > 0
                     ? (templateGroup.total_completed / templateGroup.total_leads) * 100
                     : 0;
 
                   return (
-                    <div key={templateGroup.template_id} className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center space-x-3">
-                          <div className={`w-4 h-4 rounded-full ${
-                            templateGroup.template_id === 1 ? 'bg-blue-500' :
-                            templateGroup.template_id === 2 ? 'bg-purple-500' :
-                            'bg-green-500'
-                          }`}></div>
-                          <span className="font-medium text-gray-900">
-                            {templateGroup.template_name}
-                          </span>
-                          <Badge variant="outline" className="text-xs">
-                            {templateGroup.steps.length} steps
-                          </Badge>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-sm font-semibold text-gray-900">
-                            {templateGroup.total_completed}/{templateGroup.total_leads} Complete
-                          </div>
-                          <div className="text-xs text-gray-500">
-                            {totalProgress.toFixed(1)}%
-                          </div>
-                        </div>
+                    <div key={templateGroup.template_id} className="flex flex-col items-center space-y-2">
+                      <div className="text-sm font-semibold text-gray-900">
+                        {totalProgress.toFixed(1)}%
                       </div>
-
-                      <div className="w-full bg-gray-200 rounded-full h-3">
-                        <div
-                          className={`h-3 rounded-full transition-all duration-500 ${
-                            templateGroup.template_id === 1 ? 'bg-blue-500' :
-                            templateGroup.template_id === 2 ? 'bg-purple-500' :
-                            'bg-green-500'
-                          }`}
-                          style={{ width: `${totalProgress}%` }}
-                        ></div>
+                      <div
+                        className={`rounded-t-lg w-20 transition-all duration-500 flex items-end justify-center text-white text-xs font-medium ${
+                          templateGroup.template_id === 1 ? 'bg-blue-500 hover:bg-blue-600' :
+                          templateGroup.template_id === 2 ? 'bg-purple-500 hover:bg-purple-600' :
+                          'bg-green-500 hover:bg-green-600'
+                        }`}
+                        style={{ height: `${Math.max(totalProgress * 0.8, 8)}px` }}
+                        title={`${templateGroup.total_completed}/${templateGroup.total_leads} leads completed`}
+                      >
+                        {totalProgress > 25 && (
+                          <span className="mb-1">{templateGroup.total_completed}</span>
+                        )}
                       </div>
-
-                      <div className="flex justify-between text-xs text-gray-500">
-                        <span>{templateGroup.total_in_progress} in progress</span>
-                        <span>{templateGroup.total_pending} pending</span>
+                      <div className="text-center">
+                        <div className={`w-4 h-4 rounded-full mx-auto mb-1 ${
+                          templateGroup.template_id === 1 ? 'bg-blue-500' :
+                          templateGroup.template_id === 2 ? 'bg-purple-500' :
+                          'bg-green-500'
+                        }`}></div>
+                        <div className="text-xs font-medium text-gray-900 max-w-20 break-words">
+                          {templateGroup.template_name}
+                        </div>
+                        <Badge variant="outline" className="text-xs mt-1">
+                          {templateGroup.steps.length} steps
+                        </Badge>
+                        <div className="text-xs text-gray-500 mt-1">
+                          {templateGroup.total_completed}/{templateGroup.total_leads}
+                        </div>
                       </div>
                     </div>
                   );
