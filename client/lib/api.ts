@@ -139,13 +139,21 @@ export class ApiClient {
         throw new Error(`Invalid JSON response from server URL: ${url}`);
       }
     } catch (error) {
-      // Track failure for circuit breaker
-      this.failureCount++;
-      this.lastFailureTime = Date.now();
-
       const errorMessage =
         error instanceof Error ? error.message : String(error);
       console.error("API request failed:", errorMessage, "URL:", url);
+
+      // Only track actual network failures for circuit breaker, not server responses
+      const isNetworkError = error instanceof TypeError &&
+        (error.message.includes("Failed to fetch") ||
+         error.message.includes("Network error") ||
+         error.message.includes("body stream"));
+
+      if (isNetworkError) {
+        // Track failure for circuit breaker only for network errors
+        this.failureCount++;
+        this.lastFailureTime = Date.now();
+      }
 
       // Retry logic for network errors
       if (
