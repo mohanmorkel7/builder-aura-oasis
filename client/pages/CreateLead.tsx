@@ -631,7 +631,7 @@ export default function CreateLead() {
         start_date: leadData.start_date === "" ? null : leadData.start_date,
       };
 
-      // Prepare partial data for database save (using existing fields as workaround)
+      // Prepare partial data for database save
       const partialData = {
         ...cleanedData,
         lead_source: cleanedData.lead_source || "other", // Ensure we have a lead_source
@@ -645,9 +645,30 @@ export default function CreateLead() {
           originalData: leadData,
         }),
         created_by: parseInt(user?.id || "1"),
+        template_id:
+          selectedTemplate && selectedTemplate !== "manual"
+            ? parseInt(selectedTemplate)
+            : null,
       };
 
-      await createLeadMutation.mutateAsync(partialData);
+      // If we have a draft ID, update the existing draft instead of creating a new one
+      if (draftId) {
+        try {
+          await apiClient.updateLead(draftId, partialData);
+          console.log('Draft updated successfully');
+        } catch (error) {
+          console.error("Failed to update draft, creating new one:", error);
+          // If update fails, create a new draft
+          const result = await partialSaveMutation.mutateAsync(partialData);
+          setDraftId(result.id);
+        }
+      } else {
+        // Create new draft
+        const result = await partialSaveMutation.mutateAsync(partialData);
+        setDraftId(result.id);
+        console.log('Draft created successfully');
+      }
+
       setIsPartialSaved(true);
 
       // Show success message for 2 seconds
