@@ -1921,7 +1921,7 @@ export default function CreateLead() {
               onClick={handlePartialSave}
               disabled={saving}
             >
-              Save Progress
+              {draftId ? 'Update Draft' : 'Save Progress'}
             </Button>
             {!isLastTab ? (
               <Button onClick={handleNextTab} disabled={saving}>
