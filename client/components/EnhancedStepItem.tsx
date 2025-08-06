@@ -242,7 +242,7 @@ export function EnhancedStepItem({
   };
 
   const handleFollowUp = async (messageId: number) => {
-    if (!user || step.isTemplate) return;
+    if (!user) return;
 
     // Navigate to follow-up screen with message and step context
     // The system message will be created after the follow-up is saved with assignment info
