@@ -350,7 +350,7 @@ export default function LeadEdit() {
       setLeadData({
         lead_source: lead.lead_source || "",
         lead_source_value: lead.lead_source_value || "",
-        lead_created_by: lead.lead_created_by || "",
+        lead_created_by: lead.lead_created_by || (lead as any).creator_name || "",
         status: lead.status || "",
         project_title: lead.project_title || "",
         project_description: lead.project_description || "",
