@@ -39,12 +39,19 @@ export interface Lead {
   spoc?: string; // Single Point of Contact
 
   // Commercials
-  commercials?: string[]; // CardToken, MylapaySecure, FRM, Switch-Cards, etc.
-  commercial_pricing?: Array<{
+  billing_currency?: "INR" | "USD" | "AED";
+  flat_fee_config?: Array<{
+    id: string;
+    component_name: string;
+    value: number;
+    currency: "INR" | "USD" | "AED";
+    type: "one_time" | "recurring";
+    recurring_period?: "monthly" | "quarterly" | "yearly";
+  }>;
+  transaction_fee_config?: Array<{
     solution: string;
     value: number;
-    unit: "paisa" | "cents";
-    currency: "INR" | "USD" | "Dubai";
+    currency: "INR" | "USD" | "AED";
   }>;
 
   // Client Information
