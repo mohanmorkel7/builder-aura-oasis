@@ -1828,7 +1828,7 @@ export default function CreateLead() {
                     value={leadData.probability}
                     onChange={(e) => updateField("probability", e.target.value)}
                     className="mt-1"
-                    placeholder="50"
+                    placeholder="0"
                   />
                 </div>
               </div>
