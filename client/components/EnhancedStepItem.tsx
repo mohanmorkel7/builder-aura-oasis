@@ -335,11 +335,8 @@ export function EnhancedStepItem({
             <Select
               value={step.status}
               onValueChange={(value) => onUpdateStatus(step.id, value)}
-              disabled={step.isTemplate}
             >
-              <SelectTrigger
-                className={`w-32 ${step.isTemplate ? "opacity-50 cursor-not-allowed" : ""}`}
-              >
+              <SelectTrigger className="w-32">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
