@@ -258,13 +258,13 @@ export default function LeadEdit() {
       const lead = originalLead;
 
       // Debug logging to check what data we're receiving
-      console.log('LeadEdit: Loading lead data:', {
+      console.log("LeadEdit: Loading lead data:", {
         leadId,
         start_date: lead.start_date,
         targeted_end_date: lead.targeted_end_date,
         flat_fee_config: lead.flat_fee_config,
         transaction_fee_config: lead.transaction_fee_config,
-        billing_currency: lead.billing_currency
+        billing_currency: lead.billing_currency,
       });
       setLeadData({
         lead_source: lead.lead_source || "",
@@ -386,7 +386,7 @@ export default function LeadEdit() {
       });
 
       // Debug logging to verify what was set
-      console.log('LeadEdit: After setLeadData:', {
+      console.log("LeadEdit: After setLeadData:", {
         start_date: formatDateSafely(lead.start_date),
         targeted_end_date: formatDateSafely(lead.targeted_end_date),
         flat_fee_config_raw: lead.flat_fee_config,
@@ -409,7 +409,7 @@ export default function LeadEdit() {
           } catch {
             return [];
           }
-        })()
+        })(),
       });
 
       // Restore selected template if template_id exists
@@ -425,9 +425,11 @@ export default function LeadEdit() {
 
   // Safe date formatting function to handle invalid dates
   const formatDateSafely = (dateStr: string | null | undefined): string => {
-    console.log('formatDateSafely called with:', dateStr);
+    console.log("formatDateSafely called with:", dateStr);
     if (!dateStr || dateStr.trim() === "") {
-      console.log('formatDateSafely: empty or null date, returning empty string');
+      console.log(
+        "formatDateSafely: empty or null date, returning empty string",
+      );
       return "";
     }
     try {
@@ -437,7 +439,7 @@ export default function LeadEdit() {
         return "";
       }
       const result = date.toISOString().split("T")[0];
-      console.log('formatDateSafely result:', result);
+      console.log("formatDateSafely result:", result);
       return result;
     } catch (error) {
       console.warn("Error formatting date:", dateStr, error);
