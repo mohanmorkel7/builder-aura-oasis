@@ -1106,8 +1106,15 @@ export function useCreateStepChat() {
   return useMutation({
     mutationFn: ({ stepId, chatData }: { stepId: number; chatData: any }) =>
       apiClient.createStepChat(stepId, chatData),
-    onSuccess: (_, { stepId }) => {
+    onSuccess: (data, { stepId }) => {
+      console.log("Chat created successfully:", data);
+      // Invalidate and refetch the chat query
       queryClient.invalidateQueries({ queryKey: ["step-chats", stepId] });
+      // Also trigger an immediate refetch
+      queryClient.refetchQueries({ queryKey: ["step-chats", stepId] });
+    },
+    onError: (error) => {
+      console.error("Failed to create chat:", error);
     },
   });
 }
