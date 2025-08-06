@@ -82,6 +82,9 @@ const mockActivityLogs = [
 // Get activity logs with filtering
 router.get("/", async (req: Request, res: Response) => {
   try {
+    // Set proper JSON headers
+    res.setHeader('Content-Type', 'application/json');
+
     const {
       entity_type,
       entity_id,
@@ -93,6 +96,34 @@ router.get("/", async (req: Request, res: Response) => {
       start_date,
       end_date,
     } = req.query;
+
+    // Validate and sanitize date parameters
+    let validStartDate = null;
+    let validEndDate = null;
+
+    if (start_date) {
+      try {
+        validStartDate = new Date(start_date as string);
+        if (isNaN(validStartDate.getTime())) {
+          validStartDate = null;
+        }
+      } catch (e) {
+        console.warn('Invalid start_date parameter:', start_date);
+        validStartDate = null;
+      }
+    }
+
+    if (end_date) {
+      try {
+        validEndDate = new Date(end_date as string);
+        if (isNaN(validEndDate.getTime())) {
+          validEndDate = null;
+        }
+      } catch (e) {
+        console.warn('Invalid end_date parameter:', end_date);
+        validEndDate = null;
+      }
+    }
 
     if (await isDatabaseAvailable()) {
       let whereConditions = [];
