@@ -574,7 +574,7 @@ export default function Overview() {
                             </div>
 
                             {/* Legend */}
-                            <div className="flex justify-center items-center space-x-6 mt-4 text-xs">
+                            <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-6 mt-4 text-xs">
                               <div className="flex items-center space-x-1">
                                 <div className="w-3 h-3 bg-green-500 rounded"></div>
                                 <span className="text-green-700 font-medium">Completed</span>
