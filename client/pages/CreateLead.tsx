@@ -649,7 +649,7 @@ export default function CreateLead() {
         notes: JSON.stringify({
           isPartialSave: true,
           lastSaved: new Date().toISOString(),
-          completedTabs: [currentTab],
+          completedTabs: Array.from(new Set([...((leadData as any)._completedTabs || []), currentTab])),
           originalData: leadData,
         }),
         created_by: parseInt(user?.id || "1"),
