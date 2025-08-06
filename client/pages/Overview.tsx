@@ -485,71 +485,82 @@ export default function Overview() {
                                 </div>
                               </div>
 
-                              {/* Horizontal Bar Chart */}
-                              <div className="relative">
-                                <div className="flex h-8 bg-gray-100 rounded-lg overflow-hidden">
-                                  {/* Completed Section */}
+                              {/* Vertical Bar Chart */}
+                              <div className="flex items-end justify-center space-x-8 h-40 relative">
+                                {/* Completed Bar */}
+                                <div className="flex flex-col items-center space-y-2">
+                                  <div className="text-xs font-medium text-green-700">
+                                    {stepData.completed_count}
+                                  </div>
                                   <div
-                                    className="bg-green-500 hover:bg-green-600 transition-colors cursor-pointer flex items-center justify-center text-white text-xs font-medium"
-                                    style={{ width: `${completedPercent}%` }}
+                                    className="bg-green-500 hover:bg-green-600 transition-colors cursor-pointer rounded-t-lg w-16 flex items-end justify-center text-white text-xs font-medium"
+                                    style={{ height: `${Math.max(completedPercent * 1.2, 8)}px` }}
                                     onClick={() => handleStepStatusClick(stepData, 'completed')}
                                     title={`${stepData.completed_count} completed (${completedPercent.toFixed(1)}%)`}
                                   >
-                                    {completedPercent > 10 && stepData.completed_count > 0 && (
-                                      <span>{stepData.completed_count}</span>
+                                    {completedPercent > 20 && (
+                                      <span className="mb-1">{stepData.completed_count}</span>
                                     )}
                                   </div>
-
-                                  {/* In Progress Section */}
-                                  <div
-                                    className="bg-blue-500 hover:bg-blue-600 transition-colors cursor-pointer flex items-center justify-center text-white text-xs font-medium"
-                                    style={{ width: `${inProgressPercent}%` }}
-                                    onClick={() => handleStepStatusClick(stepData, 'in_progress')}
-                                    title={`${stepData.in_progress_count} in progress (${inProgressPercent.toFixed(1)}%)`}
-                                  >
-                                    {inProgressPercent > 10 && stepData.in_progress_count > 0 && (
-                                      <span>{stepData.in_progress_count}</span>
-                                    )}
-                                  </div>
-
-                                  {/* Pending Section */}
-                                  <div
-                                    className="bg-gray-400 hover:bg-gray-500 transition-colors cursor-pointer flex items-center justify-center text-white text-xs font-medium"
-                                    style={{ width: `${pendingPercent}%` }}
-                                    onClick={() => handleStepStatusClick(stepData, 'pending')}
-                                    title={`${stepData.pending_count} pending (${pendingPercent.toFixed(1)}%)`}
-                                  >
-                                    {pendingPercent > 10 && stepData.pending_count > 0 && (
-                                      <span>{stepData.pending_count}</span>
-                                    )}
+                                  <div className="text-xs text-green-700 font-medium text-center">
+                                    Completed
                                   </div>
                                 </div>
 
-                                {/* Progress Labels */}
-                                <div className="flex justify-between items-center mt-1 text-xs">
-                                  <div className="flex items-center space-x-4">
-                                    <div className="flex items-center space-x-1">
-                                      <div className="w-3 h-3 bg-green-500 rounded"></div>
-                                      <span className="text-green-700 font-medium">
-                                        {stepData.completed_count} Completed
-                                      </span>
-                                    </div>
-                                    <div className="flex items-center space-x-1">
-                                      <div className="w-3 h-3 bg-blue-500 rounded"></div>
-                                      <span className="text-blue-700 font-medium">
-                                        {stepData.in_progress_count} In Progress
-                                      </span>
-                                    </div>
-                                    <div className="flex items-center space-x-1">
-                                      <div className="w-3 h-3 bg-gray-400 rounded"></div>
-                                      <span className="text-gray-700 font-medium">
-                                        {stepData.pending_count} Pending
-                                      </span>
-                                    </div>
+                                {/* In Progress Bar */}
+                                <div className="flex flex-col items-center space-y-2">
+                                  <div className="text-xs font-medium text-blue-700">
+                                    {stepData.in_progress_count}
                                   </div>
-                                  <div className="text-green-600 font-semibold">
-                                    {completedPercent.toFixed(1)}% Complete
+                                  <div
+                                    className="bg-blue-500 hover:bg-blue-600 transition-colors cursor-pointer rounded-t-lg w-16 flex items-end justify-center text-white text-xs font-medium"
+                                    style={{ height: `${Math.max(inProgressPercent * 1.2, 8)}px` }}
+                                    onClick={() => handleStepStatusClick(stepData, 'in_progress')}
+                                    title={`${stepData.in_progress_count} in progress (${inProgressPercent.toFixed(1)}%)`}
+                                  >
+                                    {inProgressPercent > 20 && (
+                                      <span className="mb-1">{stepData.in_progress_count}</span>
+                                    )}
                                   </div>
+                                  <div className="text-xs text-blue-700 font-medium text-center">
+                                    In Progress
+                                  </div>
+                                </div>
+
+                                {/* Pending Bar */}
+                                <div className="flex flex-col items-center space-y-2">
+                                  <div className="text-xs font-medium text-gray-700">
+                                    {stepData.pending_count}
+                                  </div>
+                                  <div
+                                    className="bg-gray-400 hover:bg-gray-500 transition-colors cursor-pointer rounded-t-lg w-16 flex items-end justify-center text-white text-xs font-medium"
+                                    style={{ height: `${Math.max(pendingPercent * 1.2, 8)}px` }}
+                                    onClick={() => handleStepStatusClick(stepData, 'pending')}
+                                    title={`${stepData.pending_count} pending (${pendingPercent.toFixed(1)}%)`}
+                                  >
+                                    {pendingPercent > 20 && (
+                                      <span className="mb-1">{stepData.pending_count}</span>
+                                    )}
+                                  </div>
+                                  <div className="text-xs text-gray-700 font-medium text-center">
+                                    Pending
+                                  </div>
+                                </div>
+
+                                {/* Y-axis labels */}
+                                <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-gray-500">
+                                  <span>{total}</span>
+                                  <span>{Math.round(total * 0.75)}</span>
+                                  <span>{Math.round(total * 0.5)}</span>
+                                  <span>{Math.round(total * 0.25)}</span>
+                                  <span>0</span>
+                                </div>
+                              </div>
+
+                              {/* Progress Summary */}
+                              <div className="text-center mt-4">
+                                <div className="text-green-600 font-semibold text-sm">
+                                  {completedPercent.toFixed(1)}% Complete ({stepData.completed_count}/{total})
                                 </div>
                               </div>
                             </div>
@@ -557,29 +568,34 @@ export default function Overview() {
                         })}
                       </div>
 
-                      {/* Overall Template Progress */}
+                      {/* Overall Template Progress - Vertical Summary */}
                       <div className="mt-6 pt-6 border-t border-gray-200">
-                        <h5 className="text-md font-semibold text-gray-900 mb-3">Overall Template Progress</h5>
-                        <div className="space-y-2">
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm text-gray-600">Total Progress Across All Steps</span>
-                            <span className="text-sm font-semibold text-gray-900">
+                        <h5 className="text-md font-semibold text-gray-900 mb-4">Overall Template Progress</h5>
+                        <div className="flex justify-center">
+                          <div className="flex flex-col items-center space-y-2">
+                            <div className="text-lg font-bold text-gray-900">
                               {templateGroup.total_leads > 0
                                 ? Math.round((templateGroup.total_completed / templateGroup.total_leads) * 100)
                                 : 0
-                              }% Complete
-                            </span>
-                          </div>
-                          <div className="w-full bg-gray-200 rounded-full h-4">
+                              }%
+                            </div>
                             <div
-                              className="bg-gradient-to-r from-green-400 to-green-600 h-4 rounded-full transition-all duration-500 flex items-center justify-center text-white text-xs font-medium"
+                              className="bg-gradient-to-t from-green-400 to-green-600 rounded-lg w-20 flex items-end justify-center text-white text-xs font-medium transition-all duration-500"
                               style={{
-                                width: `${templateGroup.total_leads > 0 ? (templateGroup.total_completed / templateGroup.total_leads) * 100 : 0}%`
+                                height: `${Math.max(
+                                  templateGroup.total_leads > 0
+                                    ? (templateGroup.total_completed / templateGroup.total_leads) * 80
+                                    : 0,
+                                  8
+                                )}px`
                               }}
                             >
                               {templateGroup.total_completed > 0 && (
-                                <span>{templateGroup.total_completed}/{templateGroup.total_leads}</span>
+                                <span className="mb-1">{templateGroup.total_completed}</span>
                               )}
+                            </div>
+                            <div className="text-xs text-gray-600 text-center">
+                              {templateGroup.total_completed}/{templateGroup.total_leads} Complete
                             </div>
                           </div>
                         </div>
