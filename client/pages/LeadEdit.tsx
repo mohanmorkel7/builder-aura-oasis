@@ -168,37 +168,8 @@ export default function LeadEdit() {
       : null;
   const { data: templateData } = useTemplate(selectedTemplateId || 0);
 
-  // Add error handling for auth context AFTER all other hooks
-  let user;
-  let authError = false;
-  try {
-    user = useAuth().user;
-  } catch (error) {
-    console.error("Auth error in LeadEdit:", error);
-    authError = true;
-  }
-
-  // Handle auth error AFTER all hooks are called
-  if (authError) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-red-600 mb-4">
-            Authentication Error
-          </h1>
-          <p className="text-gray-600 mb-4">
-            There was an issue with authentication. Please refresh the page.
-          </p>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            Refresh Page
-          </button>
-        </div>
-      </div>
-    );
-  }
+  // Get auth context - useAuth has built-in error handling and fallbacks
+  const { user } = useAuth();
 
   // State hooks
   const [leadData, setLeadData] = useState({
