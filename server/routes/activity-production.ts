@@ -3,6 +3,25 @@ import { pool } from "../database/connection";
 
 const router = Router();
 
+// Wrapper to ensure all responses are JSON
+function jsonResponse(handler: (req: Request, res: Response) => Promise<void>) {
+  return async (req: Request, res: Response) => {
+    try {
+      // Set JSON headers early
+      res.setHeader('Content-Type', 'application/json');
+      await handler(req, res);
+    } catch (error) {
+      console.error('Unhandled error in route:', error);
+      if (!res.headersSent) {
+        res.status(500).json({
+          error: 'Internal server error',
+          message: error instanceof Error ? error.message : 'Unknown error'
+        });
+      }
+    }
+  };
+}
+
 // Production database availability check with graceful fallback
 async function isDatabaseAvailable() {
   try {
