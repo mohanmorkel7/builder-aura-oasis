@@ -359,7 +359,10 @@ export default function LeadEdit() {
         // Enhanced Project Info
         solutions: (() => {
           try {
-            if (typeof lead.solutions === 'string' && lead.solutions.trim() !== '') {
+            if (
+              typeof lead.solutions === "string" &&
+              lead.solutions.trim() !== ""
+            ) {
               return JSON.parse(lead.solutions);
             }
             return Array.isArray(lead.solutions) ? lead.solutions : [];
@@ -388,7 +391,7 @@ export default function LeadEdit() {
         billing_currency: lead.billing_currency || "INR",
         flat_fee_config: (() => {
           try {
-            return lead.flat_fee_config && lead.flat_fee_config.trim() !== ''
+            return lead.flat_fee_config && lead.flat_fee_config.trim() !== ""
               ? JSON.parse(lead.flat_fee_config)
               : [];
           } catch {
@@ -397,7 +400,8 @@ export default function LeadEdit() {
         })(),
         transaction_fee_config: (() => {
           try {
-            return lead.transaction_fee_config && lead.transaction_fee_config.trim() !== ''
+            return lead.transaction_fee_config &&
+              lead.transaction_fee_config.trim() !== ""
               ? JSON.parse(lead.transaction_fee_config)
               : [];
           } catch {
@@ -408,18 +412,23 @@ export default function LeadEdit() {
         // Contacts
         contacts: (() => {
           try {
-            if (typeof lead.contacts === 'string' && lead.contacts.trim() !== '') {
+            if (
+              typeof lead.contacts === "string" &&
+              lead.contacts.trim() !== ""
+            ) {
               return JSON.parse(lead.contacts);
             }
-            return Array.isArray(lead.contacts) ? lead.contacts : [
-              {
-                contact_name: "",
-                designation: "",
-                phone: "",
-                email: "",
-                linkedin: "",
-              },
-            ];
+            return Array.isArray(lead.contacts)
+              ? lead.contacts
+              : [
+                  {
+                    contact_name: "",
+                    designation: "",
+                    phone: "",
+                    email: "",
+                    linkedin: "",
+                  },
+                ];
           } catch {
             return [
               {
