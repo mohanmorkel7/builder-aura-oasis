@@ -463,6 +463,18 @@ export default function LeadEdit() {
       } else {
         setSelectedTemplate("manual");
       }
+
+      // Debug commercial configurations
+      console.log("LeadEdit - Loading lead data:", {
+        lead_created_by: lead.lead_created_by,
+        template_id: lead.template_id,
+        expected_daily_txn_volume_year1: lead.expected_daily_txn_volume_year1,
+        expected_daily_txn_volume_year2: lead.expected_daily_txn_volume_year2,
+        expected_daily_txn_volume_year3: lead.expected_daily_txn_volume_year3,
+        expected_daily_txn_volume_year5: lead.expected_daily_txn_volume_year5,
+        flat_fee_config: lead.flat_fee_config,
+        transaction_fee_config: lead.transaction_fee_config,
+      });
     }
   }, [originalLead]);
 
