@@ -632,14 +632,17 @@ export default function CreateLead() {
       // Clean form data - convert empty strings to null for numeric fields
       const cleanedData = {
         ...leadData,
+        // Properly serialize array fields
+        solutions: JSON.stringify(leadData.solutions || []),
+        contacts: JSON.stringify(leadData.contacts || []),
         // Convert empty strings to null for numeric fields
         expected_daily_txn_volume:
           leadData.expected_daily_txn_volume === ""
             ? null
             : leadData.expected_daily_txn_volume,
         billing_currency: leadData.billing_currency,
-        flat_fee_config: JSON.stringify(leadData.flat_fee_config),
-        transaction_fee_config: JSON.stringify(leadData.transaction_fee_config),
+        flat_fee_config: JSON.stringify(leadData.flat_fee_config || []),
+        transaction_fee_config: JSON.stringify(leadData.transaction_fee_config || []),
         expected_daily_txn_volume_year1:
           leadData.expected_daily_txn_volume_year1 === ""
             ? null
