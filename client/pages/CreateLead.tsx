@@ -457,20 +457,20 @@ export default function CreateLead() {
       {
         label: "Second Year",
         volume: year2Volume,
-        multiplier: 30 * 24,
-        description: `(${year2Volume.toLocaleString()} daily txns × 30 days × 24 months = ${(year2Volume * 720).toLocaleString()} total txns)`
+        multiplier: 30 * 12,
+        description: `(${year2Volume.toLocaleString()} daily txns × 30 days × 12 months = ${(year2Volume * 360).toLocaleString()} total txns)`
       },
       {
         label: "Third Year",
         volume: year3Volume,
-        multiplier: 30 * 36,
-        description: `(${year3Volume.toLocaleString()} daily txns × 30 days × 36 months = ${(year3Volume * 1080).toLocaleString()} total txns)`
+        multiplier: 30 * 12,
+        description: `(${year3Volume.toLocaleString()} daily txns × 30 days × 12 months = ${(year3Volume * 360).toLocaleString()} total txns)`
       },
       {
         label: "Fifth Year",
         volume: year5Volume,
-        multiplier: 30 * 60,
-        description: `(${year5Volume.toLocaleString()} daily txns × 30 days × 60 months = ${(year5Volume * 1800).toLocaleString()} total txns)`
+        multiplier: 30 * 12,
+        description: `(${year5Volume.toLocaleString()} daily txns × 30 days × 12 months = ${(year5Volume * 360).toLocaleString()} total txns)`
       },
     ];
 
