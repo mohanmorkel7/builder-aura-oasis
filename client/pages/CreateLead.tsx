@@ -1543,7 +1543,14 @@ export default function CreateLead() {
                                     <TableCell>
                                       {period.solutions.reduce((sum, s) => sum + s.value, 0).toLocaleString(undefined, { maximumFractionDigits: 2 })} {leadData.billing_currency} (txn rate)
                                     </TableCell>
-                                    <TableCell>{period.totalTransactions.toLocaleString()}</TableCell>
+                                    {period.label === "Current" ? (
+                                      <TableCell>{period.totalTransactions.toLocaleString()}</TableCell>
+                                    ) : (
+                                      <>
+                                        <TableCell>{(period.volume * 30).toLocaleString()}</TableCell>
+                                        <TableCell>{period.totalTransactions.toLocaleString()}</TableCell>
+                                      </>
+                                    )}
                                     <TableCell>
                                       ₹{(
                                         period.solutions.reduce((sum, s) => sum + convertCurrency(s.totalValue, s.currency, "INR"), 0) +
