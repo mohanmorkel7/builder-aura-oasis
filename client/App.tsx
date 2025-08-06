@@ -21,7 +21,10 @@ class AuthErrorBoundary extends React.Component<
     console.error("Auth Error Boundary caught an error:", error, errorInfo);
 
     // Check if it's an auth-related error
-    if (error.message?.includes("useAuth") || error.message?.includes("AuthProvider")) {
+    if (
+      error.message?.includes("useAuth") ||
+      error.message?.includes("AuthProvider")
+    ) {
       console.warn("Auth context error detected - possible HMR issue");
     }
   }
