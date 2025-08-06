@@ -107,10 +107,10 @@ export default function LeadDetails() {
 
   const [newStepDialog, setNewStepDialog] = useState(false);
 
-  // Calculate completion percentage based on template probability values or lead probability
+  // Calculate completion percentage based on step completion or lead probability
   const calculateCompletionPercentage = () => {
-    // If we have template steps, calculate based on step completion
-    if (lead?.template_id && leadSteps && leadSteps.length > 0) {
+    // If we have lead steps, calculate based on step completion (regardless of template)
+    if (leadSteps && leadSteps.length > 0) {
       // Enhanced calculation using step probability weights
       let totalCompletedProbability = 0;
       let totalPossibleProbability = 0;
@@ -136,7 +136,7 @@ export default function LeadDetails() {
       return percentage;
     }
 
-    // If no template steps, use the lead's probability value
+    // If no steps exist, use the lead's probability value
     return lead?.probability || 0;
   };
 
