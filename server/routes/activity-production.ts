@@ -154,7 +154,9 @@ router.get("/", jsonResponse(async (req: Request, res: Response) => {
       }
     }
 
+    console.log('Activity logs: Checking database availability...');
     if (await isDatabaseAvailable()) {
+      console.log('Activity logs: Using database');
       let whereConditions = [];
       let params = [];
       let paramIndex = 1;
