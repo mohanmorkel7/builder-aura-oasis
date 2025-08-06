@@ -322,6 +322,11 @@ export default function CreateLead() {
       [field]: value,
     };
 
+    // Clear lead_source_value when lead_source changes
+    if (field === "lead_source") {
+      newData.lead_source_value = "";
+    }
+
     // If solutions are updated, sync with commercial_pricing
     if (field === "solutions") {
       const existingPricing = leadData.commercial_pricing || [];
