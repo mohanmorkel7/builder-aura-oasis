@@ -761,11 +761,7 @@ export default function LeadDashboard() {
                                     2,
                                     "0",
                                   );
-                                  const formatted = `${year}-${month}-${day}`;
-                                  console.log(
-                                    `Date conversion: ${dateValue} → ${formatted}`,
-                                  );
-                                  return formatted;
+                                  return `${year}-${month}-${day}`;
                                 }
                                 return dateValue; // Already in correct format
                               };
