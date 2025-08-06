@@ -299,27 +299,17 @@ export function EnhancedStepItem({
               <div className="flex items-center space-x-2">
                 <span className="font-medium text-gray-900">{step.name}</span>
                 <div className="flex items-center space-x-2">
-                  {step.isTemplate && (
-                    <Badge
-                      variant="outline"
-                      className="text-xs bg-blue-100 text-blue-700 border-blue-300"
-                    >
-                      Template Step
-                    </Badge>
-                  )}
-                  {step.isTemplate && step.probability_percent && (
+                  {step.probability_percent && (
                     <Badge variant="outline" className="text-xs">
                       {step.probability_percent}% weight
                     </Badge>
                   )}
-                  {!step.isTemplate &&
-                    !chatLoading &&
-                    sortedMessages.length > 0 && (
-                      <Badge variant="outline" className="text-xs">
-                        {sortedMessages.length} message
-                        {sortedMessages.length !== 1 ? "s" : ""}
-                      </Badge>
-                    )}
+                  {!chatLoading && sortedMessages.length > 0 && (
+                    <Badge variant="outline" className="text-xs">
+                      {sortedMessages.length} message
+                      {sortedMessages.length !== 1 ? "s" : ""}
+                    </Badge>
+                  )}
                 </div>
               </div>
               <div className="text-sm text-gray-600 mt-1">
