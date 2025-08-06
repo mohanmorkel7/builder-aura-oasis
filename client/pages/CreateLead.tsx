@@ -427,22 +427,53 @@ export default function CreateLead() {
     const year5Volume = parseInt(leadData.expected_daily_txn_volume_year5) || 0;
 
     const periods = [
-      { label: "Current", volume: currentVolume, multiplier: 30 },
-      { label: "First Year", volume: year1Volume, multiplier: 30 * 12 },
-      { label: "Second Year", volume: year2Volume, multiplier: 30 * 24 },
-      { label: "Third Year", volume: year3Volume, multiplier: 30 * 36 },
-      { label: "Fifth Year", volume: year5Volume, multiplier: 30 * 60 },
+      {
+        label: "Current",
+        volume: currentVolume,
+        multiplier: 30,
+        description: `(${currentVolume.toLocaleString()} daily txns × 30 = ${(currentVolume * 30).toLocaleString()} total txns)`
+      },
+      {
+        label: "First Year",
+        volume: year1Volume,
+        multiplier: 30 * 12,
+        description: `(${year1Volume.toLocaleString()} daily txns × 360 = ${(year1Volume * 360).toLocaleString()} total txns)`
+      },
+      {
+        label: "Second Year",
+        volume: year2Volume,
+        multiplier: 30 * 24,
+        description: `(${year2Volume.toLocaleString()} daily txns × 720 = ${(year2Volume * 720).toLocaleString()} total txns)`
+      },
+      {
+        label: "Third Year",
+        volume: year3Volume,
+        multiplier: 30 * 36,
+        description: `(${year3Volume.toLocaleString()} daily txns × 1080 = ${(year3Volume * 1080).toLocaleString()} total txns)`
+      },
+      {
+        label: "Fifth Year",
+        volume: year5Volume,
+        multiplier: 30 * 60,
+        description: `(${year5Volume.toLocaleString()} daily txns × 1800 = ${(year5Volume * 1800).toLocaleString()} total txns)`
+      },
     ];
 
     return periods.map(period => ({
       ...period,
       totalTransactions: period.volume * period.multiplier,
-      solutions: leadData.transaction_fee_config.map(config => ({
-        ...config,
-        totalValue: (period.volume * period.multiplier * config.value),
-        totalValueINR: convertCurrency(period.volume * period.multiplier * config.value, config.currency, "INR"),
-        totalValueUSD: convertCurrency(period.volume * period.multiplier * config.value, config.currency, "USD"),
-      }))
+      solutions: leadData.transaction_fee_config.map(config => {
+        // Value is in paisa, so total value in paisa
+        const totalValuePaisa = period.volume * period.multiplier * config.value;
+        const totalValueRupees = totalValuePaisa / 100;
+
+        return {
+          ...config,
+          totalValuePaisa: totalValuePaisa,
+          totalValueRupees: totalValueRupees,
+          totalValueUSD: convertCurrency(totalValueRupees, "INR", "USD"),
+        };
+      })
     }));
   };
 
@@ -1302,7 +1333,7 @@ export default function CreateLead() {
                             <TableRow>
                               <TableHead>Solution Name</TableHead>
                               <TableHead>Currency</TableHead>
-                              <TableHead>Value (per transaction)</TableHead>
+                              <TableHead>Value (per transaction in paisa)</TableHead>
                             </TableRow>
                           </TableHeader>
                           <TableBody>
@@ -1368,7 +1399,7 @@ export default function CreateLead() {
                         {calculateSummary().map((period, periodIndex) => (
                           <div key={period.label} className="border rounded-lg p-4">
                             <h5 className="font-semibold mb-3">
-                              {period.label} ({period.volume.toLocaleString()} daily txns × {period.multiplier} = {period.totalTransactions.toLocaleString()} total txns)
+                              {period.label} {period.description}
                             </h5>
 
                             {period.solutions.length === 0 ? (
@@ -1378,10 +1409,10 @@ export default function CreateLead() {
                                 <TableHeader>
                                   <TableRow>
                                     <TableHead>Solution</TableHead>
-                                    <TableHead>Rate</TableHead>
+                                    <TableHead>Rate (paisa)</TableHead>
                                     <TableHead>Total Transaction Count</TableHead>
-                                    <TableHead>Currency Value</TableHead>
-                                    <TableHead>INR Value</TableHead>
+                                    <TableHead>Total Value (paisa)</TableHead>
+                                    <TableHead>Total Value (rupees)</TableHead>
                                     <TableHead>USD Value</TableHead>
                                   </TableRow>
                                 </TableHeader>
@@ -1389,13 +1420,13 @@ export default function CreateLead() {
                                   {period.solutions.map((solution, index) => (
                                     <TableRow key={solution.solution}>
                                       <TableCell className="font-medium">{solution.solution}</TableCell>
-                                      <TableCell>{solution.value} {solution.currency}</TableCell>
+                                      <TableCell>{solution.value} paisa</TableCell>
                                       <TableCell>{period.totalTransactions.toLocaleString()}</TableCell>
                                       <TableCell>
-                                        {solution.totalValue.toLocaleString(undefined, { maximumFractionDigits: 2 })} {solution.currency}
+                                        {solution.totalValuePaisa.toLocaleString(undefined, { maximumFractionDigits: 0 })} paisa
                                       </TableCell>
                                       <TableCell>
-                                        ₹{solution.totalValueINR.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                                        ₹{solution.totalValueRupees.toLocaleString(undefined, { maximumFractionDigits: 2 })}
                                       </TableCell>
                                       <TableCell>
                                         ${solution.totalValueUSD.toLocaleString(undefined, { maximumFractionDigits: 2 })}
@@ -1407,9 +1438,11 @@ export default function CreateLead() {
                                     <TableCell>Total</TableCell>
                                     <TableCell>-</TableCell>
                                     <TableCell>{period.totalTransactions.toLocaleString()}</TableCell>
-                                    <TableCell>-</TableCell>
                                     <TableCell>
-                                      ₹{period.solutions.reduce((sum, s) => sum + s.totalValueINR, 0).toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                                      {period.solutions.reduce((sum, s) => sum + s.totalValuePaisa, 0).toLocaleString(undefined, { maximumFractionDigits: 0 })} paisa
+                                    </TableCell>
+                                    <TableCell>
+                                      ₹{period.solutions.reduce((sum, s) => sum + s.totalValueRupees, 0).toLocaleString(undefined, { maximumFractionDigits: 2 })}
                                     </TableCell>
                                     <TableCell>
                                       ${period.solutions.reduce((sum, s) => sum + s.totalValueUSD, 0).toLocaleString(undefined, { maximumFractionDigits: 2 })}
