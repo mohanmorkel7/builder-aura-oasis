@@ -736,10 +736,12 @@ export default function LeadDashboard() {
                                   typeof dateValue === "string" &&
                                   dateValue.includes("T")
                                 ) {
-                                  // ISO format, convert to YYYY-MM-DD
-                                  const formatted = new Date(dateValue)
-                                    .toISOString()
-                                    .split("T")[0];
+                                  // ISO format, convert to YYYY-MM-DD using local timezone to avoid date shifts
+                                  const date = new Date(dateValue);
+                                  const year = date.getFullYear();
+                                  const month = String(date.getMonth() + 1).padStart(2, '0');
+                                  const day = String(date.getDate()).padStart(2, '0');
+                                  const formatted = `${year}-${month}-${day}`;
                                   console.log(
                                     `Date conversion: ${dateValue} → ${formatted}`,
                                   );
