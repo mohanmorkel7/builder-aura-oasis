@@ -99,7 +99,17 @@ export class ApiClient {
         this.failureCount = 0;
         return result;
       } catch (jsonError) {
-        throw new Error("Invalid JSON response from server");
+        // Get the actual response text to debug what's being returned
+        let responseText = 'Could not read response';
+        try {
+          const clonedResponse = response.clone();
+          responseText = await clonedResponse.text();
+          console.error('Invalid JSON response body:', responseText.substring(0, 500)); // Log first 500 chars
+        } catch (textError) {
+          console.error('Could not read response body:', textError);
+        }
+
+        throw new Error(`Invalid JSON response from server URL: ${url}`);
       }
     } catch (error) {
       // Track failure for circuit breaker
