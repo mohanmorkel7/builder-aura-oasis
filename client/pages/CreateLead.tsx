@@ -918,6 +918,16 @@ export default function CreateLead() {
         </Alert>
       )}
 
+      {/* Save Error Alert */}
+      {saveError && (
+        <Alert variant="destructive">
+          <Info className="h-4 w-4" />
+          <AlertDescription>
+            Save Error: {saveError}
+          </AlertDescription>
+        </Alert>
+      )}
+
       {/* Resume Notification */}
       {isResumedFromDraft && (
         <Alert>
