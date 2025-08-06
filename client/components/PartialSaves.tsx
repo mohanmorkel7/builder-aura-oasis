@@ -126,11 +126,13 @@ export default function PartialSaves({
           partialSave.lead_created_by || originalData.lead_created_by,
         priority_level:
           partialSave.priority_level || originalData.priority_level,
-        start_date: partialSave.start_date || originalData.start_date,
-        targeted_end_date:
-          partialSave.targeted_end_date || originalData.targeted_end_date,
-        expected_close_date:
-          partialSave.expected_close_date || originalData.expected_close_date,
+        start_date: formatDateForInput(partialSave.start_date || originalData.start_date),
+        targeted_end_date: formatDateForInput(
+          partialSave.targeted_end_date || originalData.targeted_end_date
+        ),
+        expected_close_date: formatDateForInput(
+          partialSave.expected_close_date || originalData.expected_close_date
+        ),
         expected_daily_txn_volume:
           partialSave.expected_daily_txn_volume ||
           originalData.expected_daily_txn_volume,
