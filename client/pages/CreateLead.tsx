@@ -1473,7 +1473,7 @@ export default function CreateLead() {
                                   <TableRow>
                                     <TableHead>Solution</TableHead>
                                     <TableHead>Rate</TableHead>
-                                    <TableHead>Total Transaction Count</TableHead>
+                                    <TableHead>Total Transaction Count (month)</TableHead>
                                     <TableHead>INR Value</TableHead>
                                     <TableHead>USD Value</TableHead>
                                   </TableRow>
