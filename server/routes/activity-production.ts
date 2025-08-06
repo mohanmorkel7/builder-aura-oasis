@@ -239,7 +239,7 @@ router.get("/", jsonResponse(async (req: Request, res: Response) => {
         },
       });
     } else {
-      console.log("Database unavailable, using mock activity logs");
+      console.log("Activity logs: Database unavailable, using mock activity logs");
 
       // Filter mock activity logs
       let filteredLogs = mockActivityLogs;
