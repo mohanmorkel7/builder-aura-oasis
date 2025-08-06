@@ -367,7 +367,8 @@ export function EnhancedStepItem({
           )}
         </div>
 
-        <CollapsibleContent>
+        {!step.isTemplate && (
+          <CollapsibleContent>
           <div className="border-t bg-gray-50">
             <div className="p-4">
               {/* Chat Section */}
@@ -707,7 +708,8 @@ export function EnhancedStepItem({
               </Card>
             </div>
           </div>
-        </CollapsibleContent>
+          </CollapsibleContent>
+        )}
       </Collapsible>
     </div>
   );
