@@ -161,12 +161,12 @@ export default function LeadEdit() {
   const [selectedTemplate, setSelectedTemplate] = useState<string>("");
   const [showTemplatePreview, setShowTemplatePreview] = useState(false);
 
-  // Get selected template data
+  // Get selected template data - always call useTemplate with a number to ensure consistent hook calls
   const selectedTemplateId =
-    selectedTemplate && selectedTemplate !== "manual"
+    selectedTemplate && selectedTemplate !== "manual" && !isNaN(parseInt(selectedTemplate))
       ? parseInt(selectedTemplate)
-      : null;
-  const { data: templateData } = useTemplate(selectedTemplateId || 0);
+      : 0;
+  const { data: templateData } = useTemplate(selectedTemplateId);
 
   // Get auth context - useAuth has built-in error handling and fallbacks
   const { user } = useAuth();
