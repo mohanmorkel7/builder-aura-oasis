@@ -1524,27 +1524,10 @@ export default function CreateLead() {
                                     </TableCell>
                                     <TableCell>{period.totalTransactions.toLocaleString()}</TableCell>
                                     <TableCell>
-                                      {/* Check if all currencies are the same */}
-                                      {(() => {
-                                        const allCurrencies = [
-                                          ...period.solutions.map(s => s.currency),
-                                          ...period.flatFees.map(f => f.currency)
-                                        ];
-                                        const uniqueCurrencies = [...new Set(allCurrencies)];
-
-                                        if (uniqueCurrencies.length === 1 && uniqueCurrencies[0]) {
-                                          // All same currency - show total in that currency
-                                          const currency = uniqueCurrencies[0];
-                                          const totalValue = period.solutions.reduce((sum, s) => sum + s.totalValue, 0) +
-                                                           period.flatFees.reduce((sum, f) => sum + f.totalValue, 0);
-                                          return `${totalValue.toLocaleString(undefined, { maximumFractionDigits: 2 })} ${currency}`;
-                                        } else if (allCurrencies.length === 0) {
-                                          return "No fees configured";
-                                        } else {
-                                          return "Mixed currencies";
-                                        }
-                                      })()
-                                      }
+                                      ₹{(
+                                        period.solutions.reduce((sum, s) => sum + convertCurrency(s.totalValue, s.currency, "INR"), 0) +
+                                        period.flatFees.reduce((sum, f) => sum + convertCurrency(f.totalValue, f.currency, "INR"), 0)
+                                      ).toLocaleString(undefined, { maximumFractionDigits: 2 })}
                                     </TableCell>
                                     <TableCell>
                                       ${(period.solutions.reduce((sum, s) => sum + s.totalValueUSD, 0) + period.flatFees.reduce((sum, f) => sum + f.totalValueUSD, 0)).toLocaleString(undefined, { maximumFractionDigits: 2 })}
