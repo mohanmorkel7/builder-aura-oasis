@@ -77,6 +77,16 @@ export default function FinOpsActivityLog() {
     search: "",
   });
 
+  // Don't render if user is not available
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <RefreshCw className="w-8 h-8 animate-spin text-gray-400" />
+        <span className="ml-2 text-gray-600">Loading...</span>
+      </div>
+    );
+  }
+
   // Fetch activity logs
   const { data: activityData, isLoading } = useQuery({
     queryKey: ["activity-logs", filters],
