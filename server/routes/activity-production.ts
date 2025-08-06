@@ -99,7 +99,7 @@ const mockActivityLogs = [
 // ===== ACTIVITY LOG ROUTES =====
 
 // Get activity logs with filtering
-router.get("/", async (req: Request, res: Response) => {
+router.get("/", jsonResponse(async (req: Request, res: Response) => {
   try {
     // Set proper JSON headers
     res.setHeader('Content-Type', 'application/json');
@@ -313,7 +313,7 @@ router.get("/", async (req: Request, res: Response) => {
       res.status(500).send('{"error": "Internal server error", "activity_logs": [], "pagination": {"total": 0, "limit": 50, "offset": 0, "has_more": false}}');
     }
   }
-});
+}));
 
 // Create activity log entry
 router.post("/", async (req: Request, res: Response) => {
