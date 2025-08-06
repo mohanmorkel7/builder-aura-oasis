@@ -585,9 +585,9 @@ export default function LeadDetails() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle>{templateData?.name ? `${templateData.name} Pipeline` : 'Custom Sales Pipeline'}</CardTitle>
+                  <CardTitle>{templateLoading ? 'Loading...' : (templateData?.name ? `${templateData.name} Pipeline` : 'Custom Sales Pipeline')}</CardTitle>
                   <CardDescription>
-                    {templateData?.description || 'Manage lead-specific sales steps with rich communication'}
+                    {templateLoading ? 'Loading template details...' : (templateData?.description || 'Manage lead-specific sales steps with rich communication')}
                   </CardDescription>
                 </div>
                 <Dialog open={newStepDialog} onOpenChange={setNewStepDialog}>
