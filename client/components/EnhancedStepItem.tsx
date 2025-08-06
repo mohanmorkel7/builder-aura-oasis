@@ -101,12 +101,12 @@ export function EnhancedStepItem({
     opacity: isDragging ? 0.5 : 1,
   };
 
-  // Fetch real chat data from API
+  // Fetch real chat data from API - skip for template steps
   const {
     data: chatMessages = [],
     isLoading: chatLoading,
     error: chatError,
-  } = useStepChats(step.id);
+  } = useStepChats(step.isTemplate ? 0 : step.id);
   const createChatMutation = useCreateStepChat();
 
   // Sort messages by created_at in ascending order (latest last for bottom scroll)
@@ -170,7 +170,7 @@ export function EnhancedStepItem({
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const files = event.target.files;
-    if (!files || files.length === 0 || !user) return;
+    if (!files || files.length === 0 || !user || step.isTemplate) return;
 
     try {
       // First, upload the actual files to the server
@@ -208,7 +208,7 @@ export function EnhancedStepItem({
   };
 
   const handleSendMessage = async () => {
-    if ((!newMessage.trim() && stagedAttachments.length === 0) || !user) return;
+    if ((!newMessage.trim() && stagedAttachments.length === 0) || !user || step.isTemplate) return;
 
     const messageText = newMessage.trim() || "📎 File attachment";
 
@@ -238,7 +238,7 @@ export function EnhancedStepItem({
   };
 
   const handleFollowUp = async (messageId: number) => {
-    if (!user) return;
+    if (!user || step.isTemplate) return;
 
     // Navigate to follow-up screen with message and step context
     // The system message will be created after the follow-up is saved with assignment info
@@ -370,7 +370,7 @@ export function EnhancedStepItem({
           <div className="border-t bg-gray-50">
             <div className="p-4">
               {step.isTemplate ? (
-                /* Template Step Info - Simplified */
+                /* Template Step Info - Simple display */
                 <div className="text-center py-8 text-gray-500 bg-blue-50 rounded-lg border border-blue-200">
                   <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
                     <span className="text-blue-600 text-sm">📋</span>
@@ -391,7 +391,7 @@ export function EnhancedStepItem({
                   )}
                 </div>
               ) : (
-                /* Regular Step with Full Functionality */
+                /* Regular Step with Full Chat Functionality */
                 <Card className="border-0 shadow-lg">
                   <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 pb-4 rounded-t-lg">
                     <div className="flex items-center justify-between">
@@ -450,7 +450,7 @@ export function EnhancedStepItem({
                               }`}
                             >
                               {message.message_type === "system"
-                                ? "���"
+                                ? "📋"
                                 : message.user_name.charAt(0)}
                             </div>
                             <div className="flex-1">
@@ -548,16 +548,10 @@ export function EnhancedStepItem({
                                                   link.href = url;
                                                   link.download =
                                                     attachment.file_name; // Use original name for download
-                                                  document.body.appendChild(
-                                                    link,
-                                                  );
+                                                  document.body.appendChild(link);
                                                   link.click();
-                                                  document.body.removeChild(
-                                                    link,
-                                                  );
-                                                  window.URL.revokeObjectURL(
-                                                    url,
-                                                  );
+                                                  document.body.removeChild(link);
+                                                  window.URL.revokeObjectURL(url);
                                                   console.log(
                                                     `Successfully downloaded: ${attachment.file_name}`,
                                                   );
@@ -585,16 +579,10 @@ export function EnhancedStepItem({
                                                   link.href = url;
                                                   link.download =
                                                     attachment.file_name; // Use original name for download
-                                                  document.body.appendChild(
-                                                    link,
-                                                  );
+                                                  document.body.appendChild(link);
                                                   link.click();
-                                                  document.body.removeChild(
-                                                    link,
-                                                  );
-                                                  window.URL.revokeObjectURL(
-                                                    url,
-                                                  );
+                                                  document.body.removeChild(link);
+                                                  window.URL.revokeObjectURL(url);
                                                   console.log(
                                                     `Successfully downloaded via direct access: ${attachment.file_name}`,
                                                   );
@@ -692,8 +680,7 @@ export function EnhancedStepItem({
                                     {attachment.file_name}
                                   </span>
                                   <span className="text-xs text-gray-500">
-                                    ({Math.round(attachment.file_size / 1024)}{" "}
-                                    KB)
+                                    ({Math.round(attachment.file_size / 1024)} KB)
                                   </span>
                                 </div>
                                 <Button
