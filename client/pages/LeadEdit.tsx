@@ -285,26 +285,8 @@ export default function LeadEdit() {
           return [];
         })(),
         priority_level: lead.priority_level || "",
-        start_date: (() => {
-          console.log(
-            "Raw start_date from API:",
-            lead.start_date,
-            typeof lead.start_date,
-          );
-          const formatted = formatDateSafely(lead.start_date);
-          console.log("Formatted start_date:", formatted);
-          return formatted;
-        })(),
-        targeted_end_date: (() => {
-          console.log(
-            "Raw targeted_end_date from API:",
-            lead.targeted_end_date,
-            typeof lead.targeted_end_date,
-          );
-          const formatted = formatDateSafely(lead.targeted_end_date);
-          console.log("Formatted targeted_end_date:", formatted);
-          return formatted;
-        })(),
+        start_date: formatDateSafely(lead.start_date),
+        targeted_end_date: formatDateSafely(lead.targeted_end_date),
         expected_daily_txn_volume:
           lead.expected_daily_txn_volume?.toString() || "",
         expected_daily_txn_volume_year1:
