@@ -172,6 +172,7 @@ export default function CreateLead() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const createLeadMutation = useCreateLead();
   const partialSaveMutation = usePartialSaveLead();
 
