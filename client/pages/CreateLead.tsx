@@ -327,6 +327,13 @@ export default function CreateLead() {
     }
   }, [user?.email]);
 
+  // Debug: Track draftId changes
+  useEffect(() => {
+    console.log("draftId changed to:", draftId);
+    console.log("hasSavedDraftInSession:", hasSavedDraftInSession);
+    console.log("isResumedFromDraft:", isResumedFromDraft);
+  }, [draftId, hasSavedDraftInSession, isResumedFromDraft]);
+
   const tabs = [
     { value: "basic", label: "Lead Info", icon: "📋" },
     { value: "project", label: "Project Details", icon: "🎯" },
