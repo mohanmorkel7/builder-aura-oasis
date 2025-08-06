@@ -188,7 +188,7 @@ router.get("/", async (req: Request, res: Response) => {
         LIMIT $${paramIndex++} OFFSET $${paramIndex++}
       `;
 
-      params.push(parseInt(limit as string), parseInt(offset as string));
+      params.push(limitNum, offsetNum);
 
       const result = await pool.query(query, params);
 
