@@ -556,4 +556,10 @@ router.get("/stats/summary", async (req: Request, res: Response) => {
   }
 });
 
+// Test route to verify routing is working
+router.get("/test", (req: Request, res: Response) => {
+  console.log('TEST ROUTE HIT: /api/activity-production/test');
+  res.json({ message: "Activity production route is working!", timestamp: new Date().toISOString() });
+});
+
 export default router;
