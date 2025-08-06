@@ -692,7 +692,9 @@ export default function CreateLead() {
       // If we have a draft ID, update the existing draft instead of creating a new one
       if (draftId) {
         try {
-          console.log(`Attempting to update existing draft with ID: ${draftId}`);
+          console.log(
+            `Attempting to update existing draft with ID: ${draftId}`,
+          );
 
           // First check if the lead still exists
           try {
@@ -704,7 +706,10 @@ export default function CreateLead() {
             const result = await partialSaveMutation.mutateAsync(partialData);
             setDraftId(result.id);
             setHasSavedDraftInSession(true);
-            console.log("New draft created after old one was not found:", result);
+            console.log(
+              "New draft created after old one was not found:",
+              result,
+            );
             return;
           }
 
@@ -719,7 +724,9 @@ export default function CreateLead() {
           }
 
           // Show error but don't create duplicates
-          throw new Error(`Failed to update existing draft. Please try again or create a new lead.`);
+          throw new Error(
+            `Failed to update existing draft. Please try again or create a new lead.`,
+          );
         }
       } else {
         // Create new draft only if we haven't saved one in this session
@@ -736,7 +743,8 @@ export default function CreateLead() {
       setTimeout(() => setIsPartialSaved(false), 2000);
     } catch (error) {
       console.error("Error saving partial data:", error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to save draft';
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to save draft";
       setSaveError(errorMessage);
 
       // Clear error after 5 seconds
@@ -940,9 +948,7 @@ export default function CreateLead() {
       {saveError && (
         <Alert variant="destructive">
           <Info className="h-4 w-4" />
-          <AlertDescription>
-            Save Error: {saveError}
-          </AlertDescription>
+          <AlertDescription>Save Error: {saveError}</AlertDescription>
         </Alert>
       )}
 
