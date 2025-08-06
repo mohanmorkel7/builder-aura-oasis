@@ -369,11 +369,7 @@ export default function LeadEdit() {
         country: lead.country || "",
 
         priority: lead.priority || "",
-        expected_close_date: lead.expected_close_date
-          ? new Date(lead.expected_close_date + "T00:00:00")
-              .toISOString()
-              .split("T")[0]
-          : "",
+        expected_close_date: formatDateSafely(lead.expected_close_date),
         probability: lead.probability?.toString() || "",
         notes: lead.notes || "",
         assigned_to: lead.assigned_to || undefined,
