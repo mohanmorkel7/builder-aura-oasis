@@ -256,6 +256,16 @@ export default function LeadEdit() {
   React.useEffect(() => {
     if (originalLead) {
       const lead = originalLead;
+
+      // Debug logging to check what data we're receiving
+      console.log('LeadEdit: Loading lead data:', {
+        leadId,
+        start_date: lead.start_date,
+        targeted_end_date: lead.targeted_end_date,
+        flat_fee_config: lead.flat_fee_config,
+        transaction_fee_config: lead.transaction_fee_config,
+        billing_currency: lead.billing_currency
+      });
       setLeadData({
         lead_source: lead.lead_source || "",
         lead_source_value: lead.lead_source_value || "",
