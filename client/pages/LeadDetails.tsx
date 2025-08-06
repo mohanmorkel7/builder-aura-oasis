@@ -115,7 +115,8 @@ export default function LeadDetails() {
     templateId,
     templateData,
     templateLoading,
-    leadHasTemplateId: !!(lead as any)?.template_id,
+    leadHasTemplateId: !!templateId,
+    enabled: !!templateId,
   });
   const createStepMutation = useCreateLeadStep();
   const reorderStepsMutation = useReorderLeadSteps();
