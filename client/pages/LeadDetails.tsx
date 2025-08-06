@@ -756,7 +756,7 @@ export default function LeadDetails() {
             <CardContent className="space-y-4">
               <div className="text-center">
                 <div className="text-sm text-gray-500">
-                  {leadData.probability}% probability
+                  {leadData.probability || 0}% probability
                 </div>
               </div>
 
