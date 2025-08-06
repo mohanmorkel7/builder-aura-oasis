@@ -274,7 +274,7 @@ export function EnhancedStepItem({
           <div
             {...(step.isTemplate ? {} : attributes)}
             {...(step.isTemplate ? {} : listeners)}
-            className={`flex-shrink-0 ${step.isTemplate ? 'text-gray-300' : 'cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600'}`}
+            className={`flex-shrink-0 ${step.isTemplate ? "text-gray-300" : "cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600"}`}
           >
             <GripVertical className="w-5 h-5" />
           </div>
@@ -344,10 +344,16 @@ export function EnhancedStepItem({
           <div className="flex items-center space-x-2">
             <Select
               value={step.status}
-              onValueChange={step.isTemplate ? undefined : (value) => onUpdateStatus(step.id, value)}
+              onValueChange={
+                step.isTemplate
+                  ? undefined
+                  : (value) => onUpdateStatus(step.id, value)
+              }
               disabled={step.isTemplate}
             >
-              <SelectTrigger className={`w-32 ${step.isTemplate ? 'opacity-50 cursor-not-allowed' : ''}`}>
+              <SelectTrigger
+                className={`w-32 ${step.isTemplate ? "opacity-50 cursor-not-allowed" : ""}`}
+              >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -370,8 +376,8 @@ export function EnhancedStepItem({
         </div>
 
         <CollapsibleContent>
-            <div className="border-t bg-gray-50">
-              <div className="p-4">
+          <div className="border-t bg-gray-50">
+            <div className="p-4">
               {step.isTemplate ? (
                 /* Template Step Info */
                 <Card className="border-0 shadow-lg">
@@ -390,16 +396,19 @@ export function EnhancedStepItem({
                     </div>
                     {step.estimated_days && (
                       <div className="text-sm text-gray-700">
-                        <strong>Estimated Duration:</strong> {step.estimated_days} days
+                        <strong>Estimated Duration:</strong>{" "}
+                        {step.estimated_days} days
                       </div>
                     )}
                     {step.probability_percent && (
                       <div className="text-sm text-gray-700">
-                        <strong>Success Weight:</strong> {step.probability_percent}%
+                        <strong>Success Weight:</strong>{" "}
+                        {step.probability_percent}%
                       </div>
                     )}
                     <div className="text-xs text-blue-600 bg-blue-50 p-3 rounded">
-                      📋 This is a template step for reference. Create custom lead-specific steps to track actual progress.
+                      📋 This is a template step for reference. Create custom
+                      lead-specific steps to track actual progress.
                     </div>
                   </CardContent>
                 </Card>
@@ -751,10 +760,10 @@ export function EnhancedStepItem({
                       </div>
                     </div>
                   </CardContent>
-              </Card>
+                </Card>
               )}
             </div>
-            </div>
+          </div>
         </CollapsibleContent>
       </Collapsible>
     </div>
