@@ -5,6 +5,7 @@ import {
   useLeadSteps,
   useCreateLeadStep,
   useReorderLeadSteps,
+  useTemplate,
 } from "@/hooks/useApi";
 import { useAuth } from "@/lib/auth-context";
 import { DraggableStepsList } from "@/components/DraggableStepsList";
@@ -102,6 +103,10 @@ export default function LeadDetails() {
   const { data: lead, isLoading, error } = useLead(leadId);
   const { data: leadSteps = [], isLoading: stepsLoading } =
     useLeadSteps(leadId);
+
+  // Get template data if lead has a template_id
+  const templateId = (lead as any)?.template_id;
+  const { data: templateData } = useTemplate(templateId || 0);
   const createStepMutation = useCreateLeadStep();
   const reorderStepsMutation = useReorderLeadSteps();
 
@@ -273,7 +278,7 @@ export default function LeadDetails() {
               </Badge>
             </div>
             <p className="text-gray-600 mt-1">
-              Lead Details & Custom Sales Pipeline
+              Lead Details & {templateData?.name ? `${templateData.name} Pipeline` : 'Custom Sales Pipeline'}
             </p>
             {/* Enhanced Progress Bar */}
             <div className="mt-3">
@@ -575,14 +580,14 @@ export default function LeadDetails() {
             </CardContent>
           </Card>
 
-          {/* Custom Sales Pipeline */}
+          {/* Sales Pipeline */}
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle>Custom Sales Pipeline</CardTitle>
+                  <CardTitle>{templateData?.name ? `${templateData.name} Pipeline` : 'Custom Sales Pipeline'}</CardTitle>
                   <CardDescription>
-                    Manage lead-specific sales steps with rich communication
+                    {templateData?.description || 'Manage lead-specific sales steps with rich communication'}
                   </CardDescription>
                 </div>
                 <Dialog open={newStepDialog} onOpenChange={setNewStepDialog}>
