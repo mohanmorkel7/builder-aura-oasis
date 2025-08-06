@@ -719,40 +719,54 @@ export default function LeadDetails() {
             </CardHeader>
             <CardContent>
               {/* Show template info if template is assigned and no lead steps exist */}
-              {templateData?.steps && templateData.steps.length > 0 && leadSteps.length === 0 && (
-                <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Badge variant="outline" className="bg-blue-100 text-blue-700">
-                      Template Available
-                    </Badge>
-                    <span className="text-sm text-blue-700 font-medium">
-                      {templateData.name}
-                    </span>
-                  </div>
-                  <p className="text-sm text-blue-600 mb-3">
-                    This lead is using the "{templateData.name}" template with {templateData.steps.length} predefined steps.
-                    You can create custom lead-specific steps below to track progress for this particular lead.
-                  </p>
-                  <details className="text-sm">
-                    <summary className="cursor-pointer text-blue-700 hover:text-blue-800 font-medium">
-                      View template steps ({templateData.steps.length})
-                    </summary>
-                    <div className="mt-2 space-y-2">
-                      {templateData.steps.map((step: any, index: number) => (
-                        <div key={step.id} className="flex items-start gap-2 p-2 bg-white rounded">
-                          <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
-                            {index + 1}
-                          </span>
-                          <div className="flex-1">
-                            <div className="font-medium text-sm">{step.name}</div>
-                            <div className="text-xs text-gray-600">{step.description}</div>
-                          </div>
-                        </div>
-                      ))}
+              {templateData?.steps &&
+                templateData.steps.length > 0 &&
+                leadSteps.length === 0 && (
+                  <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Badge
+                        variant="outline"
+                        className="bg-blue-100 text-blue-700"
+                      >
+                        Template Available
+                      </Badge>
+                      <span className="text-sm text-blue-700 font-medium">
+                        {templateData.name}
+                      </span>
                     </div>
-                  </details>
-                </div>
-              )}
+                    <p className="text-sm text-blue-600 mb-3">
+                      This lead is using the "{templateData.name}" template with{" "}
+                      {templateData.steps.length} predefined steps. You can
+                      create custom lead-specific steps below to track progress
+                      for this particular lead.
+                    </p>
+                    <details className="text-sm">
+                      <summary className="cursor-pointer text-blue-700 hover:text-blue-800 font-medium">
+                        View template steps ({templateData.steps.length})
+                      </summary>
+                      <div className="mt-2 space-y-2">
+                        {templateData.steps.map((step: any, index: number) => (
+                          <div
+                            key={step.id}
+                            className="flex items-start gap-2 p-2 bg-white rounded"
+                          >
+                            <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
+                              {index + 1}
+                            </span>
+                            <div className="flex-1">
+                              <div className="font-medium text-sm">
+                                {step.name}
+                              </div>
+                              <div className="text-xs text-gray-600">
+                                {step.description}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </details>
+                  </div>
+                )}
 
               {leadSteps.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">
