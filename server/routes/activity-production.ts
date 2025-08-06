@@ -206,10 +206,9 @@ router.get("/", async (req: Request, res: Response) => {
         activity_logs: result.rows,
         pagination: {
           total,
-          limit: parseInt(limit as string),
-          offset: parseInt(offset as string),
-          has_more:
-            parseInt(offset as string) + parseInt(limit as string) < total,
+          limit: limitNum,
+          offset: offsetNum,
+          has_more: offsetNum + limitNum < total,
         },
       });
     } else {
