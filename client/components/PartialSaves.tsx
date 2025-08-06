@@ -77,6 +77,8 @@ export default function PartialSaves({
             : partialSave.project_title || originalData.project_title,
         project_description:
           partialSave.project_description || originalData.project_description,
+        project_requirements:
+          partialSave.project_requirements || originalData.project_requirements,
 
         // Deserialize JSON fields from database
         solutions: safeJsonParse(
