@@ -730,10 +730,6 @@ export default function CreateLead() {
         category: partialData.category,
         client_type: partialData.client_type,
         country: partialData.country,
-        // Date fields debug
-        start_date: partialData.start_date,
-        targeted_end_date: partialData.targeted_end_date,
-        expected_close_date: partialData.expected_close_date,
         solutions: partialData.solutions,
         contacts: partialData.contacts,
         // Don't log full notes as it contains large originalData
