@@ -337,7 +337,7 @@ export default function CreateLead() {
   }, [draftId, hasSavedDraftInSession, isResumedFromDraft]);
 
   const tabs = [
-    { value: "basic", label: "Lead Info", icon: "��" },
+    { value: "basic", label: "Lead Info", icon: "📋" },
     { value: "project", label: "Project Details", icon: "🎯" },
     { value: "commercials", label: "Commercials", icon: "��" },
     { value: "client", label: "Client & Contact", icon: "🏢" },
@@ -621,6 +621,15 @@ export default function CreateLead() {
 
     // Update the form with the resumed data
     setLeadData(formData);
+
+    // Verify the state was set correctly (will show in next render)
+    setTimeout(() => {
+      console.log("Form state after resume (next tick):", {
+        start_date: formData.start_date,
+        targeted_end_date: formData.targeted_end_date,
+        expected_close_date: formData.expected_close_date,
+      });
+    }, 100);
 
     // Set the current tab to the last completed tab or first tab
     if (_completedTabs && _completedTabs.length > 0) {
