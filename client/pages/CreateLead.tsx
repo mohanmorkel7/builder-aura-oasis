@@ -259,7 +259,7 @@ export default function CreateLead() {
     }>,
 
     // Additional Information
-    probability: "50",
+    probability: "0",
     notes: "",
   });
 
