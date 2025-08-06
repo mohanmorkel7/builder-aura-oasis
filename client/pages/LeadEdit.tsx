@@ -426,7 +426,7 @@ export default function LeadEdit() {
       let date: Date;
 
       // Check if it's already an ISO datetime string (contains T)
-      if (dateStr.includes('T')) {
+      if (dateStr.includes("T")) {
         // It's already a full datetime, parse it directly
         date = new Date(dateStr);
       } else {
