@@ -35,15 +35,15 @@ export class ApiClient {
       console.log("Making API request to:", url);
       console.log("Request config:", JSON.stringify(config, null, 2));
 
-      // Use native fetch to avoid third-party interceptors
-      const nativeFetch = window.fetch.bind(window);
       let response: Response;
 
       try {
-        response = await nativeFetch(url, config);
+        // Store original fetch in case it gets overridden by third-party scripts
+        const originalFetch = window.fetch;
+        response = await originalFetch(url, config);
       } catch (fetchError) {
-        // Fallback to XMLHttpRequest if fetch is blocked
-        console.log("Fetch failed, trying XMLHttpRequest fallback");
+        console.log("Primary fetch failed, trying fallback:", fetchError);
+        // Fallback to XMLHttpRequest if fetch is blocked or intercepted
         response = await this.xmlHttpRequestFallback(url, config);
       }
 
