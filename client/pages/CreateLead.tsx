@@ -670,10 +670,15 @@ export default function CreateLead() {
       // Prepare partial data for database save
       const partialData = {
         ...cleanedData,
+        // Only set defaults for required fields if we're creating a new draft
+        // For updates, preserve the actual user data
         lead_source: cleanedData.lead_source || "other", // Ensure we have a lead_source
-        client_name: cleanedData.client_name || "PARTIAL_SAVE_IN_PROGRESS", // Required field workaround
-        project_title:
-          cleanedData.project_title || "Partial Save - In Progress",
+        client_name: draftId
+          ? cleanedData.client_name // For updates, use actual data
+          : (cleanedData.client_name || "PARTIAL_SAVE_IN_PROGRESS"), // For new drafts, use placeholder if empty
+        project_title: draftId
+          ? cleanedData.project_title // For updates, use actual data
+          : (cleanedData.project_title || "Partial Save - In Progress"), // For new drafts, use placeholder if empty
         notes: JSON.stringify({
           isPartialSave: true,
           lastSaved: new Date().toISOString(),
