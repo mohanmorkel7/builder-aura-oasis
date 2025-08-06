@@ -480,88 +480,90 @@ export default function Overview() {
                               <span>0</span>
                             </div>
 
-                            {/* Chart Area */}
-                            <div className="ml-12 flex items-end justify-center space-x-6 h-64 border-l border-b border-gray-200">
-                              {templateGroup.steps.map((stepData: any, index: number) => {
-                                const total = stepData.total_leads;
-                                const completedHeight = maxTotal > 0 ? (stepData.completed_count / maxTotal) * 240 : 0;
-                                const inProgressHeight = maxTotal > 0 ? (stepData.in_progress_count / maxTotal) * 240 : 0;
-                                const pendingHeight = maxTotal > 0 ? (stepData.pending_count / maxTotal) * 240 : 0;
+                            {/* Chart Area - Responsive Container */}
+                            <div className="ml-8 md:ml-12 overflow-x-auto">
+                              <div className="flex items-end justify-start space-x-2 sm:space-x-4 lg:space-x-6 h-64 border-l border-b border-gray-200 min-w-fit px-4">
+                                {templateGroup.steps.map((stepData: any, index: number) => {
+                                  const total = stepData.total_leads;
+                                  const completedHeight = maxTotal > 0 ? (stepData.completed_count / maxTotal) * 240 : 0;
+                                  const inProgressHeight = maxTotal > 0 ? (stepData.in_progress_count / maxTotal) * 240 : 0;
+                                  const pendingHeight = maxTotal > 0 ? (stepData.pending_count / maxTotal) * 240 : 0;
 
-                                return (
-                                  <div key={stepData.step_id} className="flex flex-col items-center space-y-3">
-                                    {/* Step bars grouped together */}
-                                    <div className="flex items-end space-x-2">
-                                      {/* Completed Bar */}
-                                      <div className="flex flex-col items-center space-y-1">
-                                        <div className="text-xs font-medium text-green-700">
-                                          {stepData.completed_count}
+                                  return (
+                                    <div key={stepData.step_id} className="flex flex-col items-center space-y-2 min-w-0">
+                                      {/* Step bars grouped together */}
+                                      <div className="flex items-end space-x-1 sm:space-x-2">
+                                        {/* Completed Bar */}
+                                        <div className="flex flex-col items-center space-y-1">
+                                          <div className="text-xs font-medium text-green-700">
+                                            {stepData.completed_count}
+                                          </div>
+                                          <div
+                                            className="bg-green-500 hover:bg-green-600 transition-colors cursor-pointer rounded-t w-6 sm:w-8 flex items-end justify-center text-white text-xs font-medium"
+                                            style={{ height: `${Math.max(completedHeight, 4)}px` }}
+                                            onClick={() => handleStepStatusClick(stepData, 'completed')}
+                                            title={`Step ${stepData.step_order}: ${stepData.completed_count} completed`}
+                                          >
+                                            {completedHeight > 20 && stepData.completed_count > 0 && (
+                                              <span className="mb-1 text-xs">{stepData.completed_count}</span>
+                                            )}
+                                          </div>
                                         </div>
-                                        <div
-                                          className="bg-green-500 hover:bg-green-600 transition-colors cursor-pointer rounded-t w-8 flex items-end justify-center text-white text-xs font-medium"
-                                          style={{ height: `${Math.max(completedHeight, 4)}px` }}
-                                          onClick={() => handleStepStatusClick(stepData, 'completed')}
-                                          title={`Step ${stepData.step_order}: ${stepData.completed_count} completed`}
-                                        >
-                                          {completedHeight > 20 && stepData.completed_count > 0 && (
-                                            <span className="mb-1 rotate-90 text-xs">{stepData.completed_count}</span>
-                                          )}
+
+                                        {/* In Progress Bar */}
+                                        <div className="flex flex-col items-center space-y-1">
+                                          <div className="text-xs font-medium text-blue-700">
+                                            {stepData.in_progress_count}
+                                          </div>
+                                          <div
+                                            className="bg-blue-500 hover:bg-blue-600 transition-colors cursor-pointer rounded-t w-6 sm:w-8 flex items-end justify-center text-white text-xs font-medium"
+                                            style={{ height: `${Math.max(inProgressHeight, 4)}px` }}
+                                            onClick={() => handleStepStatusClick(stepData, 'in_progress')}
+                                            title={`Step ${stepData.step_order}: ${stepData.in_progress_count} in progress`}
+                                          >
+                                            {inProgressHeight > 20 && stepData.in_progress_count > 0 && (
+                                              <span className="mb-1 text-xs">{stepData.in_progress_count}</span>
+                                            )}
+                                          </div>
+                                        </div>
+
+                                        {/* Pending Bar */}
+                                        <div className="flex flex-col items-center space-y-1">
+                                          <div className="text-xs font-medium text-gray-700">
+                                            {stepData.pending_count}
+                                          </div>
+                                          <div
+                                            className="bg-gray-400 hover:bg-gray-500 transition-colors cursor-pointer rounded-t w-6 sm:w-8 flex items-end justify-center text-white text-xs font-medium"
+                                            style={{ height: `${Math.max(pendingHeight, 4)}px` }}
+                                            onClick={() => handleStepStatusClick(stepData, 'pending')}
+                                            title={`Step ${stepData.step_order}: ${stepData.pending_count} pending`}
+                                          >
+                                            {pendingHeight > 20 && stepData.pending_count > 0 && (
+                                              <span className="mb-1 text-xs">{stepData.pending_count}</span>
+                                            )}
+                                          </div>
                                         </div>
                                       </div>
 
-                                      {/* In Progress Bar */}
-                                      <div className="flex flex-col items-center space-y-1">
-                                        <div className="text-xs font-medium text-blue-700">
-                                          {stepData.in_progress_count}
+                                      {/* Step Label */}
+                                      <div className="text-center w-12 sm:w-16">
+                                        <div className="text-xs font-medium text-gray-900 leading-tight">
+                                          Step {stepData.step_order}
                                         </div>
-                                        <div
-                                          className="bg-blue-500 hover:bg-blue-600 transition-colors cursor-pointer rounded-t w-8 flex items-end justify-center text-white text-xs font-medium"
-                                          style={{ height: `${Math.max(inProgressHeight, 4)}px` }}
-                                          onClick={() => handleStepStatusClick(stepData, 'in_progress')}
-                                          title={`Step ${stepData.step_order}: ${stepData.in_progress_count} in progress`}
-                                        >
-                                          {inProgressHeight > 20 && stepData.in_progress_count > 0 && (
-                                            <span className="mb-1 rotate-90 text-xs">{stepData.in_progress_count}</span>
-                                          )}
+                                        <div className="text-xs text-gray-600 leading-tight break-words">
+                                          {stepData.step_name.length > 12
+                                            ? stepData.step_name.substring(0, 12) + '...'
+                                            : stepData.step_name
+                                          }
                                         </div>
-                                      </div>
-
-                                      {/* Pending Bar */}
-                                      <div className="flex flex-col items-center space-y-1">
-                                        <div className="text-xs font-medium text-gray-700">
-                                          {stepData.pending_count}
-                                        </div>
-                                        <div
-                                          className="bg-gray-400 hover:bg-gray-500 transition-colors cursor-pointer rounded-t w-8 flex items-end justify-center text-white text-xs font-medium"
-                                          style={{ height: `${Math.max(pendingHeight, 4)}px` }}
-                                          onClick={() => handleStepStatusClick(stepData, 'pending')}
-                                          title={`Step ${stepData.step_order}: ${stepData.pending_count} pending`}
-                                        >
-                                          {pendingHeight > 20 && stepData.pending_count > 0 && (
-                                            <span className="mb-1 rotate-90 text-xs">{stepData.pending_count}</span>
-                                          )}
+                                        <div className="text-xs text-purple-600 font-medium">
+                                          {stepData.probability_percent}%
                                         </div>
                                       </div>
                                     </div>
-
-                                    {/* Step Label */}
-                                    <div className="text-center max-w-16">
-                                      <div className="text-xs font-medium text-gray-900 leading-tight">
-                                        Step {stepData.step_order}
-                                      </div>
-                                      <div className="text-xs text-gray-600 leading-tight break-words">
-                                        {stepData.step_name.length > 15
-                                          ? stepData.step_name.substring(0, 15) + '...'
-                                          : stepData.step_name
-                                        }
-                                      </div>
-                                      <div className="text-xs text-purple-600 font-medium">
-                                        {stepData.probability_percent}%
-                                      </div>
-                                    </div>
-                                  </div>
-                                );
-                              })}
+                                  );
+                                })}
+                              </div>
                             </div>
 
                             {/* Legend */}
