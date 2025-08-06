@@ -208,6 +208,38 @@ export default function LeadDetails() {
     }
   };
 
+  const handleCopyTemplateSteps = async () => {
+    if (!templateData?.steps || templateData.steps.length === 0) {
+      alert("No template steps to copy");
+      return;
+    }
+
+    try {
+      // Copy each template step as a new lead step
+      for (let i = 0; i < templateData.steps.length; i++) {
+        const templateStep = templateData.steps[i];
+        const stepData = {
+          name: templateStep.name,
+          description: templateStep.description,
+          estimated_days: templateStep.estimated_days || 3,
+          step_order: i + 1,
+          probability_percent: templateStep.probability_percent || 0,
+          due_date: undefined, // Let user set due dates manually
+        };
+
+        await createStepMutation.mutateAsync({
+          leadId,
+          stepData,
+        });
+      }
+
+      alert(`Successfully copied ${templateData.steps.length} steps from template!`);
+    } catch (error) {
+      console.error("Failed to copy template steps:", error);
+      alert("Failed to copy template steps. Please try again.");
+    }
+  };
+
   const handleToggleExpansion = (stepId: number) => {
     setExpandedSteps((prev) => {
       const newSet = new Set(prev);
