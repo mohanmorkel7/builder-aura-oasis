@@ -60,6 +60,7 @@ export function DraggableStepsList({
 
   const handleUpdateStatus = (stepId: number, status: string) => {
     const stepData = { status };
+    console.log("Updating step status:", stepId, "to:", status);
     updateStepMutation.mutate({ stepId, stepData });
   };
 
