@@ -106,7 +106,9 @@ export default function LeadDetails() {
 
   // Get template data if lead has a template_id
   const templateId = (lead as any)?.template_id;
+  console.log('Lead template_id:', templateId, 'Lead data:', lead);
   const { data: templateData } = useTemplate(templateId || 0);
+  console.log('Template data:', templateData);
   const createStepMutation = useCreateLeadStep();
   const reorderStepsMutation = useReorderLeadSteps();
 
