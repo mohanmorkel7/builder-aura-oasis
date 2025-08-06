@@ -417,7 +417,7 @@ export default function LeadEdit() {
 
   // === END OF ALL HOOKS - NO MORE HOOKS AFTER THIS POINT ===
 
-  // Safe date formatting function to handle invalid dates
+  // Safe date formatting function to handle invalid dates and timezones
   const formatDateSafely = (dateStr: string | null | undefined): string => {
     if (!dateStr || dateStr.trim() === "") {
       return "";
@@ -438,7 +438,13 @@ export default function LeadEdit() {
         console.warn("Invalid date value:", dateStr);
         return "";
       }
-      return date.toISOString().split("T")[0];
+
+      // Format in local timezone to avoid one-day-off issues
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+
+      return `${year}-${month}-${day}`;
     } catch (error) {
       console.warn("Error formatting date:", dateStr, error);
       return "";
