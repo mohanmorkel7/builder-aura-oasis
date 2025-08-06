@@ -341,16 +341,10 @@ export function EnhancedStepItem({
           <div className="flex items-center space-x-2">
             <Select
               value={step.status}
-              onValueChange={
-                step.isTemplate
-                  ? undefined
-                  : (value) => onUpdateStatus(step.id, value)
-              }
+              onValueChange={(value) => onUpdateStatus(step.id, value)}
               disabled={step.isTemplate}
             >
-              <SelectTrigger
-                className={`w-32 ${step.isTemplate ? "opacity-50 cursor-not-allowed" : ""}`}
-              >
+              <SelectTrigger className={`w-32 ${step.isTemplate ? "opacity-50 cursor-not-allowed" : ""}`}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -359,16 +353,16 @@ export function EnhancedStepItem({
                 <SelectItem value="completed">Completed</SelectItem>
               </SelectContent>
             </Select>
-            {!step.isTemplate && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => onDeleteStep(step.id)}
-                className="text-red-600 hover:text-red-700"
-              >
-                <Trash2 className="w-4 h-4" />
-              </Button>
-            )}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onDeleteStep(step.id)}
+              className="text-red-600 hover:text-red-700"
+              disabled={step.isTemplate}
+              style={step.isTemplate ? { opacity: 0.5, pointerEvents: 'none' } : {}}
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
           </div>
         </div>
 
