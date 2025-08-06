@@ -697,6 +697,16 @@ export default function CreateLead() {
             : null,
       };
 
+      console.log("Final partialData being saved:", {
+        id: draftId,
+        client_name: partialData.client_name,
+        project_title: partialData.project_title,
+        lead_source: partialData.lead_source,
+        solutions: partialData.solutions,
+        contacts: partialData.contacts,
+        notes: partialData.notes
+      });
+
       // If we have a draft ID, update the existing draft instead of creating a new one
       if (draftId) {
         try {
