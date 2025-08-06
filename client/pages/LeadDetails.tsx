@@ -723,7 +723,10 @@ export default function LeadDetails() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="bg-blue-50 text-blue-700">
+                      <Badge
+                        variant="outline"
+                        className="bg-blue-50 text-blue-700"
+                      >
                         Template Steps
                       </Badge>
                       <span className="text-sm text-gray-600">
@@ -778,7 +781,10 @@ export default function LeadDetails() {
                   {leadSteps.length > 0 && (
                     <div className="mt-6">
                       <div className="flex items-center gap-2 mb-4">
-                        <Badge variant="outline" className="bg-green-50 text-green-700">
+                        <Badge
+                          variant="outline"
+                          className="bg-green-50 text-green-700"
+                        >
                           Custom Steps
                         </Badge>
                         <span className="text-sm text-gray-600">
@@ -803,7 +809,8 @@ export default function LeadDetails() {
                     No pipeline steps yet
                   </h3>
                   <p className="text-gray-600 mb-4">
-                    Create custom steps to track your sales process for this lead
+                    Create custom steps to track your sales process for this
+                    lead
                   </p>
                   <Button onClick={() => setNewStepDialog(true)}>
                     <Plus className="w-4 h-4 mr-2" />
