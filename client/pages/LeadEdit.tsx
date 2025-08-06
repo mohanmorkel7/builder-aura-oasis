@@ -150,12 +150,36 @@ export default function LeadEdit() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  // Add error handling for auth context
+  // ALL HOOKS MUST BE CALLED FIRST, BEFORE ANY CONDITIONAL LOGIC
+  const leadId = parseInt(id || "0");
+
+  // Move all hooks to the top before any conditional logic
+  const { data: originalLead, isLoading, error } = useLead(leadId);
+  const updateLeadMutation = useUpdateLead();
+  const { data: templates = [] } = useTemplates();
+
+  const [selectedTemplate, setSelectedTemplate] = useState<string>("");
+  const [showTemplatePreview, setShowTemplatePreview] = useState(false);
+
+  // Get selected template data
+  const selectedTemplateId =
+    selectedTemplate && selectedTemplate !== "manual"
+      ? parseInt(selectedTemplate)
+      : null;
+  const { data: templateData } = useTemplate(selectedTemplateId || 0);
+
+  // Add error handling for auth context AFTER all other hooks
   let user;
+  let authError = false;
   try {
     user = useAuth().user;
   } catch (error) {
     console.error("Auth error in LeadEdit:", error);
+    authError = true;
+  }
+
+  // Handle auth error AFTER all hooks are called
+  if (authError) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
@@ -175,23 +199,6 @@ export default function LeadEdit() {
       </div>
     );
   }
-
-  const leadId = parseInt(id || "0");
-
-  // Move all hooks to the top before any conditional logic
-  const { data: originalLead, isLoading, error } = useLead(leadId);
-  const updateLeadMutation = useUpdateLead();
-  const { data: templates = [] } = useTemplates();
-
-  const [selectedTemplate, setSelectedTemplate] = useState<string>("");
-  const [showTemplatePreview, setShowTemplatePreview] = useState(false);
-
-  // Get selected template data
-  const selectedTemplateId =
-    selectedTemplate && selectedTemplate !== "manual"
-      ? parseInt(selectedTemplate)
-      : null;
-  const { data: templateData } = useTemplate(selectedTemplateId || 0);
 
   // State hooks
   const [leadData, setLeadData] = useState({
