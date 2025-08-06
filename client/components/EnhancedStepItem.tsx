@@ -222,18 +222,21 @@ export function EnhancedStepItem({
     };
 
     try {
-      await createChatMutation.mutateAsync({ stepId: step.id, chatData });
+      console.log("Sending message to step:", step.id, "with data:", chatData);
+      const result = await createChatMutation.mutateAsync({ stepId: step.id, chatData });
+      console.log("Message sent successfully:", result);
       setNewMessage("");
       setStagedAttachments([]);
-      // Scroll to bottom after sending message (small delay to ensure DOM update)
+      // Scroll to bottom after sending message (longer delay to ensure refetch completes)
       setTimeout(() => {
         if (messagesContainerRef.current) {
           messagesContainerRef.current.scrollTop =
             messagesContainerRef.current.scrollHeight;
         }
-      }, 100);
+      }, 500);
     } catch (error) {
       console.error("Failed to send message:", error);
+      alert("Failed to send message. Please try again.");
     }
   };
 
