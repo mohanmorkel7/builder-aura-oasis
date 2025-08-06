@@ -2197,7 +2197,9 @@ export default function CreateLead() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="expected_close_date">Expected Close Date</Label>
+                  <Label htmlFor="expected_close_date">
+                    Expected Close Date
+                  </Label>
                   <Input
                     id="expected_close_date"
                     type="date"
