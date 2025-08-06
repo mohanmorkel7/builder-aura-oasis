@@ -97,6 +97,12 @@ export default function FinOpsActivityLog() {
         return await apiClient.request(url);
       } catch (error) {
         console.error('Activity API request failed:', error);
+        console.error('Error details:', {
+          message: error instanceof Error ? error.message : String(error),
+          url,
+          filters
+        });
+
         // Return empty data structure on error
         return {
           activity_logs: [],
