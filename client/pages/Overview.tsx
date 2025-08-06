@@ -392,6 +392,137 @@ export default function Overview() {
                 </AccordionTrigger>
 
                 <AccordionContent className="px-6 pb-6">
+                  {/* Lead Step-wise Bar Chart */}
+                  <div className="mb-8">
+                    <h4 className="text-lg font-semibold text-gray-900 mb-4">Lead Step Progress Chart</h4>
+                    <div className="bg-white border rounded-lg p-6">
+                      <div className="space-y-4">
+                        {templateGroup.steps.map((stepData: any, index: number) => {
+                          const total = stepData.total_leads;
+                          const completedPercent = total > 0 ? (stepData.completed_count / total) * 100 : 0;
+                          const inProgressPercent = total > 0 ? (stepData.in_progress_count / total) * 100 : 0;
+                          const pendingPercent = total > 0 ? (stepData.pending_count / total) * 100 : 0;
+
+                          return (
+                            <div key={stepData.step_id} className="space-y-2">
+                              {/* Step Info */}
+                              <div className="flex justify-between items-center">
+                                <div className="flex items-center space-x-3">
+                                  <span className="text-sm font-medium text-gray-900 min-w-[200px]">
+                                    Step {stepData.step_order}: {stepData.step_name}
+                                  </span>
+                                  <span className="text-xs text-gray-500">
+                                    ({stepData.probability_percent}% weight)
+                                  </span>
+                                </div>
+                                <div className="text-sm text-gray-600">
+                                  {total} total leads
+                                </div>
+                              </div>
+
+                              {/* Horizontal Bar Chart */}
+                              <div className="relative">
+                                <div className="flex h-8 bg-gray-100 rounded-lg overflow-hidden">
+                                  {/* Completed Section */}
+                                  <div
+                                    className="bg-green-500 hover:bg-green-600 transition-colors cursor-pointer flex items-center justify-center text-white text-xs font-medium"
+                                    style={{ width: `${completedPercent}%` }}
+                                    onClick={() => handleStepStatusClick(stepData, 'completed')}
+                                    title={`${stepData.completed_count} completed (${completedPercent.toFixed(1)}%)`}
+                                  >
+                                    {completedPercent > 10 && stepData.completed_count > 0 && (
+                                      <span>{stepData.completed_count}</span>
+                                    )}
+                                  </div>
+
+                                  {/* In Progress Section */}
+                                  <div
+                                    className="bg-blue-500 hover:bg-blue-600 transition-colors cursor-pointer flex items-center justify-center text-white text-xs font-medium"
+                                    style={{ width: `${inProgressPercent}%` }}
+                                    onClick={() => handleStepStatusClick(stepData, 'in_progress')}
+                                    title={`${stepData.in_progress_count} in progress (${inProgressPercent.toFixed(1)}%)`}
+                                  >
+                                    {inProgressPercent > 10 && stepData.in_progress_count > 0 && (
+                                      <span>{stepData.in_progress_count}</span>
+                                    )}
+                                  </div>
+
+                                  {/* Pending Section */}
+                                  <div
+                                    className="bg-gray-400 hover:bg-gray-500 transition-colors cursor-pointer flex items-center justify-center text-white text-xs font-medium"
+                                    style={{ width: `${pendingPercent}%` }}
+                                    onClick={() => handleStepStatusClick(stepData, 'pending')}
+                                    title={`${stepData.pending_count} pending (${pendingPercent.toFixed(1)}%)`}
+                                  >
+                                    {pendingPercent > 10 && stepData.pending_count > 0 && (
+                                      <span>{stepData.pending_count}</span>
+                                    )}
+                                  </div>
+                                </div>
+
+                                {/* Progress Labels */}
+                                <div className="flex justify-between items-center mt-1 text-xs">
+                                  <div className="flex items-center space-x-4">
+                                    <div className="flex items-center space-x-1">
+                                      <div className="w-3 h-3 bg-green-500 rounded"></div>
+                                      <span className="text-green-700 font-medium">
+                                        {stepData.completed_count} Completed
+                                      </span>
+                                    </div>
+                                    <div className="flex items-center space-x-1">
+                                      <div className="w-3 h-3 bg-blue-500 rounded"></div>
+                                      <span className="text-blue-700 font-medium">
+                                        {stepData.in_progress_count} In Progress
+                                      </span>
+                                    </div>
+                                    <div className="flex items-center space-x-1">
+                                      <div className="w-3 h-3 bg-gray-400 rounded"></div>
+                                      <span className="text-gray-700 font-medium">
+                                        {stepData.pending_count} Pending
+                                      </span>
+                                    </div>
+                                  </div>
+                                  <div className="text-green-600 font-semibold">
+                                    {completedPercent.toFixed(1)}% Complete
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {/* Overall Template Progress */}
+                      <div className="mt-6 pt-6 border-t border-gray-200">
+                        <h5 className="text-md font-semibold text-gray-900 mb-3">Overall Template Progress</h5>
+                        <div className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-gray-600">Total Progress Across All Steps</span>
+                            <span className="text-sm font-semibold text-gray-900">
+                              {templateGroup.total_leads > 0
+                                ? Math.round((templateGroup.total_completed / templateGroup.total_leads) * 100)
+                                : 0
+                              }% Complete
+                            </span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-4">
+                            <div
+                              className="bg-gradient-to-r from-green-400 to-green-600 h-4 rounded-full transition-all duration-500 flex items-center justify-center text-white text-xs font-medium"
+                              style={{
+                                width: `${templateGroup.total_leads > 0 ? (templateGroup.total_completed / templateGroup.total_leads) * 100 : 0}%`
+                              }}
+                            >
+                              {templateGroup.total_completed > 0 && (
+                                <span>{templateGroup.total_completed}/{templateGroup.total_leads}</span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Detailed Step Cards */}
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {templateGroup.steps.map((stepData: any) => (
                       <Card key={`${stepData.template_id}-${stepData.step_id}`} className="hover:shadow-lg transition-all duration-200 border-l-4 border-l-blue-500">
