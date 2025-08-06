@@ -241,7 +241,7 @@ export default function LeadDetails() {
     }
   };
 
-  if (isLoading || stepsLoading) {
+  if (isLoading) {
     return (
       <div className="p-6">
         <div className="text-center">Loading lead details...</div>
@@ -364,7 +364,7 @@ export default function LeadDetails() {
                               ) : step.status === "in_progress" ? (
                                 <span className="text-blue-600">⋯</span>
                               ) : (
-                                <span className="text-gray-400">○</span>
+                                <span className="text-gray-400">���</span>
                               )}
                               <span
                                 className={
