@@ -210,8 +210,7 @@ export function EnhancedStepItem({
   const handleSendMessage = async () => {
     if (
       (!newMessage.trim() && stagedAttachments.length === 0) ||
-      !user ||
-      step.isTemplate
+      !user
     )
       return;
 
