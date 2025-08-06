@@ -286,6 +286,7 @@ export default function CreateLead() {
       // Set draft ID if resuming from an existing draft
       if (resumeData.id) {
         setDraftId(resumeData.id);
+        setHasSavedDraftInSession(true);
       }
 
       // Set the active tab to the first incomplete tab if available
@@ -1429,7 +1430,7 @@ export default function CreateLead() {
                                     </SelectTrigger>
                                     <SelectContent>
                                       <SelectItem value="INR">
-                                        INR (���)
+                                        INR (₹)
                                       </SelectItem>
                                       <SelectItem value="USD">
                                         USD ($)
