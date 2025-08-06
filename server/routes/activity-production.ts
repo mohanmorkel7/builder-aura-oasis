@@ -134,10 +134,20 @@ router.get("/", jsonResponse(async (req: Request, res: Response) => {
       try {
         validStartDate = new Date(start_date as string);
         if (isNaN(validStartDate.getTime())) {
+          console.warn('Invalid start_date parameter (NaN):', start_date);
           validStartDate = null;
+        } else {
+          // Check if date is too far in the future (more than 1 day)
+          const now = new Date();
+          const oneDayFromNow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+          if (validStartDate > oneDayFromNow) {
+            console.warn('start_date is in the future:', start_date, 'Using current time instead');
+            validStartDate = now;
+          }
+          console.log('Activity logs: Using start_date:', validStartDate.toISOString());
         }
       } catch (e) {
-        console.warn('Invalid start_date parameter:', start_date);
+        console.warn('Invalid start_date parameter (error):', start_date, e);
         validStartDate = null;
       }
     }
