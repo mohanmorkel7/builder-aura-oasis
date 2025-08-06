@@ -690,7 +690,17 @@ export default function CreateLead() {
 
   const handleNextTab = async () => {
     if (!isLastTab) {
-      await handlePartialSave();
+      // Only save if we have meaningful data in the current tab
+      const hasData =
+        currentTab === "basic" ? (leadData.lead_source || leadData.lead_created_by) :
+        currentTab === "project" ? (leadData.project_title || leadData.project_description || leadData.solutions.length > 0) :
+        currentTab === "commercials" ? (leadData.flat_fee_config.length > 0 || leadData.transaction_fee_config.length > 0) :
+        currentTab === "client" ? (leadData.client_name || leadData.contacts[0]?.contact_name) :
+        true; // For additional tab, always save
+
+      if (hasData) {
+        await handlePartialSave();
+      }
       setCurrentTab(tabs[currentTabIndex + 1].value);
     }
   };
