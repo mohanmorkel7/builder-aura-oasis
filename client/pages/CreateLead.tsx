@@ -418,6 +418,9 @@ export default function CreateLead() {
     if (errors.length > 0) {
       setErrors([]);
     }
+    if (saveError) {
+      setSaveError(null);
+    }
   };
 
   const updateTransactionFeeConfig = (
