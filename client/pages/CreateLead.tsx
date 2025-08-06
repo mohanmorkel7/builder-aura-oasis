@@ -725,6 +725,9 @@ export default function CreateLead() {
         client_name: partialData.client_name,
         project_title: partialData.project_title,
         lead_source: partialData.lead_source,
+        category: partialData.category,
+        client_type: partialData.client_type,
+        country: partialData.country,
         solutions: partialData.solutions,
         contacts: partialData.contacts,
         // Don't log full notes as it contains large originalData
