@@ -1230,40 +1230,9 @@ export default function CreateLead() {
                 {/* Commercials Config */}
                 <AccordionItem value="commercials-config">
                   <AccordionTrigger className="text-lg font-semibold">
-                    <div className="flex items-center justify-between w-full mr-4">
-                      <span>Commercials Config</span>
-                      <span className="text-sm font-normal text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
-                        Billing Currency: {leadData.billing_currency} {leadData.billing_currency === "INR" ? "(₹)" : leadData.billing_currency === "USD" ? "($)" : "(د.إ)"}
-                      </span>
-                    </div>
+                    Commercials Config
                   </AccordionTrigger>
                   <AccordionContent className="space-y-6">
-                    {/* Billing Currency Selector */}
-                    <div className="pb-4 border-b">
-                      <div className="flex items-center space-x-3">
-                        <Label htmlFor="billing_currency" className="text-sm font-medium">
-                          Change Billing Currency:
-                        </Label>
-                        <Select
-                          value={leadData.billing_currency}
-                          onValueChange={(value: "INR" | "USD" | "AED") =>
-                            updateField("billing_currency", value)
-                          }
-                        >
-                          <SelectTrigger className="w-48">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="INR">INR (₹)</SelectItem>
-                            <SelectItem value="USD">USD ($)</SelectItem>
-                            <SelectItem value="AED">AED (د.إ)</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <span className="text-xs text-gray-500">
-                          This currency will be used as default for all pricing configurations
-                        </span>
-                      </div>
-                    </div>
 
                     {/* Flat Fee Config */}
                     <div className="border-t pt-6">
