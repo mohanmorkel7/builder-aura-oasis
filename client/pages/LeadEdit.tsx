@@ -385,6 +385,33 @@ export default function LeadEdit() {
         assigned_to: lead.assigned_to || undefined,
       });
 
+      // Debug logging to verify what was set
+      console.log('LeadEdit: After setLeadData:', {
+        start_date: formatDateSafely(lead.start_date),
+        targeted_end_date: formatDateSafely(lead.targeted_end_date),
+        flat_fee_config_raw: lead.flat_fee_config,
+        flat_fee_config_parsed: (() => {
+          try {
+            return lead.flat_fee_config && lead.flat_fee_config.trim() !== ""
+              ? JSON.parse(lead.flat_fee_config)
+              : [];
+          } catch {
+            return [];
+          }
+        })(),
+        transaction_fee_config_raw: lead.transaction_fee_config,
+        transaction_fee_config_parsed: (() => {
+          try {
+            return lead.transaction_fee_config &&
+              lead.transaction_fee_config.trim() !== ""
+              ? JSON.parse(lead.transaction_fee_config)
+              : [];
+          } catch {
+            return [];
+          }
+        })()
+      });
+
       // Restore selected template if template_id exists
       if (lead.template_id && lead.template_id !== null) {
         setSelectedTemplate(lead.template_id.toString());
