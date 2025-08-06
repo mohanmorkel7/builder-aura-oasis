@@ -67,7 +67,9 @@ export default function PartialSaves({
         if (!dateValue) return "";
         if (typeof dateValue === "string" && dateValue.includes("T")) {
           // ISO format, convert to YYYY-MM-DD
-          return new Date(dateValue).toISOString().split("T")[0];
+          const formatted = new Date(dateValue).toISOString().split("T")[0];
+          console.log(`Date conversion: ${dateValue} → ${formatted}`);
+          return formatted;
         }
         return dateValue; // Already in correct format
       };
