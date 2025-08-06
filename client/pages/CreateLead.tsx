@@ -446,31 +446,31 @@ export default function CreateLead() {
         label: "Current",
         volume: currentVolume,
         multiplier: 30,
-        description: `(${currentVolume.toLocaleString()} daily txns × 30 = ${(currentVolume * 30).toLocaleString()} total txns)`
+        description: `(${currentVolume.toLocaleString()} daily txns × 30 days = ${(currentVolume * 30).toLocaleString()} total txns)`
       },
       {
         label: "First Year",
         volume: year1Volume,
         multiplier: 30 * 12,
-        description: `(${year1Volume.toLocaleString()} daily txns × 360 = ${(year1Volume * 360).toLocaleString()} total txns)`
+        description: `(${year1Volume.toLocaleString()} daily txns × 30 days × 12 months = ${(year1Volume * 360).toLocaleString()} total txns)`
       },
       {
         label: "Second Year",
         volume: year2Volume,
         multiplier: 30 * 24,
-        description: `(${year2Volume.toLocaleString()} daily txns × 720 = ${(year2Volume * 720).toLocaleString()} total txns)`
+        description: `(${year2Volume.toLocaleString()} daily txns × 30 days × 24 months = ${(year2Volume * 720).toLocaleString()} total txns)`
       },
       {
         label: "Third Year",
         volume: year3Volume,
         multiplier: 30 * 36,
-        description: `(${year3Volume.toLocaleString()} daily txns × 1080 = ${(year3Volume * 1080).toLocaleString()} total txns)`
+        description: `(${year3Volume.toLocaleString()} daily txns × 30 days × 36 months = ${(year3Volume * 1080).toLocaleString()} total txns)`
       },
       {
         label: "Fifth Year",
         volume: year5Volume,
         multiplier: 30 * 60,
-        description: `(${year5Volume.toLocaleString()} daily txns × 1800 = ${(year5Volume * 1800).toLocaleString()} total txns)`
+        description: `(${year5Volume.toLocaleString()} daily txns × 30 days × 60 months = ${(year5Volume * 1800).toLocaleString()} total txns)`
       },
     ];
 
