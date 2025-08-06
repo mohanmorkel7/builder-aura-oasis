@@ -606,7 +606,7 @@ export default function CreateLead() {
         currentTab,
         draftId,
         hasSavedDraftInSession,
-        clientName: leadData.client_name
+        clientName: leadData.client_name,
       });
 
       // Clean form data - convert empty strings to null for numeric fields
@@ -657,7 +657,9 @@ export default function CreateLead() {
         notes: JSON.stringify({
           isPartialSave: true,
           lastSaved: new Date().toISOString(),
-          completedTabs: Array.from(new Set([...((leadData as any)._completedTabs || []), currentTab])),
+          completedTabs: Array.from(
+            new Set([...((leadData as any)._completedTabs || []), currentTab]),
+          ),
           originalData: leadData,
         }),
         created_by: parseInt(user?.id || "1"),
@@ -702,11 +704,18 @@ export default function CreateLead() {
     if (!isLastTab) {
       // Only save if we have meaningful data in the current tab
       const hasData =
-        currentTab === "basic" ? (leadData.lead_source || leadData.lead_created_by) :
-        currentTab === "project" ? (leadData.project_title || leadData.project_description || leadData.solutions.length > 0) :
-        currentTab === "commercials" ? (leadData.flat_fee_config.length > 0 || leadData.transaction_fee_config.length > 0) :
-        currentTab === "client" ? (leadData.client_name || leadData.contacts[0]?.contact_name) :
-        true; // For additional tab, always save
+        currentTab === "basic"
+          ? leadData.lead_source || leadData.lead_created_by
+          : currentTab === "project"
+            ? leadData.project_title ||
+              leadData.project_description ||
+              leadData.solutions.length > 0
+            : currentTab === "commercials"
+              ? leadData.flat_fee_config.length > 0 ||
+                leadData.transaction_fee_config.length > 0
+              : currentTab === "client"
+                ? leadData.client_name || leadData.contacts[0]?.contact_name
+                : true; // For additional tab, always save
 
       if (hasData) {
         await handlePartialSave();
