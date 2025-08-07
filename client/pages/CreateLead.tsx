@@ -311,7 +311,10 @@ export default function CreateLead() {
 
       // Store template_id in leadData so we can restore it after templates load
       if (resumeData.template_id) {
-        setLeadData(prev => ({ ...prev, template_id: resumeData.template_id }));
+        setLeadData((prev) => ({
+          ...prev,
+          template_id: resumeData.template_id,
+        }));
       }
 
       // Set draft ID if resuming from an existing draft
@@ -356,24 +359,38 @@ export default function CreateLead() {
   useEffect(() => {
     if (templates.length > 0 && leadData.template_id && isResumedFromDraft) {
       const templateIdStr = leadData.template_id.toString();
-      const templateExists = templates.some((t: any) => t.id.toString() === templateIdStr);
+      const templateExists = templates.some(
+        (t: any) => t.id.toString() === templateIdStr,
+      );
 
       console.log("Restoring template selection:", {
         template_id: leadData.template_id,
         templateIdStr,
         templateExists,
         currentSelectedTemplate: selectedTemplate,
-        availableTemplates: templates.map((t: any) => ({ id: t.id, name: t.name }))
+        availableTemplates: templates.map((t: any) => ({
+          id: t.id,
+          name: t.name,
+        })),
       });
 
       if (templateExists && selectedTemplate !== templateIdStr) {
-        console.log(`Setting template from ${selectedTemplate} to ${templateIdStr}`);
+        console.log(
+          `Setting template from ${selectedTemplate} to ${templateIdStr}`,
+        );
         setSelectedTemplate(templateIdStr);
       } else if (!templateExists) {
-        console.warn("Template not found in available templates, setting to manual");
+        console.warn(
+          "Template not found in available templates, setting to manual",
+        );
         setSelectedTemplate("manual");
       }
-    } else if (templates.length > 0 && !leadData.template_id && isResumedFromDraft && selectedTemplate !== "manual") {
+    } else if (
+      templates.length > 0 &&
+      !leadData.template_id &&
+      isResumedFromDraft &&
+      selectedTemplate !== "manual"
+    ) {
       console.log("No template in draft, setting to manual");
       setSelectedTemplate("manual");
     }
@@ -386,7 +403,13 @@ export default function CreateLead() {
     console.log("isResumedFromDraft:", isResumedFromDraft);
     console.log("selectedTemplate:", selectedTemplate);
     console.log("templates loaded:", templates.length);
-  }, [draftId, hasSavedDraftInSession, isResumedFromDraft, selectedTemplate, templates.length]);
+  }, [
+    draftId,
+    hasSavedDraftInSession,
+    isResumedFromDraft,
+    selectedTemplate,
+    templates.length,
+  ]);
 
   const tabs = [
     { value: "basic", label: "Lead Info", icon: "📋" },
@@ -966,7 +989,10 @@ export default function CreateLead() {
             await apiClient.deleteLead(draftId);
             console.log("Draft deleted successfully");
           } catch (deleteError) {
-            console.warn("Failed to delete draft, but lead was created:", deleteError);
+            console.warn(
+              "Failed to delete draft, but lead was created:",
+              deleteError,
+            );
           }
 
           // Clean up draft-related state and queries
@@ -977,9 +1003,10 @@ export default function CreateLead() {
 
           // Invalidate partial saves queries to remove from draft list
           queryClient.invalidateQueries({ queryKey: ["my-partial-saves"] });
-          queryClient.invalidateQueries({ queryKey: ["my-partial-saves", user?.id] });
+          queryClient.invalidateQueries({
+            queryKey: ["my-partial-saves", user?.id],
+          });
           queryClient.invalidateQueries({ queryKey: ["partial-leads"] });
-
         } catch (error) {
           console.error("Failed to create complete lead:", error);
 
