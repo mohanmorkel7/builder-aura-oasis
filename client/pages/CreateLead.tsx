@@ -525,8 +525,8 @@ export default function CreateLead() {
       // Flat fees - only show if applicable for this period
       flatFees: leadData.flat_fee_config
         .filter((config) => {
-          // One-time fees only show in first period (Current)
-          if (config.type === "one_time") {
+          // One-time and onetime fees only show in first period (Current)
+          if (config.type === "one_time" || config.type === "onetime") {
             return period.label === "Current";
           }
           // Recurring fees show in all periods
@@ -1794,8 +1794,10 @@ export default function CreateLead() {
                                         </TableHead>
                                       </>
                                     )}
-                                    <TableHead>INR Value</TableHead>
-                                    <TableHead>USD Value</TableHead>
+                                    <TableHead>INR Value (month)</TableHead>
+                                    <TableHead>USD Value (month)</TableHead>
+                                    <TableHead>INR Value (year)</TableHead>
+                                    <TableHead>USD Value (year)</TableHead>
                                   </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -1826,6 +1828,26 @@ export default function CreateLead() {
                                       <TableCell>
                                         ₹
                                         {convertCurrency(
+                                          period.volume * 30 * solution.value,
+                                          solution.currency,
+                                          "INR",
+                                        ).toLocaleString(undefined, {
+                                          maximumFractionDigits: 2,
+                                        })}
+                                      </TableCell>
+                                      <TableCell>
+                                        $
+                                        {convertCurrency(
+                                          period.volume * 30 * solution.value,
+                                          solution.currency,
+                                          "USD",
+                                        ).toLocaleString(undefined, {
+                                          maximumFractionDigits: 2,
+                                        })}
+                                      </TableCell>
+                                      <TableCell>
+                                        ₹
+                                        {convertCurrency(
                                           solution.totalValue,
                                           solution.currency,
                                           "INR",
@@ -1848,7 +1870,7 @@ export default function CreateLead() {
                                       <TableRow className="bg-blue-50">
                                         <TableCell
                                           colSpan={
-                                            period.label === "Current" ? 5 : 6
+                                            period.label === "Current" ? 7 : 8
                                           }
                                           className="font-semibold text-blue-800"
                                         >
@@ -1871,6 +1893,23 @@ export default function CreateLead() {
                                               <TableCell>-</TableCell>
                                             </>
                                           )}
+                                          <TableCell>
+                                            ₹
+                                            {convertCurrency(
+                                              flatFee.totalValue,
+                                              flatFee.currency,
+                                              "INR",
+                                            ).toLocaleString(undefined, {
+                                              maximumFractionDigits: 2,
+                                            })}
+                                          </TableCell>
+                                          <TableCell>
+                                            $
+                                            {flatFee.totalValueUSD.toLocaleString(
+                                              undefined,
+                                              { maximumFractionDigits: 2 },
+                                            )}
+                                          </TableCell>
                                           <TableCell>
                                             ₹
                                             {convertCurrency(
@@ -1920,6 +1959,52 @@ export default function CreateLead() {
                                         </TableCell>
                                       </>
                                     )}
+                                    <TableCell>
+                                      ₹
+                                      {(
+                                        period.solutions.reduce(
+                                          (sum, s) =>
+                                            sum +
+                                            convertCurrency(
+                                              period.volume * 30 * s.value,
+                                              s.currency,
+                                              "INR",
+                                            ),
+                                          0,
+                                        ) +
+                                        period.flatFees.reduce(
+                                          (sum, f) =>
+                                            sum +
+                                            convertCurrency(
+                                              f.totalValue,
+                                              f.currency,
+                                              "INR",
+                                            ),
+                                          0,
+                                        )
+                                      ).toLocaleString(undefined, {
+                                        maximumFractionDigits: 2,
+                                      })}
+                                    </TableCell>
+                                    <TableCell>
+                                      $
+                                      {(
+                                        period.solutions.reduce(
+                                          (sum, s) => sum + convertCurrency(
+                                            period.volume * 30 * s.value,
+                                            s.currency,
+                                            "USD",
+                                          ),
+                                          0,
+                                        ) +
+                                        period.flatFees.reduce(
+                                          (sum, f) => sum + f.totalValueUSD,
+                                          0,
+                                        )
+                                      ).toLocaleString(undefined, {
+                                        maximumFractionDigits: 2,
+                                      })}
+                                    </TableCell>
                                     <TableCell>
                                       ₹
                                       {(
