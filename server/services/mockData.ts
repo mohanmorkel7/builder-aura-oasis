@@ -1505,9 +1505,9 @@ export class MockDataService {
     const validStepIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; // IDs from getLeadSteps
     if (!validStepIds.includes(stepId)) {
       console.error(
-        `MockDataService.createStepChat: Invalid step_id ${stepId}. Valid IDs are: ${validStepIds.join(", ")}`,
+        `MockDataService.createStepChat: Invalid step_id ${stepId}. Valid template_step IDs are: ${validStepIds.join(", ")}`,
       );
-      throw new Error(`Step with ID ${stepId} does not exist`);
+      throw new Error(`Template step with ID ${stepId} does not exist in mock data`);
     }
 
     const newChat = {
