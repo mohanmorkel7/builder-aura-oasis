@@ -1645,16 +1645,6 @@ export default function LeadEdit() {
                     Summary Config
                   </AccordionTrigger>
                   <AccordionContent>
-                    {/* Transaction Fees */}
-                    <div className="border-t pt-6">
-                      <h4 className="text-lg font-medium mb-4">
-                        Transaction Fees
-                      </h4>
-                      <p className="text-gray-500 text-center py-4">
-                        Configure transaction-based fees above in Transaction Fee Config section.
-                      </p>
-                    </div>
-
                     {leadData.transaction_fee_config.length === 0 ? (
                       <p className="text-gray-500 text-center py-4">
                         Configure transaction fees to see summary calculations.
