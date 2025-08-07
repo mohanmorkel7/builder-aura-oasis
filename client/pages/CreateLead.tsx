@@ -1888,7 +1888,13 @@ export default function CreateLead() {
                                           <TableCell>
                                             ₹
                                             {convertCurrency(
-                                              flatFee.totalValue,
+                                              flatFee.type === "recurring" && flatFee.recurring_period === "monthly"
+                                                ? flatFee.value
+                                                : flatFee.type === "recurring" && flatFee.recurring_period === "quarterly"
+                                                  ? flatFee.value / 3
+                                                  : flatFee.type === "recurring" && flatFee.recurring_period === "yearly"
+                                                    ? flatFee.value / 12
+                                                    : flatFee.value,
                                               flatFee.currency,
                                               "INR",
                                             ).toLocaleString(undefined, {
@@ -1897,10 +1903,19 @@ export default function CreateLead() {
                                           </TableCell>
                                           <TableCell>
                                             $
-                                            {flatFee.totalValueUSD.toLocaleString(
-                                              undefined,
-                                              { maximumFractionDigits: 2 },
-                                            )}
+                                            {convertCurrency(
+                                              flatFee.type === "recurring" && flatFee.recurring_period === "monthly"
+                                                ? flatFee.value
+                                                : flatFee.type === "recurring" && flatFee.recurring_period === "quarterly"
+                                                  ? flatFee.value / 3
+                                                  : flatFee.type === "recurring" && flatFee.recurring_period === "yearly"
+                                                    ? flatFee.value / 12
+                                                    : flatFee.value,
+                                              flatFee.currency,
+                                              "USD",
+                                            ).toLocaleString(undefined, {
+                                              maximumFractionDigits: 2,
+                                            })}
                                           </TableCell>
                                           <TableCell>
                                             ₹
