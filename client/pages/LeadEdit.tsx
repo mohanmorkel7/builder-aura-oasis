@@ -673,8 +673,7 @@ export default function LeadEdit() {
                 description = `Monthly (��${multiplier})`;
                 break;
               case "quarterly":
-                if (period.label === "Current") multiplier = 1;
-                else multiplier = 4;
+                multiplier = 4;
                 description = `Quarterly (×${multiplier})`;
                 break;
               case "yearly":
