@@ -1788,6 +1788,19 @@ export default function CreateLead() {
                                   </TableRow>
                                 </TableHeader>
                                 <TableBody>
+                                  {/* Transaction Fees Section */}
+                                  {period.solutions.length > 0 && (
+                                    <TableRow className="bg-blue-50">
+                                      <TableCell
+                                        colSpan={
+                                          period.label === "Current" ? 7 : 8
+                                        }
+                                        className="font-semibold text-blue-800"
+                                      >
+                                        Transaction Fees
+                                      </TableCell>
+                                    </TableRow>
+                                  )}
                                   {period.solutions.map((solution, index) => (
                                     <TableRow key={solution.solution}>
                                       <TableCell className="font-medium">
