@@ -199,29 +199,62 @@ export class ApiClient {
   ): Promise<Response> {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
+      xhr.timeout = 30000; // 30 second timeout
+
       xhr.open(config.method || "GET", url);
 
       // Set headers
       if (config.headers) {
         Object.entries(config.headers).forEach(([key, value]) => {
-          xhr.setRequestHeader(key, value as string);
+          try {
+            xhr.setRequestHeader(key, value as string);
+          } catch (headerError) {
+            console.log(`Could not set header ${key}:`, headerError);
+          }
         });
       }
 
       xhr.onload = () => {
-        const response = new Response(xhr.responseText, {
-          status: xhr.status,
-          statusText: xhr.statusText,
-          headers: new Headers(),
-        });
-        resolve(response);
+        try {
+          // Parse response headers
+          const headers = new Headers();
+          const headerLines = xhr.getAllResponseHeaders().split('\r\n');
+          headerLines.forEach(line => {
+            const parts = line.split(': ');
+            if (parts.length === 2) {
+              headers.append(parts[0], parts[1]);
+            }
+          });
+
+          const response = new Response(xhr.responseText, {
+            status: xhr.status,
+            statusText: xhr.statusText,
+            headers: headers,
+          });
+          resolve(response);
+        } catch (responseError) {
+          console.error("Error creating response from XHR:", responseError);
+          reject(new Error("Failed to process XMLHttpRequest response"));
+        }
       };
 
       xhr.onerror = () => {
-        reject(new Error("Network error"));
+        reject(new Error("XMLHttpRequest network error"));
       };
 
-      xhr.send((config.body as string) || null);
+      xhr.ontimeout = () => {
+        reject(new Error("XMLHttpRequest timeout"));
+      };
+
+      xhr.onabort = () => {
+        reject(new Error("XMLHttpRequest aborted"));
+      };
+
+      try {
+        xhr.send((config.body as string) || null);
+      } catch (sendError) {
+        reject(new Error(`Failed to send XMLHttpRequest: ${sendError.message}`));
+      }
     });
   }
 
