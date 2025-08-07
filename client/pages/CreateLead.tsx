@@ -299,6 +299,7 @@ export default function CreateLead() {
         id: resumeData.id,
         _resumeFromId: resumeData._resumeFromId,
         clientName: resumeData.client_name,
+        template_id: resumeData.template_id,
       });
 
       // Ensure lead_created_by is set if not already present
@@ -308,11 +309,9 @@ export default function CreateLead() {
       setLeadData(resumeData);
       setIsResumedFromDraft(true);
 
-      // Restore selected template if template_id exists
+      // Store template_id in leadData so we can restore it after templates load
       if (resumeData.template_id) {
-        setSelectedTemplate(resumeData.template_id.toString());
-      } else {
-        setSelectedTemplate("manual");
+        setLeadData(prev => ({ ...prev, template_id: resumeData.template_id }));
       }
 
       // Set draft ID if resuming from an existing draft
