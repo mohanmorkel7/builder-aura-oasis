@@ -352,6 +352,17 @@ export default function CreateLead() {
     }
   }, [user?.email]);
 
+  // Restore template selection after templates are loaded
+  useEffect(() => {
+    if (templates.length > 0 && leadData.template_id && isResumedFromDraft) {
+      console.log("Restoring template selection:", leadData.template_id);
+      setSelectedTemplate(leadData.template_id.toString());
+    } else if (templates.length > 0 && !leadData.template_id && isResumedFromDraft) {
+      console.log("No template in draft, setting to manual");
+      setSelectedTemplate("manual");
+    }
+  }, [templates, leadData.template_id, isResumedFromDraft]);
+
   // Debug: Track draftId changes
   useEffect(() => {
     console.log("draftId changed to:", draftId);
