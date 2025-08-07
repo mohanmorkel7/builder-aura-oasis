@@ -792,6 +792,8 @@ export default function CreateLead() {
         country: partialData.country,
         solutions: partialData.solutions,
         contacts: partialData.contacts,
+        template_id: partialData.template_id,
+        selectedTemplate: selectedTemplate,
         // Don't log full notes as it contains large originalData
         hasNotes: !!partialData.notes,
         // Show that metadata fields were filtered out
