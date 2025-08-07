@@ -1730,6 +1730,9 @@ export default function LeadEdit() {
                                         </>
                                       )}
                                       <TableCell>
+                                        {period.totalTransactions.toLocaleString()}
+                                      </TableCell>
+                                      <TableCell>
                                         ₹
                                         {convertCurrency(
                                           period.volume * 30 * solution.value,
