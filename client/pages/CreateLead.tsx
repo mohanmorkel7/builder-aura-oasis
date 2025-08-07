@@ -1317,7 +1317,14 @@ export default function CreateLead() {
                 </h4>
 
                 <div>
-                  <Label htmlFor="template">Choose Template</Label>
+                  <Label htmlFor="template">
+                    Choose Template
+                    {templatesLoading && <span className="text-blue-500">(Loading...)</span>}
+                    {templatesError && <span className="text-red-500">(Error)</span>}
+                    {!templatesLoading && !templatesError && (
+                      <span className="text-green-500">({templates.length} available)</span>
+                    )}
+                  </Label>
                   <div className="flex items-center space-x-2 mt-1">
                     <Select
                       value={selectedTemplate}
