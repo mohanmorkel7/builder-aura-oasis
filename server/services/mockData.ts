@@ -668,7 +668,10 @@ export class MockDataService {
   }
 
   static async verifyPassword(email: string, password: string) {
-    console.log("MockDataService verifyPassword called:", { email, passwordLength: password?.length });
+    console.log("MockDataService verifyPassword called:", {
+      email,
+      passwordLength: password?.length,
+    });
 
     const user = await this.findUserByEmail(email);
     if (!user) {
@@ -676,7 +679,11 @@ export class MockDataService {
       return null;
     }
 
-    console.log("Found user in mock data:", { id: user.id, email: user.email, role: user.role });
+    console.log("Found user in mock data:", {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    });
     console.log("Attempting password verification with bcrypt...");
 
     try {
@@ -1497,7 +1504,9 @@ export class MockDataService {
     // Validate that the step exists in our mock data
     const validStepIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; // IDs from getLeadSteps
     if (!validStepIds.includes(stepId)) {
-      console.error(`MockDataService.createStepChat: Invalid step_id ${stepId}. Valid IDs are: ${validStepIds.join(', ')}`);
+      console.error(
+        `MockDataService.createStepChat: Invalid step_id ${stepId}. Valid IDs are: ${validStepIds.join(", ")}`,
+      );
       throw new Error(`Step with ID ${stepId} does not exist`);
     }
 
