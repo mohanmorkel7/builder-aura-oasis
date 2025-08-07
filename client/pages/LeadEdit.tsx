@@ -1796,7 +1796,6 @@ export default function LeadEdit() {
                                               <TableCell>-</TableCell>
                                             </>
                                           )}
-                                          <TableCell>-</TableCell>
                                           <TableCell>
                                             ₹
                                             {convertCurrency(
