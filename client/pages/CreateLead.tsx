@@ -925,17 +925,21 @@ export default function CreateLead() {
             : null,
       };
 
-      // If this was a draft, we need to either update it or create a new complete lead
+      // If this was a draft, create a new complete lead and delete the draft
       let result;
       if (draftId) {
-        // Update existing draft to be a complete lead
-        const completeData = {
-          ...submitData,
-          notes: null, // Clear the partial save metadata
-        };
         try {
-          result = await apiClient.updateLead(draftId, completeData);
-          console.log("Draft converted to complete lead successfully");
+          // Create new complete lead
+          result = await createLeadMutation.mutateAsync(submitData);
+          console.log("New complete lead created successfully");
+
+          // Delete the draft to prevent duplicates
+          try {
+            await apiClient.deleteLead(draftId);
+            console.log("Draft deleted successfully");
+          } catch (deleteError) {
+            console.warn("Failed to delete draft, but lead was created:", deleteError);
+          }
 
           // Clean up draft-related state and queries
           setDraftId(null);
@@ -949,14 +953,15 @@ export default function CreateLead() {
           queryClient.invalidateQueries({ queryKey: ["partial-leads"] });
 
         } catch (error) {
-          console.error("Failed to update draft, creating new lead:", error);
-          result = await createLeadMutation.mutateAsync(submitData);
+          console.error("Failed to create complete lead:", error);
 
-          // Even if update failed, clean up draft state since we're creating a new lead
+          // Clean up draft state even if creation failed
           setDraftId(null);
           setIsResumedFromDraft(false);
           setIsPartialSaved(false);
           setHasSavedDraftInSession(false);
+
+          throw error; // Re-throw to be caught by outer try-catch
         }
       } else {
         // Create new complete lead
