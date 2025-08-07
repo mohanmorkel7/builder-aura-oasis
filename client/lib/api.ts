@@ -46,12 +46,18 @@ export class ApiClient {
 
       try {
         // Store original fetch in case it gets overridden by third-party scripts
-        const originalFetch = window.fetch;
+        const originalFetch = window.fetch.bind(window);
         response = await originalFetch(url, config);
       } catch (fetchError) {
         console.log("Primary fetch failed, trying fallback:", fetchError);
-        // Fallback to XMLHttpRequest if fetch is blocked or intercepted
-        response = await this.xmlHttpRequestFallback(url, config);
+        // Try native fetch one more time before XMLHttpRequest fallback
+        try {
+          response = await fetch(url, config);
+        } catch (secondFetchError) {
+          console.log("Second fetch attempt failed, using XMLHttpRequest:", secondFetchError);
+          // Fallback to XMLHttpRequest if fetch is blocked or intercepted
+          response = await this.xmlHttpRequestFallback(url, config);
+        }
       }
 
       if (!response.ok) {
