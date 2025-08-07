@@ -1891,7 +1891,13 @@ export default function LeadEdit() {
                                           (sum, f) =>
                                             sum +
                                             convertCurrency(
-                                              f.totalValue,
+                                              f.type === "recurring" && f.recurring_period === "monthly"
+                                                ? f.value
+                                                : f.type === "recurring" && f.recurring_period === "quarterly"
+                                                  ? f.value / 3
+                                                  : f.type === "recurring" && f.recurring_period === "yearly"
+                                                    ? f.value / 12
+                                                    : f.value,
                                               f.currency,
                                               "INR",
                                             ),
