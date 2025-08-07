@@ -180,6 +180,21 @@ export default function CreateLead() {
   const { data: templates = [] } = useQuery({
     queryKey: ["templates-by-category", 2],
     queryFn: () => apiClient.request("/templates-production/category/2"),
+    retry: (failureCount, error) => {
+      // Retry up to 3 times for network errors
+      if (failureCount < 3 && error.message.includes("Failed to fetch")) {
+        console.log(`Retrying templates fetch (attempt ${failureCount + 1})`);
+        return true;
+      }
+      return false;
+    },
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    cacheTime: 10 * 60 * 1000, // 10 minutes
+    onError: (error) => {
+      console.error("Templates fetch failed:", error);
+      // Don't throw the error, let the component handle it gracefully
+    },
   });
 
   const [selectedTemplate, setSelectedTemplate] = useState<string>("");
