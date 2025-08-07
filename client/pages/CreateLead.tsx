@@ -2011,7 +2011,7 @@ export default function CreateLead() {
                                           (sum, s) =>
                                             sum +
                                             convertCurrency(
-                                              s.totalValue,
+                                              period.label === "Current" ? period.volume * 30 * 12 * s.value : s.totalValue,
                                               s.currency,
                                               "INR",
                                             ),
@@ -2035,7 +2035,13 @@ export default function CreateLead() {
                                       $
                                       {(
                                         period.solutions.reduce(
-                                          (sum, s) => sum + s.totalValueUSD,
+                                          (sum, s) =>
+                                            sum +
+                                            convertCurrency(
+                                              period.label === "Current" ? period.volume * 30 * 12 * s.value : s.totalValue,
+                                              s.currency,
+                                              "USD",
+                                            ),
                                           0,
                                         ) +
                                         period.flatFees.reduce(
