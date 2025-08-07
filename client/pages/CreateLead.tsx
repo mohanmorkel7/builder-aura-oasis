@@ -816,6 +816,16 @@ export default function CreateLead() {
             : null,
       };
 
+      console.log("Template ID calculation:", {
+        selectedTemplate,
+        selectedTemplateType: typeof selectedTemplate,
+        isManual: selectedTemplate === "manual",
+        isNotManual: selectedTemplate !== "manual",
+        hasSelectedTemplate: selectedTemplate && selectedTemplate !== "manual",
+        parsedTemplateId: selectedTemplate && selectedTemplate !== "manual" ? parseInt(selectedTemplate) : null,
+        finalTemplateId: partialData.template_id
+      });
+
       console.log("Final partialData being saved:", {
         draftId: draftId,
         client_name: partialData.client_name,
