@@ -840,7 +840,7 @@ router.delete("/:id", async (req: Request, res: Response) => {
   }
 });
 
-// Get lead steps
+// Get lead steps (from template_steps based on lead's template_id)
 router.get("/:leadId/steps", async (req: Request, res: Response) => {
   try {
     const leadId = parseInt(req.params.leadId);
@@ -851,7 +851,31 @@ router.get("/:leadId/steps", async (req: Request, res: Response) => {
     let steps;
     try {
       if (await isDatabaseAvailable()) {
-        steps = await LeadStepRepository.findByLeadId(leadId);
+        // First get the lead to find its template_id
+        const leadQuery = `SELECT template_id FROM leads WHERE id = $1`;
+        const leadResult = await pool.query(leadQuery, [leadId]);
+
+        if (leadResult.rows.length === 0) {
+          return res.status(404).json({ error: "Lead not found" });
+        }
+
+        const templateId = leadResult.rows[0].template_id;
+
+        if (templateId) {
+          // Get template steps for this lead's template
+          const templateStepsQuery = `
+            SELECT id, name, description, step_order, default_eta_days as estimated_days,
+                   'pending' as status, $1 as lead_id
+            FROM template_steps
+            WHERE template_id = $2
+            ORDER BY step_order ASC
+          `;
+          const templateStepsResult = await pool.query(templateStepsQuery, [leadId, templateId]);
+          steps = templateStepsResult.rows;
+        } else {
+          // No template assigned, use mock data
+          steps = await MockDataService.getLeadSteps(leadId);
+        }
       } else {
         steps = await MockDataService.getLeadSteps(leadId);
       }
