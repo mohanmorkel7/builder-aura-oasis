@@ -455,7 +455,7 @@ export default function LeadEdit() {
     { value: "basic", label: "Lead Info", icon: "📋" },
     { value: "project", label: "Project Details", icon: "🎯" },
     { value: "commercials", label: "Commercials", icon: "💰" },
-    { value: "client", label: "Client & Contact", icon: "���" },
+    { value: "client", label: "Client & Contact", icon: "🏢" },
     { value: "additional", label: "Additional", icon: "📝" },
   ];
 
@@ -1684,6 +1684,7 @@ export default function LeadEdit() {
                                         </TableHead>
                                       </>
                                     )}
+                                    <TableHead>Total Transaction Count (year)</TableHead>
                                     <TableHead>INR Value (month)</TableHead>
                                     <TableHead>USD Value (month)</TableHead>
                                     <TableHead>INR Value (year)</TableHead>
