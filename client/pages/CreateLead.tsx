@@ -179,8 +179,19 @@ export default function CreateLead() {
   // Get only Lead templates (category ID 2 based on our mock data)
   const { data: templates = [], isLoading: templatesLoading, error: templatesError } = useQuery({
     queryKey: ["templates-by-category", 2],
-    queryFn: () => apiClient.request("/templates-production/category/2"),
+    queryFn: async () => {
+      console.log("Fetching templates for category 2...");
+      try {
+        const result = await apiClient.request("/templates-production/category/2");
+        console.log("Templates fetch successful:", result);
+        return result;
+      } catch (error) {
+        console.error("Templates fetch error:", error);
+        throw error;
+      }
+    },
     retry: (failureCount, error) => {
+      console.log(`Template fetch attempt ${failureCount + 1}, error:`, error.message);
       // Retry up to 3 times for network errors
       if (failureCount < 3 && error.message.includes("Failed to fetch")) {
         console.log(`Retrying templates fetch (attempt ${failureCount + 1})`);
@@ -1351,16 +1362,17 @@ export default function CreateLead() {
                         <SelectItem value="manual">
                           Manual (Create from scratch)
                         </SelectItem>
-                        {templates.length > 0 ? templates.map((template: any) => (
+                        {templates.map((template: any) => (
                           <SelectItem
                             key={template.id}
                             value={template.id.toString()}
                           >
                             {template.name}
                           </SelectItem>
-                        )) : (
+                        ))}
+                        {templates.length === 0 && !templatesLoading && (
                           <SelectItem value="no-templates" disabled>
-                            {templatesLoading ? "Loading..." : templatesError ? "Error loading templates" : "No templates available"}
+                            {templatesError ? "Error loading templates" : "No templates available"}
                           </SelectItem>
                         )}
                       </SelectContent>
