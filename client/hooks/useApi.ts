@@ -796,6 +796,19 @@ export function useClientOnboardingSteps(clientId: number) {
     queryKey: ["onboarding-steps", clientId],
     queryFn: () => apiClient.getClientOnboardingSteps(clientId),
     enabled: !!clientId,
+    retry: (failureCount, error) => {
+      if (failureCount < 3 && error.message.includes("Failed to fetch")) {
+        console.log(`Retrying onboarding steps fetch (attempt ${failureCount + 1})`);
+        return true;
+      }
+      return false;
+    },
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    staleTime: 5 * 60 * 1000,
+    cacheTime: 10 * 60 * 1000,
+    onError: (error) => {
+      console.error("Onboarding steps fetch failed:", error);
+    },
   });
 }
 
