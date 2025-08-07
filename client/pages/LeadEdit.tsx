@@ -670,7 +670,7 @@ export default function LeadEdit() {
             switch (config.recurring_period) {
               case "monthly":
                 multiplier = 12;
-                description = `Monthly (��${multiplier})`;
+                description = `Monthly (×${multiplier})`;
                 break;
               case "quarterly":
                 multiplier = 4;
