@@ -619,7 +619,7 @@ export default function LeadEdit() {
         label: "Current",
         volume: currentVolume,
         multiplier: 30,
-        description: `(${currentVolume.toLocaleString()} daily txns �� 30 days = ${(currentVolume * 30).toLocaleString()} total txns)`,
+        description: `(${currentVolume.toLocaleString()} daily txns × 30 days = ${(currentVolume * 30).toLocaleString()} total txns, ${(currentVolume * 360).toLocaleString()} yearly txns)`,
       },
       {
         label: "First Year",
