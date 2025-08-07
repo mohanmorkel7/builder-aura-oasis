@@ -875,6 +875,55 @@ router.get("/:leadId/steps", async (req: Request, res: Response) => {
   }
 });
 
+// Fix missing steps for all leads
+router.post("/fix-all-steps", async (req: Request, res: Response) => {
+  try {
+    if (await isDatabaseAvailable()) {
+      // Find all leads that don't have steps
+      const leadsWithoutStepsQuery = `
+        SELECT l.id, l.lead_id, l.client_name
+        FROM leads l
+        LEFT JOIN lead_steps ls ON l.id = ls.lead_id
+        WHERE ls.lead_id IS NULL
+      `;
+      const leadsResult = await pool.query(leadsWithoutStepsQuery);
+
+      if (leadsResult.rows.length === 0) {
+        return res.json({ message: "All leads already have steps" });
+      }
+
+      console.log(`Found ${leadsResult.rows.length} leads without steps, creating default steps...`);
+
+      // Create default steps for each lead
+      const fixPromises = leadsResult.rows.map(async (lead) => {
+        try {
+          await LeadRepository.createDefaultSteps(lead.id);
+          return { leadId: lead.id, leadCode: lead.lead_id, success: true };
+        } catch (error) {
+          console.error(`Failed to create steps for lead ${lead.id}:`, error);
+          return { leadId: lead.id, leadCode: lead.lead_id, success: false, error: error.message };
+        }
+      });
+
+      const results = await Promise.all(fixPromises);
+      const successful = results.filter(r => r.success);
+      const failed = results.filter(r => !r.success);
+
+      res.json({
+        message: `Fixed ${successful.length} leads, ${failed.length} failed`,
+        successful: successful,
+        failed: failed,
+        totalProcessed: leadsResult.rows.length
+      });
+    } else {
+      return res.status(503).json({ error: "Database not available" });
+    }
+  } catch (error) {
+    console.error("Error fixing all lead steps:", error);
+    res.status(500).json({ error: "Failed to fix all lead steps" });
+  }
+});
+
 // Fix missing steps for a lead (create default steps if none exist)
 router.post("/:leadId/steps/fix", async (req: Request, res: Response) => {
   try {
