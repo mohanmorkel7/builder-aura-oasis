@@ -56,7 +56,7 @@ const navigationItems: NavigationItem[] = [
   },
 
   {
-    name: "Leads",
+    name: "Sales",
     href: "/leads",
     icon: Target,
     roles: ["admin", "sales", "product"],
