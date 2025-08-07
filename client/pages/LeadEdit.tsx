@@ -1671,9 +1671,14 @@ export default function LeadEdit() {
                                     <TableHead>Solution</TableHead>
                                     <TableHead>Rate(INR)</TableHead>
                                     {period.label === "Current" ? (
-                                      <TableHead>
-                                        Total Transaction Count (month)
-                                      </TableHead>
+                                      <>
+                                        <TableHead>
+                                          Total Transaction Count (month)
+                                        </TableHead>
+                                        <TableHead>
+                                          Total Transaction Count (year)
+                                        </TableHead>
+                                      </>
                                     ) : (
                                       <>
                                         <TableHead>
