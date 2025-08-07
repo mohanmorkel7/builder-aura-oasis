@@ -471,11 +471,14 @@ export class LeadRepository {
     const lead = result.rows[0];
 
     // If a template was selected, auto-populate steps from the template
-    if (leadData.selected_template_id) {
+    if (leadData.selected_template_id || leadData.template_id) {
       await this.populateStepsFromTemplate(
         lead.id,
-        leadData.selected_template_id,
+        leadData.selected_template_id || leadData.template_id,
       );
+    } else {
+      // Create default lead steps when no template is selected
+      await this.createDefaultSteps(lead.id);
     }
 
     return lead;
