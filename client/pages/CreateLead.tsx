@@ -125,7 +125,7 @@ const getCurrencyUnits = (currency: string) => {
   switch (currency) {
     case "INR":
       return [
-        { value: "rupee", label: "Rupee (₹)" },
+        { value: "rupee", label: "Rupee (���)" },
         { value: "paisa", label: "Paisa" },
       ];
     case "USD":
@@ -1619,9 +1619,6 @@ export default function CreateLead() {
                                     <SelectContent>
                                       <SelectItem value="one_time">
                                         One Time
-                                      </SelectItem>
-                                      <SelectItem value="onetime">
-                                        Onetime
                                       </SelectItem>
                                       <SelectItem value="recurring">
                                         Recurring
