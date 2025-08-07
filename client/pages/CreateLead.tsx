@@ -1965,7 +1965,7 @@ export default function CreateLead() {
                                       </>
                                     )}
                                     <TableCell>
-                                      {period.totalTransactions.toLocaleString()}
+                                      {period.label === "Current" ? (period.totalTransactions * 12).toLocaleString() : period.totalTransactions.toLocaleString()}
                                     </TableCell>
                                     <TableCell>
                                       ₹
