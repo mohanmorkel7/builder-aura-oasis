@@ -875,6 +875,55 @@ router.get("/:leadId/steps", async (req: Request, res: Response) => {
   }
 });
 
+// Fix missing steps for a lead (create default steps if none exist)
+router.post("/:leadId/steps/fix", async (req: Request, res: Response) => {
+  try {
+    const leadId = parseInt(req.params.leadId);
+    if (isNaN(leadId)) {
+      return res.status(400).json({ error: "Invalid lead ID" });
+    }
+
+    if (await isDatabaseAvailable()) {
+      // Check if lead exists
+      const leadExistsQuery = `SELECT id FROM leads WHERE id = $1`;
+      const leadResult = await pool.query(leadExistsQuery, [leadId]);
+
+      if (leadResult.rows.length === 0) {
+        return res.status(404).json({ error: "Lead not found" });
+      }
+
+      // Check if lead already has steps
+      const stepsExistQuery = `SELECT COUNT(*) as count FROM lead_steps WHERE lead_id = $1`;
+      const stepsResult = await pool.query(stepsExistQuery, [leadId]);
+      const stepCount = parseInt(stepsResult.rows[0].count);
+
+      if (stepCount > 0) {
+        return res.json({
+          message: `Lead already has ${stepCount} steps`,
+          stepCount: stepCount
+        });
+      }
+
+      // Create default steps
+      await LeadRepository.createDefaultSteps(leadId);
+
+      // Get the created steps
+      const createdStepsQuery = `SELECT * FROM lead_steps WHERE lead_id = $1 ORDER BY step_order`;
+      const createdStepsResult = await pool.query(createdStepsQuery, [leadId]);
+
+      res.json({
+        message: `Created ${createdStepsResult.rows.length} default steps for lead ${leadId}`,
+        steps: createdStepsResult.rows
+      });
+    } else {
+      return res.status(503).json({ error: "Database not available" });
+    }
+  } catch (error) {
+    console.error("Error fixing lead steps:", error);
+    res.status(500).json({ error: "Failed to fix lead steps" });
+  }
+});
+
 // Create lead step
 router.post("/:leadId/steps", async (req: Request, res: Response) => {
   try {
