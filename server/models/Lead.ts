@@ -484,6 +484,97 @@ export class LeadRepository {
     return lead;
   }
 
+  static async createDefaultSteps(leadId: number): Promise<void> {
+    try {
+      const defaultSteps = [
+        {
+          name: "Initial Contact & Discovery",
+          description: "First contact with prospect to understand their needs",
+          step_order: 1,
+          estimated_days: 1,
+        },
+        {
+          name: "Needs Assessment & Demo",
+          description: "Detailed needs assessment and product demonstration",
+          step_order: 2,
+          estimated_days: 3,
+        },
+        {
+          name: "Proposal Preparation",
+          description: "Prepare detailed proposal based on requirements",
+          step_order: 3,
+          estimated_days: 4,
+        },
+        {
+          name: "Proposal Review & Negotiation",
+          description: "Present proposal and handle negotiations",
+          step_order: 4,
+          estimated_days: 5,
+        },
+        {
+          name: "Contract Finalization",
+          description: "Finalize contract terms and get signatures",
+          step_order: 5,
+          estimated_days: 3,
+        },
+        {
+          name: "Onboarding Preparation",
+          description: "Prepare onboarding materials and timeline",
+          step_order: 6,
+          estimated_days: 2,
+        },
+        {
+          name: "Implementation Planning",
+          description: "Plan technical implementation and project timeline",
+          step_order: 7,
+          estimated_days: 5,
+        },
+        {
+          name: "System Integration",
+          description: "Integrate systems and perform testing",
+          step_order: 8,
+          estimated_days: 7,
+        },
+        {
+          name: "Go-Live & Support",
+          description: "Go live with the solution and provide initial support",
+          step_order: 9,
+          estimated_days: 3,
+        },
+        {
+          name: "Project Closure",
+          description: "Complete project documentation and handover",
+          step_order: 10,
+          estimated_days: 2,
+        },
+      ];
+
+      const insertPromises = defaultSteps.map((step) => {
+        const insertStepQuery = `
+          INSERT INTO lead_steps (
+            lead_id, name, description, status, step_order, estimated_days
+          )
+          VALUES ($1, $2, $3, $4, $5, $6)
+        `;
+
+        return pool.query(insertStepQuery, [
+          leadId,
+          step.name,
+          step.description,
+          "pending",
+          step.step_order,
+          step.estimated_days,
+        ]);
+      });
+
+      await Promise.all(insertPromises);
+      console.log(`Created ${defaultSteps.length} default steps for lead ${leadId}`);
+    } catch (error) {
+      console.error("Error creating default steps:", error);
+      // Don't throw error as lead creation should still succeed
+    }
+  }
+
   static async populateStepsFromTemplate(
     leadId: number,
     templateId: number,
@@ -500,7 +591,9 @@ export class LeadRepository {
       ]);
 
       if (templateStepsResult.rows.length === 0) {
-        return; // No steps in template
+        console.log(`No template steps found for template ${templateId}, creating default steps`);
+        await this.createDefaultSteps(leadId);
+        return;
       }
 
       // Insert lead steps based on template steps
@@ -525,6 +618,7 @@ export class LeadRepository {
       );
 
       await Promise.all(insertPromises);
+      console.log(`Created ${templateStepsResult.rows.length} steps from template ${templateId} for lead ${leadId}`);
     } catch (error) {
       console.error("Error populating steps from template:", error);
       // Don't throw error as lead creation should still succeed
