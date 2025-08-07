@@ -822,8 +822,11 @@ export default function CreateLead() {
         isManual: selectedTemplate === "manual",
         isNotManual: selectedTemplate !== "manual",
         hasSelectedTemplate: selectedTemplate && selectedTemplate !== "manual",
-        parsedTemplateId: selectedTemplate && selectedTemplate !== "manual" ? parseInt(selectedTemplate) : null,
-        finalTemplateId: partialData.template_id
+        parsedTemplateId:
+          selectedTemplate && selectedTemplate !== "manual"
+            ? parseInt(selectedTemplate)
+            : null,
+        finalTemplateId: partialData.template_id,
       });
 
       console.log("Final partialData being saved:", {
