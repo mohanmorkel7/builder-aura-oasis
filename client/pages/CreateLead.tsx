@@ -936,9 +936,27 @@ export default function CreateLead() {
         try {
           result = await apiClient.updateLead(draftId, completeData);
           console.log("Draft converted to complete lead successfully");
+
+          // Clean up draft-related state and queries
+          setDraftId(null);
+          setIsResumedFromDraft(false);
+          setIsPartialSaved(false);
+          setHasSavedDraftInSession(false);
+
+          // Invalidate partial saves queries to remove from draft list
+          queryClient.invalidateQueries({ queryKey: ["my-partial-saves"] });
+          queryClient.invalidateQueries({ queryKey: ["my-partial-saves", user?.id] });
+          queryClient.invalidateQueries({ queryKey: ["partial-leads"] });
+
         } catch (error) {
           console.error("Failed to update draft, creating new lead:", error);
           result = await createLeadMutation.mutateAsync(submitData);
+
+          // Even if update failed, clean up draft state since we're creating a new lead
+          setDraftId(null);
+          setIsResumedFromDraft(false);
+          setIsPartialSaved(false);
+          setHasSavedDraftInSession(false);
         }
       } else {
         // Create new complete lead
