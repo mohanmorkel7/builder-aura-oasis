@@ -456,7 +456,7 @@ export class LeadRepository {
       JSON.stringify(leadData.contacts || []), // $22
       leadData.priority || "medium", // $23
       leadData.expected_close_date || null, // $24
-      leadData.probability || 50, // $25
+      leadData.probability !== undefined ? leadData.probability : 0, // $25
       leadData.notes || null, // $26
       leadData.selected_template_id || null, // $27
       leadData.created_by, // $28
