@@ -1718,9 +1718,14 @@ export default function LeadEdit() {
                                         {solution.value}
                                       </TableCell>
                                       {period.label === "Current" ? (
-                                        <TableCell>
-                                          {period.totalTransactions.toLocaleString()}
-                                        </TableCell>
+                                        <>
+                                          <TableCell>
+                                            {period.totalTransactions.toLocaleString()}
+                                          </TableCell>
+                                          <TableCell>
+                                            {(period.totalTransactions * 12).toLocaleString()}
+                                          </TableCell>
+                                        </>
                                       ) : (
                                         <>
                                           <TableCell>
