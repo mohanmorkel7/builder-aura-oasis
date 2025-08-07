@@ -1795,7 +1795,10 @@ export default function LeadEdit() {
                                             {flatFee.description}
                                           </TableCell>
                                           {period.label === "Current" ? (
-                                            <TableCell>-</TableCell>
+                                            <>
+                                              <TableCell>-</TableCell>
+                                              <TableCell>-</TableCell>
+                                            </>
                                           ) : (
                                             <>
                                               <TableCell>-</TableCell>
