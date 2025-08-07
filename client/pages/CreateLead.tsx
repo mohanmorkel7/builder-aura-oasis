@@ -1746,7 +1746,7 @@ export default function CreateLead() {
                                 <TableHeader>
                                   <TableRow>
                                     <TableHead>Solution</TableHead>
-                                    <TableHead>Rate(INR)</TableHead>
+                                    <TableHead>Rate({leadData.billing_currency})</TableHead>
                                     {period.label === "Current" ? (
                                       <>
                                         <TableHead>
