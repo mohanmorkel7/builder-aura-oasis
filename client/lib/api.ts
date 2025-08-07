@@ -12,7 +12,7 @@ export class ApiClient {
     this.lastFailureTime = 0;
     console.log("Circuit breaker reset");
   }
-  private async request<T>(
+  public async request<T>(
     endpoint: string,
     options: RequestInit = {},
     retryCount = 0,
