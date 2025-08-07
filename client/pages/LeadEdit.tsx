@@ -661,40 +661,39 @@ export default function LeadEdit() {
         ),
       })),
       // Flat fees - show all flat fees in all periods
-      flatFees: leadData.flat_fee_config
-        .map((config) => {
-          let multiplier = 1;
-          let description = "One time";
+      flatFees: leadData.flat_fee_config.map((config) => {
+        let multiplier = 1;
+        let description = "One time";
 
-          if (config.type === "recurring" && config.recurring_period) {
-            switch (config.recurring_period) {
-              case "monthly":
-                multiplier = 12;
-                description = `Monthly (×${multiplier})`;
-                break;
-              case "quarterly":
-                multiplier = 4;
-                description = `Quarterly (×${multiplier})`;
-                break;
-              case "yearly":
-                multiplier = 1;
-                description = `Yearly (×${multiplier})`;
-                break;
-            }
+        if (config.type === "recurring" && config.recurring_period) {
+          switch (config.recurring_period) {
+            case "monthly":
+              multiplier = 12;
+              description = `Monthly (×${multiplier})`;
+              break;
+            case "quarterly":
+              multiplier = 4;
+              description = `Quarterly (×${multiplier})`;
+              break;
+            case "yearly":
+              multiplier = 1;
+              description = `Yearly (×${multiplier})`;
+              break;
           }
+        }
 
-          return {
-            ...config,
-            multiplier,
-            description,
-            totalValue: config.value * multiplier,
-            totalValueUSD: convertCurrency(
-              config.value * multiplier,
-              config.currency,
-              "USD",
-            ),
-          };
-        }),
+        return {
+          ...config,
+          multiplier,
+          description,
+          totalValue: config.value * multiplier,
+          totalValueUSD: convertCurrency(
+            config.value * multiplier,
+            config.currency,
+            "USD",
+          ),
+        };
+      }),
     }));
   };
 
@@ -1556,7 +1555,9 @@ export default function LeadEdit() {
                             <TableRow>
                               <TableHead>Solution Name</TableHead>
                               <TableHead>Currency</TableHead>
-                              <TableHead>Rate ({leadData.billing_currency})</TableHead>
+                              <TableHead>
+                                Rate ({leadData.billing_currency})
+                              </TableHead>
                             </TableRow>
                           </TableHeader>
                           <TableBody>
@@ -1649,7 +1650,9 @@ export default function LeadEdit() {
                                 <TableHeader>
                                   <TableRow>
                                     <TableHead>Solution</TableHead>
-                                    <TableHead>Rate({leadData.billing_currency})</TableHead>
+                                    <TableHead>
+                                      Rate({leadData.billing_currency})
+                                    </TableHead>
                                     {period.label === "Current" ? (
                                       <>
                                         <TableHead>
@@ -1692,16 +1695,16 @@ export default function LeadEdit() {
                                       <TableCell className="font-medium">
                                         {solution.solution}
                                       </TableCell>
-                                      <TableCell>
-                                        {solution.value}
-                                      </TableCell>
+                                      <TableCell>{solution.value}</TableCell>
                                       {period.label === "Current" ? (
                                         <>
                                           <TableCell>
                                             {period.totalTransactions.toLocaleString()}
                                           </TableCell>
                                           <TableCell>
-                                            {(period.totalTransactions * 12).toLocaleString()}
+                                            {(
+                                              period.totalTransactions * 12
+                                            ).toLocaleString()}
                                           </TableCell>
                                         </>
                                       ) : (
@@ -1739,7 +1742,12 @@ export default function LeadEdit() {
                                       <TableCell>
                                         ₹
                                         {convertCurrency(
-                                          period.label === "Current" ? period.volume * 30 * 12 * solution.value : solution.totalValue,
+                                          period.label === "Current"
+                                            ? period.volume *
+                                                30 *
+                                                12 *
+                                                solution.value
+                                            : solution.totalValue,
                                           solution.currency,
                                           "INR",
                                         ).toLocaleString(undefined, {
@@ -1749,7 +1757,12 @@ export default function LeadEdit() {
                                       <TableCell>
                                         $
                                         {convertCurrency(
-                                          period.label === "Current" ? period.volume * 30 * 12 * solution.value : solution.totalValue,
+                                          period.label === "Current"
+                                            ? period.volume *
+                                                30 *
+                                                12 *
+                                                solution.value
+                                            : solution.totalValue,
                                           solution.currency,
                                           "USD",
                                         ).toLocaleString(undefined, {
@@ -1791,11 +1804,19 @@ export default function LeadEdit() {
                                           <TableCell>
                                             ₹
                                             {convertCurrency(
-                                              flatFee.type === "recurring" && flatFee.recurring_period === "monthly"
+                                              flatFee.type === "recurring" &&
+                                                flatFee.recurring_period ===
+                                                  "monthly"
                                                 ? flatFee.value
-                                                : flatFee.type === "recurring" && flatFee.recurring_period === "quarterly"
+                                                : flatFee.type ===
+                                                      "recurring" &&
+                                                    flatFee.recurring_period ===
+                                                      "quarterly"
                                                   ? flatFee.value / 3
-                                                  : flatFee.type === "recurring" && flatFee.recurring_period === "yearly"
+                                                  : flatFee.type ===
+                                                        "recurring" &&
+                                                      flatFee.recurring_period ===
+                                                        "yearly"
                                                     ? flatFee.value / 12
                                                     : flatFee.value,
                                               flatFee.currency,
@@ -1807,11 +1828,19 @@ export default function LeadEdit() {
                                           <TableCell>
                                             $
                                             {convertCurrency(
-                                              flatFee.type === "recurring" && flatFee.recurring_period === "monthly"
+                                              flatFee.type === "recurring" &&
+                                                flatFee.recurring_period ===
+                                                  "monthly"
                                                 ? flatFee.value
-                                                : flatFee.type === "recurring" && flatFee.recurring_period === "quarterly"
+                                                : flatFee.type ===
+                                                      "recurring" &&
+                                                    flatFee.recurring_period ===
+                                                      "quarterly"
                                                   ? flatFee.value / 3
-                                                  : flatFee.type === "recurring" && flatFee.recurring_period === "yearly"
+                                                  : flatFee.type ===
+                                                        "recurring" &&
+                                                      flatFee.recurring_period ===
+                                                        "yearly"
                                                     ? flatFee.value / 12
                                                     : flatFee.value,
                                               flatFee.currency,
@@ -1859,7 +1888,9 @@ export default function LeadEdit() {
                                           {period.totalTransactions.toLocaleString()}
                                         </TableCell>
                                         <TableCell>
-                                          {(period.totalTransactions * 12).toLocaleString()}
+                                          {(
+                                            period.totalTransactions * 12
+                                          ).toLocaleString()}
                                         </TableCell>
                                       </>
                                     ) : (
@@ -1891,11 +1922,16 @@ export default function LeadEdit() {
                                           (sum, f) =>
                                             sum +
                                             convertCurrency(
-                                              f.type === "recurring" && f.recurring_period === "monthly"
+                                              f.type === "recurring" &&
+                                                f.recurring_period === "monthly"
                                                 ? f.value
-                                                : f.type === "recurring" && f.recurring_period === "quarterly"
+                                                : f.type === "recurring" &&
+                                                    f.recurring_period ===
+                                                      "quarterly"
                                                   ? f.value / 3
-                                                  : f.type === "recurring" && f.recurring_period === "yearly"
+                                                  : f.type === "recurring" &&
+                                                      f.recurring_period ===
+                                                        "yearly"
                                                     ? f.value / 12
                                                     : f.value,
                                               f.currency,
@@ -1911,25 +1947,34 @@ export default function LeadEdit() {
                                       $
                                       {(
                                         period.solutions.reduce(
-                                          (sum, s) => sum + convertCurrency(
-                                            period.volume * 30 * s.value,
-                                            s.currency,
-                                            "USD",
-                                          ),
+                                          (sum, s) =>
+                                            sum +
+                                            convertCurrency(
+                                              period.volume * 30 * s.value,
+                                              s.currency,
+                                              "USD",
+                                            ),
                                           0,
                                         ) +
                                         period.flatFees.reduce(
-                                          (sum, f) => sum + convertCurrency(
-                                            f.type === "recurring" && f.recurring_period === "monthly"
-                                              ? f.value
-                                              : f.type === "recurring" && f.recurring_period === "quarterly"
-                                                ? f.value / 3
-                                                : f.type === "recurring" && f.recurring_period === "yearly"
-                                                  ? f.value / 12
-                                                  : f.value,
-                                            f.currency,
-                                            "USD",
-                                          ),
+                                          (sum, f) =>
+                                            sum +
+                                            convertCurrency(
+                                              f.type === "recurring" &&
+                                                f.recurring_period === "monthly"
+                                                ? f.value
+                                                : f.type === "recurring" &&
+                                                    f.recurring_period ===
+                                                      "quarterly"
+                                                  ? f.value / 3
+                                                  : f.type === "recurring" &&
+                                                      f.recurring_period ===
+                                                        "yearly"
+                                                    ? f.value / 12
+                                                    : f.value,
+                                              f.currency,
+                                              "USD",
+                                            ),
                                           0,
                                         )
                                       ).toLocaleString(undefined, {
@@ -1943,7 +1988,12 @@ export default function LeadEdit() {
                                           (sum, s) =>
                                             sum +
                                             convertCurrency(
-                                              period.label === "Current" ? period.volume * 30 * 12 * s.value : s.totalValue,
+                                              period.label === "Current"
+                                                ? period.volume *
+                                                    30 *
+                                                    12 *
+                                                    s.value
+                                                : s.totalValue,
                                               s.currency,
                                               "INR",
                                             ),
@@ -1970,7 +2020,12 @@ export default function LeadEdit() {
                                           (sum, s) =>
                                             sum +
                                             convertCurrency(
-                                              period.label === "Current" ? period.volume * 30 * 12 * s.value : s.totalValue,
+                                              period.label === "Current"
+                                                ? period.volume *
+                                                    30 *
+                                                    12 *
+                                                    s.value
+                                                : s.totalValue,
                                               s.currency,
                                               "USD",
                                             ),

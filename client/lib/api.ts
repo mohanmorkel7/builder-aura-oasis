@@ -54,7 +54,10 @@ export class ApiClient {
         try {
           response = await fetch(url, config);
         } catch (secondFetchError) {
-          console.log("Second fetch attempt failed, using XMLHttpRequest:", secondFetchError);
+          console.log(
+            "Second fetch attempt failed, using XMLHttpRequest:",
+            secondFetchError,
+          );
           // Fallback to XMLHttpRequest if fetch is blocked or intercepted
           response = await this.xmlHttpRequestFallback(url, config);
         }
@@ -218,9 +221,9 @@ export class ApiClient {
         try {
           // Parse response headers
           const headers = new Headers();
-          const headerLines = xhr.getAllResponseHeaders().split('\r\n');
-          headerLines.forEach(line => {
-            const parts = line.split(': ');
+          const headerLines = xhr.getAllResponseHeaders().split("\r\n");
+          headerLines.forEach((line) => {
+            const parts = line.split(": ");
             if (parts.length === 2) {
               headers.append(parts[0], parts[1]);
             }
@@ -253,7 +256,9 @@ export class ApiClient {
       try {
         xhr.send((config.body as string) || null);
       } catch (sendError) {
-        reject(new Error(`Failed to send XMLHttpRequest: ${sendError.message}`));
+        reject(
+          new Error(`Failed to send XMLHttpRequest: ${sendError.message}`),
+        );
       }
     });
   }
