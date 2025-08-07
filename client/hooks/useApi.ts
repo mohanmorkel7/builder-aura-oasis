@@ -774,6 +774,19 @@ export function useProducts() {
   return useQuery({
     queryKey: ["products"],
     queryFn: () => apiClient.getProducts(),
+    retry: (failureCount, error) => {
+      if (failureCount < 3 && error.message.includes("Failed to fetch")) {
+        console.log(`Retrying products fetch (attempt ${failureCount + 1})`);
+        return true;
+      }
+      return false;
+    },
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    staleTime: 5 * 60 * 1000,
+    cacheTime: 10 * 60 * 1000,
+    onError: (error) => {
+      console.error("Products fetch failed:", error);
+    },
   });
 }
 
