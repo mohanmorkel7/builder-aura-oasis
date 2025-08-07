@@ -210,6 +210,7 @@ export interface CreateLeadData {
   notes?: string;
 
   // Template Reference
+  template_id?: number;
   selected_template_id?: number;
 
   // Partial save support
