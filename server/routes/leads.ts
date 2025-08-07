@@ -1114,9 +1114,14 @@ router.post("/steps/:stepId/chats", async (req: Request, res: Response) => {
         const stepResult = await pool.query(stepExistsQuery, [stepId]);
 
         if (stepResult.rows.length === 0) {
-          console.log(`Step ${stepId} doesn't exist in database, using mock fallback`);
+          console.log(
+            `Step ${stepId} doesn't exist in database, using mock fallback`,
+          );
           // Step doesn't exist, use mock data instead
-          const mockChat = await MockDataService.createStepChat(stepId, chatData);
+          const mockChat = await MockDataService.createStepChat(
+            stepId,
+            chatData,
+          );
           console.log("Step not found in DB, created mock chat:", mockChat);
           res.status(201).json(mockChat);
           return;
@@ -1136,8 +1141,13 @@ router.post("/steps/:stepId/chats", async (req: Request, res: Response) => {
       );
 
       // Check if it's a foreign key constraint error for step_id
-      if (dbError.message && dbError.message.includes('lead_chats_step_id_fkey')) {
-        console.log(`Foreign key constraint failed for step ${stepId}, using mock data`);
+      if (
+        dbError.message &&
+        dbError.message.includes("lead_chats_step_id_fkey")
+      ) {
+        console.log(
+          `Foreign key constraint failed for step ${stepId}, using mock data`,
+        );
       }
 
       const mockChat = await MockDataService.createStepChat(stepId, chatData);
