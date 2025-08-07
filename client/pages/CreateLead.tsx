@@ -1892,7 +1892,10 @@ export default function CreateLead() {
                                             {flatFee.description}
                                           </TableCell>
                                           {period.label === "Current" ? (
-                                            <TableCell>-</TableCell>
+                                            <>
+                                              <TableCell>-</TableCell>
+                                              <TableCell>-</TableCell>
+                                            </>
                                           ) : (
                                             <>
                                               <TableCell>-</TableCell>
