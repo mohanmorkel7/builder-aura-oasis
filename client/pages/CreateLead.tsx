@@ -1848,7 +1848,7 @@ export default function CreateLead() {
                                       <TableCell>
                                         ₹
                                         {convertCurrency(
-                                          solution.totalValue,
+                                          period.label === "Current" ? period.volume * 30 * 12 * solution.value : solution.totalValue,
                                           solution.currency,
                                           "INR",
                                         ).toLocaleString(undefined, {
@@ -1857,10 +1857,13 @@ export default function CreateLead() {
                                       </TableCell>
                                       <TableCell>
                                         $
-                                        {solution.totalValueUSD.toLocaleString(
-                                          undefined,
-                                          { maximumFractionDigits: 2 },
-                                        )}
+                                        {convertCurrency(
+                                          period.label === "Current" ? period.volume * 30 * 12 * solution.value : solution.totalValue,
+                                          solution.currency,
+                                          "USD",
+                                        ).toLocaleString(undefined, {
+                                          maximumFractionDigits: 2,
+                                        })}
                                       </TableCell>
                                     </TableRow>
                                   ))}
