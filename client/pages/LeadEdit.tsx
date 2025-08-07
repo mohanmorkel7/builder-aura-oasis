@@ -1523,9 +1523,6 @@ export default function LeadEdit() {
                                       <SelectItem value="one_time">
                                         One Time
                                       </SelectItem>
-                                      <SelectItem value="onetime">
-                                        Onetime
-                                      </SelectItem>
                                       <SelectItem value="recurring">
                                         Recurring
                                       </SelectItem>
@@ -1615,7 +1612,7 @@ export default function LeadEdit() {
                                       </SelectTrigger>
                                       <SelectContent>
                                         <SelectItem value="INR">
-                                          INR (���)
+                                          INR (₹)
                                         </SelectItem>
                                         <SelectItem value="USD">
                                           USD ($)
