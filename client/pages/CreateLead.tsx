@@ -1827,6 +1827,9 @@ export default function CreateLead() {
                                         </>
                                       )}
                                       <TableCell>
+                                        {period.totalTransactions.toLocaleString()}
+                                      </TableCell>
+                                      <TableCell>
                                         ₹
                                         {convertCurrency(
                                           period.volume * 30 * solution.value,
