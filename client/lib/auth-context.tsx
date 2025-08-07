@@ -185,13 +185,10 @@ export const AuthProvider = React.memo(function AuthProvider({
       const errorMessage =
         error instanceof Error ? error.message : String(error);
 
-      // If API is working and rejects credentials, don't try demo fallback - show error
-      if (error.message && error.message.includes("Invalid credentials")) {
-        setIsLoading(false);
-        return false;
-      }
+      console.log("API login failed, error:", errorMessage);
+      console.log("Attempting demo credentials fallback...");
 
-      // Only try demo authentication if this was a network error (API unavailable)
+      // Always try demo authentication as fallback when API fails
 
       if (password === "password") {
         let userData: User | null = null;
