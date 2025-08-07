@@ -1953,9 +1953,14 @@ export default function CreateLead() {
                                       {leadData.billing_currency} (txn rate)
                                     </TableCell>
                                     {period.label === "Current" ? (
-                                      <TableCell>
-                                        {period.totalTransactions.toLocaleString()}
-                                      </TableCell>
+                                      <>
+                                        <TableCell>
+                                          {period.totalTransactions.toLocaleString()}
+                                        </TableCell>
+                                        <TableCell>
+                                          {(period.totalTransactions * 12).toLocaleString()}
+                                        </TableCell>
+                                      </>
                                     ) : (
                                       <>
                                         <TableCell>
