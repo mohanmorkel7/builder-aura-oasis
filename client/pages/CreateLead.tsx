@@ -220,6 +220,9 @@ export default function CreateLead() {
     },
   });
 
+  const [selectedTemplate, setSelectedTemplate] = useState<string>("manual");
+  const [showTemplatePreview, setShowTemplatePreview] = useState(false);
+
   // Debug templates state
   useEffect(() => {
     console.log("Templates state:", {
@@ -230,9 +233,6 @@ export default function CreateLead() {
       templateCount: templates.length,
     });
   }, [templates, templatesLoading, templatesError, selectedTemplate]);
-
-  const [selectedTemplate, setSelectedTemplate] = useState<string>("manual");
-  const [showTemplatePreview, setShowTemplatePreview] = useState(false);
 
   // Get selected template data
   const selectedTemplateId =
