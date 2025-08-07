@@ -798,7 +798,9 @@ export function useClientOnboardingSteps(clientId: number) {
     enabled: !!clientId,
     retry: (failureCount, error) => {
       if (failureCount < 3 && error.message.includes("Failed to fetch")) {
-        console.log(`Retrying onboarding steps fetch (attempt ${failureCount + 1})`);
+        console.log(
+          `Retrying onboarding steps fetch (attempt ${failureCount + 1})`,
+        );
         return true;
       }
       return false;
