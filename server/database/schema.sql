@@ -169,7 +169,7 @@ CREATE TABLE IF NOT EXISTS leads (
     status VARCHAR(20) DEFAULT 'in-progress' CHECK (status IN ('in-progress', 'won', 'lost', 'completed')),
     priority VARCHAR(20) DEFAULT 'medium' CHECK (priority IN ('low', 'medium', 'high', 'urgent')),
     expected_close_date DATE,
-    probability INTEGER DEFAULT 50 CHECK (probability >= 0 AND probability <= 100),
+    probability INTEGER DEFAULT 0 CHECK (probability >= 0 AND probability <= 100),
     notes TEXT,
 
     -- Metadata
