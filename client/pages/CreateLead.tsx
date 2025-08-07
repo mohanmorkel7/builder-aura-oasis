@@ -177,7 +177,7 @@ export default function CreateLead() {
   const partialSaveMutation = usePartialSaveLead();
 
   // Get only Lead templates (category ID 2 based on our mock data)
-  const { data: templates = [] } = useQuery({
+  const { data: templates = [], isLoading: templatesLoading, error: templatesError } = useQuery({
     queryKey: ["templates-by-category", 2],
     queryFn: () => apiClient.request("/templates-production/category/2"),
     retry: (failureCount, error) => {
@@ -191,11 +191,25 @@ export default function CreateLead() {
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
     staleTime: 5 * 60 * 1000, // 5 minutes
     cacheTime: 10 * 60 * 1000, // 10 minutes
+    onSuccess: (data) => {
+      console.log("Templates loaded successfully:", data);
+    },
     onError: (error) => {
       console.error("Templates fetch failed:", error);
       // Don't throw the error, let the component handle it gracefully
     },
   });
+
+  // Debug templates state
+  useEffect(() => {
+    console.log("Templates state:", {
+      templates,
+      templatesLoading,
+      templatesError,
+      selectedTemplate,
+      templateCount: templates.length
+    });
+  }, [templates, templatesLoading, templatesError, selectedTemplate]);
 
   const [selectedTemplate, setSelectedTemplate] = useState<string>("manual");
   const [showTemplatePreview, setShowTemplatePreview] = useState(false);
@@ -1307,10 +1321,24 @@ export default function CreateLead() {
                   <div className="flex items-center space-x-2 mt-1">
                     <Select
                       value={selectedTemplate}
-                      onValueChange={setSelectedTemplate}
+                      onValueChange={(value) => {
+                        console.log("Template selection changed:", {
+                          from: selectedTemplate,
+                          to: value,
+                          availableTemplates: templates.map((t: any) => ({ id: t.id, name: t.name }))
+                        });
+                        setSelectedTemplate(value);
+                      }}
+                      disabled={templatesLoading}
                     >
                       <SelectTrigger className="flex-1">
-                        <SelectValue placeholder="Select a template or use manual" />
+                        <SelectValue placeholder={
+                          templatesLoading
+                            ? "Loading templates..."
+                            : templatesError
+                            ? "Failed to load templates"
+                            : "Select a template or use manual"
+                        } />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="manual">
@@ -1337,6 +1365,16 @@ export default function CreateLead() {
                       </Button>
                     )}
                   </div>
+                  {templatesError && (
+                    <p className="text-sm text-red-600 mt-1">
+                      Error loading templates: {templatesError.message}
+                    </p>
+                  )}
+                  {!templatesLoading && templates.length === 0 && (
+                    <p className="text-sm text-gray-500 mt-1">
+                      No templates available
+                    </p>
+                  )}
                 </div>
 
                 <div className="border-t pt-6">
