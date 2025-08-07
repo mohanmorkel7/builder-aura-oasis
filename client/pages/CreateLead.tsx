@@ -362,20 +362,22 @@ export default function CreateLead() {
         template_id: leadData.template_id,
         templateIdStr,
         templateExists,
+        currentSelectedTemplate: selectedTemplate,
         availableTemplates: templates.map((t: any) => ({ id: t.id, name: t.name }))
       });
 
-      if (templateExists) {
+      if (templateExists && selectedTemplate !== templateIdStr) {
+        console.log(`Setting template from ${selectedTemplate} to ${templateIdStr}`);
         setSelectedTemplate(templateIdStr);
-      } else {
+      } else if (!templateExists) {
         console.warn("Template not found in available templates, setting to manual");
         setSelectedTemplate("manual");
       }
-    } else if (templates.length > 0 && !leadData.template_id && isResumedFromDraft) {
+    } else if (templates.length > 0 && !leadData.template_id && isResumedFromDraft && selectedTemplate !== "manual") {
       console.log("No template in draft, setting to manual");
       setSelectedTemplate("manual");
     }
-  }, [templates, leadData.template_id, isResumedFromDraft]);
+  }, [templates, leadData.template_id, isResumedFromDraft, selectedTemplate]);
 
   // Debug: Track draftId changes
   useEffect(() => {
