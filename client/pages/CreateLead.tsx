@@ -532,26 +532,16 @@ export default function CreateLead() {
             switch (config.recurring_period) {
               case "monthly":
                 if (period.label === "Current") multiplier = 1;
-                else if (period.label === "First Year") multiplier = 12;
-                else if (period.label === "Second Year") multiplier = 24;
-                else if (period.label === "Third Year") multiplier = 36;
-                else if (period.label === "Fifth Year") multiplier = 60;
+                else multiplier = 12;
                 description = `Monthly (×${multiplier})`;
                 break;
               case "quarterly":
                 if (period.label === "Current") multiplier = 1;
-                else if (period.label === "First Year") multiplier = 4;
-                else if (period.label === "Second Year") multiplier = 8;
-                else if (period.label === "Third Year") multiplier = 12;
-                else if (period.label === "Fifth Year") multiplier = 20;
+                else multiplier = 4;
                 description = `Quarterly (×${multiplier})`;
                 break;
               case "yearly":
-                if (period.label === "Current") multiplier = 1;
-                else if (period.label === "First Year") multiplier = 1;
-                else if (period.label === "Second Year") multiplier = 2;
-                else if (period.label === "Third Year") multiplier = 3;
-                else if (period.label === "Fifth Year") multiplier = 5;
+                multiplier = 1;
                 description = `Yearly (×${multiplier})`;
                 break;
             }
