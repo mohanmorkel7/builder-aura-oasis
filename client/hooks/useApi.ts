@@ -410,6 +410,19 @@ export function useUser(id: number) {
     queryKey: ["users", id],
     queryFn: () => apiClient.getUser(id),
     enabled: !!id,
+    retry: (failureCount, error) => {
+      if (failureCount < 3 && error.message.includes("Failed to fetch")) {
+        console.log(`Retrying user fetch (attempt ${failureCount + 1})`);
+        return true;
+      }
+      return false;
+    },
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    staleTime: 5 * 60 * 1000,
+    cacheTime: 10 * 60 * 1000,
+    onError: (error) => {
+      console.error("User fetch failed:", error);
+    },
   });
 }
 
@@ -465,6 +478,19 @@ export function useClient(id: number) {
     queryKey: ["clients", id],
     queryFn: () => apiClient.getClient(id),
     enabled: !!id,
+    retry: (failureCount, error) => {
+      if (failureCount < 3 && error.message.includes("Failed to fetch")) {
+        console.log(`Retrying client fetch (attempt ${failureCount + 1})`);
+        return true;
+      }
+      return false;
+    },
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    staleTime: 5 * 60 * 1000,
+    cacheTime: 10 * 60 * 1000,
+    onError: (error) => {
+      console.error("Client fetch failed:", error);
+    },
   });
 }
 
@@ -659,6 +685,19 @@ export function useDeployment(id: number) {
     queryKey: ["deployments", id],
     queryFn: () => apiClient.getDeployment(id),
     enabled: !!id,
+    retry: (failureCount, error) => {
+      if (failureCount < 3 && error.message.includes("Failed to fetch")) {
+        console.log(`Retrying deployment fetch (attempt ${failureCount + 1})`);
+        return true;
+      }
+      return false;
+    },
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    staleTime: 5 * 60 * 1000,
+    cacheTime: 10 * 60 * 1000,
+    onError: (error) => {
+      console.error("Deployment fetch failed:", error);
+    },
   });
 }
 
