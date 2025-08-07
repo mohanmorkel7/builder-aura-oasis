@@ -147,10 +147,17 @@ export const AuthProvider = React.memo(function AuthProvider({
   const [isLoading, setIsLoading] = React.useState(true);
 
   React.useEffect(() => {
-    // Check for stored auth on mount
-    const storedUser = localStorage.getItem("banani_user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+    // Add error handling for localStorage access
+    try {
+      const storedUser = localStorage.getItem("banani_user");
+      if (storedUser) {
+        const userData = JSON.parse(storedUser);
+        setUser(userData);
+      }
+    } catch (error) {
+      console.warn("Error loading stored user data:", error);
+      // Clear potentially corrupted data
+      localStorage.removeItem("banani_user");
     }
     setIsLoading(false);
   }, []);
