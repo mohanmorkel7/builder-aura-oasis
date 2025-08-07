@@ -398,10 +398,14 @@ export const AuthProvider = React.memo(function AuthProvider({
     localStorage.removeItem("banani_user");
   };
 
+  // Memoize the context value to prevent unnecessary re-renders
+  const contextValue = React.useMemo(
+    () => ({ user, login, loginWithSSO, logout, isLoading }),
+    [user, isLoading]
+  );
+
   return (
-    <AuthContext.Provider
-      value={{ user, login, loginWithSSO, logout, isLoading }}
-    >
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );
