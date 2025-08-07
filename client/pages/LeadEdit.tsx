@@ -1868,6 +1868,9 @@ export default function LeadEdit() {
                                       </>
                                     )}
                                     <TableCell>
+                                      {period.totalTransactions.toLocaleString()}
+                                    </TableCell>
+                                    <TableCell>
                                       ₹
                                       {(
                                         period.solutions.reduce(
