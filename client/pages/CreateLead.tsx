@@ -1328,14 +1328,19 @@ export default function CreateLead() {
                 </h4>
 
                 <div>
-                  <Label htmlFor="template">
-                    Choose Template
-                    {templatesLoading && <span className="text-blue-500">(Loading...)</span>}
-                    {templatesError && <span className="text-red-500">(Error)</span>}
-                    {!templatesLoading && !templatesError && (
-                      <span className="text-green-500">({templates.length} available)</span>
-                    )}
-                  </Label>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="template">
+                      Choose Template
+                      {templatesLoading && <span className="text-blue-500">(Loading...)</span>}
+                      {templatesError && <span className="text-red-500">(Error)</span>}
+                      {!templatesLoading && !templatesError && (
+                        <span className="text-green-500">({templates.length} available)</span>
+                      )}
+                    </Label>
+                    <div className="text-xs text-gray-500">
+                      Current: {selectedTemplate === "manual" ? "Manual" : selectedTemplate}
+                    </div>
+                  </div>
                   <div className="flex items-center space-x-2 mt-1">
                     <Select
                       value={selectedTemplate}
@@ -1343,7 +1348,9 @@ export default function CreateLead() {
                         console.log("Template selection changed:", {
                           from: selectedTemplate,
                           to: value,
-                          availableTemplates: templates.map((t: any) => ({ id: t.id, name: t.name }))
+                          availableTemplates: templates.map((t: any) => ({ id: t.id, name: t.name })),
+                          templatesLoading,
+                          templatesError: templatesError?.message
                         });
                         setSelectedTemplate(value);
                       }}
@@ -1372,7 +1379,7 @@ export default function CreateLead() {
                         ))}
                         {templates.length === 0 && !templatesLoading && (
                           <SelectItem value="no-templates" disabled>
-                            {templatesError ? "Error loading templates" : "No templates available"}
+                            {templatesError ? `Error: ${templatesError.message}` : "No templates available"}
                           </SelectItem>
                         )}
                       </SelectContent>
