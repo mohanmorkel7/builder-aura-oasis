@@ -455,7 +455,7 @@ export default function LeadEdit() {
     { value: "basic", label: "Lead Info", icon: "📋" },
     { value: "project", label: "Project Details", icon: "🎯" },
     { value: "commercials", label: "Commercials", icon: "💰" },
-    { value: "client", label: "Client & Contact", icon: "🏢" },
+    { value: "client", label: "Client & Contact", icon: "���" },
     { value: "additional", label: "Additional", icon: "📝" },
   ];
 
@@ -1691,6 +1691,19 @@ export default function LeadEdit() {
                                   </TableRow>
                                 </TableHeader>
                                 <TableBody>
+                                  {/* Transaction Fees Section */}
+                                  {period.solutions.length > 0 && (
+                                    <TableRow className="bg-blue-50">
+                                      <TableCell
+                                        colSpan={
+                                          period.label === "Current" ? 7 : 8
+                                        }
+                                        className="font-semibold text-blue-800"
+                                      >
+                                        Transaction Fees
+                                      </TableCell>
+                                    </TableRow>
+                                  )}
                                   {period.solutions.map((solution, index) => (
                                     <TableRow key={solution.solution}>
                                       <TableCell className="font-medium">
