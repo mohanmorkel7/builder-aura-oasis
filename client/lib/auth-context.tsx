@@ -404,33 +404,44 @@ export function useAuth() {
   try {
     const context = React.useContext(AuthContext);
     if (context === undefined) {
-      console.error("useAuth called outside of AuthProvider. Component tree:", {
-        location: window?.location?.pathname || "unknown",
-        timestamp: new Date().toISOString(),
-        reactVersion: React.version,
-        isHMR: typeof module !== "undefined" && module.hot,
-      });
+      // Check if this is likely an HMR issue
+      const isHMR = typeof module !== "undefined" && module.hot;
+      const isDevelopment = process.env.NODE_ENV === "development";
+
+      if (isHMR || isDevelopment) {
+        // Suppress error logging for known HMR issues in development
+        console.warn("Auth context unavailable (likely HMR reload) - using fallback");
+      } else {
+        console.error("useAuth called outside of AuthProvider. Component tree:", {
+          location: window?.location?.pathname || "unknown",
+          timestamp: new Date().toISOString(),
+          reactVersion: React.version,
+          isHMR,
+        });
+      }
 
       // Always provide a fallback to prevent crashes during HMR
-      console.warn("Providing fallback auth context (possible HMR issue)");
       return {
         user: null,
         login: async () => false,
         loginWithSSO: async () => false,
         logout: () => {},
-        isLoading: true, // Show loading state during fallback
+        isLoading: false, // Don't show loading during fallback
       };
     }
     return context;
   } catch (error) {
-    console.error("Error accessing auth context:", error);
+    // Only log errors in production or non-HMR scenarios
+    if (process.env.NODE_ENV === "production") {
+      console.error("Error accessing auth context:", error);
+    }
     // Fallback for any context access errors
     return {
       user: null,
       login: async () => false,
       loginWithSSO: async () => false,
       logout: () => {},
-      isLoading: true,
+      isLoading: false,
     };
   }
 }
