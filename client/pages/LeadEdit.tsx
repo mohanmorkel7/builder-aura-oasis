@@ -660,16 +660,8 @@ export default function LeadEdit() {
           "USD",
         ),
       })),
-      // Flat fees - only show if applicable for this period
+      // Flat fees - show all flat fees in all periods
       flatFees: leadData.flat_fee_config
-        .filter((config) => {
-          // One-time fees only show in first period (Current)
-          if (config.type === "one_time") {
-            return period.label === "Current";
-          }
-          // Recurring fees show in all periods
-          return config.type === "recurring";
-        })
         .map((config) => {
           let multiplier = 1;
           let description = "One time";
