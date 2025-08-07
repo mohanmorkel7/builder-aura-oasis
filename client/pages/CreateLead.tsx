@@ -177,12 +177,18 @@ export default function CreateLead() {
   const partialSaveMutation = usePartialSaveLead();
 
   // Get only Lead templates (category ID 2 based on our mock data)
-  const { data: templates = [], isLoading: templatesLoading, error: templatesError } = useQuery({
+  const {
+    data: templates = [],
+    isLoading: templatesLoading,
+    error: templatesError,
+  } = useQuery({
     queryKey: ["templates-by-category", 2],
     queryFn: async () => {
       console.log("Fetching templates for category 2...");
       try {
-        const result = await apiClient.request("/templates-production/category/2");
+        const result = await apiClient.request(
+          "/templates-production/category/2",
+        );
         console.log("Templates fetch successful:", result);
         return result;
       } catch (error) {
@@ -191,7 +197,10 @@ export default function CreateLead() {
       }
     },
     retry: (failureCount, error) => {
-      console.log(`Template fetch attempt ${failureCount + 1}, error:`, error.message);
+      console.log(
+        `Template fetch attempt ${failureCount + 1}, error:`,
+        error.message,
+      );
       // Retry up to 3 times for network errors
       if (failureCount < 3 && error.message.includes("Failed to fetch")) {
         console.log(`Retrying templates fetch (attempt ${failureCount + 1})`);
@@ -218,7 +227,7 @@ export default function CreateLead() {
       templatesLoading,
       templatesError,
       selectedTemplate,
-      templateCount: templates.length
+      templateCount: templates.length,
     });
   }, [templates, templatesLoading, templatesError, selectedTemplate]);
 
@@ -1331,14 +1340,23 @@ export default function CreateLead() {
                   <div className="flex items-center justify-between">
                     <Label htmlFor="template">
                       Choose Template
-                      {templatesLoading && <span className="text-blue-500">(Loading...)</span>}
-                      {templatesError && <span className="text-red-500">(Error)</span>}
+                      {templatesLoading && (
+                        <span className="text-blue-500">(Loading...)</span>
+                      )}
+                      {templatesError && (
+                        <span className="text-red-500">(Error)</span>
+                      )}
                       {!templatesLoading && !templatesError && (
-                        <span className="text-green-500">({templates.length} available)</span>
+                        <span className="text-green-500">
+                          ({templates.length} available)
+                        </span>
                       )}
                     </Label>
                     <div className="text-xs text-gray-500">
-                      Current: {selectedTemplate === "manual" ? "Manual" : selectedTemplate}
+                      Current:{" "}
+                      {selectedTemplate === "manual"
+                        ? "Manual"
+                        : selectedTemplate}
                     </div>
                   </div>
                   <div className="flex items-center space-x-2 mt-1">
@@ -1348,22 +1366,27 @@ export default function CreateLead() {
                         console.log("Template selection changed:", {
                           from: selectedTemplate,
                           to: value,
-                          availableTemplates: templates.map((t: any) => ({ id: t.id, name: t.name })),
+                          availableTemplates: templates.map((t: any) => ({
+                            id: t.id,
+                            name: t.name,
+                          })),
                           templatesLoading,
-                          templatesError: templatesError?.message
+                          templatesError: templatesError?.message,
                         });
                         setSelectedTemplate(value);
                       }}
                       disabled={templatesLoading}
                     >
                       <SelectTrigger className="flex-1">
-                        <SelectValue placeholder={
-                          templatesLoading
-                            ? "Loading templates..."
-                            : templatesError
-                            ? "Failed to load templates"
-                            : "Select a template or use manual"
-                        } />
+                        <SelectValue
+                          placeholder={
+                            templatesLoading
+                              ? "Loading templates..."
+                              : templatesError
+                                ? "Failed to load templates"
+                                : "Select a template or use manual"
+                          }
+                        />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="manual">
@@ -1379,7 +1402,9 @@ export default function CreateLead() {
                         ))}
                         {templates.length === 0 && !templatesLoading && (
                           <SelectItem value="no-templates" disabled>
-                            {templatesError ? `Error: ${templatesError.message}` : "No templates available"}
+                            {templatesError
+                              ? `Error: ${templatesError.message}`
+                              : "No templates available"}
                           </SelectItem>
                         )}
                       </SelectContent>
@@ -1397,18 +1422,24 @@ export default function CreateLead() {
                   </div>
                   {templatesError && (
                     <div className="mt-1 p-2 bg-red-50 border border-red-200 rounded text-sm">
-                      <p className="text-red-600 font-medium">Error loading templates:</p>
+                      <p className="text-red-600 font-medium">
+                        Error loading templates:
+                      </p>
                       <p className="text-red-500">{templatesError.message}</p>
                       <button
                         type="button"
                         onClick={async () => {
                           try {
-                            console.log('Testing template API manually...');
-                            const result = await apiClient.request('/templates-production/category/2');
-                            console.log('Manual API test result:', result);
-                            alert(`Manual test successful! Found ${result.length} templates`);
+                            console.log("Testing template API manually...");
+                            const result = await apiClient.request(
+                              "/templates-production/category/2",
+                            );
+                            console.log("Manual API test result:", result);
+                            alert(
+                              `Manual test successful! Found ${result.length} templates`,
+                            );
                           } catch (error) {
-                            console.error('Manual API test failed:', error);
+                            console.error("Manual API test failed:", error);
                             alert(`Manual test failed: ${error.message}`);
                           }
                         }}
@@ -1418,30 +1449,45 @@ export default function CreateLead() {
                       </button>
                     </div>
                   )}
-                  {!templatesLoading && !templatesError && templates.length === 0 && (
-                    <div className="mt-1 p-2 bg-yellow-50 border border-yellow-200 rounded text-sm">
-                      <p className="text-yellow-600">No templates available for category 2 (Leads)</p>
-                      <button
-                        type="button"
-                        onClick={async () => {
-                          try {
-                            console.log('Testing template API for empty result...');
-                            const result = await apiClient.request('/templates-production/category/2');
-                            console.log('API test result for empty case:', result);
-                            const allTemplates = await apiClient.request('/templates-production');
-                            console.log('All templates:', allTemplates);
-                            alert(`Found ${result.length} templates for category 2, ${allTemplates.length} total templates`);
-                          } catch (error) {
-                            console.error('API test failed:', error);
-                            alert(`API test failed: ${error.message}`);
-                          }
-                        }}
-                        className="mt-1 px-2 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
-                      >
-                        Debug API
-                      </button>
-                    </div>
-                  )}
+                  {!templatesLoading &&
+                    !templatesError &&
+                    templates.length === 0 && (
+                      <div className="mt-1 p-2 bg-yellow-50 border border-yellow-200 rounded text-sm">
+                        <p className="text-yellow-600">
+                          No templates available for category 2 (Leads)
+                        </p>
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            try {
+                              console.log(
+                                "Testing template API for empty result...",
+                              );
+                              const result = await apiClient.request(
+                                "/templates-production/category/2",
+                              );
+                              console.log(
+                                "API test result for empty case:",
+                                result,
+                              );
+                              const allTemplates = await apiClient.request(
+                                "/templates-production",
+                              );
+                              console.log("All templates:", allTemplates);
+                              alert(
+                                `Found ${result.length} templates for category 2, ${allTemplates.length} total templates`,
+                              );
+                            } catch (error) {
+                              console.error("API test failed:", error);
+                              alert(`API test failed: ${error.message}`);
+                            }
+                          }}
+                          className="mt-1 px-2 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
+                        >
+                          Debug API
+                        </button>
+                      </div>
+                    )}
                 </div>
 
                 <div className="border-t pt-6">
