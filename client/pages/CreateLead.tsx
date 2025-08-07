@@ -197,7 +197,7 @@ export default function CreateLead() {
     },
   });
 
-  const [selectedTemplate, setSelectedTemplate] = useState<string>("");
+  const [selectedTemplate, setSelectedTemplate] = useState<string>("manual");
   const [showTemplatePreview, setShowTemplatePreview] = useState(false);
 
   // Get selected template data
