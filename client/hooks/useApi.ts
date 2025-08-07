@@ -547,6 +547,21 @@ export function useTemplate(id: number) {
         return mockTemplates.find((template) => template.id === id) || null;
       }
     },
+    retry: (failureCount, error) => {
+      // Retry up to 3 times for network errors
+      if (failureCount < 3 && error.message.includes("Failed to fetch")) {
+        console.log(`Retrying template fetch (attempt ${failureCount + 1})`);
+        return true;
+      }
+      return false;
+    },
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    cacheTime: 10 * 60 * 1000, // 10 minutes
+    onError: (error) => {
+      console.error("Template fetch failed:", error);
+      // Don't throw the error, let the component handle it gracefully
+    },
   });
 }
 
@@ -901,8 +916,21 @@ export function useLead(id: number) {
       return await apiClient.getLead(id);
     },
     enabled: !!id,
-    retry: 2,
-    retryDelay: 1000,
+    retry: (failureCount, error) => {
+      // Retry up to 3 times for network errors
+      if (failureCount < 3 && error.message.includes("Failed to fetch")) {
+        console.log(`Retrying lead fetch (attempt ${failureCount + 1})`);
+        return true;
+      }
+      return false;
+    },
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    cacheTime: 10 * 60 * 1000, // 10 minutes
+    onError: (error) => {
+      console.error("Lead fetch failed:", error);
+      // Don't throw the error, let the component handle it gracefully
+    },
   });
 }
 
@@ -963,6 +991,15 @@ export function useUpdateLead() {
         };
       }
     },
+    retry: (failureCount, error) => {
+      // Retry up to 2 times for network errors on mutations
+      if (failureCount < 2 && error.message.includes("Failed to fetch")) {
+        console.log(`Retrying lead update (attempt ${failureCount + 1})`);
+        return true;
+      }
+      return false;
+    },
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ["leads"] });
       queryClient.invalidateQueries({ queryKey: ["leads", id] });
