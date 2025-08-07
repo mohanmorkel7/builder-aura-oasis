@@ -854,7 +854,7 @@ router.get("/debug/template-steps", async (req: Request, res: Response) => {
 
       res.json({
         message: `Found ${result.rows.length} template steps`,
-        steps: result.rows
+        steps: result.rows,
       });
     } else {
       res.status(503).json({ error: "Database not available" });
@@ -895,7 +895,10 @@ router.get("/:leadId/steps", async (req: Request, res: Response) => {
             WHERE template_id = $2
             ORDER BY step_order ASC
           `;
-          const templateStepsResult = await pool.query(templateStepsQuery, [leadId, templateId]);
+          const templateStepsResult = await pool.query(templateStepsQuery, [
+            leadId,
+            templateId,
+          ]);
           steps = templateStepsResult.rows;
         } else {
           // No template assigned, use mock data
@@ -941,7 +944,9 @@ router.post("/fix-all-steps", async (req: Request, res: Response) => {
         return res.json({ message: "All leads already have steps" });
       }
 
-      console.log(`Found ${leadsResult.rows.length} leads without steps, creating default steps...`);
+      console.log(
+        `Found ${leadsResult.rows.length} leads without steps, creating default steps...`,
+      );
 
       // Create default steps for each lead
       const fixPromises = leadsResult.rows.map(async (lead) => {
@@ -950,19 +955,24 @@ router.post("/fix-all-steps", async (req: Request, res: Response) => {
           return { leadId: lead.id, leadCode: lead.lead_id, success: true };
         } catch (error) {
           console.error(`Failed to create steps for lead ${lead.id}:`, error);
-          return { leadId: lead.id, leadCode: lead.lead_id, success: false, error: error.message };
+          return {
+            leadId: lead.id,
+            leadCode: lead.lead_id,
+            success: false,
+            error: error.message,
+          };
         }
       });
 
       const results = await Promise.all(fixPromises);
-      const successful = results.filter(r => r.success);
-      const failed = results.filter(r => !r.success);
+      const successful = results.filter((r) => r.success);
+      const failed = results.filter((r) => !r.success);
 
       res.json({
         message: `Fixed ${successful.length} leads, ${failed.length} failed`,
         successful: successful,
         failed: failed,
-        totalProcessed: leadsResult.rows.length
+        totalProcessed: leadsResult.rows.length,
       });
     } else {
       return res.status(503).json({ error: "Database not available" });
@@ -998,7 +1008,7 @@ router.post("/:leadId/steps/fix", async (req: Request, res: Response) => {
       if (stepCount > 0) {
         return res.json({
           message: `Lead already has ${stepCount} steps`,
-          stepCount: stepCount
+          stepCount: stepCount,
         });
       }
 
@@ -1011,7 +1021,7 @@ router.post("/:leadId/steps/fix", async (req: Request, res: Response) => {
 
       res.json({
         message: `Created ${createdStepsResult.rows.length} default steps for lead ${leadId}`,
-        steps: createdStepsResult.rows
+        steps: createdStepsResult.rows,
       });
     } else {
       return res.status(503).json({ error: "Database not available" });
@@ -1269,7 +1279,10 @@ router.post("/steps/:stepId/chats", async (req: Request, res: Response) => {
             stepId,
             chatData,
           );
-          console.log("Step not found in template_steps, created mock chat:", mockChat);
+          console.log(
+            "Step not found in template_steps, created mock chat:",
+            mockChat,
+          );
           res.status(201).json(mockChat);
           return;
         }

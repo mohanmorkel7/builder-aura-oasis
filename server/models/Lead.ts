@@ -568,7 +568,9 @@ export class LeadRepository {
       });
 
       await Promise.all(insertPromises);
-      console.log(`Created ${defaultSteps.length} default steps for lead ${leadId}`);
+      console.log(
+        `Created ${defaultSteps.length} default steps for lead ${leadId}`,
+      );
     } catch (error) {
       console.error("Error creating default steps:", error);
       // Don't throw error as lead creation should still succeed
@@ -591,7 +593,9 @@ export class LeadRepository {
       ]);
 
       if (templateStepsResult.rows.length === 0) {
-        console.log(`No template steps found for template ${templateId}, creating default steps`);
+        console.log(
+          `No template steps found for template ${templateId}, creating default steps`,
+        );
         await this.createDefaultSteps(leadId);
         return;
       }
@@ -618,7 +622,9 @@ export class LeadRepository {
       );
 
       await Promise.all(insertPromises);
-      console.log(`Created ${templateStepsResult.rows.length} steps from template ${templateId} for lead ${leadId}`);
+      console.log(
+        `Created ${templateStepsResult.rows.length} steps from template ${templateId} for lead ${leadId}`,
+      );
     } catch (error) {
       console.error("Error populating steps from template:", error);
       // Don't throw error as lead creation should still succeed

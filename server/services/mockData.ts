@@ -1507,7 +1507,9 @@ export class MockDataService {
       console.error(
         `MockDataService.createStepChat: Invalid step_id ${stepId}. Valid template_step IDs are: ${validStepIds.join(", ")}`,
       );
-      throw new Error(`Template step with ID ${stepId} does not exist in mock data`);
+      throw new Error(
+        `Template step with ID ${stepId} does not exist in mock data`,
+      );
     }
 
     const newChat = {
