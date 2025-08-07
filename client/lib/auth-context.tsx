@@ -401,13 +401,11 @@ export const AuthProvider = React.memo(function AuthProvider({
   // Memoize the context value to prevent unnecessary re-renders
   const contextValue = React.useMemo(
     () => ({ user, login, loginWithSSO, logout, isLoading }),
-    [user, isLoading]
+    [user, isLoading],
   );
 
   return (
-    <AuthContext.Provider value={contextValue}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
 });
 
@@ -421,14 +419,19 @@ export function useAuth() {
 
       if (isHMR || isDevelopment) {
         // Suppress error logging for known HMR issues in development
-        console.warn("Auth context unavailable (likely HMR reload) - using fallback");
+        console.warn(
+          "Auth context unavailable (likely HMR reload) - using fallback",
+        );
       } else {
-        console.error("useAuth called outside of AuthProvider. Component tree:", {
-          location: window?.location?.pathname || "unknown",
-          timestamp: new Date().toISOString(),
-          reactVersion: React.version,
-          isHMR,
-        });
+        console.error(
+          "useAuth called outside of AuthProvider. Component tree:",
+          {
+            location: window?.location?.pathname || "unknown",
+            timestamp: new Date().toISOString(),
+            reactVersion: React.version,
+            isHMR,
+          },
+        );
       }
 
       // Always provide a fallback to prevent crashes during HMR
