@@ -840,6 +840,31 @@ router.delete("/:id", async (req: Request, res: Response) => {
   }
 });
 
+// Debug endpoint to view all template steps
+router.get("/debug/template-steps", async (req: Request, res: Response) => {
+  try {
+    if (await isDatabaseAvailable()) {
+      const templateStepsQuery = `
+        SELECT ts.*, t.name as template_name
+        FROM template_steps ts
+        LEFT JOIN onboarding_templates t ON ts.template_id = t.id
+        ORDER BY ts.template_id, ts.step_order
+      `;
+      const result = await pool.query(templateStepsQuery);
+
+      res.json({
+        message: `Found ${result.rows.length} template steps`,
+        steps: result.rows
+      });
+    } else {
+      res.status(503).json({ error: "Database not available" });
+    }
+  } catch (error) {
+    console.error("Error fetching template steps:", error);
+    res.status(500).json({ error: "Failed to fetch template steps" });
+  }
+});
+
 // Get lead steps (from template_steps based on lead's template_id)
 router.get("/:leadId/steps", async (req: Request, res: Response) => {
   try {
