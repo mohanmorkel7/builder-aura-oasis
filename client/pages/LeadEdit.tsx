@@ -1684,7 +1684,6 @@ export default function LeadEdit() {
                                         </TableHead>
                                       </>
                                     )}
-                                    <TableHead>Total Transaction Count (year)</TableHead>
                                     <TableHead>INR Value (month)</TableHead>
                                     <TableHead>USD Value (month)</TableHead>
                                     <TableHead>INR Value (year)</TableHead>
