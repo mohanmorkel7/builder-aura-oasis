@@ -1344,14 +1344,18 @@ export default function CreateLead() {
                         <SelectItem value="manual">
                           Manual (Create from scratch)
                         </SelectItem>
-                        {templates.map((template: any) => (
+                        {templates.length > 0 ? templates.map((template: any) => (
                           <SelectItem
                             key={template.id}
                             value={template.id.toString()}
                           >
                             {template.name}
                           </SelectItem>
-                        ))}
+                        )) : (
+                          <SelectItem value="no-templates" disabled>
+                            {templatesLoading ? "Loading..." : templatesError ? "Error loading templates" : "No templates available"}
+                          </SelectItem>
+                        )}
                       </SelectContent>
                     </Select>
                     {selectedTemplate && selectedTemplate !== "manual" && (
@@ -1366,14 +1370,51 @@ export default function CreateLead() {
                     )}
                   </div>
                   {templatesError && (
-                    <p className="text-sm text-red-600 mt-1">
-                      Error loading templates: {templatesError.message}
-                    </p>
+                    <div className="mt-1 p-2 bg-red-50 border border-red-200 rounded text-sm">
+                      <p className="text-red-600 font-medium">Error loading templates:</p>
+                      <p className="text-red-500">{templatesError.message}</p>
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          try {
+                            console.log('Testing template API manually...');
+                            const result = await apiClient.request('/templates-production/category/2');
+                            console.log('Manual API test result:', result);
+                            alert(`Manual test successful! Found ${result.length} templates`);
+                          } catch (error) {
+                            console.error('Manual API test failed:', error);
+                            alert(`Manual test failed: ${error.message}`);
+                          }
+                        }}
+                        className="mt-1 px-2 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
+                      >
+                        Test API Manually
+                      </button>
+                    </div>
                   )}
-                  {!templatesLoading && templates.length === 0 && (
-                    <p className="text-sm text-gray-500 mt-1">
-                      No templates available
-                    </p>
+                  {!templatesLoading && !templatesError && templates.length === 0 && (
+                    <div className="mt-1 p-2 bg-yellow-50 border border-yellow-200 rounded text-sm">
+                      <p className="text-yellow-600">No templates available for category 2 (Leads)</p>
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          try {
+                            console.log('Testing template API for empty result...');
+                            const result = await apiClient.request('/templates-production/category/2');
+                            console.log('API test result for empty case:', result);
+                            const allTemplates = await apiClient.request('/templates-production');
+                            console.log('All templates:', allTemplates);
+                            alert(`Found ${result.length} templates for category 2, ${allTemplates.length} total templates`);
+                          } catch (error) {
+                            console.error('API test failed:', error);
+                            alert(`API test failed: ${error.message}`);
+                          }
+                        }}
+                        className="mt-1 px-2 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
+                      >
+                        Debug API
+                      </button>
+                    </div>
                   )}
                 </div>
 
