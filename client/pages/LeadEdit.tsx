@@ -1863,9 +1863,6 @@ export default function LeadEdit() {
                                       </>
                                     )}
                                     <TableCell>
-                                      {period.label === "Current" ? (period.totalTransactions * 12).toLocaleString() : period.totalTransactions.toLocaleString()}
-                                    </TableCell>
-                                    <TableCell>
                                       ₹
                                       {(
                                         period.solutions.reduce(
