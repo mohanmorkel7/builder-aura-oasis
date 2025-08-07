@@ -1768,9 +1768,14 @@ export default function CreateLead() {
                                     <TableHead>Solution</TableHead>
                                     <TableHead>Rate(INR)</TableHead>
                                     {period.label === "Current" ? (
-                                      <TableHead>
-                                        Total Transaction Count (month)
-                                      </TableHead>
+                                      <>
+                                        <TableHead>
+                                          Total Transaction Count (month)
+                                        </TableHead>
+                                        <TableHead>
+                                          Total Transaction Count (year)
+                                        </TableHead>
+                                      </>
                                     ) : (
                                       <>
                                         <TableHead>
