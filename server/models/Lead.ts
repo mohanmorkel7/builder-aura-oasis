@@ -458,7 +458,7 @@ export class LeadRepository {
       leadData.expected_close_date || null, // $24
       leadData.probability !== undefined ? leadData.probability : 0, // $25
       leadData.notes || null, // $26
-      leadData.selected_template_id || null, // $27
+      leadData.template_id || leadData.selected_template_id || null, // $27
       leadData.created_by, // $28
       leadData.assigned_to || null, // $29
     ];
