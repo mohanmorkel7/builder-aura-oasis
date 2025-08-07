@@ -1393,16 +1393,6 @@ export default function LeadEdit() {
                     Commercials Config
                   </AccordionTrigger>
                   <AccordionContent className="space-y-6">
-                    {/* Transaction Fees */}
-                    <div className="border-t pt-6">
-                      <h4 className="text-lg font-medium mb-4">
-                        Transaction Fees
-                      </h4>
-                      <p className="text-gray-500 text-center py-4">
-                        Configure transaction-based fees above in Transaction Fee Config section.
-                      </p>
-                    </div>
-
                     {/* Flat Fee Config */}
                     <div className="border-t pt-6">
                       <div className="flex items-center justify-between mb-4">
