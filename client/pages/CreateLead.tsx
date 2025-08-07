@@ -355,8 +355,22 @@ export default function CreateLead() {
   // Restore template selection after templates are loaded
   useEffect(() => {
     if (templates.length > 0 && leadData.template_id && isResumedFromDraft) {
-      console.log("Restoring template selection:", leadData.template_id);
-      setSelectedTemplate(leadData.template_id.toString());
+      const templateIdStr = leadData.template_id.toString();
+      const templateExists = templates.some((t: any) => t.id.toString() === templateIdStr);
+
+      console.log("Restoring template selection:", {
+        template_id: leadData.template_id,
+        templateIdStr,
+        templateExists,
+        availableTemplates: templates.map((t: any) => ({ id: t.id, name: t.name }))
+      });
+
+      if (templateExists) {
+        setSelectedTemplate(templateIdStr);
+      } else {
+        console.warn("Template not found in available templates, setting to manual");
+        setSelectedTemplate("manual");
+      }
     } else if (templates.length > 0 && !leadData.template_id && isResumedFromDraft) {
       console.log("No template in draft, setting to manual");
       setSelectedTemplate("manual");
