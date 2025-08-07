@@ -368,7 +368,9 @@ export default function CreateLead() {
     console.log("draftId changed to:", draftId);
     console.log("hasSavedDraftInSession:", hasSavedDraftInSession);
     console.log("isResumedFromDraft:", isResumedFromDraft);
-  }, [draftId, hasSavedDraftInSession, isResumedFromDraft]);
+    console.log("selectedTemplate:", selectedTemplate);
+    console.log("templates loaded:", templates.length);
+  }, [draftId, hasSavedDraftInSession, isResumedFromDraft, selectedTemplate, templates.length]);
 
   const tabs = [
     { value: "basic", label: "Lead Info", icon: "📋" },
