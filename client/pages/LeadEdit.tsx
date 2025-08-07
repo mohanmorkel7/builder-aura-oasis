@@ -1919,7 +1919,17 @@ export default function LeadEdit() {
                                           0,
                                         ) +
                                         period.flatFees.reduce(
-                                          (sum, f) => sum + f.totalValueUSD,
+                                          (sum, f) => sum + convertCurrency(
+                                            f.type === "recurring" && f.recurring_period === "monthly"
+                                              ? f.value
+                                              : f.type === "recurring" && f.recurring_period === "quarterly"
+                                                ? f.value / 3
+                                                : f.type === "recurring" && f.recurring_period === "yearly"
+                                                  ? f.value / 12
+                                                  : f.value,
+                                            f.currency,
+                                            "USD",
+                                          ),
                                           0,
                                         )
                                       ).toLocaleString(undefined, {
