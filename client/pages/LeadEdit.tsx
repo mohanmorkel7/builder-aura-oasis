@@ -1697,7 +1697,7 @@ export default function LeadEdit() {
                                     <TableRow className="bg-blue-50">
                                       <TableCell
                                         colSpan={
-                                          period.label === "Current" ? 7 : 8
+                                          period.label === "Current" ? 8 : 9
                                         }
                                         className="font-semibold text-blue-800"
                                       >
