@@ -1877,9 +1877,7 @@ export default function CreateLead() {
                                     <>
                                       <TableRow className="bg-blue-50">
                                         <TableCell
-                                          colSpan={
-                                            period.label === "Current" ? 7 : 8
-                                          }
+                                          colSpan={8}
                                           className="font-semibold text-blue-800"
                                         >
                                           Flat Fees
