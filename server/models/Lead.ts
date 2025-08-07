@@ -289,6 +289,9 @@ export interface UpdateLeadData {
   probability?: number;
   notes?: string;
 
+  // Template Reference
+  template_id?: number;
+
   // Metadata
   assigned_to?: number;
 }
