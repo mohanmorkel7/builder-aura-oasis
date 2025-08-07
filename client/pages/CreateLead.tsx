@@ -1965,6 +1965,9 @@ export default function CreateLead() {
                                       </>
                                     )}
                                     <TableCell>
+                                      {period.totalTransactions.toLocaleString()}
+                                    </TableCell>
+                                    <TableCell>
                                       ₹
                                       {(
                                         period.solutions.reduce(
