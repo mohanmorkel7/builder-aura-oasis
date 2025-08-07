@@ -1897,6 +1897,7 @@ export default function CreateLead() {
                                               <TableCell>-</TableCell>
                                             </>
                                           )}
+                                          <TableCell>-</TableCell>
                                           <TableCell>
                                             ₹
                                             {convertCurrency(
