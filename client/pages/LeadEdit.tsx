@@ -948,6 +948,23 @@ export default function LeadEdit() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
+              {/* Lead Created By */}
+              <div>
+                <Label htmlFor="lead_created_by">Lead Created By</Label>
+                <div className="relative mt-1">
+                  <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Input
+                    id="lead_created_by"
+                    value={leadData.lead_created_by}
+                    onChange={(e) =>
+                      updateField("lead_created_by", e.target.value)
+                    }
+                    className="pl-10"
+                    placeholder="Enter email address of lead creator"
+                  />
+                </div>
+              </div>
+
               {/* Lead Source */}
               <div>
                 <Label htmlFor="lead_source">Lead Source *</Label>
@@ -972,23 +989,6 @@ export default function LeadEdit() {
                     })}
                   </SelectContent>
                 </Select>
-              </div>
-
-              {/* Lead Created By */}
-              <div>
-                <Label htmlFor="lead_created_by">Lead Created By</Label>
-                <div className="relative mt-1">
-                  <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="lead_created_by"
-                    value={leadData.lead_created_by}
-                    onChange={(e) =>
-                      updateField("lead_created_by", e.target.value)
-                    }
-                    className="pl-10"
-                    placeholder="Enter email address of lead creator"
-                  />
-                </div>
               </div>
 
               {/* Dynamic Lead Source Value */}
@@ -1252,7 +1252,7 @@ export default function LeadEdit() {
 
                 <div>
                   <Label htmlFor="expected_daily_txn_volume">
-                    Expected Daily Txn Volume
+                    Current Txn Volume
                   </Label>
                   <Input
                     id="expected_daily_txn_volume"
@@ -1393,6 +1393,16 @@ export default function LeadEdit() {
                     Commercials Config
                   </AccordionTrigger>
                   <AccordionContent className="space-y-6">
+                    {/* Transaction Fees */}
+                    <div className="border-t pt-6">
+                      <h4 className="text-lg font-medium mb-4">
+                        Transaction Fees
+                      </h4>
+                      <p className="text-gray-500 text-center py-4">
+                        Configure transaction-based fees above in Transaction Fee Config section.
+                      </p>
+                    </div>
+
                     {/* Flat Fee Config */}
                     <div className="border-t pt-6">
                       <div className="flex items-center justify-between mb-4">
@@ -1513,6 +1523,9 @@ export default function LeadEdit() {
                                       <SelectItem value="one_time">
                                         One Time
                                       </SelectItem>
+                                      <SelectItem value="onetime">
+                                        Onetime
+                                      </SelectItem>
                                       <SelectItem value="recurring">
                                         Recurring
                                       </SelectItem>
@@ -1576,7 +1589,7 @@ export default function LeadEdit() {
                             <TableRow>
                               <TableHead>Solution Name</TableHead>
                               <TableHead>Currency</TableHead>
-                              <TableHead>Value (per transaction)</TableHead>
+                              <TableHead>Rate ({leadData.billing_currency})</TableHead>
                             </TableRow>
                           </TableHeader>
                           <TableBody>
@@ -1695,7 +1708,7 @@ export default function LeadEdit() {
                                         {solution.solution}
                                       </TableCell>
                                       <TableCell>
-                                        {solution.value} {solution.currency}
+                                        {solution.value}
                                       </TableCell>
                                       {period.label === "Current" ? (
                                         <TableCell>
