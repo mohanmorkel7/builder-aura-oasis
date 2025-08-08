@@ -1392,7 +1392,7 @@ router.delete("/steps/:id", async (req: Request, res: Response) => {
       res.status(500).json({
         error: "Failed to delete step",
         details: dbError.message,
-        code: dbError.code
+        code: dbError.code,
       });
     }
   } catch (error) {

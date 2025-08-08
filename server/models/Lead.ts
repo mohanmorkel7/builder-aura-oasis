@@ -865,13 +865,17 @@ export class LeadStepRepository {
       return false;
     }
 
-    console.log(`LeadStepRepository.delete: Found step ${id}: ${checkResult.rows[0].name}`);
+    console.log(
+      `LeadStepRepository.delete: Found step ${id}: ${checkResult.rows[0].name}`,
+    );
 
     // Delete the step
     const query = "DELETE FROM lead_steps WHERE id = $1";
     const result = await pool.query(query, [id]);
 
-    console.log(`LeadStepRepository.delete: Delete query affected ${result.rowCount} rows`);
+    console.log(
+      `LeadStepRepository.delete: Delete query affected ${result.rowCount} rows`,
+    );
 
     return result.rowCount > 0;
   }
