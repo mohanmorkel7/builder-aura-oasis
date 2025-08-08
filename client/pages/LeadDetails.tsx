@@ -636,17 +636,19 @@ export default function LeadDetails() {
                         Contact Person:
                       </span>
                       <span className="text-gray-900">
-                        {leadData.contacts && leadData.contacts.length > 0 && leadData.contacts[0].contact_name
+                        {leadData.contacts &&
+                        leadData.contacts.length > 0 &&
+                        leadData.contacts[0].contact_name
                           ? leadData.contacts[0].contact_name
                           : "Not provided"}
                       </span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <Mail className="w-4 h-4 text-gray-400" />
-                      <span className="font-medium text-gray-600">
-                        Email:
-                      </span>
-                      {leadData.contacts && leadData.contacts.length > 0 && leadData.contacts[0].email ? (
+                      <span className="font-medium text-gray-600">Email:</span>
+                      {leadData.contacts &&
+                      leadData.contacts.length > 0 &&
+                      leadData.contacts[0].email ? (
                         <a
                           href={`mailto:${leadData.contacts[0].email}`}
                           className="text-blue-600 hover:underline"
@@ -659,11 +661,11 @@ export default function LeadDetails() {
                     </div>
                     <div className="flex items-center space-x-2">
                       <Phone className="w-4 h-4 text-gray-400" />
-                      <span className="font-medium text-gray-600">
-                        Phone:
-                      </span>
+                      <span className="font-medium text-gray-600">Phone:</span>
                       <span className="text-gray-900">
-                        {leadData.contacts && leadData.contacts.length > 0 && leadData.contacts[0].phone
+                        {leadData.contacts &&
+                        leadData.contacts.length > 0 &&
+                        leadData.contacts[0].phone
                           ? leadData.contacts[0].phone
                           : "Not provided"}
                       </span>
