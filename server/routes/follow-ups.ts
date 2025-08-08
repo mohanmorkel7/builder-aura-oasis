@@ -66,6 +66,7 @@ router.post("/", async (req: Request, res: Response) => {
         if (
           dbError.message.includes("follow_up_type") ||
           dbError.message.includes("lead_id") ||
+          dbError.message.includes("step_id") ||
           dbError.message.includes("message_id")
         ) {
           console.log("Attempting to run migration...");
@@ -74,6 +75,7 @@ router.post("/", async (req: Request, res: Response) => {
             await pool.query(`
               ALTER TABLE follow_ups
               ADD COLUMN IF NOT EXISTS lead_id INTEGER REFERENCES leads(id),
+              ADD COLUMN IF NOT EXISTS step_id INTEGER REFERENCES lead_steps(id),
               ADD COLUMN IF NOT EXISTS message_id INTEGER,
               ADD COLUMN IF NOT EXISTS follow_up_type VARCHAR(50) DEFAULT 'general'
             `);
