@@ -189,6 +189,7 @@ export default function LeadDetails() {
         description: newStep.description.trim(),
         due_date: newStep.due_date.trim() || undefined,
         estimated_days: 3, // Default value to satisfy API requirement
+        probability_percent: newStep.probability_percent ? parseInt(newStep.probability_percent) : 0,
       };
 
       console.log("Creating step with data:", { leadId, stepData });
@@ -202,6 +203,7 @@ export default function LeadDetails() {
         name: "",
         description: "",
         due_date: "",
+        probability_percent: "",
       });
       setNewStepDialog(false);
     } catch (error) {
