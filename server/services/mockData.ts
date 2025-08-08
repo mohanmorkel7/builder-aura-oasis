@@ -469,6 +469,7 @@ export const mockTemplates = [
         description:
           "Brief onboarding call to gather basic requirements and set expectations.",
         default_eta_days: 1,
+        probability_percent: 40,
         auto_alert: true,
         email_reminder: true,
         created_at: "2023-01-15T09:00:00Z",
@@ -485,6 +486,7 @@ export const mockTemplates = [
         description:
           "Configure essential settings and integrations for SMB client.",
         default_eta_days: 2,
+        probability_percent: 35,
         auto_alert: true,
         email_reminder: true,
         created_at: "2023-01-15T09:00:00Z",
@@ -501,6 +503,7 @@ export const mockTemplates = [
         description:
           "Activate service and provide basic support documentation.",
         default_eta_days: 1,
+        probability_percent: 25,
         auto_alert: false,
         email_reminder: true,
         created_at: "2023-01-15T09:00:00Z",
