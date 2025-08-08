@@ -1304,7 +1304,10 @@ router.put("/steps/:id", async (req: Request, res: Response) => {
             // Only completed steps contribute to progress
           });
 
-          const newProbability = Math.min(100, Math.round(totalCompletedProbability));
+          const newProbability = Math.min(
+            100,
+            Math.round(totalCompletedProbability),
+          );
 
           // Update lead probability
           await pool.query(

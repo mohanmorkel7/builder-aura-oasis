@@ -1508,7 +1508,10 @@ export class MockDataService {
         // Only completed steps contribute to progress
       });
 
-      const newProbability = Math.min(100, Math.round(totalCompletedProbability));
+      const newProbability = Math.min(
+        100,
+        Math.round(totalCompletedProbability),
+      );
 
       console.log(
         `Updated lead ${originalStep.lead_id} probability to ${newProbability}%`,
