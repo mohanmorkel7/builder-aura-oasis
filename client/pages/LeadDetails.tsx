@@ -183,6 +183,18 @@ export default function LeadDetails() {
       return;
     }
 
+    // Validate probability doesn't exceed 100%
+    const currentTotal = leadSteps ? leadSteps.reduce((sum: number, step: any) =>
+      sum + (step.probability_percent || 0), 0
+    ) : 0;
+    const newProbability = parseInt(newStep.probability_percent) || 0;
+    const totalAfterAdd = currentTotal + newProbability;
+
+    if (totalAfterAdd > 100) {
+      alert(`Total probability cannot exceed 100%. Current total: ${currentTotal}%, Adding: ${newProbability}%, Total would be: ${totalAfterAdd}%`);
+      return;
+    }
+
     try {
       const stepData = {
         name: newStep.name.trim(),
