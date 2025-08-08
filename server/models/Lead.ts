@@ -854,8 +854,25 @@ export class LeadStepRepository {
   }
 
   static async delete(id: number): Promise<boolean> {
+    console.log(`LeadStepRepository.delete: Attempting to delete step ${id}`);
+
+    // First check if the step exists
+    const checkQuery = "SELECT id, name FROM lead_steps WHERE id = $1";
+    const checkResult = await pool.query(checkQuery, [id]);
+
+    if (checkResult.rows.length === 0) {
+      console.log(`LeadStepRepository.delete: Step ${id} not found`);
+      return false;
+    }
+
+    console.log(`LeadStepRepository.delete: Found step ${id}: ${checkResult.rows[0].name}`);
+
+    // Delete the step
     const query = "DELETE FROM lead_steps WHERE id = $1";
     const result = await pool.query(query, [id]);
+
+    console.log(`LeadStepRepository.delete: Delete query affected ${result.rowCount} rows`);
+
     return result.rowCount > 0;
   }
 
