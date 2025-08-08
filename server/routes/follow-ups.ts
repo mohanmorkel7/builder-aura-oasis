@@ -346,6 +346,7 @@ router.get("/", async (req: Request, res: Response) => {
           client_name: "TechCorp Solutions",
           lead_client_name: "TechCorp Solutions",
           lead_project_title: "E-commerce Platform Development",
+          step_name: "Initial Contact",
         },
         {
           id: 14,
