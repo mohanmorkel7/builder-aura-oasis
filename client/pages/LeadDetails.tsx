@@ -783,16 +783,22 @@ export default function LeadDetails() {
                           <div className="text-xs font-medium text-blue-900 mb-1">
                             📊 Steps Overview (
                             {(() => {
+                              console.log("=== ADD STEP MODAL DEBUGGING ===");
+                              console.log("Lead steps data:", leadSteps);
+                              console.log("Template data:", templateData);
                               const currentTotal = leadSteps
                                 ? leadSteps.reduce(
-                                    (sum: number, step: any) =>
-                                      sum + (step.probability_percent || 0),
+                                    (sum: number, step: any) => {
+                                      console.log(`Step "${step.name}" probability: ${step.probability_percent}%`);
+                                      return sum + (step.probability_percent || 0);
+                                    },
                                     0,
                                   )
                                 : 0;
                               const newStepProb =
                                 parseInt(newStep.probability_percent) || 0;
                               const total = currentTotal + newStepProb;
+                              console.log("Current total:", currentTotal, "New step prob:", newStepProb, "Final total:", total);
                               return total;
                             })()}
                             % total
