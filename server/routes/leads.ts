@@ -1300,9 +1300,8 @@ router.put("/steps/:id", async (req: Request, res: Response) => {
 
             if (leadStep.status === "completed") {
               totalCompletedProbability += stepProbability;
-            } else if (leadStep.status === "in_progress") {
-              totalCompletedProbability += stepProbability * 0.5;
             }
+            // Only completed steps contribute to progress
           });
 
           const newProbability =
