@@ -105,6 +105,25 @@ export default function LeadDetails() {
   const { data: leadSteps = [], isLoading: stepsLoading } =
     useLeadSteps(leadId);
 
+  // Debug steps data
+  React.useEffect(() => {
+    if (leadSteps.length > 0) {
+      console.log('LeadDetails leadSteps:', leadSteps.map(s => ({ id: s.id, name: s.name, step_order: s.step_order })));
+
+      // Check for duplicates at source
+      const idCounts = {};
+      leadSteps.forEach(step => {
+        idCounts[step.id] = (idCounts[step.id] || 0) + 1;
+      });
+
+      Object.entries(idCounts).forEach(([id, count]) => {
+        if (count > 1) {
+          console.error(`LeadDetails: Step ID ${id} appears ${count} times in leadSteps`);
+        }
+      });
+    }
+  }, [leadSteps]);
+
   // Get template data if lead has a template_id
   const templateId = (lead as any)?.template_id;
   const { data: templateData, isLoading: templateLoading } = useTemplate(
