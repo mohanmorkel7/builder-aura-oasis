@@ -1360,10 +1360,16 @@ router.delete("/steps/:id", async (req: Request, res: Response) => {
 
     try {
       if (await isDatabaseAvailable()) {
+        console.log(`Attempting to delete lead step ${id} from database`);
         const success = await LeadStepRepository.delete(id);
+        console.log(`Delete result for step ${id}: ${success}`);
+
         if (!success) {
+          console.log(`Step ${id} not found in database`);
           return res.status(404).json({ error: "Lead step not found" });
         }
+
+        console.log(`Step ${id} deleted successfully from database`);
         res.status(204).send();
       } else {
         console.log(
@@ -1374,11 +1380,20 @@ router.delete("/steps/:id", async (req: Request, res: Response) => {
         res.status(204).send();
       }
     } catch (dbError) {
-      console.log(
-        "Database error, returning success for step deletion:",
-        dbError.message,
-      );
-      res.status(204).send();
+      console.error("Database error during step deletion:", dbError);
+      console.error("Error details:", {
+        message: dbError.message,
+        code: dbError.code,
+        detail: dbError.detail,
+        constraint: dbError.constraint,
+      });
+
+      // Return the actual error instead of masking it
+      res.status(500).json({
+        error: "Failed to delete step",
+        details: dbError.message,
+        code: dbError.code,
+      });
     }
   } catch (error) {
     console.error("Error deleting lead step:", error);
