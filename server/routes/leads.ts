@@ -887,19 +887,68 @@ router.get("/:leadId/steps", async (req: Request, res: Response) => {
         const templateId = leadResult.rows[0].template_id;
 
         if (templateId) {
-          // Get template steps for this lead's template
-          const templateStepsQuery = `
-            SELECT id, name, description, step_order, default_eta_days as estimated_days,
-                   'pending' as status, $1 as lead_id
-            FROM template_steps
-            WHERE template_id = $2
-            ORDER BY step_order ASC
+          // First check if lead steps already exist
+          const existingLeadStepsQuery = `
+            SELECT * FROM lead_steps WHERE lead_id = $1 ORDER BY step_order ASC
           `;
-          const templateStepsResult = await pool.query(templateStepsQuery, [
-            leadId,
-            templateId,
-          ]);
-          steps = templateStepsResult.rows;
+          const existingLeadStepsResult = await pool.query(existingLeadStepsQuery, [leadId]);
+
+          if (existingLeadStepsResult.rows.length > 0) {
+            // Lead steps already exist, return them
+            steps = existingLeadStepsResult.rows;
+          } else {
+            // No lead steps exist, create them from template steps
+            console.log(`Creating lead steps from template ${templateId} for lead ${leadId}`);
+
+            // Get template steps
+            const templateStepsQuery = `
+              SELECT id, name, description, step_order, default_eta_days
+              FROM template_steps
+              WHERE template_id = $1
+              ORDER BY step_order ASC
+            `;
+            const templateStepsResult = await pool.query(templateStepsQuery, [templateId]);
+
+            if (templateStepsResult.rows.length > 0) {
+              // Create lead steps from template steps
+              const leadStepsToCreate = templateStepsResult.rows.map(templateStep => ({
+                lead_id: leadId,
+                name: templateStep.name,
+                description: templateStep.description,
+                step_order: templateStep.step_order,
+                estimated_days: templateStep.default_eta_days,
+                status: 'pending',
+                due_date: null,
+                assigned_to: null
+              }));
+
+              // Insert lead steps
+              const insertPromises = leadStepsToCreate.map(stepData => {
+                const insertQuery = `
+                  INSERT INTO lead_steps (lead_id, name, description, step_order, estimated_days, status, due_date, assigned_to)
+                  VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+                  RETURNING *
+                `;
+                return pool.query(insertQuery, [
+                  stepData.lead_id,
+                  stepData.name,
+                  stepData.description,
+                  stepData.step_order,
+                  stepData.estimated_days,
+                  stepData.status,
+                  stepData.due_date,
+                  stepData.assigned_to
+                ]);
+              });
+
+              const insertResults = await Promise.all(insertPromises);
+              steps = insertResults.map(result => result.rows[0]);
+              console.log(`Created ${steps.length} lead steps from template`);
+            } else {
+              console.log(`No template steps found for template ${templateId}`);
+              steps = [];
+            }
+          }
         } else {
           // No template assigned, use mock data
           steps = await MockDataService.getLeadSteps(leadId);
