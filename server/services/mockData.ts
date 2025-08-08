@@ -1441,16 +1441,67 @@ export class MockDataService {
       stepData,
     );
 
-    // Return mock updated step - for demo purposes, we just return the new data
+    // Get the lead_id from the original step to recalculate probability
+    const originalSteps = await this.getLeadSteps(1); // Using lead 1 for demo
+    const originalStep = originalSteps.find(s => s.id === stepId);
+
+    if (!originalStep) {
+      console.log(`Step ${stepId} not found`);
+      return null;
+    }
+
+    // Create updated step
     const updatedStep = {
-      id: stepId,
+      ...originalStep,
       ...stepData,
       updated_at: new Date().toISOString(),
     };
 
+    // If status was updated, recalculate lead probability
+    if (stepData.status && stepData.status !== originalStep.status) {
+      console.log(`Step ${stepId} status changed from ${originalStep.status} to ${stepData.status}, recalculating lead probability`);
+
+      // Get all steps for the lead and calculate new probability
+      const allSteps = await this.getLeadSteps(originalStep.lead_id);
+
+      let totalStepProbability = 0;
+      let totalCompletedProbability = 0;
+
+      allSteps.forEach((step) => {
+        // Use updated status for the changed step
+        const currentStatus = step.id === stepId ? stepData.status : step.status;
+        const stepProbability = step.probability_percent || 0;
+
+        totalStepProbability += stepProbability;
+
+        if (currentStatus === "completed") {
+          totalCompletedProbability += stepProbability;
+        } else if (currentStatus === "in-progress") {
+          totalCompletedProbability += stepProbability * 0.5;
+        }
+        // pending, cancelled, blocked steps contribute 0
+      });
+
+      const newProbability = totalStepProbability > 0
+        ? Math.min(100, Math.round((totalCompletedProbability / totalStepProbability) * 100))
+        : 0;
+
+      console.log(`Updated lead ${originalStep.lead_id} probability to ${newProbability}%`);
+      console.log(`Calculation: (${totalCompletedProbability} / ${totalStepProbability}) * 100 = ${newProbability}%`);
+
+      // Store the calculated probability for subsequent lead queries
+      if (!this.calculatedProbabilities) {
+        this.calculatedProbabilities = {};
+      }
+      this.calculatedProbabilities[originalStep.lead_id] = newProbability;
+    }
+
     console.log(`MockDataService.updateLeadStep: Updated step:`, updatedStep);
     return updatedStep;
   }
+
+  // Add a property to store calculated probabilities
+  private static calculatedProbabilities: { [leadId: number]: number } = {};
 
   static async getStepChats(stepId: number) {
     // Initialize with some default chats if none exist
