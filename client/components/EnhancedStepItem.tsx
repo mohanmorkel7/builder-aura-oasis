@@ -278,9 +278,14 @@ export function EnhancedStepItem({
         <div className="flex items-center space-x-4 p-4">
           {/* Drag Handle */}
           <div
-            {...attributes}
-            {...listeners}
-            className="flex-shrink-0 cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600"
+            {...(step.isTemplate ? {} : attributes)}
+            {...(step.isTemplate ? {} : listeners)}
+            className={`flex-shrink-0 ${
+              step.isTemplate
+                ? "text-gray-300 cursor-not-allowed"
+                : "cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600"
+            }`}
+            title={step.isTemplate ? "Template steps cannot be reordered" : "Drag to reorder"}
           >
             <GripVertical className="w-5 h-5" />
           </div>
