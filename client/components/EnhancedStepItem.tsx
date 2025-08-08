@@ -109,9 +109,6 @@ export function EnhancedStepItem({
 
   // Fetch real chat data from API (only for actual lead steps)
   const stepId = step.isTemplate ? 0 : step.id;
-  console.log(
-    `EnhancedStepItem for step ${step.id}: isTemplate=${step.isTemplate}, using stepId=${stepId}`,
-  );
 
   const {
     data: chatMessages = [],

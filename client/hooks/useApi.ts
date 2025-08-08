@@ -1223,17 +1223,9 @@ export function useReorderLeadSteps() {
 
 // Lead chat hooks
 export function useStepChats(stepId: number) {
-  console.log(
-    `useStepChats called with stepId: ${stepId}, enabled: ${!!stepId && stepId > 0}`,
-  );
   return useQuery({
     queryKey: ["step-chats", stepId],
-    queryFn: async () => {
-      console.log(`Fetching chats for step ${stepId}`);
-      const result = await apiClient.getStepChats(stepId);
-      console.log(`API response for step ${stepId} chats:`, result);
-      return result;
-    },
+    queryFn: () => apiClient.getStepChats(stepId),
     enabled: !!stepId && stepId > 0,
   });
 }
