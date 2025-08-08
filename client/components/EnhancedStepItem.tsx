@@ -459,7 +459,9 @@ export function EnhancedStepItem({
               variant="ghost"
               size="sm"
               onClick={() => {
-                console.log(`Delete clicked: step ${step.id}, isTemplate: ${step.isTemplate}`);
+                console.log(
+                  `Delete clicked: step ${step.id}, isTemplate: ${step.isTemplate}`,
+                );
                 onDeleteStep(step.id);
               }}
               className="text-red-600 hover:text-red-700"
