@@ -315,11 +315,18 @@ export default function FollowUpTracker() {
 
   // Tab-specific filtered follow-ups
   const allFollowUps = filteredFollowUps;
-  const pendingFollowUps = filteredFollowUps.filter((f) => f.status === "pending");
-  const inProgressFollowUps = filteredFollowUps.filter((f) => f.status === "in_progress");
-  const completedFollowUps = filteredFollowUps.filter((f) => f.status === "completed");
+  const pendingFollowUps = filteredFollowUps.filter(
+    (f) => f.status === "pending",
+  );
+  const inProgressFollowUps = filteredFollowUps.filter(
+    (f) => f.status === "in_progress",
+  );
+  const completedFollowUps = filteredFollowUps.filter(
+    (f) => f.status === "completed",
+  );
   const overdueFollowUps = filteredFollowUps.filter((f) => {
-    const isOverdueStatus = f.status === "overdue" ||
+    const isOverdueStatus =
+      f.status === "overdue" ||
       (f.status !== "completed" && f.due_date && isOverdue(f.due_date));
     return isOverdueStatus;
   });
@@ -334,13 +341,20 @@ export default function FollowUpTracker() {
   // Get current tab's follow-ups
   const getCurrentTabFollowUps = () => {
     switch (activeTab) {
-      case "pending": return pendingFollowUps;
-      case "in_progress": return inProgressFollowUps;
-      case "completed": return completedFollowUps;
-      case "overdue": return overdueFollowUps;
-      case "my_tasks": return myFollowUps;
-      case "assigned_by_me": return assignedByMe;
-      default: return allFollowUps;
+      case "pending":
+        return pendingFollowUps;
+      case "in_progress":
+        return inProgressFollowUps;
+      case "completed":
+        return completedFollowUps;
+      case "overdue":
+        return overdueFollowUps;
+      case "my_tasks":
+        return myFollowUps;
+      case "assigned_by_me":
+        return assignedByMe;
+      default:
+        return allFollowUps;
     }
   };
 
@@ -498,202 +512,213 @@ export default function FollowUpTracker() {
         <TabsContent value={activeTab} className="mt-6">
           {/* Follow-ups List */}
           <div className="grid gap-4">
-        {loading ? (
-          <Card>
-            <CardContent className="p-12 text-center">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <MessageCircle className="w-8 h-8 text-gray-400 animate-pulse" />
-              </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                Loading follow-ups...
-              </h3>
-            </CardContent>
-          </Card>
-        ) : currentTabFollowUps.length === 0 ? (
-          <Card>
-            <CardContent className="p-12 text-center">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <MessageCircle className="w-8 h-8 text-gray-400" />
-              </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                No follow-ups found
-              </h3>
-              <p className="text-gray-600">
-                {searchTerm ||
-                statusFilter !== "all" ||
-                assigneeFilter !== "all"
-                  ? "Try adjusting your search criteria"
-                  : "Follow-ups will appear here when team members mention specific tasks"}
-              </p>
-            </CardContent>
-          </Card>
-        ) : (
-          currentTabFollowUps.map((followUp) => {
-            const StatusIcon = statusIcons[followUp.status] || Clock;
-            const isFollowUpOverdue =
-              followUp.status === "overdue" ||
-              (followUp.status !== "completed" &&
-                followUp.due_date &&
-                isOverdue(followUp.due_date));
-            const isAssignedToMe = followUp.assigned_user_name === user?.name;
-
-            return (
-              <Card
-                key={followUp.id}
-                className={`hover:shadow-md transition-shadow border-l-4 ${
-                  isAssignedToMe
-                    ? isFollowUpOverdue
-                      ? "border-l-red-500 bg-red-50"
-                      : "border-l-blue-500 bg-blue-50"
-                    : "border-l-gray-300"
-                }`}
-              >
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <Badge
-                          className="text-lg font-bold cursor-pointer hover:bg-primary hover:text-white transition-colors"
-                          onClick={() => {
-                            navigator.clipboard.writeText(`#${followUp.id}`);
-                            // Show a brief success message
-                          }}
-                        >
-                          #{followUp.id}
-                        </Badge>
-                        <h3 className="text-lg font-semibold text-gray-900">
-                          {followUp.lead_client_name ||
-                            followUp.client_name ||
-                            "Unknown Lead"}{" "}
-                          • {followUp.title || "Follow-up"}
-                        </h3>
-                        <Badge
-                          className={
-                            statusColors[followUp.status] ||
-                            "bg-gray-100 text-gray-700"
-                          }
-                        >
-                          <StatusIcon className="w-3 h-3 mr-1" />
-                          {(followUp.status || "unknown").replace("_", " ")}
-                        </Badge>
-                        {followUp.priority && (
-                          <Badge className={priorityColors[followUp.priority]}>
-                            {followUp.priority}
-                          </Badge>
-                        )}
-                      </div>
-
-                      <div className="bg-gray-50 p-3 rounded-lg mb-3 border-l-4 border-blue-200">
-                        <p className="text-sm text-gray-700 italic">
-                          "
-                          {followUp.description ||
-                            followUp.title ||
-                            "No description available"}
-                          "
-                        </p>
-                      </div>
-
-                      <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
-                        <span className="flex items-center space-x-1">
-                          <User className="w-4 h-4" />
-                          <span>
-                            Assigned to:{" "}
-                            <strong>
-                              {followUp.assigned_user_name || "Unassigned"}
-                            </strong>
-                          </span>
-                        </span>
-                        <span className="flex items-center space-x-1">
-                          <User className="w-4 h-4" />
-                          <span>
-                            By: {followUp.created_by_name || "Unknown"}
-                          </span>
-                        </span>
-                        {followUp.due_date && (
-                          <span className="flex items-center space-x-1">
-                            <Calendar className="w-4 h-4" />
-                            <span
-                              className={
-                                isFollowUpOverdue
-                                  ? "text-red-600 font-medium"
-                                  : ""
-                              }
-                            >
-                              Due:{" "}
-                              {formatToISTDateTime(followUp.due_date, {
-                                day: "numeric",
-                                month: "short",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })}
-                            </span>
-                          </span>
-                        )}
-                      </div>
-
-                      {followUp.notes && (
-                        <div className="bg-yellow-50 p-2 rounded text-sm text-gray-700 mb-3">
-                          <strong>Notes:</strong> {followUp.notes}
-                        </div>
-                      )}
-
-                      <div className="flex items-center space-x-4 text-xs text-gray-500">
-                        <span>Created: {formatToIST(followUp.created_at)}</span>
-                        {followUp.completed_at && (
-                          <span>
-                            Completed: {formatToIST(followUp.completed_at)}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col space-y-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleNavigateToMessage(followUp)}
-                        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-                      >
-                        <ExternalLink className="w-3 h-3 mr-1" />
-                        View Message
-                      </Button>
-
-                      {followUp.status !== "completed" && (
-                        <Select
-                          value={followUp.status}
-                          onValueChange={(value) =>
-                            handleUpdateStatus(followUp.id, value)
-                          }
-                        >
-                          <SelectTrigger className="w-32">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="pending">Pending</SelectItem>
-                            <SelectItem value="in_progress">
-                              In Progress
-                            </SelectItem>
-                            <SelectItem value="completed">Completed</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      )}
-
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => navigate(`/leads/${followUp.lead_id}`)}
-                        className="text-gray-600 hover:text-gray-700"
-                      >
-                        <Target className="w-3 h-3 mr-1" />
-                        Go to Lead
-                      </Button>
-                    </div>
+            {loading ? (
+              <Card>
+                <CardContent className="p-12 text-center">
+                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <MessageCircle className="w-8 h-8 text-gray-400 animate-pulse" />
                   </div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    Loading follow-ups...
+                  </h3>
                 </CardContent>
               </Card>
-            );
-          })
-        )}
+            ) : currentTabFollowUps.length === 0 ? (
+              <Card>
+                <CardContent className="p-12 text-center">
+                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <MessageCircle className="w-8 h-8 text-gray-400" />
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    No follow-ups found
+                  </h3>
+                  <p className="text-gray-600">
+                    {searchTerm ||
+                    statusFilter !== "all" ||
+                    assigneeFilter !== "all"
+                      ? "Try adjusting your search criteria"
+                      : "Follow-ups will appear here when team members mention specific tasks"}
+                  </p>
+                </CardContent>
+              </Card>
+            ) : (
+              currentTabFollowUps.map((followUp) => {
+                const StatusIcon = statusIcons[followUp.status] || Clock;
+                const isFollowUpOverdue =
+                  followUp.status === "overdue" ||
+                  (followUp.status !== "completed" &&
+                    followUp.due_date &&
+                    isOverdue(followUp.due_date));
+                const isAssignedToMe =
+                  followUp.assigned_user_name === user?.name;
+
+                return (
+                  <Card
+                    key={followUp.id}
+                    className={`hover:shadow-md transition-shadow border-l-4 ${
+                      isAssignedToMe
+                        ? isFollowUpOverdue
+                          ? "border-l-red-500 bg-red-50"
+                          : "border-l-blue-500 bg-blue-50"
+                        : "border-l-gray-300"
+                    }`}
+                  >
+                    <CardContent className="p-6">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-3 mb-2">
+                            <Badge
+                              className="text-lg font-bold cursor-pointer hover:bg-primary hover:text-white transition-colors"
+                              onClick={() => {
+                                navigator.clipboard.writeText(
+                                  `#${followUp.id}`,
+                                );
+                                // Show a brief success message
+                              }}
+                            >
+                              #{followUp.id}
+                            </Badge>
+                            <h3 className="text-lg font-semibold text-gray-900">
+                              {followUp.lead_client_name ||
+                                followUp.client_name ||
+                                "Unknown Lead"}{" "}
+                              • {followUp.title || "Follow-up"}
+                            </h3>
+                            <Badge
+                              className={
+                                statusColors[followUp.status] ||
+                                "bg-gray-100 text-gray-700"
+                              }
+                            >
+                              <StatusIcon className="w-3 h-3 mr-1" />
+                              {(followUp.status || "unknown").replace("_", " ")}
+                            </Badge>
+                            {followUp.priority && (
+                              <Badge
+                                className={priorityColors[followUp.priority]}
+                              >
+                                {followUp.priority}
+                              </Badge>
+                            )}
+                          </div>
+
+                          <div className="bg-gray-50 p-3 rounded-lg mb-3 border-l-4 border-blue-200">
+                            <p className="text-sm text-gray-700 italic">
+                              "
+                              {followUp.description ||
+                                followUp.title ||
+                                "No description available"}
+                              "
+                            </p>
+                          </div>
+
+                          <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
+                            <span className="flex items-center space-x-1">
+                              <User className="w-4 h-4" />
+                              <span>
+                                Assigned to:{" "}
+                                <strong>
+                                  {followUp.assigned_user_name || "Unassigned"}
+                                </strong>
+                              </span>
+                            </span>
+                            <span className="flex items-center space-x-1">
+                              <User className="w-4 h-4" />
+                              <span>
+                                By: {followUp.created_by_name || "Unknown"}
+                              </span>
+                            </span>
+                            {followUp.due_date && (
+                              <span className="flex items-center space-x-1">
+                                <Calendar className="w-4 h-4" />
+                                <span
+                                  className={
+                                    isFollowUpOverdue
+                                      ? "text-red-600 font-medium"
+                                      : ""
+                                  }
+                                >
+                                  Due:{" "}
+                                  {formatToISTDateTime(followUp.due_date, {
+                                    day: "numeric",
+                                    month: "short",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  })}
+                                </span>
+                              </span>
+                            )}
+                          </div>
+
+                          {followUp.notes && (
+                            <div className="bg-yellow-50 p-2 rounded text-sm text-gray-700 mb-3">
+                              <strong>Notes:</strong> {followUp.notes}
+                            </div>
+                          )}
+
+                          <div className="flex items-center space-x-4 text-xs text-gray-500">
+                            <span>
+                              Created: {formatToIST(followUp.created_at)}
+                            </span>
+                            {followUp.completed_at && (
+                              <span>
+                                Completed: {formatToIST(followUp.completed_at)}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col space-y-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleNavigateToMessage(followUp)}
+                            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                          >
+                            <ExternalLink className="w-3 h-3 mr-1" />
+                            View Message
+                          </Button>
+
+                          {followUp.status !== "completed" && (
+                            <Select
+                              value={followUp.status}
+                              onValueChange={(value) =>
+                                handleUpdateStatus(followUp.id, value)
+                              }
+                            >
+                              <SelectTrigger className="w-32">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="pending">Pending</SelectItem>
+                                <SelectItem value="in_progress">
+                                  In Progress
+                                </SelectItem>
+                                <SelectItem value="completed">
+                                  Completed
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          )}
+
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() =>
+                              navigate(`/leads/${followUp.lead_id}`)
+                            }
+                            className="text-gray-600 hover:text-gray-700"
+                          >
+                            <Target className="w-3 h-3 mr-1" />
+                            Go to Lead
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })
+            )}
           </div>
         </TabsContent>
       </Tabs>
