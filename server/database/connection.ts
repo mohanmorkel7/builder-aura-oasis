@@ -2,51 +2,30 @@ import { Pool } from "pg";
 import fs from "fs";
 import path from "path";
 
+// Use environment variables or fallback values
 const pool = new Pool({
-  connectionString:
-    process.env.DATABASE_URL ||
-    "postgresql://postgres:password@localhost:5432/banani_db",
-  ssl:
-    process.env.NODE_ENV === "production"
-      ? { rejectUnauthorized: false }
-      : false,
-  // Set timezone to IST for all connections
-  options: "-c timezone=Asia/Kolkata",
+  user: process.env.PG_USER || "crmuser",
+  host: process.env.PG_HOST || "10.30.11.95",
+  database: process.env.PG_DB || "crm_test",
+  password: process.env.PG_PASSWORD || "myl@p@y-crm$102019",
+  port: Number(process.env.PG_PORT) || 2019,
+  ssl: false, // Change to { rejectUnauthorized: false } if required in production
 });
 
-// Initialize database
+// Initialize database from schema.sql (optional in dev/local)
 export async function initializeDatabase() {
   try {
     const client = await pool.connect();
 
-    // Read and execute complete schema
-    const schemaPath = path.join(__dirname, "complete-schema.sql");
-    const schema = fs.readFileSync(schemaPath, "utf8");
+    // const schemaPath = path.join(__dirname, "schema.sql");
+    // const schema = fs.readFileSync(schemaPath, "utf8");
 
-    await client.query(schema);
-
-    // Run migration for notifications and activity logs
-    try {
-      const migrationPath = path.join(
-        __dirname,
-        "migration-fix-notifications-activity.sql",
-      );
-      const migration = fs.readFileSync(migrationPath, "utf8");
-      await client.query(migration);
-      console.log("Migration applied successfully");
-    } catch (migrationError) {
-      console.log(
-        "Migration already applied or error:",
-        migrationError.message,
-      );
-    }
-
+    // await client.query(schema);
     console.log("Database initialized successfully");
 
     client.release();
   } catch (error) {
     console.error("Database initialization error:", error);
-    // Don't throw error to allow development without DB
     console.log("Continuing without database connection...");
   }
 }
