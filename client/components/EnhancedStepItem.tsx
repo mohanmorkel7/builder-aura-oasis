@@ -723,6 +723,69 @@ export function EnhancedStepItem({
                         />
                       </div>
 
+                      {/* Follow-up checkbox and form */}
+                      <div className="mb-3 border-t border-gray-200 pt-3">
+                        <div className="flex items-center space-x-2 mb-3">
+                          <Checkbox
+                            id="create-followup"
+                            checked={createFollowUp}
+                            onCheckedChange={(checked) => setCreateFollowUp(checked as boolean)}
+                          />
+                          <Label htmlFor="create-followup" className="text-sm font-medium">
+                            Create follow-up task
+                          </Label>
+                        </div>
+
+                        {createFollowUp && (
+                          <div className="space-y-3 pl-6 border-l-2 border-blue-200 bg-blue-50 p-3 rounded">
+                            <div>
+                              <Label htmlFor="followup-notes" className="text-sm font-medium">
+                                Follow-up Notes
+                              </Label>
+                              <Input
+                                id="followup-notes"
+                                placeholder="Enter follow-up notes..."
+                                value={followUpNotes}
+                                onChange={(e) => setFollowUpNotes(e.target.value)}
+                                className="mt-1"
+                              />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3">
+                              <div>
+                                <Label htmlFor="followup-assign" className="text-sm font-medium">
+                                  Assign To
+                                </Label>
+                                <Select value={followUpAssignTo} onValueChange={setFollowUpAssignTo}>
+                                  <SelectTrigger id="followup-assign" className="mt-1">
+                                    <SelectValue placeholder="Select assignee" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value={user?.id || ""}>Myself</SelectItem>
+                                    <SelectItem value="sales-team">Sales Team</SelectItem>
+                                    <SelectItem value="manager">Manager</SelectItem>
+                                    <SelectItem value="support">Support Team</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+
+                              <div>
+                                <Label htmlFor="followup-date" className="text-sm font-medium">
+                                  Due Date
+                                </Label>
+                                <Input
+                                  id="followup-date"
+                                  type="date"
+                                  value={followUpDueDate}
+                                  onChange={(e) => setFollowUpDueDate(e.target.value)}
+                                  className="mt-1"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
                       <div className="flex justify-between items-center">
                         <div className="text-xs text-gray-500">
                           Press Ctrl+Enter to send
