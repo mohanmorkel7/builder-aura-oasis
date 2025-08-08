@@ -161,8 +161,8 @@ export class TemplateRepository {
 
       // Create template
       const templateQuery = `
-        INSERT INTO onboarding_templates (name, description, type, created_by)
-        VALUES ($1, $2, $3, $4)
+        INSERT INTO onboarding_templates (name, description, type, category_id, template_type_id, created_by)
+        VALUES ($1, $2, $3, $4, $5, $6)
         RETURNING *
       `;
 
@@ -170,6 +170,8 @@ export class TemplateRepository {
         templateData.name,
         templateData.description || null,
         templateData.type || "standard",
+        templateData.category_id || null,
+        templateData.template_type_id || null,
         templateData.created_by,
       ];
 
