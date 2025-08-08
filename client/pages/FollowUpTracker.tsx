@@ -46,18 +46,26 @@ import { updateFollowUpStatusWithNotification } from "@/utils/followUpUtils";
 
 interface FollowUp {
   id: number;
-  message_id: number;
-  step_id: number;
-  lead_id: number;
-  lead_name: string;
-  step_name: string;
-  original_message: string;
-  assigned_to: string;
-  assigned_by: string;
+  message_id?: number;
+  step_id?: number;
+  lead_id?: number;
+  client_id?: number;
+  title: string;
+  description?: string;
+  lead_name?: string;
+  lead_client_name?: string;
+  client_name?: string;
+  step_name?: string;
+  assigned_to?: number;
+  assigned_user_name?: string;
+  created_by?: number;
+  created_by_name?: string;
   status: "pending" | "in_progress" | "completed" | "overdue";
-  priority: "low" | "medium" | "high" | "urgent";
-  due_date: string;
+  priority?: "low" | "medium" | "high" | "urgent";
+  follow_up_type?: string;
+  due_date?: string;
   created_at: string;
+  updated_at?: string;
   completed_at?: string;
   notes?: string;
 }
