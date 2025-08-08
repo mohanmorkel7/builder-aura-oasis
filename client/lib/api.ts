@@ -752,7 +752,15 @@ export class ApiClient {
       const endpoint = `/follow-ups${queryString ? `?${queryString}` : ""}`;
 
       console.log("Fetching follow-ups from:", endpoint);
-      const result = await this.request(endpoint);
+
+      // Add a timeout and retry logic specifically for follow-ups
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error("Follow-ups request timeout")), 8000);
+      });
+
+      const requestPromise = this.request(endpoint);
+
+      const result = await Promise.race([requestPromise, timeoutPromise]);
       console.log(
         "Follow-ups fetch successful, got",
         Array.isArray(result) ? result.length : "non-array",
