@@ -1195,6 +1195,51 @@ router.put("/steps/:id", async (req: Request, res: Response) => {
         if (!step) {
           return res.status(404).json({ error: "Lead step not found" });
         }
+
+        // If status was updated, recalculate and update lead probability
+        if (stepData.status) {
+          console.log(`Step ${id} status updated to ${stepData.status}, recalculating lead probability`);
+
+          // Get the lead_id for this step
+          const stepQuery = await pool.query('SELECT lead_id FROM lead_steps WHERE id = $1', [id]);
+          if (stepQuery.rows.length > 0) {
+            const leadId = stepQuery.rows[0].lead_id;
+
+            // Calculate new probability based on all lead steps
+            const stepsQuery = await pool.query(`
+              SELECT id, status, probability_percent
+              FROM lead_steps
+              WHERE lead_id = $1
+            `, [leadId]);
+
+            let totalCompletedProbability = 0;
+            let totalStepProbability = 0;
+
+            stepsQuery.rows.forEach(leadStep => {
+              const stepProbability = leadStep.probability_percent || 0;
+              totalStepProbability += stepProbability;
+
+              if (leadStep.status === 'completed') {
+                totalCompletedProbability += stepProbability;
+              } else if (leadStep.status === 'in_progress') {
+                totalCompletedProbability += stepProbability * 0.5;
+              }
+            });
+
+            const newProbability = totalStepProbability > 0
+              ? Math.min(100, Math.round((totalCompletedProbability / totalStepProbability) * 100))
+              : 0;
+
+            // Update lead probability
+            await pool.query(
+              'UPDATE leads SET probability = $1, updated_at = NOW() WHERE id = $2',
+              [newProbability, leadId]
+            );
+
+            console.log(`Updated lead ${leadId} probability to ${newProbability}%`);
+          }
+        }
+
         res.json(step);
       } else {
         const mockStep = await MockDataService.updateLeadStep(id, stepData);
