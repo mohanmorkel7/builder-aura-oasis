@@ -1612,16 +1612,11 @@ export class MockDataService {
   }
 
   static async createStepChat(stepId: number, chatData: any) {
-    // Validate that the step exists in our mock data
-    const validStepIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; // IDs from getLeadSteps
-    if (!validStepIds.includes(stepId)) {
-      console.error(
-        `MockDataService.createStepChat: Invalid step_id ${stepId}. Valid template_step IDs are: ${validStepIds.join(", ")}`,
-      );
-      throw new Error(
-        `Template step with ID ${stepId} does not exist in mock data`,
-      );
-    }
+    // For mock data, we'll accept any step_id and create the chat
+    // This allows follow-ups with any step_id to work when database is unavailable
+    console.log(
+      `MockDataService.createStepChat: Creating chat for step ${stepId} (mock mode - accepting any step_id)`,
+    );
 
     const newChat = {
       id: this.nextChatId++,
