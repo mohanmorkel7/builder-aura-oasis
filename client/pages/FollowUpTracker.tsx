@@ -70,8 +70,61 @@ interface FollowUp {
   notes?: string;
 }
 
-// Mock follow-up data (simplified since we're getting real data from API)
-const mockFollowUps: FollowUp[] = [];
+// Mock follow-up data with proper structure for testing
+const mockFollowUps: FollowUp[] = [
+  {
+    id: 13,
+    message_id: 2,
+    step_id: 1,
+    lead_id: 1,
+    title: "Technical Specifications Review",
+    description: "Review technical specifications for TechCorp integration",
+    lead_client_name: "TechCorp Solutions",
+    step_name: "Initial Contact",
+    assigned_user_name: "Mike Johnson",
+    created_by_name: "Jane Smith",
+    status: "pending",
+    priority: "high",
+    due_date: "2024-01-25",
+    created_at: "2024-01-16T14:15:00Z",
+    notes: "Need to validate feasibility of custom integration requirements",
+  },
+  {
+    id: 14,
+    message_id: 4,
+    step_id: 2,
+    lead_id: 1,
+    title: "API Documentation",
+    description: "Provide API documentation for client review",
+    lead_client_name: "TechCorp Solutions",
+    step_name: "Document Collection",
+    assigned_user_name: "John Doe",
+    created_by_name: "Jane Smith",
+    status: "in_progress",
+    priority: "medium",
+    due_date: "2024-01-24",
+    created_at: "2024-01-21T09:00:00Z",
+    notes: "API documentation is 70% complete, waiting for security review",
+  },
+  {
+    id: 15,
+    message_id: 6,
+    step_id: 3,
+    lead_id: 2,
+    title: "Timeline Assessment",
+    description: "Assess timeline impact for additional reporting features",
+    lead_client_name: "RetailMax Inc",
+    step_name: "Proposal Sent",
+    assigned_user_name: "Mike Johnson",
+    created_by_name: "John Doe",
+    status: "completed",
+    priority: "medium",
+    due_date: "2024-01-20",
+    created_at: "2024-01-18T11:30:00Z",
+    completed_at: "2024-01-19T16:45:00Z",
+    notes: "Timeline assessment completed - 2 additional weeks needed for reporting features",
+  },
+];
 
 const statusColors = {
   pending: "bg-yellow-100 text-yellow-700",
