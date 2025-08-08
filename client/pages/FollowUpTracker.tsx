@@ -230,26 +230,27 @@ export default function FollowUpTracker() {
       console.log("Found follow-up for status update:", followUp);
 
       if (followUp && user) {
+        const notificationData = {
+          stepId: followUp.step_id,
+          userId: parseInt(user.id),
+          userName: user.name,
+          followUpTitle:
+            followUp.title ||
+            followUp.description?.substring(0, 50) + "..." ||
+            `Follow-up #${followUpId}`,
+        };
+
         console.log("Updating follow-up status with notification:", {
           followUpId,
           newStatus,
-          stepId: followUp.step_id,
-          followUpTitle: followUp.title,
+          notificationData,
         });
 
         // Use the utility function that includes chat notification
         await updateFollowUpStatusWithNotification(
           followUpId,
           { status: newStatus, completed_at: completedAt },
-          {
-            stepId: followUp.step_id,
-            userId: parseInt(user.id),
-            userName: user.name,
-            followUpTitle:
-              followUp.title ||
-              followUp.description?.substring(0, 50) + "..." ||
-              `Follow-up #${followUpId}`,
-          },
+          notificationData,
         );
         console.log("Follow-up status update with notification completed successfully");
       } else {
