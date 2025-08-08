@@ -809,9 +809,13 @@ router.get("/:id", async (req: Request, res: Response) => {
 
       res.json(template);
     } else {
-      console.log("Database unavailable, using mock template lookup with steps");
+      console.log(
+        "Database unavailable, using mock template lookup with steps",
+      );
       // Import mock templates with full step data
-      const { mockTemplates: mockTemplatesWithSteps } = await import("../services/mockData");
+      const { mockTemplates: mockTemplatesWithSteps } = await import(
+        "../services/mockData"
+      );
       const mockTemplate = mockTemplatesWithSteps.find((t) => t.id === id);
       if (!mockTemplate) {
         return res.status(404).json({ error: "Template not found" });
@@ -822,7 +826,9 @@ router.get("/:id", async (req: Request, res: Response) => {
     console.error("Error fetching template:", error);
     // Fallback to mock data with full step data
     try {
-      const { mockTemplates: mockTemplatesWithSteps } = await import("../services/mockData");
+      const { mockTemplates: mockTemplatesWithSteps } = await import(
+        "../services/mockData"
+      );
       const mockTemplate = mockTemplatesWithSteps.find((t) => t.id === id);
       if (!mockTemplate) {
         return res.status(404).json({ error: "Template not found" });

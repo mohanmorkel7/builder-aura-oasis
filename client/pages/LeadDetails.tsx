@@ -784,18 +784,26 @@ export default function LeadDetails() {
                             📊 Steps Overview (
                             {templateData?.steps?.length || 0} steps,
                             {(() => {
-                              console.log("=== ADD STEP MODAL TEMPLATE STEPS DEBUGGING ===");
+                              console.log(
+                                "=== ADD STEP MODAL TEMPLATE STEPS DEBUGGING ===",
+                              );
                               console.log("Template data:", templateData);
-                              console.log("Template steps:", templateData?.steps);
+                              console.log(
+                                "Template steps:",
+                                templateData?.steps,
+                              );
                               const templateTotal = templateData?.steps
-                                ? templateData.steps.reduce((sum: number, step: any) => {
-                                    console.log(
-                                      `Template step "${step.name}" probability: ${step.probability_percent}%`,
-                                    );
-                                    return (
-                                      sum + (step.probability_percent || 0)
-                                    );
-                                  }, 0)
+                                ? templateData.steps.reduce(
+                                    (sum: number, step: any) => {
+                                      console.log(
+                                        `Template step "${step.name}" probability: ${step.probability_percent}%`,
+                                      );
+                                      return (
+                                        sum + (step.probability_percent || 0)
+                                      );
+                                    },
+                                    0,
+                                  )
                                 : 0;
                               const newStepProb =
                                 parseInt(newStep.probability_percent) || 0;
@@ -834,24 +842,29 @@ export default function LeadDetails() {
                           </div>
                           <div className="text-xs text-blue-700 max-h-24 overflow-y-auto">
                             {/* Always show template steps from database */}
-                            {templateData?.steps && templateData.steps.length > 0 ? (
+                            {templateData?.steps &&
+                            templateData.steps.length > 0 ? (
                               <>
-                                {templateData.steps.map((step: any, index: number) => (
-                                  <div
-                                    key={index}
-                                    className="flex justify-between py-0.5"
-                                  >
-                                    <span className="truncate mr-2">
-                                      {step.name}
-                                    </span>
-                                    <span className="font-medium flex-shrink-0 text-blue-600">
-                                      {step.probability_percent || 0}%
-                                    </span>
-                                  </div>
-                                ))}
+                                {templateData.steps.map(
+                                  (step: any, index: number) => (
+                                    <div
+                                      key={index}
+                                      className="flex justify-between py-0.5"
+                                    >
+                                      <span className="truncate mr-2">
+                                        {step.name}
+                                      </span>
+                                      <span className="font-medium flex-shrink-0 text-blue-600">
+                                        {step.probability_percent || 0}%
+                                      </span>
+                                    </div>
+                                  ),
+                                )}
                               </>
                             ) : (
-                              <div className="text-gray-500 italic">No template steps available</div>
+                              <div className="text-gray-500 italic">
+                                No template steps available
+                              </div>
                             )}
                             {/* Show new step preview */}
                             {parseInt(newStep.probability_percent) > 0 && (
