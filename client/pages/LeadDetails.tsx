@@ -220,9 +220,20 @@ export default function LeadDetails() {
     });
   };
 
-  const handleDeleteStep = (stepId: number) => {
-    // TODO: Implement step deletion
-    console.log("Deleting step:", stepId);
+  const handleDeleteStep = async (stepId: number) => {
+    if (!window.confirm("Are you sure you want to delete this step?")) {
+      return;
+    }
+
+    try {
+      console.log("Deleting step:", stepId);
+      await apiClient.deleteLeadStep(stepId);
+      // Refresh steps after deletion
+      window.location.reload();
+    } catch (error) {
+      console.error("Failed to delete step:", error);
+      alert("Failed to delete step. Please try again.");
+    }
   };
 
   const handleReorderSteps = async (reorderedSteps: any[]) => {
@@ -394,30 +405,55 @@ export default function LeadDetails() {
 
               {/* Steps Preview */}
               {(() => {
-                const allSteps = [];
+                // Show only actual lead steps in preview
+                const allSteps = leadSteps;
 
-                // Add template steps if available
-                if (templateData?.steps && templateData.steps.length > 0) {
-                  templateData.steps.forEach(
-                    (templateStep: any, index: number) => {
-                      allSteps.push({
-                        ...templateStep,
-                        id: templateStep.id,
-                        isTemplate: true,
-                        step_order: index + 1,
-                        status: "pending",
-                      });
-                    },
+                // If no lead steps but template exists, show template as reference
+                if (allSteps.length === 0 && templateData?.steps && templateData.steps.length > 0) {
+                  const templateStepsPreview = templateData.steps.map((templateStep: any, index: number) => ({
+                    ...templateStep,
+                    id: `template-${templateStep.id}`,
+                    isTemplate: true,
+                    step_order: index + 1,
+                    status: "pending",
+                  }));
+
+                  return (
+                    <div className="mt-4 p-3 bg-blue-50 rounded-lg border">
+                      <div className="text-sm font-medium text-blue-700 mb-2">
+                        📋 Template Steps Reference ({templateStepsPreview.length} steps)
+                      </div>
+                      <div className="text-xs text-blue-600 mb-2">
+                        These are template steps. Actual trackable steps will be created when you start working on this lead.
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                        {templateStepsPreview.slice(0, 6).map((step, index) => (
+                          <div
+                            key={step.id}
+                            className="flex items-center space-x-2 p-2 rounded text-xs bg-blue-100 border border-blue-200"
+                          >
+                            <div className="flex-shrink-0">
+                              <span className="text-blue-500">📋</span>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="truncate font-medium text-blue-800">
+                                {step.name}
+                              </div>
+                              <div className="text-blue-600 text-xs">
+                                Template
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                        {templateStepsPreview.length > 6 && (
+                          <div className="flex items-center justify-center p-2 bg-blue-100 rounded text-xs text-blue-600">
+                            +{templateStepsPreview.length - 6} more template steps
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   );
                 }
-
-                // Add lead steps
-                leadSteps.forEach((leadStep: any) => {
-                  allSteps.push({
-                    ...leadStep,
-                    isTemplate: false,
-                  });
-                });
 
                 if (allSteps.length > 0) {
                   return (
@@ -794,37 +830,10 @@ export default function LeadDetails() {
               </div>
             </CardHeader>
             <CardContent>
-              {/* Combine template steps and lead steps into one unified pipeline */}
+              {/* Lead Steps Pipeline */}
               {(() => {
-                // Create combined steps array with template steps first, then lead steps
-                const allSteps = [];
-
-                // Add template steps as template-flagged steps
-                if (templateData?.steps && templateData.steps.length > 0) {
-                  templateData.steps.forEach(
-                    (templateStep: any, index: number) => {
-                      allSteps.push({
-                        ...templateStep,
-                        id: templateStep.id, // Use the original numeric template step ID
-                        isTemplate: true,
-                        step_order: index + 1,
-                        lead_id: leadId,
-                        status: "pending",
-                        completed_at: null,
-                        notes: "",
-                        due_date: null,
-                      });
-                    },
-                  );
-                }
-
-                // Add actual lead steps after template steps
-                leadSteps.forEach((leadStep: any) => {
-                  allSteps.push({
-                    ...leadStep,
-                    isTemplate: false,
-                  });
-                });
+                // Only show actual lead steps in the draggable pipeline
+                const allSteps = leadSteps;
 
                 // Show loading state if steps are still loading
                 if (stepsLoading) {
@@ -836,22 +845,31 @@ export default function LeadDetails() {
                   );
                 }
 
-                // Show the unified pipeline
+                // Show empty state or steps
                 if (allSteps.length === 0) {
                   return (
                     <div className="text-center py-8 text-gray-500">
                       <Target className="w-12 h-12 mx-auto mb-4 text-gray-300" />
                       <h3 className="text-lg font-medium text-gray-900 mb-2">
-                        No pipeline steps yet
+                        No lead steps yet
                       </h3>
                       <p className="text-gray-600 mb-4">
-                        Create custom steps to track your sales process for this
-                        lead
+                        {templateData?.steps && templateData.steps.length > 0
+                          ? `This lead uses the "${templateData.name}" template. Create lead-specific steps to start tracking progress.`
+                          : "Create custom steps to track your sales process for this lead."
+                        }
                       </p>
-                      <Button onClick={() => setNewStepDialog(true)}>
-                        <Plus className="w-4 h-4 mr-2" />
-                        Add First Step
-                      </Button>
+                      <div className="space-y-2">
+                        <Button onClick={() => setNewStepDialog(true)}>
+                          <Plus className="w-4 h-4 mr-2" />
+                          Add Lead Step
+                        </Button>
+                        {templateData?.steps && templateData.steps.length > 0 && (
+                          <div className="text-xs text-blue-600">
+                            💡 Tip: You can create lead-specific steps based on the template, or add completely custom steps.
+                          </div>
+                        )}
+                      </div>
                     </div>
                   );
                 } else {
