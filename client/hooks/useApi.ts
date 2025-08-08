@@ -1180,7 +1180,9 @@ export function useUpdateLeadStep() {
     mutationFn: ({ stepId, stepData }: { stepId: number; stepData: any }) =>
       apiClient.updateLeadStep(stepId, stepData),
     onSuccess: () => {
+      // Invalidate both lead steps and lead data to refresh probability
       queryClient.invalidateQueries({ queryKey: ["lead-steps"] });
+      queryClient.invalidateQueries({ queryKey: ["lead"] });
     },
   });
 }
