@@ -889,7 +889,11 @@ router.get("/:leadId/steps", async (req: Request, res: Response) => {
         if (templateId) {
           // First check if lead steps already exist
           const existingLeadStepsQuery = `
-            SELECT * FROM lead_steps WHERE lead_id = $1 ORDER BY step_order ASC
+            SELECT id, lead_id, name, description, status, step_order, due_date, completed_date,
+                   estimated_days, probability_percent, assigned_to, created_at, updated_at
+            FROM lead_steps
+            WHERE lead_id = $1
+            ORDER BY step_order ASC
           `;
           const existingLeadStepsResult = await pool.query(
             existingLeadStepsQuery,
