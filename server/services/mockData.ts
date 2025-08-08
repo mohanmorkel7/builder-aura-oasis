@@ -1506,6 +1506,9 @@ export class MockDataService {
       this.calculatedProbabilities[originalStep.lead_id] = newProbability;
     }
 
+    // Store the updated step for future getLeadSteps calls
+    this.updatedSteps[stepId] = updatedStep;
+
     console.log(`MockDataService.updateLeadStep: Updated step:`, updatedStep);
     return updatedStep;
   }
