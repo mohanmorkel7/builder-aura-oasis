@@ -412,6 +412,7 @@ router.get("/", async (req: Request, res: Response) => {
           client_name: "FinanceFirst Bank",
           lead_client_name: "FinanceFirst Bank",
           lead_project_title: "Data Analytics Dashboard",
+          step_name: "Initial Contact",
         },
       ];
 
