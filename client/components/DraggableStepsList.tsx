@@ -59,8 +59,21 @@ export function DraggableStepsList({
   }, [steps]);
 
   const handleUpdateStatus = (stepId: number, status: string) => {
+    const step = items.find(item => item.id === stepId);
+    if (!step) {
+      console.error("Step not found:", stepId);
+      return;
+    }
+
+    // Don't allow status updates on template steps
+    if (step.isTemplate) {
+      console.warn("Cannot update status on template step:", stepId);
+      alert("Cannot update status on template steps. Please create actual lead steps first.");
+      return;
+    }
+
     const stepData = { status };
-    console.log("Updating step status:", stepId, "to:", status);
+    console.log("Updating lead step status:", stepId, "to:", status);
     updateStepMutation.mutate({ stepId, stepData });
   };
 
