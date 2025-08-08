@@ -459,7 +459,9 @@ export function EnhancedStepItem({
               variant="ghost"
               size="sm"
               onClick={() => {
-                console.log(`Delete button clicked for step ${step.id}, isTemplate: ${step.isTemplate}`);
+                console.log(
+                  `Delete button clicked for step ${step.id}, isTemplate: ${step.isTemplate}`,
+                );
                 if (step.isTemplate) {
                   console.log("Cannot delete template step");
                   return null;
