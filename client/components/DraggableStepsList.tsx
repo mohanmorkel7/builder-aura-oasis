@@ -55,7 +55,37 @@ export function DraggableStepsList({
   );
 
   React.useEffect(() => {
-    setItems(steps);
+    console.log(
+      "DraggableStepsList received steps:",
+      steps.map((s) => ({ id: s.id, name: s.name })),
+    );
+
+    // Deduplicate steps by ID to prevent React key conflicts
+    const uniqueSteps = steps.filter(
+      (step, index, self) => index === self.findIndex((s) => s.id === step.id),
+    );
+
+    if (uniqueSteps.length !== steps.length) {
+      console.warn(
+        `Removed ${steps.length - uniqueSteps.length} duplicate steps`,
+      );
+      console.warn("Original steps:", steps);
+      console.warn("Unique steps:", uniqueSteps);
+    }
+
+    // Additional validation
+    const idCounts = {};
+    steps.forEach((step) => {
+      idCounts[step.id] = (idCounts[step.id] || 0) + 1;
+    });
+
+    Object.entries(idCounts).forEach(([id, count]) => {
+      if (count > 1) {
+        console.error(`Step ID ${id} appears ${count} times`);
+      }
+    });
+
+    setItems(uniqueSteps);
   }, [steps]);
 
   const handleUpdateStatus = (stepId: number, status: string) => {
@@ -145,9 +175,9 @@ export function DraggableStepsList({
         strategy={verticalListSortingStrategy}
       >
         <div className="space-y-4">
-          {items.map((step) => (
+          {items.map((step, index) => (
             <EnhancedStepItem
-              key={step.id}
+              key={`${step.id}-${index}`}
               step={step}
               isExpanded={expandedSteps.has(step.id)}
               onToggleExpansion={() => onToggleExpansion(step.id)}

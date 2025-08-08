@@ -41,6 +41,7 @@ import {
   Target,
 } from "lucide-react";
 import { formatToIST, formatToISTDateTime, isOverdue } from "@/lib/dateUtils";
+import { updateFollowUpStatusWithNotification } from "@/utils/followUpUtils";
 
 interface FollowUp {
   id: number;
@@ -232,30 +233,50 @@ export default function FollowUpTracker() {
       const completedAt =
         newStatus === "completed" ? new Date().toISOString() : null;
 
-      const response = await fetch(`/api/follow-ups/${followUpId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          status: newStatus,
-          completed_at: completedAt,
-        }),
-      });
+      // Find the follow-up to get step_id and title for notification
+      const followUp = followUps.find((f) => f.id === followUpId);
 
-      if (response.ok) {
-        // Update local state
-        setFollowUps((prevFollowUps) =>
-          prevFollowUps.map((f) =>
-            f.id === followUpId
-              ? { ...f, status: newStatus as any, completed_at: completedAt }
-              : f,
-          ),
+      if (followUp && user) {
+        // Use the utility function that includes chat notification
+        await updateFollowUpStatusWithNotification(
+          followUpId,
+          { status: newStatus, completed_at: completedAt },
+          {
+            stepId: followUp.step_id,
+            userId: parseInt(user.id),
+            userName: user.name,
+            followUpTitle:
+              followUp.original_message?.substring(0, 50) + "..." ||
+              `Follow-up #${followUpId}`,
+          },
         );
-        console.log(`Follow-up ${followUpId} status updated to ${newStatus}`);
       } else {
-        throw new Error("Failed to update status");
+        // Fallback to original method if follow-up not found or no user
+        const response = await fetch(`/api/follow-ups/${followUpId}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            status: newStatus,
+            completed_at: completedAt,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to update status");
+        }
       }
+
+      // Update local state
+      setFollowUps((prevFollowUps) =>
+        prevFollowUps.map((f) =>
+          f.id === followUpId
+            ? { ...f, status: newStatus as any, completed_at: completedAt }
+            : f,
+        ),
+      );
+      console.log(`Follow-up ${followUpId} status updated to ${newStatus}`);
     } catch (error) {
       console.error("Failed to update follow-up status:", error);
       alert("Failed to update status. Please try again.");

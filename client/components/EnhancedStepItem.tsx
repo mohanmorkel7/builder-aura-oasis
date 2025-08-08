@@ -6,6 +6,8 @@ import { RichTextEditor } from "./RichTextEditor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -49,7 +51,11 @@ import {
   Eye,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
-import { useStepChats, useCreateStepChat } from "@/hooks/useApi";
+import {
+  useStepChats,
+  useCreateStepChat,
+  useCreateFollowUp,
+} from "@/hooks/useApi";
 import { apiClient } from "@/lib/api";
 import { formatToISTDateTime } from "@/lib/dateUtils";
 
@@ -108,14 +114,31 @@ export function EnhancedStepItem({
     error: chatError,
   } = useStepChats(step.isTemplate ? 0 : step.id);
   const createChatMutation = useCreateStepChat();
+  const createFollowUpMutation = useCreateFollowUp();
 
   // Sort messages by created_at in ascending order (latest last for bottom scroll)
   const sortedMessages = React.useMemo(() => {
-    return [...chatMessages].sort(
+    const sorted = [...chatMessages].sort(
       (a, b) =>
         new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
     );
-  }, [chatMessages]);
+
+    // Debug: Check for duplicate message IDs
+    const idCounts = {};
+    sorted.forEach((msg) => {
+      idCounts[msg.id] = (idCounts[msg.id] || 0) + 1;
+    });
+
+    Object.entries(idCounts).forEach(([id, count]) => {
+      if (count > 1) {
+        console.error(
+          `EnhancedStepItem: Message ID ${id} appears ${count} times in step ${step.id}`,
+        );
+      }
+    });
+
+    return sorted;
+  }, [chatMessages, step.id]);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -134,6 +157,12 @@ export function EnhancedStepItem({
 
   const [newMessage, setNewMessage] = useState("");
   const [stagedAttachments, setStagedAttachments] = useState<any[]>([]);
+
+  // Follow-up related states
+  const [createFollowUp, setCreateFollowUp] = useState(false);
+  const [followUpNotes, setFollowUpNotes] = useState("");
+  const [followUpAssignTo, setFollowUpAssignTo] = useState("");
+  const [followUpDueDate, setFollowUpDueDate] = useState("");
 
   // Function to highlight mentions and make follow-up IDs clickable
   const processMessageContent = (messageText: string) => {
@@ -228,8 +257,59 @@ export function EnhancedStepItem({
         chatData,
       });
       console.log("Message sent successfully:", result);
+
+      // Create follow-up if checkbox is checked
+      if (
+        createFollowUp &&
+        (followUpNotes.trim() || followUpAssignTo || followUpDueDate)
+      ) {
+        try {
+          const followUpData = {
+            title: `Follow-up: ${step.name}`,
+            description:
+              followUpNotes.trim() || `Follow-up for message: ${messageText}`,
+            priority: "medium" as const,
+            status: "pending" as const,
+            assigned_to: followUpAssignTo || user.id,
+            due_date: followUpDueDate || undefined,
+            lead_id: step.lead_id,
+            step_id: step.id,
+            created_by: parseInt(user.id),
+          };
+
+          const followUpResult =
+            await createFollowUpMutation.mutateAsync(followUpData);
+          console.log("Follow-up created successfully:", followUpResult);
+
+          // Add a system message to chat indicating follow-up was created
+          const systemChatData = {
+            user_id: parseInt(user.id),
+            user_name: user.name,
+            message: `📋 Follow-up task created: "${followUpData.title}" - Due: ${followUpDueDate || "No due date"} - Assigned to: ${followUpAssignTo || "Myself"}`,
+            message_type: "system" as const,
+            is_rich_text: false,
+          };
+
+          await createChatMutation.mutateAsync({
+            stepId: step.id,
+            chatData: systemChatData,
+          });
+        } catch (followUpError) {
+          console.error("Failed to create follow-up:", followUpError);
+          alert(
+            "Message sent, but failed to create follow-up. Please create it manually.",
+          );
+        }
+      }
+
+      // Reset form
       setNewMessage("");
       setStagedAttachments([]);
+      setCreateFollowUp(false);
+      setFollowUpNotes("");
+      setFollowUpAssignTo("");
+      setFollowUpDueDate("");
+
       // Scroll to bottom after sending message (longer delay to ensure refetch completes)
       setTimeout(() => {
         if (messagesContainerRef.current) {
@@ -435,9 +515,9 @@ export function EnhancedStepItem({
                     )}
                     {!chatLoading &&
                       !chatError &&
-                      sortedMessages.map((message) => (
+                      sortedMessages.map((message, index) => (
                         <div
-                          key={message.id}
+                          key={`msg-${message.id}-${index}`}
                           className={`flex space-x-3 p-3 rounded border ${
                             message.message_type === "system"
                               ? "bg-blue-50 border-blue-200"
@@ -506,7 +586,7 @@ export function EnhancedStepItem({
                                   {message.attachments.map(
                                     (attachment, index) => (
                                       <div
-                                        key={index}
+                                        key={`attachment-${attachment.file_name}-${index}`}
                                         className="flex items-center space-x-3 p-2 bg-gray-50 rounded-lg border"
                                       >
                                         <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -676,7 +756,7 @@ export function EnhancedStepItem({
                           <div className="space-y-2">
                             {stagedAttachments.map((attachment, index) => (
                               <div
-                                key={index}
+                                key={`staged-${attachment.file_name}-${index}`}
                                 className="flex items-center justify-between p-2 bg-white border rounded"
                               >
                                 <div className="flex items-center space-x-2">
@@ -713,6 +793,101 @@ export function EnhancedStepItem({
                           placeholder="Type your message with rich formatting..."
                           className="min-h-[80px] border-gray-200"
                         />
+                      </div>
+
+                      {/* Follow-up checkbox and form */}
+                      <div className="mb-3 border-t border-gray-200 pt-3">
+                        <div className="flex items-center space-x-2 mb-3">
+                          <Checkbox
+                            id="create-followup"
+                            checked={createFollowUp}
+                            onCheckedChange={(checked) =>
+                              setCreateFollowUp(checked as boolean)
+                            }
+                          />
+                          <Label
+                            htmlFor="create-followup"
+                            className="text-sm font-medium"
+                          >
+                            Create follow-up task
+                          </Label>
+                        </div>
+
+                        {createFollowUp && (
+                          <div className="space-y-3 pl-6 border-l-2 border-blue-200 bg-blue-50 p-3 rounded">
+                            <div>
+                              <Label
+                                htmlFor="followup-notes"
+                                className="text-sm font-medium"
+                              >
+                                Follow-up Notes
+                              </Label>
+                              <Input
+                                id="followup-notes"
+                                placeholder="Enter follow-up notes..."
+                                value={followUpNotes}
+                                onChange={(e) =>
+                                  setFollowUpNotes(e.target.value)
+                                }
+                                className="mt-1"
+                              />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3">
+                              <div>
+                                <Label
+                                  htmlFor="followup-assign"
+                                  className="text-sm font-medium"
+                                >
+                                  Assign To
+                                </Label>
+                                <Select
+                                  value={followUpAssignTo}
+                                  onValueChange={setFollowUpAssignTo}
+                                >
+                                  <SelectTrigger
+                                    id="followup-assign"
+                                    className="mt-1"
+                                  >
+                                    <SelectValue placeholder="Select assignee" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value={user?.id || ""}>
+                                      Myself
+                                    </SelectItem>
+                                    <SelectItem value="sales-team">
+                                      Sales Team
+                                    </SelectItem>
+                                    <SelectItem value="manager">
+                                      Manager
+                                    </SelectItem>
+                                    <SelectItem value="support">
+                                      Support Team
+                                    </SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+
+                              <div>
+                                <Label
+                                  htmlFor="followup-date"
+                                  className="text-sm font-medium"
+                                >
+                                  Due Date
+                                </Label>
+                                <Input
+                                  id="followup-date"
+                                  type="date"
+                                  value={followUpDueDate}
+                                  onChange={(e) =>
+                                    setFollowUpDueDate(e.target.value)
+                                  }
+                                  className="mt-1"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        )}
                       </div>
 
                       <div className="flex justify-between items-center">
