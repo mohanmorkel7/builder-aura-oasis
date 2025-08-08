@@ -1067,7 +1067,7 @@ export default function LeadDetails() {
             <CardContent className="space-y-4">
               <div className="text-center">
                 <div className="text-sm text-gray-500">
-                  {leadData.probability || 0}% probability
+                  {completionPercentage}% probability
                 </div>
               </div>
 
@@ -1122,25 +1122,6 @@ export default function LeadDetails() {
                 </Button>
               )}
 
-              <Button
-                className="w-full justify-start"
-                variant="outline"
-                onClick={() =>
-                  navigate(`/leads/${id}/follow-up`, {
-                    state: {
-                      fromQuickAction: true,
-                      leadId: id,
-                      stepName: "Quick Action",
-                      messageId: null,
-                      createSystemMessage: false,
-                    },
-                  })
-                }
-              >
-                <Calendar className="w-4 h-4 mr-2" />
-                Schedule Follow-up
-              </Button>
-
               {leadData.contacts &&
               leadData.contacts.length > 0 &&
               leadData.contacts[0].phone ? (
@@ -1164,38 +1145,6 @@ export default function LeadDetails() {
                   Make Call (No phone available)
                 </Button>
               )}
-
-              <Button
-                className="w-full justify-start"
-                variant="outline"
-                onClick={() =>
-                  navigate(`/leads/${id}/proposal`, {
-                    state: {
-                      leadData: leadData,
-                    },
-                  })
-                }
-              >
-                <Target className="w-4 h-4 mr-2" />
-                Create Proposal
-              </Button>
-
-              <Separator />
-
-              <Button
-                className="w-full justify-start"
-                variant="outline"
-                onClick={() =>
-                  navigate(`/leads/${id}/pipeline-settings`, {
-                    state: {
-                      leadData: leadData,
-                    },
-                  })
-                }
-              >
-                <Settings className="w-4 h-4 mr-2" />
-                Pipeline Settings
-              </Button>
             </CardContent>
           </Card>
         </div>
