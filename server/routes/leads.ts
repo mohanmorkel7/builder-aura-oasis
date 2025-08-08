@@ -909,7 +909,9 @@ router.get("/:leadId/steps", async (req: Request, res: Response) => {
 
           if (existingLeadStepsResult.rows.length > 0) {
             // Lead steps already exist, return them
-            console.log(`✅ Found ${existingLeadStepsResult.rows.length} existing lead steps`);
+            console.log(
+              `✅ Found ${existingLeadStepsResult.rows.length} existing lead steps`,
+            );
             steps = existingLeadStepsResult.rows;
           } else {
             // No lead steps exist, create them from template steps
@@ -974,7 +976,9 @@ router.get("/:leadId/steps", async (req: Request, res: Response) => {
           }
         } else {
           // No template assigned, use mock data
-          console.log(`⚠️  No template assigned to lead ${leadId}, using mock data`);
+          console.log(
+            `⚠️  No template assigned to lead ${leadId}, using mock data`,
+          );
           steps = await MockDataService.getLeadSteps(leadId);
         }
       } else {

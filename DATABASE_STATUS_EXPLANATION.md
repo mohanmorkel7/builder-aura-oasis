@@ -5,11 +5,13 @@
 The application is currently using **mock data** for lead steps because the PostgreSQL database is not available in this environment.
 
 ### Evidence from Server Logs:
+
 ```
 Database not available: connect ECONNREFUSED 127.0.0.1:5432
 ```
 
 This means:
+
 - The app attempts to connect to PostgreSQL at `localhost:5432`
 - Connection fails, so it gracefully falls back to mock data
 - This is **expected behavior** and the app is working correctly
@@ -18,7 +20,8 @@ This means:
 
 The `/api/leads/:leadId/steps` endpoint follows this logic:
 
-1. **Try Database First**: 
+1. **Try Database First**:
+
    - Check if database is available
    - Get lead's template_id
    - Fetch existing lead_steps or create them from template_steps
@@ -32,6 +35,7 @@ The `/api/leads/:leadId/steps` endpoint follows this logic:
 ## Template Steps in "Add New Step" Modal
 
 The Steps Overview now correctly shows:
+
 - **Template steps** from `/api/templates-production/:id` endpoint
 - Each step with its probability_percent value
 - Real-time totals and 100% validation
@@ -42,6 +46,7 @@ The Steps Overview now correctly shows:
 To switch from mock data to real database data:
 
 1. **Start PostgreSQL Server**:
+
    ```bash
    # On local development
    pg_ctl start -D /usr/local/var/postgres
@@ -50,11 +55,13 @@ To switch from mock data to real database data:
    ```
 
 2. **Run Database Migration**:
+
    ```bash
    node server/database/migrate-probability-fields.js
    ```
 
 3. **Verify Connection**:
+
    ```bash
    node server/check-probability-field.js
    ```
@@ -69,16 +76,18 @@ To switch from mock data to real database data:
 The mock data includes:
 
 ### Lead Steps (for lead ID 1):
+
 - Initial Contact & Discovery: 20%
-- Needs Assessment & Demo: 25%  
+- Needs Assessment & Demo: 25%
 - Proposal Preparation: 30%
 - Proposal Review & Negotiation: 15%
 - Contract Finalization: 10%
 - Total: 100%
 
 ### Template Steps:
+
 - Template 1: 5 steps totaling 100%
-- Template 2: 8 steps totaling 100%  
+- Template 2: 8 steps totaling 100%
 - Template 3: 3 steps totaling 100%
 
 ## Summary
