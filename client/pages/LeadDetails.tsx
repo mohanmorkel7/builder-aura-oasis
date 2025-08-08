@@ -820,7 +820,7 @@ export default function LeadDetails() {
                       {(leadSteps && leadSteps.length > 0) || (templateData?.steps && templateData.steps.length > 0) ? (
                         <div className="p-2 bg-blue-50 border border-blue-200 rounded-md">
                           <div className="text-xs font-medium text-blue-900 mb-1">
-                            📊 Steps Overview (
+                            ���� Steps Overview (
                             {(() => {
                               const currentTotal = leadSteps ? leadSteps.reduce(
                                 (sum: number, step: any) => sum + (step.probability_percent || 0), 0
@@ -959,7 +959,13 @@ export default function LeadDetails() {
                                 probability_percent: e.target.value,
                               }))
                             }
-                            placeholder="0"
+                            placeholder={(() => {
+                              const currentTotal = leadSteps ? leadSteps.reduce(
+                                (sum: number, step: any) => sum + (step.probability_percent || 0), 0
+                              ) : 0;
+                              const remaining = Math.max(0, 100 - currentTotal);
+                              return remaining > 0 ? remaining.toString() : "0";
+                            })()}
                           />
                         </div>
                       </div>
