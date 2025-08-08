@@ -228,7 +228,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   // Fetch real notifications on component mount
   React.useEffect(() => {
     const fetchNotifications = async () => {
-      if (user) {
+      if (user && notificationsEnabled) {
         try {
           console.log("Fetching notifications for user:", user.name);
           const realNotifications = await getNotificationsFromFollowUps(
