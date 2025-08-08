@@ -1612,6 +1612,29 @@ export class MockDataService {
     return filteredChats;
   }
 
+  static async deleteLeadStep(stepId: number) {
+    console.log(`MockDataService.deleteLeadStep: Deleting step ${stepId}`);
+
+    // Remove from leadSteps if it exists
+    const stepIndex = this.leadSteps.findIndex(step => step.id === stepId);
+    if (stepIndex !== -1) {
+      const deletedStep = this.leadSteps.splice(stepIndex, 1)[0];
+      console.log(`MockDataService.deleteLeadStep: Removed step from leadSteps:`, deletedStep);
+    }
+
+    // Remove all associated chat messages
+    const initialChatCount = this.chatMessages.length;
+    this.chatMessages = this.chatMessages.filter(chat => chat.step_id !== stepId);
+    const removedChatCount = initialChatCount - this.chatMessages.length;
+
+    if (removedChatCount > 0) {
+      console.log(`MockDataService.deleteLeadStep: Removed ${removedChatCount} chat messages for step ${stepId}`);
+    }
+
+    console.log(`MockDataService.deleteLeadStep: Step ${stepId} deletion complete`);
+    return true;
+  }
+
   static async createStepChat(stepId: number, chatData: any) {
     // For mock data, we'll accept any step_id and create the chat
     // This allows follow-ups with any step_id to work when database is unavailable
