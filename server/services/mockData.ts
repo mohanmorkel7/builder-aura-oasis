@@ -1504,10 +1504,8 @@ export class MockDataService {
 
         if (currentStatus === "completed") {
           totalCompletedProbability += stepProbability;
-        } else if (currentStatus === "in-progress") {
-          totalCompletedProbability += stepProbability * 0.5;
         }
-        // pending, cancelled, blocked steps contribute 0
+        // Only completed steps contribute to progress
       });
 
       const newProbability =
