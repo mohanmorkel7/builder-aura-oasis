@@ -442,11 +442,6 @@ export default function LeadDetails() {
                             </span>
                             <span className="font-medium">
                               {Math.round(stepProbability)}%
-                              {step.status === "in_progress" && (
-                                <span className="text-blue-600 ml-1">
-                                  (50%)
-                                </span>
-                              )}
                             </span>
                           </div>
                         );
