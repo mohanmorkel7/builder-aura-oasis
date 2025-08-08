@@ -237,8 +237,53 @@ export function EnhancedStepItem({
         chatData,
       });
       console.log("Message sent successfully:", result);
+
+      // Create follow-up if checkbox is checked
+      if (createFollowUp && (followUpNotes.trim() || followUpAssignTo || followUpDueDate)) {
+        try {
+          const followUpData = {
+            title: `Follow-up: ${step.name}`,
+            description: followUpNotes.trim() || `Follow-up for message: ${messageText}`,
+            priority: 'medium' as const,
+            status: 'pending' as const,
+            assigned_to: followUpAssignTo || user.id,
+            due_date: followUpDueDate || undefined,
+            lead_id: step.lead_id,
+            step_id: step.id,
+            created_by: parseInt(user.id),
+          };
+
+          const followUpResult = await createFollowUpMutation.mutateAsync(followUpData);
+          console.log("Follow-up created successfully:", followUpResult);
+
+          // Add a system message to chat indicating follow-up was created
+          const systemChatData = {
+            user_id: parseInt(user.id),
+            user_name: user.name,
+            message: `📋 Follow-up task created: "${followUpData.title}" - Due: ${followUpDueDate || 'No due date'} - Assigned to: ${followUpAssignTo || 'Myself'}`,
+            message_type: "system" as const,
+            is_rich_text: false,
+          };
+
+          await createChatMutation.mutateAsync({
+            stepId: step.id,
+            chatData: systemChatData,
+          });
+
+        } catch (followUpError) {
+          console.error("Failed to create follow-up:", followUpError);
+          alert("Message sent, but failed to create follow-up. Please create it manually.");
+        }
+      }
+
+      // Reset form
       setNewMessage("");
       setStagedAttachments([]);
+      setCreateFollowUp(false);
+      setFollowUpNotes("");
+      setFollowUpAssignTo("");
+      setFollowUpDueDate("");
+
       // Scroll to bottom after sending message (longer delay to ensure refetch completes)
       setTimeout(() => {
         if (messagesContainerRef.current) {
