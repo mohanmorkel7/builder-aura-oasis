@@ -80,12 +80,16 @@ router.post("/", async (req: Request, res: Response) => {
               ADD COLUMN IF NOT EXISTS follow_up_type VARCHAR(50) DEFAULT 'general'
             `);
 
-            // Drop and recreate constraint
+            // Drop and recreate constraints
             await pool.query(`
               ALTER TABLE follow_ups DROP CONSTRAINT IF EXISTS follow_ups_follow_up_type_check;
+              ALTER TABLE follow_ups DROP CONSTRAINT IF EXISTS follow_ups_status_check;
               ALTER TABLE follow_ups
               ADD CONSTRAINT follow_ups_follow_up_type_check
-              CHECK (follow_up_type IN ('call', 'email', 'meeting', 'document', 'proposal', 'contract', 'onboarding', 'general', 'sales', 'support', 'other'))
+              CHECK (follow_up_type IN ('call', 'email', 'meeting', 'document', 'proposal', 'contract', 'onboarding', 'general', 'sales', 'support', 'other'));
+              ALTER TABLE follow_ups
+              ADD CONSTRAINT follow_ups_status_check
+              CHECK (status IN ('pending', 'in_progress', 'completed', 'overdue'))
             `);
 
             console.log("Migration completed, retrying insert...");
