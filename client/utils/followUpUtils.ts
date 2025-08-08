@@ -52,6 +52,7 @@ export async function notifyFollowUpStatusChange(
   };
 
   try {
+    console.log("Creating chat notification for step:", stepId, "with data:", chatData);
     // Create the system message in the step's chat
     const response = await fetch(`/api/leads/steps/${stepId}/chats`, {
       method: "POST",
