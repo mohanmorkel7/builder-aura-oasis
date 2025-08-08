@@ -925,20 +925,26 @@ router.get("/:leadId/steps", async (req: Request, res: Response) => {
             ]);
 
             // Check for any mismatches between lead steps and template probabilities
-            const stepsNeedingSync = existingLeadStepsResult.rows.filter((leadStep) => {
-              const matchingTemplate = templateStepsResult.rows.find(
-                (ts) =>
-                  ts.step_order === leadStep.step_order &&
-                  ts.name.toLowerCase().trim() === leadStep.name.toLowerCase().trim(),
-              );
+            const stepsNeedingSync = existingLeadStepsResult.rows.filter(
+              (leadStep) => {
+                const matchingTemplate = templateStepsResult.rows.find(
+                  (ts) =>
+                    ts.step_order === leadStep.step_order &&
+                    ts.name.toLowerCase().trim() ===
+                      leadStep.name.toLowerCase().trim(),
+                );
 
-              if (!matchingTemplate) return false;
+                if (!matchingTemplate) return false;
 
-              // Sync if probability is missing/0 OR if it doesn't match template
-              return !leadStep.probability_percent ||
-                     leadStep.probability_percent === 0 ||
-                     leadStep.probability_percent !== matchingTemplate.probability_percent;
-            });
+                // Sync if probability is missing/0 OR if it doesn't match template
+                return (
+                  !leadStep.probability_percent ||
+                  leadStep.probability_percent === 0 ||
+                  leadStep.probability_percent !==
+                    matchingTemplate.probability_percent
+                );
+              },
+            );
 
             if (stepsNeedingSync.length > 0) {
               console.log(

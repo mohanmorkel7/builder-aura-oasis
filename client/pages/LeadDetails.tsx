@@ -159,7 +159,7 @@ export default function LeadDetails() {
               name: s.name,
               status: s.status,
               probability_percent: prob,
-              contribution: contribution
+              contribution: contribution,
             };
           }),
         });

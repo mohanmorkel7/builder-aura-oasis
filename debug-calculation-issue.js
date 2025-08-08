@@ -32,28 +32,36 @@ async function debugCalculationIssue() {
 
       // 1. Get template steps for this lead
       console.log("📋 TEMPLATE STEPS:");
-      const templateSteps = await pool.query(`
+      const templateSteps = await pool.query(
+        `
         SELECT id, name, step_order, probability_percent
         FROM template_steps 
         WHERE template_id = $1 
         ORDER BY step_order
-      `, [lead.template_id]);
+      `,
+        [lead.template_id],
+      );
 
       let templateTotal = 0;
       templateSteps.rows.forEach((step, idx) => {
         templateTotal += step.probability_percent || 0;
-        console.log(`   ${idx + 1}. ${step.name}: ${step.probability_percent || 0}%`);
+        console.log(
+          `   ${idx + 1}. ${step.name}: ${step.probability_percent || 0}%`,
+        );
       });
       console.log(`   Template Total: ${templateTotal}%\n`);
 
       // 2. Get actual lead steps
       console.log("🎯 LEAD STEPS:");
-      const leadSteps = await pool.query(`
+      const leadSteps = await pool.query(
+        `
         SELECT id, name, step_order, status, probability_percent
         FROM lead_steps 
         WHERE lead_id = $1 
         ORDER BY step_order
-      `, [lead.id]);
+      `,
+        [lead.id],
+      );
 
       let leadStepTotal = 0;
       let completedTotal = 0;
@@ -72,7 +80,9 @@ async function debugCalculationIssue() {
           inProgressTotal += prob * 0.5;
         }
 
-        console.log(`   ${idx + 1}. ${step.name}: ${prob}% (${step.status}) → ${contribution}%`);
+        console.log(
+          `   ${idx + 1}. ${step.name}: ${prob}% (${step.status}) → ${contribution}%`,
+        );
       });
 
       console.log(`   Lead Steps Total: ${leadStepTotal}%`);
@@ -80,43 +90,56 @@ async function debugCalculationIssue() {
       console.log(`   In-Progress Contribution: ${inProgressTotal}%`);
 
       const totalContribution = completedTotal + inProgressTotal;
-      const calculatedPercentage = leadStepTotal > 0 
-        ? Math.min(100, Math.round((totalContribution / leadStepTotal) * 100))
-        : 0;
+      const calculatedPercentage =
+        leadStepTotal > 0
+          ? Math.min(100, Math.round((totalContribution / leadStepTotal) * 100))
+          : 0;
 
       console.log(`   📊 CALCULATION:`);
-      console.log(`      Formula: (${totalContribution} / ${leadStepTotal}) * 100`);
+      console.log(
+        `      Formula: (${totalContribution} / ${leadStepTotal}) * 100`,
+      );
       console.log(`      Calculated: ${calculatedPercentage}%`);
       console.log(`      Stored: ${lead.probability}%`);
-      console.log(`      Match: ${calculatedPercentage === lead.probability ? "✅" : "❌"}\n`);
+      console.log(
+        `      Match: ${calculatedPercentage === lead.probability ? "✅" : "❌"}\n`,
+      );
 
       // 3. Check for mismatches between template and lead steps
       console.log("🔍 TEMPLATE vs LEAD STEP COMPARISON:");
       const mismatches = [];
 
       for (const leadStep of leadSteps.rows) {
-        const matchingTemplate = templateSteps.rows.find(ts => 
-          ts.step_order === leadStep.step_order && 
-          ts.name.toLowerCase().trim() === leadStep.name.toLowerCase().trim()
+        const matchingTemplate = templateSteps.rows.find(
+          (ts) =>
+            ts.step_order === leadStep.step_order &&
+            ts.name.toLowerCase().trim() === leadStep.name.toLowerCase().trim(),
         );
 
         if (matchingTemplate) {
-          if ((leadStep.probability_percent || 0) !== (matchingTemplate.probability_percent || 0)) {
+          if (
+            (leadStep.probability_percent || 0) !==
+            (matchingTemplate.probability_percent || 0)
+          ) {
             mismatches.push({
               stepName: leadStep.name,
               leadProb: leadStep.probability_percent || 0,
-              templateProb: matchingTemplate.probability_percent || 0
+              templateProb: matchingTemplate.probability_percent || 0,
             });
           }
         } else {
-          console.log(`   ⚠️  Lead step "${leadStep.name}" has no matching template step`);
+          console.log(
+            `   ⚠️  Lead step "${leadStep.name}" has no matching template step`,
+          );
         }
       }
 
       if (mismatches.length > 0) {
         console.log("   ❌ PROBABILITY MISMATCHES FOUND:");
-        mismatches.forEach(mismatch => {
-          console.log(`      "${mismatch.stepName}": Lead=${mismatch.leadProb}%, Template=${mismatch.templateProb}%`);
+        mismatches.forEach((mismatch) => {
+          console.log(
+            `      "${mismatch.stepName}": Lead=${mismatch.leadProb}%, Template=${mismatch.templateProb}%`,
+          );
         });
       } else {
         console.log("   ✅ All probabilities match template values");
@@ -134,24 +157,25 @@ async function debugCalculationIssue() {
       if (response.ok) {
         const apiSteps = await response.json();
         console.log(`✅ API returned ${apiSteps.length} steps`);
-        
+
         let apiTotal = 0;
         let apiCompleted = 0;
-        
+
         apiSteps.forEach((step, idx) => {
           const prob = step.probability_percent || 0;
           apiTotal += prob;
-          
+
           if (step.status === "completed") {
             apiCompleted += prob;
           } else if (step.status === "in_progress") {
             apiCompleted += prob * 0.5;
           }
-          
+
           console.log(`   ${idx + 1}. ${step.name}: ${prob}% (${step.status})`);
         });
 
-        const apiCalculated = apiTotal > 0 ? Math.round((apiCompleted / apiTotal) * 100) : 0;
+        const apiCalculated =
+          apiTotal > 0 ? Math.round((apiCompleted / apiTotal) * 100) : 0;
         console.log(`\n📊 API Calculation: ${apiCalculated}%`);
         console.log(`   Total: ${apiTotal}%, Completed: ${apiCompleted}%`);
       } else {
@@ -160,7 +184,6 @@ async function debugCalculationIssue() {
     } catch (apiError) {
       console.log(`❌ API Error: ${apiError.message}`);
     }
-
   } catch (error) {
     console.error("❌ Error:", error.message);
   } finally {
