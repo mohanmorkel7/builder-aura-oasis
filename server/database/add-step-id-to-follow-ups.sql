@@ -8,20 +8,9 @@ ADD COLUMN IF NOT EXISTS step_id INTEGER REFERENCES lead_steps(id) ON DELETE CAS
 CREATE INDEX IF NOT EXISTS idx_follow_ups_step_id ON follow_ups(step_id);
 
 -- Update status enum to include 'in_progress' if it doesn't exist
-DO $$
-BEGIN
-    -- First check if 'in_progress' is already in the constraint
-    IF NOT EXISTS (
-        SELECT 1 FROM pg_constraint 
-        WHERE conname = 'follow_ups_status_check' 
-        AND consrc LIKE '%in_progress%'
-    ) THEN
-        -- Drop and recreate the status check constraint with 'in_progress'
-        ALTER TABLE follow_ups DROP CONSTRAINT IF EXISTS follow_ups_status_check;
-        ALTER TABLE follow_ups ADD CONSTRAINT follow_ups_status_check 
-        CHECK (status IN ('pending', 'in_progress', 'completed', 'overdue'));
-    END IF;
-END
-$$;
+-- Drop and recreate the status check constraint with 'in_progress'
+ALTER TABLE follow_ups DROP CONSTRAINT IF EXISTS follow_ups_status_check;
+ALTER TABLE follow_ups ADD CONSTRAINT follow_ups_status_check
+CHECK (status IN ('pending', 'in_progress', 'completed', 'overdue'));
 
 COMMENT ON COLUMN follow_ups.step_id IS 'Links follow-up to specific lead step for chat notifications';
