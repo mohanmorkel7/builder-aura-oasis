@@ -503,9 +503,9 @@ export function EnhancedStepItem({
                     )}
                     {!chatLoading &&
                       !chatError &&
-                      sortedMessages.map((message) => (
+                      sortedMessages.map((message, index) => (
                         <div
-                          key={message.id}
+                          key={`msg-${message.id}-${index}`}
                           className={`flex space-x-3 p-3 rounded border ${
                             message.message_type === "system"
                               ? "bg-blue-50 border-blue-200"
