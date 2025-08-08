@@ -1514,7 +1514,7 @@ export class MockDataService {
         `Updated lead ${originalStep.lead_id} probability to ${newProbability}%`,
       );
       console.log(
-        `Calculation: (${totalCompletedProbability} / ${totalStepProbability}) * 100 = ${newProbability}%`,
+        `Calculation: Completed steps total = ${totalCompletedProbability}% (capped at 100%)`,
       );
 
       // Store the calculated probability for subsequent lead queries
