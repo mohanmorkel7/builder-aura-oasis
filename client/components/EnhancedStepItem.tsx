@@ -101,12 +101,12 @@ export function EnhancedStepItem({
     opacity: isDragging ? 0.5 : 1,
   };
 
-  // Fetch real chat data from API
+  // Fetch real chat data from API (only for actual lead steps)
   const {
     data: chatMessages = [],
     isLoading: chatLoading,
     error: chatError,
-  } = useStepChats(step.id);
+  } = useStepChats(step.isTemplate ? 0 : step.id);
   const createChatMutation = useCreateStepChat();
 
   // Sort messages by created_at in ascending order (latest last for bottom scroll)
