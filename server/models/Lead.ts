@@ -554,9 +554,9 @@ export class LeadRepository {
       const insertPromises = defaultSteps.map((step) => {
         const insertStepQuery = `
           INSERT INTO lead_steps (
-            lead_id, name, description, status, step_order, estimated_days
+            lead_id, name, description, status, step_order, estimated_days, probability_percent
           )
-          VALUES ($1, $2, $3, $4, $5, $6)
+          VALUES ($1, $2, $3, $4, $5, $6, $7)
         `;
 
         return pool.query(insertStepQuery, [
@@ -566,6 +566,7 @@ export class LeadRepository {
           "pending",
           step.step_order,
           step.estimated_days,
+          step.probability_percent || Math.floor(100 / defaultSteps.length),
         ]);
       });
 
