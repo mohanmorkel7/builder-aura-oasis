@@ -161,6 +161,7 @@ export default function LeadDetails() {
     name: "",
     description: "",
     due_date: "",
+    probability_percent: "",
   });
 
   const handleBack = () => {
