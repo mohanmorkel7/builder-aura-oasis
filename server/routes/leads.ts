@@ -935,8 +935,8 @@ router.get("/:leadId/steps", async (req: Request, res: Response) => {
               // Insert lead steps
               const insertPromises = leadStepsToCreate.map((stepData) => {
                 const insertQuery = `
-                  INSERT INTO lead_steps (lead_id, name, description, step_order, estimated_days, status, due_date, assigned_to)
-                  VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+                  INSERT INTO lead_steps (lead_id, name, description, step_order, estimated_days, probability_percent, status, due_date, assigned_to)
+                  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
                   RETURNING *
                 `;
                 return pool.query(insertQuery, [
@@ -945,6 +945,7 @@ router.get("/:leadId/steps", async (req: Request, res: Response) => {
                   stepData.description,
                   stepData.step_order,
                   stepData.estimated_days,
+                  stepData.probability_percent,
                   stepData.status,
                   stepData.due_date,
                   stepData.assigned_to,
