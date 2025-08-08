@@ -133,6 +133,7 @@ router.post("/", async (req: Request, res: Response) => {
       id: Date.now(),
       client_id: req.body.client_id,
       lead_id: req.body.lead_id,
+      step_id: req.body.step_id,
       title: req.body.title,
       description: req.body.description,
       due_date: req.body.due_date,
