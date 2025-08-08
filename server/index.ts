@@ -25,11 +25,13 @@ import finopsProductionRouter from "./routes/finops-production";
 export function createServer() {
   const app = express();
 
-  // Initialize database with enhanced schema
-  initializeDatabase().catch((error) => {
-    console.error("Database initialization failed:", error);
-    console.log("Server will continue with mock data fallback");
-  });
+  // Initialize database with enhanced schema (non-blocking)
+  setTimeout(() => {
+    initializeDatabase().catch((error) => {
+      console.error("Database initialization failed:", error);
+      console.log("Server will continue with mock data fallback");
+    });
+  }, 1000); // Delay initialization to prevent blocking server startup
 
   // Middleware
   app.use(cors());

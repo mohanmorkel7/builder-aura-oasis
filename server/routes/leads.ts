@@ -913,10 +913,37 @@ router.get("/:leadId/steps", async (req: Request, res: Response) => {
               `✅ Found ${existingLeadStepsResult.rows.length} existing lead steps`,
             );
 
-            // Check if any lead steps have 0 or null probability_percent
+            // Get template steps first to check for any mismatches
+            const templateStepsQuery = `
+              SELECT name, step_order, probability_percent
+              FROM template_steps
+              WHERE template_id = $1
+              ORDER BY step_order ASC
+            `;
+            const templateStepsResult = await pool.query(templateStepsQuery, [
+              templateId,
+            ]);
+
+            // Check for any mismatches between lead steps and template probabilities
             const stepsNeedingSync = existingLeadStepsResult.rows.filter(
-              (step) =>
-                !step.probability_percent || step.probability_percent === 0,
+              (leadStep) => {
+                const matchingTemplate = templateStepsResult.rows.find(
+                  (ts) =>
+                    ts.step_order === leadStep.step_order &&
+                    ts.name.toLowerCase().trim() ===
+                      leadStep.name.toLowerCase().trim(),
+                );
+
+                if (!matchingTemplate) return false;
+
+                // Sync if probability is missing/0 OR if it doesn't match template
+                return (
+                  !leadStep.probability_percent ||
+                  leadStep.probability_percent === 0 ||
+                  leadStep.probability_percent !==
+                    matchingTemplate.probability_percent
+                );
+              },
             );
 
             if (stepsNeedingSync.length > 0) {
@@ -924,18 +951,7 @@ router.get("/:leadId/steps", async (req: Request, res: Response) => {
                 `🔄 ${stepsNeedingSync.length} steps need probability sync from template`,
               );
 
-              // Get template steps to sync probabilities
-              const templateStepsQuery = `
-                SELECT name, step_order, probability_percent
-                FROM template_steps
-                WHERE template_id = $1
-                ORDER BY step_order ASC
-              `;
-              const templateStepsResult = await pool.query(templateStepsQuery, [
-                templateId,
-              ]);
-
-              // Update lead steps with template probabilities
+              // Update lead steps with template probabilities (using pre-fetched template steps)
               for (const leadStep of stepsNeedingSync) {
                 const matchingTemplate = templateStepsResult.rows.find(
                   (ts) =>

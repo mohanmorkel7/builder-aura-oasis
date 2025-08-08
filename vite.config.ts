@@ -15,6 +15,18 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     outDir: "dist/spa",
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ["react", "react-dom"],
+          router: ["react-router-dom"],
+          ui: ["@radix-ui/react-dialog", "@radix-ui/react-dropdown-menu"],
+        },
+      },
+    },
+  },
+  optimizeDeps: {
+    include: ["react", "react-dom", "react-router-dom"],
   },
   plugins: [react(), expressPlugin()],
   resolve: {
@@ -30,10 +42,22 @@ function expressPlugin(): Plugin {
     name: "express-plugin",
     apply: "serve", // Only apply during development (serve mode)
     configureServer(server) {
-      const app = createServer();
+      try {
+        const app = createServer();
 
-      // Add Express app as middleware to Vite dev server
-      server.middlewares.use(app);
+        // Add Express app as middleware to Vite dev server with error handling
+        server.middlewares.use((req, res, next) => {
+          try {
+            app(req, res, next);
+          } catch (error) {
+            console.error("Express middleware error:", error);
+            next(error);
+          }
+        });
+      } catch (error) {
+        console.error("Failed to create Express server:", error);
+        console.log("Continuing without Express middleware...");
+      }
     },
   };
 }
