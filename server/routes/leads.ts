@@ -974,9 +974,11 @@ router.get("/:leadId/steps", async (req: Request, res: Response) => {
           }
         } else {
           // No template assigned, use mock data
+          console.log(`⚠️  No template assigned to lead ${leadId}, using mock data`);
           steps = await MockDataService.getLeadSteps(leadId);
         }
       } else {
+        console.log(`❌ Database not available, using mock data`);
         steps = await MockDataService.getLeadSteps(leadId);
       }
     } catch (dbError) {
