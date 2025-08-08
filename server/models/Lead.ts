@@ -302,6 +302,7 @@ export interface CreateLeadStepData {
   description?: string;
   due_date?: string;
   estimated_days: number;
+  probability_percent?: number;
   step_order?: number;
   assigned_to?: number;
 }
@@ -313,6 +314,7 @@ export interface UpdateLeadStepData {
   due_date?: string;
   completed_date?: string;
   estimated_days?: number;
+  probability_percent?: number;
   step_order?: number;
   assigned_to?: number;
 }
