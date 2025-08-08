@@ -1606,21 +1606,8 @@ export class MockDataService {
     );
 
     console.log(
-      `MockDataService.getStepChats: Total messages in array: ${this.chatMessages.length}`,
+      `MockDataService.getStepChats: returning ${filteredChats.length} messages for step ${stepId}`,
     );
-    console.log(
-      `MockDataService.getStepChats: Messages for step ${stepId}: ${filteredChats.length}`,
-    );
-    console.log(
-      `MockDataService.getStepChats: All step_ids in array: [${this.chatMessages.map((c) => c.step_id).join(", ")}]`,
-    );
-
-    if (filteredChats.length > 0) {
-      console.log(
-        `MockDataService.getStepChats: Returning chats:`,
-        filteredChats,
-      );
-    }
 
     return filteredChats;
   }
