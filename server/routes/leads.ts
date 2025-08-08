@@ -982,10 +982,12 @@ router.get("/:leadId/steps", async (req: Request, res: Response) => {
         steps = await MockDataService.getLeadSteps(leadId);
       }
     } catch (dbError) {
-      console.log("Database error, using mock data:", dbError.message);
+      console.log("❌ Database error, using mock data:", dbError.message);
       steps = await MockDataService.getLeadSteps(leadId);
     }
 
+    console.log(`📤 Returning ${steps?.length || 0} steps for lead ${leadId}`);
+    console.log(`=== END LEAD STEPS API DEBUG ===\n`);
     res.json(steps);
   } catch (error) {
     console.error("Error fetching lead steps:", error);
