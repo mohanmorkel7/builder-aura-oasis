@@ -781,24 +781,33 @@ export default function LeadDetails() {
                       (templateData?.steps && templateData.steps.length > 0) ? (
                         <div className="p-2 bg-blue-50 border border-blue-200 rounded-md">
                           <div className="text-xs font-medium text-blue-900 mb-1">
-                            📊 Steps Overview ({leadSteps?.length ? leadSteps.length : 0} steps,
+                            📊 Steps Overview (
+                            {leadSteps?.length ? leadSteps.length : 0} steps,
                             {(() => {
                               console.log("=== ADD STEP MODAL DEBUGGING ===");
                               console.log("Lead steps data:", leadSteps);
                               console.log("Template data:", templateData);
                               const currentTotal = leadSteps
-                                ? leadSteps.reduce(
-                                    (sum: number, step: any) => {
-                                      console.log(`Step "${step.name}" probability: ${step.probability_percent}%`);
-                                      return sum + (step.probability_percent || 0);
-                                    },
-                                    0,
-                                  )
+                                ? leadSteps.reduce((sum: number, step: any) => {
+                                    console.log(
+                                      `Step "${step.name}" probability: ${step.probability_percent}%`,
+                                    );
+                                    return (
+                                      sum + (step.probability_percent || 0)
+                                    );
+                                  }, 0)
                                 : 0;
                               const newStepProb =
                                 parseInt(newStep.probability_percent) || 0;
                               const total = currentTotal + newStepProb;
-                              console.log("Current total:", currentTotal, "New step prob:", newStepProb, "Final total:", total);
+                              console.log(
+                                "Current total:",
+                                currentTotal,
+                                "New step prob:",
+                                newStepProb,
+                                "Final total:",
+                                total,
+                              );
                               return total;
                             })()}
                             % total

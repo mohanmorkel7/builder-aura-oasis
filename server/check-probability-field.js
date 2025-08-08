@@ -26,7 +26,9 @@ async function checkProbabilityField() {
       console.log("✅ probability_percent column exists in lead_steps table:");
       console.table(columnCheck.rows);
     } else {
-      console.log("❌ probability_percent column NOT found in lead_steps table");
+      console.log(
+        "❌ probability_percent column NOT found in lead_steps table",
+      );
       console.log("Need to run migration to add the column");
     }
 
@@ -60,7 +62,6 @@ async function checkProbabilityField() {
     } else {
       console.log("No template steps found for template_id = 1");
     }
-
   } catch (error) {
     console.error("❌ Database check failed:", error.message);
     console.log("📝 This might mean:");
