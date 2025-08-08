@@ -141,7 +141,7 @@ export function DraggableStepsList({
       modifiers={[restrictToVerticalAxis, restrictToParentElement]}
     >
       <SortableContext
-        items={items.map((item) => item.id)}
+        items={items.map((item, index) => `step-${item.id}-${index}`)}
         strategy={verticalListSortingStrategy}
       >
         <div className="space-y-4">
