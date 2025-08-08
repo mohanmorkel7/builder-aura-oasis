@@ -234,7 +234,7 @@ export default function FollowUpTracker() {
         newStatus === "completed" ? new Date().toISOString() : null;
 
       // Find the follow-up to get step_id and title for notification
-      const followUp = followUps.find(f => f.id === followUpId);
+      const followUp = followUps.find((f) => f.id === followUpId);
 
       if (followUp && user) {
         // Use the utility function that includes chat notification
@@ -245,8 +245,10 @@ export default function FollowUpTracker() {
             stepId: followUp.step_id,
             userId: parseInt(user.id),
             userName: user.name,
-            followUpTitle: followUp.original_message?.substring(0, 50) + "..." || `Follow-up #${followUpId}`,
-          }
+            followUpTitle:
+              followUp.original_message?.substring(0, 50) + "..." ||
+              `Follow-up #${followUpId}`,
+          },
         );
       } else {
         // Fallback to original method if follow-up not found or no user

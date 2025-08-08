@@ -1307,8 +1307,13 @@ export function useLeadFollowUps(leadId: number) {
 export function useUpdateFollowUpStatus() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ followUpId, statusData }: { followUpId: number; statusData: any }) =>
-      apiClient.updateFollowUpStatus(followUpId, statusData),
+    mutationFn: ({
+      followUpId,
+      statusData,
+    }: {
+      followUpId: number;
+      statusData: any;
+    }) => apiClient.updateFollowUpStatus(followUpId, statusData),
     onSuccess: () => {
       // Invalidate follow-up related queries
       queryClient.invalidateQueries({ queryKey: ["follow-ups"] });

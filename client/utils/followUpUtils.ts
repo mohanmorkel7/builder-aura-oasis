@@ -12,8 +12,11 @@ export interface FollowUpStatusChangeData {
 /**
  * Creates a system chat message when a follow-up status changes
  */
-export async function notifyFollowUpStatusChange(data: FollowUpStatusChangeData) {
-  const { followUpId, newStatus, stepId, userId, userName, followUpTitle } = data;
+export async function notifyFollowUpStatusChange(
+  data: FollowUpStatusChangeData,
+) {
+  const { followUpId, newStatus, stepId, userId, userName, followUpTitle } =
+    data;
 
   if (!stepId) {
     console.warn("No step ID provided for follow-up status notification");
@@ -57,7 +60,9 @@ export async function notifyFollowUpStatusChange(data: FollowUpStatusChangeData)
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to create follow-up status notification: ${response.statusText}`);
+      throw new Error(
+        `Failed to create follow-up status notification: ${response.statusText}`,
+      );
     }
 
     console.log(`Follow-up status notification added to step ${stepId}`);
@@ -74,11 +79,14 @@ export async function notifyFollowUpStatusChange(data: FollowUpStatusChangeData)
 export async function updateFollowUpStatusWithNotification(
   followUpId: number,
   statusData: { status: string; completed_at?: string | null },
-  notificationData: Omit<FollowUpStatusChangeData, 'followUpId' | 'newStatus'>
+  notificationData: Omit<FollowUpStatusChangeData, "followUpId" | "newStatus">,
 ) {
   try {
     // Update the follow-up status
-    const updateResponse = await apiClient.updateFollowUpStatus(followUpId, statusData);
+    const updateResponse = await apiClient.updateFollowUpStatus(
+      followUpId,
+      statusData,
+    );
 
     // Create chat notification for status change
     if (notificationData.stepId) {
@@ -91,7 +99,10 @@ export async function updateFollowUpStatusWithNotification(
 
     return updateResponse;
   } catch (error) {
-    console.error("Failed to update follow-up status with notification:", error);
+    console.error(
+      "Failed to update follow-up status with notification:",
+      error,
+    );
     throw error;
   }
 }

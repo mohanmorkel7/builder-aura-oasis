@@ -51,7 +51,11 @@ import {
   Eye,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
-import { useStepChats, useCreateStepChat, useCreateFollowUp } from "@/hooks/useApi";
+import {
+  useStepChats,
+  useCreateStepChat,
+  useCreateFollowUp,
+} from "@/hooks/useApi";
 import { apiClient } from "@/lib/api";
 import { formatToISTDateTime } from "@/lib/dateUtils";
 
@@ -121,13 +125,15 @@ export function EnhancedStepItem({
 
     // Debug: Check for duplicate message IDs
     const idCounts = {};
-    sorted.forEach(msg => {
+    sorted.forEach((msg) => {
       idCounts[msg.id] = (idCounts[msg.id] || 0) + 1;
     });
 
     Object.entries(idCounts).forEach(([id, count]) => {
       if (count > 1) {
-        console.error(`EnhancedStepItem: Message ID ${id} appears ${count} times in step ${step.id}`);
+        console.error(
+          `EnhancedStepItem: Message ID ${id} appears ${count} times in step ${step.id}`,
+        );
       }
     });
 
@@ -253,13 +259,17 @@ export function EnhancedStepItem({
       console.log("Message sent successfully:", result);
 
       // Create follow-up if checkbox is checked
-      if (createFollowUp && (followUpNotes.trim() || followUpAssignTo || followUpDueDate)) {
+      if (
+        createFollowUp &&
+        (followUpNotes.trim() || followUpAssignTo || followUpDueDate)
+      ) {
         try {
           const followUpData = {
             title: `Follow-up: ${step.name}`,
-            description: followUpNotes.trim() || `Follow-up for message: ${messageText}`,
-            priority: 'medium' as const,
-            status: 'pending' as const,
+            description:
+              followUpNotes.trim() || `Follow-up for message: ${messageText}`,
+            priority: "medium" as const,
+            status: "pending" as const,
             assigned_to: followUpAssignTo || user.id,
             due_date: followUpDueDate || undefined,
             lead_id: step.lead_id,
@@ -267,14 +277,15 @@ export function EnhancedStepItem({
             created_by: parseInt(user.id),
           };
 
-          const followUpResult = await createFollowUpMutation.mutateAsync(followUpData);
+          const followUpResult =
+            await createFollowUpMutation.mutateAsync(followUpData);
           console.log("Follow-up created successfully:", followUpResult);
 
           // Add a system message to chat indicating follow-up was created
           const systemChatData = {
             user_id: parseInt(user.id),
             user_name: user.name,
-            message: `📋 Follow-up task created: "${followUpData.title}" - Due: ${followUpDueDate || 'No due date'} - Assigned to: ${followUpAssignTo || 'Myself'}`,
+            message: `📋 Follow-up task created: "${followUpData.title}" - Due: ${followUpDueDate || "No due date"} - Assigned to: ${followUpAssignTo || "Myself"}`,
             message_type: "system" as const,
             is_rich_text: false,
           };
@@ -283,10 +294,11 @@ export function EnhancedStepItem({
             stepId: step.id,
             chatData: systemChatData,
           });
-
         } catch (followUpError) {
           console.error("Failed to create follow-up:", followUpError);
-          alert("Message sent, but failed to create follow-up. Please create it manually.");
+          alert(
+            "Message sent, but failed to create follow-up. Please create it manually.",
+          );
         }
       }
 
@@ -789,9 +801,14 @@ export function EnhancedStepItem({
                           <Checkbox
                             id="create-followup"
                             checked={createFollowUp}
-                            onCheckedChange={(checked) => setCreateFollowUp(checked as boolean)}
+                            onCheckedChange={(checked) =>
+                              setCreateFollowUp(checked as boolean)
+                            }
                           />
-                          <Label htmlFor="create-followup" className="text-sm font-medium">
+                          <Label
+                            htmlFor="create-followup"
+                            className="text-sm font-medium"
+                          >
                             Create follow-up task
                           </Label>
                         </div>
@@ -799,45 +816,72 @@ export function EnhancedStepItem({
                         {createFollowUp && (
                           <div className="space-y-3 pl-6 border-l-2 border-blue-200 bg-blue-50 p-3 rounded">
                             <div>
-                              <Label htmlFor="followup-notes" className="text-sm font-medium">
+                              <Label
+                                htmlFor="followup-notes"
+                                className="text-sm font-medium"
+                              >
                                 Follow-up Notes
                               </Label>
                               <Input
                                 id="followup-notes"
                                 placeholder="Enter follow-up notes..."
                                 value={followUpNotes}
-                                onChange={(e) => setFollowUpNotes(e.target.value)}
+                                onChange={(e) =>
+                                  setFollowUpNotes(e.target.value)
+                                }
                                 className="mt-1"
                               />
                             </div>
 
                             <div className="grid grid-cols-2 gap-3">
                               <div>
-                                <Label htmlFor="followup-assign" className="text-sm font-medium">
+                                <Label
+                                  htmlFor="followup-assign"
+                                  className="text-sm font-medium"
+                                >
                                   Assign To
                                 </Label>
-                                <Select value={followUpAssignTo} onValueChange={setFollowUpAssignTo}>
-                                  <SelectTrigger id="followup-assign" className="mt-1">
+                                <Select
+                                  value={followUpAssignTo}
+                                  onValueChange={setFollowUpAssignTo}
+                                >
+                                  <SelectTrigger
+                                    id="followup-assign"
+                                    className="mt-1"
+                                  >
                                     <SelectValue placeholder="Select assignee" />
                                   </SelectTrigger>
                                   <SelectContent>
-                                    <SelectItem value={user?.id || ""}>Myself</SelectItem>
-                                    <SelectItem value="sales-team">Sales Team</SelectItem>
-                                    <SelectItem value="manager">Manager</SelectItem>
-                                    <SelectItem value="support">Support Team</SelectItem>
+                                    <SelectItem value={user?.id || ""}>
+                                      Myself
+                                    </SelectItem>
+                                    <SelectItem value="sales-team">
+                                      Sales Team
+                                    </SelectItem>
+                                    <SelectItem value="manager">
+                                      Manager
+                                    </SelectItem>
+                                    <SelectItem value="support">
+                                      Support Team
+                                    </SelectItem>
                                   </SelectContent>
                                 </Select>
                               </div>
 
                               <div>
-                                <Label htmlFor="followup-date" className="text-sm font-medium">
+                                <Label
+                                  htmlFor="followup-date"
+                                  className="text-sm font-medium"
+                                >
                                   Due Date
                                 </Label>
                                 <Input
                                   id="followup-date"
                                   type="date"
                                   value={followUpDueDate}
-                                  onChange={(e) => setFollowUpDueDate(e.target.value)}
+                                  onChange={(e) =>
+                                    setFollowUpDueDate(e.target.value)
+                                  }
                                   className="mt-1"
                                 />
                               </div>
