@@ -18,6 +18,8 @@ export async function notifyFollowUpStatusChange(
   const { followUpId, newStatus, stepId, userId, userName, followUpTitle } =
     data;
 
+  console.log("Follow-up notification data:", data);
+
   if (!stepId) {
     console.warn("No step ID provided for follow-up status notification");
     return;
@@ -50,6 +52,12 @@ export async function notifyFollowUpStatusChange(
   };
 
   try {
+    console.log(
+      "Creating chat notification for step:",
+      stepId,
+      "with data:",
+      chatData,
+    );
     // Create the system message in the step's chat
     const response = await fetch(`/api/leads/steps/${stepId}/chats`, {
       method: "POST",
@@ -60,16 +68,25 @@ export async function notifyFollowUpStatusChange(
     });
 
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error(
+        `HTTP ${response.status}: ${response.statusText} - ${errorText}`,
+      );
       throw new Error(
         `Failed to create follow-up status notification: ${response.statusText}`,
       );
     }
 
-    console.log(`Follow-up status notification added to step ${stepId}`);
-    return await response.json();
+    const result = await response.json();
+    console.log(
+      `Follow-up status notification added to step ${stepId}:`,
+      result,
+    );
+    return result;
   } catch (error) {
     console.error("Failed to create follow-up status notification:", error);
-    throw error;
+    // Don't re-throw the error - we don't want to break the status update if notification fails
+    return null;
   }
 }
 

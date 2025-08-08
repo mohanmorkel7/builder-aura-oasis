@@ -46,93 +46,84 @@ import { updateFollowUpStatusWithNotification } from "@/utils/followUpUtils";
 
 interface FollowUp {
   id: number;
-  message_id: number;
-  step_id: number;
-  lead_id: number;
-  lead_name: string;
-  step_name: string;
-  original_message: string;
-  assigned_to: string;
-  assigned_by: string;
+  message_id?: number;
+  step_id?: number;
+  lead_id?: number;
+  client_id?: number;
+  title: string;
+  description?: string;
+  lead_name?: string;
+  lead_client_name?: string;
+  client_name?: string;
+  step_name?: string;
+  assigned_to?: number;
+  assigned_user_name?: string;
+  created_by?: number;
+  created_by_name?: string;
   status: "pending" | "in_progress" | "completed" | "overdue";
-  priority: "low" | "medium" | "high" | "urgent";
-  due_date: string;
+  priority?: "low" | "medium" | "high" | "urgent";
+  follow_up_type?: string;
+  due_date?: string;
   created_at: string;
+  updated_at?: string;
   completed_at?: string;
   notes?: string;
 }
 
-// Mock follow-up data
+// Mock follow-up data with proper structure for testing
 const mockFollowUps: FollowUp[] = [
   {
     id: 13,
     message_id: 2,
     step_id: 1,
     lead_id: 1,
-    lead_name: "TechCorp Solutions",
+    title: "Technical Specifications Review",
+    description: "Review technical specifications for TechCorp integration",
+    lead_client_name: "TechCorp Solutions",
     step_name: "Initial Contact",
-    original_message:
-      "Client requirements documented and shared with the team. @Mike Johnson please review the technical specifications #13",
-    assigned_to: "Mike Johnson",
-    assigned_by: "Jane Smith",
+    assigned_user_name: "Mike Johnson",
+    created_by_name: "Jane Smith",
     status: "pending",
     priority: "high",
-    due_date: "2024-01-25T10:00:00Z",
+    due_date: "2024-01-25",
     created_at: "2024-01-16T14:15:00Z",
     notes: "Need to validate feasibility of custom integration requirements",
   },
   {
     id: 14,
     message_id: 4,
-    step_id: 3,
+    step_id: 2,
     lead_id: 1,
-    lead_name: "TechCorp Solutions",
+    title: "API Documentation",
+    description: "Provide API documentation for client review",
+    lead_client_name: "TechCorp Solutions",
     step_name: "Document Collection",
-    original_message:
-      "Working on the proposal. Need technical specifications from the development team. Follow up needed on API documentation #14",
-    assigned_to: "John Doe",
-    assigned_by: "Jane Smith",
+    assigned_user_name: "John Doe",
+    created_by_name: "Jane Smith",
     status: "in_progress",
     priority: "medium",
-    due_date: "2024-01-24T15:30:00Z",
+    due_date: "2024-01-24",
     created_at: "2024-01-21T09:00:00Z",
     notes: "API documentation is 70% complete, waiting for security review",
   },
   {
     id: 15,
     message_id: 6,
-    step_id: 2,
+    step_id: 3,
     lead_id: 2,
-    lead_name: "RetailMax Inc",
+    title: "Timeline Assessment",
+    description: "Assess timeline impact for additional reporting features",
+    lead_client_name: "RetailMax Inc",
     step_name: "Proposal Sent",
-    original_message:
-      "Demo feedback received. Client wants additional reporting features. @Product Team please assess timeline impact #15",
-    assigned_to: "Mike Johnson",
-    assigned_by: "John Doe",
+    assigned_user_name: "Mike Johnson",
+    created_by_name: "John Doe",
     status: "completed",
     priority: "medium",
-    due_date: "2024-01-20T12:00:00Z",
+    due_date: "2024-01-20",
     created_at: "2024-01-18T11:30:00Z",
     completed_at: "2024-01-19T16:45:00Z",
     notes:
       "Timeline assessment completed - 2 additional weeks needed for reporting features",
-  },
-  {
-    id: 16,
-    message_id: 8,
-    step_id: 1,
-    lead_id: 3,
-    lead_name: "FinanceFirst Bank",
-    step_name: "Initial Contact",
-    original_message:
-      "Compliance requirements discussion scheduled. @Legal Team review banking regulations for data handling #16",
-    assigned_to: "Jane Smith",
-    assigned_by: "Mike Johnson",
-    status: "overdue",
-    priority: "urgent",
-    due_date: "2024-01-22T09:00:00Z",
-    created_at: "2024-01-20T14:20:00Z",
-    notes: "Banking compliance review is critical for proposal approval",
   },
 ];
 
@@ -237,20 +228,33 @@ export default function FollowUpTracker() {
 
       // Find the follow-up to get step_id and title for notification
       const followUp = followUps.find((f) => f.id === followUpId);
+      console.log("Found follow-up for status update:", followUp);
 
       if (followUp && user) {
+        const notificationData = {
+          stepId: followUp.step_id,
+          userId: parseInt(user.id),
+          userName: user.name,
+          followUpTitle:
+            followUp.title ||
+            followUp.description?.substring(0, 50) + "..." ||
+            `Follow-up #${followUpId}`,
+        };
+
+        console.log("Updating follow-up status with notification:", {
+          followUpId,
+          newStatus,
+          notificationData,
+        });
+
         // Use the utility function that includes chat notification
         await updateFollowUpStatusWithNotification(
           followUpId,
           { status: newStatus, completed_at: completedAt },
-          {
-            stepId: followUp.step_id,
-            userId: parseInt(user.id),
-            userName: user.name,
-            followUpTitle:
-              followUp.original_message?.substring(0, 50) + "..." ||
-              `Follow-up #${followUpId}`,
-          },
+          notificationData,
+        );
+        console.log(
+          "Follow-up status update with notification completed successfully",
         );
       } else {
         // Fallback to original method if follow-up not found or no user
