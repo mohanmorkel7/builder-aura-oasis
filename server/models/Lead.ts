@@ -393,8 +393,8 @@ export class LeadRepository {
     const result = await pool.query(query, values);
 
     // Parse contacts field if it's a string (for backward compatibility)
-    return result.rows.map(lead => {
-      if (lead.contacts && typeof lead.contacts === 'string') {
+    return result.rows.map((lead) => {
+      if (lead.contacts && typeof lead.contacts === "string") {
         try {
           lead.contacts = JSON.parse(lead.contacts);
         } catch (error) {
@@ -422,7 +422,7 @@ export class LeadRepository {
       const lead = result.rows[0];
 
       // Parse contacts if it's a string (for backward compatibility)
-      if (lead.contacts && typeof lead.contacts === 'string') {
+      if (lead.contacts && typeof lead.contacts === "string") {
         try {
           lead.contacts = JSON.parse(lead.contacts);
         } catch (error) {
