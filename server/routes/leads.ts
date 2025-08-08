@@ -1249,67 +1249,69 @@ router.put("/steps/:id", async (req: Request, res: Response) => {
           return res.status(404).json({ error: "Lead step not found" });
         }
 
+        // Get the lead_id for this step before any updates
+        const stepQuery = await pool.query(
+          "SELECT lead_id FROM lead_steps WHERE id = $1",
+          [id],
+        );
+        let leadId = null;
+        if (stepQuery.rows.length > 0) {
+          leadId = stepQuery.rows[0].lead_id;
+        }
+
         // If status was updated, recalculate and update lead probability
-        if (stepData.status) {
+        if (stepData.status && leadId) {
           console.log(
             `Step ${id} status updated to ${stepData.status}, recalculating lead probability`,
           );
 
-          // Get the lead_id for this step
-          const stepQuery = await pool.query(
-            "SELECT lead_id FROM lead_steps WHERE id = $1",
-            [id],
+          // Calculate new probability based on all lead steps
+          const stepsQuery = await pool.query(
+            `
+            SELECT id, status, probability_percent
+            FROM lead_steps
+            WHERE lead_id = $1
+          `,
+            [leadId],
           );
-          if (stepQuery.rows.length > 0) {
-            const leadId = stepQuery.rows[0].lead_id;
 
-            // Calculate new probability based on all lead steps
-            const stepsQuery = await pool.query(
-              `
-              SELECT id, status, probability_percent
-              FROM lead_steps
-              WHERE lead_id = $1
-            `,
-              [leadId],
-            );
+          let totalCompletedProbability = 0;
+          let totalStepProbability = 0;
 
-            let totalCompletedProbability = 0;
-            let totalStepProbability = 0;
+          stepsQuery.rows.forEach((leadStep) => {
+            const stepProbability = leadStep.probability_percent || 0;
+            totalStepProbability += stepProbability;
 
-            stepsQuery.rows.forEach((leadStep) => {
-              const stepProbability = leadStep.probability_percent || 0;
-              totalStepProbability += stepProbability;
+            if (leadStep.status === "completed") {
+              totalCompletedProbability += stepProbability;
+            } else if (leadStep.status === "in_progress") {
+              totalCompletedProbability += stepProbability * 0.5;
+            }
+          });
 
-              if (leadStep.status === "completed") {
-                totalCompletedProbability += stepProbability;
-              } else if (leadStep.status === "in_progress") {
-                totalCompletedProbability += stepProbability * 0.5;
-              }
-            });
+          const newProbability =
+            totalStepProbability > 0
+              ? Math.min(
+                  100,
+                  Math.round(
+                    (totalCompletedProbability / totalStepProbability) * 100,
+                  ),
+                )
+              : 0;
 
-            const newProbability =
-              totalStepProbability > 0
-                ? Math.min(
-                    100,
-                    Math.round(
-                      (totalCompletedProbability / totalStepProbability) * 100,
-                    ),
-                  )
-                : 0;
+          // Update lead probability
+          await pool.query(
+            "UPDATE leads SET probability = $1, updated_at = NOW() WHERE id = $2",
+            [newProbability, leadId],
+          );
 
-            // Update lead probability
-            await pool.query(
-              "UPDATE leads SET probability = $1, updated_at = NOW() WHERE id = $2",
-              [newProbability, leadId],
-            );
-
-            console.log(
-              `Updated lead ${leadId} probability to ${newProbability}%`,
-            );
-          }
+          console.log(
+            `Updated lead ${leadId} probability to ${newProbability}%`,
+          );
         }
 
-        res.json(step);
+        // Return step data with lead_id for frontend cache invalidation
+        res.json({ ...step, lead_id: leadId });
       } else {
         const mockStep = await MockDataService.updateLeadStep(id, stepData);
         console.log(
