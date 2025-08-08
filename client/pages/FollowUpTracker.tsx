@@ -248,7 +248,8 @@ export default function FollowUpTracker() {
             userId: parseInt(user.id),
             userName: user.name,
             followUpTitle:
-              followUp.original_message?.substring(0, 50) + "..." ||
+              followUp.title ||
+              followUp.description?.substring(0, 50) + "..." ||
               `Follow-up #${followUpId}`,
           },
         );
