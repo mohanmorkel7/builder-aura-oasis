@@ -270,7 +270,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       clearTimeout(timeoutId);
       clearInterval(interval);
     };
-  }, [user]);
+  }, [user, notificationsEnabled]);
 
   const handleNotificationClick = (notification: Notification) => {
     // Mark as read (in a real app, this would make an API call)
