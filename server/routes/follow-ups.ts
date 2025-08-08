@@ -21,6 +21,7 @@ router.post("/", async (req: Request, res: Response) => {
     const {
       client_id,
       lead_id,
+      step_id,
       title,
       description,
       due_date,
@@ -32,19 +33,20 @@ router.post("/", async (req: Request, res: Response) => {
 
     if (await isDatabaseAvailable()) {
       try {
-        // First try to insert with the full schema including follow_up_type and lead_id
+        // First try to insert with the full schema including follow_up_type, lead_id, and step_id
         const query = `
           INSERT INTO follow_ups (
-            client_id, lead_id, title, description, due_date,
+            client_id, lead_id, step_id, title, description, due_date,
             follow_up_type, assigned_to, created_by, message_id
           )
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
           RETURNING *
         `;
 
         const values = [
           client_id || null,
           lead_id || null,
+          step_id || null,
           title,
           description || null,
           due_date || null,
@@ -64,6 +66,7 @@ router.post("/", async (req: Request, res: Response) => {
         if (
           dbError.message.includes("follow_up_type") ||
           dbError.message.includes("lead_id") ||
+          dbError.message.includes("step_id") ||
           dbError.message.includes("message_id")
         ) {
           console.log("Attempting to run migration...");
@@ -72,16 +75,21 @@ router.post("/", async (req: Request, res: Response) => {
             await pool.query(`
               ALTER TABLE follow_ups
               ADD COLUMN IF NOT EXISTS lead_id INTEGER REFERENCES leads(id),
+              ADD COLUMN IF NOT EXISTS step_id INTEGER REFERENCES lead_steps(id),
               ADD COLUMN IF NOT EXISTS message_id INTEGER,
               ADD COLUMN IF NOT EXISTS follow_up_type VARCHAR(50) DEFAULT 'general'
             `);
 
-            // Drop and recreate constraint
+            // Drop and recreate constraints
             await pool.query(`
               ALTER TABLE follow_ups DROP CONSTRAINT IF EXISTS follow_ups_follow_up_type_check;
+              ALTER TABLE follow_ups DROP CONSTRAINT IF EXISTS follow_ups_status_check;
               ALTER TABLE follow_ups
               ADD CONSTRAINT follow_ups_follow_up_type_check
-              CHECK (follow_up_type IN ('call', 'email', 'meeting', 'document', 'proposal', 'contract', 'onboarding', 'general', 'sales', 'support', 'other'))
+              CHECK (follow_up_type IN ('call', 'email', 'meeting', 'document', 'proposal', 'contract', 'onboarding', 'general', 'sales', 'support', 'other'));
+              ALTER TABLE follow_ups
+              ADD CONSTRAINT follow_ups_status_check
+              CHECK (status IN ('pending', 'in_progress', 'completed', 'overdue'))
             `);
 
             console.log("Migration completed, retrying insert...");
@@ -102,6 +110,7 @@ router.post("/", async (req: Request, res: Response) => {
         id: Date.now(),
         client_id,
         lead_id,
+        step_id,
         title,
         description,
         due_date,
@@ -124,6 +133,7 @@ router.post("/", async (req: Request, res: Response) => {
       id: Date.now(),
       client_id: req.body.client_id,
       lead_id: req.body.lead_id,
+      step_id: req.body.step_id,
       title: req.body.title,
       description: req.body.description,
       due_date: req.body.due_date,
@@ -150,10 +160,12 @@ router.get("/client/:clientId", async (req: Request, res: Response) => {
       const query = `
         SELECT f.*,
                CONCAT(u.first_name, ' ', u.last_name) as assigned_user_name,
-               CONCAT(c.first_name, ' ', c.last_name) as created_by_name
+               CONCAT(c.first_name, ' ', c.last_name) as created_by_name,
+               ls.name as step_name
         FROM follow_ups f
         LEFT JOIN users u ON f.assigned_to = u.id
         LEFT JOIN users c ON f.created_by = c.id
+        LEFT JOIN lead_steps ls ON f.step_id = ls.id
         WHERE f.client_id = $1
         ORDER BY f.created_at DESC
       `;
@@ -181,10 +193,12 @@ router.get("/lead/:leadId", async (req: Request, res: Response) => {
       const query = `
         SELECT f.*,
                CONCAT(u.first_name, ' ', u.last_name) as assigned_user_name,
-               CONCAT(c.first_name, ' ', c.last_name) as created_by_name
+               CONCAT(c.first_name, ' ', c.last_name) as created_by_name,
+               ls.name as step_name
         FROM follow_ups f
         LEFT JOIN users u ON f.assigned_to = u.id
         LEFT JOIN users c ON f.created_by = c.id
+        LEFT JOIN lead_steps ls ON f.step_id = ls.id
         WHERE f.lead_id = $1
         ORDER BY f.created_at DESC
       `;
@@ -291,12 +305,14 @@ router.get("/", async (req: Request, res: Response) => {
                CONCAT(c.first_name, ' ', c.last_name) as created_by_name,
                cl.client_name,
                l.client_name as lead_client_name,
-               l.project_title as lead_project_title
+               l.project_title as lead_project_title,
+               ls.name as step_name
         FROM follow_ups f
         LEFT JOIN users u ON f.assigned_to = u.id
         LEFT JOIN users c ON f.created_by = c.id
         LEFT JOIN clients cl ON f.client_id = cl.id
         LEFT JOIN leads l ON f.lead_id = l.id
+        LEFT JOIN lead_steps ls ON f.step_id = ls.id
         ${whereClause}
         ORDER BY f.created_at DESC
       `;
@@ -314,6 +330,7 @@ router.get("/", async (req: Request, res: Response) => {
           id: 13,
           client_id: 1,
           lead_id: 1,
+          step_id: 1,
           title: "Technical Specifications Review",
           description:
             "Review technical specifications for TechCorp integration",
@@ -329,11 +346,13 @@ router.get("/", async (req: Request, res: Response) => {
           client_name: "TechCorp Solutions",
           lead_client_name: "TechCorp Solutions",
           lead_project_title: "E-commerce Platform Development",
+          step_name: "Initial Contact",
         },
         {
           id: 14,
           client_id: 1,
           lead_id: 1,
+          step_id: 2,
           title: "API Documentation",
           description: "Provide API documentation for client review",
           status: "in_progress",
@@ -348,11 +367,13 @@ router.get("/", async (req: Request, res: Response) => {
           client_name: "TechCorp Solutions",
           lead_client_name: "TechCorp Solutions",
           lead_project_title: "E-commerce Platform Development",
+          step_name: "Document Collection",
         },
         {
           id: 15,
           client_id: 2,
           lead_id: 2,
+          step_id: 3,
           title: "Timeline Assessment",
           description:
             "Assess timeline impact for additional reporting features",
@@ -369,11 +390,13 @@ router.get("/", async (req: Request, res: Response) => {
           client_name: "RetailMax Inc",
           lead_client_name: "RetailMax Inc",
           lead_project_title: "Mobile App Development",
+          step_name: "Proposal Sent",
         },
         {
           id: 16,
           client_id: 3,
           lead_id: 3,
+          step_id: 4,
           title: "Banking Compliance Review",
           description:
             "Review banking regulations for data handling compliance",
@@ -389,6 +412,7 @@ router.get("/", async (req: Request, res: Response) => {
           client_name: "FinanceFirst Bank",
           lead_client_name: "FinanceFirst Bank",
           lead_project_title: "Data Analytics Dashboard",
+          step_name: "Initial Contact",
         },
       ];
 
