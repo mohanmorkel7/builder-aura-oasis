@@ -70,79 +70,8 @@ interface FollowUp {
   notes?: string;
 }
 
-// Mock follow-up data
-const mockFollowUps: FollowUp[] = [
-  {
-    id: 13,
-    message_id: 2,
-    step_id: 1,
-    lead_id: 1,
-    lead_name: "TechCorp Solutions",
-    step_name: "Initial Contact",
-    original_message:
-      "Client requirements documented and shared with the team. @Mike Johnson please review the technical specifications #13",
-    assigned_to: "Mike Johnson",
-    assigned_by: "Jane Smith",
-    status: "pending",
-    priority: "high",
-    due_date: "2024-01-25T10:00:00Z",
-    created_at: "2024-01-16T14:15:00Z",
-    notes: "Need to validate feasibility of custom integration requirements",
-  },
-  {
-    id: 14,
-    message_id: 4,
-    step_id: 3,
-    lead_id: 1,
-    lead_name: "TechCorp Solutions",
-    step_name: "Document Collection",
-    original_message:
-      "Working on the proposal. Need technical specifications from the development team. Follow up needed on API documentation #14",
-    assigned_to: "John Doe",
-    assigned_by: "Jane Smith",
-    status: "in_progress",
-    priority: "medium",
-    due_date: "2024-01-24T15:30:00Z",
-    created_at: "2024-01-21T09:00:00Z",
-    notes: "API documentation is 70% complete, waiting for security review",
-  },
-  {
-    id: 15,
-    message_id: 6,
-    step_id: 2,
-    lead_id: 2,
-    lead_name: "RetailMax Inc",
-    step_name: "Proposal Sent",
-    original_message:
-      "Demo feedback received. Client wants additional reporting features. @Product Team please assess timeline impact #15",
-    assigned_to: "Mike Johnson",
-    assigned_by: "John Doe",
-    status: "completed",
-    priority: "medium",
-    due_date: "2024-01-20T12:00:00Z",
-    created_at: "2024-01-18T11:30:00Z",
-    completed_at: "2024-01-19T16:45:00Z",
-    notes:
-      "Timeline assessment completed - 2 additional weeks needed for reporting features",
-  },
-  {
-    id: 16,
-    message_id: 8,
-    step_id: 1,
-    lead_id: 3,
-    lead_name: "FinanceFirst Bank",
-    step_name: "Initial Contact",
-    original_message:
-      "Compliance requirements discussion scheduled. @Legal Team review banking regulations for data handling #16",
-    assigned_to: "Jane Smith",
-    assigned_by: "Mike Johnson",
-    status: "overdue",
-    priority: "urgent",
-    due_date: "2024-01-22T09:00:00Z",
-    created_at: "2024-01-20T14:20:00Z",
-    notes: "Banking compliance review is critical for proposal approval",
-  },
-];
+// Mock follow-up data (simplified since we're getting real data from API)
+const mockFollowUps: FollowUp[] = [];
 
 const statusColors = {
   pending: "bg-yellow-100 text-yellow-700",
