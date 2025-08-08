@@ -927,7 +927,11 @@ export default function LeadDetails() {
                       <Button
                         onClick={handleAddStep}
                         disabled={
-                          !newStep.name.trim() || !newStep.description.trim()
+                          !newStep.name.trim() ||
+                          !newStep.description.trim() ||
+                          (leadSteps ? leadSteps.reduce((sum: number, step: any) =>
+                            sum + (step.probability_percent || 0), 0
+                          ) : 0) + (parseInt(newStep.probability_percent) || 0) > 100
                         }
                       >
                         Add Step
