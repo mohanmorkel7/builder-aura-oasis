@@ -932,7 +932,7 @@ export default function LeadDetails() {
                         </div>
                       </div>
                     </div>
-                    <DialogFooter>
+                    <DialogFooter className="flex-shrink-0 mt-6 pt-4 border-t">
                       <Button
                         variant="outline"
                         onClick={() => setNewStepDialog(false)}
