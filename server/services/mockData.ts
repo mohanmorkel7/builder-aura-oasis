@@ -1265,10 +1265,14 @@ export class MockDataService {
     const lead = leads.find((lead) => lead.id === id) || null;
 
     // Use calculated probability if available (from step status changes)
-    if (lead && this.calculatedProbabilities && this.calculatedProbabilities[id]) {
+    if (
+      lead &&
+      this.calculatedProbabilities &&
+      this.calculatedProbabilities[id]
+    ) {
       return {
         ...lead,
-        probability: this.calculatedProbabilities[id]
+        probability: this.calculatedProbabilities[id],
       };
     }
 
@@ -1445,11 +1449,11 @@ export class MockDataService {
     ];
 
     // Apply any stored step updates
-    return steps.map(step => {
+    return steps.map((step) => {
       if (this.updatedSteps[step.id]) {
         return {
           ...step,
-          ...this.updatedSteps[step.id]
+          ...this.updatedSteps[step.id],
         };
       }
       return step;
@@ -1464,7 +1468,7 @@ export class MockDataService {
 
     // Get the lead_id from the original step to recalculate probability
     const originalSteps = await this.getLeadSteps(1); // Using lead 1 for demo
-    const originalStep = originalSteps.find(s => s.id === stepId);
+    const originalStep = originalSteps.find((s) => s.id === stepId);
 
     if (!originalStep) {
       console.log(`Step ${stepId} not found`);
@@ -1480,7 +1484,9 @@ export class MockDataService {
 
     // If status was updated, recalculate lead probability
     if (stepData.status && stepData.status !== originalStep.status) {
-      console.log(`Step ${stepId} status changed from ${originalStep.status} to ${stepData.status}, recalculating lead probability`);
+      console.log(
+        `Step ${stepId} status changed from ${originalStep.status} to ${stepData.status}, recalculating lead probability`,
+      );
 
       // Get all steps for the lead and calculate new probability
       const allSteps = await this.getLeadSteps(originalStep.lead_id);
@@ -1490,7 +1496,8 @@ export class MockDataService {
 
       allSteps.forEach((step) => {
         // Use updated status for the changed step
-        const currentStatus = step.id === stepId ? stepData.status : step.status;
+        const currentStatus =
+          step.id === stepId ? stepData.status : step.status;
         const stepProbability = step.probability_percent || 0;
 
         totalStepProbability += stepProbability;
@@ -1503,12 +1510,22 @@ export class MockDataService {
         // pending, cancelled, blocked steps contribute 0
       });
 
-      const newProbability = totalStepProbability > 0
-        ? Math.min(100, Math.round((totalCompletedProbability / totalStepProbability) * 100))
-        : 0;
+      const newProbability =
+        totalStepProbability > 0
+          ? Math.min(
+              100,
+              Math.round(
+                (totalCompletedProbability / totalStepProbability) * 100,
+              ),
+            )
+          : 0;
 
-      console.log(`Updated lead ${originalStep.lead_id} probability to ${newProbability}%`);
-      console.log(`Calculation: (${totalCompletedProbability} / ${totalStepProbability}) * 100 = ${newProbability}%`);
+      console.log(
+        `Updated lead ${originalStep.lead_id} probability to ${newProbability}%`,
+      );
+      console.log(
+        `Calculation: (${totalCompletedProbability} / ${totalStepProbability}) * 100 = ${newProbability}%`,
+      );
 
       // Store the calculated probability for subsequent lead queries
       if (!this.calculatedProbabilities) {
