@@ -349,8 +349,9 @@ export function EnhancedStepItem({
             <Select
               value={step.status}
               onValueChange={(value) => onUpdateStatus(step.id, value)}
+              disabled={step.isTemplate}
             >
-              <SelectTrigger className="w-32">
+              <SelectTrigger className={`w-32 ${step.isTemplate ? "opacity-50 cursor-not-allowed" : ""}`}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -362,8 +363,14 @@ export function EnhancedStepItem({
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => onDeleteStep(step.id)}
-              className="text-red-600 hover:text-red-700"
+              onClick={() => step.isTemplate ? null : onDeleteStep(step.id)}
+              className={`${
+                step.isTemplate
+                  ? "text-gray-400 cursor-not-allowed opacity-50"
+                  : "text-red-600 hover:text-red-700"
+              }`}
+              disabled={step.isTemplate}
+              title={step.isTemplate ? "Template steps cannot be deleted" : "Delete step"}
             >
               <Trash2 className="w-4 h-4" />
             </Button>
