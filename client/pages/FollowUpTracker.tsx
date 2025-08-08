@@ -237,6 +237,7 @@ export default function FollowUpTracker() {
 
       // Find the follow-up to get step_id and title for notification
       const followUp = followUps.find((f) => f.id === followUpId);
+      console.log("Found follow-up for status update:", followUp);
 
       if (followUp && user) {
         // Use the utility function that includes chat notification
