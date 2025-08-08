@@ -41,6 +41,8 @@ import {
   Target,
 } from "lucide-react";
 import { formatToIST, formatToISTDateTime, isOverdue } from "@/lib/dateUtils";
+import { updateFollowUpStatusWithNotification } from "@/utils/followUpUtils";
+import { useAuth } from "@/lib/auth-context";
 
 interface FollowUp {
   id: number;
