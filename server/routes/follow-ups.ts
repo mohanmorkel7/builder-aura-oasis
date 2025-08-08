@@ -301,12 +301,14 @@ router.get("/", async (req: Request, res: Response) => {
                CONCAT(c.first_name, ' ', c.last_name) as created_by_name,
                cl.client_name,
                l.client_name as lead_client_name,
-               l.project_title as lead_project_title
+               l.project_title as lead_project_title,
+               ls.name as step_name
         FROM follow_ups f
         LEFT JOIN users u ON f.assigned_to = u.id
         LEFT JOIN users c ON f.created_by = c.id
         LEFT JOIN clients cl ON f.client_id = cl.id
         LEFT JOIN leads l ON f.lead_id = l.id
+        LEFT JOIN lead_steps ls ON f.step_id = ls.id
         ${whereClause}
         ORDER BY f.created_at DESC
       `;
