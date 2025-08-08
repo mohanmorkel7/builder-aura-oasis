@@ -18,6 +18,8 @@ export async function notifyFollowUpStatusChange(
   const { followUpId, newStatus, stepId, userId, userName, followUpTitle } =
     data;
 
+  console.log("Follow-up notification data:", data);
+
   if (!stepId) {
     console.warn("No step ID provided for follow-up status notification");
     return;
