@@ -390,6 +390,7 @@ router.get("/", async (req: Request, res: Response) => {
           client_name: "RetailMax Inc",
           lead_client_name: "RetailMax Inc",
           lead_project_title: "Mobile App Development",
+          step_name: "Proposal Sent",
         },
         {
           id: 16,
