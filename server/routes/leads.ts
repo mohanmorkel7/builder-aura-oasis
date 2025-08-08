@@ -1388,7 +1388,44 @@ router.delete("/steps/:id", async (req: Request, res: Response) => {
         constraint: dbError.constraint,
       });
 
-      // Return the actual error instead of masking it
+      // Handle foreign key constraint error by fixing the constraint and retrying
+      if (
+        dbError.code === "23503" &&
+        dbError.constraint === "follow_ups_step_id_fkey"
+      ) {
+        console.log(
+          "Foreign key constraint error detected, attempting to fix constraint and retry...",
+        );
+
+        try {
+          // Fix the constraint
+          await pool.query(`
+            ALTER TABLE follow_ups DROP CONSTRAINT IF EXISTS follow_ups_step_id_fkey;
+            ALTER TABLE follow_ups
+            ADD CONSTRAINT follow_ups_step_id_fkey
+            FOREIGN KEY (step_id) REFERENCES lead_steps(id) ON DELETE CASCADE;
+          `);
+
+          console.log("Constraint fixed, retrying deletion...");
+
+          // Retry the deletion
+          const success = await LeadStepRepository.delete(id);
+          if (success) {
+            console.log(`Step ${id} deleted successfully after constraint fix`);
+            return res.status(204).send();
+          } else {
+            return res.status(404).json({ error: "Lead step not found" });
+          }
+        } catch (fixError) {
+          console.error("Failed to fix constraint:", fixError);
+          return res.status(500).json({
+            error: "Failed to delete step and fix constraint",
+            details: fixError.message,
+          });
+        }
+      }
+
+      // Return the actual error for other types of errors
       res.status(500).json({
         error: "Failed to delete step",
         details: dbError.message,
