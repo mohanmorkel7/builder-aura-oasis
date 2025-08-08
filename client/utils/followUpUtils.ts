@@ -63,16 +63,20 @@ export async function notifyFollowUpStatusChange(
     });
 
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`HTTP ${response.status}: ${response.statusText} - ${errorText}`);
       throw new Error(
         `Failed to create follow-up status notification: ${response.statusText}`,
       );
     }
 
-    console.log(`Follow-up status notification added to step ${stepId}`);
-    return await response.json();
+    const result = await response.json();
+    console.log(`Follow-up status notification added to step ${stepId}:`, result);
+    return result;
   } catch (error) {
     console.error("Failed to create follow-up status notification:", error);
-    throw error;
+    // Don't re-throw the error - we don't want to break the status update if notification fails
+    return null;
   }
 }
 
