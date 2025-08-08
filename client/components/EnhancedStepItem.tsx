@@ -458,18 +458,14 @@ export function EnhancedStepItem({
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => !step.isTemplate && onDeleteStep(step.id)}
-              className={`${
-                step.isTemplate
-                  ? "text-gray-400 cursor-not-allowed opacity-50"
-                  : "text-red-600 hover:text-red-700"
-              }`}
-              disabled={step.isTemplate}
-              title={
-                step.isTemplate
-                  ? "Template steps cannot be deleted"
-                  : "Delete step"
-              }
+              onClick={() => {
+                console.log(
+                  `Delete clicked: step ${step.id}, isTemplate: ${step.isTemplate}`,
+                );
+                onDeleteStep(step.id);
+              }}
+              className="text-red-600 hover:text-red-700"
+              title="Delete this step"
             >
               <Trash2 className="w-4 h-4" />
             </Button>
