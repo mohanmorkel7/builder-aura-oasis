@@ -193,10 +193,12 @@ router.get("/lead/:leadId", async (req: Request, res: Response) => {
       const query = `
         SELECT f.*,
                CONCAT(u.first_name, ' ', u.last_name) as assigned_user_name,
-               CONCAT(c.first_name, ' ', c.last_name) as created_by_name
+               CONCAT(c.first_name, ' ', c.last_name) as created_by_name,
+               ls.name as step_name
         FROM follow_ups f
         LEFT JOIN users u ON f.assigned_to = u.id
         LEFT JOIN users c ON f.created_by = c.id
+        LEFT JOIN lead_steps ls ON f.step_id = ls.id
         WHERE f.lead_id = $1
         ORDER BY f.created_at DESC
       `;
