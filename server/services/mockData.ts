@@ -1085,6 +1085,7 @@ export class MockDataService {
         probability: 75,
         assigned_to: 2,
         created_by: 2,
+        template_id: 1,
         notes: "Very interested client, follow up regularly",
         created_at: "2024-01-15T09:00:00Z",
         updated_at: "2024-01-20T14:30:00Z",
