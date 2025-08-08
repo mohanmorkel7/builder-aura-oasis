@@ -303,27 +303,23 @@ export default function LeadDetails() {
       return;
     }
 
-    console.log("Starting delete for step:", stepId);
-
     try {
-      const response = await fetch(`/api/leads/steps/${stepId}`, {
-        method: "DELETE",
-      });
+      await apiClient.deleteLeadStep(stepId);
 
-      console.log("Delete response status:", response.status);
+      // Invalidate queries to refresh the data
+      queryClient.invalidateQueries({ queryKey: ["lead-steps", leadId] });
+      queryClient.invalidateQueries({ queryKey: ["leads"] });
 
-      if (!response.ok) {
-        throw new Error(`Delete failed with status: ${response.status}`);
-      }
-
-      console.log("Step deleted successfully");
+      // Show success message
       alert("Step deleted successfully!");
 
-      // Refresh the page to show updated data
-      window.location.reload();
+      // Fallback refresh after a short delay
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (error) {
       console.error("Failed to delete step:", error);
-      alert(`Failed to delete step: ${error.message}`);
+      alert("Failed to delete step. Please try again.");
     }
   };
 
