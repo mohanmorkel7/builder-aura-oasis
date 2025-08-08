@@ -1,50 +1,50 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
+  <head>
     <title>Test Notifications Fix</title>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Testing Notifications API</h1>
     <div id="results"></div>
-    
+
     <script>
-        async function testNotifications() {
-            const results = document.getElementById('results');
-            
-            try {
-                console.log('Testing follow-ups API...');
-                
-                const response = await fetch('/api/follow-ups?userId=1&userRole=all');
-                console.log('Response status:', response.status);
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log('Response data:', data);
-                    results.innerHTML = `
+      async function testNotifications() {
+        const results = document.getElementById("results");
+
+        try {
+          console.log("Testing follow-ups API...");
+
+          const response = await fetch("/api/follow-ups?userId=1&userRole=all");
+          console.log("Response status:", response.status);
+
+          if (response.ok) {
+            const data = await response.json();
+            console.log("Response data:", data);
+            results.innerHTML = `
                         <p>✅ API call successful</p>
                         <p>Status: ${response.status}</p>
-                        <p>Data length: ${Array.isArray(data) ? data.length : 'Not an array'}</p>
+                        <p>Data length: ${Array.isArray(data) ? data.length : "Not an array"}</p>
                         <pre>${JSON.stringify(data, null, 2)}</pre>
                     `;
-                } else {
-                    results.innerHTML = `
+          } else {
+            results.innerHTML = `
                         <p>❌ API call failed</p>
                         <p>Status: ${response.status}</p>
                         <p>Status Text: ${response.statusText}</p>
                     `;
-                }
-            } catch (error) {
-                console.error('Fetch error:', error);
-                results.innerHTML = `
+          }
+        } catch (error) {
+          console.error("Fetch error:", error);
+          results.innerHTML = `
                     <p>❌ Fetch error occurred</p>
                     <p>Error: ${error.message}</p>
                     <p>This is the same error that was causing the Dashboard issue</p>
                 `;
-            }
         }
-        
-        // Test on page load
-        testNotifications();
+      }
+
+      // Test on page load
+      testNotifications();
     </script>
-</body>
+  </body>
 </html>

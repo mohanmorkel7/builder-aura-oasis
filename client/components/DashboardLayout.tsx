@@ -242,7 +242,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           );
           setNotifications(realNotifications);
         } catch (error) {
-          console.warn("Failed to fetch notifications (non-critical):", error.message);
+          console.warn(
+            "Failed to fetch notifications (non-critical):",
+            error.message,
+          );
           // Disable notifications system if it keeps failing
           setNotificationsEnabled(false);
           setNotifications([]);
