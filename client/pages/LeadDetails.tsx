@@ -794,14 +794,14 @@ export default function LeadDetails() {
                       Add Step
                     </Button>
                   </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
+                  <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+                    <DialogHeader className="flex-shrink-0">
                       <DialogTitle>Add New Step</DialogTitle>
                       <DialogDescription>
                         Create a custom step for this lead's sales process
                       </DialogDescription>
                     </DialogHeader>
-                    <div className="space-y-4">
+                    <div className="space-y-4 overflow-y-auto flex-1 px-1">
                       {/* Template probability info */}
                       {templateData?.steps && templateData.steps.length > 0 && (
                         <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
