@@ -128,32 +128,27 @@ export default function LeadDetails() {
         totalStepProbability += stepProbability;
 
         if (step.status === "completed") {
-          // Full probability weight for completed steps
+          // Only count completed steps for progress
           totalCompletedProbability += stepProbability;
-        } else if (step.status === "in_progress") {
-          // 50% probability weight for in-progress steps
-          totalCompletedProbability += stepProbability * 0.5;
         }
+        // In-progress, pending, cancelled, blocked steps contribute 0 to progress
         // pending, cancelled, blocked steps contribute 0
       });
 
-      // Calculate percentage based on total step probabilities
+      // Calculate percentage based on completed steps only (cumulative progress)
       if (totalStepProbability > 0) {
-        // If total step probability is less than 100%, scale accordingly
-        const completionRatio =
-          totalCompletedProbability / totalStepProbability;
-        const percentage = Math.min(100, Math.round(completionRatio * 100));
+        // Show cumulative progress of completed steps only
+        const percentage = Math.min(100, Math.round(totalCompletedProbability));
 
         console.log("🔍 DETAILED PROBABILITY CALCULATION:", {
           totalStepProbability,
           totalCompletedProbability,
-          completionRatio,
           percentage,
           stepBreakdown: leadSteps.map((s) => {
             const prob = s.probability_percent || 0;
             let contribution = 0;
             if (s.status === "completed") contribution = prob;
-            else if (s.status === "in_progress") contribution = prob * 0.5;
+            // Only completed steps contribute in new calculation
 
             return {
               name: s.name,

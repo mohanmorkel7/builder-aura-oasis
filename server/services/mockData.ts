@@ -1312,28 +1312,28 @@ export class MockDataService {
       {
         id: 1,
         lead_id: leadId,
-        name: "Initial Contact & Discovery",
-        description: "First contact with prospect to understand their needs",
+        name: "First Introduction Call",
+        description: "Initial introduction call with prospect",
         status: "completed",
         step_order: 1,
         due_date: "2024-01-16",
         completed_date: "2024-01-16",
         estimated_days: 1,
-        probability_percent: 20,
+        probability_percent: 10,
         created_at: "2024-01-15T09:00:00Z",
         updated_at: "2024-01-16T10:30:00Z",
       },
       {
         id: 2,
         lead_id: leadId,
-        name: "Needs Assessment & Demo",
-        description: "Detailed needs assessment and product demonstration",
-        status: "completed",
+        name: "Product Demo",
+        description: "Detailed product demonstration",
+        status: "in-progress",
         step_order: 2,
         due_date: "2024-01-20",
-        completed_date: "2024-01-20",
+        completed_date: null,
         estimated_days: 3,
-        probability_percent: 25,
+        probability_percent: 90,
         created_at: "2024-01-15T09:00:00Z",
         updated_at: "2024-01-20T15:45:00Z",
       },
@@ -1504,27 +1504,20 @@ export class MockDataService {
 
         if (currentStatus === "completed") {
           totalCompletedProbability += stepProbability;
-        } else if (currentStatus === "in-progress") {
-          totalCompletedProbability += stepProbability * 0.5;
         }
-        // pending, cancelled, blocked steps contribute 0
+        // Only completed steps contribute to progress
       });
 
-      const newProbability =
-        totalStepProbability > 0
-          ? Math.min(
-              100,
-              Math.round(
-                (totalCompletedProbability / totalStepProbability) * 100,
-              ),
-            )
-          : 0;
+      const newProbability = Math.min(
+        100,
+        Math.round(totalCompletedProbability),
+      );
 
       console.log(
         `Updated lead ${originalStep.lead_id} probability to ${newProbability}%`,
       );
       console.log(
-        `Calculation: (${totalCompletedProbability} / ${totalStepProbability}) * 100 = ${newProbability}%`,
+        `Calculation: Completed steps total = ${totalCompletedProbability}% (capped at 100%)`,
       );
 
       // Store the calculated probability for subsequent lead queries
