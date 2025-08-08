@@ -144,16 +144,24 @@ export default function LeadDetails() {
           totalCompletedProbability / totalStepProbability;
         const percentage = Math.min(100, Math.round(completionRatio * 100));
 
-        console.log("Probability calculation:", {
+        console.log("🔍 DETAILED PROBABILITY CALCULATION:", {
           totalStepProbability,
           totalCompletedProbability,
           completionRatio,
           percentage,
-          steps: leadSteps.map((s) => ({
-            name: s.name,
-            status: s.status,
-            probability_percent: s.probability_percent,
-          })),
+          stepBreakdown: leadSteps.map((s) => {
+            const prob = s.probability_percent || 0;
+            let contribution = 0;
+            if (s.status === "completed") contribution = prob;
+            else if (s.status === "in_progress") contribution = prob * 0.5;
+
+            return {
+              name: s.name,
+              status: s.status,
+              probability_percent: prob,
+              contribution: contribution
+            };
+          }),
         });
 
         return percentage;
