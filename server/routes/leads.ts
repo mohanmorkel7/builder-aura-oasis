@@ -873,18 +873,25 @@ router.get("/:leadId/steps", async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Invalid lead ID" });
     }
 
+    console.log(`\n=== LEAD STEPS API DEBUG (Lead ${leadId}) ===`);
     let steps;
     try {
-      if (await isDatabaseAvailable()) {
+      const dbAvailable = await isDatabaseAvailable();
+      console.log(`Database available: ${dbAvailable}`);
+
+      if (dbAvailable) {
         // First get the lead to find its template_id
         const leadQuery = `SELECT template_id FROM leads WHERE id = $1`;
         const leadResult = await pool.query(leadQuery, [leadId]);
+        console.log(`Lead query result: ${leadResult.rows.length} rows`);
 
         if (leadResult.rows.length === 0) {
+          console.log(`❌ Lead ${leadId} not found in database`);
           return res.status(404).json({ error: "Lead not found" });
         }
 
         const templateId = leadResult.rows[0].template_id;
+        console.log(`Lead template_id: ${templateId}`);
 
         if (templateId) {
           // First check if lead steps already exist
