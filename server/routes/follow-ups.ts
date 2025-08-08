@@ -21,6 +21,7 @@ router.post("/", async (req: Request, res: Response) => {
     const {
       client_id,
       lead_id,
+      step_id,
       title,
       description,
       due_date,
