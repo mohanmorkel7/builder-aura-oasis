@@ -907,7 +907,7 @@ router.get("/:leadId/steps", async (req: Request, res: Response) => {
 
             // Get template steps
             const templateStepsQuery = `
-              SELECT id, name, description, step_order, default_eta_days
+              SELECT id, name, description, step_order, default_eta_days, probability_percent
               FROM template_steps
               WHERE template_id = $1
               ORDER BY step_order ASC
