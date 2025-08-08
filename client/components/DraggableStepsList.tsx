@@ -172,7 +172,7 @@ export function DraggableStepsList({
         <div className="space-y-4">
           {items.map((step, index) => (
           <EnhancedStepItem
-            key={`step-${step.id}-${step.step_order || index}-${step.name?.replace(/\s+/g, '-') || 'unknown'}`}
+            key={`${step.id}-${index}`}
             step={step}
             isExpanded={expandedSteps.has(step.id)}
             onToggleExpansion={() => onToggleExpansion(step.id)}
