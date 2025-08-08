@@ -148,7 +148,7 @@ export default function LeadDetails() {
             const prob = s.probability_percent || 0;
             let contribution = 0;
             if (s.status === "completed") contribution = prob;
-            else if (s.status === "in_progress") contribution = prob * 0.5;
+            // Only completed steps contribute in new calculation
 
             return {
               name: s.name,
