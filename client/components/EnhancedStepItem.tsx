@@ -110,6 +110,7 @@ export function EnhancedStepItem({
     error: chatError,
   } = useStepChats(step.isTemplate ? 0 : step.id);
   const createChatMutation = useCreateStepChat();
+  const createFollowUpMutation = useCreateFollowUp();
 
   // Sort messages by created_at in ascending order (latest last for bottom scroll)
   const sortedMessages = React.useMemo(() => {
