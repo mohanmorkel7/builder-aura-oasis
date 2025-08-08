@@ -3,7 +3,7 @@ const { Pool } = require("pg");
 // Use your local database connection settings
 const pool = new Pool({
   user: "postgres",
-  host: "localhost", 
+  host: "localhost",
   database: "lead_management", // Replace with your actual database name
   password: "admin123", // Replace with your actual password
   port: 5432,
@@ -70,14 +70,17 @@ async function debugLocalDatabaseContacts() {
       console.log(`   Contacts type: ${lead.contacts_type}`);
       console.log(`   Contacts value:`, lead.contacts);
       console.log(`   Contacts is array:`, Array.isArray(lead.contacts));
-      console.log(`   Contacts length:`, lead.contacts ? lead.contacts.length : 'N/A');
-      
+      console.log(
+        `   Contacts length:`,
+        lead.contacts ? lead.contacts.length : "N/A",
+      );
+
       if (lead.contacts && lead.contacts.length > 0) {
         const firstContact = lead.contacts[0];
         console.log(`   First contact:`, firstContact);
-        console.log(`   Contact name:`, firstContact.contact_name || 'MISSING');
-        console.log(`   Contact email:`, firstContact.email || 'MISSING');
-        console.log(`   Contact phone:`, firstContact.phone || 'MISSING');
+        console.log(`   Contact name:`, firstContact.contact_name || "MISSING");
+        console.log(`   Contact email:`, firstContact.email || "MISSING");
+        console.log(`   Contact phone:`, firstContact.phone || "MISSING");
       } else {
         console.log(`   ❌ No contacts or empty contacts array`);
       }
@@ -85,7 +88,7 @@ async function debugLocalDatabaseContacts() {
 
     console.log("\n🔧 POTENTIAL FIXES:");
     console.log("===================");
-    
+
     // Check for common issues
     const emptyContacts = await pool.query(`
       SELECT COUNT(*) as count
@@ -93,7 +96,9 @@ async function debugLocalDatabaseContacts() {
       WHERE contacts IS NULL OR contacts = '[]'::jsonb OR jsonb_array_length(contacts) = 0
     `);
 
-    console.log(`\n📊 Leads with empty/null contacts: ${emptyContacts.rows[0].count}`);
+    console.log(
+      `\n📊 Leads with empty/null contacts: ${emptyContacts.rows[0].count}`,
+    );
 
     // Check for string vs array issues
     const stringContacts = await pool.query(`
@@ -102,15 +107,22 @@ async function debugLocalDatabaseContacts() {
       WHERE pg_typeof(contacts) != 'jsonb'
     `);
 
-    console.log(`📊 Leads with non-JSONB contacts: ${stringContacts.rows[0].count}`);
+    console.log(
+      `📊 Leads with non-JSONB contacts: ${stringContacts.rows[0].count}`,
+    );
 
     console.log("\n💡 SUGGESTIONS:");
     console.log("1. If contacts are empty: Add contact data to your leads");
-    console.log("2. If contacts are strings: Convert them to proper JSONB format");
-    console.log("3. If contacts exist but show 'Not provided': Check frontend display logic");
+    console.log(
+      "2. If contacts are strings: Convert them to proper JSONB format",
+    );
+    console.log(
+      "3. If contacts exist but show 'Not provided': Check frontend display logic",
+    );
     console.log("4. Sample contact format that should work:");
-    console.log(`   contacts: [{"contact_name": "John Doe", "email": "john@example.com", "phone": "+1234567890", "designation": "Manager", "linkedin": ""}]`);
-
+    console.log(
+      `   contacts: [{"contact_name": "John Doe", "email": "john@example.com", "phone": "+1234567890", "designation": "Manager", "linkedin": ""}]`,
+    );
   } catch (error) {
     console.error("❌ Database Error:", error.message);
     console.log("\n💡 TROUBLESHOOTING:");
