@@ -176,7 +176,7 @@ CREATE TABLE IF NOT EXISTS lead_steps (
 -- Lead Chat/Messages table
 CREATE TABLE IF NOT EXISTS lead_chats (
     id SERIAL PRIMARY KEY,
-    step_id INTEGER REFERENCES template_steps(id) ON DELETE CASCADE,
+    step_id INTEGER REFERENCES lead_steps(id) ON DELETE CASCADE,
     user_id INTEGER REFERENCES users(id),
     user_name VARCHAR(255) NOT NULL,
     message TEXT NOT NULL,
