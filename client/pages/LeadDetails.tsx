@@ -775,6 +775,61 @@ export default function LeadDetails() {
                       </DialogDescription>
                     </DialogHeader>
                     <div className="space-y-4">
+                      {/* Template probability info */}
+                      {templateData?.steps && templateData.steps.length > 0 && (
+                        <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
+                          <div className="text-sm font-medium text-blue-900 mb-2">
+                            📊 Template Step Probabilities
+                          </div>
+                          <div className="text-xs text-blue-700 space-y-1">
+                            {templateData.steps.map((step: any, index: number) => (
+                              <div key={index} className="flex justify-between">
+                                <span>{step.name}</span>
+                                <span className="font-medium">{step.probability_percent || 0}%</span>
+                              </div>
+                            ))}
+                            <div className="border-t border-blue-300 pt-1 mt-2 flex justify-between font-medium">
+                              <span>Template Total:</span>
+                              <span>
+                                {templateData.steps.reduce((sum: number, step: any) =>
+                                  sum + (step.probability_percent || 0), 0
+                                )}%
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Current lead steps probability info */}
+                      {leadSteps && leadSteps.length > 0 && (
+                        <div className="p-3 bg-green-50 border border-green-200 rounded-md">
+                          <div className="text-sm font-medium text-green-900 mb-2">
+                            📈 Current Lead Steps
+                          </div>
+                          <div className="text-xs text-green-700 space-y-1">
+                            {leadSteps.map((step: any, index: number) => (
+                              <div key={index} className="flex justify-between">
+                                <span>{step.name}</span>
+                                <span className="font-medium">{step.probability_percent || 0}%</span>
+                              </div>
+                            ))}
+                            <div className="border-t border-green-300 pt-1 mt-2 flex justify-between font-medium">
+                              <span>Current Total:</span>
+                              <span className={
+                                (leadSteps.reduce((sum: number, step: any) =>
+                                  sum + (step.probability_percent || 0), 0
+                                ) + (parseInt(newStep.probability_percent) || 0)) > 100
+                                ? "text-red-600" : "text-green-600"
+                              }>
+                                {leadSteps.reduce((sum: number, step: any) =>
+                                  sum + (step.probability_percent || 0), 0
+                                ) + (parseInt(newStep.probability_percent) || 0)}%
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
                       <div>
                         <Label htmlFor="stepName">Step Name *</Label>
                         <Input
@@ -807,19 +862,47 @@ export default function LeadDetails() {
                         />
                       </div>
 
-                      <div>
-                        <Label htmlFor="dueDate">Due Date</Label>
-                        <Input
-                          id="dueDate"
-                          type="date"
-                          value={newStep.due_date}
-                          onChange={(e) =>
-                            setNewStep((prev) => ({
-                              ...prev,
-                              due_date: e.target.value,
-                            }))
-                          }
-                        />
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="dueDate">Due Date</Label>
+                          <Input
+                            id="dueDate"
+                            type="date"
+                            value={newStep.due_date}
+                            onChange={(e) =>
+                              setNewStep((prev) => ({
+                                ...prev,
+                                due_date: e.target.value,
+                              }))
+                            }
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="probabilityPercent">
+                            Probability Weight (%)
+                            {leadSteps && leadSteps.length > 0 && (
+                              <span className="text-xs text-gray-500 ml-1">
+                                (Remaining: {Math.max(0, 100 - leadSteps.reduce((sum: number, step: any) =>
+                                  sum + (step.probability_percent || 0), 0
+                                ))}%)
+                              </span>
+                            )}
+                          </Label>
+                          <Input
+                            id="probabilityPercent"
+                            type="number"
+                            min="0"
+                            max="100"
+                            value={newStep.probability_percent}
+                            onChange={(e) =>
+                              setNewStep((prev) => ({
+                                ...prev,
+                                probability_percent: e.target.value,
+                              }))
+                            }
+                            placeholder="0"
+                          />
+                        </div>
                       </div>
                     </div>
                     <DialogFooter>
