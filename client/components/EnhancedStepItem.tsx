@@ -617,7 +617,10 @@ export function EnhancedStepItem({
                       !chatError &&
                       sortedMessages.length === 0 && (
                         <p className="text-sm text-gray-500 text-center py-8">
-                          No messages yet. Start the conversation!
+                          {step.isTemplate
+                            ? "Template steps don't have chat functionality. Create actual lead steps to start conversations."
+                            : "No messages yet. Start the conversation!"
+                          }
                         </p>
                       )}
                   </div>
