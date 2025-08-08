@@ -1612,6 +1612,12 @@ export class MockDataService {
     return filteredChats;
   }
 
+  static addLeadStep(step: any) {
+    console.log(`MockDataService.addLeadStep: Adding step ${step.id} to storage`);
+    this.leadSteps.push(step);
+    console.log(`MockDataService.addLeadStep: Total steps now: ${this.leadSteps.length}`);
+  }
+
   static async deleteLeadStep(stepId: number) {
     console.log(`MockDataService.deleteLeadStep: Deleting step ${stepId}`);
 
