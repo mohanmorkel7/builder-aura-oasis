@@ -1443,6 +1443,17 @@ export class MockDataService {
         updated_at: "2024-01-15T09:00:00Z",
       },
     ];
+
+    // Apply any stored step updates
+    return steps.map(step => {
+      if (this.updatedSteps[step.id]) {
+        return {
+          ...step,
+          ...this.updatedSteps[step.id]
+        };
+      }
+      return step;
+    });
   }
 
   static async updateLeadStep(stepId: number, stepData: any) {
