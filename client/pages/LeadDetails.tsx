@@ -100,6 +100,7 @@ export default function LeadDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const leadId = parseInt(id || "0");
 
   const { data: lead, isLoading, error } = useLead(leadId);
