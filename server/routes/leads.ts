@@ -1389,8 +1389,13 @@ router.delete("/steps/:id", async (req: Request, res: Response) => {
       });
 
       // Handle foreign key constraint error by fixing the constraint and retrying
-      if (dbError.code === '23503' && dbError.constraint === 'follow_ups_step_id_fkey') {
-        console.log("Foreign key constraint error detected, attempting to fix constraint and retry...");
+      if (
+        dbError.code === "23503" &&
+        dbError.constraint === "follow_ups_step_id_fkey"
+      ) {
+        console.log(
+          "Foreign key constraint error detected, attempting to fix constraint and retry...",
+        );
 
         try {
           // Fix the constraint
@@ -1415,7 +1420,7 @@ router.delete("/steps/:id", async (req: Request, res: Response) => {
           console.error("Failed to fix constraint:", fixError);
           return res.status(500).json({
             error: "Failed to delete step and fix constraint",
-            details: fixError.message
+            details: fixError.message,
           });
         }
       }
