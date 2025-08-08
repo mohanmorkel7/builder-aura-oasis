@@ -410,22 +410,30 @@ export default function LeadDetails() {
                 const allSteps = leadSteps;
 
                 // If no lead steps but template exists, show template as reference
-                if (allSteps.length === 0 && templateData?.steps && templateData.steps.length > 0) {
-                  const templateStepsPreview = templateData.steps.map((templateStep: any, index: number) => ({
-                    ...templateStep,
-                    id: `template-${templateStep.id}`,
-                    isTemplate: true,
-                    step_order: index + 1,
-                    status: "pending",
-                  }));
+                if (
+                  allSteps.length === 0 &&
+                  templateData?.steps &&
+                  templateData.steps.length > 0
+                ) {
+                  const templateStepsPreview = templateData.steps.map(
+                    (templateStep: any, index: number) => ({
+                      ...templateStep,
+                      id: `template-${templateStep.id}`,
+                      isTemplate: true,
+                      step_order: index + 1,
+                      status: "pending",
+                    }),
+                  );
 
                   return (
                     <div className="mt-4 p-3 bg-blue-50 rounded-lg border">
                       <div className="text-sm font-medium text-blue-700 mb-2">
-                        📋 Template Steps Reference ({templateStepsPreview.length} steps)
+                        📋 Template Steps Reference (
+                        {templateStepsPreview.length} steps)
                       </div>
                       <div className="text-xs text-blue-600 mb-2">
-                        These are template steps. Actual trackable steps will be created when you start working on this lead.
+                        These are template steps. Actual trackable steps will be
+                        created when you start working on this lead.
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                         {templateStepsPreview.slice(0, 6).map((step, index) => (
@@ -448,7 +456,8 @@ export default function LeadDetails() {
                         ))}
                         {templateStepsPreview.length > 6 && (
                           <div className="flex items-center justify-center p-2 bg-blue-100 rounded text-xs text-blue-600">
-                            +{templateStepsPreview.length - 6} more template steps
+                            +{templateStepsPreview.length - 6} more template
+                            steps
                           </div>
                         )}
                       </div>
@@ -857,19 +866,20 @@ export default function LeadDetails() {
                       <p className="text-gray-600 mb-4">
                         {templateData?.steps && templateData.steps.length > 0
                           ? `This lead uses the "${templateData.name}" template. Create lead-specific steps to start tracking progress.`
-                          : "Create custom steps to track your sales process for this lead."
-                        }
+                          : "Create custom steps to track your sales process for this lead."}
                       </p>
                       <div className="space-y-2">
                         <Button onClick={() => setNewStepDialog(true)}>
                           <Plus className="w-4 h-4 mr-2" />
                           Add Lead Step
                         </Button>
-                        {templateData?.steps && templateData.steps.length > 0 && (
-                          <div className="text-xs text-blue-600">
-                            💡 Tip: You can create lead-specific steps based on the template, or add completely custom steps.
-                          </div>
-                        )}
+                        {templateData?.steps &&
+                          templateData.steps.length > 0 && (
+                            <div className="text-xs text-blue-600">
+                              💡 Tip: You can create lead-specific steps based
+                              on the template, or add completely custom steps.
+                            </div>
+                          )}
                       </div>
                     </div>
                   );

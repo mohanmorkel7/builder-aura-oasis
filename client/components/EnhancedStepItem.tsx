@@ -285,7 +285,11 @@ export function EnhancedStepItem({
                 ? "text-gray-300 cursor-not-allowed"
                 : "cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600"
             }`}
-            title={step.isTemplate ? "Template steps cannot be reordered" : "Drag to reorder"}
+            title={
+              step.isTemplate
+                ? "Template steps cannot be reordered"
+                : "Drag to reorder"
+            }
           >
             <GripVertical className="w-5 h-5" />
           </div>
@@ -304,12 +308,17 @@ export function EnhancedStepItem({
           <CollapsibleTrigger className="flex-1 flex items-center justify-between text-left">
             <div className="flex-1">
               <div className="flex items-center space-x-2">
-                <span className={`font-medium ${step.isTemplate ? "text-blue-700" : "text-gray-900"}`}>
+                <span
+                  className={`font-medium ${step.isTemplate ? "text-blue-700" : "text-gray-900"}`}
+                >
                   {step.name}
                 </span>
                 <div className="flex items-center space-x-2">
                   {step.isTemplate && (
-                    <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-300">
+                    <Badge
+                      variant="outline"
+                      className="text-xs bg-blue-50 text-blue-700 border-blue-300"
+                    >
                       📋 Template
                     </Badge>
                   )}
@@ -351,7 +360,9 @@ export function EnhancedStepItem({
               onValueChange={(value) => onUpdateStatus(step.id, value)}
               disabled={step.isTemplate}
             >
-              <SelectTrigger className={`w-32 ${step.isTemplate ? "opacity-50 cursor-not-allowed" : ""}`}>
+              <SelectTrigger
+                className={`w-32 ${step.isTemplate ? "opacity-50 cursor-not-allowed" : ""}`}
+              >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -363,14 +374,18 @@ export function EnhancedStepItem({
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => step.isTemplate ? null : onDeleteStep(step.id)}
+              onClick={() => (step.isTemplate ? null : onDeleteStep(step.id))}
               className={`${
                 step.isTemplate
                   ? "text-gray-400 cursor-not-allowed opacity-50"
                   : "text-red-600 hover:text-red-700"
               }`}
               disabled={step.isTemplate}
-              title={step.isTemplate ? "Template steps cannot be deleted" : "Delete step"}
+              title={
+                step.isTemplate
+                  ? "Template steps cannot be deleted"
+                  : "Delete step"
+              }
             >
               <Trash2 className="w-4 h-4" />
             </Button>
@@ -619,113 +634,117 @@ export function EnhancedStepItem({
                         <p className="text-sm text-gray-500 text-center py-8">
                           {step.isTemplate
                             ? "Template steps don't have chat functionality. Create actual lead steps to start conversations."
-                            : "No messages yet. Start the conversation!"
-                          }
+                            : "No messages yet. Start the conversation!"}
                         </p>
                       )}
                   </div>
 
                   {/* Rich Text Editor - Only show for actual lead steps */}
                   {!step.isTemplate && (
-                  <div className="border-t bg-white p-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm text-gray-700 font-medium">
-                          💬 Compose Message
-                        </span>
-                        <input
-                          ref={fileInputRef}
-                          type="file"
-                          className="hidden"
-                          onChange={handleFileUpload}
-                          multiple
+                    <div className="border-t bg-white p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center space-x-2">
+                          <span className="text-sm text-gray-700 font-medium">
+                            💬 Compose Message
+                          </span>
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            className="hidden"
+                            onChange={handleFileUpload}
+                            multiple
+                          />
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => fileInputRef.current?.click()}
+                            title="Upload documents"
+                            className="h-8 px-3 text-xs"
+                          >
+                            <Upload className="w-3 h-3 mr-1" />
+                            Attach
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* Staged Attachments Display */}
+                      {stagedAttachments.length > 0 && (
+                        <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                          <div className="text-sm font-medium text-blue-800 mb-2">
+                            Files ready to send:
+                          </div>
+                          <div className="space-y-2">
+                            {stagedAttachments.map((attachment, index) => (
+                              <div
+                                key={index}
+                                className="flex items-center justify-between p-2 bg-white border rounded"
+                              >
+                                <div className="flex items-center space-x-2">
+                                  <div className="w-6 h-6 bg-blue-100 rounded flex items-center justify-center">
+                                    📎
+                                  </div>
+                                  <span className="text-sm text-gray-700">
+                                    {attachment.file_name}
+                                  </span>
+                                  <span className="text-xs text-gray-500">
+                                    ({Math.round(attachment.file_size / 1024)}{" "}
+                                    KB)
+                                  </span>
+                                </div>
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => removeStagedAttachment(index)}
+                                  className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                                >
+                                  <X className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="mb-3">
+                        <RichTextEditor
+                          value={newMessage}
+                          onChange={setNewMessage}
+                          placeholder="Type your message with rich formatting..."
+                          className="min-h-[80px] border-gray-200"
                         />
+                      </div>
+
+                      <div className="flex justify-between items-center">
+                        <div className="text-xs text-gray-500">
+                          Press Ctrl+Enter to send
+                        </div>
                         <Button
                           size="sm"
-                          variant="outline"
-                          onClick={() => fileInputRef.current?.click()}
-                          title="Upload documents"
-                          className="h-8 px-3 text-xs"
+                          onClick={handleSendMessage}
+                          disabled={
+                            !newMessage.trim() && stagedAttachments.length === 0
+                          }
+                          className="bg-blue-500 hover:bg-blue-600 text-white px-4"
                         >
-                          <Upload className="w-3 h-3 mr-1" />
-                          Attach
+                          <Send className="w-4 h-4 mr-2" />
+                          Send Message
                         </Button>
                       </div>
                     </div>
-
-                    {/* Staged Attachments Display */}
-                    {stagedAttachments.length > 0 && (
-                      <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                        <div className="text-sm font-medium text-blue-800 mb-2">
-                          Files ready to send:
-                        </div>
-                        <div className="space-y-2">
-                          {stagedAttachments.map((attachment, index) => (
-                            <div
-                              key={index}
-                              className="flex items-center justify-between p-2 bg-white border rounded"
-                            >
-                              <div className="flex items-center space-x-2">
-                                <div className="w-6 h-6 bg-blue-100 rounded flex items-center justify-center">
-                                  📎
-                                </div>
-                                <span className="text-sm text-gray-700">
-                                  {attachment.file_name}
-                                </span>
-                                <span className="text-xs text-gray-500">
-                                  ({Math.round(attachment.file_size / 1024)} KB)
-                                </span>
-                              </div>
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => removeStagedAttachment(index)}
-                                className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
-                              >
-                                <X className="h-3 w-3" />
-                              </Button>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="mb-3">
-                      <RichTextEditor
-                        value={newMessage}
-                        onChange={setNewMessage}
-                        placeholder="Type your message with rich formatting..."
-                        className="min-h-[80px] border-gray-200"
-                      />
-                    </div>
-
-                    <div className="flex justify-between items-center">
-                      <div className="text-xs text-gray-500">
-                        Press Ctrl+Enter to send
-                      </div>
-                      <Button
-                        size="sm"
-                        onClick={handleSendMessage}
-                        disabled={
-                          !newMessage.trim() && stagedAttachments.length === 0
-                        }
-                        className="bg-blue-500 hover:bg-blue-600 text-white px-4"
-                      >
-                        <Send className="w-4 h-4 mr-2" />
-                        Send Message
-                      </Button>
-                    </div>
-                  </div>
                   )}
 
                   {/* Template Step Notice */}
                   {step.isTemplate && (
                     <div className="border-t bg-blue-50 p-4">
                       <div className="text-center text-blue-700">
-                        <div className="text-sm font-medium mb-1">📋 Template Step</div>
+                        <div className="text-sm font-medium mb-1">
+                          📋 Template Step
+                        </div>
                         <div className="text-xs text-blue-600">
-                          This is a template step for reference. Create actual lead steps to track progress and enable chat functionality.
+                          This is a template step for reference. Create actual
+                          lead steps to track progress and enable chat
+                          functionality.
                         </div>
                       </div>
                     </div>

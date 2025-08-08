@@ -59,7 +59,7 @@ export function DraggableStepsList({
   }, [steps]);
 
   const handleUpdateStatus = (stepId: number, status: string) => {
-    const step = items.find(item => item.id === stepId);
+    const step = items.find((item) => item.id === stepId);
     if (!step) {
       console.error("Step not found:", stepId);
       return;
@@ -68,7 +68,9 @@ export function DraggableStepsList({
     // Don't allow status updates on template steps
     if (step.isTemplate) {
       console.warn("Cannot update status on template step:", stepId);
-      alert("Cannot update status on template steps. Please create actual lead steps first.");
+      alert(
+        "Cannot update status on template steps. Please create actual lead steps first.",
+      );
       return;
     }
 
@@ -112,7 +114,7 @@ export function DraggableStepsList({
 
       // Call API to persist the new order (only for lead steps)
       const stepOrders = updatedItems
-        .filter(item => !item.isTemplate)
+        .filter((item) => !item.isTemplate)
         .map((item, index) => ({
           id: item.id,
           order: index + 1,
