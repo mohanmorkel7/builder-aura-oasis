@@ -817,36 +817,58 @@ export default function LeadDetails() {
                     </DialogHeader>
                     <div className="space-y-4 overflow-y-auto flex-1 px-1">
                       {/* Consolidated Steps Probability Info */}
-                      {(leadSteps && leadSteps.length > 0) || (templateData?.steps && templateData.steps.length > 0) ? (
+                      {(leadSteps && leadSteps.length > 0) ||
+                      (templateData?.steps && templateData.steps.length > 0) ? (
                         <div className="p-2 bg-blue-50 border border-blue-200 rounded-md">
                           <div className="text-xs font-medium text-blue-900 mb-1">
                             ���� Steps Overview (
                             {(() => {
-                              const currentTotal = leadSteps ? leadSteps.reduce(
-                                (sum: number, step: any) => sum + (step.probability_percent || 0), 0
-                              ) : 0;
-                              const newStepProb = parseInt(newStep.probability_percent) || 0;
+                              const currentTotal = leadSteps
+                                ? leadSteps.reduce(
+                                    (sum: number, step: any) =>
+                                      sum + (step.probability_percent || 0),
+                                    0,
+                                  )
+                                : 0;
+                              const newStepProb =
+                                parseInt(newStep.probability_percent) || 0;
                               const total = currentTotal + newStepProb;
                               return total;
-                            })()}% total
+                            })()}
+                            % total
                             {(() => {
-                              const currentTotal = leadSteps ? leadSteps.reduce(
-                                (sum: number, step: any) => sum + (step.probability_percent || 0), 0
-                              ) : 0;
-                              const newStepProb = parseInt(newStep.probability_percent) || 0;
+                              const currentTotal = leadSteps
+                                ? leadSteps.reduce(
+                                    (sum: number, step: any) =>
+                                      sum + (step.probability_percent || 0),
+                                    0,
+                                  )
+                                : 0;
+                              const newStepProb =
+                                parseInt(newStep.probability_percent) || 0;
                               const total = currentTotal + newStepProb;
-                              return total > 100 && (
-                                <span className="text-red-600 ml-1">⚠️ Exceeds 100%</span>
+                              return (
+                                total > 100 && (
+                                  <span className="text-red-600 ml-1">
+                                    ⚠️ Exceeds 100%
+                                  </span>
+                                )
                               );
-                            })()})
+                            })()}
+                            )
                           </div>
                           <div className="text-xs text-blue-700 max-h-24 overflow-y-auto">
                             {/* Show current lead steps if they exist */}
                             {leadSteps && leadSteps.length > 0 ? (
                               <>
                                 {leadSteps.map((step: any, index: number) => (
-                                  <div key={index} className="flex justify-between py-0.5">
-                                    <span className="truncate mr-2">{step.name}</span>
+                                  <div
+                                    key={index}
+                                    className="flex justify-between py-0.5"
+                                  >
+                                    <span className="truncate mr-2">
+                                      {step.name}
+                                    </span>
                                     <span className="font-medium flex-shrink-0 text-green-600">
                                       {step.probability_percent || 0}%
                                     </span>
@@ -855,14 +877,23 @@ export default function LeadDetails() {
                               </>
                             ) : (
                               /* Show template steps as reference if no lead steps */
-                              templateData?.steps && templateData.steps.map((step: any, index: number) => (
-                                <div key={index} className="flex justify-between py-0.5">
-                                  <span className="truncate mr-2">{step.name}</span>
-                                  <span className="font-medium flex-shrink-0 text-blue-600">
-                                    {step.probability_percent || 0}% (template)
-                                  </span>
-                                </div>
-                              ))
+                              templateData?.steps &&
+                              templateData.steps.map(
+                                (step: any, index: number) => (
+                                  <div
+                                    key={index}
+                                    className="flex justify-between py-0.5"
+                                  >
+                                    <span className="truncate mr-2">
+                                      {step.name}
+                                    </span>
+                                    <span className="font-medium flex-shrink-0 text-blue-600">
+                                      {step.probability_percent || 0}%
+                                      (template)
+                                    </span>
+                                  </div>
+                                ),
+                              )
                             )}
                             {/* Show new step preview */}
                             {parseInt(newStep.probability_percent) > 0 && (
@@ -939,12 +970,20 @@ export default function LeadDetails() {
                             <span className="text-xs text-gray-500 ml-1">
                               (Remaining:{" "}
                               {(() => {
-                                const currentTotal = leadSteps ? leadSteps.reduce(
-                                  (sum: number, step: any) => sum + (step.probability_percent || 0), 0
-                                ) : 0;
-                                const remaining = Math.max(0, 100 - currentTotal);
+                                const currentTotal = leadSteps
+                                  ? leadSteps.reduce(
+                                      (sum: number, step: any) =>
+                                        sum + (step.probability_percent || 0),
+                                      0,
+                                    )
+                                  : 0;
+                                const remaining = Math.max(
+                                  0,
+                                  100 - currentTotal,
+                                );
                                 return remaining;
-                              })()}%)
+                              })()}
+                              %)
                             </span>
                           </Label>
                           <Input
@@ -960,9 +999,13 @@ export default function LeadDetails() {
                               }))
                             }
                             placeholder={(() => {
-                              const currentTotal = leadSteps ? leadSteps.reduce(
-                                (sum: number, step: any) => sum + (step.probability_percent || 0), 0
-                              ) : 0;
+                              const currentTotal = leadSteps
+                                ? leadSteps.reduce(
+                                    (sum: number, step: any) =>
+                                      sum + (step.probability_percent || 0),
+                                    0,
+                                  )
+                                : 0;
                               const remaining = Math.max(0, 100 - currentTotal);
                               return remaining > 0 ? remaining.toString() : "0";
                             })()}
