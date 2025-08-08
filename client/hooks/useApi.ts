@@ -1228,9 +1228,11 @@ export function useStepChats(stepId: number) {
   );
   return useQuery({
     queryKey: ["step-chats", stepId],
-    queryFn: () => {
+    queryFn: async () => {
       console.log(`Fetching chats for step ${stepId}`);
-      return apiClient.getStepChats(stepId);
+      const result = await apiClient.getStepChats(stepId);
+      console.log(`API response for step ${stepId} chats:`, result);
+      return result;
     },
     enabled: !!stepId && stepId > 0,
   });
