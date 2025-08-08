@@ -1219,6 +1219,11 @@ router.post("/:leadId/steps", async (req: Request, res: Response) => {
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         };
+
+        // Store in MockDataService for proper deletion support
+        const { MockDataService } = await import("../services/mockData");
+        MockDataService.addLeadStep(mockStep);
+
         console.log("Database unavailable, returning mock step response");
         res.status(201).json(mockStep);
       }
