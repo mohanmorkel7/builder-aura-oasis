@@ -22,7 +22,9 @@ async function migrateProbabilityFields() {
     `);
 
     // Update existing lead steps to have equal probability distribution
-    console.log("2. Updating existing lead steps with equal probability distribution...");
+    console.log(
+      "2. Updating existing lead steps with equal probability distribution...",
+    );
     await pool.query(`
       UPDATE lead_steps 
       SET probability_percent = (
@@ -119,7 +121,6 @@ async function migrateProbabilityFields() {
     console.table(leadTotals.rows);
 
     console.log("✅ Probability field migration completed successfully!");
-
   } catch (error) {
     console.error("❌ Migration failed:", error);
     throw error;

@@ -140,7 +140,8 @@ export default function LeadDetails() {
       // Calculate percentage based on total step probabilities
       if (totalStepProbability > 0) {
         // If total step probability is less than 100%, scale accordingly
-        const completionRatio = totalCompletedProbability / totalStepProbability;
+        const completionRatio =
+          totalCompletedProbability / totalStepProbability;
         const percentage = Math.min(100, Math.round(completionRatio * 100));
 
         console.log("Probability calculation:", {
@@ -148,22 +149,28 @@ export default function LeadDetails() {
           totalCompletedProbability,
           completionRatio,
           percentage,
-          steps: leadSteps.map(s => ({
+          steps: leadSteps.map((s) => ({
             name: s.name,
             status: s.status,
-            probability_percent: s.probability_percent
-          }))
+            probability_percent: s.probability_percent,
+          })),
         });
 
         return percentage;
       }
 
       // If no probability weights set, fall back to equal distribution
-      const completedSteps = leadSteps.filter(step => step.status === "completed").length;
-      const inProgressSteps = leadSteps.filter(step => step.status === "in_progress").length;
+      const completedSteps = leadSteps.filter(
+        (step) => step.status === "completed",
+      ).length;
+      const inProgressSteps = leadSteps.filter(
+        (step) => step.status === "in_progress",
+      ).length;
       const totalSteps = leadSteps.length;
 
-      return Math.round(((completedSteps + inProgressSteps * 0.5) / totalSteps) * 100);
+      return Math.round(
+        ((completedSteps + inProgressSteps * 0.5) / totalSteps) * 100,
+      );
     }
 
     // If no steps exist, use the lead's probability value
@@ -199,14 +206,19 @@ export default function LeadDetails() {
     }
 
     // Validate probability doesn't exceed 100%
-    const currentTotal = leadSteps ? leadSteps.reduce((sum: number, step: any) =>
-      sum + (step.probability_percent || 0), 0
-    ) : 0;
+    const currentTotal = leadSteps
+      ? leadSteps.reduce(
+          (sum: number, step: any) => sum + (step.probability_percent || 0),
+          0,
+        )
+      : 0;
     const newProbability = parseInt(newStep.probability_percent) || 0;
     const totalAfterAdd = currentTotal + newProbability;
 
     if (totalAfterAdd > 100) {
-      alert(`Total probability cannot exceed 100%. Current total: ${currentTotal}%, Adding: ${newProbability}%, Total would be: ${totalAfterAdd}%`);
+      alert(
+        `Total probability cannot exceed 100%. Current total: ${currentTotal}%, Adding: ${newProbability}%, Total would be: ${totalAfterAdd}%`,
+      );
       return;
     }
 
@@ -216,7 +228,9 @@ export default function LeadDetails() {
         description: newStep.description.trim(),
         due_date: newStep.due_date.trim() || undefined,
         estimated_days: 3, // Default value to satisfy API requirement
-        probability_percent: newStep.probability_percent ? parseInt(newStep.probability_percent) : 0,
+        probability_percent: newStep.probability_percent
+          ? parseInt(newStep.probability_percent)
+          : 0,
       };
 
       console.log("Creating step with data:", { leadId, stepData });
@@ -806,15 +820,30 @@ export default function LeadDetails() {
                       {templateData?.steps && templateData.steps.length > 0 && (
                         <div className="p-2 bg-blue-50 border border-blue-200 rounded-md">
                           <div className="text-xs font-medium text-blue-900 mb-1">
-                            📊 Template ({templateData.steps.reduce((sum: number, step: any) => sum + (step.probability_percent || 0), 0)}% total)
+                            📊 Template (
+                            {templateData.steps.reduce(
+                              (sum: number, step: any) =>
+                                sum + (step.probability_percent || 0),
+                              0,
+                            )}
+                            % total)
                           </div>
                           <div className="text-xs text-blue-700 max-h-20 overflow-y-auto">
-                            {templateData.steps.map((step: any, index: number) => (
-                              <div key={index} className="flex justify-between py-0.5">
-                                <span className="truncate mr-2">{step.name}</span>
-                                <span className="font-medium flex-shrink-0">{step.probability_percent || 0}%</span>
-                              </div>
-                            ))}
+                            {templateData.steps.map(
+                              (step: any, index: number) => (
+                                <div
+                                  key={index}
+                                  className="flex justify-between py-0.5"
+                                >
+                                  <span className="truncate mr-2">
+                                    {step.name}
+                                  </span>
+                                  <span className="font-medium flex-shrink-0">
+                                    {step.probability_percent || 0}%
+                                  </span>
+                                </div>
+                              ),
+                            )}
                           </div>
                         </div>
                       )}
@@ -823,22 +852,48 @@ export default function LeadDetails() {
                       {leadSteps && leadSteps.length > 0 && (
                         <div className="p-2 bg-green-50 border border-green-200 rounded-md">
                           <div className="text-xs font-medium text-green-900 mb-1">
-                            📈 Current Steps ({leadSteps.reduce((sum: number, step: any) => sum + (step.probability_percent || 0), 0) + (parseInt(newStep.probability_percent) || 0)}% total
-                            {(leadSteps.reduce((sum: number, step: any) => sum + (step.probability_percent || 0), 0) + (parseInt(newStep.probability_percent) || 0)) > 100 &&
-                              <span className="text-red-600 ml-1">⚠️ Exceeds 100%</span>
-                            })
+                            📈 Current Steps (
+                            {leadSteps.reduce(
+                              (sum: number, step: any) =>
+                                sum + (step.probability_percent || 0),
+                              0,
+                            ) + (parseInt(newStep.probability_percent) || 0)}
+                            % total
+                            {leadSteps.reduce(
+                              (sum: number, step: any) =>
+                                sum + (step.probability_percent || 0),
+                              0,
+                            ) +
+                              (parseInt(newStep.probability_percent) || 0) >
+                              100 && (
+                              <span className="text-red-600 ml-1">
+                                ⚠️ Exceeds 100%
+                              </span>
+                            )}
+                            )
                           </div>
                           <div className="text-xs text-green-700 max-h-20 overflow-y-auto">
                             {leadSteps.map((step: any, index: number) => (
-                              <div key={index} className="flex justify-between py-0.5">
-                                <span className="truncate mr-2">{step.name}</span>
-                                <span className="font-medium flex-shrink-0">{step.probability_percent || 0}%</span>
+                              <div
+                                key={index}
+                                className="flex justify-between py-0.5"
+                              >
+                                <span className="truncate mr-2">
+                                  {step.name}
+                                </span>
+                                <span className="font-medium flex-shrink-0">
+                                  {step.probability_percent || 0}%
+                                </span>
                               </div>
                             ))}
                             {parseInt(newStep.probability_percent) > 0 && (
                               <div className="flex justify-between py-0.5 border-t border-green-300 mt-1 pt-1">
-                                <span className="truncate mr-2 italic">New step: {newStep.name || "Untitled"}</span>
-                                <span className="font-medium flex-shrink-0">{newStep.probability_percent}%</span>
+                                <span className="truncate mr-2 italic">
+                                  New step: {newStep.name || "Untitled"}
+                                </span>
+                                <span className="font-medium flex-shrink-0">
+                                  {newStep.probability_percent}%
+                                </span>
                               </div>
                             )}
                           </div>
@@ -897,9 +952,17 @@ export default function LeadDetails() {
                             Probability Weight (%)
                             {leadSteps && leadSteps.length > 0 && (
                               <span className="text-xs text-gray-500 ml-1">
-                                (Remaining: {Math.max(0, 100 - leadSteps.reduce((sum: number, step: any) =>
-                                  sum + (step.probability_percent || 0), 0
-                                ))}%)
+                                (Remaining:{" "}
+                                {Math.max(
+                                  0,
+                                  100 -
+                                    leadSteps.reduce(
+                                      (sum: number, step: any) =>
+                                        sum + (step.probability_percent || 0),
+                                      0,
+                                    ),
+                                )}
+                                %)
                               </span>
                             )}
                           </Label>
@@ -932,9 +995,15 @@ export default function LeadDetails() {
                         disabled={
                           !newStep.name.trim() ||
                           !newStep.description.trim() ||
-                          (leadSteps ? leadSteps.reduce((sum: number, step: any) =>
-                            sum + (step.probability_percent || 0), 0
-                          ) : 0) + (parseInt(newStep.probability_percent) || 0) > 100
+                          (leadSteps
+                            ? leadSteps.reduce(
+                                (sum: number, step: any) =>
+                                  sum + (step.probability_percent || 0),
+                                0,
+                              )
+                            : 0) +
+                            (parseInt(newStep.probability_percent) || 0) >
+                            100
                         }
                       >
                         Add Step
