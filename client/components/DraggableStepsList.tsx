@@ -55,6 +55,8 @@ export function DraggableStepsList({
   );
 
   React.useEffect(() => {
+    console.log('DraggableStepsList received steps:', steps.map(s => ({ id: s.id, name: s.name })));
+
     // Deduplicate steps by ID to prevent React key conflicts
     const uniqueSteps = steps.filter((step, index, self) =>
       index === self.findIndex(s => s.id === step.id)
@@ -62,7 +64,21 @@ export function DraggableStepsList({
 
     if (uniqueSteps.length !== steps.length) {
       console.warn(`Removed ${steps.length - uniqueSteps.length} duplicate steps`);
+      console.warn('Original steps:', steps);
+      console.warn('Unique steps:', uniqueSteps);
     }
+
+    // Additional validation
+    const idCounts = {};
+    steps.forEach(step => {
+      idCounts[step.id] = (idCounts[step.id] || 0) + 1;
+    });
+
+    Object.entries(idCounts).forEach(([id, count]) => {
+      if (count > 1) {
+        console.error(`Step ID ${id} appears ${count} times`);
+      }
+    });
 
     setItems(uniqueSteps);
   }, [steps]);
