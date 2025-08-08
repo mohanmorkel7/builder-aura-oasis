@@ -324,6 +324,7 @@ router.get("/", async (req: Request, res: Response) => {
           id: 13,
           client_id: 1,
           lead_id: 1,
+          step_id: 1,
           title: "Technical Specifications Review",
           description:
             "Review technical specifications for TechCorp integration",
@@ -344,6 +345,7 @@ router.get("/", async (req: Request, res: Response) => {
           id: 14,
           client_id: 1,
           lead_id: 1,
+          step_id: 2,
           title: "API Documentation",
           description: "Provide API documentation for client review",
           status: "in_progress",
@@ -363,6 +365,7 @@ router.get("/", async (req: Request, res: Response) => {
           id: 15,
           client_id: 2,
           lead_id: 2,
+          step_id: 3,
           title: "Timeline Assessment",
           description:
             "Assess timeline impact for additional reporting features",
@@ -384,6 +387,7 @@ router.get("/", async (req: Request, res: Response) => {
           id: 16,
           client_id: 3,
           lead_id: 3,
+          step_id: 4,
           title: "Banking Compliance Review",
           description:
             "Review banking regulations for data handling compliance",
