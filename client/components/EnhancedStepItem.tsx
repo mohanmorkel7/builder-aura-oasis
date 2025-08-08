@@ -560,7 +560,7 @@ export function EnhancedStepItem({
                                   {message.attachments.map(
                                     (attachment, index) => (
                                       <div
-                                        key={index}
+                                        key={`attachment-${attachment.file_name}-${index}`}
                                         className="flex items-center space-x-3 p-2 bg-gray-50 rounded-lg border"
                                       >
                                         <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -730,7 +730,7 @@ export function EnhancedStepItem({
                           <div className="space-y-2">
                             {stagedAttachments.map((attachment, index) => (
                               <div
-                                key={index}
+                                key={`staged-${attachment.file_name}-${index}`}
                                 className="flex items-center justify-between p-2 bg-white border rounded"
                               >
                                 <div className="flex items-center space-x-2">
