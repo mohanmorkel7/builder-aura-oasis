@@ -108,7 +108,9 @@ export function EnhancedStepItem({
   };
 
   // Fetch real chat data from API (only for actual lead steps)
-  const stepId = step.isTemplate ? 0 : step.id;
+  // For manually added steps, isTemplate is undefined, so they should use their actual ID
+  // For template steps, isTemplate is true, so they should use 0 (disabled)
+  const stepId = step.isTemplate === true ? 0 : step.id;
 
   const {
     data: chatMessages = [],
