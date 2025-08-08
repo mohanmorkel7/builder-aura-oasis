@@ -27,6 +27,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Search,
   MessageCircle,
@@ -169,6 +170,7 @@ export default function FollowUpTracker() {
   );
   const [followUps, setFollowUps] = useState<FollowUp[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("all");
 
   // Fetch follow-ups data from API
   useEffect(() => {
@@ -283,8 +285,8 @@ export default function FollowUpTracker() {
     }
   };
 
-  // Filter follow-ups based on search and filters
-  const filteredFollowUps = followUps.filter((followUp) => {
+  // Base filter function for search and filters
+  const baseFilter = (followUp: FollowUp) => {
     if (!followUp) return false;
 
     const searchLower = searchTerm.toLowerCase();
@@ -306,6 +308,20 @@ export default function FollowUpTracker() {
       followUp.assigned_user_name === assigneeFilter;
 
     return matchesSearch && matchesStatus && matchesAssignee;
+  };
+
+  // Filter follow-ups based on search and filters
+  const filteredFollowUps = followUps.filter(baseFilter);
+
+  // Tab-specific filtered follow-ups
+  const allFollowUps = filteredFollowUps;
+  const pendingFollowUps = filteredFollowUps.filter((f) => f.status === "pending");
+  const inProgressFollowUps = filteredFollowUps.filter((f) => f.status === "in_progress");
+  const completedFollowUps = filteredFollowUps.filter((f) => f.status === "completed");
+  const overdueFollowUps = filteredFollowUps.filter((f) => {
+    const isOverdueStatus = f.status === "overdue" ||
+      (f.status !== "completed" && f.due_date && isOverdue(f.due_date));
+    return isOverdueStatus;
   });
 
   const myFollowUps = filteredFollowUps.filter(
@@ -314,6 +330,21 @@ export default function FollowUpTracker() {
   const assignedByMe = filteredFollowUps.filter(
     (f) => f.created_by_name === user?.name,
   );
+
+  // Get current tab's follow-ups
+  const getCurrentTabFollowUps = () => {
+    switch (activeTab) {
+      case "pending": return pendingFollowUps;
+      case "in_progress": return inProgressFollowUps;
+      case "completed": return completedFollowUps;
+      case "overdue": return overdueFollowUps;
+      case "my_tasks": return myFollowUps;
+      case "assigned_by_me": return assignedByMe;
+      default: return allFollowUps;
+    }
+  };
+
+  const currentTabFollowUps = getCurrentTabFollowUps();
 
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-6">
@@ -438,8 +469,35 @@ export default function FollowUpTracker() {
         </CardContent>
       </Card>
 
-      {/* Follow-ups List */}
-      <div className="grid gap-4">
+      {/* Tabs for Follow-ups */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full grid-cols-7">
+          <TabsTrigger value="all" className="text-sm">
+            All ({allFollowUps.length})
+          </TabsTrigger>
+          <TabsTrigger value="pending" className="text-sm">
+            Pending ({pendingFollowUps.length})
+          </TabsTrigger>
+          <TabsTrigger value="in_progress" className="text-sm">
+            In Progress ({inProgressFollowUps.length})
+          </TabsTrigger>
+          <TabsTrigger value="completed" className="text-sm">
+            Completed ({completedFollowUps.length})
+          </TabsTrigger>
+          <TabsTrigger value="overdue" className="text-sm">
+            Overdue ({overdueFollowUps.length})
+          </TabsTrigger>
+          <TabsTrigger value="my_tasks" className="text-sm">
+            My Tasks ({myFollowUps.length})
+          </TabsTrigger>
+          <TabsTrigger value="assigned_by_me" className="text-sm">
+            Assigned by Me ({assignedByMe.length})
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value={activeTab} className="mt-6">
+          {/* Follow-ups List */}
+          <div className="grid gap-4">
         {loading ? (
           <Card>
             <CardContent className="p-12 text-center">
@@ -451,7 +509,7 @@ export default function FollowUpTracker() {
               </h3>
             </CardContent>
           </Card>
-        ) : filteredFollowUps.length === 0 ? (
+        ) : currentTabFollowUps.length === 0 ? (
           <Card>
             <CardContent className="p-12 text-center">
               <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -470,7 +528,7 @@ export default function FollowUpTracker() {
             </CardContent>
           </Card>
         ) : (
-          filteredFollowUps.map((followUp) => {
+          currentTabFollowUps.map((followUp) => {
             const StatusIcon = statusIcons[followUp.status] || Clock;
             const isFollowUpOverdue =
               followUp.status === "overdue" ||
@@ -636,7 +694,9 @@ export default function FollowUpTracker() {
             );
           })
         )}
-      </div>
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
