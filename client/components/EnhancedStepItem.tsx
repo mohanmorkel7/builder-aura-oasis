@@ -51,7 +51,7 @@ import {
   Eye,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
-import { useStepChats, useCreateStepChat } from "@/hooks/useApi";
+import { useStepChats, useCreateStepChat, useCreateFollowUp } from "@/hooks/useApi";
 import { apiClient } from "@/lib/api";
 import { formatToISTDateTime } from "@/lib/dateUtils";
 
