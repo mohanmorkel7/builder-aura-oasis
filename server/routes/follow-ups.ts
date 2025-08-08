@@ -110,6 +110,7 @@ router.post("/", async (req: Request, res: Response) => {
         id: Date.now(),
         client_id,
         lead_id,
+        step_id,
         title,
         description,
         due_date,
