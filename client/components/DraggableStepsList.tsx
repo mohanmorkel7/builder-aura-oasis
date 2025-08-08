@@ -86,27 +86,41 @@ export function DraggableStepsList({
     const { active, over } = event;
 
     if (active.id !== over?.id) {
+      const activeStep = items.find((item) => item.id === active.id);
+      const overStep = items.find((item) => item.id === over?.id);
+
+      // Prevent reordering if either step is a template step
+      if (activeStep?.isTemplate || overStep?.isTemplate) {
+        console.warn("Cannot reorder template steps");
+        setActiveId(null);
+        return;
+      }
+
       const oldIndex = items.findIndex((item) => item.id === active.id);
       const newIndex = items.findIndex((item) => item.id === over.id);
 
       const newItems = arrayMove(items, oldIndex, newIndex);
 
-      // Update step orders
+      // Update step orders only for non-template steps
       const updatedItems = newItems.map((item, index) => ({
         ...item,
-        step_order: index + 1,
+        step_order: item.isTemplate ? item.step_order : index + 1,
       }));
 
       setItems(updatedItems);
       onReorderSteps(updatedItems);
 
-      // Call API to persist the new order
-      const stepOrders = updatedItems.map((item, index) => ({
-        id: item.id,
-        order: index + 1,
-      }));
+      // Call API to persist the new order (only for lead steps)
+      const stepOrders = updatedItems
+        .filter(item => !item.isTemplate)
+        .map((item, index) => ({
+          id: item.id,
+          order: index + 1,
+        }));
 
-      reorderMutation.mutate({ leadId, stepOrders });
+      if (stepOrders.length > 0) {
+        reorderMutation.mutate({ leadId, stepOrders });
+      }
     }
 
     setActiveId(null);
