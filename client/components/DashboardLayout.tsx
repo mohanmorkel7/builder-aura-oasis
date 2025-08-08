@@ -251,14 +251,24 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
     // Add a small delay to ensure auth context is stable
     const timeoutId = setTimeout(() => {
-      fetchNotifications();
-    }, 100);
+      // Wrap in try-catch to prevent any unhandled promise rejections
+      fetchNotifications().catch((error) => {
+        console.warn("Notifications fetch failed silently:", error.message);
+        setNotifications([]);
+      });
+    }, 2000); // Increased delay to ensure page is fully loaded
 
-    return () => clearTimeout(timeoutId);
+    // Refresh notifications every 60 seconds (less frequent to avoid issues)
+    const interval = setInterval(() => {
+      fetchNotifications().catch((error) => {
+        console.warn("Notifications refresh failed silently:", error.message);
+      });
+    }, 60000);
 
-    // Refresh notifications every 30 seconds
-    const interval = setInterval(fetchNotifications, 30000);
-    return () => clearInterval(interval);
+    return () => {
+      clearTimeout(timeoutId);
+      clearInterval(interval);
+    };
   }, [user]);
 
   const handleNotificationClick = (notification: Notification) => {
