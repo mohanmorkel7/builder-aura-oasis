@@ -18,15 +18,15 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         manualChunks: {
-          vendor: ['react', 'react-dom'],
-          router: ['react-router-dom'],
-          ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu']
-        }
-      }
-    }
+          vendor: ["react", "react-dom"],
+          router: ["react-router-dom"],
+          ui: ["@radix-ui/react-dialog", "@radix-ui/react-dropdown-menu"],
+        },
+      },
+    },
   },
   optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom']
+    include: ["react", "react-dom", "react-router-dom"],
   },
   plugins: [react(), expressPlugin()],
   resolve: {
@@ -50,13 +50,13 @@ function expressPlugin(): Plugin {
           try {
             app(req, res, next);
           } catch (error) {
-            console.error('Express middleware error:', error);
+            console.error("Express middleware error:", error);
             next(error);
           }
         });
       } catch (error) {
-        console.error('Failed to create Express server:', error);
-        console.log('Continuing without Express middleware...');
+        console.error("Failed to create Express server:", error);
+        console.log("Continuing without Express middleware...");
       }
     },
   };
