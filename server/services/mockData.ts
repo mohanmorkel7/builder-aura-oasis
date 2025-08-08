@@ -1262,7 +1262,17 @@ export class MockDataService {
 
   static async getLeadById(id: number) {
     const leads = await this.getAllLeads();
-    return leads.find((lead) => lead.id === id) || null;
+    const lead = leads.find((lead) => lead.id === id) || null;
+
+    // Use calculated probability if available (from step status changes)
+    if (lead && this.calculatedProbabilities && this.calculatedProbabilities[id]) {
+      return {
+        ...lead,
+        probability: this.calculatedProbabilities[id]
+      };
+    }
+
+    return lead;
   }
 
   static async updateLead(id: number, leadData: any) {
