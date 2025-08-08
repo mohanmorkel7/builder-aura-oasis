@@ -241,9 +241,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           );
           setNotifications(realNotifications);
         } catch (error) {
-          console.error("Failed to fetch notifications in useEffect:", error);
-
-          // Set empty array as fallback instead of keeping undefined/error state
+          console.warn("Failed to fetch notifications (non-critical):", error.message);
+          // Set empty array as fallback - notifications are optional
           setNotifications([]);
         }
       }
