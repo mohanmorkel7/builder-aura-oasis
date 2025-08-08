@@ -945,18 +945,7 @@ router.get("/:leadId/steps", async (req: Request, res: Response) => {
                 `🔄 ${stepsNeedingSync.length} steps need probability sync from template`,
               );
 
-              // Get template steps to sync probabilities
-              const templateStepsQuery = `
-                SELECT name, step_order, probability_percent
-                FROM template_steps
-                WHERE template_id = $1
-                ORDER BY step_order ASC
-              `;
-              const templateStepsResult = await pool.query(templateStepsQuery, [
-                templateId,
-              ]);
-
-              // Update lead steps with template probabilities
+              // Update lead steps with template probabilities (using pre-fetched template steps)
               for (const leadStep of stepsNeedingSync) {
                 const matchingTemplate = templateStepsResult.rows.find(
                   (ts) =>
