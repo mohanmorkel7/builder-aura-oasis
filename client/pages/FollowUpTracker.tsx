@@ -177,6 +177,13 @@ export default function FollowUpTracker() {
       console.log("Found follow-up for status update:", followUp);
 
       if (followUp && user) {
+        console.log("Updating follow-up status with notification:", {
+          followUpId,
+          newStatus,
+          stepId: followUp.step_id,
+          followUpTitle: followUp.title,
+        });
+
         // Use the utility function that includes chat notification
         await updateFollowUpStatusWithNotification(
           followUpId,
@@ -191,6 +198,7 @@ export default function FollowUpTracker() {
               `Follow-up #${followUpId}`,
           },
         );
+        console.log("Follow-up status update with notification completed successfully");
       } else {
         // Fallback to original method if follow-up not found or no user
         const response = await fetch(`/api/follow-ups/${followUpId}`, {
