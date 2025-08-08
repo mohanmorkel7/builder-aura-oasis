@@ -936,21 +936,16 @@ export default function LeadDetails() {
                         <div>
                           <Label htmlFor="probabilityPercent">
                             Probability Weight (%)
-                            {leadSteps && leadSteps.length > 0 && (
-                              <span className="text-xs text-gray-500 ml-1">
-                                (Remaining:{" "}
-                                {Math.max(
-                                  0,
-                                  100 -
-                                    leadSteps.reduce(
-                                      (sum: number, step: any) =>
-                                        sum + (step.probability_percent || 0),
-                                      0,
-                                    ),
-                                )}
-                                %)
-                              </span>
-                            )}
+                            <span className="text-xs text-gray-500 ml-1">
+                              (Remaining:{" "}
+                              {(() => {
+                                const currentTotal = leadSteps ? leadSteps.reduce(
+                                  (sum: number, step: any) => sum + (step.probability_percent || 0), 0
+                                ) : 0;
+                                const remaining = Math.max(0, 100 - currentTotal);
+                                return remaining;
+                              })()}%)
+                            </span>
                           </Label>
                           <Input
                             id="probabilityPercent"
