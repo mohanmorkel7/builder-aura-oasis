@@ -509,52 +509,6 @@ export default function LeadDetails() {
                   );
                 }
 
-                if (allSteps.length > 0) {
-                  return (
-                    <div className="mt-4 p-3 bg-gray-50 rounded-lg border">
-                      <div className="text-sm font-medium text-gray-700 mb-2">
-                        🗂️ Steps Overview ({allSteps.length} total)
-                      </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-                        {allSteps.slice(0, 6).map((step, index) => (
-                          <div
-                            key={`preview-${step.id}`}
-                            className={`flex items-center space-x-2 p-2 rounded text-xs ${
-                              step.isTemplate
-                                ? "bg-blue-50 border border-blue-200"
-                                : "bg-white border border-gray-200"
-                            }`}
-                          >
-                            <div className="flex-shrink-0">
-                              {step.status === "completed" ? (
-                                <span className="text-green-600">✅</span>
-                              ) : step.status === "in_progress" ? (
-                                <span className="text-blue-600">🔄</span>
-                              ) : (
-                                <span className="text-gray-400">⭕</span>
-                              )}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <div className="truncate font-medium">
-                                {step.name}
-                              </div>
-                              {step.isTemplate && (
-                                <div className="text-blue-600 text-xs">
-                                  Template
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        ))}
-                        {allSteps.length > 6 && (
-                          <div className="flex items-center justify-center p-2 bg-gray-100 rounded text-xs text-gray-600">
-                            +{allSteps.length - 6} more steps
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  );
-                }
                 return null;
               })()}
             </div>
