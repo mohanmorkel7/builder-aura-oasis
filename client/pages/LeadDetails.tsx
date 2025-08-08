@@ -7,6 +7,7 @@ import {
   useReorderLeadSteps,
   useTemplate,
 } from "@/hooks/useApi";
+import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/lib/auth-context";
 import { apiClient } from "@/lib/api";
 import { DraggableStepsList } from "@/components/DraggableStepsList";
@@ -99,6 +100,7 @@ export default function LeadDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const leadId = parseInt(id || "0");
 
   const { data: lead, isLoading, error } = useLead(leadId);
@@ -304,8 +306,16 @@ export default function LeadDetails() {
     try {
       console.log("Deleting step:", stepId);
       await apiClient.deleteLeadStep(stepId);
-      // Refresh steps after deletion
-      window.location.reload();
+      console.log("Step deleted successfully");
+
+      // Invalidate queries to refresh the data instead of page reload
+      queryClient.invalidateQueries({ queryKey: ["lead-steps", leadId] });
+      queryClient.invalidateQueries({ queryKey: ["leads"] });
+
+      // Refresh the page as fallback
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
     } catch (error) {
       console.error("Failed to delete step:", error);
       alert("Failed to delete step. Please try again.");

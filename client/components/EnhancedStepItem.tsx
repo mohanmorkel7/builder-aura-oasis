@@ -458,18 +458,7 @@ export function EnhancedStepItem({
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => {
-                console.log(
-                  `Delete button clicked for step ${step.id}, isTemplate: ${step.isTemplate}`,
-                );
-                if (step.isTemplate) {
-                  console.log("Cannot delete template step");
-                  return null;
-                } else {
-                  console.log("Calling onDeleteStep for step", step.id);
-                  onDeleteStep(step.id);
-                }
-              }}
+              onClick={() => !step.isTemplate && onDeleteStep(step.id)}
               className={`${
                 step.isTemplate
                   ? "text-gray-400 cursor-not-allowed opacity-50"
