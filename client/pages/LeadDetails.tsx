@@ -7,6 +7,7 @@ import {
   useReorderLeadSteps,
   useTemplate,
 } from "@/hooks/useApi";
+import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/lib/auth-context";
 import { apiClient } from "@/lib/api";
 import { DraggableStepsList } from "@/components/DraggableStepsList";
