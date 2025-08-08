@@ -137,6 +137,12 @@ export function EnhancedStepItem({
   const [newMessage, setNewMessage] = useState("");
   const [stagedAttachments, setStagedAttachments] = useState<any[]>([]);
 
+  // Follow-up related states
+  const [createFollowUp, setCreateFollowUp] = useState(false);
+  const [followUpNotes, setFollowUpNotes] = useState("");
+  const [followUpAssignTo, setFollowUpAssignTo] = useState("");
+  const [followUpDueDate, setFollowUpDueDate] = useState("");
+
   // Function to highlight mentions and make follow-up IDs clickable
   const processMessageContent = (messageText: string) => {
     if (!user) return messageText;
