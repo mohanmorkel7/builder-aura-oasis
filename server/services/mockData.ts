@@ -1262,7 +1262,21 @@ export class MockDataService {
 
   static async getLeadById(id: number) {
     const leads = await this.getAllLeads();
-    return leads.find((lead) => lead.id === id) || null;
+    const lead = leads.find((lead) => lead.id === id) || null;
+
+    // Use calculated probability if available (from step status changes)
+    if (
+      lead &&
+      this.calculatedProbabilities &&
+      this.calculatedProbabilities[id]
+    ) {
+      return {
+        ...lead,
+        probability: this.calculatedProbabilities[id],
+      };
+    }
+
+    return lead;
   }
 
   static async updateLead(id: number, leadData: any) {
@@ -1294,7 +1308,7 @@ export class MockDataService {
   }
 
   static async getLeadSteps(leadId: number) {
-    return [
+    const steps = [
       {
         id: 1,
         lead_id: leadId,
@@ -1433,6 +1447,17 @@ export class MockDataService {
         updated_at: "2024-01-15T09:00:00Z",
       },
     ];
+
+    // Apply any stored step updates
+    return steps.map((step) => {
+      if (this.updatedSteps[step.id]) {
+        return {
+          ...step,
+          ...this.updatedSteps[step.id],
+        };
+      }
+      return step;
+    });
   }
 
   static async updateLeadStep(stepId: number, stepData: any) {
@@ -1441,16 +1466,84 @@ export class MockDataService {
       stepData,
     );
 
-    // Return mock updated step - for demo purposes, we just return the new data
+    // Get the lead_id from the original step to recalculate probability
+    const originalSteps = await this.getLeadSteps(1); // Using lead 1 for demo
+    const originalStep = originalSteps.find((s) => s.id === stepId);
+
+    if (!originalStep) {
+      console.log(`Step ${stepId} not found`);
+      return null;
+    }
+
+    // Create updated step
     const updatedStep = {
-      id: stepId,
+      ...originalStep,
       ...stepData,
       updated_at: new Date().toISOString(),
     };
 
+    // If status was updated, recalculate lead probability
+    if (stepData.status && stepData.status !== originalStep.status) {
+      console.log(
+        `Step ${stepId} status changed from ${originalStep.status} to ${stepData.status}, recalculating lead probability`,
+      );
+
+      // Get all steps for the lead and calculate new probability
+      const allSteps = await this.getLeadSteps(originalStep.lead_id);
+
+      let totalStepProbability = 0;
+      let totalCompletedProbability = 0;
+
+      allSteps.forEach((step) => {
+        // Use updated status for the changed step
+        const currentStatus =
+          step.id === stepId ? stepData.status : step.status;
+        const stepProbability = step.probability_percent || 0;
+
+        totalStepProbability += stepProbability;
+
+        if (currentStatus === "completed") {
+          totalCompletedProbability += stepProbability;
+        } else if (currentStatus === "in-progress") {
+          totalCompletedProbability += stepProbability * 0.5;
+        }
+        // pending, cancelled, blocked steps contribute 0
+      });
+
+      const newProbability =
+        totalStepProbability > 0
+          ? Math.min(
+              100,
+              Math.round(
+                (totalCompletedProbability / totalStepProbability) * 100,
+              ),
+            )
+          : 0;
+
+      console.log(
+        `Updated lead ${originalStep.lead_id} probability to ${newProbability}%`,
+      );
+      console.log(
+        `Calculation: (${totalCompletedProbability} / ${totalStepProbability}) * 100 = ${newProbability}%`,
+      );
+
+      // Store the calculated probability for subsequent lead queries
+      if (!this.calculatedProbabilities) {
+        this.calculatedProbabilities = {};
+      }
+      this.calculatedProbabilities[originalStep.lead_id] = newProbability;
+    }
+
+    // Store the updated step for future getLeadSteps calls
+    this.updatedSteps[stepId] = updatedStep;
+
     console.log(`MockDataService.updateLeadStep: Updated step:`, updatedStep);
     return updatedStep;
   }
+
+  // Add properties to store calculated probabilities and updated steps
+  private static calculatedProbabilities: { [leadId: number]: number } = {};
+  private static updatedSteps: { [stepId: number]: any } = {};
 
   static async getStepChats(stepId: number) {
     // Initialize with some default chats if none exist
