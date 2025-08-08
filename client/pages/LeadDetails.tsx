@@ -781,7 +781,7 @@ export default function LeadDetails() {
                       (templateData?.steps && templateData.steps.length > 0) ? (
                         <div className="p-2 bg-blue-50 border border-blue-200 rounded-md">
                           <div className="text-xs font-medium text-blue-900 mb-1">
-                            📊 Steps Overview (
+                            📊 Steps Overview ({leadSteps?.length ? leadSteps.length : 0} steps,
                             {(() => {
                               console.log("=== ADD STEP MODAL DEBUGGING ===");
                               console.log("Lead steps data:", leadSteps);
