@@ -925,6 +925,7 @@ router.get("/:leadId/steps", async (req: Request, res: Response) => {
                   description: templateStep.description,
                   step_order: templateStep.step_order,
                   estimated_days: templateStep.default_eta_days,
+                  probability_percent: templateStep.probability_percent || 0,
                   status: "pending",
                   due_date: null,
                   assigned_to: null,
