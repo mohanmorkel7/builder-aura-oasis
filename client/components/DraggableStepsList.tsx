@@ -55,7 +55,16 @@ export function DraggableStepsList({
   );
 
   React.useEffect(() => {
-    setItems(steps);
+    // Deduplicate steps by ID to prevent React key conflicts
+    const uniqueSteps = steps.filter((step, index, self) =>
+      index === self.findIndex(s => s.id === step.id)
+    );
+
+    if (uniqueSteps.length !== steps.length) {
+      console.warn(`Removed ${steps.length - uniqueSteps.length} duplicate steps`);
+    }
+
+    setItems(uniqueSteps);
   }, [steps]);
 
   const handleUpdateStatus = (stepId: number, status: string) => {
