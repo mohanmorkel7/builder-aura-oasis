@@ -170,9 +170,9 @@ export function DraggableStepsList({
         strategy={verticalListSortingStrategy}
       >
         <div className="space-y-4">
-          {items.map((step) => (
+          {items.map((step, index) => (
           <EnhancedStepItem
-            key={step.id}
+            key={`step-${step.id}-${step.step_order || index}-${step.name?.replace(/\s+/g, '-') || 'unknown'}`}
             step={step}
             isExpanded={expandedSteps.has(step.id)}
             onToggleExpansion={() => onToggleExpansion(step.id)}
