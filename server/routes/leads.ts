@@ -908,10 +908,50 @@ router.get("/:leadId/steps", async (req: Request, res: Response) => {
           );
 
           if (existingLeadStepsResult.rows.length > 0) {
-            // Lead steps already exist, return them
+            // Lead steps already exist, but check if they need probability sync from template
             console.log(
               `✅ Found ${existingLeadStepsResult.rows.length} existing lead steps`,
             );
+
+            // Check if any lead steps have 0 or null probability_percent
+            const stepsNeedingSync = existingLeadStepsResult.rows.filter(step =>
+              !step.probability_percent || step.probability_percent === 0
+            );
+
+            if (stepsNeedingSync.length > 0) {
+              console.log(`🔄 ${stepsNeedingSync.length} steps need probability sync from template`);
+
+              // Get template steps to sync probabilities
+              const templateStepsQuery = `
+                SELECT name, step_order, probability_percent
+                FROM template_steps
+                WHERE template_id = $1
+                ORDER BY step_order ASC
+              `;
+              const templateStepsResult = await pool.query(templateStepsQuery, [templateId]);
+
+              // Update lead steps with template probabilities
+              for (const leadStep of stepsNeedingSync) {
+                const matchingTemplate = templateStepsResult.rows.find(ts =>
+                  ts.step_order === leadStep.step_order &&
+                  ts.name.toLowerCase().trim() === leadStep.name.toLowerCase().trim()
+                );
+
+                if (matchingTemplate && matchingTemplate.probability_percent) {
+                  await pool.query(`
+                    UPDATE lead_steps
+                    SET probability_percent = $1, updated_at = NOW()
+                    WHERE id = $2
+                  `, [matchingTemplate.probability_percent, leadStep.id]);
+
+                  console.log(`  📊 Updated "${leadStep.name}": 0% → ${matchingTemplate.probability_percent}%`);
+
+                  // Update the step in our result set
+                  leadStep.probability_percent = matchingTemplate.probability_percent;
+                }
+              }
+            }
+
             steps = existingLeadStepsResult.rows;
           } else {
             // No lead steps exist, create them from template steps
