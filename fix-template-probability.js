@@ -24,9 +24,11 @@ async function fixTemplateProbability() {
     `);
 
     if (columnCheck.rows.length === 0) {
-      console.log("❌ probability_percent column doesn't exist in template_steps");
+      console.log(
+        "❌ probability_percent column doesn't exist in template_steps",
+      );
       console.log("   Adding probability_percent column...");
-      
+
       await pool.query(`
         ALTER TABLE template_steps 
         ADD COLUMN probability_percent INTEGER DEFAULT 0;
@@ -55,8 +57,10 @@ async function fixTemplateProbability() {
     console.table(currentData.rows);
 
     // 3. Fix probability values for templates
-    console.log("\n3. Updating template steps with proper probability values...");
-    
+    console.log(
+      "\n3. Updating template steps with proper probability values...",
+    );
+
     // Get all templates with steps
     const templatesWithSteps = await pool.query(`
       SELECT 
@@ -78,12 +82,14 @@ async function fixTemplateProbability() {
       const templateId = template.template_id;
       const stepCount = template.step_count;
       const templateName = template.template_name;
-      
-      console.log(`\n  Updating template ${templateId}: "${templateName}" (${stepCount} steps)`);
-      
+
+      console.log(
+        `\n  Updating template ${templateId}: "${templateName}" (${stepCount} steps)`,
+      );
+
       // Predefined probability distributions based on step count
       let probabilities = [];
-      
+
       if (stepCount === 3) {
         probabilities = [40, 35, 25]; // SMB template
       } else if (stepCount === 5) {
@@ -93,36 +99,44 @@ async function fixTemplateProbability() {
       } else {
         // Equal distribution for other step counts
         const equalShare = Math.floor(100 / stepCount);
-        const remainder = 100 - (equalShare * stepCount);
+        const remainder = 100 - equalShare * stepCount;
         probabilities = Array(stepCount).fill(equalShare);
         // Add remainder to first step
         if (remainder > 0) {
           probabilities[0] += remainder;
         }
       }
-      
+
       // Get steps for this template
-      const stepsQuery = await pool.query(`
+      const stepsQuery = await pool.query(
+        `
         SELECT id, name, step_order 
         FROM template_steps 
         WHERE template_id = $1 
         ORDER BY step_order ASC
-      `, [templateId]);
-      
+      `,
+        [templateId],
+      );
+
       // Update each step with its probability
       for (let i = 0; i < stepsQuery.rows.length; i++) {
         const step = stepsQuery.rows[i];
         const probability = probabilities[i] || 0;
-        
-        await pool.query(`
+
+        await pool.query(
+          `
           UPDATE template_steps 
           SET probability_percent = $1 
           WHERE id = $2
-        `, [probability, step.id]);
-        
-        console.log(`    Step ${step.step_order}: "${step.name}" = ${probability}%`);
+        `,
+          [probability, step.id],
+        );
+
+        console.log(
+          `    Step ${step.step_order}: "${step.name}" = ${probability}%`,
+        );
       }
-      
+
       const total = probabilities.reduce((sum, p) => sum + p, 0);
       console.log(`    ✅ Total: ${total}%`);
     }
@@ -144,35 +158,44 @@ async function fixTemplateProbability() {
     `);
 
     console.log("\nUpdated template data:");
-    verifyData.rows.forEach(row => {
+    verifyData.rows.forEach((row) => {
       console.log(`Template ${row.template_id}: "${row.template_name}"`);
-      console.log(`  Steps: ${row.step_count}, Total: ${row.total_probability}%`);
-      console.log(`  Distribution: [${row.step_probabilities.join(', ')}]%`);
+      console.log(
+        `  Steps: ${row.step_count}, Total: ${row.total_probability}%`,
+      );
+      console.log(`  Distribution: [${row.step_probabilities.join(", ")}]%`);
     });
 
     // 5. Test template API endpoint
     console.log("\n5. Testing template API endpoint...");
     try {
       const fetch = require("node-fetch");
-      const response = await fetch("http://localhost:8080/api/templates-production/1");
+      const response = await fetch(
+        "http://localhost:8080/api/templates-production/1",
+      );
       if (response.ok) {
         const templateData = await response.json();
-        console.log(`✅ Template API test: Found ${templateData.steps?.length || 0} steps`);
+        console.log(
+          `✅ Template API test: Found ${templateData.steps?.length || 0} steps`,
+        );
         if (templateData.steps && templateData.steps.length > 0) {
           console.log("   Step probabilities from API:");
           templateData.steps.forEach((step, i) => {
-            console.log(`   ${i+1}. ${step.name}: ${step.probability_percent || 0}%`);
+            console.log(
+              `   ${i + 1}. ${step.name}: ${step.probability_percent || 0}%`,
+            );
           });
         }
       } else {
-        console.log(`⚠️  Template API test failed with status: ${response.status}`);
+        console.log(
+          `⚠️  Template API test failed with status: ${response.status}`,
+        );
       }
     } catch (apiError) {
       console.log(`⚠️  Could not test API: ${apiError.message}`);
     }
 
     console.log("\n✅ Template probability fix completed successfully!");
-    
   } catch (error) {
     console.error("❌ Template probability fix failed:", error);
     throw error;
