@@ -110,6 +110,17 @@ export function EnhancedStepItem({
   // Fetch real chat data from API (only for actual lead steps)
   const stepId = step.isTemplate ? 0 : step.id;
 
+  // Debug manually added steps
+  if (step.id > 1000) {
+    console.log(`Manually added step ${step.id}:`, {
+      id: step.id,
+      name: step.name,
+      isTemplate: step.isTemplate,
+      stepId,
+      hasChats: chatMessages?.length || 0
+    });
+  }
+
   const {
     data: chatMessages = [],
     isLoading: chatLoading,
