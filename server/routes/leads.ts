@@ -1362,8 +1362,10 @@ router.delete("/steps/:id", async (req: Request, res: Response) => {
         res.status(204).send();
       } else {
         console.log(
-          "Database unavailable, returning success for step deletion",
+          "Database unavailable, using mock data service for step deletion",
         );
+        const { MockDataService } = await import("../services/mockData");
+        await MockDataService.deleteLeadStep(id);
         res.status(204).send();
       }
     } catch (dbError) {
