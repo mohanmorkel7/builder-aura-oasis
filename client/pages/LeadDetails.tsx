@@ -143,7 +143,6 @@ export default function LeadDetails() {
         console.log("🔍 DETAILED PROBABILITY CALCULATION:", {
           totalStepProbability,
           totalCompletedProbability,
-          completionRatio,
           percentage,
           stepBreakdown: leadSteps.map((s) => {
             const prob = s.probability_percent || 0;
