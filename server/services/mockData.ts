@@ -1510,8 +1510,9 @@ export class MockDataService {
     return updatedStep;
   }
 
-  // Add a property to store calculated probabilities
+  // Add properties to store calculated probabilities and updated steps
   private static calculatedProbabilities: { [leadId: number]: number } = {};
+  private static updatedSteps: { [stepId: number]: any } = {};
 
   static async getStepChats(stepId: number) {
     // Initialize with some default chats if none exist
