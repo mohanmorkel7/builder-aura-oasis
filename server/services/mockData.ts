@@ -1371,6 +1371,7 @@ export class MockDataService {
         due_date: "2024-02-20",
         completed_date: null,
         estimated_days: 5,
+        probability_percent: 0,
         created_at: "2024-01-15T09:00:00Z",
         updated_at: "2024-01-15T09:00:00Z",
       },
