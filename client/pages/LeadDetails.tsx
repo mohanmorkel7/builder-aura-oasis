@@ -816,86 +816,72 @@ export default function LeadDetails() {
                       </DialogDescription>
                     </DialogHeader>
                     <div className="space-y-4 overflow-y-auto flex-1 px-1">
-                      {/* Template probability info */}
-                      {templateData?.steps && templateData.steps.length > 0 && (
+                      {/* Consolidated Steps Probability Info */}
+                      {(leadSteps && leadSteps.length > 0) || (templateData?.steps && templateData.steps.length > 0) ? (
                         <div className="p-2 bg-blue-50 border border-blue-200 rounded-md">
                           <div className="text-xs font-medium text-blue-900 mb-1">
-                            📊 Template (
-                            {templateData.steps.reduce(
-                              (sum: number, step: any) =>
-                                sum + (step.probability_percent || 0),
-                              0,
-                            )}
-                            % total)
+                            📊 Steps Overview (
+                            {(() => {
+                              const currentTotal = leadSteps ? leadSteps.reduce(
+                                (sum: number, step: any) => sum + (step.probability_percent || 0), 0
+                              ) : 0;
+                              const newStepProb = parseInt(newStep.probability_percent) || 0;
+                              const total = currentTotal + newStepProb;
+                              return total;
+                            })()}% total
+                            {(() => {
+                              const currentTotal = leadSteps ? leadSteps.reduce(
+                                (sum: number, step: any) => sum + (step.probability_percent || 0), 0
+                              ) : 0;
+                              const newStepProb = parseInt(newStep.probability_percent) || 0;
+                              const total = currentTotal + newStepProb;
+                              return total > 100 && (
+                                <span className="text-red-600 ml-1">⚠️ Exceeds 100%</span>
+                              );
+                            })()})
                           </div>
-                          <div className="text-xs text-blue-700 max-h-20 overflow-y-auto">
-                            {templateData.steps.map(
-                              (step: any, index: number) => (
-                                <div
-                                  key={index}
-                                  className="flex justify-between py-0.5"
-                                >
-                                  <span className="truncate mr-2">
-                                    {step.name}
-                                  </span>
-                                  <span className="font-medium flex-shrink-0">
-                                    {step.probability_percent || 0}%
+                          <div className="text-xs text-blue-700 max-h-24 overflow-y-auto">
+                            {/* Show current lead steps if they exist */}
+                            {leadSteps && leadSteps.length > 0 ? (
+                              <>
+                                {leadSteps.map((step: any, index: number) => (
+                                  <div key={index} className="flex justify-between py-0.5">
+                                    <span className="truncate mr-2">{step.name}</span>
+                                    <span className="font-medium flex-shrink-0 text-green-600">
+                                      {step.probability_percent || 0}%
+                                    </span>
+                                  </div>
+                                ))}
+                              </>
+                            ) : (
+                              /* Show template steps as reference if no lead steps */
+                              templateData?.steps && templateData.steps.map((step: any, index: number) => (
+                                <div key={index} className="flex justify-between py-0.5">
+                                  <span className="truncate mr-2">{step.name}</span>
+                                  <span className="font-medium flex-shrink-0 text-blue-600">
+                                    {step.probability_percent || 0}% (template)
                                   </span>
                                 </div>
-                              ),
+                              ))
                             )}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Current lead steps probability info */}
-                      {leadSteps && leadSteps.length > 0 && (
-                        <div className="p-2 bg-green-50 border border-green-200 rounded-md">
-                          <div className="text-xs font-medium text-green-900 mb-1">
-                            📈 Current Steps (
-                            {leadSteps.reduce(
-                              (sum: number, step: any) =>
-                                sum + (step.probability_percent || 0),
-                              0,
-                            ) + (parseInt(newStep.probability_percent) || 0)}
-                            % total
-                            {leadSteps.reduce(
-                              (sum: number, step: any) =>
-                                sum + (step.probability_percent || 0),
-                              0,
-                            ) +
-                              (parseInt(newStep.probability_percent) || 0) >
-                              100 && (
-                              <span className="text-red-600 ml-1">
-                                ⚠️ Exceeds 100%
-                              </span>
-                            )}
-                            )
-                          </div>
-                          <div className="text-xs text-green-700 max-h-20 overflow-y-auto">
-                            {leadSteps.map((step: any, index: number) => (
-                              <div
-                                key={index}
-                                className="flex justify-between py-0.5"
-                              >
-                                <span className="truncate mr-2">
-                                  {step.name}
-                                </span>
-                                <span className="font-medium flex-shrink-0">
-                                  {step.probability_percent || 0}%
-                                </span>
-                              </div>
-                            ))}
+                            {/* Show new step preview */}
                             {parseInt(newStep.probability_percent) > 0 && (
-                              <div className="flex justify-between py-0.5 border-t border-green-300 mt-1 pt-1">
+                              <div className="flex justify-between py-0.5 border-t border-blue-300 mt-1 pt-1">
                                 <span className="truncate mr-2 italic">
-                                  New step: {newStep.name || "Untitled"}
+                                  + {newStep.name || "New step"}
                                 </span>
-                                <span className="font-medium flex-shrink-0">
+                                <span className="font-medium flex-shrink-0 text-orange-600">
                                   {newStep.probability_percent}%
                                 </span>
                               </div>
                             )}
+                          </div>
+                        </div>
+                      ) : (
+                        /* Show message when no steps exist */
+                        <div className="p-2 bg-gray-50 border border-gray-200 rounded-md">
+                          <div className="text-xs text-gray-600 text-center">
+                            No steps defined yet. Add the first step below.
                           </div>
                         </div>
                       )}
