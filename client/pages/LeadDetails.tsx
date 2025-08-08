@@ -8,6 +8,7 @@ import {
   useTemplate,
 } from "@/hooks/useApi";
 import { useAuth } from "@/lib/auth-context";
+import { apiClient } from "@/lib/api";
 import { DraggableStepsList } from "@/components/DraggableStepsList";
 import { Button } from "@/components/ui/button";
 import {
