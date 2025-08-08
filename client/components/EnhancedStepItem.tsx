@@ -625,7 +625,8 @@ export function EnhancedStepItem({
                       )}
                   </div>
 
-                  {/* Rich Text Editor */}
+                  {/* Rich Text Editor - Only show for actual lead steps */}
+                  {!step.isTemplate && (
                   <div className="border-t bg-white p-4">
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center space-x-2">
@@ -716,6 +717,19 @@ export function EnhancedStepItem({
                       </Button>
                     </div>
                   </div>
+                  )}
+
+                  {/* Template Step Notice */}
+                  {step.isTemplate && (
+                    <div className="border-t bg-blue-50 p-4">
+                      <div className="text-center text-blue-700">
+                        <div className="text-sm font-medium mb-1">📋 Template Step</div>
+                        <div className="text-xs text-blue-600">
+                          This is a template step for reference. Create actual lead steps to track progress and enable chat functionality.
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
