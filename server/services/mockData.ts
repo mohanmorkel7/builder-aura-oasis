@@ -1612,11 +1612,14 @@ export class MockDataService {
       `MockDataService.getStepChats: Messages for step ${stepId}: ${filteredChats.length}`,
     );
     console.log(
-      `MockDataService.getStepChats: All step_ids in array: [${this.chatMessages.map(c => c.step_id).join(', ')}]`,
+      `MockDataService.getStepChats: All step_ids in array: [${this.chatMessages.map((c) => c.step_id).join(", ")}]`,
     );
 
     if (filteredChats.length > 0) {
-      console.log(`MockDataService.getStepChats: Returning chats:`, filteredChats);
+      console.log(
+        `MockDataService.getStepChats: Returning chats:`,
+        filteredChats,
+      );
     }
 
     return filteredChats;
