@@ -1,24 +1,29 @@
 # Status Update Issue - Fix Applied
 
 ## Problem Identified
+
 The error `PUT http://localhost:8080/api/leads/steps/17 404 (Not Found)` indicates that the frontend was trying to update a step (ID 17) that doesn't exist in the database.
 
 ## Root Cause
+
 The previous system was showing template steps as if they were lead steps, but these template steps didn't have corresponding `lead_steps` records in the database.
 
 ## Fix Applied
 
 ### 1. Backend Changes ✅
+
 - **Updated `/leads/:leadId/steps` endpoint** to create actual `lead_steps` records from template steps
 - **Fixed foreign key constraint** in `lead_chats` table to reference `lead_steps` instead of `template_steps`
 - **Added proper step creation logic** that converts template steps into trackable lead steps
 
 ### 2. Database Schema Fix ✅
+
 - Updated `lead_chats` foreign key to reference `lead_steps(id)` instead of `template_steps(id)`
 - Created migration script to fix existing databases
 - Ensured `lead_steps` table has proper structure
 
 ### 3. Frontend Already Fixed ✅
+
 - Separated template steps (reference only) from lead steps (trackable)
 - Added validation to prevent status updates on template steps
 - Clear visual distinction between template and lead steps
@@ -56,8 +61,9 @@ The previous system was showing template steps as if they were lead steps, but t
 ## If Issue Persists
 
 If you still see step ID 17 or other invalid IDs:
+
 1. Hard refresh the browser (Ctrl+Shift+R)
-2. Clear browser cache 
+2. Clear browser cache
 3. Check browser dev tools for any cached API responses
 4. Verify the backend is returning steps with IDs 1-10 by checking the Network tab
 
