@@ -128,12 +128,10 @@ export default function LeadDetails() {
         totalStepProbability += stepProbability;
 
         if (step.status === "completed") {
-          // Full probability weight for completed steps
+          // Only count completed steps for progress
           totalCompletedProbability += stepProbability;
-        } else if (step.status === "in_progress") {
-          // 50% probability weight for in-progress steps
-          totalCompletedProbability += stepProbability * 0.5;
         }
+        // In-progress, pending, cancelled, blocked steps contribute 0 to progress
         // pending, cancelled, blocked steps contribute 0
       });
 
