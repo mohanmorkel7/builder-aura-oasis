@@ -122,7 +122,8 @@ const mockFollowUps: FollowUp[] = [
     due_date: "2024-01-20",
     created_at: "2024-01-18T11:30:00Z",
     completed_at: "2024-01-19T16:45:00Z",
-    notes: "Timeline assessment completed - 2 additional weeks needed for reporting features",
+    notes:
+      "Timeline assessment completed - 2 additional weeks needed for reporting features",
   },
 ];
 
@@ -252,7 +253,9 @@ export default function FollowUpTracker() {
           { status: newStatus, completed_at: completedAt },
           notificationData,
         );
-        console.log("Follow-up status update with notification completed successfully");
+        console.log(
+          "Follow-up status update with notification completed successfully",
+        );
       } else {
         // Fallback to original method if follow-up not found or no user
         const response = await fetch(`/api/follow-ups/${followUpId}`, {
