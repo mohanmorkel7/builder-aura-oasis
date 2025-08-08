@@ -761,9 +761,9 @@ export class LeadStepRepository {
     }
 
     const query = `
-      INSERT INTO lead_steps 
-      (lead_id, name, description, due_date, estimated_days, step_order, assigned_to)
-      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      INSERT INTO lead_steps
+      (lead_id, name, description, due_date, estimated_days, probability_percent, step_order, assigned_to)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       RETURNING *
     `;
 
@@ -773,6 +773,7 @@ export class LeadStepRepository {
       stepData.description || null,
       stepData.due_date || null,
       stepData.estimated_days,
+      stepData.probability_percent || 0,
       stepOrder,
       stepData.assigned_to || null,
     ];
