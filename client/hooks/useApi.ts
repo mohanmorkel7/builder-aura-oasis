@@ -1183,7 +1183,9 @@ export function useUpdateLeadStep() {
       // Get the lead_id from the response to invalidate specific queries
       if (data && data.lead_id) {
         // Invalidate specific lead steps and lead data
-        queryClient.invalidateQueries({ queryKey: ["lead-steps", data.lead_id] });
+        queryClient.invalidateQueries({
+          queryKey: ["lead-steps", data.lead_id],
+        });
         queryClient.invalidateQueries({ queryKey: ["leads", data.lead_id] });
       }
       // Also invalidate broader queries as fallback
