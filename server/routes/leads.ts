@@ -909,6 +909,7 @@ router.get("/:leadId/steps", async (req: Request, res: Response) => {
 
           if (existingLeadStepsResult.rows.length > 0) {
             // Lead steps already exist, return them
+            console.log(`✅ Found ${existingLeadStepsResult.rows.length} existing lead steps`);
             steps = existingLeadStepsResult.rows;
           } else {
             // No lead steps exist, create them from template steps
