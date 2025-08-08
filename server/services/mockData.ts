@@ -1613,31 +1613,44 @@ export class MockDataService {
   }
 
   static addLeadStep(step: any) {
-    console.log(`MockDataService.addLeadStep: Adding step ${step.id} to storage`);
+    console.log(
+      `MockDataService.addLeadStep: Adding step ${step.id} to storage`,
+    );
     this.leadSteps.push(step);
-    console.log(`MockDataService.addLeadStep: Total steps now: ${this.leadSteps.length}`);
+    console.log(
+      `MockDataService.addLeadStep: Total steps now: ${this.leadSteps.length}`,
+    );
   }
 
   static async deleteLeadStep(stepId: number) {
     console.log(`MockDataService.deleteLeadStep: Deleting step ${stepId}`);
 
     // Remove from leadSteps if it exists
-    const stepIndex = this.leadSteps.findIndex(step => step.id === stepId);
+    const stepIndex = this.leadSteps.findIndex((step) => step.id === stepId);
     if (stepIndex !== -1) {
       const deletedStep = this.leadSteps.splice(stepIndex, 1)[0];
-      console.log(`MockDataService.deleteLeadStep: Removed step from leadSteps:`, deletedStep);
+      console.log(
+        `MockDataService.deleteLeadStep: Removed step from leadSteps:`,
+        deletedStep,
+      );
     }
 
     // Remove all associated chat messages
     const initialChatCount = this.chatMessages.length;
-    this.chatMessages = this.chatMessages.filter(chat => chat.step_id !== stepId);
+    this.chatMessages = this.chatMessages.filter(
+      (chat) => chat.step_id !== stepId,
+    );
     const removedChatCount = initialChatCount - this.chatMessages.length;
 
     if (removedChatCount > 0) {
-      console.log(`MockDataService.deleteLeadStep: Removed ${removedChatCount} chat messages for step ${stepId}`);
+      console.log(
+        `MockDataService.deleteLeadStep: Removed ${removedChatCount} chat messages for step ${stepId}`,
+      );
     }
 
-    console.log(`MockDataService.deleteLeadStep: Step ${stepId} deletion complete`);
+    console.log(
+      `MockDataService.deleteLeadStep: Step ${stepId} deletion complete`,
+    );
     return true;
   }
 
