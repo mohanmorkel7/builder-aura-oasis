@@ -391,7 +391,19 @@ export class LeadRepository {
     `;
 
     const result = await pool.query(query, values);
-    return result.rows;
+
+    // Parse contacts field if it's a string (for backward compatibility)
+    return result.rows.map(lead => {
+      if (lead.contacts && typeof lead.contacts === 'string') {
+        try {
+          lead.contacts = JSON.parse(lead.contacts);
+        } catch (error) {
+          console.warn(`Failed to parse contacts for lead ${lead.id}:`, error);
+          lead.contacts = [];
+        }
+      }
+      return lead;
+    });
   }
 
   static async findById(id: number): Promise<Lead | null> {
