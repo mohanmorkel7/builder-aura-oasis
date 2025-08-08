@@ -154,23 +154,16 @@ export function DraggableStepsList({
         strategy={verticalListSortingStrategy}
       >
         <div className="space-y-4">
-          {items.map((step, index) => {
-          // Debug duplicate keys
-          if (items.filter(s => s.id === step.id).length > 1) {
-            console.warn(`Duplicate step ID found: ${step.id}`, step);
-          }
-
-          return (
-            <EnhancedStepItem
-              key={`step-${step.id}-${index}`} // Use composite key to ensure uniqueness
-              step={step}
-              isExpanded={expandedSteps.has(step.id)}
-              onToggleExpansion={() => onToggleExpansion(step.id)}
-              onUpdateStatus={handleUpdateStatus}
-              onDeleteStep={onDeleteStep}
-            />
-          );
-        })}
+          {items.map((step) => (
+          <EnhancedStepItem
+            key={step.id}
+            step={step}
+            isExpanded={expandedSteps.has(step.id)}
+            onToggleExpansion={() => onToggleExpansion(step.id)}
+            onUpdateStatus={handleUpdateStatus}
+            onDeleteStep={onDeleteStep}
+          />
+        ))}
         </div>
       </SortableContext>
 
