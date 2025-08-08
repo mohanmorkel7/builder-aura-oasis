@@ -391,12 +391,24 @@ export class LeadRepository {
     `;
 
     const result = await pool.query(query, values);
-    return result.rows;
+
+    // Parse contacts field if it's a string (for backward compatibility)
+    return result.rows.map((lead) => {
+      if (lead.contacts && typeof lead.contacts === "string") {
+        try {
+          lead.contacts = JSON.parse(lead.contacts);
+        } catch (error) {
+          console.warn(`Failed to parse contacts for lead ${lead.id}:`, error);
+          lead.contacts = [];
+        }
+      }
+      return lead;
+    });
   }
 
   static async findById(id: number): Promise<Lead | null> {
     const query = `
-      SELECT l.*, 
+      SELECT l.*,
              CONCAT(u.first_name, ' ', u.last_name) as sales_rep_name,
              CONCAT(c.first_name, ' ', c.last_name) as creator_name
       FROM leads l
@@ -406,7 +418,22 @@ export class LeadRepository {
     `;
 
     const result = await pool.query(query, [id]);
-    return result.rows.length > 0 ? result.rows[0] : null;
+    if (result.rows.length > 0) {
+      const lead = result.rows[0];
+
+      // Parse contacts if it's a string (for backward compatibility)
+      if (lead.contacts && typeof lead.contacts === "string") {
+        try {
+          lead.contacts = JSON.parse(lead.contacts);
+        } catch (error) {
+          console.warn(`Failed to parse contacts for lead ${id}:`, error);
+          lead.contacts = [];
+        }
+      }
+
+      return lead;
+    }
+    return null;
   }
 
   static async create(leadData: CreateLeadData): Promise<Lead> {
