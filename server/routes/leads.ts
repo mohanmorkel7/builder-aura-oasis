@@ -1315,13 +1315,13 @@ router.post("/steps/:stepId/chats", async (req: Request, res: Response) => {
 
     try {
       if (await isDatabaseAvailable()) {
-        // First check if the step exists in template_steps
-        const stepExistsQuery = `SELECT id FROM template_steps WHERE id = $1`;
+        // First check if the step exists in lead_steps
+        const stepExistsQuery = `SELECT id FROM lead_steps WHERE id = $1`;
         const stepResult = await pool.query(stepExistsQuery, [stepId]);
 
         if (stepResult.rows.length === 0) {
           console.log(
-            `Step ${stepId} doesn't exist in template_steps, using mock fallback`,
+            `Step ${stepId} doesn't exist in lead_steps, using mock fallback`,
           );
           // Step doesn't exist, use mock data instead
           const mockChat = await MockDataService.createStepChat(
