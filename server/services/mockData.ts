@@ -1304,7 +1304,7 @@ export class MockDataService {
   }
 
   static async getLeadSteps(leadId: number) {
-    return [
+    const steps = [
       {
         id: 1,
         lead_id: leadId,
