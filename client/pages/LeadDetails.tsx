@@ -117,38 +117,53 @@ export default function LeadDetails() {
 
   // Calculate completion percentage based on step completion or lead probability
   const calculateCompletionPercentage = () => {
-    // If we have lead steps, calculate based on step completion (regardless of template)
+    // If we have lead steps, calculate based on step completion with probability weights
     if (leadSteps && leadSteps.length > 0) {
-      // Enhanced calculation using step probability weights
       let totalCompletedProbability = 0;
-      let totalPossibleProbability = 0;
+      let totalStepProbability = 0;
 
-      leadSteps.forEach((step, index) => {
-        // Use step probability if available, otherwise distribute evenly
-        const stepProbability =
-          step.probability_percent || 100 / leadSteps.length;
-        totalPossibleProbability += stepProbability;
+      leadSteps.forEach((step) => {
+        // Use step probability_percent from database (from template or manually set)
+        const stepProbability = step.probability_percent || 0;
+        totalStepProbability += stepProbability;
 
         if (step.status === "completed") {
+          // Full probability weight for completed steps
           totalCompletedProbability += stepProbability;
         } else if (step.status === "in_progress") {
-          // Give partial credit for in-progress steps
+          // 50% probability weight for in-progress steps
           totalCompletedProbability += stepProbability * 0.5;
         }
+        // pending, cancelled, blocked steps contribute 0
       });
 
-      // Ensure we don't exceed 100% due to probability distribution issues
-      const percentage =
-        totalPossibleProbability > 0
-          ? Math.min(
-              100,
-              Math.round(
-                (totalCompletedProbability / totalPossibleProbability) * 100,
-              ),
-            )
-          : 0;
+      // Calculate percentage based on total step probabilities
+      if (totalStepProbability > 0) {
+        // If total step probability is less than 100%, scale accordingly
+        const completionRatio = totalCompletedProbability / totalStepProbability;
+        const percentage = Math.min(100, Math.round(completionRatio * 100));
 
-      return percentage;
+        console.log("Probability calculation:", {
+          totalStepProbability,
+          totalCompletedProbability,
+          completionRatio,
+          percentage,
+          steps: leadSteps.map(s => ({
+            name: s.name,
+            status: s.status,
+            probability_percent: s.probability_percent
+          }))
+        });
+
+        return percentage;
+      }
+
+      // If no probability weights set, fall back to equal distribution
+      const completedSteps = leadSteps.filter(step => step.status === "completed").length;
+      const inProgressSteps = leadSteps.filter(step => step.status === "in_progress").length;
+      const totalSteps = leadSteps.length;
+
+      return Math.round(((completedSteps + inProgressSteps * 0.5) / totalSteps) * 100);
     }
 
     // If no steps exist, use the lead's probability value
