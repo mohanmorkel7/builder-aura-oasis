@@ -114,11 +114,25 @@ export function EnhancedStepItem({
 
   // Sort messages by created_at in ascending order (latest last for bottom scroll)
   const sortedMessages = React.useMemo(() => {
-    return [...chatMessages].sort(
+    const sorted = [...chatMessages].sort(
       (a, b) =>
         new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
     );
-  }, [chatMessages]);
+
+    // Debug: Check for duplicate message IDs
+    const idCounts = {};
+    sorted.forEach(msg => {
+      idCounts[msg.id] = (idCounts[msg.id] || 0) + 1;
+    });
+
+    Object.entries(idCounts).forEach(([id, count]) => {
+      if (count > 1) {
+        console.error(`EnhancedStepItem: Message ID ${id} appears ${count} times in step ${step.id}`);
+      }
+    });
+
+    return sorted;
+  }, [chatMessages, step.id]);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
