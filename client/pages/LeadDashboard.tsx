@@ -743,7 +743,12 @@ export default function LeadDashboard() {
                                   </div>
                                 </div>
                                 <div className="text-right text-xs text-gray-500">
-                                  Due: {new Date(followUp.due_date).toISOString().split('T')[0]}
+                                  Due:{" "}
+                                  {
+                                    new Date(followUp.due_date)
+                                      .toISOString()
+                                      .split("T")[0]
+                                  }
                                 </div>
                               </div>
                             </div>
@@ -840,7 +845,12 @@ export default function LeadDashboard() {
                                 </div>
                               </div>
                               <div className="text-right text-xs text-red-600 font-medium">
-                                Due: {new Date(followUp.due_date).toISOString().split('T')[0]}
+                                Due:{" "}
+                                {
+                                  new Date(followUp.due_date)
+                                    .toISOString()
+                                    .split("T")[0]
+                                }
                               </div>
                             </div>
                           </div>
