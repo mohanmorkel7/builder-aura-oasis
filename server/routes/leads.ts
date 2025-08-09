@@ -1584,10 +1584,12 @@ router.post("/steps/:stepId/chats", async (req: Request, res: Response) => {
           // Check if the step exists in mock data
           const { MockDataService } = await import("../services/mockData");
           const storedSteps = MockDataService.getStoredLeadSteps();
-          const mockStep = storedSteps.find(s => s.id === stepId);
+          const mockStep = storedSteps.find((s) => s.id === stepId);
 
           if (mockStep) {
-            console.log(`Found step ${stepId} in mock data, creating it in database...`);
+            console.log(
+              `Found step ${stepId} in mock data, creating it in database...`,
+            );
 
             // Create the missing step in the database
             const stepData = {
@@ -1601,30 +1603,37 @@ router.post("/steps/:stepId/chats", async (req: Request, res: Response) => {
             };
 
             // Insert the step with the specific ID
-            await pool.query(`
+            await pool.query(
+              `
               INSERT INTO lead_steps (id, lead_id, name, description, status, step_order, due_date, estimated_days, created_at, updated_at)
               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-            `, [
-              stepId,
-              stepData.lead_id,
-              stepData.name,
-              stepData.description,
-              stepData.status,
-              stepData.step_order,
-              stepData.due_date,
-              stepData.estimated_days,
-              mockStep.created_at,
-              mockStep.updated_at
-            ]);
+            `,
+              [
+                stepId,
+                stepData.lead_id,
+                stepData.name,
+                stepData.description,
+                stepData.status,
+                stepData.step_order,
+                stepData.due_date,
+                stepData.estimated_days,
+                mockStep.created_at,
+                mockStep.updated_at,
+              ],
+            );
 
-            console.log(`Successfully created step ${stepId} in database, now creating chat...`);
+            console.log(
+              `Successfully created step ${stepId} in database, now creating chat...`,
+            );
 
             // Now try to create the chat again
             const chat = await LeadChatRepository.create(chatData);
             res.status(201).json(chat);
             return;
           } else {
-            console.log(`Step ${stepId} not found in mock data either, using mock chat creation`);
+            console.log(
+              `Step ${stepId} not found in mock data either, using mock chat creation`,
+            );
           }
         } catch (fixError: any) {
           console.error("Failed to create missing step in database:", fixError);
