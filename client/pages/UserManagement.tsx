@@ -217,23 +217,6 @@ export default function UserManagement() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">
-                  Azure SSO Users
-                </p>
-                <p className="text-2xl font-bold text-green-600">
-                  {mockAzureUsers.length}
-                </p>
-              </div>
-              <div className="p-3 rounded-lg bg-green-100">
-                <Cloud className="w-6 h-6 text-green-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
 
         <Card>
           <CardContent className="p-6">
@@ -330,7 +313,6 @@ export default function UserManagement() {
         <TabsList>
           <TabsTrigger value="list">All Users</TabsTrigger>
           <TabsTrigger value="roles">By Role Groups</TabsTrigger>
-          <TabsTrigger value="azure">Azure SSO Users</TabsTrigger>
         </TabsList>
 
         {/* All Users List */}
@@ -402,16 +384,7 @@ export default function UserManagement() {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        {user.azureObjectId ? (
-                          <div className="flex items-center space-x-1">
-                            <Cloud className="w-4 h-4 text-blue-600" />
-                            <span className="text-sm text-blue-600">
-                              Azure SSO
-                            </span>
-                          </div>
-                        ) : (
-                          <span className="text-sm text-gray-500">Local</span>
-                        )}
+                        <span className="text-sm text-gray-500">Local</span>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center space-x-2">
