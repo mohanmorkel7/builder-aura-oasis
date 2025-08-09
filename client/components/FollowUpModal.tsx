@@ -22,6 +22,7 @@ import { Calendar, Clock, User, MessageSquare } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api";
+import { useUsers } from "@/hooks/useApi";
 
 interface FollowUpModalProps {
   isOpen: boolean;
@@ -44,6 +45,7 @@ export function FollowUpModal({
 }: FollowUpModalProps) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const { data: users = [], isLoading: usersLoading } = useUsers();
 
   const [followUpData, setFollowUpData] = useState({
     title: "",
@@ -115,12 +117,14 @@ export function FollowUpModal({
     createFollowUpMutation.mutate(submitData);
   };
 
-  const teamMembers = [
-    { id: 2, name: "Alice Johnson" },
-    { id: 3, name: "Bob Smith" },
-    { id: 4, name: "Carol Davis" },
-    { id: 5, name: "David Wilson" },
-  ];
+  // Filter active users and format for dropdown
+  const teamMembers = users
+    .filter((user: any) => user.status === "active")
+    .map((user: any) => ({
+      id: user.id,
+      name: `${user.first_name} ${user.last_name}`,
+      role: user.role,
+    }));
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -243,14 +247,24 @@ export function FollowUpModal({
                 onValueChange={(value) =>
                   setFollowUpData((prev) => ({ ...prev, assigned_to: value }))
                 }
+                disabled={usersLoading}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select team member" />
+                  <SelectValue
+                    placeholder={
+                      usersLoading ? "Loading users..." : "Select team member"
+                    }
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {teamMembers.map((member) => (
                     <SelectItem key={member.id} value={member.id.toString()}>
-                      {member.name}
+                      <div className="flex items-center justify-between w-full">
+                        <span>{member.name}</span>
+                        <span className="text-xs text-gray-500 ml-2 capitalize">
+                          {member.role}
+                        </span>
+                      </div>
                     </SelectItem>
                   ))}
                 </SelectContent>

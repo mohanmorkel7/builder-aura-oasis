@@ -55,6 +55,7 @@ import {
   useStepChats,
   useCreateStepChat,
   useCreateFollowUp,
+  useUsers,
 } from "@/hooks/useApi";
 import { apiClient } from "@/lib/api";
 import { formatToISTDateTime } from "@/lib/dateUtils";
@@ -91,6 +92,7 @@ export function EnhancedStepItem({
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const { data: users = [], isLoading: usersLoading } = useUsers();
 
   const {
     attributes,
@@ -106,6 +108,15 @@ export function EnhancedStepItem({
     transition,
     opacity: isDragging ? 0.5 : 1,
   };
+
+  // Filter active users and format for dropdown
+  const teamMembers = users
+    .filter((user: any) => user.status === "active")
+    .map((user: any) => ({
+      id: user.id,
+      name: `${user.first_name} ${user.last_name}`,
+      role: user.role,
+    }));
 
   // Fetch real chat data from API (only for actual lead steps)
   // For manually added steps, isTemplate is undefined, so they should use their actual ID
@@ -848,26 +859,34 @@ export function EnhancedStepItem({
                                 <Select
                                   value={followUpAssignTo}
                                   onValueChange={setFollowUpAssignTo}
+                                  disabled={usersLoading}
                                 >
                                   <SelectTrigger
                                     id="followup-assign"
                                     className="mt-1"
                                   >
-                                    <SelectValue placeholder="Select assignee" />
+                                    <SelectValue
+                                      placeholder={
+                                        usersLoading
+                                          ? "Loading users..."
+                                          : "Select assignee"
+                                      }
+                                    />
                                   </SelectTrigger>
                                   <SelectContent>
-                                    <SelectItem value={user?.id || ""}>
-                                      Myself
-                                    </SelectItem>
-                                    <SelectItem value="sales-team">
-                                      Sales Team
-                                    </SelectItem>
-                                    <SelectItem value="manager">
-                                      Manager
-                                    </SelectItem>
-                                    <SelectItem value="support">
-                                      Support Team
-                                    </SelectItem>
+                                    {teamMembers.map((member) => (
+                                      <SelectItem
+                                        key={member.id}
+                                        value={member.id.toString()}
+                                      >
+                                        <div className="flex items-center justify-between w-full">
+                                          <span>{member.name}</span>
+                                          <span className="text-xs text-gray-500 ml-2 capitalize">
+                                            {member.role}
+                                          </span>
+                                        </div>
+                                      </SelectItem>
+                                    ))}
                                   </SelectContent>
                                 </Select>
                               </div>
