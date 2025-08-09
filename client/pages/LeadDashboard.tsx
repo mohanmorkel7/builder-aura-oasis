@@ -701,7 +701,6 @@ export default function LeadDashboard() {
                               key={followUp.id}
                               className={`p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors ${index === currentDueFollowUps.length - 1 ? "border-b-0" : ""}`}
                             >
-
                               <div className="flex items-start justify-between">
                                 <div className="flex-1">
                                   <div className="flex items-center space-x-2 mb-1">
@@ -807,7 +806,6 @@ export default function LeadDashboard() {
                             key={followUp.id}
                             className={`p-4 border-b border-gray-100 hover:bg-red-50 transition-colors ${index === overdueFollowUps.length - 1 ? "border-b-0" : ""}`}
                           >
-
                             <div className="flex items-start justify-between">
                               <div className="flex-1">
                                 <div className="flex items-center space-x-2 mb-1">
