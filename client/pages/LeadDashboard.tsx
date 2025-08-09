@@ -745,23 +745,9 @@ export default function LeadDashboard() {
                                 <div className="text-right text-xs text-gray-500">
                                   Due:{" "}
                                   {followUp.due_date
-                                    ? (() => {
-                                        // Parse as local date to avoid timezone issues
-                                        const dateStr =
-                                          followUp.due_date.includes("T")
-                                            ? followUp.due_date.split("T")[0]
-                                            : followUp.due_date;
-                                        const [year, month, day] =
-                                          dateStr.split("-");
-                                        const localDate = new Date(
-                                          parseInt(year),
-                                          parseInt(month) - 1,
-                                          parseInt(day),
-                                        );
-                                        return localDate.toLocaleDateString(
-                                          "en-CA",
-                                        ); // YYYY-MM-DD format
-                                      })()
+                                    ? followUp.due_date.includes("T")
+                                      ? followUp.due_date.split("T")[0]
+                                      : followUp.due_date
                                     : "No date"}
                                 </div>
                               </div>
