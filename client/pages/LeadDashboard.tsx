@@ -343,13 +343,13 @@ export default function LeadDashboard() {
           </div>
         </div>
 
-        {leadsLoading ? (
+        {leadProgressLoading ? (
           <Card>
             <CardContent className="p-6">
               <div className="text-center">Loading lead progress...</div>
             </CardContent>
           </Card>
-        ) : filteredLeads.length === 0 ? (
+        ) : leadProgressData.length === 0 ? (
           <Card>
             <CardContent className="p-6 text-center">
               <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -365,50 +365,48 @@ export default function LeadDashboard() {
           </Card>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {filteredLeads.map((lead: any) => {
-              // Mock data for lead steps - in real implementation, this would come from API
-              const leadSteps = [
-                { name: "Initial Contact", status: "completed", probability: 10 },
-                { name: "Requirement Analysis", status: "completed", probability: 25 },
-                { name: "Proposal Creation", status: "in_progress", probability: 30 },
-                { name: "Contract Review", status: "pending", probability: 20 },
-                { name: "Final Approval", status: "pending", probability: 15 }
-              ];
-
-              const completedSteps = leadSteps.filter(step => step.status === "completed");
-              const currentStep = leadSteps.find(step => step.status === "in_progress") || leadSteps.find(step => step.status === "pending");
-              const maxProbability = Math.max(...completedSteps.map(s => s.probability));
+            {leadProgressData.map((leadProgress: any) => {
+              const maxProbability = leadProgress.completed_steps.length > 0
+                ? Math.max(...leadProgress.completed_steps.map((s: any) => s.probability))
+                : 0;
               const chartHeight = 80;
 
               return (
-                <Card key={lead.id} className="overflow-hidden hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleLeadClick(lead.id)}>
+                <Card key={leadProgress.lead_id} className="overflow-hidden hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleLeadClick(leadProgress.lead_id)}>
                   <CardHeader className="pb-2">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <CardTitle className="text-sm font-medium text-gray-900 line-clamp-2">
-                          {lead.client_name}
+                          {leadProgress.client_name}
                         </CardTitle>
                         <CardDescription className="text-xs mt-1">
-                          {lead.lead_id}
+                          {leadProgress.lead_reference}
                         </CardDescription>
                       </div>
                       <Badge
-                        className={statusColors[lead.status as keyof typeof statusColors]}
+                        className={statusColors[leadProgress.lead_status as keyof typeof statusColors]}
                       >
-                        {lead.status.replace("-", " ")}
+                        {leadProgress.lead_status.replace("-", " ")}
                       </Badge>
                     </div>
+
+                    {/* Template Name */}
+                    {leadProgress.template_name && (
+                      <div className="mt-1">
+                        <div className="text-xs text-gray-500">{leadProgress.template_name}</div>
+                      </div>
+                    )}
 
                     {/* Current Step */}
                     <div className="mt-2">
                       <div className="text-xs text-gray-500">Current Step:</div>
                       <div className="flex items-center space-x-2">
                         <div className="text-sm font-medium text-blue-600">
-                          {currentStep?.name || "No active step"}
+                          {leadProgress.current_step?.name || "All steps completed"}
                         </div>
-                        {currentStep && (
+                        {leadProgress.current_step && (
                           <Badge variant="outline" className="text-xs">
-                            {currentStep.probability}%
+                            {leadProgress.current_step.probability}%
                           </Badge>
                         )}
                       </div>
@@ -417,14 +415,14 @@ export default function LeadDashboard() {
                   <CardContent className="pt-0">
                     {/* Completed Steps Progress Chart */}
                     <div className="mb-3">
-                      <div className="text-xs text-gray-500 mb-2">Completed Steps Progress:</div>
+                      <div className="text-xs text-gray-500 mb-2">Completed Steps ({leadProgress.completed_count}/{leadProgress.total_steps}):</div>
                       <div className="flex items-end justify-center space-x-1" style={{ height: `${chartHeight}px` }}>
-                        {completedSteps.length === 0 ? (
+                        {leadProgress.completed_steps.length === 0 ? (
                           <div className="flex items-center justify-center h-full text-xs text-gray-400">
                             No completed steps
                           </div>
                         ) : (
-                          completedSteps.map((step, index) => (
+                          leadProgress.completed_steps.map((step: any, index: number) => (
                             <div key={index} className="flex flex-col items-center space-y-1">
                               <div
                                 className="bg-green-500 rounded-t min-h-[4px] w-8 transition-all duration-300 relative group"
@@ -434,7 +432,7 @@ export default function LeadDashboard() {
                                 title={step.name}
                               >
                                 {/* Tooltip-like label */}
-                                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 px-1 py-0.5 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none">
                                   {step.name}
                                 </div>
                               </div>
@@ -449,11 +447,11 @@ export default function LeadDashboard() {
                     <div className="grid grid-cols-2 gap-2 text-xs">
                       <div className="flex items-center space-x-1">
                         <div className="w-2 h-2 bg-green-500 rounded"></div>
-                        <span className="text-gray-600">Completed: {completedSteps.length}</span>
+                        <span className="text-gray-600">Completed: {leadProgress.completed_count}</span>
                       </div>
                       <div className="flex items-center space-x-1">
                         <div className="w-2 h-2 bg-blue-500 rounded"></div>
-                        <span className="text-gray-600">Current: {currentStep ? '1' : '0'}</span>
+                        <span className="text-gray-600">Current: {leadProgress.current_step ? '1' : '0'}</span>
                       </div>
                     </div>
 
@@ -461,11 +459,11 @@ export default function LeadDashboard() {
                     <div className="mt-2 pt-2 border-t border-gray-100">
                       <div className="text-center">
                         <span className="text-sm font-medium text-gray-700">
-                          Completed: {completedSteps.reduce((sum, step) => sum + step.probability, 0)}%
+                          Progress: {leadProgress.total_completed_probability}%
                         </span>
-                        {lead.probability && (
+                        {leadProgress.lead_probability && (
                           <span className="text-xs text-gray-500 ml-2">
-                            (Total: {lead.probability}%)
+                            (Total: {leadProgress.lead_probability}%)
                           </span>
                         )}
                       </div>
