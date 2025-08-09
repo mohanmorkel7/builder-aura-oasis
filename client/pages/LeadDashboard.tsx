@@ -416,26 +416,7 @@ export default function LeadDashboard() {
                               key={leadProgress.lead_id}
                               className="flex flex-col items-center space-y-3 min-w-0"
                             >
-                              {/* Lead Name - Increased Height */}
-                              <div className="text-center min-w-0 w-24 h-16 flex flex-col justify-start items-center">
-                                <div
-                                  className="text-sm font-semibold text-gray-800 leading-tight mb-1 max-w-full break-words"
-                                  title={leadProgress.client_name}
-                                  style={{
-                                    display: "-webkit-box",
-                                    WebkitLineClamp: 2,
-                                    WebkitBoxOrient: "vertical",
-                                    overflow: "hidden",
-                                  }}
-                                >
-                                  {leadProgress.client_name}
-                                </div>
-                                <div className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
-                                  {leadProgress.total_completed_probability}%
-                                </div>
-                              </div>
-
-                              {/* Lead's Steps Chart */}
+                              {/* Lead's Steps Chart - Original Design */}
                               <div
                                 className="flex items-end space-x-1"
                                 style={{ height: `${chartHeight}px` }}
@@ -498,6 +479,25 @@ export default function LeadDashboard() {
                                     </span>
                                   </div>
                                 )}
+                              </div>
+
+                              {/* Lead Name - Now at Bottom */}
+                              <div className="text-center min-w-0 w-24 h-16 flex flex-col justify-start items-center">
+                                <div className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-full mb-1">
+                                  {leadProgress.total_completed_probability}%
+                                </div>
+                                <div
+                                  className="text-sm font-semibold text-gray-800 leading-tight max-w-full break-words"
+                                  title={leadProgress.client_name}
+                                  style={{
+                                    display: "-webkit-box",
+                                    WebkitLineClamp: 2,
+                                    WebkitBoxOrient: "vertical",
+                                    overflow: "hidden",
+                                  }}
+                                >
+                                  {leadProgress.client_name}
+                                </div>
                               </div>
                             </div>
                           ),
