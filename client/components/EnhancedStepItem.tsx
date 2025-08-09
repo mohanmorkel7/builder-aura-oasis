@@ -111,11 +111,11 @@ export function EnhancedStepItem({
 
   // Filter active users and format for dropdown
   const teamMembers = users
-    .filter((user: any) => user.status === 'active')
+    .filter((user: any) => user.status === "active")
     .map((user: any) => ({
       id: user.id,
       name: `${user.first_name} ${user.last_name}`,
-      role: user.role
+      role: user.role,
     }));
 
   // Fetch real chat data from API (only for actual lead steps)
@@ -865,11 +865,20 @@ export function EnhancedStepItem({
                                     id="followup-assign"
                                     className="mt-1"
                                   >
-                                    <SelectValue placeholder={usersLoading ? "Loading users..." : "Select assignee"} />
+                                    <SelectValue
+                                      placeholder={
+                                        usersLoading
+                                          ? "Loading users..."
+                                          : "Select assignee"
+                                      }
+                                    />
                                   </SelectTrigger>
                                   <SelectContent>
                                     {teamMembers.map((member) => (
-                                      <SelectItem key={member.id} value={member.id.toString()}>
+                                      <SelectItem
+                                        key={member.id}
+                                        value={member.id.toString()}
+                                      >
                                         <div className="flex items-center justify-between w-full">
                                           <span>{member.name}</span>
                                           <span className="text-xs text-gray-500 ml-2 capitalize">

@@ -119,11 +119,11 @@ export function FollowUpModal({
 
   // Filter active users and format for dropdown
   const teamMembers = users
-    .filter((user: any) => user.status === 'active')
+    .filter((user: any) => user.status === "active")
     .map((user: any) => ({
       id: user.id,
       name: `${user.first_name} ${user.last_name}`,
-      role: user.role
+      role: user.role,
     }));
 
   return (
@@ -250,7 +250,11 @@ export function FollowUpModal({
                 disabled={usersLoading}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder={usersLoading ? "Loading users..." : "Select team member"} />
+                  <SelectValue
+                    placeholder={
+                      usersLoading ? "Loading users..." : "Select team member"
+                    }
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {teamMembers.map((member) => (
