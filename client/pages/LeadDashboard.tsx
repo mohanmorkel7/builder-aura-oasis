@@ -745,14 +745,15 @@ export default function LeadDashboard() {
                                 <div className="text-right text-xs text-gray-500">
                                   Due:{" "}
                                   {followUp.due_date
-                                    ? followUp.due_date.includes("T")
-                                      ? followUp.due_date.split("T")[0]
-                                      : followUp.due_date
+                                    ? (() => {
+                                        // Convert UTC datetime to local date
+                                        const utcDate = new Date(followUp.due_date);
+                                        const year = utcDate.getFullYear();
+                                        const month = String(utcDate.getMonth() + 1).padStart(2, '0');
+                                        const day = String(utcDate.getDate()).padStart(2, '0');
+                                        return `${year}-${month}-${day}`;
+                                      })()
                                     : "No date"}
-                                  <br />
-                                  <span className="text-red-500 text-xs">
-                                    Raw: {followUp.due_date}
-                                  </span>
                                 </div>
                               </div>
                             </div>
