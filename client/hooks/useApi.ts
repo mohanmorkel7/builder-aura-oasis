@@ -1111,6 +1111,14 @@ export function useTemplateStepDashboard() {
   });
 }
 
+export function useLeadProgressDashboard() {
+  return useQuery({
+    queryKey: ["lead-progress-dashboard"],
+    queryFn: () => apiClient.getLeadProgressDashboard(),
+    refetchInterval: 30000, // Refetch every 30 seconds for real-time updates
+  });
+}
+
 // Lead steps hooks
 export function useLeadSteps(leadId: number) {
   return useQuery({
