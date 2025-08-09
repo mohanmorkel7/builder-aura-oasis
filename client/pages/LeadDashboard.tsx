@@ -721,14 +721,17 @@ export default function LeadDashboard() {
                                   </div>
                                   <div className="flex items-center space-x-4 text-xs text-gray-500">
                                     <span>
-                                      Lead: {followUp.lead_name || "Unknown"}
+                                      Lead:{" "}
+                                      {followUp.lead_client_name ||
+                                        followUp.client_name ||
+                                        "Unknown"}
                                     </span>
                                     <span>
                                       Step: {followUp.step_name || "N/A"}
                                     </span>
                                     <span>
                                       Assigned to:{" "}
-                                      {followUp.assigned_to_name ||
+                                      {followUp.assigned_user_name ||
                                         "Unassigned"}
                                     </span>
                                   </div>
@@ -815,14 +818,18 @@ export default function LeadDashboard() {
                                 </div>
                                 <div className="flex items-center space-x-4 text-xs text-gray-500">
                                   <span>
-                                    Lead: {followUp.lead_name || "Unknown"}
+                                    Lead:{" "}
+                                    {followUp.lead_client_name ||
+                                      followUp.client_name ||
+                                      "Unknown"}
                                   </span>
                                   <span>
                                     Step: {followUp.step_name || "N/A"}
                                   </span>
                                   <span>
                                     Assigned to:{" "}
-                                    {followUp.assigned_to_name || "Unassigned"}
+                                    {followUp.assigned_user_name ||
+                                      "Unassigned"}
                                   </span>
                                 </div>
                               </div>
