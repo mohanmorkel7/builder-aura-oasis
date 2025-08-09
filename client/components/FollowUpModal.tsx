@@ -45,6 +45,7 @@ export function FollowUpModal({
 }: FollowUpModalProps) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const { data: users = [], isLoading: usersLoading } = useUsers();
 
   const [followUpData, setFollowUpData] = useState({
     title: "",
