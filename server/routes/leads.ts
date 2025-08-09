@@ -164,7 +164,9 @@ router.get("/progress-dashboard", async (req: Request, res: Response) => {
         `;
 
         const leadsResult = await pool.query(leadsQuery);
-        console.log(`Found ${leadsResult.rows.length} leads for progress tracking`);
+        console.log(
+          `Found ${leadsResult.rows.length} leads for progress tracking`,
+        );
 
         for (const lead of leadsResult.rows) {
           // Get all steps for this lead with their status and probability
@@ -188,9 +190,10 @@ router.get("/progress-dashboard", async (req: Request, res: Response) => {
           ]);
 
           const steps = stepsResult.rows;
-          const completedSteps = steps.filter(s => s.status === 'completed');
-          const currentStep = steps.find(s => s.status === 'in_progress') ||
-                             steps.find(s => s.status === 'pending');
+          const completedSteps = steps.filter((s) => s.status === "completed");
+          const currentStep =
+            steps.find((s) => s.status === "in_progress") ||
+            steps.find((s) => s.status === "pending");
 
           progressData.push({
             lead_id: lead.lead_id,
@@ -199,19 +202,24 @@ router.get("/progress-dashboard", async (req: Request, res: Response) => {
             lead_status: lead.lead_status,
             lead_probability: lead.lead_probability,
             template_name: lead.template_name,
-            current_step: currentStep ? {
-              name: currentStep.name,
-              status: currentStep.status,
-              probability: currentStep.probability_percent
-            } : null,
-            completed_steps: completedSteps.map(s => ({
+            current_step: currentStep
+              ? {
+                  name: currentStep.name,
+                  status: currentStep.status,
+                  probability: currentStep.probability_percent,
+                }
+              : null,
+            completed_steps: completedSteps.map((s) => ({
               name: s.name,
               status: s.status,
-              probability: s.probability_percent
+              probability: s.probability_percent,
             })),
-            total_completed_probability: completedSteps.reduce((sum, s) => sum + (s.probability_percent || 0), 0),
+            total_completed_probability: completedSteps.reduce(
+              (sum, s) => sum + (s.probability_percent || 0),
+              0,
+            ),
             total_steps: steps.length,
-            completed_count: completedSteps.length
+            completed_count: completedSteps.length,
           });
         }
       } else {
@@ -235,15 +243,19 @@ router.get("/progress-dashboard", async (req: Request, res: Response) => {
           current_step: {
             name: "Proposal Creation",
             status: "in_progress",
-            probability: 30
+            probability: 30,
           },
           completed_steps: [
             { name: "Initial Contact", status: "completed", probability: 10 },
-            { name: "Requirement Analysis", status: "completed", probability: 25 }
+            {
+              name: "Requirement Analysis",
+              status: "completed",
+              probability: 25,
+            },
           ],
           total_completed_probability: 35,
           total_steps: 5,
-          completed_count: 2
+          completed_count: 2,
         },
         {
           lead_id: 2,
@@ -255,15 +267,19 @@ router.get("/progress-dashboard", async (req: Request, res: Response) => {
           current_step: {
             name: "Contract Review",
             status: "in_progress",
-            probability: 20
+            probability: 20,
           },
           completed_steps: [
             { name: "Initial Contact", status: "completed", probability: 10 },
-            { name: "Technical Assessment", status: "completed", probability: 15 }
+            {
+              name: "Technical Assessment",
+              status: "completed",
+              probability: 15,
+            },
           ],
           total_completed_probability: 25,
           total_steps: 6,
-          completed_count: 2
+          completed_count: 2,
         },
         {
           lead_id: 3,
@@ -275,14 +291,18 @@ router.get("/progress-dashboard", async (req: Request, res: Response) => {
           current_step: null,
           completed_steps: [
             { name: "Initial Contact", status: "completed", probability: 10 },
-            { name: "Requirement Analysis", status: "completed", probability: 30 },
+            {
+              name: "Requirement Analysis",
+              status: "completed",
+              probability: 30,
+            },
             { name: "Proposal Creation", status: "completed", probability: 35 },
-            { name: "Final Approval", status: "completed", probability: 25 }
+            { name: "Final Approval", status: "completed", probability: 25 },
           ],
           total_completed_probability: 100,
           total_steps: 4,
-          completed_count: 4
-        }
+          completed_count: 4,
+        },
       ];
     }
 
@@ -292,7 +312,7 @@ router.get("/progress-dashboard", async (req: Request, res: Response) => {
     console.error("Error in lead progress dashboard:", error);
     res.status(500).json({
       error: "Failed to fetch lead progress data",
-      details: error.message
+      details: error.message,
     });
   }
 });
