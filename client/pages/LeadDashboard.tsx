@@ -819,8 +819,23 @@ export default function LeadDashboard() {
                         return (
                           <div
                             key={followUp.id}
-                            className={`p-4 border-b border-gray-100 hover:bg-red-50 transition-colors ${index === overdueFollowUps.length - 1 ? "border-b-0" : ""}`}
+                            className={`p-4 border-b border-gray-100 hover:bg-red-50 transition-colors cursor-pointer relative group ${index === overdueFollowUps.length - 1 ? "border-b-0" : ""}`}
+                            title={followUp.description || followUp.title || followUp.original_message}
                           >
+                            {/* Hover Tooltip */}
+                            <div className="absolute left-full top-0 ml-2 px-3 py-2 bg-black text-white text-sm rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-30 pointer-events-none max-w-xs whitespace-normal">
+                              <div className="font-medium mb-1">
+                                {followUp.title || followUp.original_message}
+                              </div>
+                              {followUp.description && (
+                                <div className="text-xs text-gray-300">
+                                  {followUp.description}
+                                </div>
+                              )}
+                              {/* Arrow pointing to the left */}
+                              <div className="absolute top-3 -left-1 w-2 h-2 bg-black transform rotate-45"></div>
+                            </div>
+
                             <div className="flex items-start justify-between">
                               <div className="flex-1">
                                 <div className="flex items-center space-x-2 mb-1">
