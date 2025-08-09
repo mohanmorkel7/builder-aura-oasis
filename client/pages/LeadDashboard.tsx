@@ -743,7 +743,10 @@ export default function LeadDashboard() {
                                   </div>
                                 </div>
                                 <div className="text-right text-xs text-gray-500">
-                                  Due: {followUp.due_date ? followUp.due_date.split('T')[0] : 'No date'}
+                                  Due:{" "}
+                                  {followUp.due_date
+                                    ? followUp.due_date.split("T")[0]
+                                    : "No date"}
                                 </div>
                               </div>
                             </div>
@@ -840,7 +843,10 @@ export default function LeadDashboard() {
                                 </div>
                               </div>
                               <div className="text-right text-xs text-red-600 font-medium">
-                                Due: {followUp.due_date ? followUp.due_date.split('T')[0] : 'No date'}
+                                Due:{" "}
+                                {followUp.due_date
+                                  ? followUp.due_date.split("T")[0]
+                                  : "No date"}
                               </div>
                             </div>
                           </div>
