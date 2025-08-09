@@ -334,6 +334,150 @@ export default function LeadDashboard() {
         </Card>
       </div>
 
+      {/* Step-wise Lead Distribution */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900">Step-wise Lead Distribution</h2>
+            <p className="text-gray-600 text-sm">Track how many leads are in each template step with probability percentages</p>
+          </div>
+        </div>
+
+        {stepDashboardLoading ? (
+          <Card>
+            <CardContent className="p-6">
+              <div className="text-center">Loading step distribution...</div>
+            </CardContent>
+          </Card>
+        ) : stepDashboardData.length === 0 ? (
+          <Card>
+            <CardContent className="p-6 text-center">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Target className="w-8 h-8 text-gray-400" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                No step data available
+              </h3>
+              <p className="text-gray-600">
+                Step distribution will appear here once you have leads assigned to templates
+              </p>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {stepDashboardData.map((stepData: any) => {
+              const maxCount = Math.max(
+                stepData.pending_count,
+                stepData.in_progress_count,
+                stepData.completed_count,
+                stepData.blocked_count
+              );
+              const chartHeight = 80; // Base height for charts
+
+              return (
+                <Card key={`${stepData.template_id}-${stepData.step_id}`} className="overflow-hidden">
+                  <CardHeader className="pb-2">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <CardTitle className="text-sm font-medium text-gray-900 line-clamp-2">
+                          {stepData.step_name}
+                        </CardTitle>
+                        <CardDescription className="text-xs mt-1">
+                          {stepData.template_name}
+                        </CardDescription>
+                      </div>
+                      <Badge
+                        variant="secondary"
+                        className="text-xs bg-blue-100 text-blue-700 ml-2"
+                      >
+                        {stepData.probability_percent}%
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    {/* Vertical Bar Chart */}
+                    <div className="flex items-end justify-center space-x-1 mb-3" style={{ height: `${chartHeight}px` }}>
+                      {/* Pending */}
+                      <div className="flex flex-col items-center space-y-1">
+                        <div
+                          className="bg-yellow-400 rounded-t min-h-[4px] w-6 transition-all duration-300"
+                          style={{
+                            height: maxCount > 0 ? `${(stepData.pending_count / maxCount) * (chartHeight - 20)}px` : '4px'
+                          }}
+                        />
+                        <span className="text-xs font-medium text-yellow-700">{stepData.pending_count}</span>
+                      </div>
+
+                      {/* In Progress */}
+                      <div className="flex flex-col items-center space-y-1">
+                        <div
+                          className="bg-blue-500 rounded-t min-h-[4px] w-6 transition-all duration-300"
+                          style={{
+                            height: maxCount > 0 ? `${(stepData.in_progress_count / maxCount) * (chartHeight - 20)}px` : '4px'
+                          }}
+                        />
+                        <span className="text-xs font-medium text-blue-700">{stepData.in_progress_count}</span>
+                      </div>
+
+                      {/* Completed */}
+                      <div className="flex flex-col items-center space-y-1">
+                        <div
+                          className="bg-green-500 rounded-t min-h-[4px] w-6 transition-all duration-300"
+                          style={{
+                            height: maxCount > 0 ? `${(stepData.completed_count / maxCount) * (chartHeight - 20)}px` : '4px'
+                          }}
+                        />
+                        <span className="text-xs font-medium text-green-700">{stepData.completed_count}</span>
+                      </div>
+
+                      {/* Blocked */}
+                      <div className="flex flex-col items-center space-y-1">
+                        <div
+                          className="bg-red-500 rounded-t min-h-[4px] w-6 transition-all duration-300"
+                          style={{
+                            height: maxCount > 0 ? `${(stepData.blocked_count / maxCount) * (chartHeight - 20)}px` : '4px'
+                          }}
+                        />
+                        <span className="text-xs font-medium text-red-700">{stepData.blocked_count}</span>
+                      </div>
+                    </div>
+
+                    {/* Legend */}
+                    <div className="grid grid-cols-2 gap-1 text-xs">
+                      <div className="flex items-center space-x-1">
+                        <div className="w-2 h-2 bg-yellow-400 rounded"></div>
+                        <span className="text-gray-600">Pending</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <div className="w-2 h-2 bg-blue-500 rounded"></div>
+                        <span className="text-gray-600">In Progress</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <div className="w-2 h-2 bg-green-500 rounded"></div>
+                        <span className="text-gray-600">Completed</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <div className="w-2 h-2 bg-red-500 rounded"></div>
+                        <span className="text-gray-600">Blocked</span>
+                      </div>
+                    </div>
+
+                    {/* Total count */}
+                    <div className="mt-2 pt-2 border-t border-gray-100">
+                      <div className="text-center">
+                        <span className="text-sm font-medium text-gray-700">
+                          Total: {stepData.total_leads} leads
+                        </span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
       {/* Tabs and Search/Filters */}
       <Card>
         <CardContent className="p-6">
