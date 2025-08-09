@@ -747,10 +747,16 @@ export default function LeadDashboard() {
                                   {followUp.due_date
                                     ? (() => {
                                         // Convert UTC datetime to local date
-                                        const utcDate = new Date(followUp.due_date);
+                                        const utcDate = new Date(
+                                          followUp.due_date,
+                                        );
                                         const year = utcDate.getFullYear();
-                                        const month = String(utcDate.getMonth() + 1).padStart(2, '0');
-                                        const day = String(utcDate.getDate()).padStart(2, '0');
+                                        const month = String(
+                                          utcDate.getMonth() + 1,
+                                        ).padStart(2, "0");
+                                        const day = String(
+                                          utcDate.getDate(),
+                                        ).padStart(2, "0");
                                         return `${year}-${month}-${day}`;
                                       })()
                                     : "No date"}
@@ -854,10 +860,16 @@ export default function LeadDashboard() {
                                 {followUp.due_date
                                   ? (() => {
                                       // Convert UTC datetime to local date
-                                      const utcDate = new Date(followUp.due_date);
+                                      const utcDate = new Date(
+                                        followUp.due_date,
+                                      );
                                       const year = utcDate.getFullYear();
-                                      const month = String(utcDate.getMonth() + 1).padStart(2, '0');
-                                      const day = String(utcDate.getDate()).padStart(2, '0');
+                                      const month = String(
+                                        utcDate.getMonth() + 1,
+                                      ).padStart(2, "0");
+                                      const day = String(
+                                        utcDate.getDate(),
+                                      ).padStart(2, "0");
                                       return `${year}-${month}-${day}`;
                                     })()
                                   : "No date"}
