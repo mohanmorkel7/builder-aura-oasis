@@ -117,12 +117,14 @@ export function FollowUpModal({
     createFollowUpMutation.mutate(submitData);
   };
 
-  const teamMembers = [
-    { id: 2, name: "Alice Johnson" },
-    { id: 3, name: "Bob Smith" },
-    { id: 4, name: "Carol Davis" },
-    { id: 5, name: "David Wilson" },
-  ];
+  // Filter active users and format for dropdown
+  const teamMembers = users
+    .filter((user: any) => user.status === 'active')
+    .map((user: any) => ({
+      id: user.id,
+      name: `${user.first_name} ${user.last_name}`,
+      role: user.role
+    }));
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
