@@ -452,25 +452,26 @@ export default function LeadDashboard() {
                                     (step: any, stepIndex: number) => (
                                       <div
                                         key={stepIndex}
-                                        className="flex flex-col items-center space-y-1"
+                                        className="flex flex-col-reverse items-center space-y-1"
+                                        style={{ flexDirection: "column-reverse" }}
                                       >
+                                        <span className="text-xs font-medium text-green-700">
+                                          {step.probability}%
+                                        </span>
                                         <div
-                                          className="bg-green-500 rounded-t min-h-[4px] w-6 transition-all duration-300 relative group cursor-pointer"
+                                          className="bg-green-500 rounded-b min-h-[4px] w-6 transition-all duration-300 relative group cursor-pointer"
                                           style={{
                                             height: `${(step.probability / maxProbability) * (chartHeight - 20)}px`,
                                           }}
                                           title={`${leadProgress.client_name}: ${step.name} - ${step.probability}%`}
                                         >
                                           {/* Tooltip */}
-                                          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20 pointer-events-none">
+                                          <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20 pointer-events-none">
                                             {step.name}
                                             <br />
                                             {step.probability}%
                                           </div>
                                         </div>
-                                        <span className="text-xs font-medium text-green-700">
-                                          {step.probability}%
-                                        </span>
                                       </div>
                                     ),
                                   )
