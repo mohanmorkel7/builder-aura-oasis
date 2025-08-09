@@ -109,6 +109,15 @@ export function EnhancedStepItem({
     opacity: isDragging ? 0.5 : 1,
   };
 
+  // Filter active users and format for dropdown
+  const teamMembers = users
+    .filter((user: any) => user.status === 'active')
+    .map((user: any) => ({
+      id: user.id,
+      name: `${user.first_name} ${user.last_name}`,
+      role: user.role
+    }));
+
   // Fetch real chat data from API (only for actual lead steps)
   // For manually added steps, isTemplate is undefined, so they should use their actual ID
   // For template steps, isTemplate is true, so they should use 0 (disabled)
