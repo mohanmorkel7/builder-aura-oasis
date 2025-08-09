@@ -1622,6 +1622,10 @@ export class MockDataService {
     );
   }
 
+  static getStoredLeadSteps() {
+    return this.leadSteps;
+  }
+
   static async deleteLeadStep(stepId: number) {
     console.log(`MockDataService.deleteLeadStep: Deleting step ${stepId}`);
 
