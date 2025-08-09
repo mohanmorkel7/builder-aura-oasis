@@ -867,18 +867,16 @@ export function EnhancedStepItem({
                                     <SelectValue placeholder="Select assignee" />
                                   </SelectTrigger>
                                   <SelectContent>
-                                    <SelectItem value={user?.id || ""}>
-                                      Myself
-                                    </SelectItem>
-                                    <SelectItem value="sales-team">
-                                      Sales Team
-                                    </SelectItem>
-                                    <SelectItem value="manager">
-                                      Manager
-                                    </SelectItem>
-                                    <SelectItem value="support">
-                                      Support Team
-                                    </SelectItem>
+                                    {teamMembers.map((member) => (
+                                      <SelectItem key={member.id} value={member.id.toString()}>
+                                        <div className="flex items-center justify-between w-full">
+                                          <span>{member.name}</span>
+                                          <span className="text-xs text-gray-500 ml-2 capitalize">
+                                            {member.role}
+                                          </span>
+                                        </div>
+                                      </SelectItem>
+                                    ))}
                                   </SelectContent>
                                 </Select>
                               </div>
