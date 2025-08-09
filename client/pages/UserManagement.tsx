@@ -47,100 +47,6 @@ import {
   Cloud,
 } from "lucide-react";
 
-// Mock Azure SSO users data with realistic information
-const mockAzureUsers = [
-  {
-    id: "1",
-    name: "John Doe",
-    email: "john.doe@company.com",
-    role: "admin",
-    department: "Administration",
-    lastLogin: "2024-01-15T09:30:00Z",
-    status: "active",
-    azureObjectId: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-  },
-  {
-    id: "2",
-    name: "Jane Smith",
-    email: "jane.smith@company.com",
-    role: "sales",
-    department: "Sales",
-    lastLogin: "2024-01-14T14:22:00Z",
-    status: "active",
-    azureObjectId: "b2c3d4e5-f6g7-8901-bcde-f23456789012",
-  },
-  {
-    id: "3",
-    name: "Mike Johnson",
-    email: "mike.johnson@company.com",
-    role: "product",
-    department: "Product",
-    lastLogin: "2024-01-13T11:15:00Z",
-    status: "active",
-    azureObjectId: "c3d4e5f6-g7h8-9012-cdef-345678901234",
-  },
-  {
-    id: "4",
-    name: "Alex Chen",
-    email: "alex.chen@company.com",
-    role: "development",
-    department: "Development",
-    lastLogin: "2024-01-12T16:45:00Z",
-    status: "active",
-    azureObjectId: "d4e5f6g7-h8i9-0123-def0-456789012345",
-  },
-  {
-    id: "5",
-    name: "Sarah Wilson",
-    email: "sarah.wilson@company.com",
-    role: "db",
-    department: "Database",
-    lastLogin: "2024-01-11T10:30:00Z",
-    status: "active",
-    azureObjectId: "e5f6g7h8-i9j0-1234-ef01-567890123456",
-  },
-  {
-    id: "6",
-    name: "David Brown",
-    email: "david.brown@company.com",
-    role: "finops",
-    department: "FinOps",
-    lastLogin: "2024-01-10T13:20:00Z",
-    status: "active",
-    azureObjectId: "f6g7h8i9-j0k1-2345-f012-678901234567",
-  },
-  {
-    id: "7",
-    name: "Lisa Garcia",
-    email: "lisa.garcia@company.com",
-    role: "hr_management",
-    department: "HR",
-    lastLogin: "2024-01-09T15:10:00Z",
-    status: "active",
-    azureObjectId: "g7h8i9j0-k1l2-3456-0123-789012345678",
-  },
-  {
-    id: "8",
-    name: "Tom Martinez",
-    email: "tom.martinez@company.com",
-    role: "infra",
-    department: "Infrastructure",
-    lastLogin: "2024-01-08T08:55:00Z",
-    status: "active",
-    azureObjectId: "h8i9j0k1-l2m3-4567-1234-890123456789",
-  },
-  {
-    id: "9",
-    name: "Emma Davis",
-    email: "emma.davis@company.com",
-    role: "switch_team",
-    department: "Switch Team",
-    lastLogin: "2024-01-07T12:40:00Z",
-    status: "active",
-    azureObjectId: "i9j0k1l2-m3n4-5678-2345-901234567890",
-  },
-];
-
 export default function UserManagement() {
   const navigate = useNavigate();
   const { data: localUsers = [] } = useUsers();
@@ -148,13 +54,8 @@ export default function UserManagement() {
   const [selectedRole, setSelectedRole] = useState<string>("all");
   const [selectedDepartment, setSelectedDepartment] = useState<string>("all");
 
-  // Combine local and Azure users (in real app, these would come from API)
-  // Add prefix to Azure user IDs to avoid key conflicts
-  const azureUsersWithUniqueIds = mockAzureUsers.map((user) => ({
-    ...user,
-    id: `azure-${user.id}`,
-  }));
-  const allUsers = [...localUsers, ...azureUsersWithUniqueIds];
+  // Use only database users
+  const allUsers = localUsers || [];
 
   // Filter users based on search and filters
   const filteredUsers = allUsers.filter((user) => {
@@ -275,9 +176,7 @@ export default function UserManagement() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
-          <p className="text-gray-600 mt-1">
-            Manage users, roles, and Azure SSO integration
-          </p>
+          <p className="text-gray-600 mt-1">Manage users and roles</p>
         </div>
         <div className="flex items-center space-x-3">
           <Button variant="outline" onClick={handleSyncAzure}>
@@ -310,24 +209,6 @@ export default function UserManagement() {
               </div>
               <div className="p-3 rounded-lg bg-blue-100">
                 <Users className="w-6 h-6 text-blue-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">
-                  Azure SSO Users
-                </p>
-                <p className="text-2xl font-bold text-green-600">
-                  {mockAzureUsers.length}
-                </p>
-              </div>
-              <div className="p-3 rounded-lg bg-green-100">
-                <Cloud className="w-6 h-6 text-green-600" />
               </div>
             </div>
           </CardContent>
@@ -428,7 +309,6 @@ export default function UserManagement() {
         <TabsList>
           <TabsTrigger value="list">All Users</TabsTrigger>
           <TabsTrigger value="roles">By Role Groups</TabsTrigger>
-          <TabsTrigger value="azure">Azure SSO Users</TabsTrigger>
         </TabsList>
 
         {/* All Users List */}
@@ -500,16 +380,7 @@ export default function UserManagement() {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        {user.azureObjectId ? (
-                          <div className="flex items-center space-x-1">
-                            <Cloud className="w-4 h-4 text-blue-600" />
-                            <span className="text-sm text-blue-600">
-                              Azure SSO
-                            </span>
-                          </div>
-                        ) : (
-                          <span className="text-sm text-gray-500">Local</span>
-                        )}
+                        <span className="text-sm text-gray-500">Local</span>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center space-x-2">
@@ -621,109 +492,6 @@ export default function UserManagement() {
               </Card>
             ))}
           </div>
-        </TabsContent>
-
-        {/* Azure SSO Users */}
-        <TabsContent value="azure">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Cloud className="w-5 h-5 text-blue-600" />
-                <span>Azure SSO Users ({mockAzureUsers.length})</span>
-              </CardTitle>
-              <CardDescription>
-                Users authenticated through Microsoft Azure Active Directory
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>User</TableHead>
-                    <TableHead>Role</TableHead>
-                    <TableHead>Department</TableHead>
-                    <TableHead>Azure Object ID</TableHead>
-                    <TableHead>Last Login</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {mockAzureUsers
-                    .filter(
-                      (user) =>
-                        selectedRole === "all" || user.role === selectedRole,
-                    )
-                    .map((user) => (
-                      <TableRow key={user.id}>
-                        <TableCell>
-                          <div className="flex items-center space-x-3">
-                            <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                              <span className="text-sm font-medium text-blue-600">
-                                {user.first_name && user.last_name
-                                  ? `${user.first_name[0]}${user.last_name[0]}`
-                                  : user.first_name?.[0] ||
-                                    user.last_name?.[0] ||
-                                    "N/A"}
-                              </span>
-                            </div>
-                            <div>
-                              <div className="font-medium">
-                                {(user.first_name && user.last_name
-                                  ? `${user.first_name} ${user.last_name}`
-                                  : user.first_name ||
-                                    user.last_name ||
-                                    "Unknown") || "N/A"}
-                              </div>
-                              <div className="text-sm text-gray-500">
-                                {user.email || "N/A"}
-                              </div>
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            className={roleGroups[user.role as UserRole]?.color}
-                          >
-                            {roleGroups[user.role as UserRole]?.label}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>{user.department || "N/A"}</TableCell>
-                        <TableCell>
-                          <code className="text-xs bg-gray-100 px-2 py-1 rounded">
-                            {user.azureObjectId}
-                          </code>
-                        </TableCell>
-                        <TableCell>
-                          {user.last_login
-                            ? formatLastLogin(user.last_login)
-                            : "N/A"}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center space-x-2">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleViewUser(user.id)}
-                              title="View User"
-                            >
-                              <Eye className="w-4 h-4" />
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleUserSettings(user.id)}
-                              title="User Settings"
-                            >
-                              <Settings className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
         </TabsContent>
       </Tabs>
     </div>
