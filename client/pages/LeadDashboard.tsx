@@ -685,7 +685,7 @@ export default function LeadDashboard() {
                       </p>
                     </div>
                   ) : (
-                    <div className="max-h-64 overflow-y-auto">
+                    <div className="max-h-[calc(100vh-400px)] min-h-[200px] overflow-y-auto">
                       {currentDueFollowUps.map(
                         (followUp: any, index: number) => {
                           const dueDate = new Date(followUp.due_date);
@@ -812,7 +812,7 @@ export default function LeadDashboard() {
                       </p>
                     </div>
                   ) : (
-                    <div className="max-h-64 overflow-y-auto">
+                    <div className="max-h-[calc(100vh-400px)] min-h-[200px] overflow-y-auto">
                       {overdueFollowUps.map((followUp: any, index: number) => {
                         const dueDate = new Date(followUp.due_date);
                         const diffDays = Math.floor(
