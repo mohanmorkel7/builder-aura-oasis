@@ -247,14 +247,20 @@ export function FollowUpModal({
                 onValueChange={(value) =>
                   setFollowUpData((prev) => ({ ...prev, assigned_to: value }))
                 }
+                disabled={usersLoading}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select team member" />
+                  <SelectValue placeholder={usersLoading ? "Loading users..." : "Select team member"} />
                 </SelectTrigger>
                 <SelectContent>
                   {teamMembers.map((member) => (
                     <SelectItem key={member.id} value={member.id.toString()}>
-                      {member.name}
+                      <div className="flex items-center justify-between w-full">
+                        <span>{member.name}</span>
+                        <span className="text-xs text-gray-500 ml-2 capitalize">
+                          {member.role}
+                        </span>
+                      </div>
                     </SelectItem>
                   ))}
                 </SelectContent>
