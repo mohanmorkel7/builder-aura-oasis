@@ -745,7 +745,11 @@ export default function LeadDashboard() {
                                 <div className="text-right text-xs text-gray-500">
                                   Due:{" "}
                                   {followUp.due_date
-                                    ? followUp.due_date.split("T")[0]
+                                    ? (() => {
+                                        const dateStr = followUp.due_date.split("T")[0];
+                                        const [year, month, day] = dateStr.split("-");
+                                        return `${year}-${month}-${day}`;
+                                      })()
                                     : "No date"}
                                 </div>
                               </div>
