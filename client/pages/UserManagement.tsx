@@ -47,7 +47,6 @@ import {
   Cloud,
 } from "lucide-react";
 
-
 export default function UserManagement() {
   const navigate = useNavigate();
   const { data: localUsers = [] } = useUsers();
@@ -177,9 +176,7 @@ export default function UserManagement() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
-          <p className="text-gray-600 mt-1">
-            Manage users and roles
-          </p>
+          <p className="text-gray-600 mt-1">Manage users and roles</p>
         </div>
         <div className="flex items-center space-x-3">
           <Button variant="outline" onClick={handleSyncAzure}>
@@ -216,7 +213,6 @@ export default function UserManagement() {
             </div>
           </CardContent>
         </Card>
-
 
         <Card>
           <CardContent className="p-6">
@@ -497,7 +493,6 @@ export default function UserManagement() {
             ))}
           </div>
         </TabsContent>
-
       </Tabs>
     </div>
   );
