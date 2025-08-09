@@ -128,7 +128,6 @@ export default function Login() {
                 Microsoft SSO
               </Button>
             </div>
-
           </CardContent>
         </Card>
       </div>
