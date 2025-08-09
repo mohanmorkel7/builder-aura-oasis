@@ -92,6 +92,7 @@ export function EnhancedStepItem({
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const { data: users = [], isLoading: usersLoading } = useUsers();
 
   const {
     attributes,
