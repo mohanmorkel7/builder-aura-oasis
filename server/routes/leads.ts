@@ -1589,118 +1589,39 @@ router.post("/steps/:stepId/chats", async (req: Request, res: Response) => {
         dbError.constraint === "lead_chats_step_id_fkey"
       ) {
         console.log(
-          `Foreign key constraint error detected for step ${stepId} - step doesn't exist in database, checking mock data...`,
+          `🔧 Foreign key constraint error detected for step ${stepId}, attempting to fix constraint...`,
         );
 
         try {
-          // First, let's check if the step might exist with a different issue
+          // Fix the constraint by dropping and recreating it with CASCADE
+          console.log("Dropping old constraint...");
+          await pool.query(`
+            ALTER TABLE lead_chats
+            DROP CONSTRAINT IF EXISTS lead_chats_step_id_fkey;
+          `);
+
+          console.log("Creating new constraint with CASCADE...");
+          await pool.query(`
+            ALTER TABLE lead_chats
+            ADD CONSTRAINT lead_chats_step_id_fkey
+            FOREIGN KEY (step_id) REFERENCES lead_steps(id) ON DELETE CASCADE;
+          `);
+
           console.log(
-            `Checking if step ${stepId} exists in lead_steps table...`,
+            `✅ Successfully fixed lead_chats foreign key constraint, retrying chat creation...`,
           );
-          const stepCheckQuery = `SELECT id, name, lead_id FROM lead_steps WHERE id = $1`;
-          const stepCheckResult = await pool.query(stepCheckQuery, [stepId]);
+
+          // Now try to create the chat again after fixing the constraint
+          const chat = await LeadChatRepository.create(chatData);
           console.log(
-            `Step ${stepId} database check result:`,
-            stepCheckResult.rows,
+            `✅ Successfully created chat in database after constraint fix:`,
+            chat,
           );
-
-          // Check if the step exists in mock data
-          const { MockDataService } = await import("../services/mockData");
-          const storedSteps = MockDataService.getStoredLeadSteps();
-          console.log(
-            `Total steps in mock data: ${storedSteps.length}`,
-            storedSteps.map((s) => s.id),
-          );
-          const mockStep = storedSteps.find((s) => s.id === stepId);
-
-          if (mockStep) {
-            console.log(
-              `Found step ${stepId} in mock data, creating it in database...`,
-            );
-
-            // Create the missing step in the database
-            const stepData = {
-              lead_id: mockStep.lead_id,
-              name: mockStep.name,
-              description: mockStep.description,
-              status: mockStep.status,
-              step_order: mockStep.step_order,
-              due_date: mockStep.due_date,
-              estimated_days: mockStep.estimated_days,
-            };
-
-            // Insert the step with the specific ID
-            await pool.query(
-              `
-              INSERT INTO lead_steps (id, lead_id, name, description, status, step_order, due_date, estimated_days, created_at, updated_at)
-              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-            `,
-              [
-                stepId,
-                stepData.lead_id,
-                stepData.name,
-                stepData.description,
-                stepData.status,
-                stepData.step_order,
-                stepData.due_date,
-                stepData.estimated_days,
-                mockStep.created_at,
-                mockStep.updated_at,
-              ],
-            );
-
-            console.log(
-              `Successfully created step ${stepId} in database, now creating chat...`,
-            );
-
-            // Now try to create the chat again
-            const chat = await LeadChatRepository.create(chatData);
-            res.status(201).json(chat);
-            return;
-          } else {
-            console.log(
-              `Step ${stepId} not found in mock data either, creating placeholder step and retrying...`,
-            );
-
-            // Create a placeholder step in the database so the chat can be created
-            try {
-              await pool.query(
-                `
-                INSERT INTO lead_steps (id, lead_id, name, description, status, step_order, due_date, estimated_days, created_at, updated_at)
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-              `,
-                [
-                  stepId,
-                  1, // Default lead_id
-                  `Manual Step ${stepId}`,
-                  "Manually added step",
-                  "pending",
-                  stepId,
-                  null,
-                  1,
-                  new Date().toISOString(),
-                  new Date().toISOString(),
-                ],
-              );
-
-              console.log(
-                `Created placeholder step ${stepId} in database, now creating chat...`,
-              );
-
-              // Now try to create the chat again
-              const chat = await LeadChatRepository.create(chatData);
-              res.status(201).json(chat);
-              return;
-            } catch (createError: any) {
-              console.error(
-                `Failed to create placeholder step ${stepId}:`,
-                createError,
-              );
-              // Fall through to mock data creation
-            }
-          }
+          res.status(201).json(chat);
+          return;
         } catch (fixError: any) {
-          console.error("Failed to create missing step in database:", fixError);
+          console.error("❌ Failed to fix constraint:", fixError);
+          console.log("Falling back to mock data creation...");
           // Fall through to mock data creation
         }
       }
