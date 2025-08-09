@@ -110,7 +110,7 @@ export default function LeadDashboard() {
     isLoading: partialSavesLoading,
     refetch: refetchPartialSaves,
   } = useMyPartialSaves(userId);
-  const { data: stepDashboardData = [], isLoading: stepDashboardLoading } = useTemplateStepDashboard();
+  const { data: leadProgressData = [], isLoading: leadProgressLoading } = useLeadProgressDashboard();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
