@@ -77,7 +77,7 @@ export default function UserManagement() {
 
   // Filter users based on search and filters
   const filteredUsers = allUsers.filter((user) => {
-    const matchesSearch = (user.name?.toLowerCase().includes(searchTerm.toLowerCase()) || false) ||
+    const matchesSearch = ((user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : user.first_name || user.last_name || 'Unknown')?.toLowerCase().includes(searchTerm.toLowerCase()) || false) ||
                          (user.email?.toLowerCase().includes(searchTerm.toLowerCase()) || false);
     const matchesRole = selectedRole === "all" || user.role === selectedRole;
     const matchesDepartment = selectedDepartment === "all" || user.department === selectedDepartment;
@@ -106,7 +106,7 @@ export default function UserManagement() {
     const csv = [
       "Name,Email,Role,Department,Last Login,Status",
       ...filteredUsers.map(user =>
-        `"${user.name || 'N/A'}","${user.email || 'N/A'}","${user.role || 'N/A'}","${user.department || 'N/A'}","${user.lastLogin || 'N/A'}","${user.status || 'N/A'}"`
+        `"${(user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : user.first_name || user.last_name || 'Unknown') || 'N/A'}","${user.email || 'N/A'}","${user.role || 'N/A'}","${user.department || 'N/A'}","${user.lastLogin || 'N/A'}","${user.status || 'N/A'}"`
       )
     ].join("\n");
 
@@ -335,11 +335,11 @@ export default function UserManagement() {
                         <div className="flex items-center space-x-3">
                           <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
                             <span className="text-sm font-medium text-blue-600">
-                              {user.name?.split(' ').map(n => n[0]).join('') || 'N/A'}
+                              {(user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : user.first_name || user.last_name || 'Unknown')?.split(' ').map(n => n[0]).join('') || 'N/A'}
                             </span>
                           </div>
                           <div>
-                            <div className="font-medium">{user.name || 'N/A'}</div>
+                            <div className="font-medium">{(user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : user.first_name || user.last_name || 'Unknown') || 'N/A'}</div>
                             <div className="text-sm text-gray-500">{user.email || 'N/A'}</div>
                           </div>
                         </div>
@@ -387,7 +387,7 @@ export default function UserManagement() {
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => handleDeleteUser(user.id, user.name || 'N/A')}
+                            onClick={() => handleDeleteUser(user.id, (user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : user.first_name || user.last_name || 'Unknown') || 'N/A')}
                             title="Delete User"
                             className="hover:bg-red-50 hover:text-red-600"
                           >
@@ -430,11 +430,11 @@ export default function UserManagement() {
                         <div className="flex items-center space-x-3">
                           <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
                             <span className="text-sm font-medium text-blue-600">
-                              {user.name?.split(' ').map(n => n[0]).join('') || 'N/A'}
+                              {(user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : user.first_name || user.last_name || 'Unknown')?.split(' ').map(n => n[0]).join('') || 'N/A'}
                             </span>
                           </div>
                           <div className="flex-1">
-                            <div className="font-medium">{user.name || 'N/A'}</div>
+                            <div className="font-medium">{(user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : user.first_name || user.last_name || 'Unknown') || 'N/A'}</div>
                             <div className="text-sm text-gray-500">{user.email || 'N/A'}</div>
                             <div className="text-xs text-gray-400">{user.department || 'N/A'}</div>
                           </div>
@@ -484,11 +484,11 @@ export default function UserManagement() {
                         <div className="flex items-center space-x-3">
                           <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
                             <span className="text-sm font-medium text-blue-600">
-                              {user.name?.split(' ').map(n => n[0]).join('') || 'N/A'}
+                              {(user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : user.first_name || user.last_name || 'Unknown')?.split(' ').map(n => n[0]).join('') || 'N/A'}
                             </span>
                           </div>
                           <div>
-                            <div className="font-medium">{user.name || 'N/A'}</div>
+                            <div className="font-medium">{(user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : user.first_name || user.last_name || 'Unknown') || 'N/A'}</div>
                             <div className="text-sm text-gray-500">{user.email || 'N/A'}</div>
                           </div>
                         </div>
