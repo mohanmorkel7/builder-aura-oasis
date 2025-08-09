@@ -1536,7 +1536,10 @@ router.post("/steps/:stepId/chats", async (req: Request, res: Response) => {
     }
 
     try {
-      if (await isDatabaseAvailable()) {
+      const dbAvailable = await isDatabaseAvailable();
+      console.log(`💾 Database available: ${dbAvailable} for step ${stepId} chat creation`);
+
+      if (dbAvailable) {
         // First check if the step exists in lead_steps
         const stepExistsQuery = `SELECT id FROM lead_steps WHERE id = $1`;
         const stepResult = await pool.query(stepExistsQuery, [stepId]);
@@ -1551,18 +1554,21 @@ router.post("/steps/:stepId/chats", async (req: Request, res: Response) => {
             chatData,
           );
           console.log(
-            "Step not found in template_steps, created mock chat:",
+            "Step not found in database, created mock chat:",
             mockChat,
           );
           res.status(201).json(mockChat);
           return;
         }
 
+        console.log(`✅ Step ${stepId} exists in database, creating chat in database...`);
         const chat = await LeadChatRepository.create(chatData);
+        console.log(`✅ Successfully created chat in database:`, chat);
         res.status(201).json(chat);
       } else {
+        console.log(`❌ Database not available, creating mock chat for step ${stepId}`);
         const mockChat = await MockDataService.createStepChat(stepId, chatData);
-        console.log("Database unavailable, created mock chat:", mockChat);
+        console.log("📝 Database unavailable, created mock chat:", mockChat);
         res.status(201).json(mockChat);
       }
     } catch (dbError: any) {
