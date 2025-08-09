@@ -1606,7 +1606,9 @@ router.post("/steps/:stepId/chats", async (req: Request, res: Response) => {
             DELETE FROM lead_chats
             WHERE step_id NOT IN (SELECT id FROM lead_steps);
           `);
-          console.log(`Cleaned up ${cleanupResult.rowCount} orphaned chat records`);
+          console.log(
+            `Cleaned up ${cleanupResult.rowCount} orphaned chat records`,
+          );
 
           console.log("Creating new constraint with CASCADE...");
           await pool.query(`
