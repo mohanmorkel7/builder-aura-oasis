@@ -700,6 +700,12 @@ export default function LeadDashboard() {
                             <div
                               key={followUp.id}
                               className={`p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors ${index === currentDueFollowUps.length - 1 ? "border-b-0" : ""}`}
+                              title={
+                                followUp.description ||
+                                followUp.title ||
+                                followUp.original_message ||
+                                "No description available"
+                              }
                             >
                               <div className="flex items-start justify-between">
                                 <div className="flex-1">
@@ -821,6 +827,12 @@ export default function LeadDashboard() {
                           <div
                             key={followUp.id}
                             className={`p-4 border-b border-gray-100 hover:bg-red-50 transition-colors ${index === overdueFollowUps.length - 1 ? "border-b-0" : ""}`}
+                            title={
+                              followUp.description ||
+                              followUp.title ||
+                              followUp.original_message ||
+                              "No description available"
+                            }
                           >
                             <div className="flex items-start justify-between">
                               <div className="flex-1">
