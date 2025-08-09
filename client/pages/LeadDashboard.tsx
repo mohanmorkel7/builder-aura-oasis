@@ -458,27 +458,46 @@ export default function LeadDashboard() {
 
                                 {/* Current Step Indicator */}
                                 {leadProgress.current_step && (
-                                  <div className="flex flex-col-reverse items-center space-y-1" style={{ flexDirection: "column-reverse" }}>
-                                    <span className="text-xs font-medium text-blue-700">
-                                      {leadProgress.current_step.probability}%
-                                    </span>
+                                  <div className="flex flex-col items-center space-y-1">
                                     <div
-                                      className="bg-blue-500 rounded-b min-h-[4px] w-6 transition-all duration-300 relative group cursor-pointer border-2 border-blue-300"
+                                      className="bg-blue-500 rounded-t min-h-[4px] w-6 transition-all duration-300 relative group cursor-pointer border-2 border-blue-300"
                                       style={{
                                         height: `${(leadProgress.current_step.probability / maxProbability) * (chartHeight - 20)}px`,
                                       }}
                                       title={`${leadProgress.client_name}: ${leadProgress.current_step.name} (Current) - ${leadProgress.current_step.probability}%`}
                                     >
                                       {/* Tooltip */}
-                                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20 pointer-events-none">
+                                      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20 pointer-events-none">
                                         {leadProgress.current_step.name}
                                         <br />
                                         (Current){" "}
                                         {leadProgress.current_step.probability}%
                                       </div>
                                     </div>
+                                    <span className="text-xs font-medium text-blue-700">
+                                      {leadProgress.current_step.probability}%
+                                    </span>
                                   </div>
                                 )}
+                              </div>
+
+                              {/* Lead Name - Now at Bottom */}
+                              <div className="text-center min-w-0 w-24 h-16 flex flex-col justify-start items-center">
+                                <div className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-full mb-1">
+                                  {leadProgress.total_completed_probability}%
+                                </div>
+                                <div
+                                  className="text-sm font-semibold text-gray-800 leading-tight max-w-full break-words"
+                                  title={leadProgress.client_name}
+                                  style={{
+                                    display: "-webkit-box",
+                                    WebkitLineClamp: 2,
+                                    WebkitBoxOrient: "vertical",
+                                    overflow: "hidden",
+                                  }}
+                                >
+                                  {leadProgress.client_name}
+                                </div>
                               </div>
                             </div>
                           ),
