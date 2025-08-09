@@ -743,7 +743,7 @@ export default function LeadDashboard() {
                                   </div>
                                 </div>
                                 <div className="text-right text-xs text-gray-500">
-                                  {formatToIST(followUp.due_date).split(" ")[0]}
+                                  Due: {new Date(followUp.due_date).toISOString().split('T')[0]}
                                 </div>
                               </div>
                             </div>
