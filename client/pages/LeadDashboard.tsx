@@ -334,140 +334,140 @@ export default function LeadDashboard() {
         </Card>
       </div>
 
-      {/* Step-wise Lead Distribution */}
+      {/* Lead-wise Step Progress */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-gray-900">Step-wise Lead Distribution</h2>
-            <p className="text-gray-600 text-sm">Track how many leads are in each template step with probability percentages</p>
+            <h2 className="text-xl font-semibold text-gray-900">Lead Progress Dashboard</h2>
+            <p className="text-gray-600 text-sm">Track each lead's current step and completed step probabilities</p>
           </div>
         </div>
 
-        {stepDashboardLoading ? (
+        {leadsLoading ? (
           <Card>
             <CardContent className="p-6">
-              <div className="text-center">Loading step distribution...</div>
+              <div className="text-center">Loading lead progress...</div>
             </CardContent>
           </Card>
-        ) : stepDashboardData.length === 0 ? (
+        ) : filteredLeads.length === 0 ? (
           <Card>
             <CardContent className="p-6 text-center">
               <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Target className="w-8 h-8 text-gray-400" />
               </div>
               <h3 className="text-lg font-medium text-gray-900 mb-2">
-                No step data available
+                No leads available
               </h3>
               <p className="text-gray-600">
-                Step distribution will appear here once you have leads assigned to templates
+                Lead progress will appear here once you have active leads
               </p>
             </CardContent>
           </Card>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {stepDashboardData.map((stepData: any) => {
-              const maxCount = Math.max(
-                stepData.pending_count,
-                stepData.in_progress_count,
-                stepData.completed_count,
-                stepData.blocked_count
-              );
-              const chartHeight = 80; // Base height for charts
+            {filteredLeads.map((lead: any) => {
+              // Mock data for lead steps - in real implementation, this would come from API
+              const leadSteps = [
+                { name: "Initial Contact", status: "completed", probability: 10 },
+                { name: "Requirement Analysis", status: "completed", probability: 25 },
+                { name: "Proposal Creation", status: "in_progress", probability: 30 },
+                { name: "Contract Review", status: "pending", probability: 20 },
+                { name: "Final Approval", status: "pending", probability: 15 }
+              ];
+
+              const completedSteps = leadSteps.filter(step => step.status === "completed");
+              const currentStep = leadSteps.find(step => step.status === "in_progress") || leadSteps.find(step => step.status === "pending");
+              const maxProbability = Math.max(...completedSteps.map(s => s.probability));
+              const chartHeight = 80;
 
               return (
-                <Card key={`${stepData.template_id}-${stepData.step_id}`} className="overflow-hidden">
+                <Card key={lead.id} className="overflow-hidden hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleLeadClick(lead.id)}>
                   <CardHeader className="pb-2">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <CardTitle className="text-sm font-medium text-gray-900 line-clamp-2">
-                          {stepData.step_name}
+                          {lead.client_name}
                         </CardTitle>
                         <CardDescription className="text-xs mt-1">
-                          {stepData.template_name}
+                          {lead.lead_id}
                         </CardDescription>
                       </div>
                       <Badge
-                        variant="secondary"
-                        className="text-xs bg-blue-100 text-blue-700 ml-2"
+                        className={statusColors[lead.status as keyof typeof statusColors]}
                       >
-                        {stepData.probability_percent}%
+                        {lead.status.replace("-", " ")}
                       </Badge>
+                    </div>
+
+                    {/* Current Step */}
+                    <div className="mt-2">
+                      <div className="text-xs text-gray-500">Current Step:</div>
+                      <div className="flex items-center space-x-2">
+                        <div className="text-sm font-medium text-blue-600">
+                          {currentStep?.name || "No active step"}
+                        </div>
+                        {currentStep && (
+                          <Badge variant="outline" className="text-xs">
+                            {currentStep.probability}%
+                          </Badge>
+                        )}
+                      </div>
                     </div>
                   </CardHeader>
                   <CardContent className="pt-0">
-                    {/* Vertical Bar Chart */}
-                    <div className="flex items-end justify-center space-x-1 mb-3" style={{ height: `${chartHeight}px` }}>
-                      {/* Pending */}
-                      <div className="flex flex-col items-center space-y-1">
-                        <div
-                          className="bg-yellow-400 rounded-t min-h-[4px] w-6 transition-all duration-300"
-                          style={{
-                            height: maxCount > 0 ? `${(stepData.pending_count / maxCount) * (chartHeight - 20)}px` : '4px'
-                          }}
-                        />
-                        <span className="text-xs font-medium text-yellow-700">{stepData.pending_count}</span>
-                      </div>
-
-                      {/* In Progress */}
-                      <div className="flex flex-col items-center space-y-1">
-                        <div
-                          className="bg-blue-500 rounded-t min-h-[4px] w-6 transition-all duration-300"
-                          style={{
-                            height: maxCount > 0 ? `${(stepData.in_progress_count / maxCount) * (chartHeight - 20)}px` : '4px'
-                          }}
-                        />
-                        <span className="text-xs font-medium text-blue-700">{stepData.in_progress_count}</span>
-                      </div>
-
-                      {/* Completed */}
-                      <div className="flex flex-col items-center space-y-1">
-                        <div
-                          className="bg-green-500 rounded-t min-h-[4px] w-6 transition-all duration-300"
-                          style={{
-                            height: maxCount > 0 ? `${(stepData.completed_count / maxCount) * (chartHeight - 20)}px` : '4px'
-                          }}
-                        />
-                        <span className="text-xs font-medium text-green-700">{stepData.completed_count}</span>
-                      </div>
-
-                      {/* Blocked */}
-                      <div className="flex flex-col items-center space-y-1">
-                        <div
-                          className="bg-red-500 rounded-t min-h-[4px] w-6 transition-all duration-300"
-                          style={{
-                            height: maxCount > 0 ? `${(stepData.blocked_count / maxCount) * (chartHeight - 20)}px` : '4px'
-                          }}
-                        />
-                        <span className="text-xs font-medium text-red-700">{stepData.blocked_count}</span>
+                    {/* Completed Steps Progress Chart */}
+                    <div className="mb-3">
+                      <div className="text-xs text-gray-500 mb-2">Completed Steps Progress:</div>
+                      <div className="flex items-end justify-center space-x-1" style={{ height: `${chartHeight}px` }}>
+                        {completedSteps.length === 0 ? (
+                          <div className="flex items-center justify-center h-full text-xs text-gray-400">
+                            No completed steps
+                          </div>
+                        ) : (
+                          completedSteps.map((step, index) => (
+                            <div key={index} className="flex flex-col items-center space-y-1">
+                              <div
+                                className="bg-green-500 rounded-t min-h-[4px] w-8 transition-all duration-300 relative group"
+                                style={{
+                                  height: maxProbability > 0 ? `${(step.probability / maxProbability) * (chartHeight - 20)}px` : '4px'
+                                }}
+                                title={step.name}
+                              >
+                                {/* Tooltip-like label */}
+                                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 px-1 py-0.5 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                                  {step.name}
+                                </div>
+                              </div>
+                              <span className="text-xs font-medium text-green-700">{step.probability}%</span>
+                            </div>
+                          ))
+                        )}
                       </div>
                     </div>
 
-                    {/* Legend */}
-                    <div className="grid grid-cols-2 gap-1 text-xs">
+                    {/* Progress Summary */}
+                    <div className="grid grid-cols-2 gap-2 text-xs">
                       <div className="flex items-center space-x-1">
-                        <div className="w-2 h-2 bg-yellow-400 rounded"></div>
-                        <span className="text-gray-600">Pending</span>
+                        <div className="w-2 h-2 bg-green-500 rounded"></div>
+                        <span className="text-gray-600">Completed: {completedSteps.length}</span>
                       </div>
                       <div className="flex items-center space-x-1">
                         <div className="w-2 h-2 bg-blue-500 rounded"></div>
-                        <span className="text-gray-600">In Progress</span>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <div className="w-2 h-2 bg-green-500 rounded"></div>
-                        <span className="text-gray-600">Completed</span>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <div className="w-2 h-2 bg-red-500 rounded"></div>
-                        <span className="text-gray-600">Blocked</span>
+                        <span className="text-gray-600">Current: {currentStep ? '1' : '0'}</span>
                       </div>
                     </div>
 
-                    {/* Total count */}
+                    {/* Total Probability */}
                     <div className="mt-2 pt-2 border-t border-gray-100">
                       <div className="text-center">
                         <span className="text-sm font-medium text-gray-700">
-                          Total: {stepData.total_leads} leads
+                          Completed: {completedSteps.reduce((sum, step) => sum + step.probability, 0)}%
                         </span>
+                        {lead.probability && (
+                          <span className="text-xs text-gray-500 ml-2">
+                            (Total: {lead.probability}%)
+                          </span>
+                        )}
                       </div>
                     </div>
                   </CardContent>
