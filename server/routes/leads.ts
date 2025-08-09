@@ -136,6 +136,187 @@ router.get("/stats", async (req: Request, res: Response) => {
   }
 });
 
+// Get lead progress dashboard data
+router.get("/progress-dashboard", async (req: Request, res: Response) => {
+  try {
+    console.log("Lead progress dashboard endpoint called");
+    let progressData = [];
+
+    try {
+      if (await isDatabaseAvailable()) {
+        console.log("Database is available, querying lead progress data...");
+
+        // Get all leads with their current step progress
+        const leadsQuery = `
+          SELECT DISTINCT
+            l.id as lead_id,
+            l.client_name,
+            l.lead_id as lead_reference,
+            l.status as lead_status,
+            l.probability as lead_probability,
+            l.template_id,
+            t.name as template_name
+          FROM leads l
+          LEFT JOIN onboarding_templates t ON l.template_id = t.id
+          WHERE l.client_name != 'PARTIAL_SAVE_IN_PROGRESS'
+            AND (l.is_partial IS NULL OR l.is_partial = false)
+          ORDER BY l.id
+        `;
+
+        const leadsResult = await pool.query(leadsQuery);
+        console.log(
+          `Found ${leadsResult.rows.length} leads for progress tracking`,
+        );
+
+        for (const lead of leadsResult.rows) {
+          // Get all steps for this lead with their status and probability
+          const stepsQuery = `
+            SELECT
+              ls.id,
+              ls.name,
+              ls.status,
+              ls.step_order,
+              COALESCE(ts.probability_percent, 0) as probability_percent
+            FROM lead_steps ls
+            LEFT JOIN template_steps ts ON ls.name = ts.name
+              AND ts.template_id = $1
+            WHERE ls.lead_id = $2
+            ORDER BY ls.step_order
+          `;
+
+          const stepsResult = await pool.query(stepsQuery, [
+            lead.template_id,
+            lead.lead_id,
+          ]);
+
+          const steps = stepsResult.rows;
+          const completedSteps = steps.filter((s) => s.status === "completed");
+          const currentStep =
+            steps.find((s) => s.status === "in_progress") ||
+            steps.find((s) => s.status === "pending");
+
+          progressData.push({
+            lead_id: lead.lead_id,
+            client_name: lead.client_name,
+            lead_reference: lead.lead_reference,
+            lead_status: lead.lead_status,
+            lead_probability: lead.lead_probability,
+            template_name: lead.template_name,
+            current_step: currentStep
+              ? {
+                  name: currentStep.name,
+                  status: currentStep.status,
+                  probability: currentStep.probability_percent,
+                }
+              : null,
+            completed_steps: completedSteps.map((s) => ({
+              name: s.name,
+              status: s.status,
+              probability: s.probability_percent,
+            })),
+            total_completed_probability: completedSteps.reduce(
+              (sum, s) => sum + (s.probability_percent || 0),
+              0,
+            ),
+            total_steps: steps.length,
+            completed_count: completedSteps.length,
+          });
+        }
+      } else {
+        throw new Error("Database not available");
+      }
+    } catch (dbError) {
+      console.log(
+        "Database error, falling back to mock data:",
+        dbError.message,
+      );
+
+      // Mock data for demonstration
+      progressData = [
+        {
+          lead_id: 1,
+          client_name: "TechCorp Solutions",
+          lead_reference: "LEAD-001",
+          lead_status: "in-progress",
+          lead_probability: 65,
+          template_name: "Standard Client Onboarding",
+          current_step: {
+            name: "Proposal Creation",
+            status: "in_progress",
+            probability: 30,
+          },
+          completed_steps: [
+            { name: "Initial Contact", status: "completed", probability: 10 },
+            {
+              name: "Requirement Analysis",
+              status: "completed",
+              probability: 25,
+            },
+          ],
+          total_completed_probability: 35,
+          total_steps: 5,
+          completed_count: 2,
+        },
+        {
+          lead_id: 2,
+          client_name: "InnovateX Ltd",
+          lead_reference: "LEAD-002",
+          lead_status: "in-progress",
+          lead_probability: 45,
+          template_name: "Enterprise Onboarding",
+          current_step: {
+            name: "Contract Review",
+            status: "in_progress",
+            probability: 20,
+          },
+          completed_steps: [
+            { name: "Initial Contact", status: "completed", probability: 10 },
+            {
+              name: "Technical Assessment",
+              status: "completed",
+              probability: 15,
+            },
+          ],
+          total_completed_probability: 25,
+          total_steps: 6,
+          completed_count: 2,
+        },
+        {
+          lead_id: 3,
+          client_name: "StartupFlow",
+          lead_reference: "LEAD-003",
+          lead_status: "completed",
+          lead_probability: 100,
+          template_name: "Quick Start Package",
+          current_step: null,
+          completed_steps: [
+            { name: "Initial Contact", status: "completed", probability: 10 },
+            {
+              name: "Requirement Analysis",
+              status: "completed",
+              probability: 30,
+            },
+            { name: "Proposal Creation", status: "completed", probability: 35 },
+            { name: "Final Approval", status: "completed", probability: 25 },
+          ],
+          total_completed_probability: 100,
+          total_steps: 4,
+          completed_count: 4,
+        },
+      ];
+    }
+
+    console.log(`Returning ${progressData.length} lead progress records`);
+    res.json(progressData);
+  } catch (error) {
+    console.error("Error in lead progress dashboard:", error);
+    res.status(500).json({
+      error: "Failed to fetch lead progress data",
+      details: error.message,
+    });
+  }
+});
+
 // Get template step dashboard data
 router.get("/template-step-dashboard", async (req: Request, res: Response) => {
   try {
