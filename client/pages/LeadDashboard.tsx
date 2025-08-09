@@ -113,6 +113,10 @@ export default function LeadDashboard() {
   } = useMyPartialSaves(userId);
   const { data: leadProgressData = [], isLoading: leadProgressLoading } =
     useLeadProgressDashboard();
+  const { data: followUpsData = [], isLoading: followUpsLoading } = useFollowUps({
+    userId: user?.id,
+    userRole: "all"
+  });
 
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
