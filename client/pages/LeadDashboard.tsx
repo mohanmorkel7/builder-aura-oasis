@@ -840,12 +840,7 @@ export default function LeadDashboard() {
                                 </div>
                               </div>
                               <div className="text-right text-xs text-red-600 font-medium">
-                                Due:{" "}
-                                {
-                                  new Date(followUp.due_date)
-                                    .toISOString()
-                                    .split("T")[0]
-                                }
+                                Due: {followUp.due_date ? followUp.due_date.split('T')[0] : 'No date'}
                               </div>
                             </div>
                           </div>
