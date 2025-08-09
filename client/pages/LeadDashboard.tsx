@@ -749,6 +749,10 @@ export default function LeadDashboard() {
                                       ? followUp.due_date.split("T")[0]
                                       : followUp.due_date
                                     : "No date"}
+                                  <br />
+                                  <span className="text-red-500 text-xs">
+                                    Raw: {followUp.due_date}
+                                  </span>
                                 </div>
                               </div>
                             </div>
