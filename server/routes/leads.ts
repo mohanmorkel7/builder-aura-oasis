@@ -1581,9 +1581,16 @@ router.post("/steps/:stepId/chats", async (req: Request, res: Response) => {
         );
 
         try {
+          // First, let's check if the step might exist with a different issue
+          console.log(`Checking if step ${stepId} exists in lead_steps table...`);
+          const stepCheckQuery = `SELECT id, name, lead_id FROM lead_steps WHERE id = $1`;
+          const stepCheckResult = await pool.query(stepCheckQuery, [stepId]);
+          console.log(`Step ${stepId} database check result:`, stepCheckResult.rows);
+
           // Check if the step exists in mock data
           const { MockDataService } = await import("../services/mockData");
           const storedSteps = MockDataService.getStoredLeadSteps();
+          console.log(`Total steps in mock data: ${storedSteps.length}`, storedSteps.map(s => s.id));
           const mockStep = storedSteps.find((s) => s.id === stepId);
 
           if (mockStep) {
