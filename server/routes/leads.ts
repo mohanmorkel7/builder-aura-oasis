@@ -1571,38 +1571,62 @@ router.post("/steps/:stepId/chats", async (req: Request, res: Response) => {
         dbError.message,
       );
 
-      // Check if it's a foreign key constraint error for step_id and fix it
+      // Check if it's a foreign key constraint error for step_id
       if (
         dbError.code === "23503" &&
         dbError.constraint === "lead_chats_step_id_fkey"
       ) {
         console.log(
-          `Foreign key constraint error detected for step ${stepId}, attempting to fix constraint and retry...`,
+          `Foreign key constraint error detected for step ${stepId} - step doesn't exist in database, checking mock data...`,
         );
 
         try {
-          // Drop the existing constraint and recreate it with ON DELETE CASCADE
-          await pool.query(`
-            ALTER TABLE lead_chats
-            DROP CONSTRAINT IF EXISTS lead_chats_step_id_fkey;
-          `);
+          // Check if the step exists in mock data
+          const { MockDataService } = await import("../services/mockData");
+          const mockStep = MockDataService.leadSteps.find(s => s.id === stepId);
 
-          await pool.query(`
-            ALTER TABLE lead_chats
-            ADD CONSTRAINT lead_chats_step_id_fkey
-            FOREIGN KEY (step_id) REFERENCES lead_steps(id) ON DELETE CASCADE;
-          `);
+          if (mockStep) {
+            console.log(`Found step ${stepId} in mock data, creating it in database...`);
 
-          console.log(
-            "Successfully fixed lead_chats foreign key constraint, retrying chat creation...",
-          );
+            // Create the missing step in the database
+            const stepData = {
+              lead_id: mockStep.lead_id,
+              name: mockStep.name,
+              description: mockStep.description,
+              status: mockStep.status,
+              step_order: mockStep.step_order,
+              due_date: mockStep.due_date,
+              estimated_days: mockStep.estimated_days,
+            };
 
-          // Try to create the chat again after fixing the constraint
-          const chat = await LeadChatRepository.create(chatData);
-          res.status(201).json(chat);
-          return;
+            // Insert the step with the specific ID
+            await pool.query(`
+              INSERT INTO lead_steps (id, lead_id, name, description, status, step_order, due_date, estimated_days, created_at, updated_at)
+              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+            `, [
+              stepId,
+              stepData.lead_id,
+              stepData.name,
+              stepData.description,
+              stepData.status,
+              stepData.step_order,
+              stepData.due_date,
+              stepData.estimated_days,
+              mockStep.created_at,
+              mockStep.updated_at
+            ]);
+
+            console.log(`Successfully created step ${stepId} in database, now creating chat...`);
+
+            // Now try to create the chat again
+            const chat = await LeadChatRepository.create(chatData);
+            res.status(201).json(chat);
+            return;
+          } else {
+            console.log(`Step ${stepId} not found in mock data either, using mock chat creation`);
+          }
         } catch (fixError: any) {
-          console.error("Failed to fix constraint:", fixError);
+          console.error("Failed to create missing step in database:", fixError);
           // Fall through to mock data creation
         }
       }
