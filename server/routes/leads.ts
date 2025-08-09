@@ -1583,7 +1583,8 @@ router.post("/steps/:stepId/chats", async (req: Request, res: Response) => {
         try {
           // Check if the step exists in mock data
           const { MockDataService } = await import("../services/mockData");
-          const mockStep = MockDataService.leadSteps.find(s => s.id === stepId);
+          const storedSteps = MockDataService.getStoredLeadSteps();
+          const mockStep = storedSteps.find(s => s.id === stepId);
 
           if (mockStep) {
             console.log(`Found step ${stepId} in mock data, creating it in database...`);
