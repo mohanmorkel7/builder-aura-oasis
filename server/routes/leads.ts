@@ -1639,8 +1639,37 @@ router.post("/steps/:stepId/chats", async (req: Request, res: Response) => {
             return;
           } else {
             console.log(
-              `Step ${stepId} not found in mock data either, using mock chat creation`,
+              `Step ${stepId} not found in mock data either, creating placeholder step and retrying...`,
             );
+
+            // Create a placeholder step in the database so the chat can be created
+            try {
+              await pool.query(`
+                INSERT INTO lead_steps (id, lead_id, name, description, status, step_order, due_date, estimated_days, created_at, updated_at)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+              `, [
+                stepId,
+                1, // Default lead_id
+                `Manual Step ${stepId}`,
+                'Manually added step',
+                'pending',
+                stepId,
+                null,
+                1,
+                new Date().toISOString(),
+                new Date().toISOString()
+              ]);
+
+              console.log(`Created placeholder step ${stepId} in database, now creating chat...`);
+
+              // Now try to create the chat again
+              const chat = await LeadChatRepository.create(chatData);
+              res.status(201).json(chat);
+              return;
+            } catch (createError: any) {
+              console.error(`Failed to create placeholder step ${stepId}:`, createError);
+              // Fall through to mock data creation
+            }
           }
         } catch (fixError: any) {
           console.error("Failed to create missing step in database:", fixError);
