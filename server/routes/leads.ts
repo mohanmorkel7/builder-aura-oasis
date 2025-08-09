@@ -1537,7 +1537,9 @@ router.post("/steps/:stepId/chats", async (req: Request, res: Response) => {
 
     try {
       const dbAvailable = await isDatabaseAvailable();
-      console.log(`💾 Database available: ${dbAvailable} for step ${stepId} chat creation`);
+      console.log(
+        `💾 Database available: ${dbAvailable} for step ${stepId} chat creation`,
+      );
 
       if (dbAvailable) {
         // First check if the step exists in lead_steps
@@ -1561,12 +1563,16 @@ router.post("/steps/:stepId/chats", async (req: Request, res: Response) => {
           return;
         }
 
-        console.log(`✅ Step ${stepId} exists in database, creating chat in database...`);
+        console.log(
+          `✅ Step ${stepId} exists in database, creating chat in database...`,
+        );
         const chat = await LeadChatRepository.create(chatData);
         console.log(`✅ Successfully created chat in database:`, chat);
         res.status(201).json(chat);
       } else {
-        console.log(`❌ Database not available, creating mock chat for step ${stepId}`);
+        console.log(
+          `❌ Database not available, creating mock chat for step ${stepId}`,
+        );
         const mockChat = await MockDataService.createStepChat(stepId, chatData);
         console.log("📝 Database unavailable, created mock chat:", mockChat);
         res.status(201).json(mockChat);
@@ -1588,15 +1594,23 @@ router.post("/steps/:stepId/chats", async (req: Request, res: Response) => {
 
         try {
           // First, let's check if the step might exist with a different issue
-          console.log(`Checking if step ${stepId} exists in lead_steps table...`);
+          console.log(
+            `Checking if step ${stepId} exists in lead_steps table...`,
+          );
           const stepCheckQuery = `SELECT id, name, lead_id FROM lead_steps WHERE id = $1`;
           const stepCheckResult = await pool.query(stepCheckQuery, [stepId]);
-          console.log(`Step ${stepId} database check result:`, stepCheckResult.rows);
+          console.log(
+            `Step ${stepId} database check result:`,
+            stepCheckResult.rows,
+          );
 
           // Check if the step exists in mock data
           const { MockDataService } = await import("../services/mockData");
           const storedSteps = MockDataService.getStoredLeadSteps();
-          console.log(`Total steps in mock data: ${storedSteps.length}`, storedSteps.map(s => s.id));
+          console.log(
+            `Total steps in mock data: ${storedSteps.length}`,
+            storedSteps.map((s) => s.id),
+          );
           const mockStep = storedSteps.find((s) => s.id === stepId);
 
           if (mockStep) {
@@ -1650,30 +1664,38 @@ router.post("/steps/:stepId/chats", async (req: Request, res: Response) => {
 
             // Create a placeholder step in the database so the chat can be created
             try {
-              await pool.query(`
+              await pool.query(
+                `
                 INSERT INTO lead_steps (id, lead_id, name, description, status, step_order, due_date, estimated_days, created_at, updated_at)
                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-              `, [
-                stepId,
-                1, // Default lead_id
-                `Manual Step ${stepId}`,
-                'Manually added step',
-                'pending',
-                stepId,
-                null,
-                1,
-                new Date().toISOString(),
-                new Date().toISOString()
-              ]);
+              `,
+                [
+                  stepId,
+                  1, // Default lead_id
+                  `Manual Step ${stepId}`,
+                  "Manually added step",
+                  "pending",
+                  stepId,
+                  null,
+                  1,
+                  new Date().toISOString(),
+                  new Date().toISOString(),
+                ],
+              );
 
-              console.log(`Created placeholder step ${stepId} in database, now creating chat...`);
+              console.log(
+                `Created placeholder step ${stepId} in database, now creating chat...`,
+              );
 
               // Now try to create the chat again
               const chat = await LeadChatRepository.create(chatData);
               res.status(201).json(chat);
               return;
             } catch (createError: any) {
-              console.error(`Failed to create placeholder step ${stepId}:`, createError);
+              console.error(
+                `Failed to create placeholder step ${stepId}:`,
+                createError,
+              );
               // Fall through to mock data creation
             }
           }
