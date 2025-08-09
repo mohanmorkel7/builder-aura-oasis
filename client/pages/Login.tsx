@@ -128,51 +128,6 @@ export default function Login() {
                 Microsoft SSO
               </Button>
             </div>
-
-            <div className="text-xs text-gray-500 mt-4 p-3 bg-gray-50 rounded border">
-              <p className="font-medium mb-1">Demo Credentials:</p>
-              <p>• Admin: admin@banani.com / password</p>
-              <p>• Sales: sales@banani.com / password</p>
-              <p>• Product: product@banani.com / password</p>
-
-              {/* Debug login test */}
-              <div className="mt-3 pt-2 border-t border-gray-200">
-                <p className="text-blue-600 font-medium mb-2">Debug Login Test:</p>
-                <button
-                  type="button"
-                  onClick={async () => {
-                    try {
-                      console.log("Testing direct login API call...");
-                      const response = await fetch("/api/users/auth/login", {
-                        method: "POST",
-                        headers: {
-                          "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                          email: "admin@banani.com",
-                          password: "password"
-                        })
-                      });
-
-                      const result = await response.json();
-                      console.log("Direct API response:", result);
-
-                      if (response.ok) {
-                        alert("Direct API test successful! " + JSON.stringify(result));
-                      } else {
-                        alert("Direct API test failed: " + JSON.stringify(result));
-                      }
-                    } catch (error) {
-                      console.error("Direct API test error:", error);
-                      alert("Direct API test error: " + error.message);
-                    }
-                  }}
-                  className="px-2 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
-                >
-                  Test Direct API Call
-                </button>
-              </div>
-            </div>
           </CardContent>
         </Card>
       </div>
