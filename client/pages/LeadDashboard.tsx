@@ -407,24 +407,30 @@ export default function LeadDashboard() {
                         All Leads Progress ({leadProgressData.length} leads)
                       </div>
                       <div
-                        className="flex items-end justify-center space-x-2 overflow-x-auto"
-                        style={{ minHeight: `${chartHeight + 40}px` }}
+                        className="flex items-end justify-center space-x-3 overflow-x-auto"
+                        style={{ minHeight: `${chartHeight + 80}px` }}
                       >
                         {leadProgressData.map(
                           (leadProgress: any, leadIndex: number) => (
                             <div
                               key={leadProgress.lead_id}
-                              className="flex flex-col items-center space-y-2 min-w-0"
+                              className="flex flex-col items-center space-y-3 min-w-0"
                             >
-                              {/* Lead Name */}
-                              <div className="text-xs font-medium text-gray-600 text-center min-w-0 max-w-20">
+                              {/* Lead Name - Increased Height */}
+                              <div className="text-center min-w-0 w-24 h-16 flex flex-col justify-start items-center">
                                 <div
-                                  className="truncate"
+                                  className="text-sm font-semibold text-gray-800 leading-tight mb-1 max-w-full break-words"
                                   title={leadProgress.client_name}
+                                  style={{
+                                    display: '-webkit-box',
+                                    WebkitLineClamp: 2,
+                                    WebkitBoxOrient: 'vertical',
+                                    overflow: 'hidden'
+                                  }}
                                 >
                                   {leadProgress.client_name}
                                 </div>
-                                <div className="text-xs text-gray-400">
+                                <div className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
                                   {leadProgress.total_completed_probability}%
                                 </div>
                               </div>
