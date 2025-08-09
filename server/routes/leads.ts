@@ -1245,6 +1245,12 @@ router.post("/:leadId/steps", async (req: Request, res: Response) => {
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
+
+      // Store in MockDataService for proper deletion support and chat compatibility
+      const { MockDataService } = await import("../services/mockData");
+      MockDataService.addLeadStep(mockStep);
+
+      console.log("Database error, created mock step with ID:", mockStep.id);
       res.status(201).json(mockStep);
     }
   } catch (error) {
