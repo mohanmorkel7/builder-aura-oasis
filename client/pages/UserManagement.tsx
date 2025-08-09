@@ -106,7 +106,7 @@ export default function UserManagement() {
     const csv = [
       "Name,Email,Role,Department,Last Login,Status",
       ...filteredUsers.map(user =>
-        `"${(user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : user.first_name || user.last_name || 'Unknown') || 'N/A'}","${user.email || 'N/A'}","${user.role || 'N/A'}","${user.department || 'N/A'}","${user.lastLogin || 'N/A'}","${user.status || 'N/A'}"`
+        `"${(user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : user.first_name || user.last_name || 'Unknown') || 'N/A'}","${user.email || 'N/A'}","${user.role || 'N/A'}","${user.department || 'N/A'}","${user.last_login || 'N/A'}","${user.status || 'N/A'}"`
       )
     ].join("\n");
 
@@ -352,7 +352,7 @@ export default function UserManagement() {
                         </Badge>
                       </TableCell>
                       <TableCell>{user.department || 'N/A'}</TableCell>
-                      <TableCell>{user.lastLogin ? formatLastLogin(user.lastLogin) : 'N/A'}</TableCell>
+                      <TableCell>{user.last_login ? formatLastLogin(user.last_login) : 'N/A'}</TableCell>
                       <TableCell>
                         <Badge className={getUserStatusColor(user.status)}>
                           {user.status}
@@ -510,7 +510,7 @@ export default function UserManagement() {
                           {user.azureObjectId}
                         </code>
                       </TableCell>
-                      <TableCell>{user.lastLogin ? formatLastLogin(user.lastLogin) : 'N/A'}</TableCell>
+                      <TableCell>{user.last_login ? formatLastLogin(user.last_login) : 'N/A'}</TableCell>
                       <TableCell>
                         <div className="flex items-center space-x-2">
                           <Button
