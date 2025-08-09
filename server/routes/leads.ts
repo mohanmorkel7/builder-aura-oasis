@@ -1613,7 +1613,10 @@ router.post("/steps/:stepId/chats", async (req: Request, res: Response) => {
 
           // Now try to create the chat again after fixing the constraint
           const chat = await LeadChatRepository.create(chatData);
-          console.log(`✅ Successfully created chat in database after constraint fix:`, chat);
+          console.log(
+            `✅ Successfully created chat in database after constraint fix:`,
+            chat,
+          );
           res.status(201).json(chat);
           return;
         } catch (fixError: any) {
