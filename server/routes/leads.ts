@@ -1559,20 +1559,46 @@ router.post("/steps/:stepId/chats", async (req: Request, res: Response) => {
         console.log("Database unavailable, created mock chat:", mockChat);
         res.status(201).json(mockChat);
       }
-    } catch (dbError) {
+    } catch (dbError: any) {
       console.log(
         "Database error, returning mock chat response:",
         dbError.message,
       );
 
-      // Check if it's a foreign key constraint error for step_id
+      // Check if it's a foreign key constraint error for step_id and fix it
       if (
-        dbError.message &&
-        dbError.message.includes("lead_chats_step_id_fkey")
+        dbError.code === "23503" &&
+        dbError.constraint === "lead_chats_step_id_fkey"
       ) {
         console.log(
-          `Foreign key constraint failed for step ${stepId}, using mock data`,
+          `Foreign key constraint error detected for step ${stepId}, attempting to fix constraint and retry...`,
         );
+
+        try {
+          // Drop the existing constraint and recreate it with ON DELETE CASCADE
+          await pool.query(`
+            ALTER TABLE lead_chats
+            DROP CONSTRAINT IF EXISTS lead_chats_step_id_fkey;
+          `);
+
+          await pool.query(`
+            ALTER TABLE lead_chats
+            ADD CONSTRAINT lead_chats_step_id_fkey
+            FOREIGN KEY (step_id) REFERENCES lead_steps(id) ON DELETE CASCADE;
+          `);
+
+          console.log(
+            "Successfully fixed lead_chats foreign key constraint, retrying chat creation...",
+          );
+
+          // Try to create the chat again after fixing the constraint
+          const chat = await LeadChatRepository.create(chatData);
+          res.status(201).json(chat);
+          return;
+        } catch (fixError: any) {
+          console.error("Failed to fix constraint:", fixError);
+          // Fall through to mock data creation
+        }
       }
 
       const mockChat = await MockDataService.createStepChat(stepId, chatData);
