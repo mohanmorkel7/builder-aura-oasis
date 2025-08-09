@@ -422,10 +422,10 @@ export default function LeadDashboard() {
                                   className="text-sm font-semibold text-gray-800 leading-tight mb-1 max-w-full break-words"
                                   title={leadProgress.client_name}
                                   style={{
-                                    display: '-webkit-box',
+                                    display: "-webkit-box",
                                     WebkitLineClamp: 2,
-                                    WebkitBoxOrient: 'vertical',
-                                    overflow: 'hidden'
+                                    WebkitBoxOrient: "vertical",
+                                    overflow: "hidden",
                                   }}
                                 >
                                   {leadProgress.client_name}
