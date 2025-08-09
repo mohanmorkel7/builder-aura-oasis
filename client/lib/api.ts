@@ -537,6 +537,10 @@ export class ApiClient {
     return this.request("/leads/template-step-dashboard");
   }
 
+  async getLeadProgressDashboard() {
+    return this.request("/leads/progress-dashboard");
+  }
+
   async getLeadsForTemplateStep(
     templateId: number,
     stepId: number,
