@@ -1600,6 +1600,14 @@ router.post("/steps/:stepId/chats", async (req: Request, res: Response) => {
             DROP CONSTRAINT IF EXISTS lead_chats_step_id_fkey;
           `);
 
+          console.log("Cleaning up orphaned chat records...");
+          // Remove any chat records that reference non-existent steps
+          const cleanupResult = await pool.query(`
+            DELETE FROM lead_chats
+            WHERE step_id NOT IN (SELECT id FROM lead_steps);
+          `);
+          console.log(`Cleaned up ${cleanupResult.rowCount} orphaned chat records`);
+
           console.log("Creating new constraint with CASCADE...");
           await pool.query(`
             ALTER TABLE lead_chats
