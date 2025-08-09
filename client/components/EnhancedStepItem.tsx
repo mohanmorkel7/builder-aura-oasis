@@ -859,12 +859,13 @@ export function EnhancedStepItem({
                                 <Select
                                   value={followUpAssignTo}
                                   onValueChange={setFollowUpAssignTo}
+                                  disabled={usersLoading}
                                 >
                                   <SelectTrigger
                                     id="followup-assign"
                                     className="mt-1"
                                   >
-                                    <SelectValue placeholder="Select assignee" />
+                                    <SelectValue placeholder={usersLoading ? "Loading users..." : "Select assignee"} />
                                   </SelectTrigger>
                                   <SelectContent>
                                     {teamMembers.map((member) => (
