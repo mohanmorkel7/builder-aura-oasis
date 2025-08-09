@@ -22,6 +22,7 @@ import { Calendar, Clock, User, MessageSquare } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api";
+import { useUsers } from "@/hooks/useApi";
 
 interface FollowUpModalProps {
   isOpen: boolean;
