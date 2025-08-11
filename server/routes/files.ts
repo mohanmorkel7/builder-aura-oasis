@@ -114,24 +114,24 @@ router.post("/upload", (req: Request, res: Response) => {
     if (err) {
       console.error("Multer upload error:", err);
 
-      if (err.code === 'LIMIT_FILE_SIZE') {
+      if (err.code === "LIMIT_FILE_SIZE") {
         return res.status(413).json({
           error: "File too large",
           message: "File size exceeds the maximum limit of 50MB",
-          maxSize: "50MB"
+          maxSize: "50MB",
         });
       }
 
-      if (err.code === 'LIMIT_FILE_COUNT') {
+      if (err.code === "LIMIT_FILE_COUNT") {
         return res.status(400).json({
           error: "Too many files",
-          message: "Maximum number of files exceeded"
+          message: "Maximum number of files exceeded",
         });
       }
 
       return res.status(500).json({
         error: "Upload failed",
-        message: err.message || "Unknown upload error"
+        message: err.message || "Unknown upload error",
       });
     }
 

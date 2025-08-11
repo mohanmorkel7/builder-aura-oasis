@@ -46,36 +46,42 @@ export function createServer() {
   app.use(cors());
 
   // Handle large file uploads with proper error handling
-  app.use(express.json({
-    limit: "50mb",
-    extended: true,
-    parameterLimit: 50000,
-    verify: (req, res, buf) => {
-      // Add raw body for debugging
-      req.rawBody = buf;
-    }
-  }));
+  app.use(
+    express.json({
+      limit: "50mb",
+      extended: true,
+      parameterLimit: 50000,
+      verify: (req, res, buf) => {
+        // Add raw body for debugging
+        req.rawBody = buf;
+      },
+    }),
+  );
 
-  app.use(express.urlencoded({
-    extended: true,
-    limit: "50mb",
-    parameterLimit: 50000
-  }));
+  app.use(
+    express.urlencoded({
+      extended: true,
+      limit: "50mb",
+      parameterLimit: 50000,
+    }),
+  );
 
   // Add raw body parser for file uploads
-  app.use(express.raw({
-    limit: "50mb",
-    type: ["application/octet-stream", "multipart/form-data"]
-  }));
+  app.use(
+    express.raw({
+      limit: "50mb",
+      type: ["application/octet-stream", "multipart/form-data"],
+    }),
+  );
 
   // Error handling middleware for payload too large
   app.use((error: any, req: any, res: any, next: any) => {
-    if (error && error.type === 'entity.too.large') {
-      console.error('File too large error:', error);
+    if (error && error.type === "entity.too.large") {
+      console.error("File too large error:", error);
       return res.status(413).json({
-        error: 'File too large',
-        message: 'The uploaded file exceeds the maximum size limit of 50MB',
-        maxSize: '50MB'
+        error: "File too large",
+        message: "The uploaded file exceeds the maximum size limit of 50MB",
+        maxSize: "50MB",
       });
     }
     next(error);
@@ -84,13 +90,19 @@ export function createServer() {
   // Add headers for large upload support
   app.use((req, res, next) => {
     // Allow large requests
-    res.setHeader('Access-Control-Max-Age', '86400');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
+    res.setHeader("Access-Control-Max-Age", "86400");
+    res.setHeader(
+      "Access-Control-Allow-Headers",
+      "Content-Type, Authorization, Content-Length, X-Requested-With",
+    );
 
     // Set keep-alive for large uploads
-    if (req.headers['content-length'] && parseInt(req.headers['content-length']) > 1024 * 1024) {
-      res.setHeader('Connection', 'keep-alive');
-      res.setHeader('Keep-Alive', 'timeout=120, max=1000');
+    if (
+      req.headers["content-length"] &&
+      parseInt(req.headers["content-length"]) > 1024 * 1024
+    ) {
+      res.setHeader("Connection", "keep-alive");
+      res.setHeader("Keep-Alive", "timeout=120, max=1000");
     }
 
     next();
@@ -98,8 +110,10 @@ export function createServer() {
 
   // Debug middleware to log all requests
   app.use((req, res, next) => {
-    const contentLength = req.headers['content-length'] || 0;
-    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} (${contentLength} bytes)`);
+    const contentLength = req.headers["content-length"] || 0;
+    console.log(
+      `[${new Date().toISOString()}] ${req.method} ${req.url} (${contentLength} bytes)`,
+    );
     next();
   });
 

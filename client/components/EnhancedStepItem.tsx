@@ -218,17 +218,24 @@ export function EnhancedStepItem({
 
     // Check file size limits (50MB per file)
     const maxSizeBytes = 50 * 1024 * 1024; // 50MB
-    const oversizedFiles = Array.from(files).filter(file => file.size > maxSizeBytes);
+    const oversizedFiles = Array.from(files).filter(
+      (file) => file.size > maxSizeBytes,
+    );
 
     if (oversizedFiles.length > 0) {
-      alert(`The following files are too large (max 50MB): ${oversizedFiles.map(f => f.name).join(', ')}`);
+      alert(
+        `The following files are too large (max 50MB): ${oversizedFiles.map((f) => f.name).join(", ")}`,
+      );
       event.target.value = "";
       return;
     }
 
     try {
       // First, upload the actual files to the server
-      console.log("Uploading files to server...", Array.from(files).map(f => ({name: f.name, size: f.size})));
+      console.log(
+        "Uploading files to server...",
+        Array.from(files).map((f) => ({ name: f.name, size: f.size })),
+      );
       const uploadResult = await apiClient.uploadFiles(files);
 
       if (!uploadResult.success) {
@@ -261,9 +268,11 @@ export function EnhancedStepItem({
       let errorMessage = "Failed to upload files. Please try again.";
 
       if (error.message && error.message.includes("413")) {
-        errorMessage = "File is too large. Please choose a smaller file (max 50MB).";
+        errorMessage =
+          "File is too large. Please choose a smaller file (max 50MB).";
       } else if (error.message && error.message.includes("Network")) {
-        errorMessage = "Network error. Please check your connection and try again.";
+        errorMessage =
+          "Network error. Please check your connection and try again.";
       } else if (error.message) {
         errorMessage = `Upload failed: ${error.message}`;
       }
