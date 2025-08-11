@@ -33,11 +33,12 @@ export const formatToISTDateTime = (
 
   const defaultOptions: Intl.DateTimeFormatOptions = {
     timeZone: IST_TIMEZONE,
-    year: "numeric",
-    month: "short",
     day: "numeric",
-    hour: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "numeric",
     minute: "2-digit",
+    hour12: true,
     ...options,
   };
 
