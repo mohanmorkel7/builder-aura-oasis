@@ -58,11 +58,14 @@ export const formatToISTDateTime = (
     const istDate = new Date(dateObj.getTime() + istOffset);
 
     const day = istDate.getUTCDate();
-    const month = istDate.toLocaleString('en-IN', { month: 'short', timeZone: 'UTC' });
+    const month = istDate.toLocaleString("en-IN", {
+      month: "short",
+      timeZone: "UTC",
+    });
     const year = istDate.getUTCFullYear();
     let hours = istDate.getUTCHours();
-    const minutes = istDate.getUTCMinutes().toString().padStart(2, '0');
-    const ampm = hours >= 12 ? 'pm' : 'am';
+    const minutes = istDate.getUTCMinutes().toString().padStart(2, "0");
+    const ampm = hours >= 12 ? "pm" : "am";
     hours = hours % 12;
     hours = hours ? hours : 12; // 0 should be 12
 
