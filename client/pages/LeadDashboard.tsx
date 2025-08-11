@@ -534,8 +534,8 @@ export default function LeadDashboard() {
                                             <div
                                               className="absolute left-0 right-0 mx-1 rounded border-2 border-blue-600 transition-all duration-300 cursor-pointer group"
                                               style={{
-                                                top: `${yPosition + stepHeight * 0.1}px`,
-                                                height: `${stepHeight * 0.8}px`,
+                                                top: `${yPosition}px`,
+                                                height: `${stepHeight}px`,
                                                 backgroundColor: getStepColor(stepIndex),
                                                 opacity: 1,
                                               }}
