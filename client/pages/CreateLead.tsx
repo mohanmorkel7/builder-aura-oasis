@@ -2666,20 +2666,6 @@ export default function CreateLead() {
                     placeholder="0"
                   />
                 </div>
-                <div>
-                  <Label htmlFor="expected_close_date">
-                    Expected Close Date
-                  </Label>
-                  <Input
-                    id="expected_close_date"
-                    type="date"
-                    value={leadData.expected_close_date}
-                    onChange={(e) =>
-                      updateField("expected_close_date", e.target.value)
-                    }
-                    className="mt-1"
-                  />
-                </div>
               </div>
 
               <div>
