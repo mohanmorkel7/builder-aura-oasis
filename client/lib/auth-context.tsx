@@ -402,10 +402,22 @@ export const AuthProvider = React.memo(function AuthProvider({
   };
 
   // Memoize the context value to prevent unnecessary re-renders
-  const contextValue = React.useMemo(
-    () => ({ user, login, loginWithSSO, logout, isLoading }),
-    [user, isLoading],
-  );
+  // Add HMR guard to prevent timing issues
+  const contextValue = React.useMemo(() => {
+    try {
+      return { user, login, loginWithSSO, logout, isLoading };
+    } catch (error) {
+      // Fallback during HMR issues
+      console.warn("Context value creation error (likely HMR):", error);
+      return {
+        user: null,
+        login: async () => false,
+        loginWithSSO: async () => false,
+        logout: () => {},
+        isLoading: false,
+      };
+    }
+  }, [user, isLoading]);
 
   return (
     <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
