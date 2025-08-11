@@ -107,6 +107,11 @@ router.post("/upload-chunk", async (req: Request, res: Response) => {
   }
 });
 
+// Test endpoint to verify routing
+router.get("/test", (req: Request, res: Response) => {
+  res.json({ message: "Files router is working", timestamp: new Date().toISOString() });
+});
+
 // Upload files endpoint - flexible to handle any field names
 router.post("/upload", (req: Request, res: Response) => {
   console.log("=== UPLOAD REQUEST START ===");
