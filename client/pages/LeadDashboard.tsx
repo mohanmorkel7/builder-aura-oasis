@@ -534,23 +534,6 @@ export default function LeadDashboard() {
                             </div>
                           </div>
 
-                          {/* Y-axis Labels (Steps from bottom to top) */}
-                          <div className="mt-6 flex justify-center">
-                            <div className="text-sm text-gray-700">
-                              <div className="font-medium mb-2">Steps Legend (Bottom to Top):</div>
-                              <div className="flex flex-wrap gap-3">
-                                {allSteps.map((stepName: string, stepIndex: number) => (
-                                  <div key={stepName} className="flex items-center space-x-2">
-                                    <div
-                                      className="w-4 h-4 rounded"
-                                      style={{ backgroundColor: getStepColor(stepIndex) }}
-                                    ></div>
-                                    <span className="text-xs">{stepName}</span>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
                         </div>
                       </div>
                     </div>
