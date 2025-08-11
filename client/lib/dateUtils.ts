@@ -29,15 +29,31 @@ export const formatToISTDateTime = (
   date: string | Date,
   options: Intl.DateTimeFormatOptions = {},
 ): string => {
-  const dateObj = typeof date === "string" ? new Date(date) : date;
+  let dateObj: Date;
+
+  if (typeof date === "string") {
+    // Handle various timestamp formats from database
+    if (date.includes("T") && (date.includes("Z") || date.includes("+"))) {
+      // ISO format (UTC) - e.g., "2025-08-11T05:31:00.000Z"
+      dateObj = new Date(date);
+    } else if (date.includes("-") && date.includes(":")) {
+      // SQL format - assume UTC if no timezone specified
+      dateObj = new Date(date + (date.includes("Z") ? "" : "Z"));
+    } else {
+      // Other formats
+      dateObj = new Date(date);
+    }
+  } else {
+    dateObj = date;
+  }
 
   // Ensure we have a valid date
   if (isNaN(dateObj.getTime())) {
     return "Invalid Date";
   }
 
-  // Debug logging for timestamp conversion issues
-  if (typeof date === "string") {
+  // Debug logging for timestamp conversion issues (only in development)
+  if (typeof date === "string" && process.env.NODE_ENV === "development") {
     console.log(`formatToISTDateTime Debug:`, {
       originalInput: date,
       parsedDate: dateObj.toISOString(),
