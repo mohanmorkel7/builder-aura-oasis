@@ -52,10 +52,7 @@ export const formatToISTDateTime = (
     return "Invalid Date";
   }
 
-  // Timestamp parsing and validation completed
-
   const defaultOptions: Intl.DateTimeFormatOptions = {
-    timeZone: IST_TIMEZONE,
     day: "numeric",
     month: "short",
     year: "numeric",
@@ -66,33 +63,24 @@ export const formatToISTDateTime = (
   };
 
   try {
-    // Format the date to IST with explicit timezone indicator
+    // Format the date in user's local timezone (no forced timezone conversion)
     const formatter = new Intl.DateTimeFormat("en-IN", defaultOptions);
     const formattedDate = formatter.format(dateObj);
 
-    // IST formatting completed successfully
-
-    // Add IST indicator to make timezone clear
-    return `${formattedDate} IST`;
+    return formattedDate;
   } catch (error) {
-    console.warn("Error formatting date to IST:", error);
-    // Fallback to manual IST conversion
-    const istOffset = 5.5 * 60 * 60 * 1000; // IST is UTC+5:30
-    const istDate = new Date(dateObj.getTime() + istOffset);
-
-    const day = istDate.getUTCDate();
-    const month = istDate.toLocaleString("en-IN", {
-      month: "short",
-      timeZone: "UTC",
-    });
-    const year = istDate.getUTCFullYear();
-    let hours = istDate.getUTCHours();
-    const minutes = istDate.getUTCMinutes().toString().padStart(2, "0");
+    console.warn("Error formatting date:", error);
+    // Fallback to simple local formatting
+    const day = dateObj.getDate();
+    const month = dateObj.toLocaleString("en-IN", { month: "short" });
+    const year = dateObj.getFullYear();
+    let hours = dateObj.getHours();
+    const minutes = dateObj.getMinutes().toString().padStart(2, "0");
     const ampm = hours >= 12 ? "pm" : "am";
     hours = hours % 12;
     hours = hours ? hours : 12; // 0 should be 12
 
-    return `${day} ${month} ${year}, ${hours}:${minutes} ${ampm} IST`;
+    return `${day} ${month} ${year}, ${hours}:${minutes} ${ampm}`;
   }
 };
 
