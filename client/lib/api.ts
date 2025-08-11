@@ -49,12 +49,27 @@ export class ApiClient {
         const originalFetch = window.fetch.bind(window);
         response = await originalFetch(url, config);
       } catch (fetchError) {
-        console.log("Primary fetch failed, trying fallback:", fetchError);
+        console.error(
+          "Primary fetch failed for URL:",
+          url,
+          "Error:",
+          fetchError,
+        );
+
+        // Check if it's a network connectivity issue
+        if (
+          fetchError instanceof TypeError &&
+          fetchError.message.includes("Failed to fetch")
+        ) {
+          console.error("Network connectivity issue detected");
+        }
+
         // Try native fetch one more time before XMLHttpRequest fallback
         try {
+          console.log("Attempting second fetch...");
           response = await fetch(url, config);
         } catch (secondFetchError) {
-          console.log(
+          console.error(
             "Second fetch attempt failed, using XMLHttpRequest:",
             secondFetchError,
           );
@@ -133,6 +148,30 @@ export class ApiClient {
         throw new Error(`Could not read response from server URL: ${url}`);
       }
 
+      // Check if response is HTML instead of JSON (indicates routing issue)
+      if (
+        responseText.trim().startsWith("<!doctype") ||
+        responseText.trim().startsWith("<!DOCTYPE") ||
+        responseText.trim().startsWith("<html")
+      ) {
+        console.error(
+          "Received HTML response instead of JSON for API endpoint:",
+          url,
+        );
+        console.error(
+          "This indicates the API request is not being routed to the backend server.",
+        );
+        console.error(
+          "Response content:",
+          responseText.substring(0, 200) + "...",
+        );
+
+        // Check if server might be down or misconfigured
+        throw new Error(
+          `Server routing error: API endpoint ${endpoint} returned HTML instead of JSON. This usually means the backend server is not running or API routes are not properly configured.`,
+        );
+      }
+
       // Try to parse as JSON
       try {
         const result = JSON.parse(responseText);
@@ -180,12 +219,22 @@ export class ApiClient {
 
       if (error instanceof TypeError) {
         if (error.message.includes("Failed to fetch")) {
+          console.error("Network fetch failure details:", {
+            url,
+            config: JSON.stringify(config, null, 2),
+            error: error.message,
+            timestamp: new Date().toISOString(),
+            retryCount,
+          });
           throw new Error(
-            "Network error: Cannot connect to server. Please check your internet connection or try again later.",
+            `Network error: Cannot connect to server at ${url}. Please check your internet connection or server status.`,
           );
         }
         if (error.message.includes("body stream")) {
-          throw new Error("Network error: Please try again");
+          console.error("Body stream error for URL:", url);
+          throw new Error(
+            `Network error: Connection interrupted for ${url}. Please try again.`,
+          );
         }
       }
 
@@ -202,7 +251,7 @@ export class ApiClient {
   ): Promise<Response> {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
-      xhr.timeout = 30000; // 30 second timeout
+      xhr.timeout = 45000; // 45 second timeout
 
       xhr.open(config.method || "GET", url);
 
@@ -484,10 +533,55 @@ export class ApiClient {
     });
   }
 
+  // Enhanced request method with retry logic
+  private async requestWithRetry<T = any>(
+    endpoint: string,
+    options: RequestInit = {},
+    maxRetries: number = 2,
+  ): Promise<T> {
+    let lastError: Error | null = null;
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        console.log(
+          `Attempt ${attempt}/${maxRetries} for endpoint: ${endpoint}`,
+        );
+        const result = await this.request<T>(endpoint, options);
+        console.log(`Success on attempt ${attempt} for endpoint: ${endpoint}`);
+        return result;
+      } catch (error) {
+        lastError = error as Error;
+        console.warn(
+          `Attempt ${attempt}/${maxRetries} failed for ${endpoint}:`,
+          error,
+        );
+
+        // If it's the last attempt, don't retry
+        if (attempt === maxRetries) {
+          break;
+        }
+
+        // Wait before retrying (exponential backoff)
+        const delay = Math.min(1000 * Math.pow(2, attempt - 1), 5000);
+        console.log(`Waiting ${delay}ms before retry...`);
+        await new Promise((resolve) => setTimeout(resolve, delay));
+      }
+    }
+
+    console.error(`All ${maxRetries} attempts failed for ${endpoint}`);
+    throw lastError;
+  }
+
   // Lead methods
   async getLeads(salesRepId?: number) {
-    const params = salesRepId ? `?salesRep=${salesRepId}` : "";
-    return this.request(`/leads${params}`);
+    try {
+      const params = salesRepId ? `?salesRep=${salesRepId}` : "";
+      return await this.requestWithRetry(`/leads${params}`, {}, 3);
+    } catch (error) {
+      console.error("Failed to fetch leads after all retries:", error);
+      // Return empty array as fallback to prevent UI crashes
+      return [];
+    }
   }
 
   async getPartialLeads(salesRepId?: number) {
@@ -538,7 +632,16 @@ export class ApiClient {
   }
 
   async getLeadProgressDashboard() {
-    return this.request("/leads/progress-dashboard");
+    try {
+      return await this.requestWithRetry("/leads/progress-dashboard", {}, 3);
+    } catch (error) {
+      console.error(
+        "Failed to fetch lead progress dashboard after all retries:",
+        error,
+      );
+      // Return empty array as fallback to prevent UI crashes
+      return [];
+    }
   }
 
   async getLeadsForTemplateStep(
@@ -759,18 +862,36 @@ export class ApiClient {
 
       // Add a timeout and retry logic specifically for follow-ups
       const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error("Follow-ups request timeout")), 8000);
+        setTimeout(
+          () => reject(new Error("Follow-ups request timeout")),
+          20000,
+        ); // Increased to 20 seconds
       });
 
-      const requestPromise = this.request(endpoint);
+      // Add retry logic for follow-ups
+      let lastError: Error | null = null;
+      for (let attempt = 1; attempt <= 2; attempt++) {
+        try {
+          const requestPromise = this.request(endpoint);
+          const result = await Promise.race([requestPromise, timeoutPromise]);
+          console.log(
+            "Follow-ups fetch successful, got",
+            Array.isArray(result) ? result.length : "non-array",
+            "items",
+          );
+          return result;
+        } catch (error) {
+          lastError = error as Error;
+          console.warn(`Follow-ups request attempt ${attempt} failed:`, error);
 
-      const result = await Promise.race([requestPromise, timeoutPromise]);
-      console.log(
-        "Follow-ups fetch successful, got",
-        Array.isArray(result) ? result.length : "non-array",
-        "items",
-      );
-      return result;
+          if (attempt < 2) {
+            // Wait before retry
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+          }
+        }
+      }
+
+      throw lastError;
     } catch (error) {
       console.error("Failed to fetch follow-ups:", error);
 

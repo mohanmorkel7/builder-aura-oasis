@@ -1,5 +1,12 @@
 import * as React from "react";
 import { apiClient } from "./api";
+
+// Detect HMR at module level
+const IS_HMR_RELOAD =
+  typeof import.meta.hot !== "undefined" &&
+  import.meta.hot &&
+  performance.navigation &&
+  performance.navigation.type === 1;
 import {
   PublicClientApplication,
   AuthenticationResult,
@@ -143,24 +150,43 @@ export const AuthProvider = React.memo(function AuthProvider({
 }: {
   children: React.ReactNode;
 }) {
+  // Detect HMR and avoid certain operations during hot reloads
+  const isHMR =
+    typeof import.meta.hot !== "undefined" &&
+    import.meta.hot &&
+    import.meta.hot.data;
+
   const [user, setUser] = React.useState<User | null>(null);
   const [isLoading, setIsLoading] = React.useState(true);
 
   React.useEffect(() => {
-    // Add error handling for localStorage access
-    try {
-      const storedUser = localStorage.getItem("banani_user");
-      if (storedUser) {
-        const userData = JSON.parse(storedUser);
-        setUser(userData);
-      }
-    } catch (error) {
-      console.warn("Error loading stored user data:", error);
-      // Clear potentially corrupted data
-      localStorage.removeItem("banani_user");
+    // Skip during HMR to prevent connection timing issues
+    if (isHMR) {
+      console.log("Skipping auth initialization during HMR");
+      setIsLoading(false);
+      return;
     }
-    setIsLoading(false);
-  }, []);
+
+    const loadStoredUser = () => {
+      // Add error handling for localStorage access
+      try {
+        const storedUser = localStorage.getItem("banani_user");
+        if (storedUser) {
+          const userData = JSON.parse(storedUser);
+          setUser(userData);
+        }
+      } catch (error) {
+        console.warn("Error loading stored user data:", error);
+        // Clear potentially corrupted data
+        localStorage.removeItem("banani_user");
+      }
+      setIsLoading(false);
+    };
+
+    // Add small delay to prevent HMR timing issues
+    const timeoutId = setTimeout(loadStoredUser, 50); // Increased delay
+    return () => clearTimeout(timeoutId);
+  }, [isHMR]);
 
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
@@ -396,10 +422,22 @@ export const AuthProvider = React.memo(function AuthProvider({
   };
 
   // Memoize the context value to prevent unnecessary re-renders
-  const contextValue = React.useMemo(
-    () => ({ user, login, loginWithSSO, logout, isLoading }),
-    [user, isLoading],
-  );
+  // Add HMR guard to prevent timing issues
+  const contextValue = React.useMemo(() => {
+    try {
+      return { user, login, loginWithSSO, logout, isLoading };
+    } catch (error) {
+      // Fallback during HMR issues
+      console.warn("Context value creation error (likely HMR):", error);
+      return {
+        user: null,
+        login: async () => false,
+        loginWithSSO: async () => false,
+        logout: () => {},
+        isLoading: false,
+      };
+    }
+  }, [user, isLoading]);
 
   return (
     <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
@@ -454,5 +492,18 @@ export function useAuth() {
       logout: () => {},
       isLoading: false,
     };
+  }
+}
+
+// Handle HMR properly to prevent connection issues
+if (import.meta.hot) {
+  // Disable HMR for this module to prevent connection timing issues
+  import.meta.hot.decline();
+
+  // Add additional safety for HMR
+  if (IS_HMR_RELOAD) {
+    console.log(
+      "Auth context: HMR reload detected, using minimal initialization",
+    );
   }
 }

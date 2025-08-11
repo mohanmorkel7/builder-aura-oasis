@@ -141,6 +141,24 @@ export function createServer() {
     console.error("Error loading Workflow router:", error);
   }
 
+  // Add a simple notifications route that redirects to workflow notifications
+  try {
+    app.get("/api/notifications", (req, res) => {
+      // Redirect to workflow notifications with the same query parameters
+      const queryString =
+        Object.keys(req.query).length > 0
+          ? "?" +
+            new URLSearchParams(req.query as Record<string, string>).toString()
+          : "";
+
+      // Proxy the request to workflow notifications
+      res.redirect(`/api/workflow/notifications${queryString}`);
+    });
+    console.log("Main notifications route added successfully");
+  } catch (error) {
+    console.error("Error adding notifications route:", error);
+  }
+
   // Production routes (database-only, no mock fallback)
   try {
     app.use("/api/admin", adminProductionRouter);

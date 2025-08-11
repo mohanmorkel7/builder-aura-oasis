@@ -631,7 +631,7 @@ export default function CreateLead() {
           switch (config.recurring_period) {
             case "monthly":
               multiplier = 12;
-              description = `Monthly (×${multiplier})`;
+              description = `Monthly (��${multiplier})`;
               break;
             case "quarterly":
               multiplier = 4;
@@ -1725,7 +1725,7 @@ export default function CreateLead() {
                 {/* Commercials Config */}
                 <AccordionItem value="commercials-config">
                   <AccordionTrigger className="text-lg font-semibold">
-                    Commercials Config
+                    Commercials
                   </AccordionTrigger>
                   <AccordionContent className="space-y-6">
                     {/* Flat Fee Config */}
@@ -1979,7 +1979,7 @@ export default function CreateLead() {
                 {/* Summary Config */}
                 <AccordionItem value="summary-config">
                   <AccordionTrigger className="text-lg font-semibold">
-                    Summary Config
+                    Project Deal size
                   </AccordionTrigger>
                   <AccordionContent>
                     {leadData.transaction_fee_config.length === 0 ? (
@@ -2664,20 +2664,6 @@ export default function CreateLead() {
                     onChange={(e) => updateField("probability", e.target.value)}
                     className="mt-1"
                     placeholder="0"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="expected_close_date">
-                    Expected Close Date
-                  </Label>
-                  <Input
-                    id="expected_close_date"
-                    type="date"
-                    value={leadData.expected_close_date}
-                    onChange={(e) =>
-                      updateField("expected_close_date", e.target.value)
-                    }
-                    className="mt-1"
                   />
                 </div>
               </div>

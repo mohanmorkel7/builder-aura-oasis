@@ -86,7 +86,6 @@ const statuses = [
   { value: "in-progress", label: "In Progress" },
   { value: "won", label: "Won" },
   { value: "lost", label: "Lost" },
-  { value: "completed", label: "Completed" },
 ];
 
 const companySizes = [
@@ -119,7 +118,7 @@ const priorityLevels = [
 ];
 
 const currencyOptions = [
-  { value: "INR", label: "INR (₹)" },
+  { value: "INR", label: "INR (���)" },
   { value: "USD", label: "USD ($)" },
   { value: "AED", label: "AED (د.إ)" },
 ];
@@ -1356,7 +1355,7 @@ export default function LeadEdit() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="INR">INR (₹)</SelectItem>
+                      <SelectItem value="INR">INR (���)</SelectItem>
                       <SelectItem value="USD">USD ($)</SelectItem>
                       <SelectItem value="AED">AED (د.إ)</SelectItem>
                     </SelectContent>
@@ -1369,7 +1368,7 @@ export default function LeadEdit() {
                 {/* Commercials Config */}
                 <AccordionItem value="commercials-config">
                   <AccordionTrigger className="text-lg font-semibold">
-                    Commercials Config
+                    Commercials
                   </AccordionTrigger>
                   <AccordionContent className="space-y-6">
                     {/* Flat Fee Config */}
@@ -1623,7 +1622,7 @@ export default function LeadEdit() {
                 {/* Summary Config */}
                 <AccordionItem value="summary-config">
                   <AccordionTrigger className="text-lg font-semibold">
-                    Summary Config
+                    Project Deal size
                   </AccordionTrigger>
                   <AccordionContent>
                     {leadData.transaction_fee_config.length === 0 ? (

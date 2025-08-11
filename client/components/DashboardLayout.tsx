@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState, useEffect, ReactNode } from "react";
 import { Link, useLocation, Navigate, useNavigate } from "react-router-dom";
 import { useAuth, UserRole } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
@@ -24,15 +24,22 @@ import {
   AlertCircle,
   Ticket,
   DollarSign,
+  ChevronDown,
+  ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { apiClient } from "@/lib/api";
 
 interface NavigationItem {
   name: string;
-  href: string;
+  href?: string;
   icon: React.ComponentType<{ className?: string }>;
   roles: UserRole[];
+  submenu?: {
+    name: string;
+    href: string;
+    roles: UserRole[];
+  }[];
 }
 
 const navigationItems: NavigationItem[] = [
@@ -43,18 +50,11 @@ const navigationItems: NavigationItem[] = [
     roles: ["admin", "sales", "product"],
   },
   {
-    name: "Admin Panel",
-    href: "/admin",
-    icon: Settings,
-    roles: ["admin"],
-  },
-  {
     name: "FinOps",
     href: "/finops",
     icon: DollarSign,
     roles: ["admin", "finance"],
   },
-
   {
     name: "Sales",
     href: "/leads",
@@ -91,6 +91,18 @@ const navigationItems: NavigationItem[] = [
     icon: Bell,
     roles: ["admin", "sales", "product"],
   },
+  {
+    name: "Settings",
+    icon: Settings,
+    roles: ["admin"],
+    submenu: [
+      {
+        name: "Manage Users",
+        href: "/admin/users",
+        roles: ["admin"],
+      },
+    ],
+  },
 ];
 
 interface Notification {
@@ -126,13 +138,18 @@ const getNotificationsFromFollowUps = async (
 
     // Add timeout to prevent hanging requests
     const timeoutPromise = new Promise<never>((_, reject) => {
-      setTimeout(() => reject(new Error("Request timeout")), 5000);
+      setTimeout(() => reject(new Error("Request timeout")), 15000); // Increased to 15 seconds
     });
 
-    const followUpsPromise = apiClient.getAllFollowUps({
-      userId,
-      userRole: "all",
-    });
+    const followUpsPromise = apiClient
+      .getAllFollowUps({
+        userId,
+        userRole: "all",
+      })
+      .catch((error) => {
+        console.warn("Follow-ups API call failed, using fallback:", error);
+        return []; // Return empty array as fallback
+      });
 
     const followUps = await Promise.race([followUpsPromise, timeoutPromise]);
 
@@ -194,13 +211,23 @@ const getNotificationsFromFollowUps = async (
 };
 
 interface DashboardLayoutProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const { user, logout, isLoading } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const [expandedMenus, setExpandedMenus] = useState<{
+    [key: string]: boolean;
+  }>({});
+
+  // Auto-expand Settings menu when on settings-related pages
+  useEffect(() => {
+    if (location.pathname.startsWith("/admin/users")) {
+      setExpandedMenus((prev) => ({ ...prev, Settings: true }));
+    }
+  }, [location.pathname]);
 
   if (isLoading) {
     return (
@@ -246,8 +273,19 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             "Failed to fetch notifications (non-critical):",
             error.message,
           );
-          // Disable notifications system if it keeps failing
-          setNotificationsEnabled(false);
+
+          // Check if it's a server routing issue
+          if (
+            error.message.includes("HTML instead of JSON") ||
+            error.message.includes("Server routing error")
+          ) {
+            console.error(
+              "Backend server appears to be down or misconfigured. Disabling notifications.",
+            );
+            setNotificationsEnabled(false);
+          }
+
+          // Always return empty array on error to prevent UI crashes
           setNotifications([]);
         }
       }
@@ -317,15 +355,80 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         <nav className="flex-1 p-4 space-y-2">
           {allowedNavItems.map((item) => {
             const Icon = item.icon;
+
+            // Handle expandable menu items (like Settings)
+            if (item.submenu) {
+              const isExpanded = expandedMenus[item.name] || false;
+              const hasActiveSubmenu = item.submenu.some(
+                (subItem) => location.pathname === subItem.href,
+              );
+
+              return (
+                <div key={item.name}>
+                  {/* Main menu item */}
+                  <button
+                    onClick={() =>
+                      setExpandedMenus((prev) => ({
+                        ...prev,
+                        [item.name]: !prev[item.name],
+                      }))
+                    }
+                    className={cn(
+                      "w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+                      "text-gray-700 hover:bg-gray-100",
+                    )}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <Icon className="w-5 h-5" />
+                      <span>{item.name}</span>
+                    </div>
+                    {isExpanded ? (
+                      <ChevronDown className="w-4 h-4" />
+                    ) : (
+                      <ChevronRight className="w-4 h-4" />
+                    )}
+                  </button>
+
+                  {/* Submenu items */}
+                  {isExpanded && (
+                    <div className="ml-6 mt-2 space-y-1">
+                      {item.submenu
+                        .filter((subItem) => subItem.roles.includes(user.role))
+                        .map((subItem) => {
+                          const isSubActive =
+                            location.pathname === subItem.href;
+
+                          return (
+                            <Link
+                              key={subItem.name}
+                              to={subItem.href}
+                              className={cn(
+                                "flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+                                isSubActive
+                                  ? "bg-primary text-white"
+                                  : "text-gray-600 hover:bg-gray-100",
+                              )}
+                            >
+                              <span>{subItem.name}</span>
+                            </Link>
+                          );
+                        })}
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
+            // Handle regular menu items
             const isActive =
               location.pathname === item.href ||
               (item.href !== "/dashboard" &&
-                location.pathname.startsWith(item.href));
+                location.pathname.startsWith(item.href!));
 
             return (
               <Link
                 key={item.name}
-                to={item.href}
+                to={item.href!}
                 className={cn(
                   "flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
                   isActive
