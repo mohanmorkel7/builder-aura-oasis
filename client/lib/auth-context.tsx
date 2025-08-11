@@ -150,11 +150,8 @@ export const AuthProvider = React.memo(function AuthProvider({
 }: {
   children: React.ReactNode;
 }) {
-  // Detect HMR and avoid certain operations during hot reloads
-  const isHMR =
-    typeof import.meta.hot !== "undefined" &&
-    import.meta.hot &&
-    import.meta.hot.data;
+  // Only detect actual HMR updates, not page refreshes
+  const isHMR = import.meta.hot?.data?.isHMRUpdate;
 
   const [user, setUser] = React.useState<User | null>(null);
   const [isLoading, setIsLoading] = React.useState(true);
