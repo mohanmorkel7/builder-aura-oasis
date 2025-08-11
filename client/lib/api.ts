@@ -876,38 +876,57 @@ export class ApiClient {
       console.log(`Upload response status: ${response.status}`);
       console.log("Response headers:", Object.fromEntries(response.headers.entries()));
 
-      // Handle error responses without reading the body to avoid conflicts
+      // Handle error responses
       if (!response.ok) {
         let errorMessage = `Upload failed: ${response.status}`;
+        let serverErrorDetails = null;
 
-        // Provide user-friendly error messages based on status code
-        switch (response.status) {
-          case 400:
-            errorMessage = "Invalid file upload request. Please check your file and try again.";
-            break;
-          case 413:
-            errorMessage = "File too large. Please choose a smaller file (max 50MB).";
-            break;
-          case 404:
-            errorMessage = "Upload service not found. Please contact support.";
-            break;
-          case 500:
-            errorMessage = "Server error occurred. Please try again later.";
-            break;
-          case 503:
-            errorMessage = "Upload service temporarily unavailable. Please try again later.";
-            break;
-          default:
-            errorMessage = `Upload failed with error ${response.status}. Please try again.`;
-        }
-
-        // Log error details without reading response body
+        // Log basic error details first
         console.error("Upload failed:");
         console.error("- Status:", response.status);
         console.error("- Status Text:", response.statusText);
         console.error("- URL:", response.url);
         console.error("- Content-Type:", response.headers.get('content-type'));
         console.error("- Content-Length:", response.headers.get('content-length'));
+
+        // Try to read JSON error response if content-type indicates JSON
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          try {
+            serverErrorDetails = await response.json();
+            console.error("- Server Error Details:", serverErrorDetails);
+
+            // Use server error message if available
+            if (serverErrorDetails && (serverErrorDetails.error || serverErrorDetails.message)) {
+              errorMessage = serverErrorDetails.message || serverErrorDetails.error;
+            }
+          } catch (jsonError) {
+            console.error("- Could not parse JSON error response:", jsonError);
+          }
+        }
+
+        // Fallback to status-based error messages if no server details
+        if (!serverErrorDetails) {
+          switch (response.status) {
+            case 400:
+              errorMessage = "Invalid file upload request. Please check your file and try again.";
+              break;
+            case 413:
+              errorMessage = "File too large. Please choose a smaller file (max 50MB).";
+              break;
+            case 404:
+              errorMessage = "Upload service not found. Please contact support.";
+              break;
+            case 500:
+              errorMessage = "Server error occurred. Please try again later.";
+              break;
+            case 503:
+              errorMessage = "Upload service temporarily unavailable. Please try again later.";
+              break;
+            default:
+              errorMessage = `Upload failed with error ${response.status}. Please try again.`;
+          }
+        }
 
         throw new Error(errorMessage);
       }
