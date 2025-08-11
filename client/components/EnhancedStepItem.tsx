@@ -231,6 +231,16 @@ export function EnhancedStepItem({
     }
 
     try {
+      // Test the endpoint first
+      console.log("Testing upload endpoint...");
+      try {
+        await apiClient.testUploadEndpoint();
+        console.log("Upload endpoint is reachable");
+      } catch (testError) {
+        console.error("Upload endpoint test failed:", testError);
+        // Continue anyway, the test might fail for other reasons
+      }
+
       // First, upload the actual files to the server
       console.log(
         "Uploading files to server...",
