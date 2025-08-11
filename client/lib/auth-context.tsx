@@ -497,4 +497,9 @@ export function useAuth() {
 if (import.meta.hot) {
   // Disable HMR for this module to prevent connection timing issues
   import.meta.hot.decline();
+
+  // Add additional safety for HMR
+  if (IS_HMR_RELOAD) {
+    console.log("Auth context: HMR reload detected, using minimal initialization");
+  }
 }
