@@ -507,8 +507,8 @@ export default function LeadDashboard() {
                                             key={step.name}
                                             className="absolute left-0 right-0 mx-1 rounded transition-all duration-300 cursor-pointer group"
                                             style={{
-                                              top: `${yPosition + stepHeight * 0.1}px`,
-                                              height: `${stepHeight * 0.8}px`,
+                                              top: `${yPosition}px`,
+                                              height: `${stepHeight}px`,
                                               backgroundColor: getStepColor(stepIndex),
                                               opacity: 0.8,
                                             }}
