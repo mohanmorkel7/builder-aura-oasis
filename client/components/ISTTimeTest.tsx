@@ -48,7 +48,7 @@ export function ISTTimeTest() {
 
   return (
     <div className="p-4 border rounded-lg bg-blue-50 mb-4">
-      <h3 className="font-semibold text-blue-800 mb-2">IST Time Test</h3>
+      <h3 className="font-semibold text-blue-800 mb-2">IST Time Test & Debug</h3>
       <div className="space-y-1 text-sm">
         <div>
           <strong>Current IST (with indicator):</strong> {currentTime}
@@ -62,6 +62,14 @@ export function ISTTimeTest() {
         </div>
         <div>
           <strong>IST Timezone:</strong> {IST_TIMEZONE}
+        </div>
+        <hr className="my-2" />
+        <div className="text-xs text-gray-600">
+          <div><strong>Debug Info:</strong></div>
+          <div><strong>Current UTC:</strong> {debugInfo.currentUTC}</div>
+          <div><strong>Sample DB Timestamp (UTC):</strong> {debugInfo.sampleDBTimestamp}</div>
+          <div><strong>Sample Formatted to IST:</strong> {debugInfo.sampleISTFormatted}</div>
+          <div><strong>Browser TZ Offset (min):</strong> {debugInfo.timezoneOffset}</div>
         </div>
       </div>
     </div>
