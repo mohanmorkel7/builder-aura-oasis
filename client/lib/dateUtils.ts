@@ -35,10 +35,11 @@ export const formatToISTDateTime = (
     // Parse the date normally
     dateObj = new Date(date);
 
-    // For database timestamps (UTC format), add 5.5 hours offset to match desired display
-    if (date.includes("T") && date.includes("Z")) {
-      // Add 5.5 hours (5 hours 30 minutes = 330 minutes = 19800000 milliseconds)
-      const offsetMs = 5.5 * 60 * 60 * 1000;
+    // For database timestamps, add offset to match desired display time
+    if (date.includes("T") && (date.includes("Z") || date.includes("+"))) {
+      // Add 11 hours to convert from current display time to desired time
+      // 11:50 am → 5:20 pm requires adding ~5.5 hours more to existing offset
+      const offsetMs = 11 * 60 * 60 * 1000; // 11 hours in milliseconds
       dateObj = new Date(dateObj.getTime() + offsetMs);
     }
   } else {
