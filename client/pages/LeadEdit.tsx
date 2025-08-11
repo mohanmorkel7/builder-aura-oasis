@@ -86,7 +86,6 @@ const statuses = [
   { value: "in-progress", label: "In Progress" },
   { value: "won", label: "Won" },
   { value: "lost", label: "Lost" },
-  { value: "completed", label: "Completed" },
 ];
 
 const companySizes = [
