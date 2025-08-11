@@ -157,8 +157,19 @@ router.post("/upload", (req: Request, res: Response) => {
 
     // Continue with successful upload processing
     try {
+      console.log("=== MULTER PROCESSING COMPLETE ===");
+      console.log("req.files:", req.files);
+      console.log("req.body:", req.body);
+      console.log("req.files type:", typeof req.files);
+      console.log("req.files length:", req.files ? req.files.length : 'undefined');
+
       if (!req.files || !Array.isArray(req.files) || req.files.length === 0) {
-        console.log("No files received in upload request");
+        console.log("❌ No files received in upload request");
+        console.log("req.files details:", {
+          exists: !!req.files,
+          isArray: Array.isArray(req.files),
+          length: req.files ? req.files.length : 'N/A'
+        });
         return res.status(400).json({ error: "No files uploaded" });
       }
 
