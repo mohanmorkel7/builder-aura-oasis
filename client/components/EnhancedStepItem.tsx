@@ -732,16 +732,25 @@ export function EnhancedStepItem({
                             <div className="text-sm text-gray-700">
                               {editingMessageId === message.id ? (
                                 <div className="space-y-2">
-                                  <Textarea
-                                    value={editMessageText}
-                                    onChange={(e) => setEditMessageText(e.target.value)}
-                                    className="min-h-[60px]"
-                                    placeholder="Edit your message..."
-                                  />
+                                  {message.is_rich_text ? (
+                                    <RichTextEditor
+                                      value={editMessageText}
+                                      onChange={setEditMessageText}
+                                      placeholder="Edit your message with rich formatting..."
+                                      className="min-h-[80px] border-gray-200"
+                                    />
+                                  ) : (
+                                    <Textarea
+                                      value={editMessageText}
+                                      onChange={(e) => setEditMessageText(e.target.value)}
+                                      className="min-h-[60px]"
+                                      placeholder="Edit your message..."
+                                    />
+                                  )}
                                   <div className="flex space-x-2">
                                     <Button
                                       size="sm"
-                                      onClick={() => handleSaveEdit(message.id)}
+                                      onClick={() => handleSaveEdit(message.id, message.is_rich_text)}
                                       disabled={!editMessageText.trim()}
                                     >
                                       Save
