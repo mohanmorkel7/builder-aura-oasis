@@ -814,8 +814,9 @@ export class ApiClient {
   async uploadFiles(files: FileList) {
     const formData = new FormData();
 
-    Array.from(files).forEach((file, index) => {
-      formData.append(`file_${index}`, file);
+    // Use consistent field name that multer expects
+    Array.from(files).forEach((file) => {
+      formData.append("files", file);
     });
 
     const url = `${API_BASE_URL}/files/upload`;
