@@ -35,8 +35,42 @@ export function createServer() {
 
   // Middleware
   app.use(cors());
-  app.use(express.json({ limit: "50mb" }));
-  app.use(express.urlencoded({ extended: true, limit: "50mb" }));
+
+  // Handle large file uploads with proper error handling
+  app.use(express.json({
+    limit: "50mb",
+    extended: true,
+    parameterLimit: 50000,
+    verify: (req, res, buf) => {
+      // Add raw body for debugging
+      req.rawBody = buf;
+    }
+  }));
+
+  app.use(express.urlencoded({
+    extended: true,
+    limit: "50mb",
+    parameterLimit: 50000
+  }));
+
+  // Add raw body parser for file uploads
+  app.use(express.raw({
+    limit: "50mb",
+    type: ["application/octet-stream", "multipart/form-data"]
+  }));
+
+  // Error handling middleware for payload too large
+  app.use((error: any, req: any, res: any, next: any) => {
+    if (error && error.type === 'entity.too.large') {
+      console.error('File too large error:', error);
+      return res.status(413).json({
+        error: 'File too large',
+        message: 'The uploaded file exceeds the maximum size limit of 50MB',
+        maxSize: '50MB'
+      });
+    }
+    next(error);
+  });
 
   // Debug middleware to log all requests
   app.use((req, res, next) => {
