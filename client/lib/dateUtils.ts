@@ -32,13 +32,14 @@ export const formatToISTDateTime = (
   let dateObj: Date;
 
   if (typeof date === "string") {
-    // Handle database timestamps that might have timezone info
-    if (date.includes("+") || date.includes("Z")) {
-      // ISO format with timezone - parse normally and convert to current browser timezone
-      dateObj = new Date(date);
-    } else {
-      // Local timestamp format - treat as is
-      dateObj = new Date(date);
+    // Parse the date normally
+    dateObj = new Date(date);
+
+    // For database timestamps (UTC format), add 5.5 hours offset to match desired display
+    if (date.includes("T") && date.includes("Z")) {
+      // Add 5.5 hours (5 hours 30 minutes = 330 minutes = 19800000 milliseconds)
+      const offsetMs = 5.5 * 60 * 60 * 1000;
+      dateObj = new Date(dateObj.getTime() + offsetMs);
     }
   } else {
     dateObj = date;
@@ -49,8 +50,6 @@ export const formatToISTDateTime = (
     return "Invalid Date";
   }
 
-  // Always use the same formatting logic as current time
-  // This ensures database timestamps display exactly like current time
   try {
     const formatter = new Intl.DateTimeFormat("en-IN", {
       day: "numeric",
