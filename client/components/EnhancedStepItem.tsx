@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -27,6 +28,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
   CheckCircle,
   Clock,
@@ -49,11 +60,14 @@ import {
   List,
   Image,
   Eye,
+  Edit,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import {
   useStepChats,
   useCreateStepChat,
+  useEditStepChat,
+  useDeleteStepChat,
   useCreateFollowUp,
   useUsers,
 } from "@/hooks/useApi";
@@ -129,6 +143,8 @@ export function EnhancedStepItem({
     error: chatError,
   } = useStepChats(stepId);
   const createChatMutation = useCreateStepChat();
+  const editChatMutation = useEditStepChat();
+  const deleteChatMutation = useDeleteStepChat();
   const createFollowUpMutation = useCreateFollowUp();
 
   // Sort messages by created_at in ascending order (latest last for bottom scroll)
@@ -178,6 +194,14 @@ export function EnhancedStepItem({
   const [followUpNotes, setFollowUpNotes] = useState("");
   const [followUpAssignTo, setFollowUpAssignTo] = useState("");
   const [followUpDueDate, setFollowUpDueDate] = useState("");
+
+  // Edit message state
+  const [editingMessageId, setEditingMessageId] = useState<number | null>(null);
+  const [editMessageText, setEditMessageText] = useState("");
+
+  // Delete confirmation modal state
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [messageToDelete, setMessageToDelete] = useState<number | null>(null);
 
   // Function to highlight mentions and make follow-up IDs clickable
   const processMessageContent = (messageText: string) => {
@@ -436,6 +460,70 @@ export function EnhancedStepItem({
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
+  const handleEditMessage = (
+    messageId: number,
+    currentMessage: string,
+    isRichText: boolean,
+  ) => {
+    setEditingMessageId(messageId);
+    // For rich text messages, we keep the HTML content for the rich text editor
+    // For plain text messages, we use the text as-is
+    setEditMessageText(currentMessage);
+  };
+
+  const handleSaveEdit = async (
+    messageId: number,
+    originalIsRichText: boolean,
+  ) => {
+    if (!editMessageText.trim()) {
+      alert("Message cannot be empty");
+      return;
+    }
+
+    try {
+      await editChatMutation.mutateAsync({
+        chatId: messageId,
+        updateData: {
+          message: editMessageText.trim(),
+          is_rich_text: originalIsRichText, // Preserve the original format
+        },
+      });
+      setEditingMessageId(null);
+      setEditMessageText("");
+    } catch (error) {
+      console.error("Failed to edit message:", error);
+      alert("Failed to edit message. Please try again.");
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingMessageId(null);
+    setEditMessageText("");
+  };
+
+  const handleDeleteMessage = (messageId: number) => {
+    setMessageToDelete(messageId);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDeleteMessage = async () => {
+    if (!messageToDelete) return;
+
+    try {
+      await deleteChatMutation.mutateAsync(messageToDelete);
+      setDeleteConfirmOpen(false);
+      setMessageToDelete(null);
+    } catch (error) {
+      console.error("Failed to delete message:", error);
+      alert("Failed to delete message. Please try again.");
+    }
+  };
+
+  const cancelDeleteMessage = () => {
+    setDeleteConfirmOpen(false);
+    setMessageToDelete(null);
+  };
+
   return (
     <div
       ref={setNodeRef}
@@ -637,35 +725,111 @@ export function EnhancedStepItem({
                                   {formatToISTDateTime(message.created_at)}
                                 </span>
                                 {message.message_type !== "system" && (
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    onClick={() => handleFollowUp(message.id)}
-                                    className="text-blue-600 hover:text-blue-700"
-                                  >
-                                    <Reply className="w-3 h-3 mr-1" />
-                                    Follow-up
-                                  </Button>
+                                  <>
+                                    {/* Only show edit/delete for own messages */}
+                                    {message.user_id === parseInt(user.id) && (
+                                      <>
+                                        <Button
+                                          size="sm"
+                                          variant="ghost"
+                                          onClick={() =>
+                                            handleEditMessage(
+                                              message.id,
+                                              message.message,
+                                              message.is_rich_text,
+                                            )
+                                          }
+                                          className="text-gray-600 hover:text-gray-700"
+                                        >
+                                          <Edit className="w-3 h-3" />
+                                        </Button>
+                                        <Button
+                                          size="sm"
+                                          variant="ghost"
+                                          onClick={() =>
+                                            handleDeleteMessage(message.id)
+                                          }
+                                          className="text-red-600 hover:text-red-700"
+                                        >
+                                          <Trash2 className="w-3 h-3" />
+                                        </Button>
+                                      </>
+                                    )}
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      onClick={() => handleFollowUp(message.id)}
+                                      className="text-blue-600 hover:text-blue-700"
+                                    >
+                                      <Reply className="w-3 h-3 mr-1" />
+                                      Follow-up
+                                    </Button>
+                                  </>
                                 )}
                               </div>
                             </div>
                             <div className="text-sm text-gray-700">
-                              {message.is_rich_text ? (
-                                <div
-                                  dangerouslySetInnerHTML={{
-                                    __html: processMessageContent(
-                                      message.message,
-                                    ),
-                                  }}
-                                />
+                              {editingMessageId === message.id ? (
+                                <div className="space-y-2">
+                                  {message.is_rich_text ? (
+                                    <RichTextEditor
+                                      value={editMessageText}
+                                      onChange={setEditMessageText}
+                                      placeholder="Edit your message with rich formatting..."
+                                      className="min-h-[80px] border-gray-200"
+                                    />
+                                  ) : (
+                                    <Textarea
+                                      value={editMessageText}
+                                      onChange={(e) =>
+                                        setEditMessageText(e.target.value)
+                                      }
+                                      className="min-h-[60px]"
+                                      placeholder="Edit your message..."
+                                    />
+                                  )}
+                                  <div className="flex space-x-2">
+                                    <Button
+                                      size="sm"
+                                      onClick={() =>
+                                        handleSaveEdit(
+                                          message.id,
+                                          message.is_rich_text,
+                                        )
+                                      }
+                                      disabled={!editMessageText.trim()}
+                                    >
+                                      Save
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={handleCancelEdit}
+                                    >
+                                      Cancel
+                                    </Button>
+                                  </div>
+                                </div>
                               ) : (
-                                <div
-                                  dangerouslySetInnerHTML={{
-                                    __html: processMessageContent(
-                                      message.message,
-                                    ),
-                                  }}
-                                />
+                                <>
+                                  {message.is_rich_text ? (
+                                    <div
+                                      dangerouslySetInnerHTML={{
+                                        __html: processMessageContent(
+                                          message.message,
+                                        ),
+                                      }}
+                                    />
+                                  ) : (
+                                    <div
+                                      dangerouslySetInnerHTML={{
+                                        __html: processMessageContent(
+                                          message.message,
+                                        ),
+                                      }}
+                                    />
+                                  )}
+                                </>
                               )}
                             </div>
                             {message.attachments &&
@@ -1027,6 +1191,30 @@ export function EnhancedStepItem({
           </div>
         </CollapsibleContent>
       </Collapsible>
+
+      {/* Delete Confirmation Modal */}
+      <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Message</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this message? This action cannot
+              be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={cancelDeleteMessage}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDeleteMessage}
+              className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
