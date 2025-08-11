@@ -50,7 +50,6 @@ import {
   List,
   Image,
   Eye,
-  Trash2,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import {
