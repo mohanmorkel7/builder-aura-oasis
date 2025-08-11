@@ -147,19 +147,25 @@ export const AuthProvider = React.memo(function AuthProvider({
   const [isLoading, setIsLoading] = React.useState(true);
 
   React.useEffect(() => {
-    // Add error handling for localStorage access
-    try {
-      const storedUser = localStorage.getItem("banani_user");
-      if (storedUser) {
-        const userData = JSON.parse(storedUser);
-        setUser(userData);
+    const loadStoredUser = () => {
+      // Add error handling for localStorage access
+      try {
+        const storedUser = localStorage.getItem("banani_user");
+        if (storedUser) {
+          const userData = JSON.parse(storedUser);
+          setUser(userData);
+        }
+      } catch (error) {
+        console.warn("Error loading stored user data:", error);
+        // Clear potentially corrupted data
+        localStorage.removeItem("banani_user");
       }
-    } catch (error) {
-      console.warn("Error loading stored user data:", error);
-      // Clear potentially corrupted data
-      localStorage.removeItem("banani_user");
-    }
-    setIsLoading(false);
+      setIsLoading(false);
+    };
+
+    // Add small delay to prevent HMR timing issues
+    const timeoutId = setTimeout(loadStoredUser, 10);
+    return () => clearTimeout(timeoutId);
   }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
