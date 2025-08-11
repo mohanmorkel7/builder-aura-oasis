@@ -119,6 +119,9 @@ router.post("/upload", (req: Request, res: Response) => {
   console.log("Content-Type:", req.headers['content-type']);
   console.log("Content-Length:", req.headers['content-length']);
 
+  // Ensure we always return JSON
+  res.setHeader('Content-Type', 'application/json');
+
   // Handle multer errors specifically - use array with specific field name
   upload.array('files', 10)(req, res, (err) => {
     if (err) {
