@@ -520,8 +520,14 @@ export class ApiClient {
 
   // Lead methods
   async getLeads(salesRepId?: number) {
-    const params = salesRepId ? `?salesRep=${salesRepId}` : "";
-    return this.request(`/leads${params}`);
+    try {
+      const params = salesRepId ? `?salesRep=${salesRepId}` : "";
+      return await this.requestWithRetry(`/leads${params}`, {}, 3);
+    } catch (error) {
+      console.error("Failed to fetch leads after all retries:", error);
+      // Return empty array as fallback to prevent UI crashes
+      return [];
+    }
   }
 
   async getPartialLeads(salesRepId?: number) {
