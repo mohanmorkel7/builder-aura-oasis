@@ -676,7 +676,7 @@ export class MockDataService {
   private static nextClientId = 5;
   private static nextTemplateId = 4;
   private static nextDeploymentId = 5;
-  private static nextChatId = 5; // Start after existing seed data (IDs 1-4)
+  private static nextChatId = 5; // Start after existing seed data (IDs 1-4) to prevent duplicates
 
   // User operations
   static async findUserByEmail(email: string) {
