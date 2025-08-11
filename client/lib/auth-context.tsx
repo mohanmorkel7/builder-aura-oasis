@@ -152,6 +152,13 @@ export const AuthProvider = React.memo(function AuthProvider({
   const [isLoading, setIsLoading] = React.useState(true);
 
   React.useEffect(() => {
+    // Skip during HMR to prevent connection timing issues
+    if (isHMR) {
+      console.log("Skipping auth initialization during HMR");
+      setIsLoading(false);
+      return;
+    }
+
     const loadStoredUser = () => {
       // Add error handling for localStorage access
       try {
@@ -169,9 +176,9 @@ export const AuthProvider = React.memo(function AuthProvider({
     };
 
     // Add small delay to prevent HMR timing issues
-    const timeoutId = setTimeout(loadStoredUser, 10);
+    const timeoutId = setTimeout(loadStoredUser, 50); // Increased delay
     return () => clearTimeout(timeoutId);
-  }, []);
+  }, [isHMR]);
 
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
