@@ -1,5 +1,11 @@
 import * as React from "react";
 import { apiClient } from "./api";
+
+// Detect HMR at module level
+const IS_HMR_RELOAD = typeof import.meta.hot !== 'undefined' &&
+                     import.meta.hot &&
+                     performance.navigation &&
+                     performance.navigation.type === 1;
 import {
   PublicClientApplication,
   AuthenticationResult,
