@@ -168,7 +168,8 @@ export const AuthProvider = React.memo(function AuthProvider({
         }
 
         const storedUser = localStorage.getItem("banani_user");
-        if (storedUser && storedUser.length > 10) { // Basic validation
+        if (storedUser && storedUser.length > 10) {
+          // Basic validation
           const userData = JSON.parse(storedUser);
           // Validate essential user data
           if (userData && userData.id && userData.email && userData.role) {
