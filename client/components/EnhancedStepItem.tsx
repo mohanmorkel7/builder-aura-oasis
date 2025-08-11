@@ -453,7 +453,7 @@ export function EnhancedStepItem({
     setEditMessageText(currentMessage);
   };
 
-  const handleSaveEdit = async (messageId: number) => {
+  const handleSaveEdit = async (messageId: number, originalIsRichText: boolean) => {
     if (!editMessageText.trim()) {
       alert("Message cannot be empty");
       return;
@@ -464,7 +464,7 @@ export function EnhancedStepItem({
         chatId: messageId,
         updateData: {
           message: editMessageText.trim(),
-          is_rich_text: false,
+          is_rich_text: originalIsRichText, // Preserve the original format
         },
       });
       setEditingMessageId(null);
