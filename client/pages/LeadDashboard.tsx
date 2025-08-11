@@ -590,6 +590,137 @@ export default function LeadDashboard() {
                       </div>
                     </div>
 
+                    {/* Step-wise Distribution Chart */}
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <div className="text-sm font-medium text-gray-700 mb-4">
+                        Step-wise Distribution - Lead Count by Step
+                      </div>
+                      <div className="overflow-x-auto">
+                        <div className="min-w-max">
+                          {(() => {
+                            // Calculate step-wise distribution
+                            const stepDistribution = allSteps.map((stepName: string) => {
+                              const currentLeadsCount = leadProgressData.filter((lead: any) =>
+                                lead.current_step?.name === stepName
+                              ).length;
+
+                              const completedLeadsCount = leadProgressData.filter((lead: any) =>
+                                lead.completed_steps.some((step: any) => step.name === stepName)
+                              ).length;
+
+                              const totalLeadsAtStep = currentLeadsCount + completedLeadsCount;
+
+                              return {
+                                stepName,
+                                currentLeadsCount,
+                                completedLeadsCount,
+                                totalLeadsAtStep,
+                                stepIndex: allSteps.indexOf(stepName)
+                              };
+                            });
+
+                            const maxLeadsAtStep = Math.max(...stepDistribution.map(s => s.totalLeadsAtStep), 1);
+
+                            return (
+                              <div className="flex" style={{ height: `${chartHeight}px` }}>
+                                {/* Y-axis Step Labels on Left */}
+                                <div className="w-48 pr-4 flex flex-col" style={{ height: `${chartHeight}px` }}>
+                                  {allSteps.slice().reverse().map((stepName: string) => {
+                                    const stepHeight = chartHeight / allSteps.length;
+
+                                    return (
+                                      <div
+                                        key={stepName}
+                                        className="flex items-center justify-end text-right border-b border-gray-200"
+                                        style={{ height: `${stepHeight}px` }}
+                                      >
+                                        <span className="text-sm font-medium text-gray-700">
+                                          {stepName}
+                                        </span>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+
+                                {/* Horizontal Bar Chart */}
+                                <div className="relative" style={{ height: `${chartHeight}px`, width: '400px' }}>
+                                  {/* Grid Lines */}
+                                  <div className="absolute inset-0">
+                                    {allSteps.map((stepName: string, index: number) => {
+                                      const stepHeight = chartHeight / allSteps.length;
+                                      const yPosition = (allSteps.length - 1 - index) * stepHeight;
+
+                                      return (
+                                        <div
+                                          key={stepName}
+                                          className="absolute w-full border-b border-gray-200"
+                                          style={{ top: `${yPosition}px`, height: `${stepHeight}px` }}
+                                        />
+                                      );
+                                    })}
+                                  </div>
+
+                                  {/* Horizontal Bars for Lead Count */}
+                                  <div className="absolute inset-0">
+                                    {stepDistribution.map((stepData) => {
+                                      const stepIndex = allSteps.indexOf(stepData.stepName);
+                                      const stepHeight = chartHeight / allSteps.length;
+                                      const yPosition = (allSteps.length - 1 - stepIndex) * stepHeight;
+                                      const barWidth = (stepData.totalLeadsAtStep / maxLeadsAtStep) * 350; // Max 350px width
+
+                                      return (
+                                        <div key={stepData.stepName}>
+                                          {/* Total bar background */}
+                                          <div
+                                            className="absolute rounded transition-all duration-300 cursor-pointer group"
+                                            style={{
+                                              top: `${yPosition + stepHeight * 0.2}px`,
+                                              left: '10px',
+                                              height: `${stepHeight * 0.6}px`,
+                                              width: `${Math.max(barWidth, 20)}px`,
+                                              backgroundColor: getStepColor(stepIndex),
+                                              opacity: 0.8,
+                                            }}
+                                            title={`${stepData.stepName}: ${stepData.totalLeadsAtStep} leads total (${stepData.currentLeadsCount} current, ${stepData.completedLeadsCount} completed)`}
+                                          >
+                                            {/* Current leads portion */}
+                                            {stepData.currentLeadsCount > 0 && (
+                                              <div
+                                                className="absolute top-0 right-0 rounded-r border-l-2 border-blue-600"
+                                                style={{
+                                                  height: '100%',
+                                                  width: `${(stepData.currentLeadsCount / stepData.totalLeadsAtStep) * 100}%`,
+                                                  backgroundColor: getStepColor(stepIndex),
+                                                  opacity: 1,
+                                                }}
+                                              />
+                                            )}
+
+                                            {/* Lead count text */}
+                                            <div className="absolute inset-0 flex items-center justify-center">
+                                              <span className="text-xs font-bold text-gray-800">
+                                                {stepData.totalLeadsAtStep}
+                                              </span>
+                                            </div>
+
+                                            {/* Hover tooltip */}
+                                            <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20 pointer-events-none">
+                                              {stepData.stepName}: {stepData.totalLeadsAtStep} leads
+                                              <br />Current: {stepData.currentLeadsCount}, Completed: {stepData.completedLeadsCount}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })()}
+                        </div>
+                      </div>
+                    </div>
+
                     {/* Summary Statistics */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       <div className="bg-green-50 p-3 rounded-lg">
