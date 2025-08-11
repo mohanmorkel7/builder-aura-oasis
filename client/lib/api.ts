@@ -814,25 +814,44 @@ export class ApiClient {
   async uploadFiles(files: FileList) {
     const formData = new FormData();
 
-    Array.from(files).forEach((file) => {
-      formData.append("files", file);
+    Array.from(files).forEach((file, index) => {
+      formData.append(`file_${index}`, file);
     });
 
     const url = `${API_BASE_URL}/files/upload`;
 
     try {
+      console.log(`Uploading ${files.length} files to ${url}`);
+
       const response = await fetch(url, {
         method: "POST",
         body: formData,
         // Don't set Content-Type header, let browser set it with boundary
       });
 
+      console.log(`Upload response status: ${response.status}`);
+
       if (!response.ok) {
-        throw new Error(`Upload failed: ${response.status}`);
+        let errorMessage = `Upload failed: ${response.status}`;
+
+        try {
+          const errorData = await response.json();
+          if (errorData.error || errorData.message) {
+            errorMessage = errorData.message || errorData.error;
+          }
+        } catch (parseError) {
+          // If we can't parse JSON, use the status text
+          errorMessage = `Upload failed: ${response.status} ${response.statusText}`;
+        }
+
+        throw new Error(errorMessage);
       }
 
-      return await response.json();
+      const result = await response.json();
+      console.log("Upload successful:", result);
+      return result;
     } catch (error) {
+      console.error("Upload error:", error);
       if (error instanceof Error) {
         throw error;
       }
