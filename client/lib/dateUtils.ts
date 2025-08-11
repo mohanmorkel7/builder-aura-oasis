@@ -72,7 +72,7 @@ export const formatToISTDateTime = (
     hours = hours % 12;
     hours = hours ? hours : 12; // 0 should be 12
 
-    return `${day} ${month} ${year}, ${hours}:${minutes} ${ampm}`;
+    return `${day} ${month} ${year}, ${hours}:${minutes} ${ampm} IST`;
   }
 };
 
