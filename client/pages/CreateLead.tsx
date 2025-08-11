@@ -631,7 +631,7 @@ export default function CreateLead() {
           switch (config.recurring_period) {
             case "monthly":
               multiplier = 12;
-              description = `Monthly (×${multiplier})`;
+              description = `Monthly (��${multiplier})`;
               break;
             case "quarterly":
               multiplier = 4;
@@ -1725,7 +1725,7 @@ export default function CreateLead() {
                 {/* Commercials Config */}
                 <AccordionItem value="commercials-config">
                   <AccordionTrigger className="text-lg font-semibold">
-                    Commercials Config
+                    Commercials
                   </AccordionTrigger>
                   <AccordionContent className="space-y-6">
                     {/* Flat Fee Config */}
@@ -1979,7 +1979,7 @@ export default function CreateLead() {
                 {/* Summary Config */}
                 <AccordionItem value="summary-config">
                   <AccordionTrigger className="text-lg font-semibold">
-                    Summary Config
+                    Project Deal size
                   </AccordionTrigger>
                   <AccordionContent>
                     {leadData.transaction_fee_config.length === 0 ? (
