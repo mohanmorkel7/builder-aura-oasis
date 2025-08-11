@@ -132,6 +132,9 @@ const getNotificationsFromFollowUps = async (
     const followUpsPromise = apiClient.getAllFollowUps({
       userId,
       userRole: "all",
+    }).catch((error) => {
+      console.warn("Follow-ups API call failed, using fallback:", error);
+      return []; // Return empty array as fallback
     });
 
     const followUps = await Promise.race([followUpsPromise, timeoutPromise]);
