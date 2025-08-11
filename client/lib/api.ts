@@ -824,11 +824,18 @@ export class ApiClient {
     try {
       console.log(`Uploading ${files.length} files to ${url}`);
 
+      // Create AbortController for timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 minute timeout
+
       const response = await fetch(url, {
         method: "POST",
         body: formData,
+        signal: controller.signal,
         // Don't set Content-Type header, let browser set it with boundary
       });
+
+      clearTimeout(timeoutId);
 
       console.log(`Upload response status: ${response.status}`);
 
