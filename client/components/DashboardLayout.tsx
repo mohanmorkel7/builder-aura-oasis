@@ -24,6 +24,8 @@ import {
   AlertCircle,
   Ticket,
   DollarSign,
+  ChevronDown,
+  ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { apiClient } from "@/lib/api";
