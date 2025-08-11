@@ -153,10 +153,10 @@ export function StepItem({
               <div className="text-sm text-gray-600">
                 {step.status === "completed" &&
                   step.completed_date &&
-                  `Completed on ${new Date(step.completed_date).toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" })}`}
+                  `Completed on ${formatToISTDateTime(step.completed_date).split(',')[0]}`}
                 {step.status !== "completed" &&
                   step.due_date &&
-                  `Due: ${new Date(step.due_date).toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" })}`}
+                  `Due: ${formatToISTDateTime(step.due_date).split(',')[0]}`}
               </div>
             </div>
             {isExpanded ? (
@@ -240,10 +240,7 @@ export function StepItem({
                               {Math.round((doc.file_size / 1024 / 1024) * 10) /
                                 10}{" "}
                               MB • {doc.uploaded_by} •{" "}
-                              {new Date(doc.uploaded_at).toLocaleDateString(
-                                "en-IN",
-                                { timeZone: "Asia/Kolkata" },
-                              )}
+                              {formatToISTDateTime(doc.uploaded_at)}
                             </div>
                           </div>
                         </div>
