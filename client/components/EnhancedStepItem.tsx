@@ -444,6 +444,51 @@ export function EnhancedStepItem({
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
+  const handleEditMessage = (messageId: number, currentMessage: string) => {
+    setEditingMessageId(messageId);
+    setEditMessageText(currentMessage);
+  };
+
+  const handleSaveEdit = async (messageId: number) => {
+    if (!editMessageText.trim()) {
+      alert("Message cannot be empty");
+      return;
+    }
+
+    try {
+      await editChatMutation.mutateAsync({
+        chatId: messageId,
+        updateData: {
+          message: editMessageText.trim(),
+          is_rich_text: false,
+        },
+      });
+      setEditingMessageId(null);
+      setEditMessageText("");
+    } catch (error) {
+      console.error("Failed to edit message:", error);
+      alert("Failed to edit message. Please try again.");
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingMessageId(null);
+    setEditMessageText("");
+  };
+
+  const handleDeleteMessage = async (messageId: number) => {
+    if (!window.confirm("Are you sure you want to delete this message?")) {
+      return;
+    }
+
+    try {
+      await deleteChatMutation.mutateAsync(messageId);
+    } catch (error) {
+      console.error("Failed to delete message:", error);
+      alert("Failed to delete message. Please try again.");
+    }
+  };
+
   return (
     <div
       ref={setNodeRef}
