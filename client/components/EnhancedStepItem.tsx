@@ -189,6 +189,10 @@ export function EnhancedStepItem({
   const [editingMessageId, setEditingMessageId] = useState<number | null>(null);
   const [editMessageText, setEditMessageText] = useState("");
 
+  // Delete confirmation modal state
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [messageToDelete, setMessageToDelete] = useState<number | null>(null);
+
   // Function to highlight mentions and make follow-up IDs clickable
   const processMessageContent = (messageText: string) => {
     if (!user) return messageText;
