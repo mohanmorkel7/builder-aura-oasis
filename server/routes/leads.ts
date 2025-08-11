@@ -1852,9 +1852,7 @@ router.put("/chats/:id", async (req: Request, res: Response) => {
         const updatedChat = await LeadChatRepository.findById(id);
         res.json(updatedChat);
       } else {
-        console.log(
-          "Database unavailable, returning success for chat update",
-        );
+        console.log("Database unavailable, returning success for chat update");
         res.json({ id, message, is_rich_text: is_rich_text || false });
       }
     } catch (dbError) {

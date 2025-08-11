@@ -804,7 +804,10 @@ export class ApiClient {
     });
   }
 
-  async editStepChat(chatId: number, updateData: { message: string; is_rich_text: boolean }) {
+  async editStepChat(
+    chatId: number,
+    updateData: { message: string; is_rich_text: boolean },
+  ) {
     return this.request(`/leads/chats/${chatId}`, {
       method: "PUT",
       body: JSON.stringify(updateData),

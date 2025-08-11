@@ -1012,13 +1012,20 @@ export class LeadChatRepository {
     return result.rows[0];
   }
 
-  static async update(id: number, updateData: { message: string; is_rich_text: boolean }): Promise<boolean> {
+  static async update(
+    id: number,
+    updateData: { message: string; is_rich_text: boolean },
+  ): Promise<boolean> {
     const query = `
       UPDATE lead_chats
       SET message = $2, is_rich_text = $3, updated_at = NOW()
       WHERE id = $1
     `;
-    const result = await pool.query(query, [id, updateData.message, updateData.is_rich_text]);
+    const result = await pool.query(query, [
+      id,
+      updateData.message,
+      updateData.is_rich_text,
+    ]);
     return result.rowCount > 0;
   }
 

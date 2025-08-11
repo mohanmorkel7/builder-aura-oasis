@@ -460,14 +460,21 @@ export function EnhancedStepItem({
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
-  const handleEditMessage = (messageId: number, currentMessage: string, isRichText: boolean) => {
+  const handleEditMessage = (
+    messageId: number,
+    currentMessage: string,
+    isRichText: boolean,
+  ) => {
     setEditingMessageId(messageId);
     // For rich text messages, we keep the HTML content for the rich text editor
     // For plain text messages, we use the text as-is
     setEditMessageText(currentMessage);
   };
 
-  const handleSaveEdit = async (messageId: number, originalIsRichText: boolean) => {
+  const handleSaveEdit = async (
+    messageId: number,
+    originalIsRichText: boolean,
+  ) => {
     if (!editMessageText.trim()) {
       alert("Message cannot be empty");
       return;
@@ -725,7 +732,13 @@ export function EnhancedStepItem({
                                         <Button
                                           size="sm"
                                           variant="ghost"
-                                          onClick={() => handleEditMessage(message.id, message.message, message.is_rich_text)}
+                                          onClick={() =>
+                                            handleEditMessage(
+                                              message.id,
+                                              message.message,
+                                              message.is_rich_text,
+                                            )
+                                          }
                                           className="text-gray-600 hover:text-gray-700"
                                         >
                                           <Edit className="w-3 h-3" />
@@ -733,7 +746,9 @@ export function EnhancedStepItem({
                                         <Button
                                           size="sm"
                                           variant="ghost"
-                                          onClick={() => handleDeleteMessage(message.id)}
+                                          onClick={() =>
+                                            handleDeleteMessage(message.id)
+                                          }
                                           className="text-red-600 hover:text-red-700"
                                         >
                                           <Trash2 className="w-3 h-3" />
@@ -766,7 +781,9 @@ export function EnhancedStepItem({
                                   ) : (
                                     <Textarea
                                       value={editMessageText}
-                                      onChange={(e) => setEditMessageText(e.target.value)}
+                                      onChange={(e) =>
+                                        setEditMessageText(e.target.value)
+                                      }
                                       className="min-h-[60px]"
                                       placeholder="Edit your message..."
                                     />
@@ -774,7 +791,12 @@ export function EnhancedStepItem({
                                   <div className="flex space-x-2">
                                     <Button
                                       size="sm"
-                                      onClick={() => handleSaveEdit(message.id, message.is_rich_text)}
+                                      onClick={() =>
+                                        handleSaveEdit(
+                                          message.id,
+                                          message.is_rich_text,
+                                        )
+                                      }
                                       disabled={!editMessageText.trim()}
                                     >
                                       Save
@@ -1176,11 +1198,14 @@ export function EnhancedStepItem({
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Message</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this message? This action cannot be undone.
+              Are you sure you want to delete this message? This action cannot
+              be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={cancelDeleteMessage}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel onClick={cancelDeleteMessage}>
+              Cancel
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDeleteMessage}
               className="bg-red-600 hover:bg-red-700 focus:ring-red-600"

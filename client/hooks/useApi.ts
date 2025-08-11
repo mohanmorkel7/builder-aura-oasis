@@ -1273,8 +1273,13 @@ export function useCreateStepChat() {
 export function useEditStepChat() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ chatId, updateData }: { chatId: number; updateData: { message: string; is_rich_text: boolean } }) =>
-      apiClient.editStepChat(chatId, updateData),
+    mutationFn: ({
+      chatId,
+      updateData,
+    }: {
+      chatId: number;
+      updateData: { message: string; is_rich_text: boolean };
+    }) => apiClient.editStepChat(chatId, updateData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["step-chats"] });
     },
