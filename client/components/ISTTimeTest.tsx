@@ -8,6 +8,7 @@ import {
 export function ISTTimeTest() {
   const [currentTime, setCurrentTime] = useState("");
   const [testTimestamp, setTestTimestamp] = useState("");
+  const [debugInfo, setDebugInfo] = useState<any>({});
 
   useEffect(() => {
     const updateTime = () => {
@@ -26,6 +27,18 @@ export function ISTTimeTest() {
           hour12: true,
         }),
       );
+
+      // Test with a sample database timestamp format (UTC)
+      const sampleDBTimestamp = "2025-08-11T05:31:00.000Z"; // UTC timestamp equivalent to 11:01 AM IST
+      const testIST = formatToISTDateTime(sampleDBTimestamp);
+
+      setDebugInfo({
+        currentUTC: now.toISOString(),
+        currentLocal: now.toString(),
+        sampleDBTimestamp,
+        sampleISTFormatted: testIST,
+        timezoneOffset: now.getTimezoneOffset(),
+      });
     };
 
     updateTime();
