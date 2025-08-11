@@ -1071,6 +1071,8 @@ export function useUpdateLead() {
       queryClient.invalidateQueries({ queryKey: ["leads"] });
       queryClient.invalidateQueries({ queryKey: ["leads", id] });
       queryClient.invalidateQueries({ queryKey: ["lead-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["lead-progress-dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["template-step-dashboard"] });
     },
     onError: (error) => {
       console.error("Lead update failed:", error);
