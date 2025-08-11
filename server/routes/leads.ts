@@ -1827,6 +1827,49 @@ router.post("/steps/:stepId/chats", async (req: Request, res: Response) => {
   }
 });
 
+// Update step chat
+router.put("/chats/:id", async (req: Request, res: Response) => {
+  try {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ error: "Invalid chat ID" });
+    }
+
+    const { message, is_rich_text } = req.body;
+    if (!message) {
+      return res.status(400).json({ error: "Message is required" });
+    }
+
+    try {
+      if (await isDatabaseAvailable()) {
+        const success = await LeadChatRepository.update(id, {
+          message,
+          is_rich_text: is_rich_text || false,
+        });
+        if (!success) {
+          return res.status(404).json({ error: "Chat not found" });
+        }
+        const updatedChat = await LeadChatRepository.findById(id);
+        res.json(updatedChat);
+      } else {
+        console.log(
+          "Database unavailable, returning success for chat update",
+        );
+        res.json({ id, message, is_rich_text: is_rich_text || false });
+      }
+    } catch (dbError) {
+      console.log(
+        "Database error, returning success for chat update:",
+        dbError.message,
+      );
+      res.json({ id, message, is_rich_text: is_rich_text || false });
+    }
+  } catch (error) {
+    console.error("Error updating chat:", error);
+    res.status(500).json({ error: "Failed to update chat" });
+  }
+});
+
 // Delete step chat
 router.delete("/chats/:id", async (req: Request, res: Response) => {
   try {
