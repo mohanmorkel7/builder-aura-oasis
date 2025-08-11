@@ -216,13 +216,34 @@ export function EnhancedStepItem({
     const files = event.target.files;
     if (!files || files.length === 0 || !user) return;
 
+    // Check file size limits (50MB per file)
+    const maxSizeBytes = 50 * 1024 * 1024; // 50MB
+    const oversizedFiles = Array.from(files).filter(
+      (file) => file.size > maxSizeBytes,
+    );
+
+    if (oversizedFiles.length > 0) {
+      alert(
+        `The following files are too large (max 50MB): ${oversizedFiles.map((f) => f.name).join(", ")}`,
+      );
+      event.target.value = "";
+      return;
+    }
+
     try {
       // First, upload the actual files to the server
-      console.log("Uploading files to server...");
+      console.log(
+        "Uploading files to server...",
+        Array.from(files).map((f) => ({ name: f.name, size: f.size })),
+      );
       const uploadResult = await apiClient.uploadFiles(files);
 
       if (!uploadResult.success) {
-        throw new Error("File upload failed");
+        throw new Error(uploadResult.message || "File upload failed");
+      }
+
+      if (!uploadResult.files || uploadResult.files.length === 0) {
+        throw new Error("No files were uploaded successfully");
       }
 
       console.log("Files uploaded successfully:", uploadResult.files);
@@ -241,9 +262,23 @@ export function EnhancedStepItem({
       event.target.value = "";
 
       console.log("Files staged for sending:", newAttachments);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to upload files:", error);
-      alert("Failed to upload files. Please try again.");
+
+      let errorMessage = "Failed to upload files. Please try again.";
+
+      if (error.message && error.message.includes("413")) {
+        errorMessage =
+          "File is too large. Please choose a smaller file (max 50MB).";
+      } else if (error.message && error.message.includes("Network")) {
+        errorMessage =
+          "Network error. Please check your connection and try again.";
+      } else if (error.message) {
+        errorMessage = `Upload failed: ${error.message}`;
+      }
+
+      alert(errorMessage);
+      event.target.value = "";
     }
   };
 
@@ -748,6 +783,7 @@ export function EnhancedStepItem({
                             className="hidden"
                             onChange={handleFileUpload}
                             multiple
+                            accept="*/*"
                           />
                           <Button
                             size="sm"
