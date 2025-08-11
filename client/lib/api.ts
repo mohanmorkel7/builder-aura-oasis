@@ -850,37 +850,45 @@ export class ApiClient {
       if (!response.ok) {
         let errorMessage = `Upload failed: ${response.status}`;
         let detailedError = null;
-
-        // Clone the response to be able to read it multiple ways if needed
-        const responseClone = response.clone();
+        let responseText = '';
 
         try {
-          // Try to read as JSON first
-          const errorData = await response.json();
-          console.error("Server error response:", errorData);
+          // Read the response as text first (this can only be done once)
+          responseText = await response.text();
+          console.error("Server response text:", responseText);
 
-          if (errorData.error || errorData.message) {
-            errorMessage = errorData.message || errorData.error;
-            detailedError = errorData;
-          }
-        } catch (parseError) {
-          // If JSON parsing fails, try to read as text from the cloned response
+          // Try to parse the text as JSON
           try {
-            const responseText = await responseClone.text();
-            console.error("Non-JSON error response:", responseText);
+            const errorData = JSON.parse(responseText);
+            console.error("Parsed server error response:", errorData);
 
-            // Try to extract meaningful error from HTML or other formats
+            if (errorData.error || errorData.message) {
+              errorMessage = errorData.message || errorData.error;
+              detailedError = errorData;
+            }
+          } catch (jsonParseError) {
+            // If it's not JSON, extract meaningful error from the text
+            console.error("Response is not JSON, analyzing text content");
+
             if (responseText.includes('413') || responseText.toLowerCase().includes('too large')) {
               errorMessage = "File too large. Please choose a smaller file.";
             } else if (responseText.includes('400') || responseText.toLowerCase().includes('bad request')) {
               errorMessage = "Invalid request format. Please try again.";
+            } else if (responseText.includes('404')) {
+              errorMessage = "Upload endpoint not found. Please contact support.";
+            } else if (responseText.includes('500')) {
+              errorMessage = "Server error occurred. Please try again later.";
+            } else if (responseText.trim() === '') {
+              errorMessage = `Upload failed: ${response.status} ${response.statusText} (empty response)`;
             } else {
-              errorMessage = `Upload failed: ${response.status} ${response.statusText}`;
+              // Include a snippet of the response for debugging
+              const snippet = responseText.length > 200 ? responseText.substring(0, 200) + '...' : responseText;
+              errorMessage = `Upload failed: ${response.status} ${response.statusText}. Response: ${snippet}`;
             }
-          } catch (textError) {
-            console.error("Could not read error response:", textError);
-            errorMessage = `Upload failed: ${response.status} ${response.statusText}`;
           }
+        } catch (readError) {
+          console.error("Could not read response body:", readError);
+          errorMessage = `Upload failed: ${response.status} ${response.statusText} (could not read response)`;
         }
 
         // Log error details properly
@@ -889,6 +897,7 @@ export class ApiClient {
         console.error("- Status Text:", response.statusText);
         console.error("- URL:", response.url);
         console.error("- Headers:", Object.fromEntries(response.headers.entries()));
+        console.error("- Response Text:", responseText);
         console.error("- Error Data:", detailedError);
 
         throw new Error(errorMessage);
