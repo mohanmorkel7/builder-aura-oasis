@@ -123,6 +123,7 @@ export default function LeadDashboard() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [sourceFilter, setSourceFilter] = useState<string>("all");
   const [activeTab, setActiveTab] = useState<"leads" | "drafts">("leads");
+  const [yAxisSort, setYAxisSort] = useState<"asc" | "desc">("asc");
 
   // Refresh partial saves when component mounts
   useEffect(() => {
