@@ -140,6 +140,16 @@ export class ApiClient {
         throw new Error(`Could not read response from server URL: ${url}`);
       }
 
+      // Check if response is HTML instead of JSON (indicates routing issue)
+      if (responseText.trim().startsWith('<!doctype') || responseText.trim().startsWith('<!DOCTYPE') || responseText.trim().startsWith('<html')) {
+        console.error("Received HTML response instead of JSON for API endpoint:", url);
+        console.error("This indicates the API request is not being routed to the backend server.");
+        console.error("Response content:", responseText.substring(0, 200) + "...");
+
+        // Check if server might be down or misconfigured
+        throw new Error(`Server routing error: API endpoint ${endpoint} returned HTML instead of JSON. This usually means the backend server is not running or API routes are not properly configured.`);
+      }
+
       // Try to parse as JSON
       try {
         const result = JSON.parse(responseText);
