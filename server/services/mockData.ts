@@ -1601,6 +1601,13 @@ export class MockDataService {
       ];
     }
 
+    // Ensure nextChatId is higher than any existing message ID to prevent duplicates
+    const maxExistingId = Math.max(...this.chatMessages.map(chat => chat.id), 0);
+    if (this.nextChatId <= maxExistingId) {
+      this.nextChatId = maxExistingId + 1;
+      console.log(`MockDataService: Updated nextChatId to ${this.nextChatId} to prevent duplicates`);
+    }
+
     const filteredChats = this.chatMessages.filter(
       (chat) => chat.step_id === stepId,
     );
