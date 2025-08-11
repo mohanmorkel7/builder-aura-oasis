@@ -112,6 +112,19 @@ router.get("/test", (req: Request, res: Response) => {
   res.json({ message: "Files router is working", timestamp: new Date().toISOString() });
 });
 
+// Simple POST test endpoint to verify POST routing works
+router.post("/test-post", (req: Request, res: Response) => {
+  console.log("Test POST endpoint hit");
+  console.log("Headers:", req.headers);
+  console.log("Body:", req.body);
+  res.json({
+    message: "POST routing works",
+    timestamp: new Date().toISOString(),
+    headers: req.headers,
+    hasBody: !!req.body
+  });
+});
+
 // Upload files endpoint - flexible to handle any field names
 router.post("/upload", (req: Request, res: Response) => {
   console.log("=== UPLOAD REQUEST START ===");
