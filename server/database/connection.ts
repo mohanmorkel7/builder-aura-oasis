@@ -2,16 +2,14 @@ import { Pool } from "pg";
 import fs from "fs";
 import path from "path";
 
+// Use environment variables or fallback values
 const pool = new Pool({
-  connectionString:
-    process.env.DATABASE_URL ||
-    "postgresql://postgres:password@localhost:5432/banani_db",
-  ssl:
-    process.env.NODE_ENV === "production"
-      ? { rejectUnauthorized: false }
-      : false,
-  // Set timezone to IST for all connections
-  options: "-c timezone=Asia/Kolkata",
+  user: process.env.PG_USER || "crmuser",
+  host: process.env.PG_HOST || "10.30.11.95",
+  database: process.env.PG_DB || "crm_test",
+  password: process.env.PG_PASSWORD || "myl@p@y-crm$102019",
+  port: Number(process.env.PG_PORT) || 2019,
+  ssl: false, // Change to { rejectUnauthorized: false } if required in production
 });
 
 // Check if database is available
@@ -80,6 +78,7 @@ export async function initializeDatabase() {
       console.log("Database schema already exists");
     }
 
+    // await client.query(schema);
     console.log("Database initialized successfully");
     client.release();
   } catch (error) {

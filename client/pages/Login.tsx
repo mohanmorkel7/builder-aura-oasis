@@ -40,7 +40,7 @@ export default function Login() {
         <div className="text-center">
           <div className="flex justify-center mb-4">
             <img
-              src="https://cdn.builder.io/api/v1/image/assets%2F9f68bdced9274939b0bcd49e09efd146%2F17959db31c554dfdaeddef5d5757085c?format=webp&width=800"
+              src={'./mylapaylogo.png'}
               alt="Mylapay"
               className="h-12 object-contain"
             />
