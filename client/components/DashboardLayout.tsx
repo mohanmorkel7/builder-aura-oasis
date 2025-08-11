@@ -218,6 +218,13 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const navigate = useNavigate();
   const [expandedMenus, setExpandedMenus] = useState<{ [key: string]: boolean }>({});
 
+  // Auto-expand Settings menu when on settings-related pages
+  useEffect(() => {
+    if (location.pathname.startsWith("/admin/users")) {
+      setExpandedMenus((prev) => ({ ...prev, Settings: true }));
+    }
+  }, [location.pathname]);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
