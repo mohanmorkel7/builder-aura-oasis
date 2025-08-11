@@ -733,18 +733,6 @@ export default function LeadDashboard() {
                         </div>
                       </div>
 
-                      <div className="bg-purple-50 p-3 rounded-lg">
-                        <div className="text-sm font-medium text-purple-800">
-                          Completed Leads
-                        </div>
-                        <div className="text-2xl font-bold text-purple-900">
-                          {
-                            leadProgressData.filter(
-                              (lead: any) => !lead.current_step,
-                            ).length
-                          }
-                        </div>
-                      </div>
 
                       <div className="bg-orange-50 p-3 rounded-lg">
                         <div className="text-sm font-medium text-orange-800">
