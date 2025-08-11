@@ -410,12 +410,33 @@ export default function LeadDashboard() {
                   )
                 );
 
+                // Sort steps based on yAxisSort state
+                const sortedSteps = [...allSteps].sort((a, b) => {
+                  return yAxisSort === "asc"
+                    ? a.localeCompare(b)
+                    : b.localeCompare(a);
+                });
+
                 return (
                   <div className="space-y-6">
                     {/* New Chart Design: X-axis Leads, Y-axis Steps */}
                     <div className="bg-gray-50 p-4 rounded-lg">
-                      <div className="text-sm font-medium text-gray-700 mb-4">
-                        All Leads Progress ({leadProgressData.length} leads)
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="text-sm font-medium text-gray-700">
+                          All Leads Progress ({leadProgressData.length} leads)
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-xs text-gray-600">Y-axis Sort:</span>
+                          <Select value={yAxisSort} onValueChange={(value: "asc" | "desc") => setYAxisSort(value)}>
+                            <SelectTrigger className="w-32 h-8">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="asc">Ascending</SelectItem>
+                              <SelectItem value="desc">Descending</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
                       </div>
                       <div className="overflow-x-auto">
                         <div className="min-w-max">
