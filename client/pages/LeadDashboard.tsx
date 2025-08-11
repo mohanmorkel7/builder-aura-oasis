@@ -418,30 +418,8 @@ export default function LeadDashboard() {
                       </div>
                       <div className="overflow-x-auto">
                         <div className="min-w-max">
-                          {/* Leads on X-axis */}
-                          <div className="flex items-end space-x-4 mb-4">
-                            <div className="w-32 text-right pr-4">
-                              <span className="text-sm font-medium text-gray-600">
-                                Steps
-                              </span>
-                            </div>
-                            {leadProgressData.map((leadProgress: any) => (
-                              <div
-                                key={leadProgress.lead_id}
-                                className="w-24 text-center border-b border-gray-300 pb-2"
-                              >
-                                <div className="text-xs font-medium text-gray-700 transform -rotate-45 origin-bottom-left whitespace-nowrap">
-                                  {leadProgress.client_name}
-                                </div>
-                                <div className="text-xs text-blue-600 mt-1">
-                                  {leadProgress.total_completed_probability}%
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-
                           {/* Steps on Y-axis with vertical bars */}
-                          <div className="space-y-3">
+                          <div className="space-y-3 mb-4">
                             {allSteps.map((stepName: string) => (
                               <div
                                 key={stepName}
@@ -496,6 +474,28 @@ export default function LeadDashboard() {
                                     </div>
                                   );
                                 })}
+                              </div>
+                            ))}
+                          </div>
+
+                          {/* Leads on X-axis - Now at bottom */}
+                          <div className="flex items-start space-x-4 border-t border-gray-300 pt-2">
+                            <div className="w-32 text-right pr-4">
+                              <span className="text-sm font-medium text-gray-600">
+                                Steps
+                              </span>
+                            </div>
+                            {leadProgressData.map((leadProgress: any) => (
+                              <div
+                                key={leadProgress.lead_id}
+                                className="w-24 text-center"
+                              >
+                                <div className="text-xs font-medium text-gray-700 transform rotate-45 origin-top-left whitespace-nowrap">
+                                  {leadProgress.client_name}
+                                </div>
+                                <div className="text-xs text-blue-600 mt-3">
+                                  {leadProgress.total_completed_probability}%
+                                </div>
                               </div>
                             ))}
                           </div>
