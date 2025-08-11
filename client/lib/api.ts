@@ -858,8 +858,13 @@ export class ApiClient {
       const result = await response.json();
       console.log("Upload successful:", result);
       return result;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Upload error:", error);
+
+      if (error.name === 'AbortError') {
+        throw new Error("Upload timed out. Please try with smaller files or check your connection.");
+      }
+
       if (error instanceof Error) {
         throw error;
       }
