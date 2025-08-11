@@ -851,7 +851,11 @@ export class ApiClient {
         let errorMessage = `Upload failed: ${response.status}`;
         let detailedError = null;
 
+        // Clone the response to be able to read it multiple ways if needed
+        const responseClone = response.clone();
+
         try {
+          // Try to read as JSON first
           const errorData = await response.json();
           console.error("Server error response:", errorData);
 
@@ -860,11 +864,19 @@ export class ApiClient {
             detailedError = errorData;
           }
         } catch (parseError) {
-          // If we can't parse JSON, get response text for debugging
+          // If JSON parsing fails, try to read as text from the cloned response
           try {
-            const responseText = await response.text();
+            const responseText = await responseClone.text();
             console.error("Non-JSON error response:", responseText);
-            errorMessage = `Upload failed: ${response.status} ${response.statusText}`;
+
+            // Try to extract meaningful error from HTML or other formats
+            if (responseText.includes('413') || responseText.toLowerCase().includes('too large')) {
+              errorMessage = "File too large. Please choose a smaller file.";
+            } else if (responseText.includes('400') || responseText.toLowerCase().includes('bad request')) {
+              errorMessage = "Invalid request format. Please try again.";
+            } else {
+              errorMessage = `Upload failed: ${response.status} ${response.statusText}`;
+            }
           } catch (textError) {
             console.error("Could not read error response:", textError);
             errorMessage = `Upload failed: ${response.status} ${response.statusText}`;
@@ -874,6 +886,7 @@ export class ApiClient {
         console.error("Complete upload error details:", {
           status: response.status,
           statusText: response.statusText,
+          url: response.url,
           headers: Object.fromEntries(response.headers.entries()),
           errorData: detailedError
         });
