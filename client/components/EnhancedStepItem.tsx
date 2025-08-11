@@ -484,17 +484,27 @@ export function EnhancedStepItem({
     setEditMessageText("");
   };
 
-  const handleDeleteMessage = async (messageId: number) => {
-    if (!window.confirm("Are you sure you want to delete this message?")) {
-      return;
-    }
+  const handleDeleteMessage = (messageId: number) => {
+    setMessageToDelete(messageId);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDeleteMessage = async () => {
+    if (!messageToDelete) return;
 
     try {
-      await deleteChatMutation.mutateAsync(messageId);
+      await deleteChatMutation.mutateAsync(messageToDelete);
+      setDeleteConfirmOpen(false);
+      setMessageToDelete(null);
     } catch (error) {
       console.error("Failed to delete message:", error);
       alert("Failed to delete message. Please try again.");
     }
+  };
+
+  const cancelDeleteMessage = () => {
+    setDeleteConfirmOpen(false);
+    setMessageToDelete(null);
   };
 
   return (
