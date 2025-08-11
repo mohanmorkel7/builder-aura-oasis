@@ -32,15 +32,18 @@ export const formatToISTDateTime = (
   let dateObj: Date;
 
   if (typeof date === "string") {
-    // Handle various timestamp formats from database
-    if (date.includes("T") && (date.includes("Z") || date.includes("+"))) {
-      // ISO format (UTC) - e.g., "2025-08-11T05:31:00.000Z"
-      dateObj = new Date(date);
-    } else if (date.includes("-") && date.includes(":")) {
-      // SQL format - assume UTC if no timezone specified
-      dateObj = new Date(date + (date.includes("Z") ? "" : "Z"));
+    // Parse the timestamp string and treat it as is (no timezone assumptions)
+    if (date.includes("T") && date.includes("Z")) {
+      // If it's UTC format, create date normally and show the time as is
+      const utcString = date.replace("Z", "");
+      const [datePart, timePart] = utcString.split("T");
+      const [year, month, day] = datePart.split("-").map(Number);
+      const [hour, minute, second] = timePart.split(":").map(Number);
+
+      // Create a date that represents the time directly (not as UTC)
+      dateObj = new Date(year, month - 1, day, hour, minute, second || 0);
     } else {
-      // Other formats
+      // For other formats, parse normally
       dateObj = new Date(date);
     }
   } else {
@@ -52,20 +55,9 @@ export const formatToISTDateTime = (
     return "Invalid Date";
   }
 
-  const defaultOptions: Intl.DateTimeFormatOptions = {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-    ...options,
-  };
-
   try {
-    // Format the date using UTC time (no timezone conversion)
-    const utcOptions: Intl.DateTimeFormatOptions = {
-      timeZone: "UTC",
+    // Format the date using local time (no timezone conversion)
+    const formatter = new Intl.DateTimeFormat("en-IN", {
       day: "numeric",
       month: "short",
       year: "numeric",
@@ -73,20 +65,17 @@ export const formatToISTDateTime = (
       minute: "2-digit",
       hour12: true,
       ...options,
-    };
+    });
 
-    const formatter = new Intl.DateTimeFormat("en-IN", utcOptions);
-    const formattedDate = formatter.format(dateObj);
-
-    return formattedDate;
+    return formatter.format(dateObj);
   } catch (error) {
     console.warn("Error formatting date:", error);
-    // Fallback to UTC formatting
-    const day = dateObj.getUTCDate();
-    const month = dateObj.toLocaleString("en-IN", { month: "short", timeZone: "UTC" });
-    const year = dateObj.getUTCFullYear();
-    let hours = dateObj.getUTCHours();
-    const minutes = dateObj.getUTCMinutes().toString().padStart(2, "0");
+    // Fallback formatting
+    const day = dateObj.getDate();
+    const month = dateObj.toLocaleString("en-IN", { month: "short" });
+    const year = dateObj.getFullYear();
+    let hours = dateObj.getHours();
+    const minutes = dateObj.getMinutes().toString().padStart(2, "0");
     const ampm = hours >= 12 ? "pm" : "am";
     hours = hours % 12;
     hours = hours ? hours : 12; // 0 should be 12
