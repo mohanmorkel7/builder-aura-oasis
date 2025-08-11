@@ -216,6 +216,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const { user, logout, isLoading } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const [expandedMenus, setExpandedMenus] = useState<{ [key: string]: boolean }>({});
 
   if (isLoading) {
     return (
