@@ -50,18 +50,11 @@ const navigationItems: NavigationItem[] = [
     roles: ["admin", "sales", "product"],
   },
   {
-    name: "Admin Panel",
-    href: "/admin",
-    icon: Settings,
-    roles: ["admin"],
-  },
-  {
     name: "FinOps",
     href: "/finops",
     icon: DollarSign,
     roles: ["admin", "finance"],
   },
-
   {
     name: "Sales",
     href: "/leads",
@@ -97,6 +90,18 @@ const navigationItems: NavigationItem[] = [
     href: "/alerts",
     icon: Bell,
     roles: ["admin", "sales", "product"],
+  },
+  {
+    name: "Settings",
+    icon: Settings,
+    roles: ["admin"],
+    submenu: [
+      {
+        name: "Manage Users",
+        href: "/admin/users",
+        roles: ["admin"],
+      },
+    ],
   },
 ];
 
