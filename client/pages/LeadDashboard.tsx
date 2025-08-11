@@ -505,7 +505,7 @@ export default function LeadDashboard() {
                                         return (
                                           <div
                                             key={step.name}
-                                            className="absolute left-0 right-0 mx-1 rounded transition-all duration-300 cursor-pointer group"
+                                            className="absolute left-1/2 transform -translate-x-1/2 w-8 rounded transition-all duration-300 cursor-pointer group"
                                             style={{
                                               top: `${yPosition}px`,
                                               height: `${stepHeight}px`,
@@ -1169,7 +1169,7 @@ export default function LeadDashboard() {
                           </span>
                           {lead.contacts && lead.contacts.length > 0 && (
                             <>
-                              <span>•</span>
+                              <span>��</span>
                               <span>{lead.contacts[0].contact_name}</span>
                               <span>•</span>
                               <span>{lead.contacts[0].email}</span>
