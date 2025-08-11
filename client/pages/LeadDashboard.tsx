@@ -899,17 +899,6 @@ export default function LeadDashboard() {
                       </div>
                     </div>
 
-                    {/* Legend */}
-                    <div className="flex items-center justify-center space-x-6 text-sm">
-                      <div className="flex items-center space-x-2">
-                        <div className="w-4 h-4 bg-green-500 rounded"></div>
-                        <span className="text-gray-600">Completed Steps</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <div className="w-4 h-4 bg-blue-500 rounded border-2 border-blue-300"></div>
-                        <span className="text-gray-600">Current Step</span>
-                      </div>
-                    </div>
 
                     {/* Lead List Summary */}
                     <div className="border-t pt-4">
