@@ -484,6 +484,40 @@ export class ApiClient {
     });
   }
 
+  // Enhanced request method with retry logic
+  private async requestWithRetry<T = any>(
+    endpoint: string,
+    options: RequestInit = {},
+    maxRetries: number = 2
+  ): Promise<T> {
+    let lastError: Error | null = null;
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        console.log(`Attempt ${attempt}/${maxRetries} for endpoint: ${endpoint}`);
+        const result = await this.request<T>(endpoint, options);
+        console.log(`Success on attempt ${attempt} for endpoint: ${endpoint}`);
+        return result;
+      } catch (error) {
+        lastError = error as Error;
+        console.warn(`Attempt ${attempt}/${maxRetries} failed for ${endpoint}:`, error);
+
+        // If it's the last attempt, don't retry
+        if (attempt === maxRetries) {
+          break;
+        }
+
+        // Wait before retrying (exponential backoff)
+        const delay = Math.min(1000 * Math.pow(2, attempt - 1), 5000);
+        console.log(`Waiting ${delay}ms before retry...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
+
+    console.error(`All ${maxRetries} attempts failed for ${endpoint}`);
+    throw lastError;
+  }
+
   // Lead methods
   async getLeads(salesRepId?: number) {
     const params = salesRepId ? `?salesRep=${salesRepId}` : "";
