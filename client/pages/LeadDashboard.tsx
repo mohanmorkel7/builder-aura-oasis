@@ -432,7 +432,7 @@ export default function LeadDashboard() {
                   return stepColors[stepIndex % stepColors.length];
                 };
 
-                const chartHeight = 200;
+                const chartHeight = 400;
 
                 return (
                   <div className="space-y-6">
