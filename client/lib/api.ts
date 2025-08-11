@@ -900,84 +900,54 @@ export class ApiClient {
       console.log(`Upload response status: ${response.status}`);
       console.log("Response headers:", Object.fromEntries(response.headers.entries()));
 
-      // Read response body immediately to avoid "body stream already read" errors
-      let responseText = '';
-      let responseData = null;
-
-      try {
-        responseText = await response.text();
-        console.log("Raw response body:", responseText);
-
-        // Try to parse as JSON if response has content
-        if (responseText.trim()) {
-          try {
-            responseData = JSON.parse(responseText);
-            console.log("Parsed response JSON:", responseData);
-          } catch (parseError) {
-            console.log("Response is not valid JSON, treating as plain text");
-          }
-        }
-      } catch (readError) {
-        console.error("Could not read response body:", readError);
-        throw new Error(`Upload failed: ${response.status} (could not read server response)`);
-      }
-
-      // Handle error responses using the already-read data
+      // Handle error responses WITHOUT reading the body to avoid stream conflicts
       if (!response.ok) {
-        let errorMessage = `Upload failed: ${response.status}`;
-
-        // Log basic error details
+        // Log error details using only headers and status
         console.error("Upload failed:");
         console.error("- Status:", response.status);
         console.error("- Status Text:", response.statusText);
         console.error("- URL:", response.url);
         console.error("- Content-Type:", response.headers.get('content-type'));
         console.error("- Content-Length:", response.headers.get('content-length'));
-        console.error("- Response Text:", responseText);
-        console.error("- Response Data:", responseData);
 
-        // Use server error message if available in parsed JSON
-        if (responseData && (responseData.error || responseData.message)) {
-          errorMessage = responseData.message || responseData.error;
-          console.error("Using server error message:", errorMessage);
-        } else {
-          // Fallback to status-based error messages
-          switch (response.status) {
-            case 400:
-              errorMessage = "Invalid file upload request. Please check your file and try again.";
-              break;
-            case 413:
-              errorMessage = "File too large. Please choose a smaller file (max 50MB).";
-              break;
-            case 404:
-              errorMessage = "Upload service not found. Please contact support.";
-              break;
-            case 500:
-              errorMessage = "Server error occurred. Please try again later.";
-              break;
-            case 503:
-              errorMessage = "Upload service temporarily unavailable. Please try again later.";
-              break;
-            default:
-              errorMessage = `Upload failed with error ${response.status}. Please try again.`;
-          }
-          console.error("Using fallback error message:", errorMessage);
+        // Use status-based error messages (don't read response body)
+        let errorMessage = "Upload failed";
+        switch (response.status) {
+          case 400:
+            errorMessage = "Bad request - server rejected the file upload. This might be due to invalid file format, corrupted data, or server configuration issues.";
+            break;
+          case 413:
+            errorMessage = "File too large. Please choose a smaller file (max 50MB).";
+            break;
+          case 404:
+            errorMessage = "Upload service not found. Please contact support.";
+            break;
+          case 500:
+            errorMessage = "Server error occurred. Please try again later.";
+            break;
+          case 503:
+            errorMessage = "Upload service temporarily unavailable. Please try again later.";
+            break;
+          default:
+            errorMessage = `Upload failed with error ${response.status}. Please try again.`;
         }
 
+        console.error("Error message:", errorMessage);
         throw new Error(errorMessage);
       }
 
-      // Handle successful response using already-read data
-      if (responseData) {
-        console.log("Upload successful:", responseData);
-        return responseData;
-      } else {
-        console.error("Success response is not valid JSON:", responseText);
-
-        // Return a generic success response
+      // Only read response body for successful responses (200-299)
+      try {
+        console.log("Reading successful response body...");
+        const result = await response.json();
+        console.log("Upload successful:", result);
+        return result;
+      } catch (jsonError) {
+        console.error("Success response is not valid JSON:", jsonError);
+        // Return a basic success response if we can't parse the JSON
         return {
           success: true,
-          message: "Upload completed but server response was invalid",
+          message: "Upload completed successfully",
           files: []
         };
       }
