@@ -443,7 +443,10 @@ export default function LeadDashboard() {
                                   .slice()
                                   .reverse()
                                   .map(
-                                    (stepName: string, reverseIndex: number) => {
+                                    (
+                                      stepName: string,
+                                      reverseIndex: number,
+                                    ) => {
                                       const stepHeight =
                                         chartHeight / allSteps.length;
 
@@ -513,9 +516,8 @@ export default function LeadDashboard() {
                                           {/* Completed Steps */}
                                           {leadProgress.completed_steps.map(
                                             (step: any) => {
-                                              const stepIndex = allSteps.indexOf(
-                                                step.name,
-                                              );
+                                              const stepIndex =
+                                                allSteps.indexOf(step.name);
                                               if (stepIndex === -1) return null;
 
                                               const stepHeight =
@@ -555,9 +557,11 @@ export default function LeadDashboard() {
                                           {/* Current Step */}
                                           {leadProgress.current_step &&
                                             (() => {
-                                              const stepIndex = allSteps.indexOf(
-                                                leadProgress.current_step.name,
-                                              );
+                                              const stepIndex =
+                                                allSteps.indexOf(
+                                                  leadProgress.current_step
+                                                    .name,
+                                                );
                                               if (stepIndex === -1) return null;
 
                                               const stepHeight =
@@ -620,7 +624,8 @@ export default function LeadDashboard() {
                                 }}
                               >
                                 {leadProgressData.map((leadProgress: any) => {
-                                  const leadWidth = 100 / leadProgressData.length;
+                                  const leadWidth =
+                                    100 / leadProgressData.length;
 
                                   return (
                                     <div
@@ -629,7 +634,9 @@ export default function LeadDashboard() {
                                       style={{ width: `${leadWidth}%` }}
                                     >
                                       <div className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-full mb-1 inline-block">
-                                        {leadProgress.total_completed_probability}
+                                        {
+                                          leadProgress.total_completed_probability
+                                        }
                                         %
                                       </div>
                                       <div className="text-sm font-semibold text-gray-800 break-words px-1">
@@ -709,7 +716,9 @@ export default function LeadDashboard() {
                                           <div
                                             key={stepName}
                                             className="flex items-center justify-end text-right border-b border-gray-200"
-                                            style={{ height: `${stepHeight}px` }}
+                                            style={{
+                                              height: `${stepHeight}px`,
+                                            }}
                                           >
                                             <span className="text-sm font-medium text-gray-700">
                                               {stepName}
@@ -784,7 +793,8 @@ export default function LeadDashboard() {
                                               title={`${stepData.stepName}: ${stepData.totalLeadsAtStep} leads total (${stepData.currentLeadsCount} current, ${stepData.completedLeadsCount} completed)`}
                                             >
                                               {/* Current leads portion */}
-                                              {stepData.currentLeadsCount > 0 && (
+                                              {stepData.currentLeadsCount >
+                                                0 && (
                                                 <div
                                                   className="absolute top-0 right-0 rounded-r border-l-2 border-blue-600"
                                                   style={{
@@ -807,7 +817,8 @@ export default function LeadDashboard() {
                                               {/* Hover tooltip */}
                                               <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20 pointer-events-none">
                                                 {stepData.stepName}:{" "}
-                                                {stepData.totalLeadsAtStep} leads
+                                                {stepData.totalLeadsAtStep}{" "}
+                                                leads
                                                 <br />
                                                 Current:{" "}
                                                 {stepData.currentLeadsCount},
