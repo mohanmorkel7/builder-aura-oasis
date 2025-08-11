@@ -900,37 +900,48 @@ export class ApiClient {
       console.log(`Upload response status: ${response.status}`);
       console.log("Response headers:", Object.fromEntries(response.headers.entries()));
 
-      // Handle error responses
+      // Read response body immediately to avoid "body stream already read" errors
+      let responseText = '';
+      let responseData = null;
+
+      try {
+        responseText = await response.text();
+        console.log("Raw response body:", responseText);
+
+        // Try to parse as JSON if response has content
+        if (responseText.trim()) {
+          try {
+            responseData = JSON.parse(responseText);
+            console.log("Parsed response JSON:", responseData);
+          } catch (parseError) {
+            console.log("Response is not valid JSON, treating as plain text");
+          }
+        }
+      } catch (readError) {
+        console.error("Could not read response body:", readError);
+        throw new Error(`Upload failed: ${response.status} (could not read server response)`);
+      }
+
+      // Handle error responses using the already-read data
       if (!response.ok) {
         let errorMessage = `Upload failed: ${response.status}`;
-        let serverErrorDetails = null;
 
-        // Log basic error details first
+        // Log basic error details
         console.error("Upload failed:");
         console.error("- Status:", response.status);
         console.error("- Status Text:", response.statusText);
         console.error("- URL:", response.url);
         console.error("- Content-Type:", response.headers.get('content-type'));
         console.error("- Content-Length:", response.headers.get('content-length'));
+        console.error("- Response Text:", responseText);
+        console.error("- Response Data:", responseData);
 
-        // Try to read JSON error response if content-type indicates JSON
-        const contentType = response.headers.get('content-type');
-        if (contentType && contentType.includes('application/json')) {
-          try {
-            serverErrorDetails = await response.json();
-            console.error("- Server Error Details:", serverErrorDetails);
-
-            // Use server error message if available
-            if (serverErrorDetails && (serverErrorDetails.error || serverErrorDetails.message)) {
-              errorMessage = serverErrorDetails.message || serverErrorDetails.error;
-            }
-          } catch (jsonError) {
-            console.error("- Could not parse JSON error response:", jsonError);
-          }
-        }
-
-        // Fallback to status-based error messages if no server details
-        if (!serverErrorDetails) {
+        // Use server error message if available in parsed JSON
+        if (responseData && (responseData.error || responseData.message)) {
+          errorMessage = responseData.message || responseData.error;
+          console.error("Using server error message:", errorMessage);
+        } else {
+          // Fallback to status-based error messages
           switch (response.status) {
             case 400:
               errorMessage = "Invalid file upload request. Please check your file and try again.";
@@ -950,21 +961,20 @@ export class ApiClient {
             default:
               errorMessage = `Upload failed with error ${response.status}. Please try again.`;
           }
+          console.error("Using fallback error message:", errorMessage);
         }
 
         throw new Error(errorMessage);
       }
 
-      // Only read response body for successful responses
-      try {
-        const result = await response.json();
-        console.log("Upload successful:", result);
-        return result;
-      } catch (jsonError) {
-        // If we can't parse JSON from a 200 response, that's a server issue
-        console.error("Success response is not valid JSON:", jsonError);
+      // Handle successful response using already-read data
+      if (responseData) {
+        console.log("Upload successful:", responseData);
+        return responseData;
+      } else {
+        console.error("Success response is not valid JSON:", responseText);
 
-        // Don't try to read the body again, just return a generic success
+        // Return a generic success response
         return {
           success: true,
           message: "Upload completed but server response was invalid",
