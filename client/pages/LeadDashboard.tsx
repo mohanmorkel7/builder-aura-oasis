@@ -800,7 +800,7 @@ export default function LeadDashboard() {
                                                 top: `${yPosition + stepHeight * 0.2}px`,
                                                 left: "10px",
                                                 height: `${stepHeight * 0.6}px`,
-                                                width: `${Math.max(barWidth, 20)}px`,
+                                                width: `${Math.max(barWidth, 5)}%`,
                                                 backgroundColor:
                                                   getStepColor(stepIndex),
                                                 opacity: 0.8,
