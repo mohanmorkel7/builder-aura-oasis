@@ -445,7 +445,7 @@ export default function LeadDashboard() {
                       <div className="overflow-x-auto">
                         <div className="min-w-max">
                           {/* Chart Container with Y-axis labels */}
-                          <div className="flex" style={{ height: `${chartHeight + 80}px` }}>
+                          <div className="flex" style={{ height: `${chartHeight}px` }}>
                             {/* Y-axis Step Labels on Left */}
                             <div className="w-48 pr-4 flex flex-col" style={{ height: `${chartHeight}px` }}>
                               {allSteps.slice().reverse().map((stepName: string, reverseIndex: number) => {
