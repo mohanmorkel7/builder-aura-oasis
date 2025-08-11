@@ -397,7 +397,6 @@ export default function LeadDashboard() {
                         ...allCompletedSteps.map((s: any) => s.probability),
                       )
                     : 100;
-                const chartHeight = 120;
 
                 // Get all unique steps from all leads and order them from step 1 upward
                 const allSteps = Array.from(
