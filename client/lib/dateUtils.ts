@@ -106,7 +106,7 @@ export const getCurrentISTTimestamp = (): string => {
 };
 
 /**
- * Gets current date/time formatted in IST for display
+ * Gets current date/time formatted in local timezone for display
  */
 export const getCurrentISTDateTime = (): string => {
   return formatToISTDateTime(new Date());
