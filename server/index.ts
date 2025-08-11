@@ -66,11 +66,11 @@ export function createServer() {
     }),
   );
 
-  // Add raw body parser for file uploads
+  // Add raw body parser for specific content types (exclude multipart/form-data to allow multer to handle it)
   app.use(
     express.raw({
       limit: "50mb",
-      type: ["application/octet-stream", "multipart/form-data"],
+      type: ["application/octet-stream"],
     }),
   );
 
