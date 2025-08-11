@@ -277,15 +277,16 @@ export function EnhancedStepItem({
 
       let errorMessage = "Failed to upload files. Please try again.";
 
-      if (error.message && error.message.includes("413")) {
-        errorMessage =
-          "File is too large. Please choose a smaller file (max 50MB).";
-      } else if (error.message && error.message.includes("Network")) {
-        errorMessage =
-          "Network error. Please check your connection and try again.";
-      } else if (error.message) {
-        errorMessage = `Upload failed: ${error.message}`;
+      if (error.message) {
+        // Use the error message from the API client
+        errorMessage = error.message;
       }
+
+      console.error("File upload error details:", {
+        message: error.message,
+        stack: error.stack,
+        files: Array.from(files).map(f => ({ name: f.name, size: f.size }))
+      });
 
       alert(errorMessage);
       event.target.value = "";
