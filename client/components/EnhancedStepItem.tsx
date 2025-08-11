@@ -154,19 +154,7 @@ export function EnhancedStepItem({
         new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
     );
 
-    // Debug: Check for duplicate message IDs
-    const idCounts = {};
-    sorted.forEach((msg) => {
-      idCounts[msg.id] = (idCounts[msg.id] || 0) + 1;
-    });
-
-    Object.entries(idCounts).forEach(([id, count]) => {
-      if (count > 1) {
-        console.error(
-          `EnhancedStepItem: Message ID ${id} appears ${count} times in step ${step.id}`,
-        );
-      }
-    });
+    // Note: Message ID uniqueness is now ensured by proper MockDataService initialization
 
     return sorted;
   }, [chatMessages, step.id]);
