@@ -399,109 +399,107 @@ export default function LeadDashboard() {
                     : 100;
                 const chartHeight = 120;
 
+                // Get all unique steps from all leads
+                const allSteps = Array.from(
+                  new Set(
+                    leadProgressData.flatMap((lead: any) => [
+                      ...lead.completed_steps.map((step: any) => step.name),
+                      ...(lead.current_step ? [lead.current_step.name] : []),
+                    ])
+                  )
+                );
+
                 return (
                   <div className="space-y-6">
-                    {/* Combined Chart */}
+                    {/* New Chart Design: X-axis Steps, Y-axis Leads */}
                     <div className="bg-gray-50 p-4 rounded-lg">
                       <div className="text-sm font-medium text-gray-700 mb-4">
                         All Leads Progress ({leadProgressData.length} leads)
                       </div>
-                      <div
-                        className="flex items-end justify-center space-x-3 overflow-x-auto"
-                        style={{ minHeight: `${chartHeight + 80}px` }}
-                      >
-                        {leadProgressData.map(
-                          (leadProgress: any, leadIndex: number) => (
-                            <div
-                              key={leadProgress.lead_id}
-                              className="flex flex-col items-center space-y-3 min-w-0"
-                            >
-                              {/* Lead's Steps Chart - Original Design */}
+                      <div className="overflow-x-auto">
+                        <div className="min-w-max">
+                          {/* Steps on X-axis */}
+                          <div className="flex items-end space-x-4 mb-4">
+                            <div className="w-32 text-right pr-4">
+                              <span className="text-sm font-medium text-gray-600">
+                                Leads
+                              </span>
+                            </div>
+                            {allSteps.map((stepName: string, index: number) => (
                               <div
-                                className="flex items-end space-x-1"
-                                style={{ height: `${chartHeight}px` }}
+                                key={stepName}
+                                className="w-24 text-center border-b border-gray-300 pb-2"
                               >
-                                {leadProgress.completed_steps.length === 0 ? (
-                                  <div className="w-8 h-2 bg-gray-300 rounded flex items-center justify-center">
-                                    <span className="text-xs text-gray-500">
-                                      0
-                                    </span>
+                                <div className="text-xs font-medium text-gray-700 transform -rotate-45 origin-bottom-left whitespace-nowrap">
+                                  {stepName}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+
+                          {/* Leads on Y-axis with horizontal bars */}
+                          <div className="space-y-3">
+                            {leadProgressData.map((leadProgress: any) => (
+                              <div
+                                key={leadProgress.lead_id}
+                                className="flex items-center space-x-4"
+                              >
+                                {/* Lead name on Y-axis */}
+                                <div className="w-32 text-right pr-4">
+                                  <div className="text-sm font-medium text-gray-800">
+                                    {leadProgress.client_name}
                                   </div>
-                                ) : (
-                                  leadProgress.completed_steps.map(
-                                    (step: any, stepIndex: number) => (
-                                      <div
-                                        key={stepIndex}
-                                        className="flex flex-col items-center space-y-1"
-                                      >
+                                  <div className="text-xs text-blue-600">
+                                    {leadProgress.total_completed_probability}%
+                                  </div>
+                                </div>
+
+                                {/* Bars for each step */}
+                                {allSteps.map((stepName: string) => {
+                                  const completedStep = leadProgress.completed_steps.find(
+                                    (step: any) => step.name === stepName
+                                  );
+                                  const isCurrentStep = leadProgress.current_step?.name === stepName;
+
+                                  return (
+                                    <div
+                                      key={stepName}
+                                      className="w-24 h-8 flex items-center justify-center"
+                                    >
+                                      {completedStep ? (
                                         <div
-                                          className="bg-green-500 rounded-t min-h-[4px] w-6 transition-all duration-300 relative group cursor-pointer"
+                                          className="bg-green-500 h-6 rounded transition-all duration-300 relative group cursor-pointer"
                                           style={{
-                                            height: `${(step.probability / maxProbability) * (chartHeight - 20)}px`,
+                                            width: `${Math.max((completedStep.probability / maxProbability) * 80, 8)}px`,
                                           }}
-                                          title={`${leadProgress.client_name}: ${step.name} - ${step.probability}%`}
+                                          title={`${leadProgress.client_name}: ${stepName} - ${completedStep.probability}%`}
                                         >
-                                          {/* Tooltip */}
-                                          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20 pointer-events-none">
-                                            {step.name}
-                                            <br />
-                                            {step.probability}%
+                                          <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20 pointer-events-none">
+                                            {completedStep.probability}%
                                           </div>
                                         </div>
-                                        <span className="text-xs font-medium text-green-700">
-                                          {step.probability}%
-                                        </span>
-                                      </div>
-                                    ),
-                                  )
-                                )}
-
-                                {/* Current Step Indicator */}
-                                {leadProgress.current_step && (
-                                  <div className="flex flex-col items-center space-y-1">
-                                    <div
-                                      className="bg-blue-500 rounded-t min-h-[4px] w-6 transition-all duration-300 relative group cursor-pointer border-2 border-blue-300"
-                                      style={{
-                                        height: `${(leadProgress.current_step.probability / maxProbability) * (chartHeight - 20)}px`,
-                                      }}
-                                      title={`${leadProgress.client_name}: ${leadProgress.current_step.name} (Current) - ${leadProgress.current_step.probability}%`}
-                                    >
-                                      {/* Tooltip */}
-                                      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20 pointer-events-none">
-                                        {leadProgress.current_step.name}
-                                        <br />
-                                        (Current){" "}
-                                        {leadProgress.current_step.probability}%
-                                      </div>
+                                      ) : isCurrentStep ? (
+                                        <div
+                                          className="bg-blue-500 h-6 rounded border-2 border-blue-300 transition-all duration-300 relative group cursor-pointer"
+                                          style={{
+                                            width: `${Math.max((leadProgress.current_step.probability / maxProbability) * 80, 8)}px`,
+                                          }}
+                                          title={`${leadProgress.client_name}: ${stepName} (Current) - ${leadProgress.current_step.probability}%`}
+                                        >
+                                          <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20 pointer-events-none">
+                                            {leadProgress.current_step.probability}% (Current)
+                                          </div>
+                                        </div>
+                                      ) : (
+                                        <div className="w-2 h-2 bg-gray-200 rounded-full"></div>
+                                      )}
                                     </div>
-                                    <span className="text-xs font-medium text-blue-700">
-                                      {leadProgress.current_step.probability}%
-                                    </span>
-                                  </div>
-                                )}
+                                  );
+                                })}
                               </div>
-
-                              {/* Lead Name - Now at Bottom */}
-                              <div className="text-center min-w-0 w-24 h-16 flex flex-col justify-start items-center">
-                                <div className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-full mb-1">
-                                  {leadProgress.total_completed_probability}%
-                                </div>
-                                <div
-                                  className="text-sm font-semibold text-gray-800 leading-tight max-w-full break-words"
-                                  title={leadProgress.client_name}
-                                  style={{
-                                    display: "-webkit-box",
-                                    WebkitLineClamp: 2,
-                                    WebkitBoxOrient: "vertical",
-                                    overflow: "hidden",
-                                  }}
-                                >
-                                  {leadProgress.client_name}
-                                </div>
-                              </div>
-                            </div>
-                          ),
-                        )}
+                            ))}
+                          </div>
+                        </div>
                       </div>
                     </div>
 
