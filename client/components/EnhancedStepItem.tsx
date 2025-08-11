@@ -748,6 +748,7 @@ export function EnhancedStepItem({
                             className="hidden"
                             onChange={handleFileUpload}
                             multiple
+                            accept="*/*"
                           />
                           <Button
                             size="sm"
