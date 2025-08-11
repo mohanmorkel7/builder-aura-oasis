@@ -23,7 +23,7 @@ export const formatToIST = (
 };
 
 /**
- * Formats a date to IST with time included
+ * Formats a date to local timezone with time included
  */
 export const formatToISTDateTime = (
   date: string | Date,
