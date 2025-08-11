@@ -903,9 +903,16 @@ export class ApiClient {
         throw new Error(errorMessage);
       }
 
-      const result = await response.json();
-      console.log("Upload successful:", result);
-      return result;
+      // Handle successful response
+      try {
+        const result = await response.json();
+        console.log("Upload successful:", result);
+        return result;
+      } catch (jsonError) {
+        // If successful response is not JSON, something is wrong
+        console.error("Success response is not valid JSON:", jsonError);
+        throw new Error("Server returned invalid response format for successful upload");
+      }
     } catch (error: any) {
       console.error("Upload error:", error);
 
