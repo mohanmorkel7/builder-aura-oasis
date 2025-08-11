@@ -789,7 +789,7 @@ export default function LeadDashboard() {
                                         const barWidth =
                                           (stepData.totalLeadsAtStep /
                                             maxLeadsAtStep) *
-                                          350; // Max 350px width
+                                          85; // Max 85% width
 
                                         return (
                                           <div key={stepData.stepName}>
