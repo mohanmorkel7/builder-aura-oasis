@@ -411,51 +411,51 @@ export default function LeadDashboard() {
 
                 return (
                   <div className="space-y-6">
-                    {/* New Chart Design: X-axis Steps, Y-axis Leads */}
+                    {/* New Chart Design: X-axis Leads, Y-axis Steps */}
                     <div className="bg-gray-50 p-4 rounded-lg">
                       <div className="text-sm font-medium text-gray-700 mb-4">
                         All Leads Progress ({leadProgressData.length} leads)
                       </div>
                       <div className="overflow-x-auto">
                         <div className="min-w-max">
-                          {/* Steps on X-axis */}
+                          {/* Leads on X-axis */}
                           <div className="flex items-end space-x-4 mb-4">
                             <div className="w-32 text-right pr-4">
                               <span className="text-sm font-medium text-gray-600">
-                                Leads
+                                Steps
                               </span>
                             </div>
-                            {allSteps.map((stepName: string, index: number) => (
+                            {leadProgressData.map((leadProgress: any) => (
                               <div
-                                key={stepName}
+                                key={leadProgress.lead_id}
                                 className="w-24 text-center border-b border-gray-300 pb-2"
                               >
                                 <div className="text-xs font-medium text-gray-700 transform -rotate-45 origin-bottom-left whitespace-nowrap">
-                                  {stepName}
+                                  {leadProgress.client_name}
+                                </div>
+                                <div className="text-xs text-blue-600 mt-1">
+                                  {leadProgress.total_completed_probability}%
                                 </div>
                               </div>
                             ))}
                           </div>
 
-                          {/* Leads on Y-axis with horizontal bars */}
+                          {/* Steps on Y-axis with vertical bars */}
                           <div className="space-y-3">
-                            {leadProgressData.map((leadProgress: any) => (
+                            {allSteps.map((stepName: string) => (
                               <div
-                                key={leadProgress.lead_id}
+                                key={stepName}
                                 className="flex items-center space-x-4"
                               >
-                                {/* Lead name on Y-axis */}
+                                {/* Step name on Y-axis */}
                                 <div className="w-32 text-right pr-4">
                                   <div className="text-sm font-medium text-gray-800">
-                                    {leadProgress.client_name}
-                                  </div>
-                                  <div className="text-xs text-blue-600">
-                                    {leadProgress.total_completed_probability}%
+                                    {stepName}
                                   </div>
                                 </div>
 
-                                {/* Bars for each step */}
-                                {allSteps.map((stepName: string) => {
+                                {/* Bars for each lead */}
+                                {leadProgressData.map((leadProgress: any) => {
                                   const completedStep = leadProgress.completed_steps.find(
                                     (step: any) => step.name === stepName
                                   );
@@ -463,7 +463,7 @@ export default function LeadDashboard() {
 
                                   return (
                                     <div
-                                      key={stepName}
+                                      key={leadProgress.lead_id}
                                       className="w-24 h-8 flex items-center justify-center"
                                     >
                                       {completedStep ? (
