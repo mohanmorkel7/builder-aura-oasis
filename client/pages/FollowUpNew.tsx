@@ -8,6 +8,7 @@ import {
   useCreateFollowUp,
 } from "@/hooks/useApi";
 import { useAuth } from "@/lib/auth-context";
+import { formatToISTDateTime } from "@/lib/dateUtils";
 import { Button } from "@/components/ui/button";
 import {
   Card,
