@@ -33,6 +33,7 @@ import {
   useCreateStepComment,
 } from "@/hooks/useApi";
 import { useAuth } from "@/lib/auth-context";
+import { formatToISTDateTime } from "@/lib/dateUtils";
 
 interface StepItemProps {
   step: any;
