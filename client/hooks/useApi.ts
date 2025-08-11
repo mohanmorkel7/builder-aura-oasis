@@ -1036,6 +1036,8 @@ export function useCreateLead() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["leads"] });
       queryClient.invalidateQueries({ queryKey: ["lead-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["lead-progress-dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["template-step-dashboard"] });
     },
   });
 }
@@ -1071,6 +1073,8 @@ export function useUpdateLead() {
       queryClient.invalidateQueries({ queryKey: ["leads"] });
       queryClient.invalidateQueries({ queryKey: ["leads", id] });
       queryClient.invalidateQueries({ queryKey: ["lead-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["lead-progress-dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["template-step-dashboard"] });
     },
     onError: (error) => {
       console.error("Lead update failed:", error);
@@ -1085,6 +1089,8 @@ export function useDeleteLead() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["leads"] });
       queryClient.invalidateQueries({ queryKey: ["lead-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["lead-progress-dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["template-step-dashboard"] });
     },
   });
 }
@@ -1178,6 +1184,8 @@ export function useCreateLeadStep() {
     },
     onSuccess: (_, { leadId }) => {
       queryClient.invalidateQueries({ queryKey: ["lead-steps", leadId] });
+      queryClient.invalidateQueries({ queryKey: ["lead-progress-dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["template-step-dashboard"] });
     },
   });
 }
@@ -1199,6 +1207,8 @@ export function useUpdateLeadStep() {
       // Also invalidate broader queries as fallback
       queryClient.invalidateQueries({ queryKey: ["lead-steps"] });
       queryClient.invalidateQueries({ queryKey: ["leads"] });
+      queryClient.invalidateQueries({ queryKey: ["lead-progress-dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["template-step-dashboard"] });
     },
   });
 }
@@ -1209,6 +1219,8 @@ export function useDeleteLeadStep() {
     mutationFn: (stepId: number) => apiClient.deleteLeadStep(stepId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["lead-steps"] });
+      queryClient.invalidateQueries({ queryKey: ["lead-progress-dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["template-step-dashboard"] });
     },
   });
 }
@@ -1225,6 +1237,8 @@ export function useReorderLeadSteps() {
     }) => apiClient.reorderLeadSteps(leadId, stepOrders),
     onSuccess: (_, { leadId }) => {
       queryClient.invalidateQueries({ queryKey: ["lead-steps", leadId] });
+      queryClient.invalidateQueries({ queryKey: ["lead-progress-dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["template-step-dashboard"] });
     },
   });
 }
