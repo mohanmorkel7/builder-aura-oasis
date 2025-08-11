@@ -180,14 +180,14 @@ router.post("/upload", (req: Request, res: Response) => {
         return res.status(400).json({ error: "No files uploaded" });
       }
 
-      console.log(`Received ${req.files.length} files for upload`);
-      req.files.forEach((file, index) => {
+      console.log(`✅ Received ${files.length} files for upload`);
+      files.forEach((file, index) => {
         console.log(
           `File ${index + 1}: ${file.originalname} (${file.size} bytes) (field: ${file.fieldname})`,
         );
       });
 
-      const uploadedFiles = req.files.map((file) => ({
+      const uploadedFiles = files.map((file) => ({
         originalName: file.originalname,
         filename: file.filename,
         size: file.size,
