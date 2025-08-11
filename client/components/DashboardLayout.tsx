@@ -32,9 +32,14 @@ import { apiClient } from "@/lib/api";
 
 interface NavigationItem {
   name: string;
-  href: string;
+  href?: string;
   icon: React.ComponentType<{ className?: string }>;
   roles: UserRole[];
+  submenu?: {
+    name: string;
+    href: string;
+    roles: UserRole[];
+  }[];
 }
 
 const navigationItems: NavigationItem[] = [
