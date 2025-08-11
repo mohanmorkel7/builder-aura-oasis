@@ -864,7 +864,18 @@ export class ApiClient {
 
       // Log file details for debugging
       Array.from(files).forEach((file, index) => {
-        console.log(`File ${index + 1}: ${file.name} (${file.size} bytes, ${file.type})`);
+        console.log(`File ${index + 1}: ${file.name} (${file.size} bytes, ${file.type}, last modified: ${new Date(file.lastModified)})`);
+
+        // Check for potential issues
+        if (file.size === 0) {
+          console.warn(`⚠️  File ${file.name} is empty (0 bytes)`);
+        }
+        if (file.size > 50 * 1024 * 1024) {
+          console.warn(`⚠️  File ${file.name} exceeds 50MB limit`);
+        }
+        if (!file.type) {
+          console.warn(`⚠️  File ${file.name} has no MIME type`);
+        }
       });
 
       // Debug FormData contents
