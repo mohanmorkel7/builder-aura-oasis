@@ -29,16 +29,29 @@ export const formatToISTDateTime = (
   date: string | Date,
   options: Intl.DateTimeFormatOptions = {},
 ): string => {
-  // Parse the date normally - this will handle UTC timestamps correctly
-  const dateObj = typeof date === "string" ? new Date(date) : date;
+  let dateObj: Date;
+
+  if (typeof date === "string") {
+    // Handle database timestamps that might have timezone info
+    if (date.includes("+") || date.includes("Z")) {
+      // ISO format with timezone - parse normally and convert to current browser timezone
+      dateObj = new Date(date);
+    } else {
+      // Local timestamp format - treat as is
+      dateObj = new Date(date);
+    }
+  } else {
+    dateObj = date;
+  }
 
   // Ensure we have a valid date
   if (isNaN(dateObj.getTime())) {
     return "Invalid Date";
   }
 
+  // Always use the same formatting logic as current time
+  // This ensures database timestamps display exactly like current time
   try {
-    // Format the date using user's local timezone (browser default)
     const formatter = new Intl.DateTimeFormat("en-IN", {
       day: "numeric",
       month: "short",
@@ -52,7 +65,7 @@ export const formatToISTDateTime = (
     return formatter.format(dateObj);
   } catch (error) {
     console.warn("Error formatting date:", error);
-    // Fallback formatting using local time
+    // Fallback formatting
     const day = dateObj.getDate();
     const month = dateObj.toLocaleString("en-IN", { month: "short" });
     const year = dateObj.getFullYear();
@@ -60,7 +73,7 @@ export const formatToISTDateTime = (
     const minutes = dateObj.getMinutes().toString().padStart(2, "0");
     const ampm = hours >= 12 ? "pm" : "am";
     hours = hours % 12;
-    hours = hours ? hours : 12; // 0 should be 12
+    hours = hours ? hours : 12;
 
     return `${day} ${month} ${year}, ${hours}:${minutes} ${ampm}`;
   }
