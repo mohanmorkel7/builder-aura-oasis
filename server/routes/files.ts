@@ -122,6 +122,16 @@ router.post("/upload", (req: Request, res: Response) => {
   // Ensure we always return JSON
   res.setHeader('Content-Type', 'application/json');
 
+  // Check if this is a multipart request
+  if (!req.headers['content-type'] || !req.headers['content-type'].includes('multipart/form-data')) {
+    console.log("❌ Invalid content type. Expected multipart/form-data, got:", req.headers['content-type']);
+    return res.status(400).json({
+      error: "Invalid content type",
+      message: "Expected multipart/form-data for file upload",
+      received: req.headers['content-type'] || 'none'
+    });
+  }
+
   // Handle multer errors specifically - use array with specific field name
   upload.array('files', 10)(req, res, (err) => {
     if (err) {
