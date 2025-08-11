@@ -169,19 +169,29 @@ router.post("/upload", (req: Request, res: Response) => {
       console.log("req.files:", req.files);
       console.log("req.body:", req.body);
       console.log("req.files type:", typeof req.files);
-      console.log("req.files length:", req.files ? (req.files as any).length : 'undefined');
+      console.log("req.files is array:", Array.isArray(req.files));
 
-      // With upload.array(), req.files is directly an array
-      const files = req.files as Express.Multer.File[];
-
-      if (!files || files.length === 0) {
+      // With upload.any(), req.files is an array of files
+      if (!req.files || !Array.isArray(req.files) || req.files.length === 0) {
         console.log("❌ No files received in upload request");
-        console.log("files details:", {
-          exists: !!files,
-          length: files ? files.length : 'N/A'
+        console.log("req.files details:", {
+          exists: !!req.files,
+          isArray: Array.isArray(req.files),
+          length: req.files ? (req.files as any).length : 'N/A',
+          type: typeof req.files
         });
-        return res.status(400).json({ error: "No files uploaded" });
+        return res.status(400).json({
+          error: "No files uploaded",
+          message: "No files were received in the request",
+          debug: {
+            hasFiles: !!req.files,
+            isArray: Array.isArray(req.files),
+            length: req.files ? (req.files as any).length : 'N/A'
+          }
+        });
       }
+
+      const files = req.files as Express.Multer.File[];
 
       console.log(`✅ Received ${files.length} files for upload`);
       files.forEach((file, index) => {
