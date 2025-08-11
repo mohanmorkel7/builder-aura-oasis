@@ -824,6 +824,14 @@ export class ApiClient {
     try {
       console.log(`Uploading ${files.length} files to ${url}`);
 
+      // Log file details for debugging
+      Array.from(files).forEach((file, index) => {
+        console.log(`File ${index + 1}: ${file.name} (${file.size} bytes, ${file.type})`);
+      });
+
+      // Log FormData contents (note: can't directly inspect FormData entries in all browsers)
+      console.log("FormData created with files under 'files' field");
+
       // Create AbortController for timeout
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 minute timeout
