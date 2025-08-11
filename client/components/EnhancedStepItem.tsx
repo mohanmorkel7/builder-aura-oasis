@@ -446,8 +446,10 @@ export function EnhancedStepItem({
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
-  const handleEditMessage = (messageId: number, currentMessage: string) => {
+  const handleEditMessage = (messageId: number, currentMessage: string, isRichText: boolean) => {
     setEditingMessageId(messageId);
+    // For rich text messages, we keep the HTML content for the rich text editor
+    // For plain text messages, we use the text as-is
     setEditMessageText(currentMessage);
   };
 
