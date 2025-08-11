@@ -160,21 +160,38 @@ export const AuthProvider = React.memo(function AuthProvider({
     const loadStoredUser = () => {
       // Add error handling for localStorage access
       try {
+        // Check if localStorage is available
+        if (typeof Storage === "undefined") {
+          console.log("localStorage not available");
+          setIsLoading(false);
+          return;
+        }
+
         const storedUser = localStorage.getItem("banani_user");
-        if (storedUser) {
+        if (storedUser && storedUser.length > 10) { // Basic validation
           const userData = JSON.parse(storedUser);
-          console.log(
-            "Successfully loaded user from localStorage:",
-            userData.email,
-          );
-          setUser(userData);
+          // Validate essential user data
+          if (userData && userData.id && userData.email && userData.role) {
+            console.log(
+              "Successfully loaded user from localStorage:",
+              userData.email,
+            );
+            setUser(userData);
+          } else {
+            console.warn("Invalid user data in localStorage, clearing");
+            localStorage.removeItem("banani_user");
+          }
         } else {
-          console.log("No user found in localStorage");
+          console.log("No valid user found in localStorage");
         }
       } catch (error) {
         console.warn("Error loading stored user data:", error);
         // Clear corrupted localStorage data
-        localStorage.removeItem("banani_user");
+        try {
+          localStorage.removeItem("banani_user");
+        } catch (cleanupError) {
+          console.warn("Could not clean up localStorage:", cleanupError);
+        }
       }
       setIsLoading(false);
     };
