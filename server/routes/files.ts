@@ -109,6 +109,11 @@ router.post("/upload-chunk", async (req: Request, res: Response) => {
 
 // Upload files endpoint - flexible to handle any field names
 router.post("/upload", (req: Request, res: Response) => {
+  console.log("=== UPLOAD REQUEST START ===");
+  console.log("Headers:", req.headers);
+  console.log("Content-Type:", req.headers['content-type']);
+  console.log("Content-Length:", req.headers['content-length']);
+
   // Handle multer errors specifically
   upload.any()(req, res, (err) => {
     if (err) {
