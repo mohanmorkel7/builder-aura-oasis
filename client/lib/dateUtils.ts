@@ -52,15 +52,7 @@ export const formatToISTDateTime = (
     return "Invalid Date";
   }
 
-  // Debug logging for timestamp conversion issues (only in development)
-  if (typeof date === "string" && process.env.NODE_ENV === "development") {
-    console.log(`formatToISTDateTime Debug:`, {
-      originalInput: date,
-      parsedDate: dateObj.toISOString(),
-      localString: dateObj.toString(),
-      utcString: dateObj.toUTCString(),
-    });
-  }
+  // Timestamp parsing and validation completed
 
   const defaultOptions: Intl.DateTimeFormatOptions = {
     timeZone: IST_TIMEZONE,
