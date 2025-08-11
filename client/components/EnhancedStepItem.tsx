@@ -727,22 +727,51 @@ export function EnhancedStepItem({
                               </div>
                             </div>
                             <div className="text-sm text-gray-700">
-                              {message.is_rich_text ? (
-                                <div
-                                  dangerouslySetInnerHTML={{
-                                    __html: processMessageContent(
-                                      message.message,
-                                    ),
-                                  }}
-                                />
+                              {editingMessageId === message.id ? (
+                                <div className="space-y-2">
+                                  <Textarea
+                                    value={editMessageText}
+                                    onChange={(e) => setEditMessageText(e.target.value)}
+                                    className="min-h-[60px]"
+                                    placeholder="Edit your message..."
+                                  />
+                                  <div className="flex space-x-2">
+                                    <Button
+                                      size="sm"
+                                      onClick={() => handleSaveEdit(message.id)}
+                                      disabled={!editMessageText.trim()}
+                                    >
+                                      Save
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={handleCancelEdit}
+                                    >
+                                      Cancel
+                                    </Button>
+                                  </div>
+                                </div>
                               ) : (
-                                <div
-                                  dangerouslySetInnerHTML={{
-                                    __html: processMessageContent(
-                                      message.message,
-                                    ),
-                                  }}
-                                />
+                                <>
+                                  {message.is_rich_text ? (
+                                    <div
+                                      dangerouslySetInnerHTML={{
+                                        __html: processMessageContent(
+                                          message.message,
+                                        ),
+                                      }}
+                                    />
+                                  ) : (
+                                    <div
+                                      dangerouslySetInnerHTML={{
+                                        __html: processMessageContent(
+                                          message.message,
+                                        ),
+                                      }}
+                                    />
+                                  )}
+                                </>
                               )}
                             </div>
                             {message.attachments &&
