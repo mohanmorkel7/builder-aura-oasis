@@ -701,7 +701,7 @@ export function EnhancedStepItem({
                                         <Button
                                           size="sm"
                                           variant="ghost"
-                                          onClick={() => handleEditMessage(message.id, message.message)}
+                                          onClick={() => handleEditMessage(message.id, message.message, message.is_rich_text)}
                                           className="text-gray-600 hover:text-gray-700"
                                         >
                                           <Edit className="w-3 h-3" />
