@@ -35,13 +35,10 @@ export const formatToISTDateTime = (
     // Parse the date normally
     dateObj = new Date(date);
 
-    // For database timestamps, add offset to match desired display time
-    if (date.includes("T") && (date.includes("Z") || date.includes("+"))) {
-      // Add 5.5 hours to convert 11:50 am → 5:20 pm
-      // 5 hours 30 minutes = 330 minutes = 19800000 milliseconds
-      const offsetMs = 5.5 * 60 * 60 * 1000;
-      dateObj = new Date(dateObj.getTime() + offsetMs);
-    }
+    // For all database timestamps (string format), add offset to match desired display time
+    // This ensures server timestamps show in desired timezone regardless of format
+    const offsetMs = 5.5 * 60 * 60 * 1000; // 5.5 hours in milliseconds
+    dateObj = new Date(dateObj.getTime() + offsetMs);
   } else {
     dateObj = date;
   }
