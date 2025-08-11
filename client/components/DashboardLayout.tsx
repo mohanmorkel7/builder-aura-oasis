@@ -50,21 +50,15 @@ const navigationItems: NavigationItem[] = [
     roles: ["admin", "sales", "product"],
   },
   {
-    name: "FinOps",
-    href: "/finops",
-    icon: DollarSign,
-    roles: ["admin", "finance"],
+    name: "Admin Panel",
+    href: "/admin",
+    icon: Users,
+    roles: ["admin"],
   },
   {
     name: "Sales",
     href: "/leads",
     icon: Target,
-    roles: ["admin", "sales", "product"],
-  },
-  {
-    name: "Proposals",
-    href: "/proposals",
-    icon: FileText,
     roles: ["admin", "sales", "product"],
   },
   {
@@ -74,10 +68,10 @@ const navigationItems: NavigationItem[] = [
     roles: ["admin", "sales", "product"],
   },
   {
-    name: "Support Tickets",
-    href: "/tickets",
-    icon: Ticket,
-    roles: ["admin", "sales", "product"],
+    name: "FinOps",
+    href: "/finops",
+    icon: DollarSign,
+    roles: ["admin", "finance"],
   },
   {
     name: "Product Management",
@@ -86,16 +80,22 @@ const navigationItems: NavigationItem[] = [
     roles: ["admin", "product"],
   },
   {
+    name: "Proposals",
+    href: "/proposals",
+    icon: FileText,
+    roles: ["admin", "sales", "product"],
+  },
+  {
+    name: "Support Tickets",
+    href: "/tickets",
+    icon: Ticket,
+    roles: ["admin", "sales", "product"],
+  },
+  {
     name: "Alerts & Notifications",
     href: "/alerts",
     icon: Bell,
     roles: ["admin", "sales", "product"],
-  },
-  {
-    name: "Admin Panel",
-    href: "/admin",
-    icon: Users,
-    roles: ["admin"],
   },
   {
     name: "Settings",
