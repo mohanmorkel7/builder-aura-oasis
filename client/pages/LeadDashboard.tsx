@@ -564,7 +564,7 @@ export default function LeadDashboard() {
                           {/* X-axis Lead Labels at Bottom */}
                           <div className="flex">
                             <div className="w-48 pr-4"></div>
-                            <div className="flex-1 flex">
+                            <div className="flex" style={{ width: `${leadProgressData.length * 80}px` }}>
                               {leadProgressData.map((leadProgress: any) => {
                                 const leadWidth = 100 / leadProgressData.length;
 
