@@ -141,13 +141,15 @@ const getNotificationsFromFollowUps = async (
       setTimeout(() => reject(new Error("Request timeout")), 15000); // Increased to 15 seconds
     });
 
-    const followUpsPromise = apiClient.getAllFollowUps({
-      userId,
-      userRole: "all",
-    }).catch((error) => {
-      console.warn("Follow-ups API call failed, using fallback:", error);
-      return []; // Return empty array as fallback
-    });
+    const followUpsPromise = apiClient
+      .getAllFollowUps({
+        userId,
+        userRole: "all",
+      })
+      .catch((error) => {
+        console.warn("Follow-ups API call failed, using fallback:", error);
+        return []; // Return empty array as fallback
+      });
 
     const followUps = await Promise.race([followUpsPromise, timeoutPromise]);
 
@@ -216,7 +218,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const { user, logout, isLoading } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const [expandedMenus, setExpandedMenus] = useState<{ [key: string]: boolean }>({});
+  const [expandedMenus, setExpandedMenus] = useState<{
+    [key: string]: boolean;
+  }>({});
 
   // Auto-expand Settings menu when on settings-related pages
   useEffect(() => {
@@ -271,8 +275,13 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           );
 
           // Check if it's a server routing issue
-          if (error.message.includes("HTML instead of JSON") || error.message.includes("Server routing error")) {
-            console.error("Backend server appears to be down or misconfigured. Disabling notifications.");
+          if (
+            error.message.includes("HTML instead of JSON") ||
+            error.message.includes("Server routing error")
+          ) {
+            console.error(
+              "Backend server appears to be down or misconfigured. Disabling notifications.",
+            );
             setNotificationsEnabled(false);
           }
 
@@ -351,7 +360,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             if (item.submenu) {
               const isExpanded = expandedMenus[item.name] || false;
               const hasActiveSubmenu = item.submenu.some(
-                (subItem) => location.pathname === subItem.href
+                (subItem) => location.pathname === subItem.href,
               );
 
               return (
@@ -386,7 +395,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                       {item.submenu
                         .filter((subItem) => subItem.roles.includes(user.role))
                         .map((subItem) => {
-                          const isSubActive = location.pathname === subItem.href;
+                          const isSubActive =
+                            location.pathname === subItem.href;
 
                           return (
                             <Link

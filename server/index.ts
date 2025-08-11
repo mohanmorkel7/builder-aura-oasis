@@ -145,9 +145,11 @@ export function createServer() {
   try {
     app.get("/api/notifications", (req, res) => {
       // Redirect to workflow notifications with the same query parameters
-      const queryString = Object.keys(req.query).length > 0
-        ? "?" + new URLSearchParams(req.query as Record<string, string>).toString()
-        : "";
+      const queryString =
+        Object.keys(req.query).length > 0
+          ? "?" +
+            new URLSearchParams(req.query as Record<string, string>).toString()
+          : "";
 
       // Proxy the request to workflow notifications
       res.redirect(`/api/workflow/notifications${queryString}`);

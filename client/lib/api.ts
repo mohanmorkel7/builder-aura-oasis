@@ -49,10 +49,18 @@ export class ApiClient {
         const originalFetch = window.fetch.bind(window);
         response = await originalFetch(url, config);
       } catch (fetchError) {
-        console.error("Primary fetch failed for URL:", url, "Error:", fetchError);
+        console.error(
+          "Primary fetch failed for URL:",
+          url,
+          "Error:",
+          fetchError,
+        );
 
         // Check if it's a network connectivity issue
-        if (fetchError instanceof TypeError && fetchError.message.includes('Failed to fetch')) {
+        if (
+          fetchError instanceof TypeError &&
+          fetchError.message.includes("Failed to fetch")
+        ) {
           console.error("Network connectivity issue detected");
         }
 
@@ -141,13 +149,27 @@ export class ApiClient {
       }
 
       // Check if response is HTML instead of JSON (indicates routing issue)
-      if (responseText.trim().startsWith('<!doctype') || responseText.trim().startsWith('<!DOCTYPE') || responseText.trim().startsWith('<html')) {
-        console.error("Received HTML response instead of JSON for API endpoint:", url);
-        console.error("This indicates the API request is not being routed to the backend server.");
-        console.error("Response content:", responseText.substring(0, 200) + "...");
+      if (
+        responseText.trim().startsWith("<!doctype") ||
+        responseText.trim().startsWith("<!DOCTYPE") ||
+        responseText.trim().startsWith("<html")
+      ) {
+        console.error(
+          "Received HTML response instead of JSON for API endpoint:",
+          url,
+        );
+        console.error(
+          "This indicates the API request is not being routed to the backend server.",
+        );
+        console.error(
+          "Response content:",
+          responseText.substring(0, 200) + "...",
+        );
 
         // Check if server might be down or misconfigured
-        throw new Error(`Server routing error: API endpoint ${endpoint} returned HTML instead of JSON. This usually means the backend server is not running or API routes are not properly configured.`);
+        throw new Error(
+          `Server routing error: API endpoint ${endpoint} returned HTML instead of JSON. This usually means the backend server is not running or API routes are not properly configured.`,
+        );
       }
 
       // Try to parse as JSON
@@ -202,7 +224,7 @@ export class ApiClient {
             config: JSON.stringify(config, null, 2),
             error: error.message,
             timestamp: new Date().toISOString(),
-            retryCount
+            retryCount,
           });
           throw new Error(
             `Network error: Cannot connect to server at ${url}. Please check your internet connection or server status.`,
@@ -210,7 +232,9 @@ export class ApiClient {
         }
         if (error.message.includes("body stream")) {
           console.error("Body stream error for URL:", url);
-          throw new Error(`Network error: Connection interrupted for ${url}. Please try again.`);
+          throw new Error(
+            `Network error: Connection interrupted for ${url}. Please try again.`,
+          );
         }
       }
 
@@ -513,19 +537,24 @@ export class ApiClient {
   private async requestWithRetry<T = any>(
     endpoint: string,
     options: RequestInit = {},
-    maxRetries: number = 2
+    maxRetries: number = 2,
   ): Promise<T> {
     let lastError: Error | null = null;
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        console.log(`Attempt ${attempt}/${maxRetries} for endpoint: ${endpoint}`);
+        console.log(
+          `Attempt ${attempt}/${maxRetries} for endpoint: ${endpoint}`,
+        );
         const result = await this.request<T>(endpoint, options);
         console.log(`Success on attempt ${attempt} for endpoint: ${endpoint}`);
         return result;
       } catch (error) {
         lastError = error as Error;
-        console.warn(`Attempt ${attempt}/${maxRetries} failed for ${endpoint}:`, error);
+        console.warn(
+          `Attempt ${attempt}/${maxRetries} failed for ${endpoint}:`,
+          error,
+        );
 
         // If it's the last attempt, don't retry
         if (attempt === maxRetries) {
@@ -535,7 +564,7 @@ export class ApiClient {
         // Wait before retrying (exponential backoff)
         const delay = Math.min(1000 * Math.pow(2, attempt - 1), 5000);
         console.log(`Waiting ${delay}ms before retry...`);
-        await new Promise(resolve => setTimeout(resolve, delay));
+        await new Promise((resolve) => setTimeout(resolve, delay));
       }
     }
 
@@ -606,7 +635,10 @@ export class ApiClient {
     try {
       return await this.requestWithRetry("/leads/progress-dashboard", {}, 3);
     } catch (error) {
-      console.error("Failed to fetch lead progress dashboard after all retries:", error);
+      console.error(
+        "Failed to fetch lead progress dashboard after all retries:",
+        error,
+      );
       // Return empty array as fallback to prevent UI crashes
       return [];
     }
@@ -830,7 +862,10 @@ export class ApiClient {
 
       // Add a timeout and retry logic specifically for follow-ups
       const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error("Follow-ups request timeout")), 20000); // Increased to 20 seconds
+        setTimeout(
+          () => reject(new Error("Follow-ups request timeout")),
+          20000,
+        ); // Increased to 20 seconds
       });
 
       // Add retry logic for follow-ups
@@ -851,7 +886,7 @@ export class ApiClient {
 
           if (attempt < 2) {
             // Wait before retry
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await new Promise((resolve) => setTimeout(resolve, 1000));
           }
         }
       }
