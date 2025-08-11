@@ -129,6 +129,21 @@ router.post("/upload", (req: Request, res: Response) => {
         });
       }
 
+      // Handle specific multer/busboy errors
+      if (err.message && err.message.includes("Unexpected end of form")) {
+        return res.status(400).json({
+          error: "Upload corrupted",
+          message: "File upload was interrupted or corrupted. Please try again.",
+        });
+      }
+
+      if (err.message && err.message.includes("Missing boundary")) {
+        return res.status(400).json({
+          error: "Invalid form data",
+          message: "Invalid multipart form data. Please refresh and try again.",
+        });
+      }
+
       return res.status(500).json({
         error: "Upload failed",
         message: err.message || "Unknown upload error",
