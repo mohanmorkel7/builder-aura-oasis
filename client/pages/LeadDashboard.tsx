@@ -399,7 +399,7 @@ export default function LeadDashboard() {
                     : 100;
                 const chartHeight = 120;
 
-                // Get all unique steps from all leads
+                // Get all unique steps from all leads and order them from step 1 upward
                 const allSteps = Array.from(
                   new Set(
                     leadProgressData.flatMap((lead: any) => [
@@ -407,118 +407,121 @@ export default function LeadDashboard() {
                       ...(lead.current_step ? [lead.current_step.name] : []),
                     ])
                   )
-                );
-
-                // Sort steps based on yAxisSort state
-                const sortedSteps = [...allSteps].sort((a, b) => {
-                  return yAxisSort === "asc"
-                    ? a.localeCompare(b)
-                    : b.localeCompare(a);
+                ).sort((a, b) => {
+                  // Extract step numbers for proper ordering (Step 1, Step 2, etc.)
+                  const getStepNumber = (stepName: string) => {
+                    const match = stepName.match(/(\d+)/);
+                    return match ? parseInt(match[1]) : 999;
+                  };
+                  return getStepNumber(a) - getStepNumber(b);
                 });
+
+                // Define colors for different steps
+                const stepColors = [
+                  "#ef4444", // red-500
+                  "#f97316", // orange-500
+                  "#eab308", // yellow-500
+                  "#22c55e", // green-500
+                  "#06b6d4", // cyan-500
+                  "#3b82f6", // blue-500
+                  "#8b5cf6", // violet-500
+                  "#ec4899", // pink-500
+                  "#6b7280", // gray-500
+                  "#84cc16", // lime-500
+                ];
+
+                const getStepColor = (stepIndex: number) => {
+                  return stepColors[stepIndex % stepColors.length];
+                };
+
+                const chartHeight = 200;
 
                 return (
                   <div className="space-y-6">
-                    {/* New Chart Design: X-axis Leads, Y-axis Steps */}
+                    {/* Vertical Stacked Bar Chart Design */}
                     <div className="bg-gray-50 p-4 rounded-lg">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="text-sm font-medium text-gray-700">
-                          All Leads Progress ({leadProgressData.length} leads)
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <span className="text-xs text-gray-600">Y-axis Sort:</span>
-                          <Select value={yAxisSort} onValueChange={(value: "asc" | "desc") => setYAxisSort(value)}>
-                            <SelectTrigger className="w-32 h-8">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="asc">Ascending</SelectItem>
-                              <SelectItem value="desc">Descending</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
+                      <div className="text-sm font-medium text-gray-700 mb-4">
+                        All Leads Progress ({leadProgressData.length} leads)
                       </div>
                       <div className="overflow-x-auto">
                         <div className="min-w-max">
-                          {/* Steps on Y-axis with vertical bars */}
-                          <div className="space-y-3 mb-4">
-                            {sortedSteps.map((stepName: string) => (
-                              <div
-                                key={stepName}
-                                className="flex items-center space-x-4"
-                              >
-                                {/* Step name on Y-axis */}
-                                <div className="w-32 text-right pr-4">
-                                  <div className="text-sm font-medium text-gray-800">
-                                    {stepName}
+                          {/* Chart Container */}
+                          <div className="flex items-end justify-center space-x-6" style={{ height: `${chartHeight + 100}px` }}>
+                            {leadProgressData.map((leadProgress: any) => {
+                              // Calculate total height for normalization
+                              const totalProbability = [...leadProgress.completed_steps, ...(leadProgress.current_step ? [leadProgress.current_step] : [])]
+                                .reduce((sum: number, step: any) => sum + step.probability, 0);
+
+                              return (
+                                <div key={leadProgress.lead_id} className="flex flex-col items-center">
+                                  {/* Vertical Stacked Bar */}
+                                  <div
+                                    className="w-16 border border-gray-300 rounded flex flex-col-reverse relative group cursor-pointer"
+                                    style={{ height: `${chartHeight}px` }}
+                                  >
+                                    {/* Completed Steps (from bottom up, ordered by step number) */}
+                                    {allSteps.map((stepName: string, stepIndex: number) => {
+                                      const completedStep = leadProgress.completed_steps.find(
+                                        (step: any) => step.name === stepName
+                                      );
+                                      const isCurrentStep = leadProgress.current_step?.name === stepName;
+
+                                      if (!completedStep && !isCurrentStep) return null;
+
+                                      const step = completedStep || leadProgress.current_step;
+                                      const heightPercentage = (step.probability / 100) * 100; // Convert to percentage of chart height
+                                      const segmentHeight = (heightPercentage / 100) * (chartHeight - 20); // Leave some padding
+
+                                      return (
+                                        <div
+                                          key={stepName}
+                                          className="transition-all duration-300 relative group/segment"
+                                          style={{
+                                            height: `${Math.max(segmentHeight, 4)}px`,
+                                            backgroundColor: getStepColor(stepIndex),
+                                            opacity: isCurrentStep ? 0.7 : 1,
+                                            border: isCurrentStep ? "2px solid #1e40af" : "none",
+                                          }}
+                                          title={`${leadProgress.client_name}: ${stepName} - ${step.probability}%${isCurrentStep ? " (Current)" : ""}`}
+                                        >
+                                          <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover/segment:opacity-100 transition-opacity whitespace-nowrap z-20 pointer-events-none">
+                                            {stepName}: {step.probability}%{isCurrentStep ? " (Current)" : ""}
+                                          </div>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+
+                                  {/* Lead Name and Percentage */}
+                                  <div className="text-center mt-2">
+                                    <div className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-full mb-1">
+                                      {leadProgress.total_completed_probability}%
+                                    </div>
+                                    <div className="text-sm font-semibold text-gray-800 max-w-16 break-words">
+                                      {leadProgress.client_name}
+                                    </div>
                                   </div>
                                 </div>
-
-                                {/* Bars for each lead */}
-                                {leadProgressData.map((leadProgress: any) => {
-                                  const completedStep = leadProgress.completed_steps.find(
-                                    (step: any) => step.name === stepName
-                                  );
-                                  const isCurrentStep = leadProgress.current_step?.name === stepName;
-
-                                  return (
-                                    <div
-                                      key={leadProgress.lead_id}
-                                      className="w-24 h-8 flex items-center justify-center"
-                                    >
-                                      {completedStep ? (
-                                        <div
-                                          className="bg-green-500 h-6 rounded transition-all duration-300 relative group cursor-pointer"
-                                          style={{
-                                            width: `${Math.max((completedStep.probability / maxProbability) * 80, 8)}px`,
-                                          }}
-                                          title={`${leadProgress.client_name}: ${stepName} - ${completedStep.probability}%`}
-                                        >
-                                          <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20 pointer-events-none">
-                                            {completedStep.probability}%
-                                          </div>
-                                        </div>
-                                      ) : isCurrentStep ? (
-                                        <div
-                                          className="bg-blue-500 h-6 rounded border-2 border-blue-300 transition-all duration-300 relative group cursor-pointer"
-                                          style={{
-                                            width: `${Math.max((leadProgress.current_step.probability / maxProbability) * 80, 8)}px`,
-                                          }}
-                                          title={`${leadProgress.client_name}: ${stepName} (Current) - ${leadProgress.current_step.probability}%`}
-                                        >
-                                          <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20 pointer-events-none">
-                                            {leadProgress.current_step.probability}% (Current)
-                                          </div>
-                                        </div>
-                                      ) : (
-                                        <div className="w-2 h-2 bg-gray-200 rounded-full"></div>
-                                      )}
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            ))}
+                              );
+                            })}
                           </div>
 
-                          {/* Leads on X-axis - Now at bottom */}
-                          <div className="flex items-start space-x-4 border-t border-gray-300 pt-2">
-                            <div className="w-32 text-right pr-4">
-                              <span className="text-sm font-medium text-gray-600">
-                                Steps
-                              </span>
-                            </div>
-                            {leadProgressData.map((leadProgress: any) => (
-                              <div
-                                key={leadProgress.lead_id}
-                                className="w-24 text-center"
-                              >
-                                <div className="text-xs font-medium text-gray-700 transform rotate-45 origin-top-left whitespace-nowrap">
-                                  {leadProgress.client_name}
-                                </div>
-                                <div className="text-xs text-blue-600 mt-3">
-                                  {leadProgress.total_completed_probability}%
-                                </div>
+                          {/* Y-axis Labels (Steps from bottom to top) */}
+                          <div className="mt-6 flex justify-center">
+                            <div className="text-sm text-gray-700">
+                              <div className="font-medium mb-2">Steps Legend (Bottom to Top):</div>
+                              <div className="flex flex-wrap gap-3">
+                                {allSteps.map((stepName: string, stepIndex: number) => (
+                                  <div key={stepName} className="flex items-center space-x-2">
+                                    <div
+                                      className="w-4 h-4 rounded"
+                                      style={{ backgroundColor: getStepColor(stepIndex) }}
+                                    ></div>
+                                    <span className="text-xs">{stepName}</span>
+                                  </div>
+                                ))}
                               </div>
-                            ))}
+                            </div>
                           </div>
                         </div>
                       </div>
