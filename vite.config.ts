@@ -9,7 +9,8 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
     hmr: {
-      timeout: 5000,
+      timeout: 10000,
+      overlay: false,
     },
     fs: {
       allow: ["./client", "./shared"],
