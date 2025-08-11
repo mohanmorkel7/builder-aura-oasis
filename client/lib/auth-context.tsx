@@ -2,10 +2,11 @@ import * as React from "react";
 import { apiClient } from "./api";
 
 // Detect HMR at module level
-const IS_HMR_RELOAD = typeof import.meta.hot !== 'undefined' &&
-                     import.meta.hot &&
-                     performance.navigation &&
-                     performance.navigation.type === 1;
+const IS_HMR_RELOAD =
+  typeof import.meta.hot !== "undefined" &&
+  import.meta.hot &&
+  performance.navigation &&
+  performance.navigation.type === 1;
 import {
   PublicClientApplication,
   AuthenticationResult,
@@ -150,9 +151,10 @@ export const AuthProvider = React.memo(function AuthProvider({
   children: React.ReactNode;
 }) {
   // Detect HMR and avoid certain operations during hot reloads
-  const isHMR = typeof import.meta.hot !== 'undefined' &&
-                import.meta.hot &&
-                import.meta.hot.data;
+  const isHMR =
+    typeof import.meta.hot !== "undefined" &&
+    import.meta.hot &&
+    import.meta.hot.data;
 
   const [user, setUser] = React.useState<User | null>(null);
   const [isLoading, setIsLoading] = React.useState(true);
@@ -500,6 +502,8 @@ if (import.meta.hot) {
 
   // Add additional safety for HMR
   if (IS_HMR_RELOAD) {
-    console.log("Auth context: HMR reload detected, using minimal initialization");
+    console.log(
+      "Auth context: HMR reload detected, using minimal initialization",
+    );
   }
 }
