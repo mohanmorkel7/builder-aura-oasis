@@ -899,7 +899,6 @@ export default function LeadDashboard() {
                       </div>
                     </div>
 
-
                     {/* Lead List Summary */}
                     <div className="border-t pt-4">
                       <div className="text-sm font-medium text-gray-700 mb-3">
