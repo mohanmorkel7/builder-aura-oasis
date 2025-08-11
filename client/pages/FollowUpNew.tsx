@@ -128,7 +128,7 @@ export default function FollowUpNew() {
         const systemMessageData = {
           user_id: parseInt(user.id),
           user_name: user.name,
-          message: `📋 Follow-up created for message #${leadContext.messageId} | Assigned to: ${assignedUserName} | Time: ${new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}`,
+          message: `📋 Follow-up created for message #${leadContext.messageId} | Assigned to: ${assignedUserName} | Time: ${formatToISTDateTime(new Date())}`,
           message_type: "system" as const,
           is_rich_text: false,
         };
