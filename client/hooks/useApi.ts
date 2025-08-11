@@ -1217,6 +1217,8 @@ export function useDeleteLeadStep() {
     mutationFn: (stepId: number) => apiClient.deleteLeadStep(stepId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["lead-steps"] });
+      queryClient.invalidateQueries({ queryKey: ["lead-progress-dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["template-step-dashboard"] });
     },
   });
 }
