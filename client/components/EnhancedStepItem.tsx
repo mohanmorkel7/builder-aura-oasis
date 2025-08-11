@@ -238,7 +238,18 @@ export function EnhancedStepItem({
         console.log("Upload endpoint test result:", testResult);
       } catch (testError) {
         console.error("Upload endpoint test failed:", testError);
-        // Continue anyway, the test might fail for other reasons
+      }
+
+      // Test upload format expectations
+      console.log("Testing server upload format expectations...");
+      try {
+        const formatTest = await apiClient.testUploadFormat();
+        console.log("Upload format test result:", formatTest);
+        if (!formatTest.success) {
+          console.warn("⚠️ Server format test failed - proceeding with default field name");
+        }
+      } catch (formatError) {
+        console.error("Upload format test failed:", formatError);
       }
 
       // First, upload the actual files to the server
