@@ -209,7 +209,7 @@ const getNotificationsFromFollowUps = async (
 };
 
 interface DashboardLayoutProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
