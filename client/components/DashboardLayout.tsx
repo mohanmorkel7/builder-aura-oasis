@@ -269,8 +269,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             "Failed to fetch notifications (non-critical):",
             error.message,
           );
-          // Disable notifications system if it keeps failing
-          setNotificationsEnabled(false);
+
+          // Check if it's a server routing issue
+          if (error.message.includes("HTML instead of JSON") || error.message.includes("Server routing error")) {
+            console.error("Backend server appears to be down or misconfigured. Disabling notifications.");
+            setNotificationsEnabled(false);
+          }
+
+          // Always return empty array on error to prevent UI crashes
           setNotifications([]);
         }
       }
