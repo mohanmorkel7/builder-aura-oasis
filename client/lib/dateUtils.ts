@@ -63,19 +63,30 @@ export const formatToISTDateTime = (
   };
 
   try {
-    // Format the date in user's local timezone (no forced timezone conversion)
-    const formatter = new Intl.DateTimeFormat("en-IN", defaultOptions);
+    // Format the date using UTC time (no timezone conversion)
+    const utcOptions: Intl.DateTimeFormatOptions = {
+      timeZone: "UTC",
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+      ...options,
+    };
+
+    const formatter = new Intl.DateTimeFormat("en-IN", utcOptions);
     const formattedDate = formatter.format(dateObj);
 
     return formattedDate;
   } catch (error) {
     console.warn("Error formatting date:", error);
-    // Fallback to simple local formatting
-    const day = dateObj.getDate();
-    const month = dateObj.toLocaleString("en-IN", { month: "short" });
-    const year = dateObj.getFullYear();
-    let hours = dateObj.getHours();
-    const minutes = dateObj.getMinutes().toString().padStart(2, "0");
+    // Fallback to UTC formatting
+    const day = dateObj.getUTCDate();
+    const month = dateObj.toLocaleString("en-IN", { month: "short", timeZone: "UTC" });
+    const year = dateObj.getUTCFullYear();
+    let hours = dateObj.getUTCHours();
+    const minutes = dateObj.getUTCMinutes().toString().padStart(2, "0");
     const ampm = hours >= 12 ? "pm" : "am";
     hours = hours % 12;
     hours = hours ? hours : 12; // 0 should be 12
