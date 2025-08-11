@@ -36,6 +36,16 @@ export const formatToISTDateTime = (
     return "Invalid Date";
   }
 
+  // Debug logging for timestamp conversion issues
+  if (typeof date === "string") {
+    console.log(`formatToISTDateTime Debug:`, {
+      originalInput: date,
+      parsedDate: dateObj.toISOString(),
+      localString: dateObj.toString(),
+      utcString: dateObj.toUTCString(),
+    });
+  }
+
   const defaultOptions: Intl.DateTimeFormatOptions = {
     timeZone: IST_TIMEZONE,
     day: "numeric",
@@ -51,6 +61,12 @@ export const formatToISTDateTime = (
     // Format the date to IST with explicit timezone indicator
     const formatter = new Intl.DateTimeFormat("en-IN", defaultOptions);
     const formattedDate = formatter.format(dateObj);
+
+    console.log(`IST Formatting Result:`, {
+      input: typeof date === "string" ? date : dateObj.toISOString(),
+      formattedIST: formattedDate,
+      timezone: IST_TIMEZONE
+    });
 
     // Add IST indicator to make timezone clear
     return `${formattedDate} IST`;
