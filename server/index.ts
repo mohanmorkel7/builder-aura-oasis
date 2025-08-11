@@ -48,7 +48,7 @@ export function createServer() {
   // Handle large file uploads with proper error handling - skip multipart/form-data for multer
   app.use((req, res, next) => {
     // Skip JSON parsing for multipart/form-data to avoid conflicts with multer
-    if (req.headers['content-type']?.startsWith('multipart/form-data')) {
+    if (req.headers["content-type"]?.startsWith("multipart/form-data")) {
       return next();
     }
     express.json({
@@ -64,7 +64,7 @@ export function createServer() {
 
   app.use((req, res, next) => {
     // Skip URL-encoded parsing for multipart/form-data to avoid conflicts with multer
-    if (req.headers['content-type']?.startsWith('multipart/form-data')) {
+    if (req.headers["content-type"]?.startsWith("multipart/form-data")) {
       return next();
     }
     express.urlencoded({

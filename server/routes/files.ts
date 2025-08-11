@@ -109,7 +109,10 @@ router.post("/upload-chunk", async (req: Request, res: Response) => {
 
 // Test endpoint to verify routing
 router.get("/test", (req: Request, res: Response) => {
-  res.json({ message: "Files router is working", timestamp: new Date().toISOString() });
+  res.json({
+    message: "Files router is working",
+    timestamp: new Date().toISOString(),
+  });
 });
 
 // Simple POST test endpoint to verify POST routing works
@@ -121,7 +124,7 @@ router.post("/test-post", (req: Request, res: Response) => {
     message: "POST routing works",
     timestamp: new Date().toISOString(),
     headers: req.headers,
-    hasBody: !!req.body
+    hasBody: !!req.body,
   });
 });
 
@@ -130,135 +133,143 @@ router.post("/upload", (req: Request, res: Response) => {
   try {
     console.log("=== UPLOAD REQUEST START ===");
     console.log("Headers:", req.headers);
-    console.log("Content-Type:", req.headers['content-type']);
-    console.log("Content-Length:", req.headers['content-length']);
+    console.log("Content-Type:", req.headers["content-type"]);
+    console.log("Content-Length:", req.headers["content-length"]);
 
     // Ensure we always return JSON
-    res.setHeader('Content-Type', 'application/json');
+    res.setHeader("Content-Type", "application/json");
 
-  // Use the more flexible upload.any() instead of upload.array()
-  upload.any()(req, res, (err) => {
-    if (err) {
-      console.error("❌ Multer upload error:", err);
-      console.error("Error code:", err.code);
-      console.error("Error message:", err.message);
+    // Use the more flexible upload.any() instead of upload.array()
+    upload.any()(req, res, (err) => {
+      if (err) {
+        console.error("❌ Multer upload error:", err);
+        console.error("Error code:", err.code);
+        console.error("Error message:", err.message);
 
-      // Ensure we always return a proper JSON response
-      try {
-        if (err.code === "LIMIT_FILE_SIZE") {
-          return res.status(413).json({
-            error: "File too large",
-            message: "File size exceeds the maximum limit of 50MB",
-            maxSize: "50MB",
-          });
-        }
-
-        if (err.code === "LIMIT_FILE_COUNT") {
-          return res.status(400).json({
-            error: "Too many files",
-            message: "Maximum number of files exceeded",
-          });
-        }
-
-        // Handle specific multer/busboy errors
-        if (err.message && err.message.includes("Unexpected end of form")) {
-          return res.status(400).json({
-            error: "Upload corrupted",
-            message: "File upload was interrupted or corrupted. Please try again.",
-          });
-        }
-
-        if (err.message && err.message.includes("Missing boundary")) {
-          return res.status(400).json({
-            error: "Invalid form data",
-            message: "Invalid multipart form data. Please refresh and try again.",
-          });
-        }
-
-        // Generic error response
-        return res.status(400).json({
-          error: "Upload failed",
-          message: err.message || "Unknown upload error",
-          errorCode: err.code || 'UNKNOWN',
-        });
-      } catch (responseError) {
-        console.error("❌ Failed to send error response:", responseError);
-        // Last resort - send plain text
-        return res.status(500).send("Upload failed: " + (err.message || "Unknown error"));
-      }
-    }
-
-    // Continue with successful upload processing
-    try {
-      console.log("=== MULTER PROCESSING COMPLETE ===");
-      console.log("req.files:", req.files);
-      console.log("req.body:", req.body);
-      console.log("req.files type:", typeof req.files);
-      console.log("req.files is array:", Array.isArray(req.files));
-
-      // With upload.any(), req.files is an array of files
-      if (!req.files || !Array.isArray(req.files) || req.files.length === 0) {
-        console.log("❌ No files received in upload request");
-        console.log("req.files details:", {
-          exists: !!req.files,
-          isArray: Array.isArray(req.files),
-          length: req.files ? (req.files as any).length : 'N/A',
-          type: typeof req.files
-        });
-        return res.status(400).json({
-          error: "No files uploaded",
-          message: "No files were received in the request",
-          debug: {
-            hasFiles: !!req.files,
-            isArray: Array.isArray(req.files),
-            length: req.files ? (req.files as any).length : 'N/A'
+        // Ensure we always return a proper JSON response
+        try {
+          if (err.code === "LIMIT_FILE_SIZE") {
+            return res.status(413).json({
+              error: "File too large",
+              message: "File size exceeds the maximum limit of 50MB",
+              maxSize: "50MB",
+            });
           }
-        });
+
+          if (err.code === "LIMIT_FILE_COUNT") {
+            return res.status(400).json({
+              error: "Too many files",
+              message: "Maximum number of files exceeded",
+            });
+          }
+
+          // Handle specific multer/busboy errors
+          if (err.message && err.message.includes("Unexpected end of form")) {
+            return res.status(400).json({
+              error: "Upload corrupted",
+              message:
+                "File upload was interrupted or corrupted. Please try again.",
+            });
+          }
+
+          if (err.message && err.message.includes("Missing boundary")) {
+            return res.status(400).json({
+              error: "Invalid form data",
+              message:
+                "Invalid multipart form data. Please refresh and try again.",
+            });
+          }
+
+          // Generic error response
+          return res.status(400).json({
+            error: "Upload failed",
+            message: err.message || "Unknown upload error",
+            errorCode: err.code || "UNKNOWN",
+          });
+        } catch (responseError) {
+          console.error("❌ Failed to send error response:", responseError);
+          // Last resort - send plain text
+          return res
+            .status(500)
+            .send("Upload failed: " + (err.message || "Unknown error"));
+        }
       }
 
-      const files = req.files as Express.Multer.File[];
+      // Continue with successful upload processing
+      try {
+        console.log("=== MULTER PROCESSING COMPLETE ===");
+        console.log("req.files:", req.files);
+        console.log("req.body:", req.body);
+        console.log("req.files type:", typeof req.files);
+        console.log("req.files is array:", Array.isArray(req.files));
 
-      console.log(`✅ Received ${files.length} files for upload`);
-      files.forEach((file, index) => {
+        // With upload.any(), req.files is an array of files
+        if (!req.files || !Array.isArray(req.files) || req.files.length === 0) {
+          console.log("❌ No files received in upload request");
+          console.log("req.files details:", {
+            exists: !!req.files,
+            isArray: Array.isArray(req.files),
+            length: req.files ? (req.files as any).length : "N/A",
+            type: typeof req.files,
+          });
+          return res.status(400).json({
+            error: "No files uploaded",
+            message: "No files were received in the request",
+            debug: {
+              hasFiles: !!req.files,
+              isArray: Array.isArray(req.files),
+              length: req.files ? (req.files as any).length : "N/A",
+            },
+          });
+        }
+
+        const files = req.files as Express.Multer.File[];
+
+        console.log(`✅ Received ${files.length} files for upload`);
+        files.forEach((file, index) => {
+          console.log(
+            `File ${index + 1}: ${file.originalname} (${file.size} bytes) (field: ${file.fieldname})`,
+          );
+        });
+
+        const uploadedFiles = files.map((file) => ({
+          originalName: file.originalname,
+          filename: file.filename,
+          size: file.size,
+          mimetype: file.mimetype,
+          path: `/uploads/${file.filename}`,
+          fieldname: file.fieldname,
+        }));
+
         console.log(
-          `File ${index + 1}: ${file.originalname} (${file.size} bytes) (field: ${file.fieldname})`,
+          `Successfully uploaded ${uploadedFiles.length} files:`,
+          uploadedFiles.map((f) => `${f.filename} (${f.size} bytes)`),
         );
-      });
 
-      const uploadedFiles = files.map((file) => ({
-        originalName: file.originalname,
-        filename: file.filename,
-        size: file.size,
-        mimetype: file.mimetype,
-        path: `/uploads/${file.filename}`,
-        fieldname: file.fieldname,
-      }));
-
-      console.log(
-        `Successfully uploaded ${uploadedFiles.length} files:`,
-        uploadedFiles.map((f) => `${f.filename} (${f.size} bytes)`),
-      );
-
-      res.json({
-        success: true,
-        files: uploadedFiles,
-        message: `Successfully uploaded ${uploadedFiles.length} file(s)`,
-      });
-    } catch (error) {
-      console.error("❌ Error processing uploaded files:", error);
-      return res.status(500).json({
-        error: "Failed to process uploaded files",
-        message: error instanceof Error ? error.message : "Unknown processing error"
-      });
-    }
-  });
+        res.json({
+          success: true,
+          files: uploadedFiles,
+          message: `Successfully uploaded ${uploadedFiles.length} file(s)`,
+        });
+      } catch (error) {
+        console.error("❌ Error processing uploaded files:", error);
+        return res.status(500).json({
+          error: "Failed to process uploaded files",
+          message:
+            error instanceof Error ? error.message : "Unknown processing error",
+        });
+      }
+    });
   } catch (unexpectedError) {
     console.error("❌ Unexpected error in upload handler:", unexpectedError);
     try {
       res.status(500).json({
         error: "Unexpected server error",
         message: "An unexpected error occurred during upload processing",
-        details: unexpectedError instanceof Error ? unexpectedError.message : String(unexpectedError)
+        details:
+          unexpectedError instanceof Error
+            ? unexpectedError.message
+            : String(unexpectedError),
       });
     } catch (responseError) {
       console.error("❌ Failed to send error response:", responseError);

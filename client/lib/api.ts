@@ -830,13 +830,18 @@ export class ApiClient {
 
     // Create a simple test FormData
     const formData = new FormData();
-    const testBlob = new Blob(['test file content'], { type: 'text/plain' });
-    const testFile = new File([testBlob], 'test.txt', { type: 'text/plain' });
+    const testBlob = new Blob(["test file content"], { type: "text/plain" });
+    const testFile = new File([testBlob], "test.txt", { type: "text/plain" });
 
-    console.log("Testing with simple file:", testFile.name, testFile.size, testFile.type);
+    console.log(
+      "Testing with simple file:",
+      testFile.name,
+      testFile.size,
+      testFile.type,
+    );
 
     // Test different field names
-    const fieldNames = ['files', 'file', 'upload', 'document'];
+    const fieldNames = ["files", "file", "upload", "document"];
 
     for (const fieldName of fieldNames) {
       console.log(`Testing field name: ${fieldName}`);
@@ -845,8 +850,8 @@ export class ApiClient {
 
       try {
         const response = await fetch(url, {
-          method: 'POST',
-          body: testFormData
+          method: "POST",
+          body: testFormData,
         });
 
         console.log(`Field ${fieldName}: Status ${response.status}`);
@@ -863,7 +868,7 @@ export class ApiClient {
       }
     }
 
-    return { success: false, message: 'All field names failed' };
+    return { success: false, message: "All field names failed" };
   }
 
   // File upload method
@@ -883,7 +888,7 @@ export class ApiClient {
         name: file.name,
         size: file.size,
         type: file.type,
-        lastModified: file.lastModified
+        lastModified: file.lastModified,
       });
       formData.append("files", file);
     });
@@ -906,7 +911,9 @@ export class ApiClient {
 
       // Log file details for debugging
       Array.from(files).forEach((file, index) => {
-        console.log(`File ${index + 1}: ${file.name} (${file.size} bytes, ${file.type}, last modified: ${new Date(file.lastModified)})`);
+        console.log(
+          `File ${index + 1}: ${file.name} (${file.size} bytes, ${file.type}, last modified: ${new Date(file.lastModified)})`,
+        );
 
         // Check for potential issues
         if (file.size === 0) {
@@ -922,13 +929,18 @@ export class ApiClient {
 
       // Debug FormData contents
       console.log("FormData created with files under 'files' field");
-      console.log("FormData has entries:", Array.from(formData.entries()).length);
+      console.log(
+        "FormData has entries:",
+        Array.from(formData.entries()).length,
+      );
 
       // Try to log FormData entries (modern browsers)
       try {
         for (const [key, value] of formData.entries()) {
           if (value instanceof File) {
-            console.log(`FormData entry: ${key} = File(${value.name}, ${value.size} bytes)`);
+            console.log(
+              `FormData entry: ${key} = File(${value.name}, ${value.size} bytes)`,
+            );
           } else {
             console.log(`FormData entry: ${key} = ${value}`);
           }
@@ -951,10 +963,13 @@ export class ApiClient {
       clearTimeout(timeoutId);
 
       console.log(`Upload response status: ${response.status}`);
-      console.log("Response headers:", Object.fromEntries(response.headers.entries()));
+      console.log(
+        "Response headers:",
+        Object.fromEntries(response.headers.entries()),
+      );
 
       // Read response body IMMEDIATELY to avoid stream conflicts
-      let responseText = '';
+      let responseText = "";
       let responseData = null;
 
       try {
@@ -984,8 +999,11 @@ export class ApiClient {
         console.error("- Status:", response.status);
         console.error("- Status Text:", response.statusText);
         console.error("- URL:", response.url);
-        console.error("- Content-Type:", response.headers.get('content-type'));
-        console.error("- Content-Length:", response.headers.get('content-length'));
+        console.error("- Content-Type:", response.headers.get("content-type"));
+        console.error(
+          "- Content-Length:",
+          response.headers.get("content-length"),
+        );
         console.error("- Response Text:", responseText);
         console.error("- Response Data:", responseData);
 
@@ -999,19 +1017,23 @@ export class ApiClient {
           // Fallback to status-based messages
           switch (response.status) {
             case 400:
-              errorMessage = "Bad request - server rejected the file upload. Check the server logs for details.";
+              errorMessage =
+                "Bad request - server rejected the file upload. Check the server logs for details.";
               break;
             case 413:
-              errorMessage = "File too large. Please choose a smaller file (max 50MB).";
+              errorMessage =
+                "File too large. Please choose a smaller file (max 50MB).";
               break;
             case 404:
-              errorMessage = "Upload service not found. Please contact support.";
+              errorMessage =
+                "Upload service not found. Please contact support.";
               break;
             case 500:
               errorMessage = "Server error occurred. Please try again later.";
               break;
             case 503:
-              errorMessage = "Upload service temporarily unavailable. Please try again later.";
+              errorMessage =
+                "Upload service temporarily unavailable. Please try again later.";
               break;
             default:
               errorMessage = `Upload failed with error ${response.status}. Please try again.`;
@@ -1031,14 +1053,16 @@ export class ApiClient {
         return {
           success: true,
           message: "Upload completed successfully",
-          files: []
+          files: [],
         };
       }
     } catch (error: any) {
       console.error("Upload error:", error);
 
-      if (error.name === 'AbortError') {
-        throw new Error("Upload timed out. Please try with smaller files or check your connection.");
+      if (error.name === "AbortError") {
+        throw new Error(
+          "Upload timed out. Please try with smaller files or check your connection.",
+        );
       }
 
       if (error instanceof Error) {

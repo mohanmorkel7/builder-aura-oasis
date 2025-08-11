@@ -124,15 +124,17 @@ function ProtectedRoute({
     console.error("ProtectedRoute AuthProvider error:", error);
 
     // Don't redirect to login for API/upload errors that might bubble up
-    if (error && typeof error.message === 'string') {
+    if (error && typeof error.message === "string") {
       const errorMsg = error.message.toLowerCase();
-      if (errorMsg.includes('upload') ||
-          errorMsg.includes('fetch') ||
-          errorMsg.includes('network') ||
-          errorMsg.includes('400') ||
-          errorMsg.includes('413') ||
-          errorMsg.includes('body stream')) {
-        console.log('API error in ProtectedRoute, preserving auth state');
+      if (
+        errorMsg.includes("upload") ||
+        errorMsg.includes("fetch") ||
+        errorMsg.includes("network") ||
+        errorMsg.includes("400") ||
+        errorMsg.includes("413") ||
+        errorMsg.includes("body stream")
+      ) {
+        console.log("API error in ProtectedRoute, preserving auth state");
         // Try to render children anyway
         return <>{children}</>;
       }

@@ -246,7 +246,9 @@ export function EnhancedStepItem({
         const formatTest = await apiClient.testUploadFormat();
         console.log("Upload format test result:", formatTest);
         if (!formatTest.success) {
-          console.warn("⚠️ Server format test failed - proceeding with default field name");
+          console.warn(
+            "⚠️ Server format test failed - proceeding with default field name",
+          );
         }
       } catch (formatError) {
         console.error("Upload format test failed:", formatError);
@@ -298,7 +300,9 @@ export function EnhancedStepItem({
       console.error("- Error stack:", error.stack);
       console.error("- Files attempted:");
       Array.from(files).forEach((file, index) => {
-        console.error(`  File ${index + 1}: ${file.name} (${file.size} bytes, ${file.type})`);
+        console.error(
+          `  File ${index + 1}: ${file.name} (${file.size} bytes, ${file.type})`,
+        );
       });
 
       // Prevent error from bubbling up and potentially affecting auth state

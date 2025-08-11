@@ -173,7 +173,10 @@ export const AuthProvider = React.memo(function AuthProvider({
         const storedUser = localStorage.getItem("banani_user");
         if (storedUser) {
           const userData = JSON.parse(storedUser);
-          console.log("Successfully loaded user from localStorage:", userData.email);
+          console.log(
+            "Successfully loaded user from localStorage:",
+            userData.email,
+          );
           setUser(userData);
         } else {
           console.log("No user found in localStorage");
@@ -184,7 +187,8 @@ export const AuthProvider = React.memo(function AuthProvider({
         console.warn("Keeping localStorage data, error might be temporary");
         // Try to preserve session if possible
         const storedUser = localStorage.getItem("banani_user");
-        if (storedUser && storedUser.length > 10) { // Basic sanity check
+        if (storedUser && storedUser.length > 10) {
+          // Basic sanity check
           console.log("Attempting to preserve session despite parse error");
         }
       }
