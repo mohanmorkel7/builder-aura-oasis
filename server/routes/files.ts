@@ -127,13 +127,14 @@ router.post("/test-post", (req: Request, res: Response) => {
 
 // Upload files endpoint - flexible to handle any field names
 router.post("/upload", (req: Request, res: Response) => {
-  console.log("=== UPLOAD REQUEST START ===");
-  console.log("Headers:", req.headers);
-  console.log("Content-Type:", req.headers['content-type']);
-  console.log("Content-Length:", req.headers['content-length']);
+  try {
+    console.log("=== UPLOAD REQUEST START ===");
+    console.log("Headers:", req.headers);
+    console.log("Content-Type:", req.headers['content-type']);
+    console.log("Content-Length:", req.headers['content-length']);
 
-  // Ensure we always return JSON
-  res.setHeader('Content-Type', 'application/json');
+    // Ensure we always return JSON
+    res.setHeader('Content-Type', 'application/json');
 
   // Use the more flexible upload.any() instead of upload.array()
   upload.any()(req, res, (err) => {
@@ -251,6 +252,19 @@ router.post("/upload", (req: Request, res: Response) => {
       });
     }
   });
+  } catch (unexpectedError) {
+    console.error("❌ Unexpected error in upload handler:", unexpectedError);
+    try {
+      res.status(500).json({
+        error: "Unexpected server error",
+        message: "An unexpected error occurred during upload processing",
+        details: unexpectedError instanceof Error ? unexpectedError.message : String(unexpectedError)
+      });
+    } catch (responseError) {
+      console.error("❌ Failed to send error response:", responseError);
+      res.status(500).send("Internal server error");
+    }
+  }
 });
 
 // Download file by filename
