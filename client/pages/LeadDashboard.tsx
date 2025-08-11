@@ -746,10 +746,9 @@ export default function LeadDashboard() {
 
                                   {/* Horizontal Bar Chart */}
                                   <div
-                                    className="relative"
+                                    className="relative flex-1"
                                     style={{
                                       height: `${chartHeight}px`,
-                                      width: "400px",
                                     }}
                                   >
                                     {/* Grid Lines */}
