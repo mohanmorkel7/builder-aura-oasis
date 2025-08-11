@@ -447,29 +447,57 @@ export default function LeadDashboard() {
                           {/* Chart Container with Y-axis labels */}
                           <div className="flex" style={{ height: `${chartHeight + 100}px` }}>
                             {/* Y-axis Step Labels on Left */}
-                            <div className="w-40 pr-4 flex flex-col justify-end" style={{ height: `${chartHeight}px` }}>
-                              {allSteps.slice().reverse().map((stepName: string, reverseIndex: number) => {
-                                const stepIndex = allSteps.length - 1 - reverseIndex;
-                                const stepHeight = chartHeight / allSteps.length;
+                            <div className="w-60 pr-4 flex flex-col justify-end" style={{ height: `${chartHeight}px` }}>
+                              {(() => {
+                                // Calculate step completion percentages across all leads
+                                const stepStats = allSteps.map((stepName: string) => {
+                                  const totalLeads = leadProgressData.length;
+                                  const completedLeads = leadProgressData.filter((lead: any) =>
+                                    lead.completed_steps.some((step: any) => step.name === stepName) ||
+                                    lead.current_step?.name === stepName
+                                  ).length;
+                                  const completionPercentage = totalLeads > 0 ? Math.round((completedLeads / totalLeads) * 100) : 0;
 
-                                return (
-                                  <div
-                                    key={stepName}
-                                    className="flex items-center justify-end text-right"
-                                    style={{ height: `${stepHeight}px` }}
-                                  >
-                                    <div className="flex items-center space-x-2">
+                                  // Calculate average probability for this step
+                                  const stepProbabilities = leadProgressData
+                                    .map((lead: any) => {
+                                      const completedStep = lead.completed_steps.find((step: any) => step.name === stepName);
+                                      const currentStep = lead.current_step?.name === stepName ? lead.current_step : null;
+                                      return completedStep?.probability || currentStep?.probability || 0;
+                                    })
+                                    .filter((prob: number) => prob > 0);
+
+                                  const avgProbability = stepProbabilities.length > 0
+                                    ? Math.round(stepProbabilities.reduce((sum: number, prob: number) => sum + prob, 0) / stepProbabilities.length)
+                                    : 0;
+
+                                  return {
+                                    stepName,
+                                    completionPercentage,
+                                    avgProbability,
+                                    stepIndex: allSteps.indexOf(stepName)
+                                  };
+                                });
+
+                                // Sort steps by completion percentage (highest first)
+                                const sortedStepStats = stepStats.sort((a, b) => b.completionPercentage - a.completionPercentage);
+
+                                return sortedStepStats.map((stepStat, index) => {
+                                  const stepHeight = chartHeight / sortedStepStats.length;
+
+                                  return (
+                                    <div
+                                      key={stepStat.stepName}
+                                      className="flex items-center justify-end text-right"
+                                      style={{ height: `${stepHeight}px` }}
+                                    >
                                       <span className="text-sm font-medium text-gray-700">
-                                        {stepName}
+                                        {stepStat.stepName} → {stepStat.avgProbability}%
                                       </span>
-                                      <div
-                                        className="w-4 h-4 rounded border border-gray-400"
-                                        style={{ backgroundColor: getStepColor(stepIndex) }}
-                                      ></div>
                                     </div>
-                                  </div>
-                                );
-                              })}
+                                  );
+                                });
+                              })()}
                             </div>
 
                             {/* Chart Bars */}
