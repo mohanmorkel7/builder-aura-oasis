@@ -202,7 +202,7 @@ export class ApiClient {
   ): Promise<Response> {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
-      xhr.timeout = 30000; // 30 second timeout
+      xhr.timeout = 45000; // 45 second timeout
 
       xhr.open(config.method || "GET", url);
 
