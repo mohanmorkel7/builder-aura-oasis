@@ -187,12 +187,20 @@ export class ApiClient {
 
       if (error instanceof TypeError) {
         if (error.message.includes("Failed to fetch")) {
+          console.error("Network fetch failure details:", {
+            url,
+            config: JSON.stringify(config, null, 2),
+            error: error.message,
+            timestamp: new Date().toISOString(),
+            retryCount
+          });
           throw new Error(
-            "Network error: Cannot connect to server. Please check your internet connection or try again later.",
+            `Network error: Cannot connect to server at ${url}. Please check your internet connection or server status.`,
           );
         }
         if (error.message.includes("body stream")) {
-          throw new Error("Network error: Please try again");
+          console.error("Body stream error for URL:", url);
+          throw new Error(`Network error: Connection interrupted for ${url}. Please try again.`);
         }
       }
 
