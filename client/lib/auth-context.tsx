@@ -160,13 +160,6 @@ export const AuthProvider = React.memo(function AuthProvider({
   const [isLoading, setIsLoading] = React.useState(true);
 
   React.useEffect(() => {
-    // Skip during HMR to prevent connection timing issues
-    if (isHMR) {
-      console.log("Skipping auth initialization during HMR");
-      setIsLoading(false);
-      return;
-    }
-
     const loadStoredUser = () => {
       // Add error handling for localStorage access
       try {
@@ -183,22 +176,22 @@ export const AuthProvider = React.memo(function AuthProvider({
         }
       } catch (error) {
         console.warn("Error loading stored user data:", error);
-        // Don't automatically clear localStorage - might be temporary corruption
-        console.warn("Keeping localStorage data, error might be temporary");
-        // Try to preserve session if possible
-        const storedUser = localStorage.getItem("banani_user");
-        if (storedUser && storedUser.length > 10) {
-          // Basic sanity check
-          console.log("Attempting to preserve session despite parse error");
-        }
+        // Clear corrupted localStorage data
+        localStorage.removeItem("banani_user");
       }
       setIsLoading(false);
     };
 
-    // Add small delay to prevent HMR timing issues
-    const timeoutId = setTimeout(loadStoredUser, 50); // Increased delay
-    return () => clearTimeout(timeoutId);
-  }, [isHMR]);
+    // Only skip during actual HMR updates, not page refreshes
+    if (isHMR && import.meta.hot?.data.skip) {
+      console.log("Skipping auth initialization during HMR update");
+      setIsLoading(false);
+      return;
+    }
+
+    // Load stored user immediately for page refreshes
+    loadStoredUser();
+  }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
