@@ -578,7 +578,13 @@ export class ApiClient {
   }
 
   async getLeadProgressDashboard() {
-    return this.request("/leads/progress-dashboard");
+    try {
+      return await this.requestWithRetry("/leads/progress-dashboard", {}, 3);
+    } catch (error) {
+      console.error("Failed to fetch lead progress dashboard after all retries:", error);
+      // Return empty array as fallback to prevent UI crashes
+      return [];
+    }
   }
 
   async getLeadsForTemplateStep(
