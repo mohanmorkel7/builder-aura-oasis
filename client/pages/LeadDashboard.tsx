@@ -672,8 +672,8 @@ export default function LeadDashboard() {
                         <div className="text-sm font-medium text-gray-700 mb-4">
                           Step-wise Distribution - Lead Count by Step
                         </div>
-                        <div className="overflow-x-auto">
-                          <div className="min-w-max">
+                        <div>
+                          <div>
                             {(() => {
                               // Calculate step-wise distribution
                               const stepDistribution = allSteps.map(
@@ -746,10 +746,9 @@ export default function LeadDashboard() {
 
                                   {/* Horizontal Bar Chart */}
                                   <div
-                                    className="relative"
+                                    className="relative flex-1"
                                     style={{
                                       height: `${chartHeight}px`,
-                                      width: "400px",
                                     }}
                                   >
                                     {/* Grid Lines */}
@@ -790,7 +789,7 @@ export default function LeadDashboard() {
                                         const barWidth =
                                           (stepData.totalLeadsAtStep /
                                             maxLeadsAtStep) *
-                                          350; // Max 350px width
+                                          85; // Max 85% width
 
                                         return (
                                           <div key={stepData.stepName}>
@@ -801,7 +800,7 @@ export default function LeadDashboard() {
                                                 top: `${yPosition + stepHeight * 0.2}px`,
                                                 left: "10px",
                                                 height: `${stepHeight * 0.6}px`,
-                                                width: `${Math.max(barWidth, 20)}px`,
+                                                width: `${Math.max(barWidth, 5)}%`,
                                                 backgroundColor:
                                                   getStepColor(stepIndex),
                                                 opacity: 0.8,
