@@ -1018,7 +1018,7 @@ export class LeadChatRepository {
   ): Promise<boolean> {
     const query = `
       UPDATE lead_chats
-      SET message = $2, is_rich_text = $3, updated_at = NOW()
+      SET message = $2, is_rich_text = $3
       WHERE id = $1
     `;
     const result = await pool.query(query, [
