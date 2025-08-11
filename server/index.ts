@@ -1,6 +1,15 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
+
+// Extend Express Request interface for raw body
+declare global {
+  namespace Express {
+    interface Request {
+      rawBody?: Buffer;
+    }
+  }
+}
 import { initializeDatabase } from "./database/connection";
 import { handleDemo } from "./routes/demo";
 import usersRouter from "./routes/users";
