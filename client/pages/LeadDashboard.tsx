@@ -466,7 +466,7 @@ export default function LeadDashboard() {
                             </div>
 
                             {/* Chart Grid and Lead Positions */}
-                            <div className="flex-1 relative" style={{ height: `${chartHeight}px` }}>
+                            <div className="relative" style={{ height: `${chartHeight}px`, width: `${leadProgressData.length * 80}px` }}>
                               {/* Grid Lines */}
                               <div className="absolute inset-0">
                                 {allSteps.map((stepName: string, index: number) => {
