@@ -810,6 +810,20 @@ export class ApiClient {
     });
   }
 
+  // Test method to verify upload endpoint
+  async testUploadEndpoint() {
+    const url = `${API_BASE_URL}/files/test`;
+    try {
+      const response = await fetch(url);
+      const result = await response.text();
+      console.log("Upload endpoint test:", response.status, result);
+      return { status: response.status, result };
+    } catch (error) {
+      console.error("Upload endpoint test failed:", error);
+      throw error;
+    }
+  }
+
   // File upload method
   async uploadFiles(files: FileList) {
     const formData = new FormData();
