@@ -445,116 +445,134 @@ export default function LeadDashboard() {
                       <div className="overflow-x-auto">
                         <div className="min-w-max">
                           {/* Chart Container with Y-axis labels */}
-                          <div className="flex" style={{ height: `${chartHeight + 100}px` }}>
+                          <div className="flex" style={{ height: `${chartHeight + 80}px` }}>
                             {/* Y-axis Step Labels on Left */}
-                            <div className="w-60 pr-4 flex flex-col justify-end" style={{ height: `${chartHeight}px` }}>
-                              {(() => {
-                                // Calculate step completion percentages across all leads
-                                const stepStats = allSteps.map((stepName: string) => {
-                                  const totalLeads = leadProgressData.length;
-                                  const completedLeads = leadProgressData.filter((lead: any) =>
-                                    lead.completed_steps.some((step: any) => step.name === stepName) ||
-                                    lead.current_step?.name === stepName
-                                  ).length;
-                                  const completionPercentage = totalLeads > 0 ? Math.round((completedLeads / totalLeads) * 100) : 0;
+                            <div className="w-48 pr-4 flex flex-col" style={{ height: `${chartHeight}px` }}>
+                              {allSteps.slice().reverse().map((stepName: string, reverseIndex: number) => {
+                                const stepHeight = chartHeight / allSteps.length;
 
-                                  // Calculate average probability for this step
-                                  const stepProbabilities = leadProgressData
-                                    .map((lead: any) => {
-                                      const completedStep = lead.completed_steps.find((step: any) => step.name === stepName);
-                                      const currentStep = lead.current_step?.name === stepName ? lead.current_step : null;
-                                      return completedStep?.probability || currentStep?.probability || 0;
-                                    })
-                                    .filter((prob: number) => prob > 0);
+                                return (
+                                  <div
+                                    key={stepName}
+                                    className="flex items-center justify-end text-right border-b border-gray-200"
+                                    style={{ height: `${stepHeight}px` }}
+                                  >
+                                    <span className="text-sm font-medium text-gray-700">
+                                      {stepName}
+                                    </span>
+                                  </div>
+                                );
+                              })}
+                            </div>
 
-                                  const avgProbability = stepProbabilities.length > 0
-                                    ? Math.round(stepProbabilities.reduce((sum: number, prob: number) => sum + prob, 0) / stepProbabilities.length)
-                                    : 0;
-
-                                  return {
-                                    stepName,
-                                    completionPercentage,
-                                    avgProbability,
-                                    stepIndex: allSteps.indexOf(stepName)
-                                  };
-                                });
-
-                                // Sort steps by completion percentage (highest first)
-                                const sortedStepStats = stepStats.sort((a, b) => b.completionPercentage - a.completionPercentage);
-
-                                return sortedStepStats.map((stepStat, index) => {
-                                  const stepHeight = chartHeight / sortedStepStats.length;
+                            {/* Chart Grid and Lead Positions */}
+                            <div className="flex-1 relative" style={{ height: `${chartHeight}px` }}>
+                              {/* Grid Lines */}
+                              <div className="absolute inset-0">
+                                {allSteps.map((stepName: string, index: number) => {
+                                  const stepHeight = chartHeight / allSteps.length;
+                                  const yPosition = (allSteps.length - 1 - index) * stepHeight;
 
                                   return (
                                     <div
-                                      key={stepStat.stepName}
-                                      className="flex items-center justify-end text-right"
-                                      style={{ height: `${stepHeight}px` }}
-                                    >
-                                      <span className="text-sm font-medium text-gray-700">
-                                        {stepStat.stepName} → {stepStat.avgProbability}%
-                                      </span>
-                                    </div>
+                                      key={stepName}
+                                      className="absolute w-full border-b border-gray-200"
+                                      style={{ top: `${yPosition}px`, height: `${stepHeight}px` }}
+                                    />
                                   );
-                                });
-                              })()}
-                            </div>
+                                })}
+                              </div>
 
-                            {/* Chart Bars */}
-                            <div className="flex items-end space-x-6">
-                              {leadProgressData.map((leadProgress: any) => {
-                                // Calculate total height for normalization
-                                const totalProbability = [...leadProgress.completed_steps, ...(leadProgress.current_step ? [leadProgress.current_step] : [])]
-                                  .reduce((sum: number, step: any) => sum + step.probability, 0);
+                              {/* Lead Progress Indicators */}
+                              <div className="absolute inset-0 flex" style={{ paddingTop: '0px' }}>
+                                {leadProgressData.map((leadProgress: any, leadIndex: number) => {
+                                  const leadWidth = 100 / leadProgressData.length;
 
-                                return (
-                                  <div key={leadProgress.lead_id} className="flex flex-col items-center">
-                                    {/* Vertical Stacked Bar */}
+                                  return (
                                     <div
-                                      className="w-16 border border-gray-300 rounded flex flex-col-reverse relative group cursor-pointer"
-                                      style={{ height: `${chartHeight}px` }}
+                                      key={leadProgress.lead_id}
+                                      className="relative"
+                                      style={{ width: `${leadWidth}%` }}
                                     >
-                                      {/* Completed Steps (from bottom up, ordered by step number) */}
-                                      {allSteps.map((stepName: string, stepIndex: number) => {
-                                        const completedStep = leadProgress.completed_steps.find(
-                                          (step: any) => step.name === stepName
-                                        );
-                                        const isCurrentStep = leadProgress.current_step?.name === stepName;
+                                      {/* Completed Steps */}
+                                      {leadProgress.completed_steps.map((step: any) => {
+                                        const stepIndex = allSteps.indexOf(step.name);
+                                        if (stepIndex === -1) return null;
 
-                                        if (!completedStep && !isCurrentStep) return null;
-
-                                        const step = completedStep || leadProgress.current_step;
-                                        const heightPercentage = (step.probability / 100) * 100; // Convert to percentage of chart height
-                                        const segmentHeight = (heightPercentage / 100) * (chartHeight - 20); // Leave some padding
+                                        const stepHeight = chartHeight / allSteps.length;
+                                        const yPosition = (allSteps.length - 1 - stepIndex) * stepHeight;
 
                                         return (
                                           <div
-                                            key={stepName}
-                                            className="transition-all duration-300 relative group/segment"
+                                            key={step.name}
+                                            className="absolute left-1/2 transform -translate-x-1/2 w-8 rounded transition-all duration-300 cursor-pointer group"
                                             style={{
-                                              height: `${Math.max(segmentHeight, 4)}px`,
+                                              top: `${yPosition + stepHeight * 0.2}px`,
+                                              height: `${stepHeight * 0.6}px`,
                                               backgroundColor: getStepColor(stepIndex),
-                                              opacity: isCurrentStep ? 0.8 : 1,
-                                              border: isCurrentStep ? "2px solid #3b82f6" : "none",
+                                              opacity: 0.8,
                                             }}
-                                            title={`${leadProgress.client_name}: ${stepName} - ${step.probability}%${isCurrentStep ? " (Current)" : ""}`}
+                                            title={`${leadProgress.client_name}: ${step.name} - ${step.probability}% (Completed)`}
                                           >
-                                            <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover/segment:opacity-100 transition-opacity whitespace-nowrap z-20 pointer-events-none">
-                                              {stepName}: {step.probability}%{isCurrentStep ? " (Current)" : ""}
+                                            <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20 pointer-events-none">
+                                              {step.name}: {step.probability}% (Completed)
                                             </div>
                                           </div>
                                         );
                                       })}
-                                    </div>
 
-                                    {/* Lead Name and Percentage */}
-                                    <div className="text-center mt-2">
-                                      <div className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-full mb-1">
-                                        {leadProgress.total_completed_probability}%
-                                      </div>
-                                      <div className="text-sm font-semibold text-gray-800 max-w-16 break-words">
-                                        {leadProgress.client_name}
-                                      </div>
+                                      {/* Current Step */}
+                                      {leadProgress.current_step && (
+                                        (() => {
+                                          const stepIndex = allSteps.indexOf(leadProgress.current_step.name);
+                                          if (stepIndex === -1) return null;
+
+                                          const stepHeight = chartHeight / allSteps.length;
+                                          const yPosition = (allSteps.length - 1 - stepIndex) * stepHeight;
+
+                                          return (
+                                            <div
+                                              className="absolute left-1/2 transform -translate-x-1/2 w-8 rounded border-2 border-blue-600 transition-all duration-300 cursor-pointer group"
+                                              style={{
+                                                top: `${yPosition + stepHeight * 0.2}px`,
+                                                height: `${stepHeight * 0.6}px`,
+                                                backgroundColor: getStepColor(stepIndex),
+                                                opacity: 1,
+                                              }}
+                                              title={`${leadProgress.client_name}: ${leadProgress.current_step.name} - ${leadProgress.current_step.probability}% (Current)`}
+                                            >
+                                              <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20 pointer-events-none">
+                                                {leadProgress.current_step.name}: {leadProgress.current_step.probability}% (Current)
+                                              </div>
+                                            </div>
+                                          );
+                                        })()
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* X-axis Lead Labels at Bottom */}
+                          <div className="flex mt-4">
+                            <div className="w-48 pr-4"></div>
+                            <div className="flex-1 flex">
+                              {leadProgressData.map((leadProgress: any) => {
+                                const leadWidth = 100 / leadProgressData.length;
+
+                                return (
+                                  <div
+                                    key={leadProgress.lead_id}
+                                    className="text-center"
+                                    style={{ width: `${leadWidth}%` }}
+                                  >
+                                    <div className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-full mb-1 inline-block">
+                                      {leadProgress.total_completed_probability}%
+                                    </div>
+                                    <div className="text-sm font-semibold text-gray-800 break-words px-1">
+                                      {leadProgress.client_name}
                                     </div>
                                   </div>
                                 );
