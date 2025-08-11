@@ -45,8 +45,12 @@ export function createServer() {
   // Middleware
   app.use(cors());
 
-  // Handle large file uploads with proper error handling
-  app.use(
+  // Handle large file uploads with proper error handling - skip multipart/form-data for multer
+  app.use((req, res, next) => {
+    // Skip JSON parsing for multipart/form-data to avoid conflicts with multer
+    if (req.headers["content-type"]?.startsWith("multipart/form-data")) {
+      return next();
+    }
     express.json({
       limit: "50mb",
       extended: true,
@@ -55,22 +59,26 @@ export function createServer() {
         // Add raw body for debugging
         req.rawBody = buf;
       },
-    }),
-  );
+    })(req, res, next);
+  });
 
-  app.use(
+  app.use((req, res, next) => {
+    // Skip URL-encoded parsing for multipart/form-data to avoid conflicts with multer
+    if (req.headers["content-type"]?.startsWith("multipart/form-data")) {
+      return next();
+    }
     express.urlencoded({
       extended: true,
       limit: "50mb",
       parameterLimit: 50000,
-    }),
-  );
+    })(req, res, next);
+  });
 
-  // Add raw body parser for file uploads
+  // Add raw body parser for specific content types (exclude multipart/form-data to allow multer to handle it)
   app.use(
     express.raw({
       limit: "50mb",
-      type: ["application/octet-stream", "multipart/form-data"],
+      type: ["application/octet-stream"],
     }),
   );
 

@@ -231,6 +231,29 @@ export function EnhancedStepItem({
     }
 
     try {
+      // Test the endpoint first
+      console.log("Testing upload endpoint...");
+      try {
+        const testResult = await apiClient.testUploadEndpoint();
+        console.log("Upload endpoint test result:", testResult);
+      } catch (testError) {
+        console.error("Upload endpoint test failed:", testError);
+      }
+
+      // Test upload format expectations
+      console.log("Testing server upload format expectations...");
+      try {
+        const formatTest = await apiClient.testUploadFormat();
+        console.log("Upload format test result:", formatTest);
+        if (!formatTest.success) {
+          console.warn(
+            "⚠️ Server format test failed - proceeding with default field name",
+          );
+        }
+      } catch (formatError) {
+        console.error("Upload format test failed:", formatError);
+      }
+
       // First, upload the actual files to the server
       console.log(
         "Uploading files to server...",
@@ -267,18 +290,33 @@ export function EnhancedStepItem({
 
       let errorMessage = "Failed to upload files. Please try again.";
 
-      if (error.message && error.message.includes("413")) {
-        errorMessage =
-          "File is too large. Please choose a smaller file (max 50MB).";
-      } else if (error.message && error.message.includes("Network")) {
-        errorMessage =
-          "Network error. Please check your connection and try again.";
-      } else if (error.message) {
-        errorMessage = `Upload failed: ${error.message}`;
+      if (error.message) {
+        // Use the error message from the API client
+        errorMessage = error.message;
       }
 
-      alert(errorMessage);
+      console.error("File upload error details:");
+      console.error("- Error message:", error.message);
+      console.error("- Error stack:", error.stack);
+      console.error("- Files attempted:");
+      Array.from(files).forEach((file, index) => {
+        console.error(
+          `  File ${index + 1}: ${file.name} (${file.size} bytes, ${file.type})`,
+        );
+      });
+
+      // Prevent error from bubbling up and potentially affecting auth state
+      try {
+        alert(errorMessage);
+      } catch (alertError) {
+        console.error("Could not show alert:", alertError);
+      }
+
       event.target.value = "";
+
+      // Prevent any navigation or state corruption
+      event.preventDefault();
+      event.stopPropagation();
     }
   };
 

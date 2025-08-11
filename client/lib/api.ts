@@ -810,48 +810,261 @@ export class ApiClient {
     });
   }
 
+  // Test method to verify upload endpoint
+  async testUploadEndpoint() {
+    const url = `${API_BASE_URL}/files/test`;
+    try {
+      const response = await fetch(url);
+      const result = await response.text();
+      console.log("Upload endpoint test:", response.status, result);
+      return { status: response.status, result };
+    } catch (error) {
+      console.error("Upload endpoint test failed:", error);
+      throw error;
+    }
+  }
+
+  // Test method to verify what the server expects for uploads
+  async testUploadFormat() {
+    const url = `${API_BASE_URL}/files/upload`;
+
+    // Create a simple test FormData
+    const formData = new FormData();
+    const testBlob = new Blob(["test file content"], { type: "text/plain" });
+    const testFile = new File([testBlob], "test.txt", { type: "text/plain" });
+
+    console.log(
+      "Testing with simple file:",
+      testFile.name,
+      testFile.size,
+      testFile.type,
+    );
+
+    // Test different field names
+    const fieldNames = ["files", "file", "upload", "document"];
+
+    for (const fieldName of fieldNames) {
+      console.log(`Testing field name: ${fieldName}`);
+      const testFormData = new FormData();
+      testFormData.append(fieldName, testFile);
+
+      try {
+        const response = await fetch(url, {
+          method: "POST",
+          body: testFormData,
+        });
+
+        console.log(`Field ${fieldName}: Status ${response.status}`);
+
+        if (response.ok) {
+          const result = await response.json();
+          console.log(`✅ Success with field name: ${fieldName}`, result);
+          return { fieldName, success: true, result };
+        } else {
+          console.log(`❌ Failed with field name: ${fieldName}`);
+        }
+      } catch (error) {
+        console.log(`❌ Error with field name: ${fieldName}:`, error);
+      }
+    }
+
+    return { success: false, message: "All field names failed" };
+  }
+
   // File upload method
   async uploadFiles(files: FileList) {
+    // Validate input
+    if (!files || files.length === 0) {
+      throw new Error("No files provided for upload");
+    }
+
+    console.log(`Starting upload of ${files.length} files`);
+
     const formData = new FormData();
 
+    // Use consistent field name that multer expects
     Array.from(files).forEach((file, index) => {
-      formData.append(`file_${index}`, file);
+      console.log(`Adding file ${index + 1} to FormData:`, {
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        lastModified: file.lastModified,
+      });
+      formData.append("files", file);
     });
+
+    // Validate FormData was created properly
+    let formDataEntryCount = 0;
+    try {
+      for (const entry of formData.entries()) {
+        formDataEntryCount++;
+      }
+      console.log(`FormData contains ${formDataEntryCount} entries`);
+    } catch (e) {
+      console.warn("Cannot iterate FormData entries in this browser");
+    }
 
     const url = `${API_BASE_URL}/files/upload`;
 
     try {
       console.log(`Uploading ${files.length} files to ${url}`);
 
+      // Log file details for debugging
+      Array.from(files).forEach((file, index) => {
+        console.log(
+          `File ${index + 1}: ${file.name} (${file.size} bytes, ${file.type}, last modified: ${new Date(file.lastModified)})`,
+        );
+
+        // Check for potential issues
+        if (file.size === 0) {
+          console.warn(`⚠️  File ${file.name} is empty (0 bytes)`);
+        }
+        if (file.size > 50 * 1024 * 1024) {
+          console.warn(`⚠️  File ${file.name} exceeds 50MB limit`);
+        }
+        if (!file.type) {
+          console.warn(`⚠️  File ${file.name} has no MIME type`);
+        }
+      });
+
+      // Debug FormData contents
+      console.log("FormData created with files under 'files' field");
+      console.log(
+        "FormData has entries:",
+        Array.from(formData.entries()).length,
+      );
+
+      // Try to log FormData entries (modern browsers)
+      try {
+        for (const [key, value] of formData.entries()) {
+          if (value instanceof File) {
+            console.log(
+              `FormData entry: ${key} = File(${value.name}, ${value.size} bytes)`,
+            );
+          } else {
+            console.log(`FormData entry: ${key} = ${value}`);
+          }
+        }
+      } catch (e) {
+        console.log("Cannot inspect FormData entries in this browser");
+      }
+
+      // Create AbortController for timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 minute timeout
+
       const response = await fetch(url, {
         method: "POST",
         body: formData,
+        signal: controller.signal,
         // Don't set Content-Type header, let browser set it with boundary
       });
 
+      clearTimeout(timeoutId);
+
       console.log(`Upload response status: ${response.status}`);
+      console.log(
+        "Response headers:",
+        Object.fromEntries(response.headers.entries()),
+      );
 
-      if (!response.ok) {
-        let errorMessage = `Upload failed: ${response.status}`;
+      // Read response body IMMEDIATELY to avoid stream conflicts
+      let responseText = "";
+      let responseData = null;
 
-        try {
-          const errorData = await response.json();
-          if (errorData.error || errorData.message) {
-            errorMessage = errorData.message || errorData.error;
+      try {
+        console.log("Reading response body immediately...");
+        responseText = await response.text();
+        console.log("Raw response text:", responseText);
+
+        // Try to parse as JSON if we have content
+        if (responseText.trim()) {
+          try {
+            responseData = JSON.parse(responseText);
+            console.log("Parsed response data:", responseData);
+          } catch (parseError) {
+            console.log("Response is not JSON, treating as text");
           }
-        } catch (parseError) {
-          // If we can't parse JSON, use the status text
-          errorMessage = `Upload failed: ${response.status} ${response.statusText}`;
+        } else {
+          console.log("Response body is empty");
+        }
+      } catch (readError) {
+        console.error("Failed to read response body:", readError);
+        // Continue with status-based error handling
+      }
+
+      // Now handle the response based on status, using already-read data
+      if (!response.ok) {
+        console.error("Upload failed:");
+        console.error("- Status:", response.status);
+        console.error("- Status Text:", response.statusText);
+        console.error("- URL:", response.url);
+        console.error("- Content-Type:", response.headers.get("content-type"));
+        console.error(
+          "- Content-Length:",
+          response.headers.get("content-length"),
+        );
+        console.error("- Response Text:", responseText);
+        console.error("- Response Data:", responseData);
+
+        let errorMessage = "Upload failed";
+
+        // Use server error message if available
+        if (responseData && (responseData.error || responseData.message)) {
+          errorMessage = responseData.message || responseData.error;
+          console.error("Using server error message:", errorMessage);
+        } else {
+          // Fallback to status-based messages
+          switch (response.status) {
+            case 400:
+              errorMessage =
+                "Bad request - server rejected the file upload. Check the server logs for details.";
+              break;
+            case 413:
+              errorMessage =
+                "File too large. Please choose a smaller file (max 50MB).";
+              break;
+            case 404:
+              errorMessage =
+                "Upload service not found. Please contact support.";
+              break;
+            case 500:
+              errorMessage = "Server error occurred. Please try again later.";
+              break;
+            case 503:
+              errorMessage =
+                "Upload service temporarily unavailable. Please try again later.";
+              break;
+            default:
+              errorMessage = `Upload failed with error ${response.status}. Please try again.`;
+          }
+          console.error("Using fallback error message:", errorMessage);
         }
 
         throw new Error(errorMessage);
       }
 
-      const result = await response.json();
-      console.log("Upload successful:", result);
-      return result;
-    } catch (error) {
+      // Handle successful response using already-read data
+      if (responseData) {
+        console.log("Upload successful:", responseData);
+        return responseData;
+      } else {
+        console.log("Success response but no valid JSON data");
+        return {
+          success: true,
+          message: "Upload completed successfully",
+          files: [],
+        };
+      }
+    } catch (error: any) {
       console.error("Upload error:", error);
+
+      if (error.name === "AbortError") {
+        throw new Error(
+          "Upload timed out. Please try with smaller files or check your connection.",
+        );
+      }
+
       if (error instanceof Error) {
         throw error;
       }
