@@ -324,21 +324,6 @@ export default function LeadDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-purple-600 text-sm font-medium">Completed</p>
-                <p className="text-2xl font-bold text-purple-900">
-                  {stats.completed}
-                </p>
-              </div>
-              <div className="bg-purple-200 p-3 rounded-full">
-                <CheckCircle className="w-6 h-6 text-purple-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
 
       {/* Lead-wise Step Progress */}
