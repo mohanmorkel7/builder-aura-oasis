@@ -11,7 +11,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/lib/auth-context";
 import { apiClient } from "@/lib/api";
 import { DraggableStepsList } from "@/components/DraggableStepsList";
-import { ISTTimeTest } from "@/components/ISTTimeTest";
 import { Button } from "@/components/ui/button";
 import {
   Card,
