@@ -1235,6 +1235,8 @@ export function useReorderLeadSteps() {
     }) => apiClient.reorderLeadSteps(leadId, stepOrders),
     onSuccess: (_, { leadId }) => {
       queryClient.invalidateQueries({ queryKey: ["lead-steps", leadId] });
+      queryClient.invalidateQueries({ queryKey: ["lead-progress-dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["template-step-dashboard"] });
     },
   });
 }
