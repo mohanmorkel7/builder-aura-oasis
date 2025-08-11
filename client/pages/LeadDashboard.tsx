@@ -385,16 +385,25 @@ export default function LeadDashboard() {
                     : 100;
 
                 // Get all available steps from template step dashboard, fall back to lead-specific steps
-                const allAvailableSteps = templateStepData.length > 0
-                  ? Array.from(new Set(templateStepData.map((step: any) => step.step_name)))
-                  : Array.from(
-                      new Set(
-                        leadProgressData.flatMap((lead: any) => [
-                          ...lead.completed_steps.map((step: any) => step.name),
-                          ...(lead.current_step ? [lead.current_step.name] : []),
-                        ]),
-                      ),
-                    );
+                const allAvailableSteps =
+                  templateStepData.length > 0
+                    ? Array.from(
+                        new Set(
+                          templateStepData.map((step: any) => step.step_name),
+                        ),
+                      )
+                    : Array.from(
+                        new Set(
+                          leadProgressData.flatMap((lead: any) => [
+                            ...lead.completed_steps.map(
+                              (step: any) => step.name,
+                            ),
+                            ...(lead.current_step
+                              ? [lead.current_step.name]
+                              : []),
+                          ]),
+                        ),
+                      );
 
                 const allSteps = allAvailableSteps.sort((a, b) => {
                   // Extract step numbers for proper ordering (Step 1, Step 2, etc.)
