@@ -556,7 +556,7 @@ export default function LeadDashboard() {
                           </div>
 
                           {/* X-axis Lead Labels at Bottom */}
-                          <div className="flex mt-4">
+                          <div className="flex">
                             <div className="w-48 pr-4"></div>
                             <div className="flex-1 flex">
                               {leadProgressData.map((leadProgress: any) => {
