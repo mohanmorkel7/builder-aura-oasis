@@ -126,7 +126,7 @@ const getNotificationsFromFollowUps = async (
 
     // Add timeout to prevent hanging requests
     const timeoutPromise = new Promise<never>((_, reject) => {
-      setTimeout(() => reject(new Error("Request timeout")), 5000);
+      setTimeout(() => reject(new Error("Request timeout")), 15000); // Increased to 15 seconds
     });
 
     const followUpsPromise = apiClient.getAllFollowUps({
