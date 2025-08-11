@@ -31,6 +31,11 @@ export const formatToISTDateTime = (
 ): string => {
   const dateObj = typeof date === "string" ? new Date(date) : date;
 
+  // Ensure we have a valid date
+  if (isNaN(dateObj.getTime())) {
+    return "Invalid Date";
+  }
+
   const defaultOptions: Intl.DateTimeFormatOptions = {
     timeZone: IST_TIMEZONE,
     day: "numeric",
@@ -42,7 +47,27 @@ export const formatToISTDateTime = (
     ...options,
   };
 
-  return dateObj.toLocaleString("en-IN", defaultOptions);
+  try {
+    // Format the date to IST
+    const formatter = new Intl.DateTimeFormat("en-IN", defaultOptions);
+    return formatter.format(dateObj);
+  } catch (error) {
+    console.warn("Error formatting date to IST:", error);
+    // Fallback to manual IST conversion
+    const istOffset = 5.5 * 60 * 60 * 1000; // IST is UTC+5:30
+    const istDate = new Date(dateObj.getTime() + istOffset);
+
+    const day = istDate.getUTCDate();
+    const month = istDate.toLocaleString('en-IN', { month: 'short', timeZone: 'UTC' });
+    const year = istDate.getUTCFullYear();
+    let hours = istDate.getUTCHours();
+    const minutes = istDate.getUTCMinutes().toString().padStart(2, '0');
+    const ampm = hours >= 12 ? 'pm' : 'am';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // 0 should be 12
+
+    return `${day} ${month} ${year}, ${hours}:${minutes} ${ampm}`;
+  }
 };
 
 /**
