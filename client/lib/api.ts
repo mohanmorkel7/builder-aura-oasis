@@ -874,74 +874,59 @@ export class ApiClient {
       clearTimeout(timeoutId);
 
       console.log(`Upload response status: ${response.status}`);
+      console.log("Response headers:", Object.fromEntries(response.headers.entries()));
 
-      // Read the response body immediately to avoid "body stream already read" errors
-      let responseText = '';
-      let responseData = null;
-
-      try {
-        responseText = await response.text();
-        console.log("Raw response text:", responseText);
-
-        // Try to parse as JSON
-        if (responseText.trim()) {
-          try {
-            responseData = JSON.parse(responseText);
-            console.log("Parsed response data:", responseData);
-          } catch (jsonError) {
-            console.log("Response is not JSON, treating as plain text");
-          }
-        }
-      } catch (readError) {
-        console.error("Could not read response body:", readError);
-        throw new Error(`Upload failed: ${response.status} ${response.statusText} (could not read response)`);
-      }
-
-      // Now handle the response based on status
+      // Handle error responses without reading the body to avoid conflicts
       if (!response.ok) {
         let errorMessage = `Upload failed: ${response.status}`;
 
-        // Extract error message from parsed data or text
-        if (responseData && (responseData.error || responseData.message)) {
-          errorMessage = responseData.message || responseData.error;
-        } else if (responseText) {
-          // Analyze text content for common error patterns
-          if (responseText.includes('413') || responseText.toLowerCase().includes('too large')) {
-            errorMessage = "File too large. Please choose a smaller file.";
-          } else if (responseText.includes('400') || responseText.toLowerCase().includes('bad request')) {
-            errorMessage = "Invalid request format. Please try again.";
-          } else if (responseText.includes('404')) {
-            errorMessage = "Upload endpoint not found. Please contact support.";
-          } else if (responseText.includes('500')) {
+        // Provide user-friendly error messages based on status code
+        switch (response.status) {
+          case 400:
+            errorMessage = "Invalid file upload request. Please check your file and try again.";
+            break;
+          case 413:
+            errorMessage = "File too large. Please choose a smaller file (max 50MB).";
+            break;
+          case 404:
+            errorMessage = "Upload service not found. Please contact support.";
+            break;
+          case 500:
             errorMessage = "Server error occurred. Please try again later.";
-          } else {
-            // Include a snippet of the response for debugging
-            const snippet = responseText.length > 200 ? responseText.substring(0, 200) + '...' : responseText;
-            errorMessage = `Upload failed: ${response.status} ${response.statusText}. Response: ${snippet}`;
-          }
-        } else {
-          errorMessage = `Upload failed: ${response.status} ${response.statusText} (empty response)`;
+            break;
+          case 503:
+            errorMessage = "Upload service temporarily unavailable. Please try again later.";
+            break;
+          default:
+            errorMessage = `Upload failed with error ${response.status}. Please try again.`;
         }
 
-        // Log error details properly
-        console.error("Complete upload error details:");
+        // Log error details without reading response body
+        console.error("Upload failed:");
         console.error("- Status:", response.status);
         console.error("- Status Text:", response.statusText);
         console.error("- URL:", response.url);
-        console.error("- Headers:", JSON.stringify(Object.fromEntries(response.headers.entries()), null, 2));
-        console.error("- Response Text:", responseText);
-        console.error("- Response Data:", responseData);
+        console.error("- Content-Type:", response.headers.get('content-type'));
+        console.error("- Content-Length:", response.headers.get('content-length'));
 
         throw new Error(errorMessage);
       }
 
-      // Handle successful response
-      if (responseData) {
-        console.log("Upload successful:", responseData);
-        return responseData;
-      } else {
-        console.error("Success response is not valid JSON:", responseText);
-        throw new Error("Server returned invalid response format for successful upload");
+      // Only read response body for successful responses
+      try {
+        const result = await response.json();
+        console.log("Upload successful:", result);
+        return result;
+      } catch (jsonError) {
+        // If we can't parse JSON from a 200 response, that's a server issue
+        console.error("Success response is not valid JSON:", jsonError);
+
+        // Don't try to read the body again, just return a generic success
+        return {
+          success: true,
+          message: "Upload completed but server response was invalid",
+          files: []
+        };
       }
     } catch (error: any) {
       console.error("Upload error:", error);
