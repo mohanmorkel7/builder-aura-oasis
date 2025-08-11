@@ -1205,6 +1205,8 @@ export function useUpdateLeadStep() {
       // Also invalidate broader queries as fallback
       queryClient.invalidateQueries({ queryKey: ["lead-steps"] });
       queryClient.invalidateQueries({ queryKey: ["leads"] });
+      queryClient.invalidateQueries({ queryKey: ["lead-progress-dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["template-step-dashboard"] });
     },
   });
 }
