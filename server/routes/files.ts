@@ -51,7 +51,7 @@ router.post("/upload-chunk", async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Missing required chunk data" });
     }
 
-    const chunkDir = path.join(uploadsDir, 'chunks');
+    const chunkDir = path.join(uploadsDir, "chunks");
     if (!fs.existsSync(chunkDir)) {
       fs.mkdirSync(chunkDir, { recursive: true });
     }
@@ -59,10 +59,12 @@ router.post("/upload-chunk", async (req: Request, res: Response) => {
     const chunkPath = path.join(chunkDir, `${filename}.chunk.${chunkIndex}`);
 
     // Decode base64 chunk data
-    const chunkBuffer = Buffer.from(chunk, 'base64');
+    const chunkBuffer = Buffer.from(chunk, "base64");
     fs.writeFileSync(chunkPath, chunkBuffer);
 
-    console.log(`Received chunk ${chunkIndex + 1}/${totalChunks} for ${filename}`);
+    console.log(
+      `Received chunk ${chunkIndex + 1}/${totalChunks} for ${filename}`,
+    );
 
     // If this is the last chunk, combine all chunks
     if (parseInt(chunkIndex) === parseInt(totalChunks) - 1) {
