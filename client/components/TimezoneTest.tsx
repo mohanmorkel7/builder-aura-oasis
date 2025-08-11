@@ -7,10 +7,10 @@ export function TimezoneTest() {
 
   // Test different timestamp formats that might come from database
   const testFormats = [
-    "2025-08-11T05:31:00.000Z",           // UTC with Z
-    "2025-08-11T05:31:00+05:30",         // With IST offset
-    "2025-08-11 05:31:00",               // SQL format without timezone
-    "2025-08-11T11:01:00.000Z",          // UTC equivalent to IST 4:31 PM
+    "2025-08-11T05:31:00.000Z", // UTC with Z
+    "2025-08-11T05:31:00+05:30", // With IST offset
+    "2025-08-11 05:31:00", // SQL format without timezone
+    "2025-08-11T11:01:00.000Z", // UTC equivalent to IST 4:31 PM
   ];
 
   return (
@@ -36,7 +36,9 @@ export function TimezoneTest() {
         </div>
         <hr className="my-2" />
         <div className="text-xs">
-          <div><strong>Testing different timestamp formats:</strong></div>
+          <div>
+            <strong>Testing different timestamp formats:</strong>
+          </div>
           {testFormats.map((format, index) => (
             <div key={index} className="ml-2">
               <strong>{format}:</strong> {formatToISTDateTime(format)}
