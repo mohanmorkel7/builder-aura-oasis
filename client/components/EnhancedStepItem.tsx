@@ -183,6 +183,10 @@ export function EnhancedStepItem({
   const [followUpAssignTo, setFollowUpAssignTo] = useState("");
   const [followUpDueDate, setFollowUpDueDate] = useState("");
 
+  // Edit message state
+  const [editingMessageId, setEditingMessageId] = useState<number | null>(null);
+  const [editMessageText, setEditMessageText] = useState("");
+
   // Function to highlight mentions and make follow-up IDs clickable
   const processMessageContent = (messageText: string) => {
     if (!user) return messageText;
