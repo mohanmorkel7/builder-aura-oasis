@@ -829,9 +829,26 @@ export class ApiClient {
     const formData = new FormData();
 
     // Use consistent field name that multer expects
-    Array.from(files).forEach((file) => {
+    Array.from(files).forEach((file, index) => {
+      console.log(`Adding file ${index + 1} to FormData:`, {
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        lastModified: file.lastModified
+      });
       formData.append("files", file);
     });
+
+    // Validate FormData was created properly
+    let formDataEntryCount = 0;
+    try {
+      for (const entry of formData.entries()) {
+        formDataEntryCount++;
+      }
+      console.log(`FormData contains ${formDataEntryCount} entries`);
+    } catch (e) {
+      console.warn("Cannot iterate FormData entries in this browser");
+    }
 
     const url = `${API_BASE_URL}/files/upload`;
 
