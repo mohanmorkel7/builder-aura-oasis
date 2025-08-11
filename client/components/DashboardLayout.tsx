@@ -344,7 +344,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         <div className="p-6 border-b border-gray-200">
           <div className="flex items-center justify-center">
             <img
-              src="https://cdn.builder.io/api/v1/image/assets%2F9f68bdced9274939b0bcd49e09efd146%2F17959db31c554dfdaeddef5d5757085c?format=webp&width=800"
+              src={'./mylapaylogo.png'}
               alt="Mylapay"
               className="h-8 object-contain"
             />
