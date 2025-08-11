@@ -98,18 +98,6 @@ const navigationItems: NavigationItem[] = [
     roles: ["admin"],
   },
   {
-    name: "Admin Reports",
-    href: "/admin/reports",
-    icon: BarChart3,
-    roles: ["admin"],
-  },
-  {
-    name: "Admin Templates",
-    href: "/admin/templates",
-    icon: FileText,
-    roles: ["admin"],
-  },
-  {
     name: "Settings",
     icon: Settings,
     roles: ["admin"],
