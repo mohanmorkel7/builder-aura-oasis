@@ -29,26 +29,8 @@ export const formatToISTDateTime = (
   date: string | Date,
   options: Intl.DateTimeFormatOptions = {},
 ): string => {
-  let dateObj: Date;
-
-  if (typeof date === "string") {
-    // Parse the timestamp string and treat it as is (no timezone assumptions)
-    if (date.includes("T") && date.includes("Z")) {
-      // If it's UTC format, create date normally and show the time as is
-      const utcString = date.replace("Z", "");
-      const [datePart, timePart] = utcString.split("T");
-      const [year, month, day] = datePart.split("-").map(Number);
-      const [hour, minute, second] = timePart.split(":").map(Number);
-
-      // Create a date that represents the time directly (not as UTC)
-      dateObj = new Date(year, month - 1, day, hour, minute, second || 0);
-    } else {
-      // For other formats, parse normally
-      dateObj = new Date(date);
-    }
-  } else {
-    dateObj = date;
-  }
+  // Parse the date normally - this will handle UTC timestamps correctly
+  const dateObj = typeof date === "string" ? new Date(date) : date;
 
   // Ensure we have a valid date
   if (isNaN(dateObj.getTime())) {
@@ -56,7 +38,7 @@ export const formatToISTDateTime = (
   }
 
   try {
-    // Format the date using local time (no timezone conversion)
+    // Format the date using user's local timezone (browser default)
     const formatter = new Intl.DateTimeFormat("en-IN", {
       day: "numeric",
       month: "short",
@@ -70,7 +52,7 @@ export const formatToISTDateTime = (
     return formatter.format(dateObj);
   } catch (error) {
     console.warn("Error formatting date:", error);
-    // Fallback formatting
+    // Fallback formatting using local time
     const day = dateObj.getDate();
     const month = dateObj.toLocaleString("en-IN", { month: "short" });
     const year = dateObj.getFullYear();
