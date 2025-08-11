@@ -415,18 +415,18 @@ export default function LeadDashboard() {
                   return getStepNumber(a) - getStepNumber(b);
                 });
 
-                // Define colors for different steps
+                // Define light colors for different steps
                 const stepColors = [
-                  "#ef4444", // red-500
-                  "#f97316", // orange-500
-                  "#eab308", // yellow-500
-                  "#22c55e", // green-500
-                  "#06b6d4", // cyan-500
-                  "#3b82f6", // blue-500
-                  "#8b5cf6", // violet-500
-                  "#ec4899", // pink-500
-                  "#6b7280", // gray-500
-                  "#84cc16", // lime-500
+                  "#fca5a5", // red-300
+                  "#fdba74", // orange-300
+                  "#fde047", // yellow-300
+                  "#86efac", // green-300
+                  "#67e8f9", // cyan-300
+                  "#93c5fd", // blue-300
+                  "#c4b5fd", // violet-300
+                  "#f9a8d4", // pink-300
+                  "#d1d5db", // gray-300
+                  "#bef264", // lime-300
                 ];
 
                 const getStepColor = (stepIndex: number) => {
