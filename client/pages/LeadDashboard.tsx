@@ -706,7 +706,7 @@ export default function LeadDashboard() {
                     </div>
 
                     {/* Summary Statistics */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                       <div className="bg-green-50 p-3 rounded-lg">
                         <div className="text-sm font-medium text-green-800">
                           Total Completed Steps
