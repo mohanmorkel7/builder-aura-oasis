@@ -462,3 +462,8 @@ export function useAuth() {
     };
   }
 }
+
+// Handle HMR properly to prevent connection issues
+if (import.meta.hot) {
+  import.meta.hot.accept();
+}
