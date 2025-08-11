@@ -465,5 +465,6 @@ export function useAuth() {
 
 // Handle HMR properly to prevent connection issues
 if (import.meta.hot) {
-  import.meta.hot.accept();
+  // Disable HMR for this module to prevent connection timing issues
+  import.meta.hot.decline();
 }
