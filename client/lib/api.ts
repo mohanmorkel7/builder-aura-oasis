@@ -49,12 +49,19 @@ export class ApiClient {
         const originalFetch = window.fetch.bind(window);
         response = await originalFetch(url, config);
       } catch (fetchError) {
-        console.log("Primary fetch failed, trying fallback:", fetchError);
+        console.error("Primary fetch failed for URL:", url, "Error:", fetchError);
+
+        // Check if it's a network connectivity issue
+        if (fetchError instanceof TypeError && fetchError.message.includes('Failed to fetch')) {
+          console.error("Network connectivity issue detected");
+        }
+
         // Try native fetch one more time before XMLHttpRequest fallback
         try {
+          console.log("Attempting second fetch...");
           response = await fetch(url, config);
         } catch (secondFetchError) {
-          console.log(
+          console.error(
             "Second fetch attempt failed, using XMLHttpRequest:",
             secondFetchError,
           );
