@@ -291,8 +291,18 @@ export function EnhancedStepItem({
         type: f.type
       })));
 
-      alert(errorMessage);
+      // Prevent error from bubbling up and potentially affecting auth state
+      try {
+        alert(errorMessage);
+      } catch (alertError) {
+        console.error("Could not show alert:", alertError);
+      }
+
       event.target.value = "";
+
+      // Prevent any navigation or state corruption
+      event.preventDefault();
+      event.stopPropagation();
     }
   };
 
