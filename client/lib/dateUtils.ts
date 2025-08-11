@@ -78,11 +78,14 @@ export const formatToISTDateTime = (
     const formatter = new Intl.DateTimeFormat("en-IN", defaultOptions);
     const formattedDate = formatter.format(dateObj);
 
-    console.log(`IST Formatting Result:`, {
-      input: typeof date === "string" ? date : dateObj.toISOString(),
-      formattedIST: formattedDate,
-      timezone: IST_TIMEZONE
-    });
+    // Debug logging (only in development)
+    if (process.env.NODE_ENV === "development") {
+      console.log(`IST Formatting Result:`, {
+        input: typeof date === "string" ? date : dateObj.toISOString(),
+        formattedIST: formattedDate,
+        timezone: IST_TIMEZONE
+      });
+    }
 
     // Add IST indicator to make timezone clear
     return `${formattedDate} IST`;
