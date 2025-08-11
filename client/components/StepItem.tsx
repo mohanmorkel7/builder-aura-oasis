@@ -153,10 +153,10 @@ export function StepItem({
               <div className="text-sm text-gray-600">
                 {step.status === "completed" &&
                   step.completed_date &&
-                  `Completed on ${formatToISTDateTime(step.completed_date).split(',')[0]}`}
+                  `Completed on ${formatToISTDateTime(step.completed_date).split(",")[0]}`}
                 {step.status !== "completed" &&
                   step.due_date &&
-                  `Due: ${formatToISTDateTime(step.due_date).split(',')[0]}`}
+                  `Due: ${formatToISTDateTime(step.due_date).split(",")[0]}`}
               </div>
             </div>
             {isExpanded ? (
