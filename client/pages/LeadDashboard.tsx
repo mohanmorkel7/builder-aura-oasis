@@ -6,6 +6,7 @@ import {
   useDeleteLead,
   useMyPartialSaves,
   useLeadProgressDashboard,
+  useTemplateStepDashboard,
   useFollowUps,
 } from "@/hooks/useApi";
 import { useAuth } from "@/lib/auth-context";
@@ -112,6 +113,8 @@ export default function LeadDashboard() {
   } = useMyPartialSaves(userId);
   const { data: leadProgressData = [], isLoading: leadProgressLoading } =
     useLeadProgressDashboard();
+  const { data: templateStepData = [], isLoading: templateStepLoading } =
+    useTemplateStepDashboard();
   const { data: followUpsData = [], isLoading: followUpsLoading } =
     useFollowUps({
       userId: user?.id,
@@ -381,15 +384,28 @@ export default function LeadDashboard() {
                       )
                     : 100;
 
-                // Get all unique steps from all leads and order them from step 1 upward
-                const allSteps = Array.from(
-                  new Set(
-                    leadProgressData.flatMap((lead: any) => [
-                      ...lead.completed_steps.map((step: any) => step.name),
-                      ...(lead.current_step ? [lead.current_step.name] : []),
-                    ]),
-                  ),
-                ).sort((a, b) => {
+                // Get all available steps from template step dashboard, fall back to lead-specific steps
+                const allAvailableSteps =
+                  templateStepData.length > 0
+                    ? Array.from(
+                        new Set(
+                          templateStepData.map((step: any) => step.step_name),
+                        ),
+                      )
+                    : Array.from(
+                        new Set(
+                          leadProgressData.flatMap((lead: any) => [
+                            ...lead.completed_steps.map(
+                              (step: any) => step.name,
+                            ),
+                            ...(lead.current_step
+                              ? [lead.current_step.name]
+                              : []),
+                          ]),
+                        ),
+                      );
+
+                const allSteps = allAvailableSteps.sort((a, b) => {
                   // Extract step numbers for proper ordering (Step 1, Step 2, etc.)
                   const getStepNumber = (stepName: string) => {
                     const match = stepName.match(/(\d+)/);
