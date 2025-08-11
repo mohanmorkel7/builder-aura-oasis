@@ -131,6 +131,8 @@ export function EnhancedStepItem({
     error: chatError,
   } = useStepChats(stepId);
   const createChatMutation = useCreateStepChat();
+  const editChatMutation = useEditStepChat();
+  const deleteChatMutation = useDeleteStepChat();
   const createFollowUpMutation = useCreateFollowUp();
 
   // Sort messages by created_at in ascending order (latest last for bottom scroll)
