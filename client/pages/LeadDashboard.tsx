@@ -672,8 +672,8 @@ export default function LeadDashboard() {
                         <div className="text-sm font-medium text-gray-700 mb-4">
                           Step-wise Distribution - Lead Count by Step
                         </div>
-                        <div className="overflow-x-auto">
-                          <div className="min-w-max">
+                        <div>
+                          <div>
                             {(() => {
                               // Calculate step-wise distribution
                               const stepDistribution = allSteps.map(
