@@ -83,7 +83,7 @@ export const formatToISTDateTime = (
       console.log(`IST Formatting Result:`, {
         input: typeof date === "string" ? date : dateObj.toISOString(),
         formattedIST: formattedDate,
-        timezone: IST_TIMEZONE
+        timezone: IST_TIMEZONE,
       });
     }
 
