@@ -824,6 +824,48 @@ export class ApiClient {
     }
   }
 
+  // Test method to verify what the server expects for uploads
+  async testUploadFormat() {
+    const url = `${API_BASE_URL}/files/upload`;
+
+    // Create a simple test FormData
+    const formData = new FormData();
+    const testBlob = new Blob(['test file content'], { type: 'text/plain' });
+    const testFile = new File([testBlob], 'test.txt', { type: 'text/plain' });
+
+    console.log("Testing with simple file:", testFile.name, testFile.size, testFile.type);
+
+    // Test different field names
+    const fieldNames = ['files', 'file', 'upload', 'document'];
+
+    for (const fieldName of fieldNames) {
+      console.log(`Testing field name: ${fieldName}`);
+      const testFormData = new FormData();
+      testFormData.append(fieldName, testFile);
+
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          body: testFormData
+        });
+
+        console.log(`Field ${fieldName}: Status ${response.status}`);
+
+        if (response.ok) {
+          const result = await response.json();
+          console.log(`✅ Success with field name: ${fieldName}`, result);
+          return { fieldName, success: true, result };
+        } else {
+          console.log(`❌ Failed with field name: ${fieldName}`);
+        }
+      } catch (error) {
+        console.log(`❌ Error with field name: ${fieldName}:`, error);
+      }
+    }
+
+    return { success: false, message: 'All field names failed' };
+  }
+
   // File upload method
   async uploadFiles(files: FileList) {
     // Validate input
