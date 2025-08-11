@@ -883,13 +883,13 @@ export class ApiClient {
           }
         }
 
-        console.error("Complete upload error details:", {
-          status: response.status,
-          statusText: response.statusText,
-          url: response.url,
-          headers: Object.fromEntries(response.headers.entries()),
-          errorData: detailedError
-        });
+        // Log error details properly
+        console.error("Complete upload error details:");
+        console.error("- Status:", response.status);
+        console.error("- Status Text:", response.statusText);
+        console.error("- URL:", response.url);
+        console.error("- Headers:", Object.fromEntries(response.headers.entries()));
+        console.error("- Error Data:", detailedError);
 
         throw new Error(errorMessage);
       }
