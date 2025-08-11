@@ -841,16 +841,34 @@ export class ApiClient {
 
       if (!response.ok) {
         let errorMessage = `Upload failed: ${response.status}`;
+        let detailedError = null;
 
         try {
           const errorData = await response.json();
+          console.error("Server error response:", errorData);
+
           if (errorData.error || errorData.message) {
             errorMessage = errorData.message || errorData.error;
+            detailedError = errorData;
           }
         } catch (parseError) {
-          // If we can't parse JSON, use the status text
-          errorMessage = `Upload failed: ${response.status} ${response.statusText}`;
+          // If we can't parse JSON, get response text for debugging
+          try {
+            const responseText = await response.text();
+            console.error("Non-JSON error response:", responseText);
+            errorMessage = `Upload failed: ${response.status} ${response.statusText}`;
+          } catch (textError) {
+            console.error("Could not read error response:", textError);
+            errorMessage = `Upload failed: ${response.status} ${response.statusText}`;
+          }
         }
+
+        console.error("Complete upload error details:", {
+          status: response.status,
+          statusText: response.statusText,
+          headers: Object.fromEntries(response.headers.entries()),
+          errorData: detailedError
+        });
 
         throw new Error(errorMessage);
       }
