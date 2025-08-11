@@ -442,7 +442,7 @@ export default function LeadDashboard() {
                         <div className="min-w-max">
                           {/* Steps on Y-axis with vertical bars */}
                           <div className="space-y-3 mb-4">
-                            {allSteps.map((stepName: string) => (
+                            {sortedSteps.map((stepName: string) => (
                               <div
                                 key={stepName}
                                 className="flex items-center space-x-4"
