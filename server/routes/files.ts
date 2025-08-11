@@ -125,42 +125,53 @@ router.post("/upload", (req: Request, res: Response) => {
   // Use the more flexible upload.any() instead of upload.array()
   upload.any()(req, res, (err) => {
     if (err) {
-      console.error("Multer upload error:", err);
+      console.error("❌ Multer upload error:", err);
+      console.error("Error code:", err.code);
+      console.error("Error message:", err.message);
 
-      if (err.code === "LIMIT_FILE_SIZE") {
-        return res.status(413).json({
-          error: "File too large",
-          message: "File size exceeds the maximum limit of 50MB",
-          maxSize: "50MB",
-        });
-      }
+      // Ensure we always return a proper JSON response
+      try {
+        if (err.code === "LIMIT_FILE_SIZE") {
+          return res.status(413).json({
+            error: "File too large",
+            message: "File size exceeds the maximum limit of 50MB",
+            maxSize: "50MB",
+          });
+        }
 
-      if (err.code === "LIMIT_FILE_COUNT") {
+        if (err.code === "LIMIT_FILE_COUNT") {
+          return res.status(400).json({
+            error: "Too many files",
+            message: "Maximum number of files exceeded",
+          });
+        }
+
+        // Handle specific multer/busboy errors
+        if (err.message && err.message.includes("Unexpected end of form")) {
+          return res.status(400).json({
+            error: "Upload corrupted",
+            message: "File upload was interrupted or corrupted. Please try again.",
+          });
+        }
+
+        if (err.message && err.message.includes("Missing boundary")) {
+          return res.status(400).json({
+            error: "Invalid form data",
+            message: "Invalid multipart form data. Please refresh and try again.",
+          });
+        }
+
+        // Generic error response
         return res.status(400).json({
-          error: "Too many files",
-          message: "Maximum number of files exceeded",
+          error: "Upload failed",
+          message: err.message || "Unknown upload error",
+          errorCode: err.code || 'UNKNOWN',
         });
+      } catch (responseError) {
+        console.error("❌ Failed to send error response:", responseError);
+        // Last resort - send plain text
+        return res.status(500).send("Upload failed: " + (err.message || "Unknown error"));
       }
-
-      // Handle specific multer/busboy errors
-      if (err.message && err.message.includes("Unexpected end of form")) {
-        return res.status(400).json({
-          error: "Upload corrupted",
-          message: "File upload was interrupted or corrupted. Please try again.",
-        });
-      }
-
-      if (err.message && err.message.includes("Missing boundary")) {
-        return res.status(400).json({
-          error: "Invalid form data",
-          message: "Invalid multipart form data. Please refresh and try again.",
-        });
-      }
-
-      return res.status(500).json({
-        error: "Upload failed",
-        message: err.message || "Unknown upload error",
-      });
     }
 
     // Continue with successful upload processing
