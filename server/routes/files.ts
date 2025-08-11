@@ -119,8 +119,8 @@ router.post("/upload", (req: Request, res: Response) => {
   console.log("Content-Type:", req.headers['content-type']);
   console.log("Content-Length:", req.headers['content-length']);
 
-  // Handle multer errors specifically
-  upload.any()(req, res, (err) => {
+  // Handle multer errors specifically - use array with specific field name
+  upload.array('files', 10)(req, res, (err) => {
     if (err) {
       console.error("Multer upload error:", err);
 
