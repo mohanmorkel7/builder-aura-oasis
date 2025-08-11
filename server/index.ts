@@ -81,9 +81,25 @@ export function createServer() {
     next(error);
   });
 
+  // Add headers for large upload support
+  app.use((req, res, next) => {
+    // Allow large requests
+    res.setHeader('Access-Control-Max-Age', '86400');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
+
+    // Set keep-alive for large uploads
+    if (req.headers['content-length'] && parseInt(req.headers['content-length']) > 1024 * 1024) {
+      res.setHeader('Connection', 'keep-alive');
+      res.setHeader('Keep-Alive', 'timeout=120, max=1000');
+    }
+
+    next();
+  });
+
   // Debug middleware to log all requests
   app.use((req, res, next) => {
-    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    const contentLength = req.headers['content-length'] || 0;
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} (${contentLength} bytes)`);
     next();
   });
 
