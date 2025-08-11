@@ -829,8 +829,22 @@ export class ApiClient {
         console.log(`File ${index + 1}: ${file.name} (${file.size} bytes, ${file.type})`);
       });
 
-      // Log FormData contents (note: can't directly inspect FormData entries in all browsers)
+      // Debug FormData contents
       console.log("FormData created with files under 'files' field");
+      console.log("FormData has entries:", Array.from(formData.entries()).length);
+
+      // Try to log FormData entries (modern browsers)
+      try {
+        for (const [key, value] of formData.entries()) {
+          if (value instanceof File) {
+            console.log(`FormData entry: ${key} = File(${value.name}, ${value.size} bytes)`);
+          } else {
+            console.log(`FormData entry: ${key} = ${value}`);
+          }
+        }
+      } catch (e) {
+        console.log("Cannot inspect FormData entries in this browser");
+      }
 
       // Create AbortController for timeout
       const controller = new AbortController();
