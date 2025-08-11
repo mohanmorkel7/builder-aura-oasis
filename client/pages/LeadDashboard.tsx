@@ -113,6 +113,8 @@ export default function LeadDashboard() {
   } = useMyPartialSaves(userId);
   const { data: leadProgressData = [], isLoading: leadProgressLoading } =
     useLeadProgressDashboard();
+  const { data: templateStepData = [], isLoading: templateStepLoading } =
+    useTemplateStepDashboard();
   const { data: followUpsData = [], isLoading: followUpsLoading } =
     useFollowUps({
       userId: user?.id,
