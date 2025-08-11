@@ -285,11 +285,10 @@ export function EnhancedStepItem({
       console.error("File upload error details:");
       console.error("- Error message:", error.message);
       console.error("- Error stack:", error.stack);
-      console.error("- Files attempted:", Array.from(files).map(f => ({
-        name: f.name,
-        size: f.size,
-        type: f.type
-      })));
+      console.error("- Files attempted:");
+      Array.from(files).forEach((file, index) => {
+        console.error(`  File ${index + 1}: ${file.name} (${file.size} bytes, ${file.type})`);
+      });
 
       // Prevent error from bubbling up and potentially affecting auth state
       try {
