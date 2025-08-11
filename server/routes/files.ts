@@ -42,6 +42,71 @@ const upload = multer({
   },
 });
 
+// Chunked upload endpoint for large files
+router.post("/upload-chunk", async (req: Request, res: Response) => {
+  try {
+    const { chunk, filename, chunkIndex, totalChunks } = req.body;
+
+    if (!chunk || !filename || chunkIndex === undefined || !totalChunks) {
+      return res.status(400).json({ error: "Missing required chunk data" });
+    }
+
+    const chunkDir = path.join(uploadsDir, "chunks");
+    if (!fs.existsSync(chunkDir)) {
+      fs.mkdirSync(chunkDir, { recursive: true });
+    }
+
+    const chunkPath = path.join(chunkDir, `${filename}.chunk.${chunkIndex}`);
+
+    // Decode base64 chunk data
+    const chunkBuffer = Buffer.from(chunk, "base64");
+    fs.writeFileSync(chunkPath, chunkBuffer);
+
+    console.log(
+      `Received chunk ${chunkIndex + 1}/${totalChunks} for ${filename}`,
+    );
+
+    // If this is the last chunk, combine all chunks
+    if (parseInt(chunkIndex) === parseInt(totalChunks) - 1) {
+      const finalPath = path.join(uploadsDir, `${Date.now()}_${filename}`);
+      const writeStream = fs.createWriteStream(finalPath);
+
+      for (let i = 0; i < totalChunks; i++) {
+        const chunkFile = path.join(chunkDir, `${filename}.chunk.${i}`);
+        if (fs.existsSync(chunkFile)) {
+          const chunkData = fs.readFileSync(chunkFile);
+          writeStream.write(chunkData);
+          fs.unlinkSync(chunkFile); // Clean up chunk file
+        }
+      }
+
+      writeStream.end();
+
+      const stats = fs.statSync(finalPath);
+      console.log(`File assembled: ${filename} (${stats.size} bytes)`);
+
+      return res.json({
+        success: true,
+        file: {
+          originalName: filename,
+          filename: path.basename(finalPath),
+          size: stats.size,
+          path: `/uploads/${path.basename(finalPath)}`,
+        },
+        message: "File uploaded successfully via chunked upload",
+      });
+    }
+
+    res.json({
+      success: true,
+      message: `Chunk ${parseInt(chunkIndex) + 1}/${totalChunks} received`,
+    });
+  } catch (error) {
+    console.error("Error in chunked upload:", error);
+    res.status(500).json({ error: "Failed to process chunk" });
+  }
+});
+
 // Upload files endpoint - flexible to handle any field names
 router.post("/upload", upload.any(), async (req: Request, res: Response) => {
   try {
