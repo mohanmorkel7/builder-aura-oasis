@@ -48,9 +48,12 @@ export const formatToISTDateTime = (
   };
 
   try {
-    // Format the date to IST
+    // Format the date to IST with explicit timezone indicator
     const formatter = new Intl.DateTimeFormat("en-IN", defaultOptions);
-    return formatter.format(dateObj);
+    const formattedDate = formatter.format(dateObj);
+
+    // Add IST indicator to make timezone clear
+    return `${formattedDate} IST`;
   } catch (error) {
     console.warn("Error formatting date to IST:", error);
     // Fallback to manual IST conversion
