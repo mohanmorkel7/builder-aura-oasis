@@ -333,15 +333,81 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         <nav className="flex-1 p-4 space-y-2">
           {allowedNavItems.map((item) => {
             const Icon = item.icon;
+
+            // Handle expandable menu items (like Settings)
+            if (item.submenu) {
+              const isExpanded = expandedMenus[item.name] || false;
+              const hasActiveSubmenu = item.submenu.some(
+                (subItem) => location.pathname === subItem.href
+              );
+
+              return (
+                <div key={item.name}>
+                  {/* Main menu item */}
+                  <button
+                    onClick={() =>
+                      setExpandedMenus((prev) => ({
+                        ...prev,
+                        [item.name]: !prev[item.name],
+                      }))
+                    }
+                    className={cn(
+                      "w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+                      hasActiveSubmenu
+                        ? "bg-primary text-white"
+                        : "text-gray-700 hover:bg-gray-100",
+                    )}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <Icon className="w-5 h-5" />
+                      <span>{item.name}</span>
+                    </div>
+                    {isExpanded ? (
+                      <ChevronDown className="w-4 h-4" />
+                    ) : (
+                      <ChevronRight className="w-4 h-4" />
+                    )}
+                  </button>
+
+                  {/* Submenu items */}
+                  {isExpanded && (
+                    <div className="ml-6 mt-2 space-y-1">
+                      {item.submenu
+                        .filter((subItem) => subItem.roles.includes(user.role))
+                        .map((subItem) => {
+                          const isSubActive = location.pathname === subItem.href;
+
+                          return (
+                            <Link
+                              key={subItem.name}
+                              to={subItem.href}
+                              className={cn(
+                                "flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+                                isSubActive
+                                  ? "bg-primary text-white"
+                                  : "text-gray-600 hover:bg-gray-100",
+                              )}
+                            >
+                              <span>{subItem.name}</span>
+                            </Link>
+                          );
+                        })}
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
+            // Handle regular menu items
             const isActive =
               location.pathname === item.href ||
               (item.href !== "/dashboard" &&
-                location.pathname.startsWith(item.href));
+                location.pathname.startsWith(item.href!));
 
             return (
               <Link
                 key={item.name}
-                to={item.href}
+                to={item.href!}
                 className={cn(
                   "flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
                   isActive
