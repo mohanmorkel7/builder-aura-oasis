@@ -690,15 +690,38 @@ export function EnhancedStepItem({
                                   {formatToISTDateTime(message.created_at)}
                                 </span>
                                 {message.message_type !== "system" && (
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    onClick={() => handleFollowUp(message.id)}
-                                    className="text-blue-600 hover:text-blue-700"
-                                  >
-                                    <Reply className="w-3 h-3 mr-1" />
-                                    Follow-up
-                                  </Button>
+                                  <>
+                                    {/* Only show edit/delete for own messages */}
+                                    {message.user_id === parseInt(user.id) && (
+                                      <>
+                                        <Button
+                                          size="sm"
+                                          variant="ghost"
+                                          onClick={() => handleEditMessage(message.id, message.message)}
+                                          className="text-gray-600 hover:text-gray-700"
+                                        >
+                                          <Edit className="w-3 h-3" />
+                                        </Button>
+                                        <Button
+                                          size="sm"
+                                          variant="ghost"
+                                          onClick={() => handleDeleteMessage(message.id)}
+                                          className="text-red-600 hover:text-red-700"
+                                        >
+                                          <Trash2 className="w-3 h-3" />
+                                        </Button>
+                                      </>
+                                    )}
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      onClick={() => handleFollowUp(message.id)}
+                                      className="text-blue-600 hover:text-blue-700"
+                                    >
+                                      <Reply className="w-3 h-3 mr-1" />
+                                      Follow-up
+                                    </Button>
+                                  </>
                                 )}
                               </div>
                             </div>
