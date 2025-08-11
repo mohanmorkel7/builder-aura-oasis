@@ -98,6 +98,13 @@ export const getCurrentISTTimestamp = (): string => {
 };
 
 /**
+ * Gets current date/time formatted in IST for display
+ */
+export const getCurrentISTDateTime = (): string => {
+  return formatToISTDateTime(new Date());
+};
+
+/**
  * Checks if a date is overdue (past current IST time)
  */
 export const isOverdue = (dueDate: string | Date): boolean => {
