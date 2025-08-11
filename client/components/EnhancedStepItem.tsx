@@ -282,11 +282,14 @@ export function EnhancedStepItem({
         errorMessage = error.message;
       }
 
-      console.error("File upload error details:", {
-        message: error.message,
-        stack: error.stack,
-        files: Array.from(files).map(f => ({ name: f.name, size: f.size }))
-      });
+      console.error("File upload error details:");
+      console.error("- Error message:", error.message);
+      console.error("- Error stack:", error.stack);
+      console.error("- Files attempted:", Array.from(files).map(f => ({
+        name: f.name,
+        size: f.size,
+        type: f.type
+      })));
 
       alert(errorMessage);
       event.target.value = "";
