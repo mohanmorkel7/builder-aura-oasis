@@ -826,6 +826,13 @@ export class ApiClient {
 
   // File upload method
   async uploadFiles(files: FileList) {
+    // Validate input
+    if (!files || files.length === 0) {
+      throw new Error("No files provided for upload");
+    }
+
+    console.log(`Starting upload of ${files.length} files`);
+
     const formData = new FormData();
 
     // Use consistent field name that multer expects
