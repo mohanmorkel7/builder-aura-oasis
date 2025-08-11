@@ -1184,6 +1184,8 @@ export function useCreateLeadStep() {
     },
     onSuccess: (_, { leadId }) => {
       queryClient.invalidateQueries({ queryKey: ["lead-steps", leadId] });
+      queryClient.invalidateQueries({ queryKey: ["lead-progress-dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["template-step-dashboard"] });
     },
   });
 }
