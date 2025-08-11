@@ -6,6 +6,7 @@ import {
   useDeleteLead,
   useMyPartialSaves,
   useLeadProgressDashboard,
+  useTemplateStepDashboard,
   useFollowUps,
 } from "@/hooks/useApi";
 import { useAuth } from "@/lib/auth-context";
