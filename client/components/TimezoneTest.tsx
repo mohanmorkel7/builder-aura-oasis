@@ -34,6 +34,15 @@ export function TimezoneTest() {
         <div>
           <strong>Current UTC time:</strong> {currentTime.toISOString()}
         </div>
+        <hr className="my-2" />
+        <div className="text-xs">
+          <div><strong>Testing different timestamp formats:</strong></div>
+          {testFormats.map((format, index) => (
+            <div key={index} className="ml-2">
+              <strong>{format}:</strong> {formatToISTDateTime(format)}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
