@@ -207,8 +207,11 @@ router.post("/upload", (req: Request, res: Response) => {
         message: `Successfully uploaded ${uploadedFiles.length} file(s)`,
       });
     } catch (error) {
-      console.error("Error processing uploaded files:", error);
-      res.status(500).json({ error: "Failed to process uploaded files" });
+      console.error("❌ Error processing uploaded files:", error);
+      return res.status(500).json({
+        error: "Failed to process uploaded files",
+        message: error instanceof Error ? error.message : "Unknown processing error"
+      });
     }
   });
 });
