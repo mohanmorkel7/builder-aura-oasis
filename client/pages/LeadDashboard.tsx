@@ -505,7 +505,7 @@ export default function LeadDashboard() {
                                         return (
                                           <div
                                             key={step.name}
-                                            className="absolute left-1/2 transform -translate-x-1/2 w-8 rounded transition-all duration-300 cursor-pointer group"
+                                            className="absolute left-1/2 transform -translate-x-1/2 w-8 rounded transition-all duration-300 cursor-pointer group flex items-center justify-center"
                                             style={{
                                               top: `${yPosition}px`,
                                               height: `${stepHeight}px`,
@@ -514,6 +514,9 @@ export default function LeadDashboard() {
                                             }}
                                             title={`${leadProgress.client_name}: ${step.name} - ${step.probability}% (Completed)`}
                                           >
+                                            <span className="text-xs font-bold text-gray-800">
+                                              {step.probability}%
+                                            </span>
                                             <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20 pointer-events-none">
                                               {step.name}: {step.probability}% (Completed)
                                             </div>
