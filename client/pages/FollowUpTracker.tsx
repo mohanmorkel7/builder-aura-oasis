@@ -146,7 +146,7 @@ const mockFollowUps: FollowUp[] = [
     created_by_name: "David Kim",
     status: "pending",
     priority: "high",
-    due_date: new Date(Date.now() + 86400000 * 2).toISOString().split('T')[0],
+    due_date: "2024-01-27",
     created_at: new Date().toISOString(),
     notes: "Need to coordinate with legal team for compliance review",
     type: "vc",
