@@ -156,25 +156,29 @@ router.get("/follow-ups", async (req: Request, res: Response) => {
             vc_id: 1,
             title: "Follow up on term sheet feedback",
             description: "Check investor response to updated terms",
-            due_date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days from now
+            due_date: new Date(
+              Date.now() + 2 * 24 * 60 * 60 * 1000,
+            ).toISOString(), // 2 days from now
             status: "pending",
             assigned_to: 1,
             step_name: "Term Sheet",
             round_title: "Series A",
-            assigned_user_name: "John Doe"
+            assigned_user_name: "John Doe",
           },
           {
             id: 2,
             vc_id: 2,
             title: "Schedule due diligence meeting",
             description: "Coordinate with investor team for DD session",
-            due_date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days from now
+            due_date: new Date(
+              Date.now() + 5 * 24 * 60 * 60 * 1000,
+            ).toISOString(), // 5 days from now
             status: "pending",
             assigned_to: 2,
             step_name: "Due Diligence",
             round_title: "Seed Round",
-            assigned_user_name: "Jane Smith"
-          }
+            assigned_user_name: "Jane Smith",
+          },
         ];
       }
     } catch (dbError) {
@@ -190,8 +194,8 @@ router.get("/follow-ups", async (req: Request, res: Response) => {
           assigned_to: 1,
           step_name: "Initial Pitch",
           round_title: "Mock Round",
-          assigned_user_name: "Mock User"
-        }
+          assigned_user_name: "Mock User",
+        },
       ];
     }
 
@@ -281,9 +285,9 @@ router.get("/progress", async (req: Request, res: Response) => {
             completed_steps: [
               { name: "Initial Pitch", probability: 20, status: "completed" },
               { name: "Product Demo", probability: 20, status: "completed" },
-              { name: "Due Diligence", probability: 20, status: "completed" }
+              { name: "Due Diligence", probability: 20, status: "completed" },
             ],
-            current_step: { name: "Term Sheet", probability: 20 }
+            current_step: { name: "Term Sheet", probability: 20 },
           },
           {
             vc_id: 2,
@@ -294,10 +298,10 @@ router.get("/progress", async (req: Request, res: Response) => {
             total_completed_probability: 40,
             completed_steps: [
               { name: "Initial Pitch", probability: 20, status: "completed" },
-              { name: "Product Demo", probability: 20, status: "completed" }
+              { name: "Product Demo", probability: 20, status: "completed" },
             ],
-            current_step: { name: "Due Diligence", probability: 20 }
-          }
+            current_step: { name: "Due Diligence", probability: 20 },
+          },
         ];
       }
     } catch (dbError) {
@@ -311,10 +315,10 @@ router.get("/progress", async (req: Request, res: Response) => {
           completed_count: 1,
           total_completed_probability: 20,
           completed_steps: [
-            { name: "Initial Pitch", probability: 20, status: "completed" }
+            { name: "Initial Pitch", probability: 20, status: "completed" },
           ],
-          current_step: { name: "Product Demo", probability: 20 }
-        }
+          current_step: { name: "Product Demo", probability: 20 },
+        },
       ];
     }
 
