@@ -454,7 +454,7 @@ export default function VCDashboard() {
       </Card>
 
       {/* VC Progress Chart */}
-      {!progressLoading && vcProgressData.length > 0 && (
+      {vcProgressData.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
