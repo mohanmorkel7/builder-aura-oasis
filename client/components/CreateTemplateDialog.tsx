@@ -68,6 +68,7 @@ const iconMap = {
   Headphones,
   Megaphone,
   Settings,
+  BarChart3,
 };
 
 export default function CreateTemplateDialog({
