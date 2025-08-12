@@ -56,6 +56,11 @@ import {
   Briefcase,
   Eye,
   Edit,
+  Calendar,
+  AlertCircle,
+  PieChart,
+  BarChart3,
+  Activity,
 } from "lucide-react";
 import { formatToIST } from "@/lib/dateUtils";
 
@@ -146,6 +151,40 @@ export default function VCDashboard() {
   } = useQuery({
     queryKey: ["vc-stats"],
     queryFn: () => apiClient.request("/vc/stats"),
+    retry: 1,
+  });
+
+  // Fetch VC follow-ups
+  const {
+    data: vcFollowUps = [],
+    isLoading: followUpsLoading,
+  } = useQuery({
+    queryKey: ["vc-follow-ups"],
+    queryFn: async () => {
+      try {
+        return await apiClient.request("/vc/follow-ups");
+      } catch (error) {
+        console.error("Error fetching VC follow-ups:", error);
+        return [];
+      }
+    },
+    retry: 1,
+  });
+
+  // Fetch VC progress data
+  const {
+    data: vcProgressData = [],
+    isLoading: progressLoading,
+  } = useQuery({
+    queryKey: ["vc-progress"],
+    queryFn: async () => {
+      try {
+        return await apiClient.request("/vc/progress");
+      } catch (error) {
+        console.error("Error fetching VC progress:", error);
+        return [];
+      }
+    },
     retry: 1,
   });
 
@@ -256,7 +295,7 @@ export default function VCDashboard() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 max-w-7xl mx-auto space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -271,58 +310,68 @@ export default function VCDashboard() {
         </Button>
       </div>
 
-      {/* Stats Cards */}
+      {/* Statistics Cards - Enhanced with Gradients */}
       {!statsLoading && vcStats && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Opportunities</CardTitle>
-              <Target className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{vcStats.total || 0}</div>
-              <p className="text-xs text-muted-foreground">
-                Active VC opportunities
-              </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-blue-600 text-sm font-medium">Total Opportunities</p>
+                  <p className="text-2xl font-bold text-blue-900">
+                    {vcStats.total || 0}
+                  </p>
+                </div>
+                <div className="bg-blue-200 p-3 rounded-full">
+                  <Target className="w-6 h-6 text-blue-600" />
+                </div>
+              </div>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">In Progress</CardTitle>
-              <Clock className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{vcStats.in_progress || 0}</div>
-              <p className="text-xs text-muted-foreground">
-                Currently being processed
-              </p>
+          <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-orange-600 text-sm font-medium">
+                    In Progress
+                  </p>
+                  <p className="text-2xl font-bold text-orange-900">
+                    {vcStats.in_progress || 0}
+                  </p>
+                </div>
+                <div className="bg-orange-200 p-3 rounded-full">
+                  <Clock className="w-6 h-6 text-orange-600" />
+                </div>
+              </div>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Successful Rounds</CardTitle>
-              <CheckCircle className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{vcStats.won || 0}</div>
-              <p className="text-xs text-muted-foreground">
-                Successfully closed
-              </p>
+          <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-green-600 text-sm font-medium">Successful Rounds</p>
+                  <p className="text-2xl font-bold text-green-900">{vcStats.won || 0}</p>
+                </div>
+                <div className="bg-green-200 p-3 rounded-full">
+                  <TrendingUp className="w-6 h-6 text-green-600" />
+                </div>
+              </div>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">VC Templates</CardTitle>
-              <FileText className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{vcTemplates.length}</div>
-              <p className="text-xs text-muted-foreground">
-                Available templates
-              </p>
+          <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-purple-600 text-sm font-medium">VC Templates</p>
+                  <p className="text-2xl font-bold text-purple-900">{vcTemplates.length}</p>
+                </div>
+                <div className="bg-purple-200 p-3 rounded-full">
+                  <FileText className="w-6 h-6 text-purple-600" />
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -391,6 +440,140 @@ export default function VCDashboard() {
           </div>
         </CardContent>
       </Card>
+
+      {/* VC Progress Chart */}
+      {!progressLoading && vcProgressData.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BarChart3 className="w-5 h-5" />
+              VC Progress Dashboard
+            </CardTitle>
+            <CardDescription>
+              Track each VC opportunity's current stage and funding progress
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <div className="text-sm font-medium text-gray-700 mb-4">
+                All VC Opportunities Progress ({vcProgressData.length} rounds)
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {vcProgressData.map((vcProgress: any, index: number) => (
+                  <div key={index} className="bg-white p-4 rounded-lg border">
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-semibold text-sm truncate">
+                        {vcProgress.round_title || 'Untitled Round'}
+                      </h4>
+                      <Badge className={`${statusColors[vcProgress.status as keyof typeof statusColors]} border-0 text-xs`}>
+                        {vcProgress.status?.replace('-', ' ').toUpperCase()}
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-gray-600 mb-3">{vcProgress.investor_name}</p>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-xs">
+                        <span>Progress</span>
+                        <span>{vcProgress.progress || 0}%</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${vcProgress.progress || 0}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Follow-ups Due and Overdue */}
+      {!followUpsLoading && vcFollowUps.length > 0 && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-orange-600" />
+                Follow-ups Due
+              </CardTitle>
+              <CardDescription>
+                VC opportunities requiring immediate attention
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {vcFollowUps.filter((followUp: any) => followUp.is_due && !followUp.is_overdue).slice(0, 5).map((followUp: any) => (
+                  <div key={followUp.id} className="flex items-center justify-between p-3 bg-orange-50 rounded-lg border border-orange-200">
+                    <div className="flex-1">
+                      <p className="font-medium text-sm text-gray-900">{followUp.round_title}</p>
+                      <p className="text-xs text-gray-600">{followUp.investor_name}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs text-orange-600 font-medium">Due Today</p>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="mt-1 h-6 px-2 text-xs"
+                        onClick={() => navigate(`/vc/${followUp.vc_id}`)}
+                      >
+                        View
+                      </Button>
+                    </div>
+                  </div>
+                )) || (
+                  <div className="text-center py-4 text-gray-500">
+                    <Calendar className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+                    <p className="text-sm">No follow-ups due today</p>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <AlertCircle className="w-5 h-5 text-red-600" />
+                Overdue Follow-ups
+              </CardTitle>
+              <CardDescription>
+                VC opportunities that need urgent attention
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {vcFollowUps.filter((followUp: any) => followUp.is_overdue).slice(0, 5).map((followUp: any) => (
+                  <div key={followUp.id} className="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-red-200">
+                    <div className="flex-1">
+                      <p className="font-medium text-sm text-gray-900">{followUp.round_title}</p>
+                      <p className="text-xs text-gray-600">{followUp.investor_name}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs text-red-600 font-medium">Overdue</p>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="mt-1 h-6 px-2 text-xs border-red-200 text-red-600 hover:bg-red-50"
+                        onClick={() => navigate(`/vc/${followUp.vc_id}`)}
+                      >
+                        View
+                      </Button>
+                    </div>
+                  </div>
+                )) || (
+                  <div className="text-center py-4 text-gray-500">
+                    <AlertCircle className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+                    <p className="text-sm">No overdue follow-ups</p>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       {/* VC Opportunities List */}
       <Card>
