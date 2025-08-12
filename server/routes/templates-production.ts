@@ -88,6 +88,17 @@ const mockCategories = [
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   },
+  {
+    id: 6,
+    name: "VC",
+    description: "Venture capital templates",
+    color: "#6366F1",
+    icon: "Megaphone",
+    sort_order: 6,
+    is_active: true,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  },
 ];
 
 const mockTemplates = [
@@ -199,6 +210,42 @@ const mockTemplates = [
       icon: "DollarSign",
     },
   },
+  {
+    id: 7,
+    name: "Series A Funding Process",
+    description: "Complete workflow for Series A funding rounds",
+    usage_count: 8,
+    step_count: 12,
+    is_active: true,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    creator_name: "VC Team",
+    category_id: 6,
+    category: {
+      id: 6,
+      name: "VC",
+      color: "#6366F1",
+      icon: "Megaphone",
+    },
+  },
+  {
+    id: 8,
+    name: "Seed Round Management",
+    description: "Template for managing seed funding rounds",
+    usage_count: 12,
+    step_count: 8,
+    is_active: true,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    creator_name: "VC Team",
+    category_id: 6,
+    category: {
+      id: 6,
+      name: "VC",
+      color: "#6366F1",
+      icon: "Megaphone",
+    },
+  },
 ];
 
 // ===== TEMPLATE ROUTES =====
@@ -280,6 +327,13 @@ router.get("/categories", async (req: Request, res: Response) => {
             color: "#EF4444",
             icon: "Headphones",
             sort_order: 5,
+          },
+          {
+            name: "VC",
+            description: "Venture capital templates",
+            color: "#6366F1",
+            icon: "Megaphone",
+            sort_order: 6,
           },
         ];
 
