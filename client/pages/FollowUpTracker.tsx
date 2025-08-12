@@ -182,7 +182,7 @@ const mockFollowUps: FollowUp[] = [
     created_by_name: "David Kim",
     status: "pending",
     priority: "high",
-    due_date: new Date(Date.now() + 86400000 * 5).toISOString().split('T')[0],
+    due_date: "2024-01-30",
     created_at: new Date(Date.now() - 86400000).toISOString(),
     notes: "Prepare detailed system architecture documentation",
     type: "vc",
