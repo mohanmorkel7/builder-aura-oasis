@@ -75,6 +75,8 @@ export default function CreateTemplateDialog({
   onSuccess,
   categories,
 }: CreateTemplateDialogProps) {
+  // Debug: Log categories to see what we're receiving
+  console.log("CreateTemplateDialog categories:", categories);
   const { user } = useAuth();
   const [templateData, setTemplateData] = useState({
     name: "",
