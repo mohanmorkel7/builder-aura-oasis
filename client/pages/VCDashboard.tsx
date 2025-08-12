@@ -227,21 +227,68 @@ export default function VCDashboard() {
     {
       id: 1,
       vc_id: 1,
+      title: "Schedule follow-up call with investment committee",
       round_title: "Series A Funding",
       investor_name: "Accel Partners",
-      is_due: true,
-      is_overdue: false,
-      due_date: new Date().toISOString(),
+      contact_person: "John Smith",
+      step_name: "Due Diligence Review",
+      assigned_user_name: "Alice Johnson",
+      status: "pending",
+      due_date: new Date().toISOString(), // Today
+      description: "Follow up on due diligence questions and prepare for next meeting"
     },
     {
       id: 2,
       vc_id: 2,
+      title: "Send updated financial projections",
       round_title: "Seed Round",
       investor_name: "Sequoia Capital",
-      is_due: false,
-      is_overdue: true,
-      due_date: new Date(Date.now() - 86400000).toISOString(), // Yesterday
+      contact_person: "Sarah Johnson",
+      step_name: "Financial Review",
+      assigned_user_name: "Bob Wilson",
+      status: "pending",
+      due_date: new Date(Date.now() + 86400000).toISOString(), // Tomorrow
+      description: "Update Q4 projections based on feedback from investor"
     },
+    {
+      id: 3,
+      vc_id: 4,
+      title: "Prepare product demo materials",
+      round_title: "Pre-Series A",
+      investor_name: "Lightspeed Venture",
+      contact_person: "Emily Davis",
+      step_name: "Product Demo",
+      assigned_user_name: "David Kim",
+      status: "pending",
+      due_date: new Date(Date.now() + 86400000 * 3).toISOString(), // 3 days from now
+      description: "Create comprehensive demo showcasing key features"
+    },
+    {
+      id: 4,
+      vc_id: 3,
+      title: "Submit legal documentation",
+      round_title: "Bridge Round",
+      investor_name: "Matrix Partners",
+      contact_person: "Michael Chen",
+      step_name: "Legal Documentation",
+      assigned_user_name: "Carol Davis",
+      status: "pending",
+      due_date: new Date(Date.now() - 86400000 * 2).toISOString(), // 2 days overdue
+      description: "Final review and submission of all legal documents"
+    },
+    {
+      id: 5,
+      vc_id: 1,
+      title: "Technical architecture review",
+      round_title: "Series A Funding",
+      investor_name: "Accel Partners",
+      contact_person: "John Smith",
+      step_name: "Technical Due Diligence",
+      assigned_user_name: "Tech Lead",
+      status: "pending",
+      due_date: new Date(Date.now() - 86400000).toISOString(), // 1 day overdue
+      description: "Technical deep dive with Accel's technical team"
+    }
   ];
 
   // Comprehensive VC progress data similar to Lead Dashboard
