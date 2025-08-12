@@ -424,7 +424,8 @@ router.get("/", async (req: Request, res: Response) => {
             vc_id: 1,
             step_id: 5,
             title: "Investment Committee Presentation",
-            description: "Schedule and prepare presentation for Accel Partners investment committee",
+            description:
+              "Schedule and prepare presentation for Accel Partners investment committee",
             status: "pending",
             follow_up_type: "meeting",
             assigned_to: 4, // Emily Davis (VC team)
@@ -444,7 +445,8 @@ router.get("/", async (req: Request, res: Response) => {
             vc_id: 2,
             step_id: 6,
             title: "Financial Projections Update",
-            description: "Send updated Q4 financial projections to Sequoia Capital",
+            description:
+              "Send updated Q4 financial projections to Sequoia Capital",
             status: "in_progress",
             follow_up_type: "document",
             assigned_to: 6, // Finance Team
@@ -464,7 +466,8 @@ router.get("/", async (req: Request, res: Response) => {
             vc_id: 4,
             step_id: 7,
             title: "Technical Architecture Deep Dive",
-            description: "Technical review meeting with Lightspeed technical partners",
+            description:
+              "Technical review meeting with Lightspeed technical partners",
             status: "pending",
             follow_up_type: "meeting",
             assigned_to: 8, // Tech Lead
@@ -478,7 +481,7 @@ router.get("/", async (req: Request, res: Response) => {
             investor_name: "Lightspeed Venture",
             step_name: "Technical Due Diligence",
             type: "vc",
-          }
+          },
         );
       }
 

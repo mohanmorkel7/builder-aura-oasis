@@ -184,7 +184,8 @@ export default function AdminTemplates() {
     {
       id: 4,
       name: "Series A Funding Process",
-      description: "Comprehensive template for managing Series A funding rounds",
+      description:
+        "Comprehensive template for managing Series A funding rounds",
       usage_count: 5,
       step_count: 6,
       is_active: true,
@@ -214,7 +215,7 @@ export default function AdminTemplates() {
   // Use fallback stats directly to avoid network issues
   const stats = {
     total_templates: fallbackTemplates.length,
-    active_templates: fallbackTemplates.filter(t => t.is_active).length,
+    active_templates: fallbackTemplates.filter((t) => t.is_active).length,
     total_usage: fallbackTemplates.reduce((sum, t) => sum + t.usage_count, 0),
   };
 
@@ -282,9 +283,7 @@ export default function AdminTemplates() {
           <p className="text-gray-600 mt-1">
             Manage workflow templates and categories
             {categoriesError && (
-              <span className="text-orange-600 ml-2">
-                (Using offline data)
-              </span>
+              <span className="text-orange-600 ml-2">(Using offline data)</span>
             )}
           </p>
         </div>
@@ -299,8 +298,16 @@ export default function AdminTemplates() {
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <div className="flex items-center">
           <div className="flex-shrink-0">
-            <svg className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+            <svg
+              className="h-5 w-5 text-blue-400"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                clipRule="evenodd"
+              />
             </svg>
           </div>
           <div className="ml-3">
@@ -309,8 +316,10 @@ export default function AdminTemplates() {
             </h3>
             <div className="mt-2 text-sm text-blue-700">
               <p>
-                Using local template data. All categories including <strong>VC</strong> are available for template creation.
-                You can view, edit, and create templates offline. Changes will be saved when connectivity is restored.
+                Using local template data. All categories including{" "}
+                <strong>VC</strong> are available for template creation. You can
+                view, edit, and create templates offline. Changes will be saved
+                when connectivity is restored.
               </p>
             </div>
           </div>

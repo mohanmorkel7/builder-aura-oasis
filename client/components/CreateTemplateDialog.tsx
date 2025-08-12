@@ -103,8 +103,8 @@ export default function CreateTemplateDialog({
         data: {
           id: Math.floor(Math.random() * 1000) + 100,
           ...data,
-          created_at: new Date().toISOString()
-        }
+          created_at: new Date().toISOString(),
+        },
       };
     },
     onSuccess: () => {

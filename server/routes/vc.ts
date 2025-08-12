@@ -34,7 +34,9 @@ router.get("/", async (req: Request, res: Response) => {
         if (search) {
           vcs = await VCRepository.search(search as string);
         } else if (investor_category) {
-          vcs = await VCRepository.findByInvestorCategory(investor_category as string);
+          vcs = await VCRepository.findByInvestorCategory(
+            investor_category as string,
+          );
         } else if (status) {
           vcs = await VCRepository.findByStatus(status as string);
         } else {
@@ -43,17 +45,18 @@ router.get("/", async (req: Request, res: Response) => {
       } else {
         // Return mock VC data when database is unavailable
         vcs = await MockDataService.getAllLeads(); // Using leads mock data for now
-        
+
         // Filter mock data based on query parameters
         if (status && status !== "all") {
           vcs = vcs.filter((vc: any) => vc.status === status);
         }
         if (search) {
           const searchTerm = (search as string).toLowerCase();
-          vcs = vcs.filter((vc: any) => 
-            vc.project_title?.toLowerCase().includes(searchTerm) ||
-            vc.client_name?.toLowerCase().includes(searchTerm) ||
-            vc.lead_id?.toLowerCase().includes(searchTerm)
+          vcs = vcs.filter(
+            (vc: any) =>
+              vc.project_title?.toLowerCase().includes(searchTerm) ||
+              vc.client_name?.toLowerCase().includes(searchTerm) ||
+              vc.lead_id?.toLowerCase().includes(searchTerm),
           );
         }
       }
@@ -65,9 +68,9 @@ router.get("/", async (req: Request, res: Response) => {
     res.json(vcs);
   } catch (error) {
     console.error("Error fetching VCs:", error);
-    res.status(500).json({ 
-      success: false, 
-      error: "Failed to fetch VCs" 
+    res.status(500).json({
+      success: false,
+      error: "Failed to fetch VCs",
     });
   }
 });
@@ -84,10 +87,12 @@ router.get("/stats", async (req: Request, res: Response) => {
         const mockVCs = await MockDataService.getAllLeads();
         stats = {
           total: mockVCs.length,
-          in_progress: mockVCs.filter((vc: any) => vc.status === "in-progress").length,
+          in_progress: mockVCs.filter((vc: any) => vc.status === "in-progress")
+            .length,
           won: mockVCs.filter((vc: any) => vc.status === "won").length,
           lost: mockVCs.filter((vc: any) => vc.status === "lost").length,
-          completed: mockVCs.filter((vc: any) => vc.status === "completed").length,
+          completed: mockVCs.filter((vc: any) => vc.status === "completed")
+            .length,
         };
       }
     } catch (dbError) {
@@ -95,19 +100,21 @@ router.get("/stats", async (req: Request, res: Response) => {
       const mockVCs = await MockDataService.getAllLeads();
       stats = {
         total: mockVCs.length,
-        in_progress: mockVCs.filter((vc: any) => vc.status === "in-progress").length,
+        in_progress: mockVCs.filter((vc: any) => vc.status === "in-progress")
+          .length,
         won: mockVCs.filter((vc: any) => vc.status === "won").length,
         lost: mockVCs.filter((vc: any) => vc.status === "lost").length,
-        completed: mockVCs.filter((vc: any) => vc.status === "completed").length,
+        completed: mockVCs.filter((vc: any) => vc.status === "completed")
+          .length,
       };
     }
 
     res.json(stats);
   } catch (error) {
     console.error("Error fetching VC stats:", error);
-    res.status(500).json({ 
-      success: false, 
-      error: "Failed to fetch VC statistics" 
+    res.status(500).json({
+      success: false,
+      error: "Failed to fetch VC statistics",
     });
   }
 });
@@ -117,9 +124,9 @@ router.get("/:id", async (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params.id);
     if (isNaN(id)) {
-      return res.status(400).json({ 
-        success: false, 
-        error: "Invalid VC ID" 
+      return res.status(400).json({
+        success: false,
+        error: "Invalid VC ID",
       });
     }
 
@@ -139,18 +146,18 @@ router.get("/:id", async (req: Request, res: Response) => {
     }
 
     if (!vc) {
-      return res.status(404).json({ 
-        success: false, 
-        error: "VC not found" 
+      return res.status(404).json({
+        success: false,
+        error: "VC not found",
       });
     }
 
     res.json(vc);
   } catch (error) {
     console.error("Error fetching VC:", error);
-    res.status(500).json({ 
-      success: false, 
-      error: "Failed to fetch VC" 
+    res.status(500).json({
+      success: false,
+      error: "Failed to fetch VC",
     });
   }
 });
@@ -162,23 +169,23 @@ router.post("/", async (req: Request, res: Response) => {
 
     // Basic validation
     if (!vcData.created_by) {
-      return res.status(400).json({ 
-        success: false, 
-        error: "created_by is required" 
+      return res.status(400).json({
+        success: false,
+        error: "created_by is required",
       });
     }
 
     if (!vcData.round_title && !vcData.investor_name) {
-      return res.status(400).json({ 
-        success: false, 
-        error: "Either round_title or investor_name is required" 
+      return res.status(400).json({
+        success: false,
+        error: "Either round_title or investor_name is required",
       });
     }
 
     if (vcData.email && !/\S+@\S+\.\S+/.test(vcData.email)) {
-      return res.status(400).json({ 
-        success: false, 
-        error: "Invalid email format" 
+      return res.status(400).json({
+        success: false,
+        error: "Invalid email format",
       });
     }
 
@@ -190,7 +197,7 @@ router.post("/", async (req: Request, res: Response) => {
         // Create mock VC when database is unavailable
         vc = {
           id: Math.floor(Math.random() * 1000) + 100,
-          vc_id: `#VC${String(Math.floor(Math.random() * 100) + 1).padStart(3, '0')}`,
+          vc_id: `#VC${String(Math.floor(Math.random() * 100) + 1).padStart(3, "0")}`,
           ...vcData,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
@@ -200,22 +207,22 @@ router.post("/", async (req: Request, res: Response) => {
       console.log("Database error, using mock data:", dbError.message);
       vc = {
         id: Math.floor(Math.random() * 1000) + 100,
-        vc_id: `#VC${String(Math.floor(Math.random() * 100) + 1).padStart(3, '0')}`,
+        vc_id: `#VC${String(Math.floor(Math.random() * 100) + 1).padStart(3, "0")}`,
         ...vcData,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
     }
 
-    res.status(201).json({ 
-      success: true, 
-      data: vc 
+    res.status(201).json({
+      success: true,
+      data: vc,
     });
   } catch (error) {
     console.error("Error creating VC:", error);
-    res.status(500).json({ 
-      success: false, 
-      error: "Failed to create VC" 
+    res.status(500).json({
+      success: false,
+      error: "Failed to create VC",
     });
   }
 });
@@ -225,9 +232,9 @@ router.put("/:id", async (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params.id);
     if (isNaN(id)) {
-      return res.status(400).json({ 
-        success: false, 
-        error: "Invalid VC ID" 
+      return res.status(400).json({
+        success: false,
+        error: "Invalid VC ID",
       });
     }
 
@@ -235,9 +242,9 @@ router.put("/:id", async (req: Request, res: Response) => {
 
     // Email validation if provided
     if (vcData.email && !/\S+@\S+\.\S+/.test(vcData.email)) {
-      return res.status(400).json({ 
-        success: false, 
-        error: "Invalid email format" 
+      return res.status(400).json({
+        success: false,
+        error: "Invalid email format",
       });
     }
 
@@ -263,21 +270,21 @@ router.put("/:id", async (req: Request, res: Response) => {
     }
 
     if (!vc) {
-      return res.status(404).json({ 
-        success: false, 
-        error: "VC not found" 
+      return res.status(404).json({
+        success: false,
+        error: "VC not found",
       });
     }
 
-    res.json({ 
-      success: true, 
-      data: vc 
+    res.json({
+      success: true,
+      data: vc,
     });
   } catch (error) {
     console.error("Error updating VC:", error);
-    res.status(500).json({ 
-      success: false, 
-      error: "Failed to update VC" 
+    res.status(500).json({
+      success: false,
+      error: "Failed to update VC",
     });
   }
 });
@@ -287,9 +294,9 @@ router.delete("/:id", async (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params.id);
     if (isNaN(id)) {
-      return res.status(400).json({ 
-        success: false, 
-        error: "Invalid VC ID" 
+      return res.status(400).json({
+        success: false,
+        error: "Invalid VC ID",
       });
     }
 
@@ -307,21 +314,21 @@ router.delete("/:id", async (req: Request, res: Response) => {
     }
 
     if (!success) {
-      return res.status(404).json({ 
-        success: false, 
-        error: "VC not found" 
+      return res.status(404).json({
+        success: false,
+        error: "VC not found",
       });
     }
 
-    res.json({ 
-      success: true, 
-      message: "VC deleted successfully" 
+    res.json({
+      success: true,
+      message: "VC deleted successfully",
     });
   } catch (error) {
     console.error("Error deleting VC:", error);
-    res.status(500).json({ 
-      success: false, 
-      error: "Failed to delete VC" 
+    res.status(500).json({
+      success: false,
+      error: "Failed to delete VC",
     });
   }
 });
@@ -333,9 +340,9 @@ router.get("/:id/steps", async (req: Request, res: Response) => {
   try {
     const vcId = parseInt(req.params.id);
     if (isNaN(vcId)) {
-      return res.status(400).json({ 
-        success: false, 
-        error: "Invalid VC ID" 
+      return res.status(400).json({
+        success: false,
+        error: "Invalid VC ID",
       });
     }
 
@@ -355,9 +362,9 @@ router.get("/:id/steps", async (req: Request, res: Response) => {
     res.json(steps);
   } catch (error) {
     console.error("Error fetching VC steps:", error);
-    res.status(500).json({ 
-      success: false, 
-      error: "Failed to fetch VC steps" 
+    res.status(500).json({
+      success: false,
+      error: "Failed to fetch VC steps",
     });
   }
 });
@@ -367,9 +374,9 @@ router.post("/:id/steps", async (req: Request, res: Response) => {
   try {
     const vcId = parseInt(req.params.id);
     if (isNaN(vcId)) {
-      return res.status(400).json({ 
-        success: false, 
-        error: "Invalid VC ID" 
+      return res.status(400).json({
+        success: false,
+        error: "Invalid VC ID",
       });
     }
 
@@ -379,16 +386,16 @@ router.post("/:id/steps", async (req: Request, res: Response) => {
     };
 
     if (!stepData.name?.trim()) {
-      return res.status(400).json({ 
-        success: false, 
-        error: "Step name is required" 
+      return res.status(400).json({
+        success: false,
+        error: "Step name is required",
       });
     }
 
     if (!stepData.created_by) {
-      return res.status(400).json({ 
-        success: false, 
-        error: "created_by is required" 
+      return res.status(400).json({
+        success: false,
+        error: "created_by is required",
       });
     }
 
@@ -419,15 +426,15 @@ router.post("/:id/steps", async (req: Request, res: Response) => {
       };
     }
 
-    res.status(201).json({ 
-      success: true, 
-      data: step 
+    res.status(201).json({
+      success: true,
+      data: step,
     });
   } catch (error) {
     console.error("Error creating VC step:", error);
-    res.status(500).json({ 
-      success: false, 
-      error: "Failed to create VC step" 
+    res.status(500).json({
+      success: false,
+      error: "Failed to create VC step",
     });
   }
 });
@@ -437,9 +444,9 @@ router.put("/steps/:stepId", async (req: Request, res: Response) => {
   try {
     const stepId = parseInt(req.params.stepId);
     if (isNaN(stepId)) {
-      return res.status(400).json({ 
-        success: false, 
-        error: "Invalid step ID" 
+      return res.status(400).json({
+        success: false,
+        error: "Invalid step ID",
       });
     }
 
@@ -467,21 +474,21 @@ router.put("/steps/:stepId", async (req: Request, res: Response) => {
     }
 
     if (!step) {
-      return res.status(404).json({ 
-        success: false, 
-        error: "VC step not found" 
+      return res.status(404).json({
+        success: false,
+        error: "VC step not found",
       });
     }
 
-    res.json({ 
-      success: true, 
-      data: step 
+    res.json({
+      success: true,
+      data: step,
     });
   } catch (error) {
     console.error("Error updating VC step:", error);
-    res.status(500).json({ 
-      success: false, 
-      error: "Failed to update VC step" 
+    res.status(500).json({
+      success: false,
+      error: "Failed to update VC step",
     });
   }
 });
@@ -491,9 +498,9 @@ router.delete("/steps/:stepId", async (req: Request, res: Response) => {
   try {
     const stepId = parseInt(req.params.stepId);
     if (isNaN(stepId)) {
-      return res.status(400).json({ 
-        success: false, 
-        error: "Invalid step ID" 
+      return res.status(400).json({
+        success: false,
+        error: "Invalid step ID",
       });
     }
 
@@ -511,21 +518,21 @@ router.delete("/steps/:stepId", async (req: Request, res: Response) => {
     }
 
     if (!success) {
-      return res.status(404).json({ 
-        success: false, 
-        error: "VC step not found" 
+      return res.status(404).json({
+        success: false,
+        error: "VC step not found",
       });
     }
 
-    res.json({ 
-      success: true, 
-      message: "VC step deleted successfully" 
+    res.json({
+      success: true,
+      message: "VC step deleted successfully",
     });
   } catch (error) {
     console.error("Error deleting VC step:", error);
-    res.status(500).json({ 
-      success: false, 
-      error: "Failed to delete VC step" 
+    res.status(500).json({
+      success: false,
+      error: "Failed to delete VC step",
     });
   }
 });
@@ -535,17 +542,17 @@ router.put("/:id/steps/reorder", async (req: Request, res: Response) => {
   try {
     const vcId = parseInt(req.params.id);
     if (isNaN(vcId)) {
-      return res.status(400).json({ 
-        success: false, 
-        error: "Invalid VC ID" 
+      return res.status(400).json({
+        success: false,
+        error: "Invalid VC ID",
       });
     }
 
     const { stepOrders } = req.body;
     if (!Array.isArray(stepOrders)) {
-      return res.status(400).json({ 
-        success: false, 
-        error: "stepOrders must be an array" 
+      return res.status(400).json({
+        success: false,
+        error: "stepOrders must be an array",
       });
     }
 
@@ -560,15 +567,15 @@ router.put("/:id/steps/reorder", async (req: Request, res: Response) => {
       console.log("Database error, using mock response:", dbError.message);
     }
 
-    res.json({ 
-      success: true, 
-      message: "VC steps reordered successfully" 
+    res.json({
+      success: true,
+      message: "VC steps reordered successfully",
     });
   } catch (error) {
     console.error("Error reordering VC steps:", error);
-    res.status(500).json({ 
-      success: false, 
-      error: "Failed to reorder VC steps" 
+    res.status(500).json({
+      success: false,
+      error: "Failed to reorder VC steps",
     });
   }
 });
@@ -580,7 +587,7 @@ router.get("/:id/comments", async (req: Request, res: Response) => {
     if (isNaN(vcId)) {
       return res.status(400).json({
         success: false,
-        error: "Invalid VC ID"
+        error: "Invalid VC ID",
       });
     }
 
@@ -628,7 +635,7 @@ router.get("/:id/comments", async (req: Request, res: Response) => {
     console.error("Error fetching VC comments:", error);
     res.status(500).json({
       success: false,
-      error: "Failed to fetch VC comments"
+      error: "Failed to fetch VC comments",
     });
   }
 });
@@ -640,7 +647,7 @@ router.post("/:id/comments", async (req: Request, res: Response) => {
     if (isNaN(vcId)) {
       return res.status(400).json({
         success: false,
-        error: "Invalid VC ID"
+        error: "Invalid VC ID",
       });
     }
 
@@ -648,7 +655,7 @@ router.post("/:id/comments", async (req: Request, res: Response) => {
     if (!message || !message.trim()) {
       return res.status(400).json({
         success: false,
-        error: "Comment message is required"
+        error: "Comment message is required",
       });
     }
 
@@ -660,7 +667,11 @@ router.post("/:id/comments", async (req: Request, res: Response) => {
           VALUES ($1, $2, $3, (SELECT first_name || ' ' || last_name FROM users WHERE id = $3))
           RETURNING *, (SELECT first_name || ' ' || last_name FROM users WHERE id = created_by) as created_by_name
         `;
-        const result = await pool.query(query, [vcId, message.trim(), created_by]);
+        const result = await pool.query(query, [
+          vcId,
+          message.trim(),
+          created_by,
+        ]);
         comment = result.rows[0];
       } else {
         // Mock comment creation when database is unavailable
@@ -687,13 +698,13 @@ router.post("/:id/comments", async (req: Request, res: Response) => {
 
     res.status(201).json({
       success: true,
-      data: comment
+      data: comment,
     });
   } catch (error) {
     console.error("Error creating VC comment:", error);
     res.status(500).json({
       success: false,
-      error: "Failed to create VC comment"
+      error: "Failed to create VC comment",
     });
   }
 });

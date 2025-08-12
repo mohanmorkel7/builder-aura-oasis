@@ -204,7 +204,7 @@ export default function VCDashboard() {
       lead_source: "event",
       billing_currency: "USD",
       created_at: new Date(Date.now() - 86400000 * 21).toISOString(), // 21 days ago
-    }
+    },
   ];
 
   const vcList = mockVCList;
@@ -215,9 +215,9 @@ export default function VCDashboard() {
   // Calculate VC stats from mock data
   const vcStats = {
     total: mockVCList.length,
-    in_progress: mockVCList.filter(vc => vc.status === "in-progress").length,
-    won: mockVCList.filter(vc => vc.status === "won").length,
-    lost: mockVCList.filter(vc => vc.status === "lost").length,
+    in_progress: mockVCList.filter((vc) => vc.status === "in-progress").length,
+    won: mockVCList.filter((vc) => vc.status === "won").length,
+    lost: mockVCList.filter((vc) => vc.status === "lost").length,
   };
   const statsLoading = false;
   const statsError = null;
@@ -235,7 +235,8 @@ export default function VCDashboard() {
       assigned_user_name: "Alice Johnson",
       status: "pending",
       due_date: new Date().toISOString(), // Today
-      description: "Follow up on due diligence questions and prepare for next meeting"
+      description:
+        "Follow up on due diligence questions and prepare for next meeting",
     },
     {
       id: 2,
@@ -248,7 +249,7 @@ export default function VCDashboard() {
       assigned_user_name: "Bob Wilson",
       status: "pending",
       due_date: new Date(Date.now() + 86400000).toISOString(), // Tomorrow
-      description: "Update Q4 projections based on feedback from investor"
+      description: "Update Q4 projections based on feedback from investor",
     },
     {
       id: 3,
@@ -261,7 +262,7 @@ export default function VCDashboard() {
       assigned_user_name: "David Kim",
       status: "pending",
       due_date: new Date(Date.now() + 86400000 * 3).toISOString(), // 3 days from now
-      description: "Create comprehensive demo showcasing key features"
+      description: "Create comprehensive demo showcasing key features",
     },
     {
       id: 4,
@@ -274,7 +275,7 @@ export default function VCDashboard() {
       assigned_user_name: "Carol Davis",
       status: "pending",
       due_date: new Date(Date.now() - 86400000 * 2).toISOString(), // 2 days overdue
-      description: "Final review and submission of all legal documents"
+      description: "Final review and submission of all legal documents",
     },
     {
       id: 5,
@@ -287,8 +288,8 @@ export default function VCDashboard() {
       assigned_user_name: "Tech Lead",
       status: "pending",
       due_date: new Date(Date.now() - 86400000).toISOString(), // 1 day overdue
-      description: "Technical deep dive with Accel's technical team"
-    }
+      description: "Technical deep dive with Accel's technical team",
+    },
   ];
 
   // Comprehensive VC progress data similar to Lead Dashboard
@@ -301,11 +302,11 @@ export default function VCDashboard() {
       completed_steps: [
         { name: "Initial Pitch", probability: 15 },
         { name: "Due Diligence", probability: 35 },
-        { name: "Term Sheet", probability: 50 }
+        { name: "Term Sheet", probability: 50 },
       ],
       current_step: { name: "Legal Review", probability: 75 },
       total_completed_probability: 65,
-      completed_count: 3
+      completed_count: 3,
     },
     {
       vc_id: 2,
@@ -314,11 +315,11 @@ export default function VCDashboard() {
       status: "in-progress",
       completed_steps: [
         { name: "Initial Pitch", probability: 20 },
-        { name: "Product Demo", probability: 40 }
+        { name: "Product Demo", probability: 40 },
       ],
       current_step: { name: "Due Diligence", probability: 60 },
       total_completed_probability: 40,
-      completed_count: 2
+      completed_count: 2,
     },
     {
       vc_id: 3,
@@ -330,42 +331,41 @@ export default function VCDashboard() {
         { name: "Due Diligence", probability: 35 },
         { name: "Term Sheet", probability: 50 },
         { name: "Legal Review", probability: 75 },
-        { name: "Final Approval", probability: 100 }
+        { name: "Final Approval", probability: 100 },
       ],
       current_step: null,
       total_completed_probability: 100,
-      completed_count: 5
+      completed_count: 5,
     },
     {
       vc_id: 4,
       round_title: "Pre-Series A",
       investor_name: "Lightspeed Venture",
       status: "in-progress",
-      completed_steps: [
-        { name: "Initial Pitch", probability: 15 }
-      ],
+      completed_steps: [{ name: "Initial Pitch", probability: 15 }],
       current_step: { name: "Product Demo", probability: 30 },
       total_completed_probability: 22,
-      completed_count: 1
-    }
+      completed_count: 1,
+    },
   ];
 
   const followUpsLoading = false;
   const progressLoading = false;
 
   // Fetch VC templates for quick insights
-  const {
-    data: vcTemplates = [],
-    isLoading: templatesLoading,
-  } = useQuery({
+  const { data: vcTemplates = [], isLoading: templatesLoading } = useQuery({
     queryKey: ["vc-templates-dashboard"],
     queryFn: async () => {
       try {
-        const categories = await apiClient.request("/templates-production/categories");
+        const categories = await apiClient.request(
+          "/templates-production/categories",
+        );
         const vcCategory = categories.find((cat: any) => cat.name === "VC");
-        
+
         if (vcCategory) {
-          return await apiClient.request(`/templates-production/category/${vcCategory.id}`);
+          return await apiClient.request(
+            `/templates-production/category/${vcCategory.id}`,
+          );
         }
         return [];
       } catch (error) {
@@ -384,16 +384,18 @@ export default function VCDashboard() {
         vc.vc_id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         vc.investor_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         vc.contact_person?.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      const matchesStatus = statusFilter === "all" || vc.status === statusFilter;
-      const matchesCategory = categoryFilter === "all" || vc.investor_category === categoryFilter;
-      
+
+      const matchesStatus =
+        statusFilter === "all" || vc.status === statusFilter;
+      const matchesCategory =
+        categoryFilter === "all" || vc.investor_category === categoryFilter;
+
       return matchesSearch && matchesStatus && matchesCategory;
     })
     .sort((a: any, b: any) => {
       const aValue = a[sortBy] || "";
       const bValue = b[sortBy] || "";
-      
+
       if (sortOrder === "asc") {
         return aValue > bValue ? 1 : -1;
       } else {
@@ -428,7 +430,8 @@ export default function VCDashboard() {
   };
 
   const getSourceIcon = (source: string) => {
-    const IconComponent = sourceIcons[source as keyof typeof sourceIcons] || Zap;
+    const IconComponent =
+      sourceIcons[source as keyof typeof sourceIcons] || Zap;
     return <IconComponent className="w-4 h-4" />;
   };
 
@@ -436,7 +439,11 @@ export default function VCDashboard() {
     if (!amount) return "N/A";
 
     // If amount already includes a currency symbol, return as is
-    if (amount.includes("$") || amount.includes("₹") || amount.includes("د.إ")) {
+    if (
+      amount.includes("$") ||
+      amount.includes("₹") ||
+      amount.includes("د.إ")
+    ) {
       return amount;
     }
 
@@ -456,9 +463,7 @@ export default function VCDashboard() {
             <p className="text-gray-600 mb-4">
               There was an error loading the VC dashboard.
             </p>
-            <Button onClick={() => refetchVCs()}>
-              Try Again
-            </Button>
+            <Button onClick={() => refetchVCs()}>Try Again</Button>
           </div>
         </div>
       </div>
@@ -522,8 +527,12 @@ export default function VCDashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-green-600 text-sm font-medium">Successful Rounds</p>
-                  <p className="text-2xl font-bold text-green-900">{vcStats.won || 0}</p>
+                  <p className="text-green-600 text-sm font-medium">
+                    Successful Rounds
+                  </p>
+                  <p className="text-2xl font-bold text-green-900">
+                    {vcStats.won || 0}
+                  </p>
                 </div>
                 <div className="bg-green-200 p-3 rounded-full">
                   <TrendingUp className="w-6 h-6 text-green-600" />
@@ -536,8 +545,12 @@ export default function VCDashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-purple-600 text-sm font-medium">VC Templates</p>
-                  <p className="text-2xl font-bold text-purple-900">{vcTemplates.length}</p>
+                  <p className="text-purple-600 text-sm font-medium">
+                    VC Templates
+                  </p>
+                  <p className="text-2xl font-bold text-purple-900">
+                    {vcTemplates.length}
+                  </p>
                 </div>
                 <div className="bg-purple-200 p-3 rounded-full">
                   <FileText className="w-6 h-6 text-purple-600" />
@@ -591,11 +604,14 @@ export default function VCDashboard() {
               </SelectContent>
             </Select>
 
-            <Select value={`${sortBy}-${sortOrder}`} onValueChange={(value) => {
-              const [field, order] = value.split("-");
-              setSortBy(field);
-              setSortOrder(order as "asc" | "desc");
-            }}>
+            <Select
+              value={`${sortBy}-${sortOrder}`}
+              onValueChange={(value) => {
+                const [field, order] = value.split("-");
+                setSortBy(field);
+                setSortOrder(order as "asc" | "desc");
+              }}
+            >
               <SelectTrigger className="w-full md:w-[200px]">
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
@@ -655,7 +671,7 @@ export default function VCDashboard() {
                   "Due Diligence",
                   "Term Sheet",
                   "Legal Review",
-                  "Final Approval"
+                  "Final Approval",
                 ];
                 return stepOrder.indexOf(a) - stepOrder.indexOf(b);
               });
@@ -685,7 +701,8 @@ export default function VCDashboard() {
                     {/* VC Progress Chart - Left Side */}
                     <div className="bg-gray-50 p-4 rounded-lg">
                       <div className="text-sm font-medium text-gray-700 mb-4">
-                        All VCs Progress Overview ({vcProgressData.length} rounds)
+                        All VCs Progress Overview ({vcProgressData.length}{" "}
+                        rounds)
                       </div>
                       <div className="overflow-x-auto">
                         <div className="min-w-max">
@@ -703,7 +720,8 @@ export default function VCDashboard() {
                                 .slice()
                                 .reverse()
                                 .map((stepName: string) => {
-                                  const stepHeight = chartHeight / allSteps.length;
+                                  const stepHeight =
+                                    chartHeight / allSteps.length;
                                   return (
                                     <div
                                       key={stepName}
@@ -728,83 +746,116 @@ export default function VCDashboard() {
                             >
                               {/* Grid Lines */}
                               <div className="absolute inset-0">
-                                {allSteps.map((stepName: string, index: number) => {
-                                  const stepHeight = chartHeight / allSteps.length;
-                                  const yPosition = (allSteps.length - 1 - index) * stepHeight;
-                                  return (
-                                    <div
-                                      key={stepName}
-                                      className="absolute w-full border-b border-gray-200"
-                                      style={{
-                                        top: `${yPosition}px`,
-                                        height: `${stepHeight}px`,
-                                      }}
-                                    />
-                                  );
-                                })}
+                                {allSteps.map(
+                                  (stepName: string, index: number) => {
+                                    const stepHeight =
+                                      chartHeight / allSteps.length;
+                                    const yPosition =
+                                      (allSteps.length - 1 - index) *
+                                      stepHeight;
+                                    return (
+                                      <div
+                                        key={stepName}
+                                        className="absolute w-full border-b border-gray-200"
+                                        style={{
+                                          top: `${yPosition}px`,
+                                          height: `${stepHeight}px`,
+                                        }}
+                                      />
+                                    );
+                                  },
+                                )}
                               </div>
 
                               {/* VC Progress Indicators */}
-                              <div className="absolute inset-0 flex" style={{ paddingTop: "0px" }}>
-                                {vcProgressData.map((vcProgress: any, vcIndex: number) => {
-                                  const vcWidth = 100 / vcProgressData.length;
-                                  return (
-                                    <div
-                                      key={vcProgress.vc_id}
-                                      className="relative"
-                                      style={{ width: `${vcWidth}%` }}
-                                    >
-                                      {/* Completed Steps */}
-                                      {vcProgress.completed_steps.map((step: any) => {
-                                        const stepIndex = allSteps.indexOf(step.name);
-                                        if (stepIndex === -1) return null;
-                                        const stepHeight = chartHeight / allSteps.length;
-                                        const yPosition = (allSteps.length - 1 - stepIndex) * stepHeight;
-                                        return (
-                                          <div
-                                            key={step.name}
-                                            className="absolute left-1/2 transform -translate-x-1/2 w-8 rounded transition-all duration-300 cursor-pointer group flex items-center justify-center"
-                                            style={{
-                                              top: `${yPosition}px`,
-                                              height: `${stepHeight}px`,
-                                              backgroundColor: getStepColor(stepIndex),
-                                              opacity: 0.8,
-                                            }}
-                                            title={`${vcProgress.round_title}: ${step.name} - ${step.probability}% (Completed)`}
-                                          >
-                                            <span className="text-xs font-bold text-gray-800">
-                                              {step.probability}%
-                                            </span>
-                                          </div>
-                                        );
-                                      })}
+                              <div
+                                className="absolute inset-0 flex"
+                                style={{ paddingTop: "0px" }}
+                              >
+                                {vcProgressData.map(
+                                  (vcProgress: any, vcIndex: number) => {
+                                    const vcWidth = 100 / vcProgressData.length;
+                                    return (
+                                      <div
+                                        key={vcProgress.vc_id}
+                                        className="relative"
+                                        style={{ width: `${vcWidth}%` }}
+                                      >
+                                        {/* Completed Steps */}
+                                        {vcProgress.completed_steps.map(
+                                          (step: any) => {
+                                            const stepIndex = allSteps.indexOf(
+                                              step.name,
+                                            );
+                                            if (stepIndex === -1) return null;
+                                            const stepHeight =
+                                              chartHeight / allSteps.length;
+                                            const yPosition =
+                                              (allSteps.length -
+                                                1 -
+                                                stepIndex) *
+                                              stepHeight;
+                                            return (
+                                              <div
+                                                key={step.name}
+                                                className="absolute left-1/2 transform -translate-x-1/2 w-8 rounded transition-all duration-300 cursor-pointer group flex items-center justify-center"
+                                                style={{
+                                                  top: `${yPosition}px`,
+                                                  height: `${stepHeight}px`,
+                                                  backgroundColor:
+                                                    getStepColor(stepIndex),
+                                                  opacity: 0.8,
+                                                }}
+                                                title={`${vcProgress.round_title}: ${step.name} - ${step.probability}% (Completed)`}
+                                              >
+                                                <span className="text-xs font-bold text-gray-800">
+                                                  {step.probability}%
+                                                </span>
+                                              </div>
+                                            );
+                                          },
+                                        )}
 
-                                      {/* Current Step */}
-                                      {vcProgress.current_step && (() => {
-                                        const stepIndex = allSteps.indexOf(vcProgress.current_step.name);
-                                        if (stepIndex === -1) return null;
-                                        const stepHeight = chartHeight / allSteps.length;
-                                        const yPosition = (allSteps.length - 1 - stepIndex) * stepHeight;
-                                        return (
-                                          <div
-                                            className="absolute left-1/2 transform -translate-x-1/2 w-8 rounded border-2 border-blue-600 transition-all duration-300 cursor-pointer group flex items-center justify-center"
-                                            style={{
-                                              top: `${yPosition}px`,
-                                              height: `${stepHeight}px`,
-                                              backgroundColor: getStepColor(stepIndex),
-                                              opacity: 1,
-                                            }}
-                                            title={`${vcProgress.round_title}: ${vcProgress.current_step.name} - ${vcProgress.current_step.probability}% (Current)`}
-                                          >
-                                            <span className="text-xs font-bold text-gray-800">
-                                              {vcProgress.current_step.probability}%
-                                            </span>
-                                          </div>
-                                        );
-                                      })()}
-                                    </div>
-                                  );
-                                })}
+                                        {/* Current Step */}
+                                        {vcProgress.current_step &&
+                                          (() => {
+                                            const stepIndex = allSteps.indexOf(
+                                              vcProgress.current_step.name,
+                                            );
+                                            if (stepIndex === -1) return null;
+                                            const stepHeight =
+                                              chartHeight / allSteps.length;
+                                            const yPosition =
+                                              (allSteps.length -
+                                                1 -
+                                                stepIndex) *
+                                              stepHeight;
+                                            return (
+                                              <div
+                                                className="absolute left-1/2 transform -translate-x-1/2 w-8 rounded border-2 border-blue-600 transition-all duration-300 cursor-pointer group flex items-center justify-center"
+                                                style={{
+                                                  top: `${yPosition}px`,
+                                                  height: `${stepHeight}px`,
+                                                  backgroundColor:
+                                                    getStepColor(stepIndex),
+                                                  opacity: 1,
+                                                }}
+                                                title={`${vcProgress.round_title}: ${vcProgress.current_step.name} - ${vcProgress.current_step.probability}% (Current)`}
+                                              >
+                                                <span className="text-xs font-bold text-gray-800">
+                                                  {
+                                                    vcProgress.current_step
+                                                      .probability
+                                                  }
+                                                  %
+                                                </span>
+                                              </div>
+                                            );
+                                          })()}
+                                      </div>
+                                    );
+                                  },
+                                )}
                               </div>
                             </div>
                           </div>
@@ -812,7 +863,12 @@ export default function VCDashboard() {
                           {/* X-axis VC Labels at Bottom */}
                           <div className="flex">
                             <div className="w-48 pr-4"></div>
-                            <div className="flex" style={{ width: `${vcProgressData.length * 120}px` }}>
+                            <div
+                              className="flex"
+                              style={{
+                                width: `${vcProgressData.length * 120}px`,
+                              }}
+                            >
                               {vcProgressData.map((vcProgress: any) => {
                                 const vcWidth = 100 / vcProgressData.length;
                                 return (
@@ -848,20 +904,23 @@ export default function VCDashboard() {
                         <div>
                           {(() => {
                             // Calculate step-wise distribution (only in-progress/current steps)
-                            const stepDistribution = allSteps.map((stepName: string) => {
-                              const currentVCsCount = vcProgressData.filter(
-                                (vc: any) => vc.current_step?.name === stepName,
-                              ).length;
-                              // Only count current/in-progress VCs, not completed ones
-                              const totalVCsAtStep = currentVCsCount;
-                              return {
-                                stepName,
-                                currentVCsCount,
-                                completedVCsCount: 0, // Not showing completed steps
-                                totalVCsAtStep,
-                                stepIndex: allSteps.indexOf(stepName),
-                              };
-                            });
+                            const stepDistribution = allSteps.map(
+                              (stepName: string) => {
+                                const currentVCsCount = vcProgressData.filter(
+                                  (vc: any) =>
+                                    vc.current_step?.name === stepName,
+                                ).length;
+                                // Only count current/in-progress VCs, not completed ones
+                                const totalVCsAtStep = currentVCsCount;
+                                return {
+                                  stepName,
+                                  currentVCsCount,
+                                  completedVCsCount: 0, // Not showing completed steps
+                                  totalVCsAtStep,
+                                  stepIndex: allSteps.indexOf(stepName),
+                                };
+                              },
+                            );
 
                             const maxVCsAtStep = Math.max(
                               ...stepDistribution.map((s) => s.totalVCsAtStep),
@@ -869,26 +928,33 @@ export default function VCDashboard() {
                             );
 
                             return (
-                              <div className="flex" style={{ height: `${chartHeight}px` }}>
+                              <div
+                                className="flex"
+                                style={{ height: `${chartHeight}px` }}
+                              >
                                 {/* Y-axis Step Labels on Left */}
                                 <div
                                   className="w-48 pr-4 flex flex-col"
                                   style={{ height: `${chartHeight}px` }}
                                 >
-                                  {allSteps.slice().reverse().map((stepName: string) => {
-                                    const stepHeight = chartHeight / allSteps.length;
-                                    return (
-                                      <div
-                                        key={stepName}
-                                        className="flex items-center justify-end text-right border-b border-gray-200"
-                                        style={{ height: `${stepHeight}px` }}
-                                      >
-                                        <span className="text-sm font-medium text-gray-700">
-                                          {stepName}
-                                        </span>
-                                      </div>
-                                    );
-                                  })}
+                                  {allSteps
+                                    .slice()
+                                    .reverse()
+                                    .map((stepName: string) => {
+                                      const stepHeight =
+                                        chartHeight / allSteps.length;
+                                      return (
+                                        <div
+                                          key={stepName}
+                                          className="flex items-center justify-end text-right border-b border-gray-200"
+                                          style={{ height: `${stepHeight}px` }}
+                                        >
+                                          <span className="text-sm font-medium text-gray-700">
+                                            {stepName}
+                                          </span>
+                                        </div>
+                                      );
+                                    })}
                                 </div>
 
                                 {/* Horizontal Bar Chart */}
@@ -898,29 +964,42 @@ export default function VCDashboard() {
                                 >
                                   {/* Grid Lines */}
                                   <div className="absolute inset-0">
-                                    {allSteps.map((stepName: string, index: number) => {
-                                      const stepHeight = chartHeight / allSteps.length;
-                                      const yPosition = (allSteps.length - 1 - index) * stepHeight;
-                                      return (
-                                        <div
-                                          key={stepName}
-                                          className="absolute w-full border-b border-gray-200"
-                                          style={{
-                                            top: `${yPosition}px`,
-                                            height: `${stepHeight}px`,
-                                          }}
-                                        />
-                                      );
-                                    })}
+                                    {allSteps.map(
+                                      (stepName: string, index: number) => {
+                                        const stepHeight =
+                                          chartHeight / allSteps.length;
+                                        const yPosition =
+                                          (allSteps.length - 1 - index) *
+                                          stepHeight;
+                                        return (
+                                          <div
+                                            key={stepName}
+                                            className="absolute w-full border-b border-gray-200"
+                                            style={{
+                                              top: `${yPosition}px`,
+                                              height: `${stepHeight}px`,
+                                            }}
+                                          />
+                                        );
+                                      },
+                                    )}
                                   </div>
 
                                   {/* Horizontal Bars for VC Count */}
                                   <div className="absolute inset-0">
                                     {stepDistribution.map((stepData) => {
-                                      const stepIndex = allSteps.indexOf(stepData.stepName);
-                                      const stepHeight = chartHeight / allSteps.length;
-                                      const yPosition = (allSteps.length - 1 - stepIndex) * stepHeight;
-                                      const barWidth = (stepData.totalVCsAtStep / maxVCsAtStep) * 85; // Max 85% width
+                                      const stepIndex = allSteps.indexOf(
+                                        stepData.stepName,
+                                      );
+                                      const stepHeight =
+                                        chartHeight / allSteps.length;
+                                      const yPosition =
+                                        (allSteps.length - 1 - stepIndex) *
+                                        stepHeight;
+                                      const barWidth =
+                                        (stepData.totalVCsAtStep /
+                                          maxVCsAtStep) *
+                                        85; // Max 85% width
                                       return (
                                         <div key={stepData.stepName}>
                                           {/* Total bar background */}
@@ -931,7 +1010,8 @@ export default function VCDashboard() {
                                               left: "10px",
                                               height: `${stepHeight * 0.6}px`,
                                               width: `${Math.max(barWidth, 5)}%`,
-                                              backgroundColor: getStepColor(stepIndex),
+                                              backgroundColor:
+                                                getStepColor(stepIndex),
                                               opacity: 0.8,
                                             }}
                                             title={`${stepData.stepName}: ${stepData.totalVCsAtStep} VCs currently in progress`}
@@ -947,7 +1027,9 @@ export default function VCDashboard() {
 
                                             {/* Hover tooltip */}
                                             <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20 pointer-events-none">
-                                              {stepData.stepName}: {stepData.totalVCsAtStep} VCs in progress
+                                              {stepData.stepName}:{" "}
+                                              {stepData.totalVCsAtStep} VCs in
+                                              progress
                                             </div>
                                           </div>
                                         </div>
@@ -970,7 +1052,10 @@ export default function VCDashboard() {
                         Total Completed Steps
                       </div>
                       <div className="text-2xl font-bold text-green-900">
-                        {vcProgressData.reduce((sum: number, vc: any) => sum + vc.completed_count, 0)}
+                        {vcProgressData.reduce(
+                          (sum: number, vc: any) => sum + vc.completed_count,
+                          0,
+                        )}
                       </div>
                     </div>
 
@@ -979,7 +1064,10 @@ export default function VCDashboard() {
                         Active VC Rounds
                       </div>
                       <div className="text-2xl font-bold text-blue-900">
-                        {vcProgressData.filter((vc: any) => vc.current_step).length}
+                        {
+                          vcProgressData.filter((vc: any) => vc.current_step)
+                            .length
+                        }
                       </div>
                     </div>
 
@@ -989,8 +1077,13 @@ export default function VCDashboard() {
                       </div>
                       <div className="text-2xl font-bold text-orange-900">
                         {Math.round(
-                          vcProgressData.reduce((sum: number, vc: any) => sum + vc.total_completed_probability, 0) / vcProgressData.length,
-                        )}%
+                          vcProgressData.reduce(
+                            (sum: number, vc: any) =>
+                              sum + vc.total_completed_probability,
+                            0,
+                          ) / vcProgressData.length,
+                        )}
+                        %
                       </div>
                     </div>
                   </div>
@@ -1011,7 +1104,13 @@ export default function VCDashboard() {
                             <div className="font-medium text-gray-900">
                               {vc.round_title}
                             </div>
-                            <Badge className={statusColors[vc.status as keyof typeof statusColors]}>
+                            <Badge
+                              className={
+                                statusColors[
+                                  vc.status as keyof typeof statusColors
+                                ]
+                              }
+                            >
                               {vc.status.replace("-", " ")}
                             </Badge>
                           </div>
@@ -1145,8 +1244,7 @@ export default function VCDashboard() {
                                   </div>
                                   <div className="flex items-center space-x-4 text-xs text-gray-500">
                                     <span>
-                                      VC:{" "}
-                                      {followUp.round_title || "Unknown"}
+                                      VC: {followUp.round_title || "Unknown"}
                                     </span>
                                     <span>
                                       Step: {followUp.step_name || "N/A"}
@@ -1261,8 +1359,7 @@ export default function VCDashboard() {
                                 </div>
                                 <div className="flex items-center space-x-4 text-xs text-gray-500">
                                   <span>
-                                    VC:{" "}
-                                    {followUp.round_title || "Unknown"}
+                                    VC: {followUp.round_title || "Unknown"}
                                   </span>
                                   <span>
                                     Step: {followUp.step_name || "N/A"}
@@ -1342,7 +1439,9 @@ export default function VCDashboard() {
                                 className={`${statusColors[vc.status as keyof typeof statusColors]} border-0`}
                               >
                                 {getStatusIcon(vc.status)}
-                                <span className="ml-1 capitalize">{vc.status.replace("-", " ")}</span>
+                                <span className="ml-1 capitalize">
+                                  {vc.status.replace("-", " ")}
+                                </span>
                               </Badge>
                             )}
                           </div>
@@ -1350,37 +1449,56 @@ export default function VCDashboard() {
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
                             <div>
                               <p className="text-sm text-gray-600">Investor</p>
-                              <p className="font-medium">{vc.investor_name || "N/A"}</p>
+                              <p className="font-medium">
+                                {vc.investor_name || "N/A"}
+                              </p>
                               {vc.investor_category && (
                                 <Badge
                                   className={`${investorCategoryColors[vc.investor_category as keyof typeof investorCategoryColors]} border-0 text-xs`}
                                 >
-                                  {vc.investor_category.replace("_", " ").toUpperCase()}
+                                  {vc.investor_category
+                                    .replace("_", " ")
+                                    .toUpperCase()}
                                 </Badge>
                               )}
                             </div>
 
                             <div>
-                              <p className="text-sm text-gray-600">Round Details</p>
+                              <p className="text-sm text-gray-600">
+                                Round Details
+                              </p>
                               <p className="font-medium">
-                                {vc.round_stage ? vc.round_stage.replace("_", " ").toUpperCase() : "N/A"}
+                                {vc.round_stage
+                                  ? vc.round_stage
+                                      .replace("_", " ")
+                                      .toUpperCase()
+                                  : "N/A"}
                               </p>
                               <p className="text-sm text-gray-500">
-                                {formatCurrency(vc.round_size, vc.billing_currency)}
+                                {formatCurrency(
+                                  vc.round_size,
+                                  vc.billing_currency,
+                                )}
                               </p>
                             </div>
 
                             <div>
                               <p className="text-sm text-gray-600">Contact</p>
-                              <p className="font-medium">{vc.contact_person || "N/A"}</p>
-                              <p className="text-sm text-gray-500">{vc.email || "N/A"}</p>
+                              <p className="font-medium">
+                                {vc.contact_person || "N/A"}
+                              </p>
+                              <p className="text-sm text-gray-500">
+                                {vc.email || "N/A"}
+                              </p>
                             </div>
                           </div>
 
                           <div className="flex items-center gap-4 text-sm text-gray-500">
                             <div className="flex items-center gap-1">
                               {getSourceIcon(vc.lead_source)}
-                              <span className="capitalize">{vc.lead_source?.replace("-", " ")}</span>
+                              <span className="capitalize">
+                                {vc.lead_source?.replace("-", " ")}
+                              </span>
                             </div>
                             <div className="flex items-center gap-1">
                               <Calendar className="w-4 h-4" />
@@ -1436,9 +1554,12 @@ export default function VCDashboard() {
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
-                            <AlertDialogTitle>Delete VC Opportunity</AlertDialogTitle>
+                            <AlertDialogTitle>
+                              Delete VC Opportunity
+                            </AlertDialogTitle>
                             <AlertDialogDescription>
-                              Are you sure you want to delete "{vc.round_title}"? This action cannot be undone.
+                              Are you sure you want to delete "{vc.round_title}
+                              "? This action cannot be undone.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
@@ -1464,7 +1585,9 @@ export default function VCDashboard() {
                 No VCs Found
               </h3>
               <p className="text-gray-600 mb-4">
-                {searchTerm || statusFilter !== "all" || categoryFilter !== "all"
+                {searchTerm ||
+                statusFilter !== "all" ||
+                categoryFilter !== "all"
                   ? "Try adjusting your filters or search terms."
                   : "Get started by creating your first VC round."}
               </p>

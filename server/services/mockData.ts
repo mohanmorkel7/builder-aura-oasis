@@ -534,7 +534,8 @@ export const mockTemplates = [
         template_id: 4,
         step_order: 1,
         name: "Initial Pitch Deck Review",
-        description: "Review investor pitch deck and prepare presentation materials.",
+        description:
+          "Review investor pitch deck and prepare presentation materials.",
         default_eta_days: 3,
         probability_percent: 20,
         auto_alert: true,
@@ -550,7 +551,8 @@ export const mockTemplates = [
         template_id: 4,
         step_order: 2,
         name: "Due Diligence Preparation",
-        description: "Prepare all financial and legal documents for investor review.",
+        description:
+          "Prepare all financial and legal documents for investor review.",
         default_eta_days: 7,
         probability_percent: 25,
         auto_alert: true,
@@ -598,7 +600,8 @@ export const mockTemplates = [
         template_id: 4,
         step_order: 5,
         name: "Legal Documentation",
-        description: "Complete all legal documentation and investor agreements.",
+        description:
+          "Complete all legal documentation and investor agreements.",
         default_eta_days: 21,
         probability_percent: 10,
         auto_alert: false,
@@ -647,7 +650,8 @@ export const mockTemplates = [
         template_id: 5,
         step_order: 1,
         name: "Business Plan Validation",
-        description: "Validate business model and create investor-ready business plan.",
+        description:
+          "Validate business model and create investor-ready business plan.",
         default_eta_days: 5,
         probability_percent: 25,
         auto_alert: true,
@@ -744,7 +748,8 @@ export const mockTemplates = [
         template_id: 6,
         step_order: 1,
         name: "Growth Metrics Analysis",
-        description: "Analyze current growth metrics and prepare investor materials.",
+        description:
+          "Analyze current growth metrics and prepare investor materials.",
         default_eta_days: 7,
         probability_percent: 30,
         auto_alert: true,
@@ -760,7 +765,8 @@ export const mockTemplates = [
         template_id: 6,
         step_order: 2,
         name: "Strategic Investor Identification",
-        description: "Identify strategic investors aligned with growth objectives.",
+        description:
+          "Identify strategic investors aligned with growth objectives.",
         default_eta_days: 14,
         probability_percent: 35,
         auto_alert: true,
@@ -825,7 +831,8 @@ export const mockTemplates = [
         template_id: 7,
         step_order: 1,
         name: "Existing Investor Outreach",
-        description: "Contact existing investors for bridge funding participation.",
+        description:
+          "Contact existing investors for bridge funding participation.",
         default_eta_days: 3,
         probability_percent: 40,
         auto_alert: true,

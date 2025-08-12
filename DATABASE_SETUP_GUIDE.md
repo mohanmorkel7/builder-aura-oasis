@@ -1,9 +1,11 @@
 # Database Setup Guide - Switch from Mock Data to Real-Time Database
 
 ## Current Status
+
 Your application is currently using **mock data** because the database connection is not available. All endpoints are falling back to mock data.
 
 ## Quick Database Status Check
+
 Visit: `http://localhost:8080/api/database/status` to see current database connection status and which endpoints are using mock vs real data.
 
 ## Setup Options
@@ -11,6 +13,7 @@ Visit: `http://localhost:8080/api/database/status` to see current database conne
 ### Option 1: Local PostgreSQL Installation
 
 #### Install PostgreSQL locally:
+
 ```bash
 # macOS
 brew install postgresql
@@ -26,6 +29,7 @@ sudo systemctl start postgresql
 ```
 
 #### Create database:
+
 ```sql
 sudo -u postgres psql
 CREATE DATABASE crm_dev;
@@ -35,11 +39,13 @@ GRANT ALL PRIVILEGES ON DATABASE crm_dev TO postgres;
 ```
 
 ### Option 2: Docker PostgreSQL (if Docker available)
+
 ```bash
 docker run --name crm_postgres -e POSTGRES_DB=crm_dev -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres:15
 ```
 
 ### Option 3: Cloud Database (Recommended for Production)
+
 - **Supabase**: https://supabase.com (Free tier available)
 - **Railway**: https://railway.app (PostgreSQL hosting)
 - **Heroku Postgres**: https://www.heroku.com/postgres
@@ -48,6 +54,7 @@ docker run --name crm_postgres -e POSTGRES_DB=crm_dev -e POSTGRES_USER=postgres 
 ## Environment Configuration
 
 Set these environment variables (already configured in your dev server):
+
 ```
 PG_HOST=localhost
 PG_PORT=5432
@@ -59,8 +66,9 @@ PG_DB=crm_dev
 ## Current Endpoint Status
 
 ### Endpoints with Mock Data Fallback:
+
 - `/api/leads` - ✅ Ready for database
-- `/api/vc` - ✅ Ready for database  
+- `/api/vc` - ✅ Ready for database
 - `/api/follow-ups` - ✅ Ready for database
 - `/api/users` - ✅ Ready for database
 - `/api/clients` - ✅ Ready for database
@@ -68,9 +76,10 @@ PG_DB=crm_dev
 - `/api/tickets` - ✅ Ready for database
 
 ### Production Endpoints (Database-Only):
+
 - `/api/leads-production` - 🔴 Requires database
 - `/api/templates-production` - 🔴 Requires database
-- `/api/activity-production` - 🔴 Requires database  
+- `/api/activity-production` - 🔴 Requires database
 - `/api/notifications-production` - 🔴 Requires database
 - `/api/admin` - 🔴 Requires database
 - `/api/finops-production` - 🔴 Requires database
@@ -82,7 +91,9 @@ PG_DB=crm_dev
 3. **Force reconnect**: `POST /api/database/reconnect`
 
 ## Database Schema
+
 The application will automatically initialize the database schema when a connection is established, including:
+
 - User management tables
 - Lead and VC tracking
 - Follow-up system
@@ -93,14 +104,16 @@ The application will automatically initialize the database schema when a connect
 ## What Changes When Database is Connected
 
 ### Before (Mock Data):
+
 - Data resets on server restart
 - Limited test data available
 - No persistence across sessions
 - Production endpoints unavailable
 
 ### After (Real Database):
+
 - ✅ Persistent data storage
-- ✅ Real-time updates across users  
+- ✅ Real-time updates across users
 - ✅ Full CRUD operations
 - ✅ Production endpoints available
 - ✅ Data integrity and relationships
@@ -117,16 +130,20 @@ The application will automatically initialize the database schema when a connect
 ## Troubleshooting
 
 ### Connection Issues:
+
 - Verify PostgreSQL is running: `pg_isready`
 - Check port availability: `netstat -an | grep 5432`
 - Test direct connection: `psql -h localhost -U postgres -d crm_dev`
 
 ### Permission Issues:
+
 - Ensure user has database privileges
 - Check authentication method in `pg_hba.conf`
 
 ### Schema Issues:
+
 The application will automatically initialize the schema, but you can manually run:
+
 ```sql
 -- Connect to your database and run the schema files in server/database/
 ```

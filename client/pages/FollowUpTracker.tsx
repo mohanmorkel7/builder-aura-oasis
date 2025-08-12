@@ -129,7 +129,8 @@ const mockFollowUps: FollowUp[] = [
     due_date: "2024-01-20",
     created_at: "2024-01-18T11:30:00Z",
     completed_at: "2024-01-19T16:45:00Z",
-    notes: "Timeline assessment completed - 2 additional weeks needed for reporting features",
+    notes:
+      "Timeline assessment completed - 2 additional weeks needed for reporting features",
     type: "lead",
   },
   // VC follow-ups (visible only to admin)
@@ -138,7 +139,8 @@ const mockFollowUps: FollowUp[] = [
     vc_id: 1,
     step_id: 4,
     title: "Investment Committee Presentation",
-    description: "Schedule and prepare presentation for Accel Partners investment committee",
+    description:
+      "Schedule and prepare presentation for Accel Partners investment committee",
     vc_round_title: "Series A Funding",
     investor_name: "Accel Partners",
     step_name: "Due Diligence Review",
@@ -227,7 +229,7 @@ export default function FollowUpTracker() {
   const [typeFilter, setTypeFilter] = useState<string>("all"); // Filter for lead vs VC follow-ups
 
   // Check if user is admin to show VC follow-ups
-  const isAdmin = user?.role === 'admin';
+  const isAdmin = user?.role === "admin";
 
   // Fetch follow-ups data from API
   useEffect(() => {
@@ -249,7 +251,9 @@ export default function FollowUpTracker() {
           updated_at: new Date(f.updated_at).toISOString(),
           due_date: f.due_date || new Date().toISOString().split("T")[0],
           // Determine type based on available fields if not explicitly set
-          type: f.type || (f.vc_id || f.vc_round_title || f.investor_name ? "vc" : "lead"),
+          type:
+            f.type ||
+            (f.vc_id || f.vc_round_title || f.investor_name ? "vc" : "lead"),
         }));
 
         setFollowUps(formattedFollowUps);
@@ -262,7 +266,9 @@ export default function FollowUpTracker() {
           updated_at: new Date(f.updated_at || f.created_at).toISOString(),
           due_date: f.due_date || new Date().toISOString().split("T")[0],
           // Determine type based on available fields if not explicitly set
-          type: f.type || (f.vc_id || f.vc_round_title || f.investor_name ? "vc" : "lead"),
+          type:
+            f.type ||
+            (f.vc_id || f.vc_round_title || f.investor_name ? "vc" : "lead"),
         }));
         setFollowUps(formattedMockFollowUps);
       } finally {
@@ -371,7 +377,11 @@ export default function FollowUpTracker() {
     if (!followUp) return false;
 
     // Determine follow-up type with fallback logic
-    const followUpType = followUp.type || (followUp.vc_id || followUp.vc_round_title || followUp.investor_name ? "vc" : "lead");
+    const followUpType =
+      followUp.type ||
+      (followUp.vc_id || followUp.vc_round_title || followUp.investor_name
+        ? "vc"
+        : "lead");
 
     // Filter out VC follow-ups if user is not admin
     if (followUpType === "vc" && !isAdmin) {
@@ -380,7 +390,12 @@ export default function FollowUpTracker() {
 
     const searchLower = searchTerm.toLowerCase();
     const matchesSearch =
-      (followUp.lead_name || followUp.lead_client_name || followUp.vc_round_title || "")
+      (
+        followUp.lead_name ||
+        followUp.lead_client_name ||
+        followUp.vc_round_title ||
+        ""
+      )
         .toLowerCase()
         .includes(searchLower) ||
       (followUp.investor_name || "").toLowerCase().includes(searchLower) ||
@@ -396,8 +411,7 @@ export default function FollowUpTracker() {
     const matchesAssignee =
       assigneeFilter === "all" ||
       followUp.assigned_user_name === assigneeFilter;
-    const matchesType =
-      typeFilter === "all" || followUpType === typeFilter;
+    const matchesType = typeFilter === "all" || followUpType === typeFilter;
 
     return matchesSearch && matchesStatus && matchesAssignee && matchesType;
   };
@@ -461,7 +475,8 @@ export default function FollowUpTracker() {
             Follow-up Tracker
           </h1>
           <p className="text-gray-600 mt-1">
-            Track and manage follow-up tasks from leads and VC rounds{isAdmin ? '' : ' (VC follow-ups require admin access)'}
+            Track and manage follow-up tasks from leads and VC rounds
+            {isAdmin ? "" : " (VC follow-ups require admin access)"}
           </p>
         </div>
         <div className="flex items-center space-x-2">
@@ -482,10 +497,18 @@ export default function FollowUpTracker() {
               <div>
                 <p className="text-yellow-600 text-sm font-medium">Pending</p>
                 <p className="text-2xl font-bold text-yellow-900">
-                  {followUps.filter((f) => {
-                    const type = f.type || (f.vc_id || f.vc_round_title || f.investor_name ? "vc" : "lead");
-                    return f.status === "pending" && (type !== "vc" || isAdmin);
-                  }).length}
+                  {
+                    followUps.filter((f) => {
+                      const type =
+                        f.type ||
+                        (f.vc_id || f.vc_round_title || f.investor_name
+                          ? "vc"
+                          : "lead");
+                      return (
+                        f.status === "pending" && (type !== "vc" || isAdmin)
+                      );
+                    }).length
+                  }
                 </p>
               </div>
               <Clock className="w-8 h-8 text-yellow-600" />
@@ -499,10 +522,18 @@ export default function FollowUpTracker() {
               <div>
                 <p className="text-blue-600 text-sm font-medium">In Progress</p>
                 <p className="text-2xl font-bold text-blue-900">
-                  {followUps.filter((f) => {
-                    const type = f.type || (f.vc_id || f.vc_round_title || f.investor_name ? "vc" : "lead");
-                    return f.status === "in_progress" && (type !== "vc" || isAdmin);
-                  }).length}
+                  {
+                    followUps.filter((f) => {
+                      const type =
+                        f.type ||
+                        (f.vc_id || f.vc_round_title || f.investor_name
+                          ? "vc"
+                          : "lead");
+                      return (
+                        f.status === "in_progress" && (type !== "vc" || isAdmin)
+                      );
+                    }).length
+                  }
                 </p>
               </div>
               <AlertCircle className="w-8 h-8 text-blue-600" />
@@ -516,10 +547,18 @@ export default function FollowUpTracker() {
               <div>
                 <p className="text-green-600 text-sm font-medium">Completed</p>
                 <p className="text-2xl font-bold text-green-900">
-                  {followUps.filter((f) => {
-                    const type = f.type || (f.vc_id || f.vc_round_title || f.investor_name ? "vc" : "lead");
-                    return f.status === "completed" && (type !== "vc" || isAdmin);
-                  }).length}
+                  {
+                    followUps.filter((f) => {
+                      const type =
+                        f.type ||
+                        (f.vc_id || f.vc_round_title || f.investor_name
+                          ? "vc"
+                          : "lead");
+                      return (
+                        f.status === "completed" && (type !== "vc" || isAdmin)
+                      );
+                    }).length
+                  }
                 </p>
               </div>
               <CheckCircle className="w-8 h-8 text-green-600" />
@@ -533,10 +572,18 @@ export default function FollowUpTracker() {
               <div>
                 <p className="text-red-600 text-sm font-medium">Overdue</p>
                 <p className="text-2xl font-bold text-red-900">
-                  {followUps.filter((f) => {
-                    const type = f.type || (f.vc_id || f.vc_round_title || f.investor_name ? "vc" : "lead");
-                    return f.status === "overdue" && (type !== "vc" || isAdmin);
-                  }).length}
+                  {
+                    followUps.filter((f) => {
+                      const type =
+                        f.type ||
+                        (f.vc_id || f.vc_round_title || f.investor_name
+                          ? "vc"
+                          : "lead");
+                      return (
+                        f.status === "overdue" && (type !== "vc" || isAdmin)
+                      );
+                    }).length
+                  }
                 </p>
               </div>
               <AlertCircle className="w-8 h-8 text-red-600" />
@@ -672,7 +719,13 @@ export default function FollowUpTracker() {
                   followUp.assigned_user_name === user?.name;
 
                 // Determine follow-up type with fallback logic
-                const followUpType = followUp.type || (followUp.vc_id || followUp.vc_round_title || followUp.investor_name ? "vc" : "lead");
+                const followUpType =
+                  followUp.type ||
+                  (followUp.vc_id ||
+                  followUp.vc_round_title ||
+                  followUp.investor_name
+                    ? "vc"
+                    : "lead");
 
                 return (
                   <Card
@@ -703,17 +756,28 @@ export default function FollowUpTracker() {
                             <h3 className="text-lg font-semibold text-gray-900">
                               {followUpType === "vc" ? (
                                 <>
-                                  <Badge variant="secondary" className="mr-2 bg-purple-100 text-purple-700">
+                                  <Badge
+                                    variant="secondary"
+                                    className="mr-2 bg-purple-100 text-purple-700"
+                                  >
                                     VC
                                   </Badge>
-                                  {followUp.vc_round_title || "Unknown VC Round"} • {followUp.investor_name || "Unknown Investor"}
+                                  {followUp.vc_round_title ||
+                                    "Unknown VC Round"}{" "}
+                                  •{" "}
+                                  {followUp.investor_name || "Unknown Investor"}
                                 </>
                               ) : (
                                 <>
-                                  <Badge variant="secondary" className="mr-2 bg-blue-100 text-blue-700">
+                                  <Badge
+                                    variant="secondary"
+                                    className="mr-2 bg-blue-100 text-blue-700"
+                                  >
                                     LEAD
                                   </Badge>
-                                  {followUp.lead_client_name || followUp.client_name || "Unknown Lead"}
+                                  {followUp.lead_client_name ||
+                                    followUp.client_name ||
+                                    "Unknown Lead"}
                                 </>
                               )}{" "}
                               • {followUp.title || "Follow-up"}
@@ -863,9 +927,7 @@ export default function FollowUpTracker() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() =>
-                                navigate(`/vc/${followUp.vc_id}`)
-                              }
+                              onClick={() => navigate(`/vc/${followUp.vc_id}`)}
                               className="text-gray-600 hover:text-gray-700"
                             >
                               <Target className="w-3 h-3 mr-1" />

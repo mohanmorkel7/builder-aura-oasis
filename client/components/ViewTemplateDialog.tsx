@@ -93,7 +93,8 @@ export default function ViewTemplateDialog({
       4: {
         id: 4,
         name: "Series A Funding Process",
-        description: "Comprehensive template for managing Series A funding rounds from initial pitch to closing",
+        description:
+          "Comprehensive template for managing Series A funding rounds from initial pitch to closing",
         usage_count: 5,
         step_count: 6,
         is_active: true,
@@ -105,7 +106,8 @@ export default function ViewTemplateDialog({
           {
             id: 21,
             name: "Initial Pitch Deck Review",
-            description: "Review investor pitch deck and prepare presentation materials",
+            description:
+              "Review investor pitch deck and prepare presentation materials",
             default_eta_days: 3,
             probability_percent: 20,
             auto_alert: true,
@@ -115,7 +117,8 @@ export default function ViewTemplateDialog({
           {
             id: 22,
             name: "Due Diligence Preparation",
-            description: "Prepare all financial and legal documents for investor review",
+            description:
+              "Prepare all financial and legal documents for investor review",
             default_eta_days: 7,
             probability_percent: 25,
             auto_alert: true,
@@ -125,7 +128,8 @@ export default function ViewTemplateDialog({
           {
             id: 23,
             name: "Investor Meetings",
-            description: "Schedule and conduct meetings with potential investors",
+            description:
+              "Schedule and conduct meetings with potential investors",
             default_eta_days: 14,
             probability_percent: 20,
             auto_alert: true,
@@ -145,7 +149,8 @@ export default function ViewTemplateDialog({
           {
             id: 25,
             name: "Legal Documentation",
-            description: "Complete all legal documentation and investor agreements",
+            description:
+              "Complete all legal documentation and investor agreements",
             default_eta_days: 21,
             probability_percent: 10,
             auto_alert: false,
@@ -167,7 +172,8 @@ export default function ViewTemplateDialog({
       5: {
         id: 5,
         name: "Seed Round Management",
-        description: "Template for managing seed funding rounds with angel investors and early-stage VCs",
+        description:
+          "Template for managing seed funding rounds with angel investors and early-stage VCs",
         usage_count: 8,
         step_count: 5,
         is_active: true,
@@ -179,7 +185,8 @@ export default function ViewTemplateDialog({
           {
             id: 27,
             name: "Business Plan Validation",
-            description: "Validate business model and create investor-ready business plan",
+            description:
+              "Validate business model and create investor-ready business plan",
             default_eta_days: 5,
             probability_percent: 25,
             auto_alert: true,
@@ -230,37 +237,44 @@ export default function ViewTemplateDialog({
       },
     };
 
-    return templates[id as keyof typeof templates] || {
-      id,
-      name: "Sample Template",
-      description: "Sample template for offline viewing",
-      usage_count: 1,
-      step_count: 3,
-      is_active: true,
-      created_at: "2024-01-15T09:00:00Z",
-      updated_at: "2024-01-15T09:00:00Z",
-      creator_name: "System",
-      category: { id: 1, name: "Product", color: "#3B82F6", icon: "Package" },
-      steps: [
-        {
-          id: 1,
-          name: "Sample Step 1",
-          description: "This is a sample step for offline viewing",
-          default_eta_days: 1,
-          probability_percent: 50,
-          auto_alert: false,
-          email_reminder: false,
-          step_order: 1,
-        },
-      ],
-    };
+    return (
+      templates[id as keyof typeof templates] || {
+        id,
+        name: "Sample Template",
+        description: "Sample template for offline viewing",
+        usage_count: 1,
+        step_count: 3,
+        is_active: true,
+        created_at: "2024-01-15T09:00:00Z",
+        updated_at: "2024-01-15T09:00:00Z",
+        creator_name: "System",
+        category: { id: 1, name: "Product", color: "#3B82F6", icon: "Package" },
+        steps: [
+          {
+            id: 1,
+            name: "Sample Step 1",
+            description: "This is a sample step for offline viewing",
+            default_eta_days: 1,
+            probability_percent: 50,
+            auto_alert: false,
+            email_reminder: false,
+            step_order: 1,
+          },
+        ],
+      }
+    );
   };
 
   // Use fallback data instead of API call
   const template = templateId ? getFallbackTemplate(templateId) : null;
   const isLoading = false;
 
-  console.log("ViewTemplateDialog (offline mode) - Template ID:", templateId, "Template:", template);
+  console.log(
+    "ViewTemplateDialog (offline mode) - Template ID:",
+    templateId,
+    "Template:",
+    template,
+  );
 
   if (!templateId) return null;
 

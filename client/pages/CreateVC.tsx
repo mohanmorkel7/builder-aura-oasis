@@ -193,11 +193,15 @@ export default function CreateVC() {
       console.log("Fetching VC templates...");
       try {
         // First, try to get the VC category ID
-        const categories = await apiClient.request("/templates-production/categories");
+        const categories = await apiClient.request(
+          "/templates-production/categories",
+        );
         const vcCategory = categories.find((cat: any) => cat.name === "VC");
 
         if (vcCategory) {
-          const result = await apiClient.request(`/templates-production/category/${vcCategory.id}`);
+          const result = await apiClient.request(
+            `/templates-production/category/${vcCategory.id}`,
+          );
           console.log("VC templates fetch successful:", result);
           return result;
         } else {
@@ -227,15 +231,45 @@ export default function CreateVC() {
         name: "Series A Funding Process",
         description: "Complete workflow for Series A funding rounds",
         steps: [
-          { id: 1, name: "Initial Pitch Deck Review", description: "Review and refine pitch deck", probability_percent: 15 },
-          { id: 2, name: "Management Presentation", description: "Present to investment committee", probability_percent: 25 },
-          { id: 3, name: "Due Diligence Initiation", description: "Begin comprehensive due diligence", probability_percent: 35 },
-          { id: 4, name: "Term Sheet Negotiation", description: "Negotiate terms and valuation", probability_percent: 50 },
-          { id: 5, name: "Legal Documentation", description: "Draft and finalize legal agreements", probability_percent: 75 },
-          { id: 6, name: "Final Approval", description: "Board approval and closing", probability_percent: 100 }
+          {
+            id: 1,
+            name: "Initial Pitch Deck Review",
+            description: "Review and refine pitch deck",
+            probability_percent: 15,
+          },
+          {
+            id: 2,
+            name: "Management Presentation",
+            description: "Present to investment committee",
+            probability_percent: 25,
+          },
+          {
+            id: 3,
+            name: "Due Diligence Initiation",
+            description: "Begin comprehensive due diligence",
+            probability_percent: 35,
+          },
+          {
+            id: 4,
+            name: "Term Sheet Negotiation",
+            description: "Negotiate terms and valuation",
+            probability_percent: 50,
+          },
+          {
+            id: 5,
+            name: "Legal Documentation",
+            description: "Draft and finalize legal agreements",
+            probability_percent: 75,
+          },
+          {
+            id: 6,
+            name: "Final Approval",
+            description: "Board approval and closing",
+            probability_percent: 100,
+          },
         ],
         created_by: "VC Team",
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
       };
     }
 
@@ -245,14 +279,39 @@ export default function CreateVC() {
         name: "Seed Round Management",
         description: "Template for managing seed funding rounds",
         steps: [
-          { id: 1, name: "Product Demo", description: "Demonstrate product capabilities", probability_percent: 20 },
-          { id: 2, name: "Market Analysis", description: "Present market opportunity", probability_percent: 40 },
-          { id: 3, name: "Financial Review", description: "Review financial projections", probability_percent: 60 },
-          { id: 4, name: "Investment Agreement", description: "Finalize investment terms", probability_percent: 80 },
-          { id: 5, name: "Closing", description: "Complete the funding round", probability_percent: 100 }
+          {
+            id: 1,
+            name: "Product Demo",
+            description: "Demonstrate product capabilities",
+            probability_percent: 20,
+          },
+          {
+            id: 2,
+            name: "Market Analysis",
+            description: "Present market opportunity",
+            probability_percent: 40,
+          },
+          {
+            id: 3,
+            name: "Financial Review",
+            description: "Review financial projections",
+            probability_percent: 60,
+          },
+          {
+            id: 4,
+            name: "Investment Agreement",
+            description: "Finalize investment terms",
+            probability_percent: 80,
+          },
+          {
+            id: 5,
+            name: "Closing",
+            description: "Complete the funding round",
+            probability_percent: 100,
+          },
         ],
         created_by: "VC Team",
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
       };
     }
 
@@ -403,9 +462,15 @@ export default function CreateVC() {
         company_size: vcData.company_size,
         industry: vcData.industry,
         potential_lead_investor: vcData.potential_lead_investor,
-        minimum_size: vcData.minimum_size ? parseInt(vcData.minimum_size) : null,
-        maximum_size: vcData.maximum_size ? parseInt(vcData.maximum_size) : null,
-        minimum_arr_requirement: vcData.minimum_arr_requirement ? parseInt(vcData.minimum_arr_requirement) : null,
+        minimum_size: vcData.minimum_size
+          ? parseInt(vcData.minimum_size)
+          : null,
+        maximum_size: vcData.maximum_size
+          ? parseInt(vcData.maximum_size)
+          : null,
+        minimum_arr_requirement: vcData.minimum_arr_requirement
+          ? parseInt(vcData.minimum_arr_requirement)
+          : null,
         priority_level: vcData.priority_level,
         start_date: vcData.start_date || null,
         targeted_end_date: vcData.targeted_end_date || null,
@@ -451,9 +516,15 @@ export default function CreateVC() {
         company_size: vcData.company_size,
         industry: vcData.industry,
         potential_lead_investor: vcData.potential_lead_investor,
-        minimum_size: vcData.minimum_size ? parseInt(vcData.minimum_size) : null,
-        maximum_size: vcData.maximum_size ? parseInt(vcData.maximum_size) : null,
-        minimum_arr_requirement: vcData.minimum_arr_requirement ? parseInt(vcData.minimum_arr_requirement) : null,
+        minimum_size: vcData.minimum_size
+          ? parseInt(vcData.minimum_size)
+          : null,
+        maximum_size: vcData.maximum_size
+          ? parseInt(vcData.maximum_size)
+          : null,
+        minimum_arr_requirement: vcData.minimum_arr_requirement
+          ? parseInt(vcData.minimum_arr_requirement)
+          : null,
         priority_level: vcData.priority_level,
         start_date: vcData.start_date || null,
         targeted_end_date: vcData.targeted_end_date || null,
@@ -511,7 +582,9 @@ export default function CreateVC() {
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="lead-info">Lead Information</TabsTrigger>
-          <TabsTrigger value="investor-contact">Investor Information</TabsTrigger>
+          <TabsTrigger value="investor-contact">
+            Investor Information
+          </TabsTrigger>
           <TabsTrigger value="deal-details">Round Information</TabsTrigger>
           <TabsTrigger value="additional">Additional Information</TabsTrigger>
         </TabsList>
@@ -533,7 +606,9 @@ export default function CreateVC() {
                     id="lead_created_by"
                     placeholder="Name of person who created this lead"
                     value={vcData.lead_created_by}
-                    onChange={(e) => handleInputChange("lead_created_by", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("lead_created_by", e.target.value)
+                    }
                   />
                 </div>
 
@@ -541,7 +616,9 @@ export default function CreateVC() {
                   <Label htmlFor="lead_source">Lead Source *</Label>
                   <Select
                     value={vcData.lead_source}
-                    onValueChange={(value) => handleInputChange("lead_source", value)}
+                    onValueChange={(value) =>
+                      handleInputChange("lead_source", value)
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select how you found this lead" />
@@ -605,10 +682,13 @@ export default function CreateVC() {
                     <Label htmlFor="lead_source_value">
                       {vcData.lead_source === "email" && "Email Address"}
                       {vcData.lead_source === "phone" && "Phone Number"}
-                      {vcData.lead_source === "social-media" && "Social Media Profile/Link"}
+                      {vcData.lead_source === "social-media" &&
+                        "Social Media Profile/Link"}
                       {vcData.lead_source === "website" && "Website URL"}
-                      {vcData.lead_source === "referral" && "Referral Source/Contact"}
-                      {vcData.lead_source === "cold-call" && "Phone Number Called"}
+                      {vcData.lead_source === "referral" &&
+                        "Referral Source/Contact"}
+                      {vcData.lead_source === "cold-call" &&
+                        "Phone Number Called"}
                       {vcData.lead_source === "event" && "Event Name/Details"}
                       {vcData.lead_source === "other" && "Source Details"}
                     </Label>
@@ -625,7 +705,9 @@ export default function CreateVC() {
                       <Input
                         id="lead_source_value"
                         value={vcData.lead_source_value}
-                        onChange={(e) => handleInputChange("lead_source_value", e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("lead_source_value", e.target.value)
+                        }
                         className="pl-10"
                         placeholder={
                           vcData.lead_source === "email"
@@ -654,7 +736,9 @@ export default function CreateVC() {
                     <Label htmlFor="status">Status</Label>
                     <Select
                       value={vcData.status}
-                      onValueChange={(value) => handleInputChange("status", value)}
+                      onValueChange={(value) =>
+                        handleInputChange("status", value)
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select status" />
@@ -688,7 +772,9 @@ export default function CreateVC() {
                   <Label htmlFor="investor_category">Investor Category *</Label>
                   <Select
                     value={vcData.investor_category}
-                    onValueChange={(value) => handleInputChange("investor_category", value)}
+                    onValueChange={(value) =>
+                      handleInputChange("investor_category", value)
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select investor category" />
@@ -702,7 +788,9 @@ export default function CreateVC() {
                     </SelectContent>
                   </Select>
                   {errors.investor_category && (
-                    <p className="text-sm text-red-600 mt-1">{errors.investor_category}</p>
+                    <p className="text-sm text-red-600 mt-1">
+                      {errors.investor_category}
+                    </p>
                   )}
                 </div>
 
@@ -712,11 +800,15 @@ export default function CreateVC() {
                     id="investor_name"
                     placeholder="Name of the investor/firm"
                     value={vcData.investor_name}
-                    onChange={(e) => handleInputChange("investor_name", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("investor_name", e.target.value)
+                    }
                     className={errors.investor_name ? "border-red-500" : ""}
                   />
                   {errors.investor_name && (
-                    <p className="text-sm text-red-600 mt-1">{errors.investor_name}</p>
+                    <p className="text-sm text-red-600 mt-1">
+                      {errors.investor_name}
+                    </p>
                   )}
                 </div>
 
@@ -726,7 +818,9 @@ export default function CreateVC() {
                     id="contact_person"
                     placeholder="Primary contact person"
                     value={vcData.contact_person}
-                    onChange={(e) => handleInputChange("contact_person", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("contact_person", e.target.value)
+                    }
                   />
                 </div>
 
@@ -761,7 +855,9 @@ export default function CreateVC() {
                     id="website"
                     placeholder="https://investor.com"
                     value={vcData.website}
-                    onChange={(e) => handleInputChange("website", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("website", e.target.value)
+                    }
                   />
                 </div>
 
@@ -769,21 +865,30 @@ export default function CreateVC() {
                   <Label htmlFor="company_size">Company/Fund Size</Label>
                   <Select
                     value={vcData.company_size}
-                    onValueChange={(value) => handleInputChange("company_size", value)}
+                    onValueChange={(value) =>
+                      handleInputChange("company_size", value)
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select fund/company size" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="startup">Startup Fund ($1M-$10M)</SelectItem>
-                      <SelectItem value="small">Small Fund ($10M-$50M)</SelectItem>
-                      <SelectItem value="medium">Medium Fund ($50M-$200M)</SelectItem>
-                      <SelectItem value="large">Large Fund ($200M-$1B)</SelectItem>
+                      <SelectItem value="startup">
+                        Startup Fund ($1M-$10M)
+                      </SelectItem>
+                      <SelectItem value="small">
+                        Small Fund ($10M-$50M)
+                      </SelectItem>
+                      <SelectItem value="medium">
+                        Medium Fund ($50M-$200M)
+                      </SelectItem>
+                      <SelectItem value="large">
+                        Large Fund ($200M-$1B)
+                      </SelectItem>
                       <SelectItem value="mega">Mega Fund ($1B+)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
-
 
                 <div className="md:col-span-2">
                   <Label htmlFor="address">Address</Label>
@@ -791,7 +896,9 @@ export default function CreateVC() {
                     id="address"
                     placeholder="Street address"
                     value={vcData.address}
-                    onChange={(e) => handleInputChange("address", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("address", e.target.value)
+                    }
                   />
                 </div>
 
@@ -846,7 +953,9 @@ export default function CreateVC() {
                       id="custom_country"
                       placeholder="Enter country name"
                       value={vcData.custom_country}
-                      onChange={(e) => handleInputChange("custom_country", e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("custom_country", e.target.value)
+                      }
                     />
                   </div>
                 )}
@@ -854,13 +963,15 @@ export default function CreateVC() {
 
               {/* Investment Details */}
               <div className="border-t pt-6 mt-6">
-                <h3 className="text-lg font-semibold mb-4">Investment Details</h3>
+                <h3 className="text-lg font-semibold mb-4">
+                  Investment Details
+                </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex items-center space-x-2">
                     <Checkbox
                       id="potential_lead_investor"
                       checked={vcData.potential_lead_investor}
-                      onCheckedChange={(checked) => 
+                      onCheckedChange={(checked) =>
                         handleInputChange("potential_lead_investor", checked)
                       }
                     />
@@ -877,7 +988,9 @@ export default function CreateVC() {
                       id="minimum_size"
                       placeholder="e.g., 10000000"
                       value={vcData.minimum_size}
-                      onChange={(e) => handleInputChange("minimum_size", e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("minimum_size", e.target.value)
+                      }
                     />
                   </div>
 
@@ -887,17 +1000,26 @@ export default function CreateVC() {
                       id="maximum_size"
                       placeholder="e.g., 100000000"
                       value={vcData.maximum_size}
-                      onChange={(e) => handleInputChange("maximum_size", e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("maximum_size", e.target.value)
+                      }
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="minimum_arr_requirement">Minimum ARR Requirement</Label>
+                    <Label htmlFor="minimum_arr_requirement">
+                      Minimum ARR Requirement
+                    </Label>
                     <Input
                       id="minimum_arr_requirement"
                       placeholder="e.g., 50000000"
                       value={vcData.minimum_arr_requirement}
-                      onChange={(e) => handleInputChange("minimum_arr_requirement", e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "minimum_arr_requirement",
+                          e.target.value,
+                        )
+                      }
                     />
                   </div>
                 </div>
@@ -941,14 +1063,20 @@ export default function CreateVC() {
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <Label htmlFor={`contact_name_${index}`}>Full Name</Label>
+                          <Label htmlFor={`contact_name_${index}`}>
+                            Full Name
+                          </Label>
                           <div className="relative">
                             <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                             <Input
                               id={`contact_name_${index}`}
                               value={contact.contact_name}
                               onChange={(e) =>
-                                updateContact(index, "contact_name", e.target.value)
+                                updateContact(
+                                  index,
+                                  "contact_name",
+                                  e.target.value,
+                                )
                               }
                               placeholder="Contact person's name"
                               className="pl-10"
@@ -957,19 +1085,27 @@ export default function CreateVC() {
                         </div>
 
                         <div>
-                          <Label htmlFor={`designation_${index}`}>Designation</Label>
+                          <Label htmlFor={`designation_${index}`}>
+                            Designation
+                          </Label>
                           <Input
                             id={`designation_${index}`}
                             value={contact.designation}
                             onChange={(e) =>
-                              updateContact(index, "designation", e.target.value)
+                              updateContact(
+                                index,
+                                "designation",
+                                e.target.value,
+                              )
                             }
                             placeholder="Partner, Associate, etc."
                           />
                         </div>
 
                         <div>
-                          <Label htmlFor={`contact_email_${index}`}>Email</Label>
+                          <Label htmlFor={`contact_email_${index}`}>
+                            Email
+                          </Label>
                           <div className="relative">
                             <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                             <Input
@@ -986,7 +1122,9 @@ export default function CreateVC() {
                         </div>
 
                         <div>
-                          <Label htmlFor={`contact_phone_${index}`}>Phone</Label>
+                          <Label htmlFor={`contact_phone_${index}`}>
+                            Phone
+                          </Label>
                           <div className="relative">
                             <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                             <Input
@@ -1002,7 +1140,9 @@ export default function CreateVC() {
                         </div>
 
                         <div className="md:col-span-2">
-                          <Label htmlFor={`linkedin_${index}`}>LinkedIn Profile</Label>
+                          <Label htmlFor={`linkedin_${index}`}>
+                            LinkedIn Profile
+                          </Label>
                           <Input
                             id={`linkedin_${index}`}
                             value={contact.linkedin}
@@ -1038,11 +1178,15 @@ export default function CreateVC() {
                     id="round_title"
                     placeholder="e.g., Series A Funding"
                     value={vcData.round_title}
-                    onChange={(e) => handleInputChange("round_title", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("round_title", e.target.value)
+                    }
                     className={errors.round_title ? "border-red-500" : ""}
                   />
                   {errors.round_title && (
-                    <p className="text-sm text-red-600 mt-1">{errors.round_title}</p>
+                    <p className="text-sm text-red-600 mt-1">
+                      {errors.round_title}
+                    </p>
                   )}
                 </div>
 
@@ -1050,7 +1194,9 @@ export default function CreateVC() {
                   <Label htmlFor="round_stage">Round Stage</Label>
                   <Select
                     value={vcData.round_stage}
-                    onValueChange={(value) => handleInputChange("round_stage", value)}
+                    onValueChange={(value) =>
+                      handleInputChange("round_stage", value)
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select round stage" />
@@ -1071,7 +1217,9 @@ export default function CreateVC() {
                     id="round_size"
                     placeholder="e.g., $10M, ₹50Cr"
                     value={vcData.round_size}
-                    onChange={(e) => handleInputChange("round_size", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("round_size", e.target.value)
+                    }
                   />
                 </div>
 
@@ -1081,7 +1229,9 @@ export default function CreateVC() {
                     id="valuation"
                     placeholder="e.g., $100M, ₹500Cr"
                     value={vcData.valuation}
-                    onChange={(e) => handleInputChange("valuation", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("valuation", e.target.value)
+                    }
                   />
                 </div>
 
@@ -1089,7 +1239,9 @@ export default function CreateVC() {
                   <Label htmlFor="priority_level">Priority Level</Label>
                   <Select
                     value={vcData.priority_level}
-                    onValueChange={(value) => handleInputChange("priority_level", value)}
+                    onValueChange={(value) =>
+                      handleInputChange("priority_level", value)
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select priority" />
@@ -1118,7 +1270,9 @@ export default function CreateVC() {
                     id="start_date"
                     type="date"
                     value={vcData.start_date}
-                    onChange={(e) => handleInputChange("start_date", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("start_date", e.target.value)
+                    }
                   />
                 </div>
 
@@ -1128,7 +1282,9 @@ export default function CreateVC() {
                     id="targeted_end_date"
                     type="date"
                     value={vcData.targeted_end_date}
-                    onChange={(e) => handleInputChange("targeted_end_date", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("targeted_end_date", e.target.value)
+                    }
                   />
                 </div>
               </div>
@@ -1139,7 +1295,9 @@ export default function CreateVC() {
                   id="project_description"
                   placeholder="Describe the funding round, use of funds, and key details..."
                   value={vcData.project_description}
-                  onChange={(e) => handleInputChange("project_description", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("project_description", e.target.value)
+                  }
                   rows={4}
                 />
               </div>
@@ -1171,7 +1329,10 @@ export default function CreateVC() {
                       value={selectedTemplate}
                       onValueChange={(value) => {
                         setSelectedTemplate(value);
-                        handleInputChange("template_id", value === "manual" ? "" : value);
+                        handleInputChange(
+                          "template_id",
+                          value === "manual" ? "" : value,
+                        );
                       }}
                       disabled={templatesLoading}
                     >
@@ -1225,7 +1386,8 @@ export default function CreateVC() {
                     )}
                   </div>
                   <p className="text-sm text-gray-500 mt-1">
-                    Select a VC-specific template to automatically configure workflow steps for this round.
+                    Select a VC-specific template to automatically configure
+                    workflow steps for this round.
                   </p>
                 </div>
               </div>
@@ -1252,13 +1414,15 @@ export default function CreateVC() {
                   max="100"
                   placeholder="0"
                   value={vcData.probability}
-                  onChange={(e) => handleInputChange("probability", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("probability", e.target.value)
+                  }
                 />
                 <p className="text-sm text-gray-500 mt-1">
-                  Default: 0% - Estimate the likelihood of closing this VC opportunity
+                  Default: 0% - Estimate the likelihood of closing this VC
+                  opportunity
                 </p>
               </div>
-
 
               <div>
                 <Label htmlFor="notes">Notes</Label>

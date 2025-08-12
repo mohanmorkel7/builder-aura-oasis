@@ -106,7 +106,8 @@ export default function VCDetails() {
         targeted_end_date: new Date(Date.now() + 86400000 * 30).toISOString(),
         spoc: "Alice Johnson",
         billing_currency: "USD",
-        round_description: "Series A funding round to expand product development and market reach.",
+        round_description:
+          "Series A funding round to expand product development and market reach.",
         potential_lead_investor: true,
         minimum_size: 5000000,
         maximum_size: 15000000,
@@ -137,7 +138,8 @@ export default function VCDetails() {
         targeted_end_date: new Date(Date.now() + 86400000 * 45).toISOString(),
         spoc: "Bob Wilson",
         billing_currency: "USD",
-        round_description: "Seed funding to validate product-market fit and build initial team.",
+        round_description:
+          "Seed funding to validate product-market fit and build initial team.",
         potential_lead_investor: false,
         minimum_size: 2000000,
         maximum_size: 8000000,
@@ -199,7 +201,8 @@ export default function VCDetails() {
         targeted_end_date: new Date(Date.now() + 86400000 * 60).toISOString(),
         spoc: "David Kim",
         billing_currency: "USD",
-        round_description: "Pre-Series A funding to accelerate growth and prepare for larger institutional round.",
+        round_description:
+          "Pre-Series A funding to accelerate growth and prepare for larger institutional round.",
         potential_lead_investor: false,
         minimum_size: 3000000,
         maximum_size: 12000000,
@@ -230,13 +233,14 @@ export default function VCDetails() {
         targeted_end_date: new Date(Date.now() - 86400000 * 10).toISOString(),
         spoc: "Frank Miller",
         billing_currency: "USD",
-        round_description: "Series B extension round that did not proceed due to market conditions.",
+        round_description:
+          "Series B extension round that did not proceed due to market conditions.",
         potential_lead_investor: false,
         minimum_size: 10000000,
         maximum_size: 25000000,
         minimum_arr_requirement: 5000000,
         created_at: new Date(Date.now() - 86400000 * 21).toISOString(),
-      }
+      },
     };
     return mockVCs[vcId as keyof typeof mockVCs] || null;
   };
@@ -244,36 +248,183 @@ export default function VCDetails() {
   const getMockVCSteps = (vcId: string) => {
     const stepsByVC = {
       "1": [
-        { id: 1, name: "Initial Pitch Deck Review", description: "Review and refine pitch deck", status: "completed", progress: 100, created_at: new Date(Date.now() - 86400000 * 6).toISOString() },
-        { id: 2, name: "Management Presentation", description: "Present to investment committee", status: "completed", progress: 100, created_at: new Date(Date.now() - 86400000 * 4).toISOString() },
-        { id: 3, name: "Due Diligence Initiation", description: "Begin comprehensive due diligence", status: "in-progress", progress: 65, created_at: new Date(Date.now() - 86400000 * 2).toISOString() },
-        { id: 4, name: "Term Sheet Negotiation", description: "Negotiate terms and valuation", status: "pending", progress: 0, created_at: new Date().toISOString() },
-        { id: 5, name: "Legal Documentation", description: "Draft and finalize legal agreements", status: "pending", progress: 0, created_at: new Date().toISOString() }
+        {
+          id: 1,
+          name: "Initial Pitch Deck Review",
+          description: "Review and refine pitch deck",
+          status: "completed",
+          progress: 100,
+          created_at: new Date(Date.now() - 86400000 * 6).toISOString(),
+        },
+        {
+          id: 2,
+          name: "Management Presentation",
+          description: "Present to investment committee",
+          status: "completed",
+          progress: 100,
+          created_at: new Date(Date.now() - 86400000 * 4).toISOString(),
+        },
+        {
+          id: 3,
+          name: "Due Diligence Initiation",
+          description: "Begin comprehensive due diligence",
+          status: "in-progress",
+          progress: 65,
+          created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
+        },
+        {
+          id: 4,
+          name: "Term Sheet Negotiation",
+          description: "Negotiate terms and valuation",
+          status: "pending",
+          progress: 0,
+          created_at: new Date().toISOString(),
+        },
+        {
+          id: 5,
+          name: "Legal Documentation",
+          description: "Draft and finalize legal agreements",
+          status: "pending",
+          progress: 0,
+          created_at: new Date().toISOString(),
+        },
       ],
       "2": [
-        { id: 4, name: "Product Demo", description: "Demonstrate product capabilities", status: "completed", progress: 100, created_at: new Date(Date.now() - 86400000 * 2).toISOString() },
-        { id: 5, name: "Market Analysis", description: "Present market opportunity", status: "in-progress", progress: 40, created_at: new Date(Date.now() - 86400000 * 1).toISOString() },
-        { id: 6, name: "Financial Review", description: "Review projections", status: "pending", progress: 0, created_at: new Date().toISOString() }
+        {
+          id: 4,
+          name: "Product Demo",
+          description: "Demonstrate product capabilities",
+          status: "completed",
+          progress: 100,
+          created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
+        },
+        {
+          id: 5,
+          name: "Market Analysis",
+          description: "Present market opportunity",
+          status: "in-progress",
+          progress: 40,
+          created_at: new Date(Date.now() - 86400000 * 1).toISOString(),
+        },
+        {
+          id: 6,
+          name: "Financial Review",
+          description: "Review projections",
+          status: "pending",
+          progress: 0,
+          created_at: new Date().toISOString(),
+        },
       ],
       "3": [
-        { id: 6, name: "Term Sheet", description: "Finalize terms and close", status: "completed", progress: 100, created_at: new Date(Date.now() - 86400000 * 8).toISOString() },
-        { id: 7, name: "Legal Documentation", description: "Complete legal agreements", status: "completed", progress: 100, created_at: new Date(Date.now() - 86400000 * 9).toISOString() }
+        {
+          id: 6,
+          name: "Term Sheet",
+          description: "Finalize terms and close",
+          status: "completed",
+          progress: 100,
+          created_at: new Date(Date.now() - 86400000 * 8).toISOString(),
+        },
+        {
+          id: 7,
+          name: "Legal Documentation",
+          description: "Complete legal agreements",
+          status: "completed",
+          progress: 100,
+          created_at: new Date(Date.now() - 86400000 * 9).toISOString(),
+        },
       ],
       "4": [
-        { id: 8, name: "First Introduction Call", description: "Initial investor meeting and introduction", status: "completed", progress: 100, created_at: new Date(Date.now() - 86400000 * 1).toISOString() },
-        { id: 9, name: "Product Demo", description: "Demonstrate platform capabilities", status: "in-progress", progress: 90, created_at: new Date().toISOString() },
-        { id: 10, name: "Proposal Preparation", description: "Prepare detailed funding proposal", status: "in-progress", progress: 30, created_at: new Date().toISOString() },
-        { id: 11, name: "Proposal Review & Negotiation", description: "Review terms and negotiate", status: "pending", progress: 15, created_at: new Date().toISOString() },
-        { id: 12, name: "Contract Finalization", description: "Finalize legal contracts", status: "pending", progress: 10, created_at: new Date().toISOString() },
-        { id: 13, name: "Onboarding Preparation", description: "Prepare for investor onboarding", status: "pending", progress: 10, created_at: new Date().toISOString() },
-        { id: 14, name: "Implementation Planning", description: "Plan fund utilization", status: "pending", progress: 10, created_at: new Date().toISOString() },
-        { id: 15, name: "System Integration", description: "Integrate investor systems", status: "pending", progress: 10, created_at: new Date().toISOString() },
-        { id: 16, name: "Go-Live & Support", description: "Launch with ongoing support", status: "pending", progress: 10, created_at: new Date().toISOString() },
-        { id: 17, name: "Project Closure", description: "Close funding round", status: "pending", progress: 10, created_at: new Date().toISOString() }
+        {
+          id: 8,
+          name: "First Introduction Call",
+          description: "Initial investor meeting and introduction",
+          status: "completed",
+          progress: 100,
+          created_at: new Date(Date.now() - 86400000 * 1).toISOString(),
+        },
+        {
+          id: 9,
+          name: "Product Demo",
+          description: "Demonstrate platform capabilities",
+          status: "in-progress",
+          progress: 90,
+          created_at: new Date().toISOString(),
+        },
+        {
+          id: 10,
+          name: "Proposal Preparation",
+          description: "Prepare detailed funding proposal",
+          status: "in-progress",
+          progress: 30,
+          created_at: new Date().toISOString(),
+        },
+        {
+          id: 11,
+          name: "Proposal Review & Negotiation",
+          description: "Review terms and negotiate",
+          status: "pending",
+          progress: 15,
+          created_at: new Date().toISOString(),
+        },
+        {
+          id: 12,
+          name: "Contract Finalization",
+          description: "Finalize legal contracts",
+          status: "pending",
+          progress: 10,
+          created_at: new Date().toISOString(),
+        },
+        {
+          id: 13,
+          name: "Onboarding Preparation",
+          description: "Prepare for investor onboarding",
+          status: "pending",
+          progress: 10,
+          created_at: new Date().toISOString(),
+        },
+        {
+          id: 14,
+          name: "Implementation Planning",
+          description: "Plan fund utilization",
+          status: "pending",
+          progress: 10,
+          created_at: new Date().toISOString(),
+        },
+        {
+          id: 15,
+          name: "System Integration",
+          description: "Integrate investor systems",
+          status: "pending",
+          progress: 10,
+          created_at: new Date().toISOString(),
+        },
+        {
+          id: 16,
+          name: "Go-Live & Support",
+          description: "Launch with ongoing support",
+          status: "pending",
+          progress: 10,
+          created_at: new Date().toISOString(),
+        },
+        {
+          id: 17,
+          name: "Project Closure",
+          description: "Close funding round",
+          status: "pending",
+          progress: 10,
+          created_at: new Date().toISOString(),
+        },
       ],
       "5": [
-        { id: 11, name: "Initial Contact", description: "First investor meeting", status: "completed", progress: 100, created_at: new Date(Date.now() - 86400000 * 20).toISOString() }
-      ]
+        {
+          id: 11,
+          name: "Initial Contact",
+          description: "First investor meeting",
+          status: "completed",
+          progress: 100,
+          created_at: new Date(Date.now() - 86400000 * 20).toISOString(),
+        },
+      ],
     };
     return stepsByVC[vcId as keyof typeof stepsByVC] || [];
   };
@@ -281,22 +432,65 @@ export default function VCDetails() {
   const getMockVCComments = (vcId: string) => {
     const commentsByVC = {
       "1": [
-        { id: 1, message: "Initial pitch went well, moving to due diligence phase.", created_by: 1, created_by_name: "Alice Johnson", created_at: new Date(Date.now() - 86400000 * 2).toISOString() },
-        { id: 2, message: "Need to prepare financial projections for next week.", created_by: 2, created_by_name: "Bob Smith", created_at: new Date(Date.now() - 86400000 * 1).toISOString() }
+        {
+          id: 1,
+          message: "Initial pitch went well, moving to due diligence phase.",
+          created_by: 1,
+          created_by_name: "Alice Johnson",
+          created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
+        },
+        {
+          id: 2,
+          message: "Need to prepare financial projections for next week.",
+          created_by: 2,
+          created_by_name: "Bob Smith",
+          created_at: new Date(Date.now() - 86400000 * 1).toISOString(),
+        },
       ],
       "2": [
-        { id: 3, message: "Great product demo, investors are interested.", created_by: 1, created_by_name: "Carol Davis", created_at: new Date(Date.now() - 86400000 * 1).toISOString() }
+        {
+          id: 3,
+          message: "Great product demo, investors are interested.",
+          created_by: 1,
+          created_by_name: "Carol Davis",
+          created_at: new Date(Date.now() - 86400000 * 1).toISOString(),
+        },
       ],
       "3": [
-        { id: 4, message: "Successfully closed the bridge round!", created_by: 1, created_by_name: "David Wilson", created_at: new Date(Date.now() - 86400000 * 8).toISOString() }
+        {
+          id: 4,
+          message: "Successfully closed the bridge round!",
+          created_by: 1,
+          created_by_name: "David Wilson",
+          created_at: new Date(Date.now() - 86400000 * 8).toISOString(),
+        },
       ],
       "4": [
-        { id: 5, message: "Scheduling follow-up meeting with Emily from Lightspeed.", created_by: 1, created_by_name: "Team Lead", created_at: new Date().toISOString() },
-        { id: 6, message: "They're interested in our growth metrics and want to see Q4 numbers.", created_by: 2, created_by_name: "Sales Director", created_at: new Date().toISOString() }
+        {
+          id: 5,
+          message: "Scheduling follow-up meeting with Emily from Lightspeed.",
+          created_by: 1,
+          created_by_name: "Team Lead",
+          created_at: new Date().toISOString(),
+        },
+        {
+          id: 6,
+          message:
+            "They're interested in our growth metrics and want to see Q4 numbers.",
+          created_by: 2,
+          created_by_name: "Sales Director",
+          created_at: new Date().toISOString(),
+        },
       ],
       "5": [
-        { id: 7, message: "Round did not proceed due to market conditions.", created_by: 1, created_by_name: "Frank Miller", created_at: new Date(Date.now() - 86400000 * 10).toISOString() }
-      ]
+        {
+          id: 7,
+          message: "Round did not proceed due to market conditions.",
+          created_by: 1,
+          created_by_name: "Frank Miller",
+          created_at: new Date(Date.now() - 86400000 * 10).toISOString(),
+        },
+      ],
     };
     return commentsByVC[vcId as keyof typeof commentsByVC] || [];
   };
@@ -457,7 +651,11 @@ export default function VCDetails() {
     if (!amount) return "N/A";
 
     // If amount already includes a currency symbol, return as is
-    if (amount.includes("$") || amount.includes("₹") || amount.includes("د.إ")) {
+    if (
+      amount.includes("$") ||
+      amount.includes("₹") ||
+      amount.includes("د.إ")
+    ) {
       return amount;
     }
 
@@ -485,7 +683,8 @@ export default function VCDetails() {
               VC Opportunity Not Found
             </h3>
             <p className="text-gray-600 mb-4">
-              The VC opportunity you're looking for doesn't exist or you don't have permission to view it.
+              The VC opportunity you're looking for doesn't exist or you don't
+              have permission to view it.
             </p>
             <Button onClick={handleBack}>
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -522,7 +721,8 @@ export default function VCDetails() {
               {vc.vc_id && <Badge variant="secondary">{vc.vc_id}</Badge>}
             </div>
             <p className="text-gray-600 mt-1">
-              {vc.investor_name} • {vc.investor_category?.replace("_", " ").toUpperCase()}
+              {vc.investor_name} •{" "}
+              {vc.investor_category?.replace("_", " ").toUpperCase()}
             </p>
           </div>
         </div>
@@ -563,11 +763,13 @@ export default function VCDetails() {
                       {vc.status?.replace("-", " ").toUpperCase()}
                     </Badge>
                   </div>
-                  
+
                   <div>
                     <Label className="text-sm text-gray-600">Round Stage</Label>
                     <p className="font-medium">
-                      {vc.round_stage ? vc.round_stage.replace("_", " ").toUpperCase() : "N/A"}
+                      {vc.round_stage
+                        ? vc.round_stage.replace("_", " ").toUpperCase()
+                        : "N/A"}
                     </p>
                   </div>
 
@@ -597,14 +799,20 @@ export default function VCDetails() {
                   <div>
                     <Label className="text-sm text-gray-600">Start Date</Label>
                     <p className="font-medium">
-                      {vc.start_date ? formatToISTDateTime(vc.start_date) : "N/A"}
+                      {vc.start_date
+                        ? formatToISTDateTime(vc.start_date)
+                        : "N/A"}
                     </p>
                   </div>
 
                   <div>
-                    <Label className="text-sm text-gray-600">Target Close</Label>
+                    <Label className="text-sm text-gray-600">
+                      Target Close
+                    </Label>
                     <p className="font-medium">
-                      {vc.targeted_end_date ? formatToISTDateTime(vc.targeted_end_date) : "N/A"}
+                      {vc.targeted_end_date
+                        ? formatToISTDateTime(vc.targeted_end_date)
+                        : "N/A"}
                     </p>
                   </div>
 
@@ -623,102 +831,112 @@ export default function VCDetails() {
               )}
 
               {/* Progress Bar Section - Similar to LeadDetails */}
-              {vcSteps.length > 0 && (() => {
-                const completedSteps = vcSteps.filter(step => step.status === "completed").length;
-                const inProgressSteps = vcSteps.filter(step => step.status === "in-progress").length;
-                const totalSteps = vcSteps.length;
+              {vcSteps.length > 0 &&
+                (() => {
+                  const completedSteps = vcSteps.filter(
+                    (step) => step.status === "completed",
+                  ).length;
+                  const inProgressSteps = vcSteps.filter(
+                    (step) => step.status === "in-progress",
+                  ).length;
+                  const totalSteps = vcSteps.length;
 
-                // Calculate completion percentage based on status
-                const completionPercentage = totalSteps > 0
-                  ? Math.round(((completedSteps + inProgressSteps * 0.5) / totalSteps) * 100)
-                  : 0;
+                  // Calculate completion percentage based on status
+                  const completionPercentage =
+                    totalSteps > 0
+                      ? Math.round(
+                          ((completedSteps + inProgressSteps * 0.5) /
+                            totalSteps) *
+                            100,
+                        )
+                      : 0;
 
-                return (
-                  <div className="mt-4 pt-4 border-t">
-                    <div className="flex items-center space-x-3">
-                      <span className="text-sm font-medium text-gray-700">
-                        Progress:
-                      </span>
-                      <div className="flex-1 max-w-sm">
-                        <div className="w-full bg-gray-200 rounded-full h-3 relative">
-                          <div
-                            className={`h-3 rounded-full transition-all duration-500 ${
-                              completionPercentage === 100
-                                ? "bg-green-500"
-                                : completionPercentage >= 75
-                                  ? "bg-blue-500"
-                                  : completionPercentage >= 50
-                                    ? "bg-yellow-500"
-                                    : completionPercentage >= 25
-                                      ? "bg-orange-500"
-                                      : "bg-red-500"
-                            }`}
-                            style={{ width: `${completionPercentage}%` }}
-                          ></div>
-                          {completionPercentage > 0 && (
+                  return (
+                    <div className="mt-4 pt-4 border-t">
+                      <div className="flex items-center space-x-3">
+                        <span className="text-sm font-medium text-gray-700">
+                          Progress:
+                        </span>
+                        <div className="flex-1 max-w-sm">
+                          <div className="w-full bg-gray-200 rounded-full h-3 relative">
                             <div
-                              className="absolute top-0 h-3 w-1 bg-white opacity-75 rounded-full"
-                              style={{ left: `${completionPercentage}%` }}
+                              className={`h-3 rounded-full transition-all duration-500 ${
+                                completionPercentage === 100
+                                  ? "bg-green-500"
+                                  : completionPercentage >= 75
+                                    ? "bg-blue-500"
+                                    : completionPercentage >= 50
+                                      ? "bg-yellow-500"
+                                      : completionPercentage >= 25
+                                        ? "bg-orange-500"
+                                        : "bg-red-500"
+                              }`}
+                              style={{ width: `${completionPercentage}%` }}
                             ></div>
-                          )}
+                            {completionPercentage > 0 && (
+                              <div
+                                className="absolute top-0 h-3 w-1 bg-white opacity-75 rounded-full"
+                                style={{ left: `${completionPercentage}%` }}
+                              ></div>
+                            )}
+                          </div>
+                          <div className="flex justify-between text-xs text-gray-500 mt-1">
+                            <span>0%</span>
+                            <span>50%</span>
+                            <span>100%</span>
+                          </div>
                         </div>
-                        <div className="flex justify-between text-xs text-gray-500 mt-1">
-                          <span>0%</span>
-                          <span>50%</span>
-                          <span>100%</span>
+                        <div className="text-right">
+                          <div className="text-sm font-bold text-blue-600">
+                            {completionPercentage}% Complete
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {completedSteps} of {totalSteps} steps
+                          </div>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <div className="text-sm font-bold text-blue-600">
-                          {completionPercentage}% Complete
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          {completedSteps} of {totalSteps} steps
-                        </div>
-                      </div>
-                    </div>
 
-                    {/* Step-by-step breakdown */}
-                    <div className="mt-2 text-xs text-gray-600">
-                      <details className="cursor-pointer">
-                        <summary className="hover:text-gray-800 select-none">
-                          📊 View detailed progress breakdown
-                        </summary>
-                        <div className="mt-2 p-3 bg-gray-50 rounded border space-y-1">
-                          {vcSteps.map((step) => (
-                            <div
-                              key={step.id}
-                              className="flex justify-between items-center"
-                            >
-                              <span className="flex items-center space-x-2">
-                                {step.status === "completed" ? (
-                                  <span className="text-green-600">✓</span>
-                                ) : step.status === "in-progress" ? (
-                                  <span className="text-blue-600">⋯</span>
-                                ) : (
-                                  <span className="text-gray-400">○</span>
-                                )}
-                                <span
-                                  className={
-                                    step.status === "completed"
-                                      ? "line-through text-gray-500"
-                                      : ""
-                                  }
-                                >
-                                  {step.name}
+                      {/* Step-by-step breakdown */}
+                      <div className="mt-2 text-xs text-gray-600">
+                        <details className="cursor-pointer">
+                          <summary className="hover:text-gray-800 select-none">
+                            📊 View detailed progress breakdown
+                          </summary>
+                          <div className="mt-2 p-3 bg-gray-50 rounded border space-y-1">
+                            {vcSteps.map((step) => (
+                              <div
+                                key={step.id}
+                                className="flex justify-between items-center"
+                              >
+                                <span className="flex items-center space-x-2">
+                                  {step.status === "completed" ? (
+                                    <span className="text-green-600">✓</span>
+                                  ) : step.status === "in-progress" ? (
+                                    <span className="text-blue-600">⋯</span>
+                                  ) : (
+                                    <span className="text-gray-400">○</span>
+                                  )}
+                                  <span
+                                    className={
+                                      step.status === "completed"
+                                        ? "line-through text-gray-500"
+                                        : ""
+                                    }
+                                  >
+                                    {step.name}
+                                  </span>
                                 </span>
-                              </span>
-                              <span className="font-medium">
-                                {step.progress || 0}%
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      </details>
+                                <span className="font-medium">
+                                  {step.progress || 0}%
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </details>
+                      </div>
                     </div>
-                  </div>
-                );
-              })()}
+                  );
+                })()}
             </CardContent>
           </Card>
         </div>
@@ -750,7 +968,10 @@ export default function VCDetails() {
                 {vc.email && (
                   <div className="flex items-center gap-2">
                     <Mail className="w-4 h-4 text-gray-400" />
-                    <a href={`mailto:${vc.email}`} className="text-blue-600 hover:underline">
+                    <a
+                      href={`mailto:${vc.email}`}
+                      className="text-blue-600 hover:underline"
+                    >
                       {vc.email}
                     </a>
                   </div>
@@ -758,7 +979,10 @@ export default function VCDetails() {
                 {vc.phone && (
                   <div className="flex items-center gap-2">
                     <Phone className="w-4 h-4 text-gray-400" />
-                    <a href={`tel:${vc.phone}`} className="text-blue-600 hover:underline">
+                    <a
+                      href={`tel:${vc.phone}`}
+                      className="text-blue-600 hover:underline"
+                    >
                       {vc.phone}
                     </a>
                   </div>
@@ -766,7 +990,12 @@ export default function VCDetails() {
                 {vc.website && (
                   <div className="flex items-center gap-2">
                     <Globe className="w-4 h-4 text-gray-400" />
-                    <a href={vc.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                    <a
+                      href={vc.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline"
+                    >
                       {vc.website}
                     </a>
                   </div>
@@ -781,7 +1010,9 @@ export default function VCDetails() {
                     <div className="text-sm">
                       {vc.address && <p>{vc.address}</p>}
                       <p>
-                        {[vc.city, vc.state, vc.country].filter(Boolean).join(", ")}
+                        {[vc.city, vc.state, vc.country]
+                          .filter(Boolean)
+                          .join(", ")}
                       </p>
                     </div>
                   </div>
@@ -791,21 +1022,35 @@ export default function VCDetails() {
               {/* Investment Details */}
               <Separator />
               <div>
-                <Label className="text-sm text-gray-600">Investment Range</Label>
+                <Label className="text-sm text-gray-600">
+                  Investment Range
+                </Label>
                 <div className="mt-1">
                   {vc.minimum_size && (
                     <p className="text-sm">
-                      Min: {formatCurrency(vc.minimum_size.toString(), vc.billing_currency)}
+                      Min:{" "}
+                      {formatCurrency(
+                        vc.minimum_size.toString(),
+                        vc.billing_currency,
+                      )}
                     </p>
                   )}
                   {vc.maximum_size && (
                     <p className="text-sm">
-                      Max: {formatCurrency(vc.maximum_size.toString(), vc.billing_currency)}
+                      Max:{" "}
+                      {formatCurrency(
+                        vc.maximum_size.toString(),
+                        vc.billing_currency,
+                      )}
                     </p>
                   )}
                   {vc.minimum_arr_requirement && (
                     <p className="text-sm">
-                      Min ARR: {formatCurrency(vc.minimum_arr_requirement.toString(), vc.billing_currency)}
+                      Min ARR:{" "}
+                      {formatCurrency(
+                        vc.minimum_arr_requirement.toString(),
+                        vc.billing_currency,
+                      )}
                     </p>
                   )}
                 </div>
@@ -855,7 +1100,10 @@ export default function VCDetails() {
                       id="step-name"
                       value={newStepForm.name}
                       onChange={(e) =>
-                        setNewStepForm((prev) => ({ ...prev, name: e.target.value }))
+                        setNewStepForm((prev) => ({
+                          ...prev,
+                          name: e.target.value,
+                        }))
                       }
                       placeholder="e.g., Due Diligence Review"
                     />
@@ -866,7 +1114,10 @@ export default function VCDetails() {
                       id="step-description"
                       value={newStepForm.description}
                       onChange={(e) =>
-                        setNewStepForm((prev) => ({ ...prev, description: e.target.value }))
+                        setNewStepForm((prev) => ({
+                          ...prev,
+                          description: e.target.value,
+                        }))
                       }
                       placeholder="Describe what needs to be done..."
                       rows={3}
@@ -878,7 +1129,10 @@ export default function VCDetails() {
                       <Select
                         value={newStepForm.priority}
                         onValueChange={(value) =>
-                          setNewStepForm((prev) => ({ ...prev, priority: value as any }))
+                          setNewStepForm((prev) => ({
+                            ...prev,
+                            priority: value as any,
+                          }))
                         }
                       >
                         <SelectTrigger>
@@ -898,7 +1152,10 @@ export default function VCDetails() {
                         type="date"
                         value={newStepForm.due_date}
                         onChange={(e) =>
-                          setNewStepForm((prev) => ({ ...prev, due_date: e.target.value }))
+                          setNewStepForm((prev) => ({
+                            ...prev,
+                            due_date: e.target.value,
+                          }))
                         }
                       />
                     </div>
@@ -915,7 +1172,9 @@ export default function VCDetails() {
                   <Button
                     type="button"
                     onClick={handleAddStep}
-                    disabled={!newStepForm.name.trim() || createStepMutation.isPending}
+                    disabled={
+                      !newStepForm.name.trim() || createStepMutation.isPending
+                    }
                   >
                     {createStepMutation.isPending ? "Adding..." : "Add Step"}
                   </Button>
@@ -947,7 +1206,6 @@ export default function VCDetails() {
         </CardContent>
       </Card>
 
-
       {/* Additional Contacts */}
       {contacts.length > 0 && (
         <Card>
@@ -960,16 +1218,23 @@ export default function VCDetails() {
                 <div key={index} className="border rounded-lg p-4">
                   <div className="flex items-center gap-2 mb-2">
                     <Users className="w-4 h-4 text-gray-400" />
-                    <span className="font-medium">{contact.contact_name || "Unnamed Contact"}</span>
+                    <span className="font-medium">
+                      {contact.contact_name || "Unnamed Contact"}
+                    </span>
                   </div>
                   {contact.designation && (
-                    <p className="text-sm text-gray-600 mb-2">{contact.designation}</p>
+                    <p className="text-sm text-gray-600 mb-2">
+                      {contact.designation}
+                    </p>
                   )}
                   <div className="space-y-1">
                     {contact.email && (
                       <div className="flex items-center gap-2">
                         <Mail className="w-3 h-3 text-gray-400" />
-                        <a href={`mailto:${contact.email}`} className="text-xs text-blue-600 hover:underline">
+                        <a
+                          href={`mailto:${contact.email}`}
+                          className="text-xs text-blue-600 hover:underline"
+                        >
                           {contact.email}
                         </a>
                       </div>
@@ -977,7 +1242,10 @@ export default function VCDetails() {
                     {contact.phone && (
                       <div className="flex items-center gap-2">
                         <Phone className="w-3 h-3 text-gray-400" />
-                        <a href={`tel:${contact.phone}`} className="text-xs text-blue-600 hover:underline">
+                        <a
+                          href={`tel:${contact.phone}`}
+                          className="text-xs text-blue-600 hover:underline"
+                        >
                           {contact.phone}
                         </a>
                       </div>
@@ -985,7 +1253,12 @@ export default function VCDetails() {
                     {contact.linkedin && (
                       <div className="flex items-center gap-2">
                         <Hash className="w-3 h-3 text-gray-400" />
-                        <a href={contact.linkedin} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline">
+                        <a
+                          href={contact.linkedin}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-blue-600 hover:underline"
+                        >
                           LinkedIn
                         </a>
                       </div>
