@@ -937,7 +937,7 @@ export default function CreateVC() {
                     <SelectTrigger>
                       <SelectValue placeholder="Select country" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent position="popper" className="z-50">
                       {COUNTRIES.map((country) => (
                         <SelectItem key={country} value={country}>
                           {country}
