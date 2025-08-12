@@ -388,6 +388,8 @@ export default function CreateVC() {
         state: vcData.state,
         country: vcData.custom_country || vcData.country,
         website: vcData.website,
+        company_size: vcData.company_size,
+        industry: vcData.industry,
         potential_lead_investor: vcData.potential_lead_investor,
         minimum_size: vcData.minimum_size ? parseInt(vcData.minimum_size) : null,
         maximum_size: vcData.maximum_size ? parseInt(vcData.maximum_size) : null,
@@ -398,6 +400,7 @@ export default function CreateVC() {
         spoc: vcData.spoc,
         billing_currency: vcData.billing_currency,
         notes: vcData.notes,
+        contacts: JSON.stringify(vcData.contacts),
         created_by: parseInt(user.id),
         is_partial: true,
       };
