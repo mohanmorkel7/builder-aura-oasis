@@ -530,7 +530,10 @@ export default function FollowUpTracker() {
               <div>
                 <p className="text-green-600 text-sm font-medium">Completed</p>
                 <p className="text-2xl font-bold text-green-900">
-                  {followUps.filter((f) => f.status === "completed").length}
+                  {followUps.filter((f) => {
+                    const type = f.type || (f.vc_id || f.vc_round_title || f.investor_name ? "vc" : "lead");
+                    return f.status === "completed" && (type !== "vc" || isAdmin);
+                  }).length}
                 </p>
               </div>
               <CheckCircle className="w-8 h-8 text-green-600" />
@@ -544,7 +547,10 @@ export default function FollowUpTracker() {
               <div>
                 <p className="text-red-600 text-sm font-medium">Overdue</p>
                 <p className="text-2xl font-bold text-red-900">
-                  {followUps.filter((f) => f.status === "overdue").length}
+                  {followUps.filter((f) => {
+                    const type = f.type || (f.vc_id || f.vc_round_title || f.investor_name ? "vc" : "lead");
+                    return f.status === "overdue" && (type !== "vc" || isAdmin);
+                  }).length}
                 </p>
               </div>
               <AlertCircle className="w-8 h-8 text-red-600" />
