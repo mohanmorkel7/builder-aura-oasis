@@ -925,8 +925,9 @@ export default function CreateVC() {
                 <div>
                   <Label htmlFor="country">Country *</Label>
                   <Select
-                    value={vcData.country}
+                    value={vcData.country || ""}
                     onValueChange={(value) => {
+                      console.log("Country selected:", value);
                       handleInputChange("country", value);
                       if (value !== "Other") {
                         handleInputChange("custom_country", "");
