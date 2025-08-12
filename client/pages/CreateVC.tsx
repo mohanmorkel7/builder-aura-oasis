@@ -190,8 +190,28 @@ export default function CreateVC() {
     }
   }, [user?.email]);
 
-  const createVCMutation = useCreateLead();
-  const partialSaveMutation = usePartialSaveLead();
+  const createVCMutation = useMutation({
+    mutationFn: (vcData: any) =>
+      apiClient.request("/vc", {
+        method: "POST",
+        body: JSON.stringify(vcData),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["vcs"] });
+    },
+  });
+
+  const partialSaveMutation = useMutation({
+    mutationFn: (vcData: any) =>
+      apiClient.request("/vc", {
+        method: "POST",
+        body: JSON.stringify({ ...vcData, is_partial: true }),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["vcs"] });
+      queryClient.invalidateQueries({ queryKey: ["partial-vcs"] });
+    },
+  });
 
   const handleInputChange = (field: string, value: any) => {
     const newData = {
