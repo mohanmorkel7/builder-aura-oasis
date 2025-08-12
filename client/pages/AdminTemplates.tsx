@@ -88,14 +88,83 @@ export default function AdminTemplates() {
   const [viewTemplateId, setViewTemplateId] = useState<number | null>(null);
   const [editTemplateId, setEditTemplateId] = useState<number | null>(null);
 
+  // Fallback categories data
+  const fallbackCategories = [
+    {
+      id: 1,
+      name: "Product",
+      description: "Product development templates",
+      color: "#3B82F6",
+      icon: "Package",
+      sort_order: 1,
+      is_active: true,
+    },
+    {
+      id: 2,
+      name: "Leads",
+      description: "Lead management templates",
+      color: "#10B981",
+      icon: "Target",
+      sort_order: 2,
+      is_active: true,
+    },
+    {
+      id: 3,
+      name: "FinOps",
+      description: "Financial operations templates",
+      color: "#F59E0B",
+      icon: "DollarSign",
+      sort_order: 3,
+      is_active: true,
+    },
+    {
+      id: 4,
+      name: "Onboarding",
+      description: "Onboarding templates",
+      color: "#8B5CF6",
+      icon: "UserPlus",
+      sort_order: 4,
+      is_active: true,
+    },
+    {
+      id: 5,
+      name: "Support",
+      description: "Customer support templates",
+      color: "#EF4444",
+      icon: "Headphones",
+      sort_order: 5,
+      is_active: true,
+    },
+    {
+      id: 6,
+      name: "VC",
+      description: "Venture Capital and investment templates",
+      color: "#6366F1",
+      icon: "Megaphone",
+      sort_order: 6,
+      is_active: true,
+    },
+  ];
+
   // Fetch template categories
-  const { data: categories = [] } = useQuery({
-    queryKey: ["template-categories", Date.now()], // Add timestamp to force new query
-    queryFn: () => apiClient.request(`/templates-production/categories?t=${Date.now()}`),
-    staleTime: 0, // Force refresh
-    cacheTime: 0, // Don't cache
-    onSuccess: (data) => {
-      console.log("AdminTemplates fetched categories:", data);
+  const { data: categories = fallbackCategories, error: categoriesError } = useQuery({
+    queryKey: ["template-categories"],
+    queryFn: async () => {
+      try {
+        console.log("Attempting to fetch categories from API...");
+        const result = await apiClient.request("/templates-production/categories");
+        console.log("AdminTemplates fetched categories from API:", result);
+        return result;
+      } catch (error) {
+        console.warn("Failed to fetch categories from API, using fallback data:", error);
+        return fallbackCategories;
+      }
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    cacheTime: 10 * 60 * 1000, // 10 minutes
+    retry: false, // Don't retry, use fallback instead
+    onError: (error) => {
+      console.warn("Categories query failed, using fallback data:", error);
     },
   });
 
