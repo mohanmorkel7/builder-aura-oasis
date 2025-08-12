@@ -149,6 +149,46 @@ export default function CreateVC() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState("lead-info");
+  const [selectedTemplate, setSelectedTemplate] = useState<string>("manual");
+
+  // Get VC templates (category ID for VC templates)
+  const {
+    data: templates = [],
+    isLoading: templatesLoading,
+    error: templatesError,
+  } = useQuery({
+    queryKey: ["templates-by-category", "VC"],
+    queryFn: async () => {
+      console.log("Fetching VC templates...");
+      try {
+        // First, try to get the VC category ID
+        const categories = await apiClient.request("/templates-production/categories");
+        const vcCategory = categories.find((cat: any) => cat.name === "VC");
+
+        if (vcCategory) {
+          const result = await apiClient.request(`/templates-production/category/${vcCategory.id}`);
+          console.log("VC templates fetch successful:", result);
+          return result;
+        } else {
+          console.log("VC category not found, returning empty array");
+          return [];
+        }
+      } catch (error) {
+        console.error("VC templates fetch error:", error);
+        return [];
+      }
+    },
+    retry: 1,
+    staleTime: 5 * 60 * 1000,
+    cacheTime: 10 * 60 * 1000,
+  });
+
+  // Initialize lead_created_by with user email when user loads or changes
+  useEffect(() => {
+    if (user?.email && !vcData.lead_created_by) {
+      handleInputChange("lead_created_by", user.email);
+    }
+  }, [user?.email]);
 
   const createVCMutation = useCreateLead();
   const partialSaveMutation = usePartialSaveLead();
