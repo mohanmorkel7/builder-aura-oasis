@@ -517,30 +517,33 @@ export default function VCDashboard() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {vcFollowUps.filter((followUp: any) => followUp.is_due && !followUp.is_overdue).slice(0, 5).map((followUp: any) => (
-                  <div key={followUp.id} className="flex items-center justify-between p-3 bg-orange-50 rounded-lg border border-orange-200">
-                    <div className="flex-1">
-                      <p className="font-medium text-sm text-gray-900">{followUp.round_title}</p>
-                      <p className="text-xs text-gray-600">{followUp.investor_name}</p>
+                {(() => {
+                  const dueFollowUps = vcFollowUps.filter((followUp: any) => followUp.is_due && !followUp.is_overdue).slice(0, 5);
+                  return dueFollowUps.length > 0 ? dueFollowUps.map((followUp: any) => (
+                    <div key={followUp.id} className="flex items-center justify-between p-3 bg-orange-50 rounded-lg border border-orange-200">
+                      <div className="flex-1">
+                        <p className="font-medium text-sm text-gray-900">{followUp.round_title}</p>
+                        <p className="text-xs text-gray-600">{followUp.investor_name}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs text-orange-600 font-medium">Due Today</p>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="mt-1 h-6 px-2 text-xs"
+                          onClick={() => navigate(`/vc/${followUp.vc_id}`)}
+                        >
+                          View
+                        </Button>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-xs text-orange-600 font-medium">Due Today</p>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="mt-1 h-6 px-2 text-xs"
-                        onClick={() => navigate(`/vc/${followUp.vc_id}`)}
-                      >
-                        View
-                      </Button>
+                  )) : (
+                    <div className="text-center py-4 text-gray-500">
+                      <Calendar className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+                      <p className="text-sm">No follow-ups due today</p>
                     </div>
-                  </div>
-                )) || (
-                  <div className="text-center py-4 text-gray-500">
-                    <Calendar className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-                    <p className="text-sm">No follow-ups due today</p>
-                  </div>
-                )}
+                  );
+                })()}
               </div>
             </CardContent>
           </Card>
@@ -557,30 +560,33 @@ export default function VCDashboard() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {vcFollowUps.filter((followUp: any) => followUp.is_overdue).slice(0, 5).map((followUp: any) => (
-                  <div key={followUp.id} className="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-red-200">
-                    <div className="flex-1">
-                      <p className="font-medium text-sm text-gray-900">{followUp.round_title}</p>
-                      <p className="text-xs text-gray-600">{followUp.investor_name}</p>
+                {(() => {
+                  const overdueFollowUps = vcFollowUps.filter((followUp: any) => followUp.is_overdue).slice(0, 5);
+                  return overdueFollowUps.length > 0 ? overdueFollowUps.map((followUp: any) => (
+                    <div key={followUp.id} className="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-red-200">
+                      <div className="flex-1">
+                        <p className="font-medium text-sm text-gray-900">{followUp.round_title}</p>
+                        <p className="text-xs text-gray-600">{followUp.investor_name}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs text-red-600 font-medium">Overdue</p>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="mt-1 h-6 px-2 text-xs border-red-200 text-red-600 hover:bg-red-50"
+                          onClick={() => navigate(`/vc/${followUp.vc_id}`)}
+                        >
+                          View
+                        </Button>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-xs text-red-600 font-medium">Overdue</p>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="mt-1 h-6 px-2 text-xs border-red-200 text-red-600 hover:bg-red-50"
-                        onClick={() => navigate(`/vc/${followUp.vc_id}`)}
-                      >
-                        View
-                      </Button>
+                  )) : (
+                    <div className="text-center py-4 text-gray-500">
+                      <AlertCircle className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+                      <p className="text-sm">No overdue follow-ups</p>
                     </div>
-                  </div>
-                )) || (
-                  <div className="text-center py-4 text-gray-500">
-                    <AlertCircle className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-                    <p className="text-sm">No overdue follow-ups</p>
-                  </div>
-                )}
+                  );
+                })()}
               </div>
             </CardContent>
           </Card>
