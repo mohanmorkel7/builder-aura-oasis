@@ -903,6 +903,22 @@ export default function CreateVC() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
+                <Label htmlFor="probability">Success Probability (%)</Label>
+                <Input
+                  id="probability"
+                  type="number"
+                  min="0"
+                  max="100"
+                  placeholder="0"
+                  value={vcData.probability}
+                  onChange={(e) => handleInputChange("probability", e.target.value)}
+                />
+                <p className="text-sm text-gray-500 mt-1">
+                  Default: 0% - Estimate the likelihood of closing this VC opportunity
+                </p>
+              </div>
+
+              <div>
                 <Label htmlFor="billing_currency">Billing Currency</Label>
                 <Select
                   value={vcData.billing_currency}
