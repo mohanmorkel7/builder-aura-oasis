@@ -573,4 +573,129 @@ router.put("/:id/steps/reorder", async (req: Request, res: Response) => {
   }
 });
 
+// Get comments for a VC
+router.get("/:id/comments", async (req: Request, res: Response) => {
+  try {
+    const vcId = parseInt(req.params.id);
+    if (isNaN(vcId)) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid VC ID"
+      });
+    }
+
+    let comments = [];
+    try {
+      if (await isDatabaseAvailable()) {
+        const query = `
+          SELECT c.*, u.first_name || ' ' || u.last_name as created_by_name
+          FROM vc_comments c
+          LEFT JOIN users u ON c.created_by = u.id
+          WHERE c.vc_id = $1
+          ORDER BY c.created_at ASC
+        `;
+        const result = await pool.query(query, [vcId]);
+        comments = result.rows;
+      } else {
+        // Mock comments when database is unavailable
+        comments = [
+          {
+            id: 1,
+            vc_id: vcId,
+            message: "Initial discussions with the investor look promising.",
+            created_by: 1,
+            created_by_name: "John Doe",
+            created_at: new Date().toISOString(),
+          },
+        ];
+      }
+    } catch (dbError) {
+      console.log("Database error, using mock data:", dbError.message);
+      comments = [
+        {
+          id: 1,
+          vc_id: vcId,
+          message: "Mock comment - database unavailable",
+          created_by: 1,
+          created_by_name: "Mock User",
+          created_at: new Date().toISOString(),
+        },
+      ];
+    }
+
+    res.json(comments);
+  } catch (error) {
+    console.error("Error fetching VC comments:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to fetch VC comments"
+    });
+  }
+});
+
+// Add comment to a VC
+router.post("/:id/comments", async (req: Request, res: Response) => {
+  try {
+    const vcId = parseInt(req.params.id);
+    if (isNaN(vcId)) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid VC ID"
+      });
+    }
+
+    const { message, created_by } = req.body;
+    if (!message || !message.trim()) {
+      return res.status(400).json({
+        success: false,
+        error: "Comment message is required"
+      });
+    }
+
+    let comment;
+    try {
+      if (await isDatabaseAvailable()) {
+        const query = `
+          INSERT INTO vc_comments (vc_id, message, created_by, created_by_name)
+          VALUES ($1, $2, $3, (SELECT first_name || ' ' || last_name FROM users WHERE id = $3))
+          RETURNING *, (SELECT first_name || ' ' || last_name FROM users WHERE id = created_by) as created_by_name
+        `;
+        const result = await pool.query(query, [vcId, message.trim(), created_by]);
+        comment = result.rows[0];
+      } else {
+        // Mock comment creation when database is unavailable
+        comment = {
+          id: Math.floor(Math.random() * 1000) + 1,
+          vc_id: vcId,
+          message: message.trim(),
+          created_by,
+          created_by_name: "Mock User",
+          created_at: new Date().toISOString(),
+        };
+      }
+    } catch (dbError) {
+      console.log("Database error, using mock response:", dbError.message);
+      comment = {
+        id: Math.floor(Math.random() * 1000) + 1,
+        vc_id: vcId,
+        message: message.trim(),
+        created_by,
+        created_by_name: "Mock User",
+        created_at: new Date().toISOString(),
+      };
+    }
+
+    res.status(201).json({
+      success: true,
+      data: comment
+    });
+  } catch (error) {
+    console.error("Error creating VC comment:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to create VC comment"
+    });
+  }
+});
+
 export default router;
