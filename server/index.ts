@@ -18,6 +18,7 @@ import templatesRouter from "./routes/templates";
 import deploymentsRouter from "./routes/deployments";
 import onboardingRouter from "./routes/onboarding";
 import leadsRouter from "./routes/leads";
+import vcRouter from "./routes/vc";
 import followUpsRouter from "./routes/follow-ups";
 import filesRouter from "./routes/files";
 import ticketsRouter from "./routes/tickets";
