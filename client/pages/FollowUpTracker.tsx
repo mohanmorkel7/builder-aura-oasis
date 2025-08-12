@@ -496,7 +496,10 @@ export default function FollowUpTracker() {
               <div>
                 <p className="text-yellow-600 text-sm font-medium">Pending</p>
                 <p className="text-2xl font-bold text-yellow-900">
-                  {followUps.filter((f) => f.status === "pending").length}
+                  {followUps.filter((f) => {
+                    const type = f.type || (f.vc_id || f.vc_round_title || f.investor_name ? "vc" : "lead");
+                    return f.status === "pending" && (type !== "vc" || isAdmin);
+                  }).length}
                 </p>
               </div>
               <Clock className="w-8 h-8 text-yellow-600" />
