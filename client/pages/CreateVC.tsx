@@ -255,6 +255,36 @@ export default function CreateVC() {
     }
   };
 
+  // Contact management functions
+  const updateContact = (index: number, field: string, value: string) => {
+    const newContacts = [...vcData.contacts];
+    newContacts[index] = { ...newContacts[index], [field]: value };
+    setVcData((prev) => ({ ...prev, contacts: newContacts }));
+  };
+
+  const addContact = () => {
+    setVcData((prev) => ({
+      ...prev,
+      contacts: [
+        ...prev.contacts,
+        {
+          contact_name: "",
+          designation: "",
+          phone: "",
+          email: "",
+          linkedin: "",
+        },
+      ],
+    }));
+  };
+
+  const removeContact = (index: number) => {
+    if (vcData.contacts.length > 1) {
+      const newContacts = vcData.contacts.filter((_, i) => i !== index);
+      setVcData((prev) => ({ ...prev, contacts: newContacts }));
+    }
+  };
+
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
