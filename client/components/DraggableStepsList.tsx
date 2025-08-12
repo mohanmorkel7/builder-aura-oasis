@@ -192,7 +192,7 @@ export function DraggableStepsList({
         {activeStep ? (
           <EnhancedStepItem
             step={activeStep}
-            isExpanded={expandedSteps.has(activeStep.id)}
+            isExpanded={expandedSteps?.has(activeStep.id) || false}
             onToggleExpansion={() => {}}
             onUpdateStatus={() => {}}
             onDeleteStep={() => {}}
