@@ -93,8 +93,9 @@ export class ApiClient {
 
         let errorText: string = "";
         try {
-          // Read the response text directly (no cloning needed for error cases)
-          errorText = await response.text();
+          // Clone the response before reading to avoid "body stream already read" errors
+          const responseClone = response.clone();
+          errorText = await responseClone.text();
           console.log("Server error response:", errorText);
         } catch (textError) {
           console.error("Could not read error response body:", textError);
