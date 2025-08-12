@@ -24,6 +24,7 @@ import filesRouter from "./routes/files";
 import ticketsRouter from "./routes/tickets";
 import finopsRouter from "./routes/finops";
 import workflowRouter from "./routes/workflow";
+import databaseStatusRouter from "./routes/database-status";
 
 // Production routes (database-only, no mock fallback)
 import templatesProductionRouter from "./routes/templates-production";
