@@ -102,9 +102,9 @@ export default function CreateVC() {
   // State for VC data
   const [vcData, setVcData] = useState({
     // Lead Info
-    lead_source: "email" as const,
+    lead_source: "" as const,
     lead_source_value: "",
-    lead_created_by: "",
+    lead_created_by: user?.email || "",
     status: "in-progress" as const,
 
     // Investor and Contact Info
@@ -134,12 +134,14 @@ export default function CreateVC() {
     start_date: "",
     targeted_end_date: "",
     spoc: "",
+    template_id: "",
 
     // Billing and Commercials
     billing_currency: "INR" as const,
     flat_fee_config: [] as any[],
 
     // Additional fields
+    probability: "0",
     notes: "",
     documents: [] as any[],
   });
