@@ -269,7 +269,7 @@ export default function CreateTemplateDialog({
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
                   <SelectContent>
-                    {categories.map((category) => {
+                    {safeCategories.map((category) => {
                       const IconComponent = getCategoryIcon(category.icon);
                       return (
                         <SelectItem
@@ -287,6 +287,11 @@ export default function CreateTemplateDialog({
                         </SelectItem>
                       );
                     })}
+                    {safeCategories.length === 0 && (
+                      <SelectItem value="loading" disabled>
+                        Loading categories...
+                      </SelectItem>
+                    )}
                   </SelectContent>
                 </Select>
               </div>
