@@ -310,7 +310,7 @@ export default function AdminTemplates() {
             <div className="mt-2 text-sm text-blue-700">
               <p>
                 Using local template data. All categories including <strong>VC</strong> are available for template creation.
-                Created templates will be saved when connectivity is restored.
+                You can view, edit, and create templates offline. Changes will be saved when connectivity is restored.
               </p>
             </div>
           </div>
