@@ -56,6 +56,8 @@ import {
   AlertCircle,
   FileText,
   Eye,
+  Globe,
+  User,
 } from "lucide-react";
 
 const INVESTOR_CATEGORIES = [
