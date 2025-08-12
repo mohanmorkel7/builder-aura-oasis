@@ -1007,9 +1007,9 @@ export default function VCDashboard() {
       {/* VC Opportunities List */}
       <Card>
         <CardHeader>
-          <CardTitle>VC Opportunities ({filteredVCs.length})</CardTitle>
+          <CardTitle>VC List ({filteredVCs.length})</CardTitle>
           <CardDescription>
-            Manage your venture capital funding opportunities
+            Manage your venture capital funding rounds
           </CardDescription>
         </CardHeader>
         <CardContent>
