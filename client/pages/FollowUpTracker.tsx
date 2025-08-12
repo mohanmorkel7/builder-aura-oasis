@@ -370,8 +370,11 @@ export default function FollowUpTracker() {
   const baseFilter = (followUp: FollowUp) => {
     if (!followUp) return false;
 
+    // Determine follow-up type with fallback logic
+    const followUpType = followUp.type || (followUp.vc_id || followUp.vc_round_title || followUp.investor_name ? "vc" : "lead");
+
     // Filter out VC follow-ups if user is not admin
-    if (followUp.type === "vc" && !isAdmin) {
+    if (followUpType === "vc" && !isAdmin) {
       return false;
     }
 
