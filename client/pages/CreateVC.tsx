@@ -58,6 +58,12 @@ import {
   Eye,
   Globe,
   User,
+  MessageSquare,
+  ExternalLink,
+  UserCheck,
+  PhoneCall,
+  Presentation,
+  HelpCircle,
 } from "lucide-react";
 
 const INVESTOR_CATEGORIES = [
