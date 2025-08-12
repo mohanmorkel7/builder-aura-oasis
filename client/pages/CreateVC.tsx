@@ -696,6 +696,86 @@ export default function CreateVC() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              {/* Template Selection */}
+              <div className="border-b pb-6 mb-6">
+                <h4 className="text-lg font-medium text-gray-900 mb-4">
+                  Template Selection
+                </h4>
+                <div>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="template">
+                      Choose Template (4 available)
+                      {templatesLoading && (
+                        <span className="text-blue-500">(Loading...)</span>
+                      )}
+                      {templatesError && (
+                        <span className="text-red-500">(Error)</span>
+                      )}
+                      {!templatesLoading && !templatesError && (
+                        <span className="text-green-500">
+                          ({templates.length} available)
+                        </span>
+                      )}
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2 mt-1">
+                    <Select
+                      value={selectedTemplate}
+                      onValueChange={(value) => {
+                        setSelectedTemplate(value);
+                        handleInputChange("template_id", value === "manual" ? "" : value);
+                      }}
+                      disabled={templatesLoading}
+                    >
+                      <SelectTrigger className="flex-1">
+                        <SelectValue
+                          placeholder={
+                            templatesLoading
+                              ? "Loading templates..."
+                              : templatesError
+                                ? "Failed to load templates"
+                                : "Select a VC template or use manual"
+                          }
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="manual">
+                          Manual (Create from scratch)
+                        </SelectItem>
+                        {templates.map((template: any) => (
+                          <SelectItem
+                            key={template.id}
+                            value={template.id.toString()}
+                          >
+                            {template.name}
+                          </SelectItem>
+                        ))}
+                        {templates.length === 0 && !templatesLoading && (
+                          <SelectItem value="no-templates" disabled>
+                            {templatesError
+                              ? `Error: ${templatesError.message}`
+                              : "No VC templates available"}
+                          </SelectItem>
+                        )}
+                      </SelectContent>
+                    </Select>
+                    {selectedTemplate && selectedTemplate !== "manual" && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => alert("Template preview feature coming soon")}
+                      >
+                        <Eye className="w-4 h-4" />
+                      </Button>
+                    )}
+                  </div>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Select a VC-specific template to automatically configure workflow steps for this round.
+                  </p>
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="round_title">Round Title *</Label>
