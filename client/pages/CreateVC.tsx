@@ -376,7 +376,7 @@ export default function CreateVC() {
                     onValueChange={(value) => handleInputChange("lead_source", value)}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select lead source" />
+                      <SelectValue placeholder="Select how you found this lead" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="email">Email</SelectItem>
@@ -391,15 +391,55 @@ export default function CreateVC() {
                   </Select>
                 </div>
 
-                <div>
-                  <Label htmlFor="lead_source_value">Source Details</Label>
-                  <Input
-                    id="lead_source_value"
-                    placeholder="e.g., investor@email.com, LinkedIn, etc."
-                    value={vcData.lead_source_value}
-                    onChange={(e) => handleInputChange("lead_source_value", e.target.value)}
-                  />
-                </div>
+                {/* Dynamic Lead Source Value */}
+                {vcData.lead_source && (
+                  <div>
+                    <Label htmlFor="lead_source_value">
+                      {vcData.lead_source === "email" && "Email Address"}
+                      {vcData.lead_source === "phone" && "Phone Number"}
+                      {vcData.lead_source === "social-media" && "Social Media Profile/Link"}
+                      {vcData.lead_source === "website" && "Website URL"}
+                      {vcData.lead_source === "referral" && "Referral Source/Contact"}
+                      {vcData.lead_source === "cold-call" && "Phone Number Called"}
+                      {vcData.lead_source === "event" && "Event Name/Details"}
+                      {vcData.lead_source === "other" && "Source Details"}
+                    </Label>
+                    <div className="relative mt-1">
+                      {vcData.lead_source === "email" && (
+                        <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      )}
+                      {vcData.lead_source === "phone" && (
+                        <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      )}
+                      {vcData.lead_source === "website" && (
+                        <Globe className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      )}
+                      <Input
+                        id="lead_source_value"
+                        value={vcData.lead_source_value}
+                        onChange={(e) => handleInputChange("lead_source_value", e.target.value)}
+                        className="pl-10"
+                        placeholder={
+                          vcData.lead_source === "email"
+                            ? "contact@investor.com"
+                            : vcData.lead_source === "phone"
+                              ? "+1 (555) 000-0000"
+                              : vcData.lead_source === "social-media"
+                                ? "LinkedIn profile or social media link"
+                                : vcData.lead_source === "website"
+                                  ? "https://investor.com"
+                                  : vcData.lead_source === "referral"
+                                    ? "Name of person who referred"
+                                    : vcData.lead_source === "cold-call"
+                                      ? "+1 (555) 000-0000"
+                                      : vcData.lead_source === "event"
+                                        ? "Conference name or event details"
+                                        : "Describe the source"
+                        }
+                      />
+                    </div>
+                  </div>
+                )}
 
                 <div>
                   <Label htmlFor="lead_created_by">Lead Created By</Label>
