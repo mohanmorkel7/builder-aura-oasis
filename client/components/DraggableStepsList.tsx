@@ -24,7 +24,7 @@ import { useReorderLeadSteps, useUpdateLeadStep } from "@/hooks/useApi";
 interface DraggableStepsListProps {
   leadId: number;
   steps: any[];
-  expandedSteps: Set<number>;
+  expandedSteps?: Set<number>;
   onToggleExpansion: (stepId: number) => void;
   onDeleteStep: (stepId: number) => void;
   onReorderSteps: (steps: any[]) => void;
