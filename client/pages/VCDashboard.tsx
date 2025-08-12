@@ -212,16 +212,15 @@ export default function VCDashboard() {
   const vcError = null;
   const refetchVCs = () => {};
 
-  // Fetch VC stats
-  const {
-    data: vcStats,
-    isLoading: statsLoading,
-    error: statsError,
-  } = useQuery({
-    queryKey: ["vc-stats"],
-    queryFn: () => apiClient.request("/vc/stats"),
-    retry: 1,
-  });
+  // Calculate VC stats from mock data
+  const vcStats = {
+    total: mockVCList.length,
+    in_progress: mockVCList.filter(vc => vc.status === "in-progress").length,
+    won: mockVCList.filter(vc => vc.status === "won").length,
+    lost: mockVCList.filter(vc => vc.status === "lost").length,
+  };
+  const statsLoading = false;
+  const statsError = null;
 
   // Mock data for follow-ups and comprehensive VC progress since these endpoints don't exist yet
   const vcFollowUps = [
