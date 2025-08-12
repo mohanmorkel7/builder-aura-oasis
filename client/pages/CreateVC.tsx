@@ -1218,7 +1218,13 @@ export default function CreateVC() {
                         type="button"
                         variant="outline"
                         size="sm"
-                        onClick={() => alert("Template preview feature coming soon")}
+                        onClick={() => {
+                          if (templateDetails) {
+                            setPreviewTemplate(templateDetails);
+                            setIsTemplatePreviewOpen(true);
+                          }
+                        }}
+                        disabled={templateDetailsLoading}
                       >
                         <Eye className="w-4 h-4" />
                       </Button>
@@ -1289,6 +1295,13 @@ export default function CreateVC() {
           </AlertDescription>
         </Alert>
       )}
+
+      {/* Template Preview Modal */}
+      <TemplatePreviewModal
+        isOpen={isTemplatePreviewOpen}
+        onClose={() => setIsTemplatePreviewOpen(false)}
+        template={previewTemplate}
+      />
     </div>
   );
 }
