@@ -802,66 +802,59 @@ router.get("/progress", async (req: Request, res: Response) => {
     try {
       if (await isDatabaseAvailable()) {
         const query = `
-          WITH vc_step_progress AS (
+          WITH vc_step_summary AS (
             SELECT
               v.id as vc_id,
               v.round_title,
               v.investor_name,
               v.status,
-              vs.id as step_id,
-              vs.name as step_name,
-              vs.probability,
-              vs.status as step_status,
-              vs.completed_at,
-              ROW_NUMBER() OVER (PARTITION BY v.id ORDER BY vs.created_at) as step_order
+              COUNT(vs.id) FILTER (WHERE vs.status = 'completed') as completed_count,
+              -- Use a default probability of 20% per step
+              COALESCE(COUNT(vs.id) FILTER (WHERE vs.status = 'completed') * 20, 0) as total_completed_probability
             FROM vcs v
             LEFT JOIN vc_steps vs ON v.id = vs.vc_id
             WHERE v.status IN ('in-progress', 'won')
+            GROUP BY v.id, v.round_title, v.investor_name, v.status
           ),
-          vc_summary AS (
+          completed_steps_data AS (
             SELECT
-              vc_id,
-              round_title,
-              investor_name,
-              status,
-              COUNT(CASE WHEN step_status = 'completed' THEN 1 END) as completed_count,
-              SUM(CASE WHEN step_status = 'completed' THEN probability ELSE 0 END) as total_completed_probability
-            FROM vc_step_progress
-            WHERE step_id IS NOT NULL
-            GROUP BY vc_id, round_title, investor_name, status
-          )
-          SELECT
-            vs.vc_id,
-            vs.round_title,
-            vs.investor_name,
-            vs.status,
-            vs.completed_count,
-            vs.total_completed_probability,
-            COALESCE(
+              vs.vc_id,
               json_agg(
                 json_build_object(
-                  'name', vsp.step_name,
-                  'probability', vsp.probability,
-                  'status', vsp.step_status
+                  'name', vs.name,
+                  'probability', 20,
+                  'status', vs.status
                 )
-              ) FILTER (WHERE vsp.step_status = 'completed'),
-              '[]'
-            ) as completed_steps,
-            json_build_object(
-              'name', current_step.step_name,
-              'probability', current_step.probability
-            ) as current_step
-          FROM vc_summary vs
-          LEFT JOIN vc_step_progress vsp ON vs.vc_id = vsp.vc_id AND vsp.step_status = 'completed'
-          LEFT JOIN LATERAL (
-            SELECT step_name, probability
-            FROM vc_step_progress
-            WHERE vc_id = vs.vc_id AND step_status = 'in-progress'
-            ORDER BY step_order
-            LIMIT 1
-          ) current_step ON true
-          GROUP BY vs.vc_id, vs.round_title, vs.investor_name, vs.status, vs.completed_count, vs.total_completed_probability, current_step.step_name, current_step.probability
-          ORDER BY vs.round_title
+                ORDER BY vs.order_index
+              ) as completed_steps
+            FROM vc_steps vs
+            WHERE vs.status = 'completed'
+            GROUP BY vs.vc_id
+          ),
+          current_step_data AS (
+            SELECT DISTINCT ON (vs.vc_id)
+              vs.vc_id,
+              json_build_object(
+                'name', vs.name,
+                'probability', 20
+              ) as current_step
+            FROM vc_steps vs
+            WHERE vs.status = 'in_progress'
+            ORDER BY vs.vc_id, vs.order_index
+          )
+          SELECT
+            vss.vc_id,
+            vss.round_title,
+            vss.investor_name,
+            vss.status,
+            vss.completed_count,
+            vss.total_completed_probability,
+            COALESCE(csd.completed_steps, '[]'::json) as completed_steps,
+            COALESCE(csdt.current_step, 'null'::json) as current_step
+          FROM vc_step_summary vss
+          LEFT JOIN completed_steps_data csd ON vss.vc_id = csd.vc_id
+          LEFT JOIN current_step_data csdt ON vss.vc_id = csdt.vc_id
+          ORDER BY vss.round_title
         `;
         const result = await pool.query(query);
         progressData = result.rows;
