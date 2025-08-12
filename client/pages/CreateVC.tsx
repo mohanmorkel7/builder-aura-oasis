@@ -627,6 +627,53 @@ export default function CreateVC() {
                   />
                 </div>
 
+                <div>
+                  <Label htmlFor="company_size">Company/Fund Size</Label>
+                  <Select
+                    value={vcData.company_size}
+                    onValueChange={(value) => handleInputChange("company_size", value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select fund/company size" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="startup">Startup Fund ($1M-$10M)</SelectItem>
+                      <SelectItem value="small">Small Fund ($10M-$50M)</SelectItem>
+                      <SelectItem value="medium">Medium Fund ($50M-$200M)</SelectItem>
+                      <SelectItem value="large">Large Fund ($200M-$1B)</SelectItem>
+                      <SelectItem value="mega">Mega Fund ($1B+)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="industry">Investment Focus/Industry</Label>
+                  <Select
+                    value={vcData.industry}
+                    onValueChange={(value) => handleInputChange("industry", value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select investment focus" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="technology">Technology</SelectItem>
+                      <SelectItem value="fintech">FinTech</SelectItem>
+                      <SelectItem value="healthcare">Healthcare</SelectItem>
+                      <SelectItem value="biotech">Biotech</SelectItem>
+                      <SelectItem value="edtech">EdTech</SelectItem>
+                      <SelectItem value="cleantech">CleanTech</SelectItem>
+                      <SelectItem value="consumer">Consumer Products</SelectItem>
+                      <SelectItem value="b2b">B2B Software</SelectItem>
+                      <SelectItem value="mobility">Mobility & Transportation</SelectItem>
+                      <SelectItem value="real_estate">Real Estate</SelectItem>
+                      <SelectItem value="media">Media & Entertainment</SelectItem>
+                      <SelectItem value="retail">Retail</SelectItem>
+                      <SelectItem value="manufacturing">Manufacturing</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <div className="md:col-span-2">
                   <Label htmlFor="address">Address</Label>
                   <Input
