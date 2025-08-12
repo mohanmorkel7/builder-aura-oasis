@@ -416,6 +416,72 @@ router.get("/", async (req: Request, res: Response) => {
         },
       ];
 
+      // Add VC follow-ups for admin users
+      if (userRole === "admin") {
+        mockFollowUps.push(
+          {
+            id: 17,
+            vc_id: 1,
+            step_id: 5,
+            title: "Investment Committee Presentation",
+            description: "Schedule and prepare presentation for Accel Partners investment committee",
+            status: "pending",
+            follow_up_type: "meeting",
+            assigned_to: 4, // Emily Davis (VC team)
+            created_by: 5, // David Kim (VC team)
+            due_date: "2024-01-27",
+            created_at: "2024-01-24T10:00:00+05:30",
+            updated_at: "2024-01-24T10:00:00+05:30",
+            assigned_user_name: "Emily Davis",
+            created_by_name: "David Kim",
+            vc_round_title: "Series A Funding",
+            investor_name: "Accel Partners",
+            step_name: "Due Diligence Review",
+            type: "vc",
+          },
+          {
+            id: 18,
+            vc_id: 2,
+            step_id: 6,
+            title: "Financial Projections Update",
+            description: "Send updated Q4 financial projections to Sequoia Capital",
+            status: "in_progress",
+            follow_up_type: "document",
+            assigned_to: 6, // Finance Team
+            created_by: 7, // Bob Wilson
+            due_date: "2024-01-26",
+            created_at: "2024-01-23T14:30:00+05:30",
+            updated_at: "2024-01-23T14:30:00+05:30",
+            assigned_user_name: "Finance Team",
+            created_by_name: "Bob Wilson",
+            vc_round_title: "Seed Round",
+            investor_name: "Sequoia Capital",
+            step_name: "Financial Review",
+            type: "vc",
+          },
+          {
+            id: 19,
+            vc_id: 4,
+            step_id: 7,
+            title: "Technical Architecture Deep Dive",
+            description: "Technical review meeting with Lightspeed technical partners",
+            status: "pending",
+            follow_up_type: "meeting",
+            assigned_to: 8, // Tech Lead
+            created_by: 5, // David Kim
+            due_date: "2024-01-30",
+            created_at: "2024-01-22T09:15:00+05:30",
+            updated_at: "2024-01-22T09:15:00+05:30",
+            assigned_user_name: "Tech Lead",
+            created_by_name: "David Kim",
+            vc_round_title: "Pre-Series A",
+            investor_name: "Lightspeed Venture",
+            step_name: "Technical Due Diligence",
+            type: "vc",
+          }
+        );
+      }
+
       // Apply role-based filtering to mock data
       if (userRole === "sales" && userId) {
         const userIdNum = normalizeUserId(userId as string);
