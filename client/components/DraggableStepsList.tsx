@@ -179,7 +179,7 @@ export function DraggableStepsList({
             <EnhancedStepItem
               key={`${step.id}-${index}`}
               step={step}
-              isExpanded={expandedSteps.has(step.id)}
+              isExpanded={expandedSteps?.has(step.id) || false}
               onToggleExpansion={() => onToggleExpansion(step.id)}
               onUpdateStatus={handleUpdateStatus}
               onDeleteStep={onDeleteStep}
