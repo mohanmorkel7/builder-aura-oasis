@@ -367,7 +367,7 @@ export default function VCDashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-blue-600 text-sm font-medium">Total Opportunities</p>
+                  <p className="text-blue-600 text-sm font-medium">Total VCs</p>
                   <p className="text-2xl font-bold text-blue-900">
                     {vcStats.total || 0}
                   </p>
