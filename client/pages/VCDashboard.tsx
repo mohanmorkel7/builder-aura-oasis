@@ -154,7 +154,7 @@ export default function VCDashboard() {
     retry: 1,
   });
 
-  // Mock data for follow-ups and progress since these endpoints don't exist yet
+  // Mock data for follow-ups and comprehensive VC progress since these endpoints don't exist yet
   const vcFollowUps = [
     {
       id: 1,
@@ -176,25 +176,63 @@ export default function VCDashboard() {
     },
   ];
 
+  // Comprehensive VC progress data similar to Lead Dashboard
   const vcProgressData = [
     {
+      vc_id: 1,
       round_title: "Series A Funding",
       investor_name: "Accel Partners",
       status: "in-progress",
-      progress: 65,
+      completed_steps: [
+        { name: "Initial Pitch", probability: 15 },
+        { name: "Due Diligence", probability: 35 },
+        { name: "Term Sheet", probability: 50 }
+      ],
+      current_step: { name: "Legal Review", probability: 75 },
+      total_completed_probability: 65,
+      completed_count: 3
     },
     {
+      vc_id: 2,
       round_title: "Seed Round",
       investor_name: "Sequoia Capital",
       status: "in-progress",
-      progress: 40,
+      completed_steps: [
+        { name: "Initial Pitch", probability: 20 },
+        { name: "Product Demo", probability: 40 }
+      ],
+      current_step: { name: "Due Diligence", probability: 60 },
+      total_completed_probability: 40,
+      completed_count: 2
     },
     {
+      vc_id: 3,
       round_title: "Bridge Round",
       investor_name: "Matrix Partners",
       status: "won",
-      progress: 100,
+      completed_steps: [
+        { name: "Initial Pitch", probability: 15 },
+        { name: "Due Diligence", probability: 35 },
+        { name: "Term Sheet", probability: 50 },
+        { name: "Legal Review", probability: 75 },
+        { name: "Final Approval", probability: 100 }
+      ],
+      current_step: null,
+      total_completed_probability: 100,
+      completed_count: 5
     },
+    {
+      vc_id: 4,
+      round_title: "Pre-Series A",
+      investor_name: "Lightspeed Venture",
+      status: "in-progress",
+      completed_steps: [
+        { name: "Initial Pitch", probability: 15 }
+      ],
+      current_step: { name: "Product Demo", probability: 30 },
+      total_completed_probability: 22,
+      completed_count: 1
+    }
   ];
 
   const followUpsLoading = false;
