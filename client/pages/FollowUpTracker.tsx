@@ -248,6 +248,8 @@ export default function FollowUpTracker() {
           created_at: new Date(f.created_at).toISOString(),
           updated_at: new Date(f.updated_at).toISOString(),
           due_date: f.due_date || new Date().toISOString().split("T")[0],
+          // Determine type based on available fields if not explicitly set
+          type: f.type || (f.vc_id || f.vc_round_title || f.investor_name ? "vc" : "lead"),
         }));
 
         setFollowUps(formattedFollowUps);
