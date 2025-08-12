@@ -189,6 +189,13 @@ export function createServer() {
   }
 
   try {
+    app.use("/api/vc", vcRouter);
+    console.log("VC router loaded successfully");
+  } catch (error) {
+    console.error("Error loading VC router:", error);
+  }
+
+  try {
     app.use("/api/follow-ups", followUpsRouter);
     console.log("Follow-ups router loaded successfully");
   } catch (error) {
