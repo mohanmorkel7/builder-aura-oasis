@@ -925,15 +925,9 @@ export default function CreateVC() {
 
                 <div>
                   <Label htmlFor="country">Country *</Label>
-                  {/* Debug info */}
-                  <div className="text-xs text-gray-500 mb-1">
-                    Current value: "{vcData.country}" | Available: {COUNTRIES.length} countries
-                  </div>
                   <Select
-                    value={vcData.country || ""}
+                    value={vcData.country || undefined}
                     onValueChange={(value) => {
-                      console.log("Country selected:", value);
-                      console.log("Available countries:", COUNTRIES);
                       handleInputChange("country", value);
                       if (value !== "Other") {
                         handleInputChange("custom_country", "");
@@ -943,7 +937,7 @@ export default function CreateVC() {
                     <SelectTrigger>
                       <SelectValue placeholder="Select country" />
                     </SelectTrigger>
-                    <SelectContent position="popper" style={{ zIndex: 9999 }}>
+                    <SelectContent>
                       {COUNTRIES.map((country) => (
                         <SelectItem key={country} value={country}>
                           {country}
