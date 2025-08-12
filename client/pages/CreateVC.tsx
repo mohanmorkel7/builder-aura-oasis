@@ -472,6 +472,16 @@ export default function CreateVC() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
+                  <Label htmlFor="lead_created_by">Lead Created By</Label>
+                  <Input
+                    id="lead_created_by"
+                    placeholder="Name of person who created this lead"
+                    value={vcData.lead_created_by}
+                    onChange={(e) => handleInputChange("lead_created_by", e.target.value)}
+                  />
+                </div>
+
+                <div>
                   <Label htmlFor="lead_source">Lead Source *</Label>
                   <Select
                     value={vcData.lead_source}
@@ -495,7 +505,7 @@ export default function CreateVC() {
 
                 {/* Dynamic Lead Source Value */}
                 {vcData.lead_source && (
-                  <div>
+                  <div className="md:col-span-2">
                     <Label htmlFor="lead_source_value">
                       {vcData.lead_source === "email" && "Email Address"}
                       {vcData.lead_source === "phone" && "Phone Number"}
@@ -542,16 +552,6 @@ export default function CreateVC() {
                     </div>
                   </div>
                 )}
-
-                <div>
-                  <Label htmlFor="lead_created_by">Lead Created By</Label>
-                  <Input
-                    id="lead_created_by"
-                    placeholder="Name of person who created this lead"
-                    value={vcData.lead_created_by}
-                    onChange={(e) => handleInputChange("lead_created_by", e.target.value)}
-                  />
-                </div>
 
                 {isEditMode && (
                   <div>
