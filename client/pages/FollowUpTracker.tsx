@@ -402,6 +402,20 @@ export default function FollowUpTracker() {
   // Filter follow-ups based on search and filters
   const filteredFollowUps = followUps.filter(baseFilter);
 
+  // Debug logging
+  console.log("Debug FollowUpTracker:", {
+    totalFollowUps: followUps.length,
+    filteredFollowUps: filteredFollowUps.length,
+    isAdmin,
+    typeFilter,
+    statusFilter,
+    assigneeFilter,
+    user: user?.role,
+    followUpsData: followUps,
+    vcFollowUps: followUps.filter(f => f.type === "vc"),
+    leadFollowUps: followUps.filter(f => f.type === "lead"),
+  });
+
   // Tab-specific filtered follow-ups
   const allFollowUps = filteredFollowUps;
   const pendingFollowUps = filteredFollowUps.filter(
