@@ -90,6 +90,15 @@ router.get("/categories", async (req: Request, res: Response) => {
         sort_order: 5,
         is_active: true,
       },
+      {
+        id: 6,
+        name: "VC",
+        description: "Venture Capital and investment templates",
+        color: "#6366F1",
+        icon: "Megaphone",
+        sort_order: 6,
+        is_active: true,
+      },
     ];
     res.json(mockCategories);
   } catch (error) {
