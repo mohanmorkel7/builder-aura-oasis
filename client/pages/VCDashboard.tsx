@@ -154,135 +154,31 @@ export default function VCDashboard() {
     staleTime: 60000, // 1 minute
   });
 
-  // Mock data for follow-ups and comprehensive VC progress since these endpoints don't exist yet
-  const vcFollowUps = [
-    {
-      id: 1,
-      vc_id: 1,
-      title: "Schedule follow-up call with investment committee",
-      round_title: "Series A Funding",
-      investor_name: "Accel Partners",
-      contact_person: "John Smith",
-      step_name: "Due Diligence Review",
-      assigned_user_name: "Alice Johnson",
-      status: "pending",
-      due_date: new Date().toISOString(), // Today
-      description:
-        "Follow up on due diligence questions and prepare for next meeting",
+  // Fetch VC follow-ups from database
+  const {
+    data: vcFollowUps = [],
+    isLoading: followUpsLoading,
+  } = useQuery({
+    queryKey: ["vc-follow-ups"],
+    queryFn: async () => {
+      return await apiClient.request("/vc/follow-ups");
     },
-    {
-      id: 2,
-      vc_id: 2,
-      title: "Send updated financial projections",
-      round_title: "Seed Round",
-      investor_name: "Sequoia Capital",
-      contact_person: "Sarah Johnson",
-      step_name: "Financial Review",
-      assigned_user_name: "Bob Wilson",
-      status: "pending",
-      due_date: new Date(Date.now() + 86400000).toISOString(), // Tomorrow
-      description: "Update Q4 projections based on feedback from investor",
-    },
-    {
-      id: 3,
-      vc_id: 4,
-      title: "Prepare product demo materials",
-      round_title: "Pre-Series A",
-      investor_name: "Lightspeed Venture",
-      contact_person: "Emily Davis",
-      step_name: "Product Demo",
-      assigned_user_name: "David Kim",
-      status: "pending",
-      due_date: new Date(Date.now() + 86400000 * 3).toISOString(), // 3 days from now
-      description: "Create comprehensive demo showcasing key features",
-    },
-    {
-      id: 4,
-      vc_id: 3,
-      title: "Submit legal documentation",
-      round_title: "Bridge Round",
-      investor_name: "Matrix Partners",
-      contact_person: "Michael Chen",
-      step_name: "Legal Documentation",
-      assigned_user_name: "Carol Davis",
-      status: "pending",
-      due_date: new Date(Date.now() - 86400000 * 2).toISOString(), // 2 days overdue
-      description: "Final review and submission of all legal documents",
-    },
-    {
-      id: 5,
-      vc_id: 1,
-      title: "Technical architecture review",
-      round_title: "Series A Funding",
-      investor_name: "Accel Partners",
-      contact_person: "John Smith",
-      step_name: "Technical Due Diligence",
-      assigned_user_name: "Tech Lead",
-      status: "pending",
-      due_date: new Date(Date.now() - 86400000).toISOString(), // 1 day overdue
-      description: "Technical deep dive with Accel's technical team",
-    },
-  ];
+    retry: 2,
+    staleTime: 30000, // 30 seconds
+  });
 
-  // Comprehensive VC progress data similar to Lead Dashboard
-  const vcProgressData = [
-    {
-      vc_id: 1,
-      round_title: "Series A Funding",
-      investor_name: "Accel Partners",
-      status: "in-progress",
-      completed_steps: [
-        { name: "Initial Pitch", probability: 15 },
-        { name: "Due Diligence", probability: 35 },
-        { name: "Term Sheet", probability: 50 },
-      ],
-      current_step: { name: "Legal Review", probability: 75 },
-      total_completed_probability: 65,
-      completed_count: 3,
+  // Fetch VC progress data from database
+  const {
+    data: vcProgressData = [],
+    isLoading: progressLoading,
+  } = useQuery({
+    queryKey: ["vc-progress"],
+    queryFn: async () => {
+      return await apiClient.request("/vc/progress");
     },
-    {
-      vc_id: 2,
-      round_title: "Seed Round",
-      investor_name: "Sequoia Capital",
-      status: "in-progress",
-      completed_steps: [
-        { name: "Initial Pitch", probability: 20 },
-        { name: "Product Demo", probability: 40 },
-      ],
-      current_step: { name: "Due Diligence", probability: 60 },
-      total_completed_probability: 40,
-      completed_count: 2,
-    },
-    {
-      vc_id: 3,
-      round_title: "Bridge Round",
-      investor_name: "Matrix Partners",
-      status: "won",
-      completed_steps: [
-        { name: "Initial Pitch", probability: 15 },
-        { name: "Due Diligence", probability: 35 },
-        { name: "Term Sheet", probability: 50 },
-        { name: "Legal Review", probability: 75 },
-        { name: "Final Approval", probability: 100 },
-      ],
-      current_step: null,
-      total_completed_probability: 100,
-      completed_count: 5,
-    },
-    {
-      vc_id: 4,
-      round_title: "Pre-Series A",
-      investor_name: "Lightspeed Venture",
-      status: "in-progress",
-      completed_steps: [{ name: "Initial Pitch", probability: 15 }],
-      current_step: { name: "Product Demo", probability: 30 },
-      total_completed_probability: 22,
-      completed_count: 1,
-    },
-  ];
-
-  const followUpsLoading = false;
-  const progressLoading = false;
+    retry: 2,
+    staleTime: 30000, // 30 seconds
+  });
 
   // Fetch VC templates for quick insights
   const { data: vcTemplates = [], isLoading: templatesLoading } = useQuery({
