@@ -93,6 +93,7 @@ export default function VCDetails() {
   });
 
   const [isAddStepOpen, setIsAddStepOpen] = useState(false);
+  const [expandedSteps, setExpandedSteps] = useState<Set<number>>(new Set());
 
   const handleBack = () => {
     navigate("/vc");
