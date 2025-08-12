@@ -449,10 +449,12 @@ export default function VCDetails() {
                 </div>
               ) : (
                 <DraggableStepsList
-                  steps={vcSteps}
-                  onReorder={handleReorderSteps}
                   leadId={parseInt(id!)}
-                  onStepsChange={refetchSteps}
+                  steps={vcSteps}
+                  expandedSteps={expandedSteps}
+                  onToggleExpansion={handleToggleExpansion}
+                  onDeleteStep={handleDeleteStep}
+                  onReorderSteps={handleReorderSteps}
                 />
               )}
             </CardContent>
