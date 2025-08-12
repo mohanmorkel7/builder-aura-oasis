@@ -164,7 +164,7 @@ const mockFollowUps: FollowUp[] = [
     created_by_name: "Bob Wilson",
     status: "in_progress",
     priority: "medium",
-    due_date: new Date(Date.now() + 86400000).toISOString().split('T')[0],
+    due_date: "2024-01-26",
     created_at: new Date(Date.now() - 86400000).toISOString(),
     notes: "Waiting for final approval from CFO",
     type: "vc",
