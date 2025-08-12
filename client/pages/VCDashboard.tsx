@@ -434,6 +434,12 @@ export default function VCDashboard() {
 
   const formatCurrency = (amount: string, currency: string = "INR") => {
     if (!amount) return "N/A";
+
+    // If amount already includes a currency symbol, return as is
+    if (amount.includes("$") || amount.includes("₹") || amount.includes("د.إ")) {
+      return amount;
+    }
+
     const symbol = currency === "USD" ? "$" : currency === "AED" ? "د.إ" : "₹";
     return `${symbol}${amount}`;
   };
