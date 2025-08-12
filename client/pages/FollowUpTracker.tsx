@@ -677,7 +677,7 @@ export default function FollowUpTracker() {
                               #{followUp.id}
                             </Badge>
                             <h3 className="text-lg font-semibold text-gray-900">
-                              {followUp.type === "vc" ? (
+                              {followUpType === "vc" ? (
                                 <>
                                   <Badge variant="secondary" className="mr-2 bg-purple-100 text-purple-700">
                                     VC
