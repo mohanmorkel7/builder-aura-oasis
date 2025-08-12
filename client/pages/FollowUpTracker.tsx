@@ -397,7 +397,7 @@ export default function FollowUpTracker() {
       assigneeFilter === "all" ||
       followUp.assigned_user_name === assigneeFilter;
     const matchesType =
-      typeFilter === "all" || followUp.type === typeFilter;
+      typeFilter === "all" || followUpType === typeFilter;
 
     return matchesSearch && matchesStatus && matchesAssignee && matchesType;
   };
