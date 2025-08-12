@@ -110,6 +110,8 @@ export default function CreateVC() {
     // Investor and Contact Info
     investor_category: "",
     investor_name: "",
+    company_size: "",
+    industry: "",
     contact_person: "",
     email: "",
     phone: "",
@@ -123,6 +125,23 @@ export default function CreateVC() {
     minimum_size: "",
     maximum_size: "",
     minimum_arr_requirement: "",
+
+    // Additional contacts (similar to CreateLead)
+    contacts: [
+      {
+        contact_name: "",
+        designation: "",
+        phone: "",
+        email: "",
+        linkedin: "",
+      },
+    ] as Array<{
+      contact_name: string;
+      designation: string;
+      phone: string;
+      email: string;
+      linkedin: string;
+    }>,
 
     // Deal Details (Round Information)
     round_title: "",
