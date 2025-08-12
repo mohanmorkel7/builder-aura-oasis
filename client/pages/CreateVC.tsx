@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useCreateLead, usePartialSaveLead, useTemplate } from "@/hooks/useApi";
 import { useAuth } from "@/lib/auth-context";
@@ -96,8 +96,12 @@ const COUNTRIES = [
 export default function CreateVC() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
   const queryClient = useQueryClient();
+
+  // Check if we're in edit mode
+  const isEditMode = !!id;
 
   // State for VC data
   const [vcData, setVcData] = useState({
@@ -549,23 +553,25 @@ export default function CreateVC() {
                   />
                 </div>
 
-                <div>
-                  <Label htmlFor="status">Status</Label>
-                  <Select
-                    value={vcData.status}
-                    onValueChange={(value) => handleInputChange("status", value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="in-progress">In Progress</SelectItem>
-                      <SelectItem value="won">Won</SelectItem>
-                      <SelectItem value="lost">Lost</SelectItem>
-                      <SelectItem value="completed">Completed</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                {isEditMode && (
+                  <div>
+                    <Label htmlFor="status">Status</Label>
+                    <Select
+                      value={vcData.status}
+                      onValueChange={(value) => handleInputChange("status", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="in-progress">In Progress</SelectItem>
+                        <SelectItem value="won">Won</SelectItem>
+                        <SelectItem value="lost">Lost</SelectItem>
+                        <SelectItem value="completed">Completed</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -682,33 +688,6 @@ export default function CreateVC() {
                   </Select>
                 </div>
 
-                <div>
-                  <Label htmlFor="industry">Investment Focus/Industry</Label>
-                  <Select
-                    value={vcData.industry}
-                    onValueChange={(value) => handleInputChange("industry", value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select investment focus" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="technology">Technology</SelectItem>
-                      <SelectItem value="fintech">FinTech</SelectItem>
-                      <SelectItem value="healthcare">Healthcare</SelectItem>
-                      <SelectItem value="biotech">Biotech</SelectItem>
-                      <SelectItem value="edtech">EdTech</SelectItem>
-                      <SelectItem value="cleantech">CleanTech</SelectItem>
-                      <SelectItem value="consumer">Consumer Products</SelectItem>
-                      <SelectItem value="b2b">B2B Software</SelectItem>
-                      <SelectItem value="mobility">Mobility & Transportation</SelectItem>
-                      <SelectItem value="real_estate">Real Estate</SelectItem>
-                      <SelectItem value="media">Media & Entertainment</SelectItem>
-                      <SelectItem value="retail">Retail</SelectItem>
-                      <SelectItem value="manufacturing">Manufacturing</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
 
                 <div className="md:col-span-2">
                   <Label htmlFor="address">Address</Label>
@@ -956,86 +935,6 @@ export default function CreateVC() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {/* Template Selection */}
-              <div className="border-b pb-6 mb-6">
-                <h4 className="text-lg font-medium text-gray-900 mb-4">
-                  Template Selection
-                </h4>
-                <div>
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="template">
-                      Choose Template (4 available)
-                      {templatesLoading && (
-                        <span className="text-blue-500">(Loading...)</span>
-                      )}
-                      {templatesError && (
-                        <span className="text-red-500">(Error)</span>
-                      )}
-                      {!templatesLoading && !templatesError && (
-                        <span className="text-green-500">
-                          ({templates.length} available)
-                        </span>
-                      )}
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2 mt-1">
-                    <Select
-                      value={selectedTemplate}
-                      onValueChange={(value) => {
-                        setSelectedTemplate(value);
-                        handleInputChange("template_id", value === "manual" ? "" : value);
-                      }}
-                      disabled={templatesLoading}
-                    >
-                      <SelectTrigger className="flex-1">
-                        <SelectValue
-                          placeholder={
-                            templatesLoading
-                              ? "Loading templates..."
-                              : templatesError
-                                ? "Failed to load templates"
-                                : "Select a VC template or use manual"
-                          }
-                        />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="manual">
-                          Manual (Create from scratch)
-                        </SelectItem>
-                        {templates.map((template: any) => (
-                          <SelectItem
-                            key={template.id}
-                            value={template.id.toString()}
-                          >
-                            {template.name}
-                          </SelectItem>
-                        ))}
-                        {templates.length === 0 && !templatesLoading && (
-                          <SelectItem value="no-templates" disabled>
-                            {templatesError
-                              ? `Error: ${templatesError.message}`
-                              : "No VC templates available"}
-                          </SelectItem>
-                        )}
-                      </SelectContent>
-                    </Select>
-                    {selectedTemplate && selectedTemplate !== "manual" && (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => alert("Template preview feature coming soon")}
-                      >
-                        <Eye className="w-4 h-4" />
-                      </Button>
-                    )}
-                  </div>
-                  <p className="text-sm text-gray-500 mt-1">
-                    Select a VC-specific template to automatically configure workflow steps for this round.
-                  </p>
-                </div>
-              </div>
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="round_title">Round Title *</Label>
@@ -1148,6 +1047,86 @@ export default function CreateVC() {
                   rows={4}
                 />
               </div>
+
+              {/* Template Selection - Moved to bottom */}
+              <div className="border-t pt-6 mt-6">
+                <h4 className="text-lg font-medium text-gray-900 mb-4">
+                  Template Selection
+                </h4>
+                <div>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="template">
+                      Choose Template (4 available)
+                      {templatesLoading && (
+                        <span className="text-blue-500">(Loading...)</span>
+                      )}
+                      {templatesError && (
+                        <span className="text-red-500">(Error)</span>
+                      )}
+                      {!templatesLoading && !templatesError && (
+                        <span className="text-green-500">
+                          ({templates.length} available)
+                        </span>
+                      )}
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2 mt-1">
+                    <Select
+                      value={selectedTemplate}
+                      onValueChange={(value) => {
+                        setSelectedTemplate(value);
+                        handleInputChange("template_id", value === "manual" ? "" : value);
+                      }}
+                      disabled={templatesLoading}
+                    >
+                      <SelectTrigger className="flex-1">
+                        <SelectValue
+                          placeholder={
+                            templatesLoading
+                              ? "Loading templates..."
+                              : templatesError
+                                ? "Failed to load templates"
+                                : "Select a VC template or use manual"
+                          }
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="manual">
+                          Manual (Create from scratch)
+                        </SelectItem>
+                        {templates.map((template: any) => (
+                          <SelectItem
+                            key={template.id}
+                            value={template.id.toString()}
+                          >
+                            {template.name}
+                          </SelectItem>
+                        ))}
+                        {templates.length === 0 && !templatesLoading && (
+                          <SelectItem value="no-templates" disabled>
+                            {templatesError
+                              ? `Error: ${templatesError.message}`
+                              : "No VC templates available"}
+                          </SelectItem>
+                        )}
+                      </SelectContent>
+                    </Select>
+                    {selectedTemplate && selectedTemplate !== "manual" && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => alert("Template preview feature coming soon")}
+                      >
+                        <Eye className="w-4 h-4" />
+                      </Button>
+                    )}
+                  </div>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Select a VC-specific template to automatically configure workflow steps for this round.
+                  </p>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -1178,22 +1157,6 @@ export default function CreateVC() {
                 </p>
               </div>
 
-              <div>
-                <Label htmlFor="billing_currency">Billing Currency</Label>
-                <Select
-                  value={vcData.billing_currency}
-                  onValueChange={(value) => handleInputChange("billing_currency", value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select currency" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="INR">INR (₹)</SelectItem>
-                    <SelectItem value="USD">USD ($)</SelectItem>
-                    <SelectItem value="AED">AED</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
 
               <div>
                 <Label htmlFor="notes">Notes</Label>
