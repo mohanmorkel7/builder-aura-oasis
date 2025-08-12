@@ -249,6 +249,9 @@ export default function CreateVC() {
     if (!vcData.investor_category) {
       newErrors.investor_category = "Investor category is required";
     }
+    if (!vcData.lead_source) {
+      newErrors.lead_source = "Lead source is required";
+    }
     if (!vcData.email.trim()) {
       newErrors.email = "Email is required";
     }
