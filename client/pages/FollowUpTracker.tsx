@@ -647,6 +647,9 @@ export default function FollowUpTracker() {
                 const isAssignedToMe =
                   followUp.assigned_user_name === user?.name;
 
+                // Determine follow-up type with fallback logic
+                const followUpType = followUp.type || (followUp.vc_id || followUp.vc_round_title || followUp.investor_name ? "vc" : "lead");
+
                 return (
                   <Card
                     key={followUp.id}
