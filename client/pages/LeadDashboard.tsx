@@ -675,7 +675,7 @@ export default function LeadDashboard() {
                         <div>
                           <div>
                             {(() => {
-                              // Calculate step-wise distribution
+                              // Calculate step-wise distribution (only in-progress/current steps)
                               const stepDistribution = allSteps.map(
                                 (stepName: string) => {
                                   const currentLeadsCount =
@@ -684,20 +684,13 @@ export default function LeadDashboard() {
                                         lead.current_step?.name === stepName,
                                     ).length;
 
-                                  const completedLeadsCount =
-                                    leadProgressData.filter((lead: any) =>
-                                      lead.completed_steps.some(
-                                        (step: any) => step.name === stepName,
-                                      ),
-                                    ).length;
-
-                                  const totalLeadsAtStep =
-                                    currentLeadsCount + completedLeadsCount;
+                                  // Only count current/in-progress leads, not completed ones
+                                  const totalLeadsAtStep = currentLeadsCount;
 
                                   return {
                                     stepName,
                                     currentLeadsCount,
-                                    completedLeadsCount,
+                                    completedLeadsCount: 0, // Not showing completed steps
                                     totalLeadsAtStep,
                                     stepIndex: allSteps.indexOf(stepName),
                                   };
@@ -805,22 +798,9 @@ export default function LeadDashboard() {
                                                   getStepColor(stepIndex),
                                                 opacity: 0.8,
                                               }}
-                                              title={`${stepData.stepName}: ${stepData.totalLeadsAtStep} leads total (${stepData.currentLeadsCount} current, ${stepData.completedLeadsCount} completed)`}
+                                              title={`${stepData.stepName}: ${stepData.totalLeadsAtStep} leads currently in progress`}
                                             >
-                                              {/* Current leads portion */}
-                                              {stepData.currentLeadsCount >
-                                                0 && (
-                                                <div
-                                                  className="absolute top-0 right-0 rounded-r border-l-2 border-blue-600"
-                                                  style={{
-                                                    height: "100%",
-                                                    width: `${(stepData.currentLeadsCount / stepData.totalLeadsAtStep) * 100}%`,
-                                                    backgroundColor:
-                                                      getStepColor(stepIndex),
-                                                    opacity: 1,
-                                                  }}
-                                                />
-                                              )}
+                                              {/* All bars represent current leads only */}
 
                                               {/* Lead count text */}
                                               <div className="absolute inset-0 flex items-center justify-center">
@@ -833,12 +813,7 @@ export default function LeadDashboard() {
                                               <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20 pointer-events-none">
                                                 {stepData.stepName}:{" "}
                                                 {stepData.totalLeadsAtStep}{" "}
-                                                leads
-                                                <br />
-                                                Current:{" "}
-                                                {stepData.currentLeadsCount},
-                                                Completed:{" "}
-                                                {stepData.completedLeadsCount}
+                                                leads in progress
                                               </div>
                                             </div>
                                           </div>
