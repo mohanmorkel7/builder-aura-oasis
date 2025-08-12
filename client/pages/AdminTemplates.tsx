@@ -92,6 +92,8 @@ export default function AdminTemplates() {
   const { data: categories = [] } = useQuery({
     queryKey: ["template-categories"],
     queryFn: () => apiClient.request("/templates-production/categories"),
+    staleTime: 0, // Force refresh
+    cacheTime: 0, // Don't cache
   });
 
   // Fetch templates with categories
