@@ -76,7 +76,11 @@ export default function CreateTemplateDialog({
   categories,
 }: CreateTemplateDialogProps) {
   // Debug: Log categories to see what we're receiving
-  console.log("CreateTemplateDialog categories:", categories);
+  console.log("CreateTemplateDialog received categories:", categories);
+  console.log("Categories count:", categories?.length || 0);
+
+  // Ensure categories is always an array
+  const safeCategories = Array.isArray(categories) ? categories : [];
   const { user } = useAuth();
   const [templateData, setTemplateData] = useState({
     name: "",
