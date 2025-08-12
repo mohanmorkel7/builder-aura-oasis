@@ -231,6 +231,13 @@ export function createServer() {
     console.error("Error loading Workflow router:", error);
   }
 
+  try {
+    app.use("/api/database", databaseStatusRouter);
+    console.log("Database status router loaded successfully");
+  } catch (error) {
+    console.error("Error loading Database status router:", error);
+  }
+
   // Add a simple notifications route that redirects to workflow notifications
   try {
     app.get("/api/notifications", (req, res) => {
