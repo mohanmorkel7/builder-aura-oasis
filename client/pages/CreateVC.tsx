@@ -270,14 +270,19 @@ export default function CreateVC() {
 
     setIsSubmitting(true);
     try {
-      // Map VC data to lead format for now (we'll update this with proper VC endpoints later)
-      const leadData = {
+      // Prepare VC data for submission
+      const submitData = {
         lead_source: vcData.lead_source,
         lead_source_value: vcData.lead_source_value,
+        lead_created_by: vcData.lead_created_by,
         status: vcData.status,
-        project_title: vcData.round_title,
-        project_description: vcData.project_description,
-        client_name: vcData.investor_name,
+        round_title: vcData.round_title,
+        round_description: vcData.project_description,
+        round_stage: vcData.round_stage,
+        round_size: vcData.round_size,
+        valuation: vcData.valuation,
+        investor_category: vcData.investor_category,
+        investor_name: vcData.investor_name,
         contact_person: vcData.contact_person,
         email: vcData.email,
         phone: vcData.phone,
@@ -286,15 +291,20 @@ export default function CreateVC() {
         state: vcData.state,
         country: vcData.custom_country || vcData.country,
         website: vcData.website,
+        potential_lead_investor: vcData.potential_lead_investor,
+        minimum_size: vcData.minimum_size ? parseInt(vcData.minimum_size) : null,
+        maximum_size: vcData.maximum_size ? parseInt(vcData.maximum_size) : null,
+        minimum_arr_requirement: vcData.minimum_arr_requirement ? parseInt(vcData.minimum_arr_requirement) : null,
         priority_level: vcData.priority_level,
-        start_date: vcData.start_date,
-        targeted_end_date: vcData.targeted_end_date,
+        start_date: vcData.start_date || null,
+        targeted_end_date: vcData.targeted_end_date || null,
         spoc: vcData.spoc,
         billing_currency: vcData.billing_currency,
+        notes: vcData.notes,
         created_by: parseInt(user.id),
       };
 
-      const result = await createVCMutation.mutateAsync(leadData);
+      const result = await createVCMutation.mutateAsync(submitData);
       navigate(`/vc/${result.id}`);
     } catch (error) {
       console.error("Failed to create VC:", error);
