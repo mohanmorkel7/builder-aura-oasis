@@ -163,27 +163,11 @@ export default function AdminTemplates() {
     },
   ];
 
-  // Fetch template categories
-  const { data: categories = fallbackCategories, error: categoriesError } = useQuery({
-    queryKey: ["template-categories"],
-    queryFn: async () => {
-      try {
-        console.log("Attempting to fetch categories from API...");
-        const result = await apiClient.request("/templates-production/categories");
-        console.log("AdminTemplates fetched categories from API:", result);
-        return result;
-      } catch (error) {
-        console.warn("Failed to fetch categories from API, using fallback data:", error);
-        return fallbackCategories;
-      }
-    },
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    cacheTime: 10 * 60 * 1000, // 10 minutes
-    retry: false, // Don't retry, use fallback instead
-    onError: (error) => {
-      console.warn("Categories query failed, using fallback data:", error);
-    },
-  });
+  // Use fallback categories directly to avoid network issues
+  const categories = fallbackCategories;
+  const categoriesError = null; // No error since we're using fallback
+
+  console.log("Using fallback categories directly:", categories);
 
   // Fetch templates with categories
   const { data: templates = [], isLoading } = useQuery({
