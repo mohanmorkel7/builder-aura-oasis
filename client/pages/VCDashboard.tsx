@@ -1028,96 +1028,277 @@ export default function VCDashboard() {
         </Card>
       )}
 
-      {/* Follow-ups Due and Overdue */}
-      {vcFollowUps.length > 0 && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-orange-600" />
-                Follow-ups Due
-              </CardTitle>
-              <CardDescription>
-                VC opportunities requiring immediate attention
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {(() => {
-                  const dueFollowUps = vcFollowUps.filter((followUp: any) => followUp.is_due && !followUp.is_overdue).slice(0, 5);
-                  return dueFollowUps.length > 0 ? dueFollowUps.map((followUp: any) => (
-                    <div key={followUp.id} className="flex items-center justify-between p-3 bg-orange-50 rounded-lg border border-orange-200">
-                      <div className="flex-1">
-                        <p className="font-medium text-sm text-gray-900">{followUp.round_title}</p>
-                        <p className="text-xs text-gray-600">{followUp.investor_name}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-xs text-orange-600 font-medium">Due Today</p>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="mt-1 h-6 px-2 text-xs"
-                          onClick={() => navigate(`/vc/${followUp.vc_id}`)}
-                        >
-                          View
-                        </Button>
-                      </div>
-                    </div>
-                  )) : (
-                    <div className="text-center py-4 text-gray-500">
-                      <Calendar className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-                      <p className="text-sm">No follow-ups due today</p>
-                    </div>
-                  );
-                })()}
-              </div>
-            </CardContent>
-          </Card>
+      {/* Follow-up Status Cards */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {(() => {
+          // Filter follow-ups by due status
+          const now = new Date();
+          const currentDueFollowUps = vcFollowUps.filter((followUp: any) => {
+            if (!followUp.due_date) return false;
+            const dueDate = new Date(followUp.due_date);
+            const diffDays = Math.ceil(
+              (dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
+            );
+            return (
+              diffDays >= 0 && diffDays <= 7 && followUp.status !== "completed"
+            ); // Due within 7 days
+          });
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <AlertCircle className="w-5 h-5 text-red-600" />
-                Overdue Follow-ups
-              </CardTitle>
-              <CardDescription>
-                VC opportunities that need urgent attention
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {(() => {
-                  const overdueFollowUps = vcFollowUps.filter((followUp: any) => followUp.is_overdue).slice(0, 5);
-                  return overdueFollowUps.length > 0 ? overdueFollowUps.map((followUp: any) => (
-                    <div key={followUp.id} className="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-red-200">
-                      <div className="flex-1">
-                        <p className="font-medium text-sm text-gray-900">{followUp.round_title}</p>
-                        <p className="text-xs text-gray-600">{followUp.investor_name}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-xs text-red-600 font-medium">Overdue</p>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="mt-1 h-6 px-2 text-xs border-red-200 text-red-600 hover:bg-red-50"
-                          onClick={() => navigate(`/vc/${followUp.vc_id}`)}
-                        >
-                          View
-                        </Button>
-                      </div>
+          const overdueFollowUps = vcFollowUps.filter((followUp: any) => {
+            if (!followUp.due_date) return false;
+            const dueDate = new Date(followUp.due_date);
+            return dueDate < now && followUp.status !== "completed";
+          });
+
+          return (
+            <>
+              {/* Current Due Follow-ups Card */}
+              <Card className="overflow-hidden">
+                <CardHeader className="bg-gradient-to-r from-blue-50 to-blue-100 border-b border-blue-200">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-lg font-semibold text-blue-900 flex items-center">
+                        <Clock className="w-5 h-5 mr-2" />
+                        Follow-ups Due
+                      </CardTitle>
+                      <CardDescription className="text-blue-700">
+                        Follow-ups due within the next 7 days (
+                        {currentDueFollowUps.length} items)
+                      </CardDescription>
                     </div>
-                  )) : (
-                    <div className="text-center py-4 text-gray-500">
-                      <AlertCircle className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-                      <p className="text-sm">No overdue follow-ups</p>
+                    <Badge
+                      variant="secondary"
+                      className="bg-blue-200 text-blue-800"
+                    >
+                      {currentDueFollowUps.length}
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-0">
+                  {followUpsLoading ? (
+                    <div className="p-6 text-center text-gray-500">
+                      Loading follow-ups...
                     </div>
-                  );
-                })()}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
+                  ) : currentDueFollowUps.length === 0 ? (
+                    <div className="p-6 text-center">
+                      <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <CheckCircle className="w-6 h-6 text-blue-500" />
+                      </div>
+                      <p className="text-gray-600 font-medium">
+                        All caught up!
+                      </p>
+                      <p className="text-gray-500 text-sm">
+                        No follow-ups due in the next 7 days
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="max-h-[calc(100vh-400px)] min-h-[200px] overflow-y-auto">
+                      {currentDueFollowUps.map(
+                        (followUp: any, index: number) => {
+                          const dueDate = new Date(followUp.due_date);
+                          const diffDays = Math.ceil(
+                            (dueDate.getTime() - now.getTime()) /
+                              (1000 * 60 * 60 * 24),
+                          );
+                          const isToday = diffDays === 0;
+                          const isTomorrow = diffDays === 1;
+
+                          return (
+                            <div
+                              key={followUp.id}
+                              className={`p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer ${index === currentDueFollowUps.length - 1 ? "border-b-0" : ""}`}
+                              onClick={() => navigate(`/vc/${followUp.vc_id}`)}
+                              title={
+                                followUp.description ||
+                                followUp.title ||
+                                "No description available"
+                              }
+                            >
+                              <div className="flex items-start justify-between">
+                                <div className="flex-1">
+                                  <div className="flex items-center space-x-2 mb-1">
+                                    <h4 className="font-medium text-gray-900 text-sm line-clamp-1">
+                                      {followUp.title}
+                                    </h4>
+                                    <Badge
+                                      variant="outline"
+                                      className={`text-xs ${
+                                        isToday
+                                          ? "border-orange-300 text-orange-700 bg-orange-50"
+                                          : isTomorrow
+                                            ? "border-yellow-300 text-yellow-700 bg-yellow-50"
+                                            : "border-blue-300 text-blue-700 bg-blue-50"
+                                      }`}
+                                    >
+                                      {isToday
+                                        ? "Today"
+                                        : isTomorrow
+                                          ? "Tomorrow"
+                                          : `${diffDays} days`}
+                                    </Badge>
+                                  </div>
+                                  <div className="flex items-center space-x-4 text-xs text-gray-500">
+                                    <span>
+                                      VC:{" "}
+                                      {followUp.round_title || "Unknown"}
+                                    </span>
+                                    <span>
+                                      Step: {followUp.step_name || "N/A"}
+                                    </span>
+                                    <span>
+                                      Assigned to:{" "}
+                                      {followUp.assigned_user_name ||
+                                        "Unassigned"}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="text-right text-xs text-gray-500">
+                                  Due:{" "}
+                                  {followUp.due_date
+                                    ? (() => {
+                                        // Convert UTC datetime to local date
+                                        const utcDate = new Date(
+                                          followUp.due_date,
+                                        );
+                                        const year = utcDate.getFullYear();
+                                        const month = String(
+                                          utcDate.getMonth() + 1,
+                                        ).padStart(2, "0");
+                                        const day = String(
+                                          utcDate.getDate(),
+                                        ).padStart(2, "0");
+                                        return `${year}-${month}-${day}`;
+                                      })()
+                                    : "No date"}
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        },
+                      )}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Overdue Follow-ups Card */}
+              <Card className="overflow-hidden">
+                <CardHeader className="bg-gradient-to-r from-red-50 to-red-100 border-b border-red-200">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-lg font-semibold text-red-900 flex items-center">
+                        <XCircle className="w-5 h-5 mr-2" />
+                        Overdue Follow-ups
+                      </CardTitle>
+                      <CardDescription className="text-red-700">
+                        Follow-ups that are past their due date (
+                        {overdueFollowUps.length} items)
+                      </CardDescription>
+                    </div>
+                    <Badge
+                      variant="destructive"
+                      className="bg-red-200 text-red-800"
+                    >
+                      {overdueFollowUps.length}
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-0">
+                  {followUpsLoading ? (
+                    <div className="p-6 text-center text-gray-500">
+                      Loading follow-ups...
+                    </div>
+                  ) : overdueFollowUps.length === 0 ? (
+                    <div className="p-6 text-center">
+                      <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <CheckCircle className="w-6 h-6 text-green-500" />
+                      </div>
+                      <p className="text-gray-600 font-medium">Great job!</p>
+                      <p className="text-gray-500 text-sm">
+                        No overdue follow-ups
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="max-h-[calc(100vh-400px)] min-h-[200px] overflow-y-auto">
+                      {overdueFollowUps.map((followUp: any, index: number) => {
+                        const dueDate = new Date(followUp.due_date);
+                        const diffDays = Math.floor(
+                          (now.getTime() - dueDate.getTime()) /
+                            (1000 * 60 * 60 * 24),
+                        );
+
+                        return (
+                          <div
+                            key={followUp.id}
+                            className={`p-4 border-b border-gray-100 hover:bg-red-50 transition-colors cursor-pointer ${index === overdueFollowUps.length - 1 ? "border-b-0" : ""}`}
+                            onClick={() => navigate(`/vc/${followUp.vc_id}`)}
+                            title={
+                              followUp.description ||
+                              followUp.title ||
+                              "No description available"
+                            }
+                          >
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <div className="flex items-center space-x-2 mb-1">
+                                  <h4 className="font-medium text-gray-900 text-sm line-clamp-1">
+                                    {followUp.title}
+                                  </h4>
+                                  <Badge
+                                    variant="destructive"
+                                    className="text-xs bg-red-100 text-red-700"
+                                  >
+                                    {diffDays === 1
+                                      ? "1 day overdue"
+                                      : `${diffDays} days overdue`}
+                                  </Badge>
+                                </div>
+                                <div className="flex items-center space-x-4 text-xs text-gray-500">
+                                  <span>
+                                    VC:{" "}
+                                    {followUp.round_title || "Unknown"}
+                                  </span>
+                                  <span>
+                                    Step: {followUp.step_name || "N/A"}
+                                  </span>
+                                  <span>
+                                    Assigned to:{" "}
+                                    {followUp.assigned_user_name ||
+                                      "Unassigned"}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="text-right text-xs text-red-600 font-medium">
+                                Due:{" "}
+                                {followUp.due_date
+                                  ? (() => {
+                                      // Convert UTC datetime to local date
+                                      const utcDate = new Date(
+                                        followUp.due_date,
+                                      );
+                                      const year = utcDate.getFullYear();
+                                      const month = String(
+                                        utcDate.getMonth() + 1,
+                                      ).padStart(2, "0");
+                                      const day = String(
+                                        utcDate.getDate(),
+                                      ).padStart(2, "0");
+                                      return `${year}-${month}-${day}`;
+                                    })()
+                                  : "No date"}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </>
+          );
+        })()}
+      </div>
 
       {/* VC Opportunities List */}
       <Card>
