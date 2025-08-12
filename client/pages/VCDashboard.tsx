@@ -726,19 +726,17 @@ export default function VCDashboard() {
                       <div>
                         <div>
                           {(() => {
-                            // Calculate step-wise distribution
+                            // Calculate step-wise distribution (only in-progress/current steps)
                             const stepDistribution = allSteps.map((stepName: string) => {
                               const currentVCsCount = vcProgressData.filter(
                                 (vc: any) => vc.current_step?.name === stepName,
                               ).length;
-                              const completedVCsCount = vcProgressData.filter((vc: any) =>
-                                vc.completed_steps.some((step: any) => step.name === stepName),
-                              ).length;
-                              const totalVCsAtStep = currentVCsCount + completedVCsCount;
+                              // Only count current/in-progress VCs, not completed ones
+                              const totalVCsAtStep = currentVCsCount;
                               return {
                                 stepName,
                                 currentVCsCount,
-                                completedVCsCount,
+                                completedVCsCount: 0, // Not showing completed steps
                                 totalVCsAtStep,
                                 stepIndex: allSteps.indexOf(stepName),
                               };
@@ -815,20 +813,9 @@ export default function VCDashboard() {
                                               backgroundColor: getStepColor(stepIndex),
                                               opacity: 0.8,
                                             }}
-                                            title={`${stepData.stepName}: ${stepData.totalVCsAtStep} VCs total (${stepData.currentVCsCount} current, ${stepData.completedVCsCount} completed)`}
+                                            title={`${stepData.stepName}: ${stepData.totalVCsAtStep} VCs currently in progress`}
                                           >
-                                            {/* Current VCs portion */}
-                                            {stepData.currentVCsCount > 0 && (
-                                              <div
-                                                className="absolute top-0 right-0 rounded-r border-l-2 border-blue-600"
-                                                style={{
-                                                  height: "100%",
-                                                  width: `${(stepData.currentVCsCount / stepData.totalVCsAtStep) * 100}%`,
-                                                  backgroundColor: getStepColor(stepIndex),
-                                                  opacity: 1,
-                                                }}
-                                              />
-                                            )}
+                                            {/* All bars represent current VCs only */}
 
                                             {/* VC count text */}
                                             <div className="absolute inset-0 flex items-center justify-center">
@@ -839,9 +826,7 @@ export default function VCDashboard() {
 
                                             {/* Hover tooltip */}
                                             <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20 pointer-events-none">
-                                              {stepData.stepName}: {stepData.totalVCsAtStep} VCs
-                                              <br />
-                                              Current: {stepData.currentVCsCount}, Completed: {stepData.completedVCsCount}
+                                              {stepData.stepName}: {stepData.totalVCsAtStep} VCs in progress
                                             </div>
                                           </div>
                                         </div>
