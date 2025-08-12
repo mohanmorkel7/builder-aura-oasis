@@ -351,12 +351,12 @@ export default function VCDashboard() {
         <div>
           <h1 className="text-3xl font-bold text-gray-900">VC Dashboard</h1>
           <p className="text-gray-600 mt-1">
-            Manage venture capital opportunities and funding rounds
+            Manage venture capital funding rounds
           </p>
         </div>
         <Button onClick={() => navigate("/vc/create")}>
           <Plus className="w-4 h-4 mr-2" />
-          Create VC Opportunity
+          Create VC
         </Button>
       </div>
 
