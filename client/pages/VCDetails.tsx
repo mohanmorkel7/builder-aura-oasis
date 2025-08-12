@@ -244,25 +244,35 @@ export default function VCDetails() {
   const getMockVCSteps = (vcId: string) => {
     const stepsByVC = {
       "1": [
-        { id: 1, name: "Initial Pitch Deck Review", description: "Review and refine pitch deck", status: "completed", created_at: new Date(Date.now() - 86400000 * 6).toISOString() },
-        { id: 2, name: "Management Presentation", description: "Present to investment committee", status: "completed", created_at: new Date(Date.now() - 86400000 * 4).toISOString() },
-        { id: 3, name: "Due Diligence Initiation", description: "Begin comprehensive due diligence", status: "in-progress", created_at: new Date(Date.now() - 86400000 * 2).toISOString() }
+        { id: 1, name: "Initial Pitch Deck Review", description: "Review and refine pitch deck", status: "completed", progress: 100, created_at: new Date(Date.now() - 86400000 * 6).toISOString() },
+        { id: 2, name: "Management Presentation", description: "Present to investment committee", status: "completed", progress: 100, created_at: new Date(Date.now() - 86400000 * 4).toISOString() },
+        { id: 3, name: "Due Diligence Initiation", description: "Begin comprehensive due diligence", status: "in-progress", progress: 65, created_at: new Date(Date.now() - 86400000 * 2).toISOString() },
+        { id: 4, name: "Term Sheet Negotiation", description: "Negotiate terms and valuation", status: "pending", progress: 0, created_at: new Date().toISOString() },
+        { id: 5, name: "Legal Documentation", description: "Draft and finalize legal agreements", status: "pending", progress: 0, created_at: new Date().toISOString() }
       ],
       "2": [
-        { id: 4, name: "Product Demo", description: "Demonstrate product capabilities", status: "completed", created_at: new Date(Date.now() - 86400000 * 2).toISOString() },
-        { id: 5, name: "Market Analysis", description: "Present market opportunity", status: "in-progress", created_at: new Date(Date.now() - 86400000 * 1).toISOString() }
+        { id: 4, name: "Product Demo", description: "Demonstrate product capabilities", status: "completed", progress: 100, created_at: new Date(Date.now() - 86400000 * 2).toISOString() },
+        { id: 5, name: "Market Analysis", description: "Present market opportunity", status: "in-progress", progress: 40, created_at: new Date(Date.now() - 86400000 * 1).toISOString() },
+        { id: 6, name: "Financial Review", description: "Review projections", status: "pending", progress: 0, created_at: new Date().toISOString() }
       ],
       "3": [
-        { id: 6, name: "Term Sheet", description: "Finalize terms and close", status: "completed", created_at: new Date(Date.now() - 86400000 * 8).toISOString() },
-        { id: 7, name: "Legal Documentation", description: "Complete legal agreements", status: "completed", created_at: new Date(Date.now() - 86400000 * 9).toISOString() }
+        { id: 6, name: "Term Sheet", description: "Finalize terms and close", status: "completed", progress: 100, created_at: new Date(Date.now() - 86400000 * 8).toISOString() },
+        { id: 7, name: "Legal Documentation", description: "Complete legal agreements", status: "completed", progress: 100, created_at: new Date(Date.now() - 86400000 * 9).toISOString() }
       ],
       "4": [
-        { id: 8, name: "Initial Pitch", description: "Present initial opportunity", status: "completed", created_at: new Date().toISOString() },
-        { id: 9, name: "Product Demo", description: "Demonstrate platform capabilities", status: "pending", created_at: new Date().toISOString() },
-        { id: 10, name: "Financial Review", description: "Review financial projections and metrics", status: "pending", created_at: new Date().toISOString() }
+        { id: 8, name: "First Introduction Call", description: "Initial investor meeting and introduction", status: "completed", progress: 100, created_at: new Date(Date.now() - 86400000 * 1).toISOString() },
+        { id: 9, name: "Product Demo", description: "Demonstrate platform capabilities", status: "in-progress", progress: 90, created_at: new Date().toISOString() },
+        { id: 10, name: "Proposal Preparation", description: "Prepare detailed funding proposal", status: "in-progress", progress: 30, created_at: new Date().toISOString() },
+        { id: 11, name: "Proposal Review & Negotiation", description: "Review terms and negotiate", status: "pending", progress: 15, created_at: new Date().toISOString() },
+        { id: 12, name: "Contract Finalization", description: "Finalize legal contracts", status: "pending", progress: 10, created_at: new Date().toISOString() },
+        { id: 13, name: "Onboarding Preparation", description: "Prepare for investor onboarding", status: "pending", progress: 10, created_at: new Date().toISOString() },
+        { id: 14, name: "Implementation Planning", description: "Plan fund utilization", status: "pending", progress: 10, created_at: new Date().toISOString() },
+        { id: 15, name: "System Integration", description: "Integrate investor systems", status: "pending", progress: 10, created_at: new Date().toISOString() },
+        { id: 16, name: "Go-Live & Support", description: "Launch with ongoing support", status: "pending", progress: 10, created_at: new Date().toISOString() },
+        { id: 17, name: "Project Closure", description: "Close funding round", status: "pending", progress: 10, created_at: new Date().toISOString() }
       ],
       "5": [
-        { id: 11, name: "Initial Contact", description: "First investor meeting", status: "completed", created_at: new Date(Date.now() - 86400000 * 20).toISOString() }
+        { id: 11, name: "Initial Contact", description: "First investor meeting", status: "completed", progress: 100, created_at: new Date(Date.now() - 86400000 * 20).toISOString() }
       ]
     };
     return stepsByVC[vcId as keyof typeof stepsByVC] || [];
