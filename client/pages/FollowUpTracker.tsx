@@ -513,7 +513,10 @@ export default function FollowUpTracker() {
               <div>
                 <p className="text-blue-600 text-sm font-medium">In Progress</p>
                 <p className="text-2xl font-bold text-blue-900">
-                  {followUps.filter((f) => f.status === "in_progress").length}
+                  {followUps.filter((f) => {
+                    const type = f.type || (f.vc_id || f.vc_round_title || f.investor_name ? "vc" : "lead");
+                    return f.status === "in_progress" && (type !== "vc" || isAdmin);
+                  }).length}
                 </p>
               </div>
               <AlertCircle className="w-8 h-8 text-blue-600" />
