@@ -154,39 +154,51 @@ export default function VCDashboard() {
     retry: 1,
   });
 
-  // Fetch VC follow-ups
-  const {
-    data: vcFollowUps = [],
-    isLoading: followUpsLoading,
-  } = useQuery({
-    queryKey: ["vc-follow-ups"],
-    queryFn: async () => {
-      try {
-        return await apiClient.request("/vc/follow-ups");
-      } catch (error) {
-        console.error("Error fetching VC follow-ups:", error);
-        return [];
-      }
+  // Mock data for follow-ups and progress since these endpoints don't exist yet
+  const vcFollowUps = [
+    {
+      id: 1,
+      vc_id: 1,
+      round_title: "Series A Funding",
+      investor_name: "Accel Partners",
+      is_due: true,
+      is_overdue: false,
+      due_date: new Date().toISOString(),
     },
-    retry: 1,
-  });
+    {
+      id: 2,
+      vc_id: 2,
+      round_title: "Seed Round",
+      investor_name: "Sequoia Capital",
+      is_due: false,
+      is_overdue: true,
+      due_date: new Date(Date.now() - 86400000).toISOString(), // Yesterday
+    },
+  ];
 
-  // Fetch VC progress data
-  const {
-    data: vcProgressData = [],
-    isLoading: progressLoading,
-  } = useQuery({
-    queryKey: ["vc-progress"],
-    queryFn: async () => {
-      try {
-        return await apiClient.request("/vc/progress");
-      } catch (error) {
-        console.error("Error fetching VC progress:", error);
-        return [];
-      }
+  const vcProgressData = [
+    {
+      round_title: "Series A Funding",
+      investor_name: "Accel Partners",
+      status: "in-progress",
+      progress: 65,
     },
-    retry: 1,
-  });
+    {
+      round_title: "Seed Round",
+      investor_name: "Sequoia Capital",
+      status: "in-progress",
+      progress: 40,
+    },
+    {
+      round_title: "Bridge Round",
+      investor_name: "Matrix Partners",
+      status: "won",
+      progress: 100,
+    },
+  ];
+
+  const followUpsLoading = false;
+  const progressLoading = false;
 
   // Fetch VC templates for quick insights
   const {
