@@ -925,113 +925,18 @@ export default function VCDetails() {
               <p className="mt-2 text-gray-600">Loading steps...</p>
             </div>
           ) : (
-            <div className="space-y-6">
-              {/* Progress Summary */}
-              {vcSteps.length > 0 && (() => {
-                const completedSteps = vcSteps.filter(step => step.status === "completed").length;
-                const totalSteps = vcSteps.length;
-                const overallProgress = Math.round(
-                  vcSteps.reduce((sum, step) => sum + (step.progress || 0), 0) / totalSteps
-                );
-
-                return (
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <div className="flex items-center justify-between mb-3">
-                      <div>
-                        <h4 className="text-lg font-semibold">Progress: {overallProgress}%</h4>
-                        <p className="text-sm text-gray-600">Complete {completedSteps} of {totalSteps} steps</p>
-                      </div>
-                      <div className="text-right">
-                        <Button variant="outline" size="sm" className="text-blue-600">
-                          View detailed progress breakdown
-                        </Button>
-                      </div>
-                    </div>
-
-                    {/* Overall Progress Bar */}
-                    <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
-                      <div
-                        className="bg-blue-600 h-3 rounded-full transition-all duration-500"
-                        style={{ width: `${overallProgress}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                );
-              })()}
-
-              {/* Detailed Steps List */}
-              <div className="space-y-3">
-                {vcSteps.map((step, index) => (
-                  <div key={step.id} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3 flex-1">
-                        {/* Status Icon */}
-                        <div className="flex-shrink-0">
-                          {step.status === "completed" ? (
-                            <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                              <CheckCircle className="w-4 h-4 text-white" />
-                            </div>
-                          ) : step.status === "in-progress" ? (
-                            <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
-                              <Clock className="w-4 h-4 text-white" />
-                            </div>
-                          ) : (
-                            <div className="w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center">
-                              <span className="w-2 h-2 bg-gray-500 rounded-full"></span>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Step Info */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center space-x-2">
-                            <h5 className="font-medium text-gray-900 truncate">{step.name}</h5>
-                            <span className="text-sm font-medium text-blue-600">
-                              {step.progress || 0}%
-                            </span>
-                          </div>
-                          <p className="text-sm text-gray-600 mt-1">{step.description}</p>
-
-                          {/* Step Progress Bar */}
-                          <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
-                            <div
-                              className={`h-2 rounded-full transition-all duration-300 ${
-                                step.status === "completed" ? "bg-green-500" :
-                                step.status === "in-progress" ? "bg-blue-500" : "bg-gray-400"
-                              }`}
-                              style={{ width: `${step.progress || 0}%` }}
-                            ></div>
-                          </div>
-                        </div>
-
-                        {/* Status Badge */}
-                        <div className="flex-shrink-0">
-                          <Badge
-                            className={`${
-                              step.status === "completed" ? "bg-green-100 text-green-700" :
-                              step.status === "in-progress" ? "bg-blue-100 text-blue-700" :
-                              "bg-gray-100 text-gray-700"
-                            } border-0`}
-                          >
-                            {step.status === "completed" ? "✓ Completed" :
-                             step.status === "in-progress" ? "In Progress" :
-                             "○ Pending"}
-                          </Badge>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Add Step Button */}
-              <div className="flex justify-center pt-4 border-t">
-                <Button variant="outline" onClick={() => setIsAddStepOpen(true)}>
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add New Step
-                </Button>
-              </div>
-            </div>
+            <DraggableStepsList
+              steps={vcSteps}
+              onReorder={handleReorderSteps}
+              onStatusChange={(stepId, status) => {
+                // Handle step status change
+                console.log("Status change:", stepId, status);
+              }}
+              expandedSteps={expandedSteps}
+              onToggleExpansion={handleToggleExpansion}
+              onDeleteStep={handleDeleteStep}
+              leadId={parseInt(id!)}
+            />
           )}
         </CardContent>
       </Card>
