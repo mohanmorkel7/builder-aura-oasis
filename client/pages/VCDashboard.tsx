@@ -480,7 +480,20 @@ export default function VCDashboard() {
       </Card>
 
       {/* VC Progress Dashboard */}
-      {vcProgressData.length > 0 && (
+      {progressLoading ? (
+        <Card className="max-w-full">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BarChart3 className="w-5 h-5" />
+              VC Progress Dashboard
+            </CardTitle>
+            <CardDescription>Loading progress data...</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="h-64 bg-gray-100 rounded animate-pulse"></div>
+          </CardContent>
+        </Card>
+      ) : vcProgressData.length > 0 && (
         <Card className="max-w-full">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
