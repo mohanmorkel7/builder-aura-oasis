@@ -316,13 +316,18 @@ export default function CreateVC() {
 
   const handlePartialSave = async () => {
     try {
-      const leadData = {
-        lead_source: vcData.lead_source,
+      const partialData = {
+        lead_source: vcData.lead_source || "other",
         lead_source_value: vcData.lead_source_value,
+        lead_created_by: vcData.lead_created_by,
         status: vcData.status,
-        project_title: vcData.round_title,
-        project_description: vcData.project_description,
-        client_name: vcData.investor_name,
+        round_title: vcData.round_title || "Draft VC - In Progress",
+        round_description: vcData.project_description,
+        round_stage: vcData.round_stage,
+        round_size: vcData.round_size,
+        valuation: vcData.valuation,
+        investor_category: vcData.investor_category,
+        investor_name: vcData.investor_name || "PARTIAL_SAVE_IN_PROGRESS",
         contact_person: vcData.contact_person,
         email: vcData.email,
         phone: vcData.phone,
@@ -331,16 +336,21 @@ export default function CreateVC() {
         state: vcData.state,
         country: vcData.custom_country || vcData.country,
         website: vcData.website,
+        potential_lead_investor: vcData.potential_lead_investor,
+        minimum_size: vcData.minimum_size ? parseInt(vcData.minimum_size) : null,
+        maximum_size: vcData.maximum_size ? parseInt(vcData.maximum_size) : null,
+        minimum_arr_requirement: vcData.minimum_arr_requirement ? parseInt(vcData.minimum_arr_requirement) : null,
         priority_level: vcData.priority_level,
-        start_date: vcData.start_date,
-        targeted_end_date: vcData.targeted_end_date,
+        start_date: vcData.start_date || null,
+        targeted_end_date: vcData.targeted_end_date || null,
         spoc: vcData.spoc,
         billing_currency: vcData.billing_currency,
+        notes: vcData.notes,
         created_by: parseInt(user.id),
         is_partial: true,
       };
 
-      await partialSaveMutation.mutateAsync(leadData);
+      await partialSaveMutation.mutateAsync(partialData);
       alert("VC data saved as draft!");
     } catch (error) {
       console.error("Failed to save partial VC:", error);
