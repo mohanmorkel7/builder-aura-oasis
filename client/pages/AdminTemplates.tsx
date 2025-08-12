@@ -88,6 +88,23 @@ export default function AdminTemplates() {
   const [viewTemplateId, setViewTemplateId] = useState<number | null>(null);
   const [editTemplateId, setEditTemplateId] = useState<number | null>(null);
 
+  // Test server connectivity
+  const { data: serverConnected } = useQuery({
+    queryKey: ["server-ping"],
+    queryFn: async () => {
+      try {
+        await apiClient.request("/ping");
+        console.log("Server ping successful");
+        return true;
+      } catch (error) {
+        console.warn("Server ping failed:", error);
+        return false;
+      }
+    },
+    retry: false,
+    staleTime: 30000, // 30 seconds
+  });
+
   // Fallback categories data
   const fallbackCategories = [
     {
