@@ -313,7 +313,32 @@ export default function VCDashboard() {
       </div>
 
       {/* Statistics Cards - Enhanced with Gradients */}
-      {!statsLoading && vcStats && (
+      {statsLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <Card key={i} className="bg-gradient-to-br from-gray-50 to-gray-100 border-gray-200">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="h-4 bg-gray-300 rounded animate-pulse mb-2"></div>
+                    <div className="h-8 bg-gray-300 rounded animate-pulse"></div>
+                  </div>
+                  <div className="bg-gray-200 p-3 rounded-full">
+                    <div className="w-6 h-6 bg-gray-300 rounded animate-pulse"></div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : statsError ? (
+        <Card className="bg-red-50 border-red-200">
+          <CardContent className="p-6 text-center">
+            <AlertCircle className="w-8 h-8 text-red-500 mx-auto mb-2" />
+            <p className="text-red-600">Failed to load statistics</p>
+          </CardContent>
+        </Card>
+      ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
             <CardContent className="p-6">
