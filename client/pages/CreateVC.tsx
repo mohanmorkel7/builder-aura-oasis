@@ -194,10 +194,17 @@ export default function CreateVC() {
   const partialSaveMutation = usePartialSaveLead();
 
   const handleInputChange = (field: string, value: any) => {
-    setVcData((prev) => ({
-      ...prev,
+    const newData = {
+      ...vcData,
       [field]: value,
-    }));
+    };
+
+    // Clear lead_source_value when lead_source changes
+    if (field === "lead_source") {
+      newData.lead_source_value = "";
+    }
+
+    setVcData(newData);
 
     // Clear error when user starts typing
     if (errors[field]) {
