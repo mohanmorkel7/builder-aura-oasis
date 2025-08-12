@@ -497,14 +497,54 @@ export default function CreateVC() {
                       <SelectValue placeholder="Select how you found this lead" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="email">Email</SelectItem>
-                      <SelectItem value="social-media">Social Media</SelectItem>
-                      <SelectItem value="phone">Phone</SelectItem>
-                      <SelectItem value="website">Website</SelectItem>
-                      <SelectItem value="referral">Referral</SelectItem>
-                      <SelectItem value="cold-call">Cold Call</SelectItem>
-                      <SelectItem value="event">Event</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
+                      <SelectItem value="email">
+                        <div className="flex items-center gap-2">
+                          <Mail className="w-4 h-4" />
+                          Email
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="social-media">
+                        <div className="flex items-center gap-2">
+                          <MessageSquare className="w-4 h-4" />
+                          Social Media
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="phone">
+                        <div className="flex items-center gap-2">
+                          <Phone className="w-4 h-4" />
+                          Phone
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="website">
+                        <div className="flex items-center gap-2">
+                          <Globe className="w-4 h-4" />
+                          Website
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="referral">
+                        <div className="flex items-center gap-2">
+                          <UserCheck className="w-4 h-4" />
+                          Referral
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="cold-call">
+                        <div className="flex items-center gap-2">
+                          <PhoneCall className="w-4 h-4" />
+                          Cold Call
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="event">
+                        <div className="flex items-center gap-2">
+                          <Presentation className="w-4 h-4" />
+                          Event
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="other">
+                        <div className="flex items-center gap-2">
+                          <HelpCircle className="w-4 h-4" />
+                          Other
+                        </div>
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
