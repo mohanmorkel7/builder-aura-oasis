@@ -94,6 +94,9 @@ export default function AdminTemplates() {
     queryFn: () => apiClient.request("/templates-production/categories"),
     staleTime: 0, // Force refresh
     cacheTime: 0, // Don't cache
+    onSuccess: (data) => {
+      console.log("AdminTemplates fetched categories:", data);
+    },
   });
 
   // Fetch templates with categories
