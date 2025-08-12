@@ -503,7 +503,7 @@ export default function VCDashboard() {
       )}
 
       {/* Follow-ups Due and Overdue */}
-      {!followUpsLoading && vcFollowUps.length > 0 && (
+      {vcFollowUps.length > 0 && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Card>
             <CardHeader>
