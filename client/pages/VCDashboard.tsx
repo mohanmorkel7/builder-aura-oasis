@@ -1147,16 +1147,16 @@ export default function VCDashboard() {
             <div className="text-center py-8">
               <Target className="w-12 h-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                No VC Opportunities Found
+                No VCs Found
               </h3>
               <p className="text-gray-600 mb-4">
                 {searchTerm || statusFilter !== "all" || categoryFilter !== "all"
                   ? "Try adjusting your filters or search terms."
-                  : "Get started by creating your first VC opportunity."}
+                  : "Get started by creating your first VC round."}
               </p>
               <Button onClick={() => navigate("/vc/create")}>
                 <Plus className="w-4 h-4 mr-2" />
-                Create VC Opportunity
+                Create VC
               </Button>
             </div>
           )}
