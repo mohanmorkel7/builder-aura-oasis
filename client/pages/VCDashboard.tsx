@@ -204,21 +204,19 @@ export default function VCDashboard() {
     retry: 1,
   });
 
-  // Filter and sort VCs
+  // Filter and sort VCs (status and category filtering is done server-side)
   const filteredVCs = vcList
     .filter((vc: any) => {
-      const matchesSearch =
-        vc.round_title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        vc.vc_id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        vc.investor_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        vc.contact_person?.toLowerCase().includes(searchTerm.toLowerCase());
+      // Only apply search filtering on client-side since status/category are server-side
+      if (!searchTerm) return true;
 
-      const matchesStatus =
-        statusFilter === "all" || vc.status === statusFilter;
-      const matchesCategory =
-        categoryFilter === "all" || vc.investor_category === categoryFilter;
-
-      return matchesSearch && matchesStatus && matchesCategory;
+      const searchLower = searchTerm.toLowerCase();
+      return (
+        vc.round_title?.toLowerCase().includes(searchLower) ||
+        vc.vc_id?.toLowerCase().includes(searchLower) ||
+        vc.investor_name?.toLowerCase().includes(searchLower) ||
+        vc.contact_person?.toLowerCase().includes(searchLower)
+      );
     })
     .sort((a: any, b: any) => {
       const aValue = a[sortBy] || "";
