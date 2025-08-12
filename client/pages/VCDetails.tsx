@@ -941,6 +941,246 @@ export default function VCDetails() {
         </CardContent>
       </Card>
 
+      {/* VC Follow-up Tracker */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-blue-600" />
+                VC Follow-up Tracker
+              </CardTitle>
+              <CardDescription>
+                Track follow-ups specific to this VC round (separate from leads)
+              </CardDescription>
+            </div>
+            <Button variant="outline" size="sm">
+              <Plus className="w-4 h-4 mr-2" />
+              Add VC Follow-up
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {/* VC Follow-ups List */}
+          <div className="space-y-4">
+            {(() => {
+              // Mock VC-specific follow-ups (separate from leads)
+              const vcSpecificFollowUps = [
+                {
+                  id: 1,
+                  title: "Schedule investment committee presentation",
+                  description: "Present to full investment committee at Lightspeed",
+                  assigned_to: "Emily Davis",
+                  due_date: new Date(Date.now() + 86400000 * 2).toISOString(),
+                  priority: "high",
+                  status: "pending",
+                  step_related: "Due Diligence",
+                  contact_person: "Emily Davis",
+                  follow_up_type: "meeting",
+                  created_at: new Date().toISOString(),
+                  created_by: "David Kim"
+                },
+                {
+                  id: 2,
+                  title: "Send updated financial projections Q4",
+                  description: "Share revised financial projections based on committee feedback",
+                  assigned_to: "Finance Team",
+                  due_date: new Date(Date.now() + 86400000).toISOString(),
+                  priority: "medium",
+                  status: "in-progress",
+                  step_related: "Financial Review",
+                  contact_person: "Emily Davis",
+                  follow_up_type: "document",
+                  created_at: new Date(Date.now() - 86400000).toISOString(),
+                  created_by: "David Kim"
+                },
+                {
+                  id: 3,
+                  title: "Technical architecture deep dive",
+                  description: "Detailed technical review with Lightspeed's technical partners",
+                  assigned_to: "Tech Lead",
+                  due_date: new Date(Date.now() + 86400000 * 5).toISOString(),
+                  priority: "high",
+                  status: "pending",
+                  step_related: "Technical Due Diligence",
+                  contact_person: "Technical Partner",
+                  follow_up_type: "meeting",
+                  created_at: new Date(Date.now() - 86400000).toISOString(),
+                  created_by: "David Kim"
+                }
+              ];
+
+              const now = new Date();
+
+              return vcSpecificFollowUps.length > 0 ? (
+                <div className="space-y-3">
+                  {vcSpecificFollowUps.map((followUp: any) => {
+                    const dueDate = new Date(followUp.due_date);
+                    const isOverdue = dueDate < now;
+                    const diffDays = Math.ceil((dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+                    const isToday = diffDays === 0;
+                    const isTomorrow = diffDays === 1;
+
+                    return (
+                      <div key={followUp.id} className={`border rounded-lg p-4 ${
+                        isOverdue ? 'border-red-200 bg-red-50' :
+                        isToday ? 'border-orange-200 bg-orange-50' :
+                        isTomorrow ? 'border-yellow-200 bg-yellow-50' :
+                        'border-gray-200 bg-gray-50'
+                      }`}>
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <h4 className="font-medium text-gray-900">{followUp.title}</h4>
+                              <Badge variant="outline" className={`text-xs ${
+                                followUp.priority === 'high' ? 'border-red-300 text-red-700 bg-red-50' :
+                                followUp.priority === 'medium' ? 'border-yellow-300 text-yellow-700 bg-yellow-50' :
+                                'border-gray-300 text-gray-700 bg-gray-50'
+                              }`}>
+                                {followUp.priority.toUpperCase()}
+                              </Badge>
+                              <Badge variant="outline" className={`text-xs ${
+                                followUp.status === 'completed' ? 'border-green-300 text-green-700 bg-green-50' :
+                                followUp.status === 'in-progress' ? 'border-blue-300 text-blue-700 bg-blue-50' :
+                                'border-gray-300 text-gray-700 bg-gray-50'
+                              }`}>
+                                {followUp.status.replace('-', ' ').toUpperCase()}
+                              </Badge>
+                            </div>
+
+                            <p className="text-sm text-gray-600 mb-2">{followUp.description}</p>
+
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs text-gray-500">
+                              <div>
+                                <span className="font-medium">Assigned to:</span>
+                                <br />
+                                {followUp.assigned_to}
+                              </div>
+                              <div>
+                                <span className="font-medium">Contact:</span>
+                                <br />
+                                {followUp.contact_person}
+                              </div>
+                              <div>
+                                <span className="font-medium">Related Step:</span>
+                                <br />
+                                {followUp.step_related}
+                              </div>
+                              <div>
+                                <span className="font-medium">Type:</span>
+                                <br />
+                                <Badge variant="secondary" className="text-xs">
+                                  {followUp.follow_up_type}
+                                </Badge>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="ml-4 text-right">
+                            <div className={`text-sm font-medium mb-1 ${
+                              isOverdue ? 'text-red-600' :
+                              isToday ? 'text-orange-600' :
+                              isTomorrow ? 'text-yellow-600' :
+                              'text-gray-600'
+                            }`}>
+                              {isOverdue ? `${Math.abs(diffDays)} days overdue` :
+                               isToday ? 'Due today' :
+                               isTomorrow ? 'Due tomorrow' :
+                               `Due in ${diffDays} days`}
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              {(() => {
+                                const utcDate = new Date(followUp.due_date);
+                                const year = utcDate.getFullYear();
+                                const month = String(utcDate.getMonth() + 1).padStart(2, "0");
+                                const day = String(utcDate.getDate()).padStart(2, "0");
+                                return `${year}-${month}-${day}`;
+                              })()}
+                            </div>
+                            <div className="mt-2 space-x-2">
+                              <Button variant="outline" size="sm" className="h-6 px-2 text-xs">
+                                <Edit className="w-3 h-3 mr-1" />
+                                Edit
+                              </Button>
+                              <Button variant="outline" size="sm" className="h-6 px-2 text-xs">
+                                <CheckCircle className="w-3 h-3 mr-1" />
+                                Complete
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+
+                  {/* Quick Stats */}
+                  <div className="mt-6 pt-4 border-t">
+                    <div className="grid grid-cols-4 gap-4 text-center">
+                      <div className="bg-blue-50 p-3 rounded-lg">
+                        <div className="text-lg font-bold text-blue-900">
+                          {vcSpecificFollowUps.length}
+                        </div>
+                        <div className="text-xs text-blue-600">Total VC Follow-ups</div>
+                      </div>
+                      <div className="bg-orange-50 p-3 rounded-lg">
+                        <div className="text-lg font-bold text-orange-900">
+                          {vcSpecificFollowUps.filter(f => f.status === 'pending').length}
+                        </div>
+                        <div className="text-xs text-orange-600">Pending</div>
+                      </div>
+                      <div className="bg-yellow-50 p-3 rounded-lg">
+                        <div className="text-lg font-bold text-yellow-900">
+                          {vcSpecificFollowUps.filter(f => f.status === 'in-progress').length}
+                        </div>
+                        <div className="text-xs text-yellow-600">In Progress</div>
+                      </div>
+                      <div className="bg-green-50 p-3 rounded-lg">
+                        <div className="text-lg font-bold text-green-900">
+                          {vcSpecificFollowUps.filter(f => f.status === 'completed').length}
+                        </div>
+                        <div className="text-xs text-green-600">Completed</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  <Calendar className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+                  <p className="font-medium">No VC follow-ups yet</p>
+                  <p className="text-sm">Create follow-ups specific to this VC round</p>
+                </div>
+              );
+            })()}
+          </div>
+
+          {/* Segregation Notice */}
+          <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-start gap-3">
+              <div className="w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center mt-0.5">
+                <FileText className="w-3 h-3 text-blue-600" />
+              </div>
+              <div className="flex-1">
+                <h4 className="text-sm font-medium text-blue-900 mb-1">
+                  VC Follow-up Segregation
+                </h4>
+                <p className="text-xs text-blue-700">
+                  This section tracks follow-ups specific to VC rounds only.
+                  Lead follow-ups are managed separately in the Leads Dashboard
+                  to avoid mixing different types of business activities.
+                </p>
+                <div className="mt-2 flex gap-2">
+                  <Button variant="outline" size="sm" className="h-6 px-2 text-xs border-blue-300 text-blue-700 hover:bg-blue-100">
+                    View Lead Follow-ups
+                  </Button>
+                  <Button variant="outline" size="sm" className="h-6 px-2 text-xs border-blue-300 text-blue-700 hover:bg-blue-100">
+                    VC Follow-up Settings
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Additional Contacts */}
       {contacts.length > 0 && (
