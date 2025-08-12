@@ -123,6 +123,42 @@ router.get("/categories", async (req: Request, res: Response) => {
         sort_order: 2,
         is_active: true,
       },
+      {
+        id: 3,
+        name: "FinOps",
+        description: "Financial operations templates",
+        color: "#F59E0B",
+        icon: "DollarSign",
+        sort_order: 3,
+        is_active: true,
+      },
+      {
+        id: 4,
+        name: "Onboarding",
+        description: "Onboarding templates",
+        color: "#8B5CF6",
+        icon: "UserPlus",
+        sort_order: 4,
+        is_active: true,
+      },
+      {
+        id: 5,
+        name: "Support",
+        description: "Customer support templates",
+        color: "#EF4444",
+        icon: "Headphones",
+        sort_order: 5,
+        is_active: true,
+      },
+      {
+        id: 6,
+        name: "VC",
+        description: "Venture Capital and investment templates",
+        color: "#6366F1",
+        icon: "Megaphone",
+        sort_order: 6,
+        is_active: true,
+      },
     ];
     res.json(mockCategories);
   }
