@@ -62,6 +62,12 @@ const navigationItems: NavigationItem[] = [
     roles: ["admin", "sales", "product"],
   },
   {
+    name: "VC",
+    href: "/vc",
+    icon: Target,
+    roles: ["admin", "sales", "product"],
+  },
+  {
     name: "Follow-ups",
     href: "/follow-ups",
     icon: MessageCircle,
