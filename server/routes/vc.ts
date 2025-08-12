@@ -709,4 +709,217 @@ router.post("/:id/comments", async (req: Request, res: Response) => {
   }
 });
 
+// Get VC follow-ups for dashboard
+router.get("/follow-ups", async (req: Request, res: Response) => {
+  try {
+    let followUps = [];
+    try {
+      if (await isDatabaseAvailable()) {
+        const query = `
+          SELECT
+            fu.id,
+            fu.vc_id,
+            fu.title,
+            fu.description,
+            fu.due_date,
+            fu.status,
+            fu.assigned_to,
+            fu.step_name,
+            v.round_title,
+            u.first_name || ' ' || u.last_name as assigned_user_name
+          FROM vc_follow_ups fu
+          LEFT JOIN vcs v ON fu.vc_id = v.id
+          LEFT JOIN users u ON fu.assigned_to = u.id
+          WHERE fu.status != 'completed'
+          ORDER BY fu.due_date ASC
+        `;
+        const result = await pool.query(query);
+        followUps = result.rows;
+      } else {
+        // Return mock follow-ups when database is unavailable
+        followUps = [
+          {
+            id: 1,
+            vc_id: 1,
+            title: "Follow up on term sheet feedback",
+            description: "Check investor response to updated terms",
+            due_date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days from now
+            status: "pending",
+            assigned_to: 1,
+            step_name: "Term Sheet",
+            round_title: "Series A",
+            assigned_user_name: "John Doe"
+          },
+          {
+            id: 2,
+            vc_id: 2,
+            title: "Schedule due diligence meeting",
+            description: "Coordinate with investor team for DD session",
+            due_date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days from now
+            status: "pending",
+            assigned_to: 2,
+            step_name: "Due Diligence",
+            round_title: "Seed Round",
+            assigned_user_name: "Jane Smith"
+          }
+        ];
+      }
+    } catch (dbError) {
+      console.log("Database error, using mock data:", dbError.message);
+      followUps = [
+        {
+          id: 1,
+          vc_id: 1,
+          title: "Mock follow-up - database unavailable",
+          description: "Mock follow-up for testing",
+          due_date: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+          status: "pending",
+          assigned_to: 1,
+          step_name: "Initial Pitch",
+          round_title: "Mock Round",
+          assigned_user_name: "Mock User"
+        }
+      ];
+    }
+
+    res.json(followUps);
+  } catch (error) {
+    console.error("Error fetching VC follow-ups:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to fetch VC follow-ups",
+    });
+  }
+});
+
+// Get VC progress data for dashboard
+router.get("/progress", async (req: Request, res: Response) => {
+  try {
+    let progressData = [];
+    try {
+      if (await isDatabaseAvailable()) {
+        const query = `
+          WITH vc_step_progress AS (
+            SELECT
+              v.id as vc_id,
+              v.round_title,
+              v.investor_name,
+              v.status,
+              vs.id as step_id,
+              vs.name as step_name,
+              vs.probability,
+              vs.status as step_status,
+              vs.completed_at,
+              ROW_NUMBER() OVER (PARTITION BY v.id ORDER BY vs.created_at) as step_order
+            FROM vcs v
+            LEFT JOIN vc_steps vs ON v.id = vs.vc_id
+            WHERE v.status IN ('in-progress', 'won')
+          ),
+          vc_summary AS (
+            SELECT
+              vc_id,
+              round_title,
+              investor_name,
+              status,
+              COUNT(CASE WHEN step_status = 'completed' THEN 1 END) as completed_count,
+              SUM(CASE WHEN step_status = 'completed' THEN probability ELSE 0 END) as total_completed_probability
+            FROM vc_step_progress
+            WHERE step_id IS NOT NULL
+            GROUP BY vc_id, round_title, investor_name, status
+          )
+          SELECT
+            vs.vc_id,
+            vs.round_title,
+            vs.investor_name,
+            vs.status,
+            vs.completed_count,
+            vs.total_completed_probability,
+            COALESCE(
+              json_agg(
+                json_build_object(
+                  'name', vsp.step_name,
+                  'probability', vsp.probability,
+                  'status', vsp.step_status
+                )
+              ) FILTER (WHERE vsp.step_status = 'completed'),
+              '[]'
+            ) as completed_steps,
+            json_build_object(
+              'name', current_step.step_name,
+              'probability', current_step.probability
+            ) as current_step
+          FROM vc_summary vs
+          LEFT JOIN vc_step_progress vsp ON vs.vc_id = vsp.vc_id AND vsp.step_status = 'completed'
+          LEFT JOIN LATERAL (
+            SELECT step_name, probability
+            FROM vc_step_progress
+            WHERE vc_id = vs.vc_id AND step_status = 'in-progress'
+            ORDER BY step_order
+            LIMIT 1
+          ) current_step ON true
+          GROUP BY vs.vc_id, vs.round_title, vs.investor_name, vs.status, vs.completed_count, vs.total_completed_probability, current_step.step_name, current_step.probability
+          ORDER BY vs.round_title
+        `;
+        const result = await pool.query(query);
+        progressData = result.rows;
+      } else {
+        // Return mock progress data when database is unavailable
+        progressData = [
+          {
+            vc_id: 1,
+            round_title: "Series A",
+            investor_name: "Acme Ventures",
+            status: "in-progress",
+            completed_count: 3,
+            total_completed_probability: 45,
+            completed_steps: [
+              { name: "Initial Pitch", probability: 15, status: "completed" },
+              { name: "Product Demo", probability: 15, status: "completed" },
+              { name: "Due Diligence", probability: 15, status: "completed" }
+            ],
+            current_step: { name: "Term Sheet", probability: 25 }
+          },
+          {
+            vc_id: 2,
+            round_title: "Seed Round",
+            investor_name: "Beta Capital",
+            status: "in-progress",
+            completed_count: 2,
+            total_completed_probability: 30,
+            completed_steps: [
+              { name: "Initial Pitch", probability: 15, status: "completed" },
+              { name: "Product Demo", probability: 15, status: "completed" }
+            ],
+            current_step: { name: "Due Diligence", probability: 20 }
+          }
+        ];
+      }
+    } catch (dbError) {
+      console.log("Database error, using mock data:", dbError.message);
+      progressData = [
+        {
+          vc_id: 1,
+          round_title: "Mock Round",
+          investor_name: "Mock Investor",
+          status: "in-progress",
+          completed_count: 1,
+          total_completed_probability: 20,
+          completed_steps: [
+            { name: "Initial Pitch", probability: 20, status: "completed" }
+          ],
+          current_step: { name: "Product Demo", probability: 25 }
+        }
+      ];
+    }
+
+    res.json(progressData);
+  } catch (error) {
+    console.error("Error fetching VC progress data:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to fetch VC progress data",
+    });
+  }
+});
+
 export default router;
