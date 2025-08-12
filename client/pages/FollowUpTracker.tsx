@@ -147,7 +147,7 @@ const mockFollowUps: FollowUp[] = [
     status: "pending",
     priority: "high",
     due_date: "2024-01-27",
-    created_at: new Date().toISOString(),
+    created_at: "2024-01-24T10:00:00Z",
     notes: "Need to coordinate with legal team for compliance review",
     type: "vc",
   },
