@@ -152,6 +152,32 @@ export default function VCDetails() {
     }
   };
 
+  const handleToggleExpansion = (stepId: number) => {
+    setExpandedSteps((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(stepId)) {
+        newSet.delete(stepId);
+      } else {
+        newSet.add(stepId);
+      }
+      return newSet;
+    });
+  };
+
+  const handleDeleteStep = async (stepId: number) => {
+    try {
+      // For now, we'll use the same delete logic as leads
+      // This should be updated to use VC-specific step deletion when available
+      await fetch(`/api/leads/steps/${stepId}`, {
+        method: "DELETE",
+      });
+      refetchSteps();
+    } catch (error) {
+      console.error("Failed to delete step:", error);
+      alert("Failed to delete step. Please try again.");
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "in-progress":
