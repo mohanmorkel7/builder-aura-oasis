@@ -867,13 +867,13 @@ router.get("/progress", async (req: Request, res: Response) => {
             investor_name: "Acme Ventures",
             status: "in-progress",
             completed_count: 3,
-            total_completed_probability: 45,
+            total_completed_probability: 60,
             completed_steps: [
-              { name: "Initial Pitch", probability: 15, status: "completed" },
-              { name: "Product Demo", probability: 15, status: "completed" },
-              { name: "Due Diligence", probability: 15, status: "completed" }
+              { name: "Initial Pitch", probability: 20, status: "completed" },
+              { name: "Product Demo", probability: 20, status: "completed" },
+              { name: "Due Diligence", probability: 20, status: "completed" }
             ],
-            current_step: { name: "Term Sheet", probability: 25 }
+            current_step: { name: "Term Sheet", probability: 20 }
           },
           {
             vc_id: 2,
@@ -881,10 +881,10 @@ router.get("/progress", async (req: Request, res: Response) => {
             investor_name: "Beta Capital",
             status: "in-progress",
             completed_count: 2,
-            total_completed_probability: 30,
+            total_completed_probability: 40,
             completed_steps: [
-              { name: "Initial Pitch", probability: 15, status: "completed" },
-              { name: "Product Demo", probability: 15, status: "completed" }
+              { name: "Initial Pitch", probability: 20, status: "completed" },
+              { name: "Product Demo", probability: 20, status: "completed" }
             ],
             current_step: { name: "Due Diligence", probability: 20 }
           }
