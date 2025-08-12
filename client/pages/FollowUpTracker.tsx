@@ -49,12 +49,15 @@ interface FollowUp {
   message_id?: number;
   step_id?: number;
   lead_id?: number;
+  vc_id?: number;
   client_id?: number;
   title: string;
   description?: string;
   lead_name?: string;
   lead_client_name?: string;
   client_name?: string;
+  vc_round_title?: string;
+  investor_name?: string;
   step_name?: string;
   assigned_to?: number;
   assigned_user_name?: string;
@@ -68,10 +71,12 @@ interface FollowUp {
   updated_at?: string;
   completed_at?: string;
   notes?: string;
+  type?: "lead" | "vc"; // Add type to distinguish between lead and VC follow-ups
 }
 
-// Mock follow-up data with proper structure for testing
+// Mock follow-up data with both leads and VC follow-ups
 const mockFollowUps: FollowUp[] = [
+  // Lead follow-ups
   {
     id: 13,
     message_id: 2,
@@ -88,6 +93,7 @@ const mockFollowUps: FollowUp[] = [
     due_date: "2024-01-25",
     created_at: "2024-01-16T14:15:00Z",
     notes: "Need to validate feasibility of custom integration requirements",
+    type: "lead",
   },
   {
     id: 14,
@@ -105,6 +111,7 @@ const mockFollowUps: FollowUp[] = [
     due_date: "2024-01-24",
     created_at: "2024-01-21T09:00:00Z",
     notes: "API documentation is 70% complete, waiting for security review",
+    type: "lead",
   },
   {
     id: 15,
@@ -122,8 +129,63 @@ const mockFollowUps: FollowUp[] = [
     due_date: "2024-01-20",
     created_at: "2024-01-18T11:30:00Z",
     completed_at: "2024-01-19T16:45:00Z",
-    notes:
-      "Timeline assessment completed - 2 additional weeks needed for reporting features",
+    notes: "Timeline assessment completed - 2 additional weeks needed for reporting features",
+    type: "lead",
+  },
+  // VC follow-ups (visible only to admin)
+  {
+    id: 16,
+    vc_id: 1,
+    step_id: 4,
+    title: "Investment Committee Presentation",
+    description: "Schedule and prepare presentation for Accel Partners investment committee",
+    vc_round_title: "Series A Funding",
+    investor_name: "Accel Partners",
+    step_name: "Due Diligence Review",
+    assigned_user_name: "Emily Davis",
+    created_by_name: "David Kim",
+    status: "pending",
+    priority: "high",
+    due_date: new Date(Date.now() + 86400000 * 2).toISOString().split('T')[0],
+    created_at: new Date().toISOString(),
+    notes: "Need to coordinate with legal team for compliance review",
+    type: "vc",
+  },
+  {
+    id: 17,
+    vc_id: 2,
+    step_id: 5,
+    title: "Financial Projections Update",
+    description: "Send updated Q4 financial projections to Sequoia Capital",
+    vc_round_title: "Seed Round",
+    investor_name: "Sequoia Capital",
+    step_name: "Financial Review",
+    assigned_user_name: "Finance Team",
+    created_by_name: "Bob Wilson",
+    status: "in_progress",
+    priority: "medium",
+    due_date: new Date(Date.now() + 86400000).toISOString().split('T')[0],
+    created_at: new Date(Date.now() - 86400000).toISOString(),
+    notes: "Waiting for final approval from CFO",
+    type: "vc",
+  },
+  {
+    id: 18,
+    vc_id: 4,
+    step_id: 6,
+    title: "Technical Architecture Deep Dive",
+    description: "Technical review meeting with Lightspeed technical partners",
+    vc_round_title: "Pre-Series A",
+    investor_name: "Lightspeed Venture",
+    step_name: "Technical Due Diligence",
+    assigned_user_name: "Tech Lead",
+    created_by_name: "David Kim",
+    status: "pending",
+    priority: "high",
+    due_date: new Date(Date.now() + 86400000 * 5).toISOString().split('T')[0],
+    created_at: new Date(Date.now() - 86400000).toISOString(),
+    notes: "Prepare detailed system architecture documentation",
+    type: "vc",
   },
 ];
 
@@ -162,6 +224,10 @@ export default function FollowUpTracker() {
   const [followUps, setFollowUps] = useState<FollowUp[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("all");
+  const [typeFilter, setTypeFilter] = useState<string>("all"); // Filter for lead vs VC follow-ups
+
+  // Check if user is admin to show VC follow-ups
+  const isAdmin = user?.role === 'admin';
 
   // Fetch follow-ups data from API
   useEffect(() => {
@@ -293,11 +359,17 @@ export default function FollowUpTracker() {
   const baseFilter = (followUp: FollowUp) => {
     if (!followUp) return false;
 
+    // Filter out VC follow-ups if user is not admin
+    if (followUp.type === "vc" && !isAdmin) {
+      return false;
+    }
+
     const searchLower = searchTerm.toLowerCase();
     const matchesSearch =
-      (followUp.lead_name || followUp.lead_client_name || "")
+      (followUp.lead_name || followUp.lead_client_name || followUp.vc_round_title || "")
         .toLowerCase()
         .includes(searchLower) ||
+      (followUp.investor_name || "").toLowerCase().includes(searchLower) ||
       (followUp.step_name || "").toLowerCase().includes(searchLower) ||
       (followUp.assigned_user_name || "").toLowerCase().includes(searchLower) ||
       (followUp.created_by_name || "").toLowerCase().includes(searchLower) ||
@@ -310,8 +382,10 @@ export default function FollowUpTracker() {
     const matchesAssignee =
       assigneeFilter === "all" ||
       followUp.assigned_user_name === assigneeFilter;
+    const matchesType =
+      typeFilter === "all" || followUp.type === typeFilter;
 
-    return matchesSearch && matchesStatus && matchesAssignee;
+    return matchesSearch && matchesStatus && matchesAssignee && matchesType;
   };
 
   // Filter follow-ups based on search and filters
@@ -373,7 +447,7 @@ export default function FollowUpTracker() {
             Follow-up Tracker
           </h1>
           <p className="text-gray-600 mt-1">
-            Track and manage all follow-up tasks from team conversations
+            Track and manage follow-up tasks from leads and VC rounds{isAdmin ? '' : ' (VC follow-ups require admin access)'}
           </p>
         </div>
         <div className="flex items-center space-x-2">
@@ -459,6 +533,18 @@ export default function FollowUpTracker() {
               />
             </div>
             <div className="flex gap-2">
+              {isAdmin && (
+                <Select value={typeFilter} onValueChange={setTypeFilter}>
+                  <SelectTrigger className="w-32">
+                    <SelectValue placeholder="Type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Types</SelectItem>
+                    <SelectItem value="lead">Leads</SelectItem>
+                    <SelectItem value="vc">VC</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger className="w-40">
                   <SelectValue placeholder="All Statuses" />
@@ -480,6 +566,9 @@ export default function FollowUpTracker() {
                   <SelectItem value="Mike Johnson">Mike Johnson</SelectItem>
                   <SelectItem value="Jane Smith">Jane Smith</SelectItem>
                   <SelectItem value="John Doe">John Doe</SelectItem>
+                  <SelectItem value="Emily Davis">Emily Davis</SelectItem>
+                  <SelectItem value="Finance Team">Finance Team</SelectItem>
+                  <SelectItem value="Tech Lead">Tech Lead</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -583,9 +672,21 @@ export default function FollowUpTracker() {
                               #{followUp.id}
                             </Badge>
                             <h3 className="text-lg font-semibold text-gray-900">
-                              {followUp.lead_client_name ||
-                                followUp.client_name ||
-                                "Unknown Lead"}{" "}
+                              {followUp.type === "vc" ? (
+                                <>
+                                  <Badge variant="secondary" className="mr-2 bg-purple-100 text-purple-700">
+                                    VC
+                                  </Badge>
+                                  {followUp.vc_round_title || "Unknown VC Round"} • {followUp.investor_name || "Unknown Investor"}
+                                </>
+                              ) : (
+                                <>
+                                  <Badge variant="secondary" className="mr-2 bg-blue-100 text-blue-700">
+                                    LEAD
+                                  </Badge>
+                                  {followUp.lead_client_name || followUp.client_name || "Unknown Lead"}
+                                </>
+                              )}{" "}
                               • {followUp.title || "Follow-up"}
                             </h3>
                             <Badge
@@ -673,15 +774,27 @@ export default function FollowUpTracker() {
                         </div>
 
                         <div className="flex flex-col space-y-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleNavigateToMessage(followUp)}
-                            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-                          >
-                            <ExternalLink className="w-3 h-3 mr-1" />
-                            View Message
-                          </Button>
+                          {followUp.type === "lead" ? (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleNavigateToMessage(followUp)}
+                              className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                            >
+                              <ExternalLink className="w-3 h-3 mr-1" />
+                              View Message
+                            </Button>
+                          ) : (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => navigate(`/vc/${followUp.vc_id}`)}
+                              className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+                            >
+                              <ExternalLink className="w-3 h-3 mr-1" />
+                              View VC Round
+                            </Button>
+                          )}
 
                           {followUp.status !== "completed" && (
                             <Select
@@ -705,17 +818,31 @@ export default function FollowUpTracker() {
                             </Select>
                           )}
 
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() =>
-                              navigate(`/leads/${followUp.lead_id}`)
-                            }
-                            className="text-gray-600 hover:text-gray-700"
-                          >
-                            <Target className="w-3 h-3 mr-1" />
-                            Go to Lead
-                          </Button>
+                          {followUp.type === "lead" ? (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() =>
+                                navigate(`/leads/${followUp.lead_id}`)
+                              }
+                              className="text-gray-600 hover:text-gray-700"
+                            >
+                              <Target className="w-3 h-3 mr-1" />
+                              Go to Lead
+                            </Button>
+                          ) : (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() =>
+                                navigate(`/vc/${followUp.vc_id}`)
+                              }
+                              className="text-gray-600 hover:text-gray-700"
+                            >
+                              <Target className="w-3 h-3 mr-1" />
+                              Go to VC
+                            </Button>
+                          )}
                         </div>
                       </div>
                     </CardContent>
