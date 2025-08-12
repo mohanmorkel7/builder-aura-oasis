@@ -352,7 +352,6 @@ export default function CreateVC() {
   });
 
   const handleInputChange = (field: string, value: any) => {
-    console.log(`handleInputChange called: ${field} = ${value}`);
     const newData = {
       ...vcData,
       [field]: value,
