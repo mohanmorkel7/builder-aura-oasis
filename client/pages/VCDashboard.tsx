@@ -1168,16 +1168,22 @@ export default function VCDashboard() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => navigate(`/vc/${vc.id}`)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/vc/${vc.id}`);
+                        }}
                       >
                         <Eye className="w-4 h-4 mr-1" />
                         View
                       </Button>
-                      
+
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => navigate(`/vc/${vc.id}/edit`)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/vc/${vc.id}/edit`);
+                        }}
                       >
                         <Edit className="w-4 h-4 mr-1" />
                         Edit
