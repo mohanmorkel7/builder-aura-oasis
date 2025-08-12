@@ -692,7 +692,7 @@ export default function FollowUpTracker() {
                                   {followUp.lead_client_name || followUp.client_name || "Unknown Lead"}
                                 </>
                               )}{" "}
-                              �� {followUp.title || "Follow-up"}
+                              • {followUp.title || "Follow-up"}
                             </h3>
                             <Badge
                               className={
@@ -823,7 +823,7 @@ export default function FollowUpTracker() {
                             </Select>
                           )}
 
-                          {followUp.type === "lead" ? (
+                          {followUpType === "lead" ? (
                             <Button
                               variant="ghost"
                               size="sm"
