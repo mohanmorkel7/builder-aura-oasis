@@ -30,6 +30,7 @@ import {
   UserPlus,
   Headphones,
   Megaphone,
+  BarChart3,
 } from "lucide-react";
 
 interface TemplateCategory {
