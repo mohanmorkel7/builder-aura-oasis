@@ -588,7 +588,7 @@ router.get("/debug/tables", async (req: Request, res: Response) => {
         vcs: vcCount.rows[0].count,
         vc_steps: stepsCount.rows[0].count,
       },
-      all_vc_steps: allSteps.rows
+      all_vc_steps: allSteps.rows,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -604,16 +604,19 @@ router.get("/debug/:id/steps", async (req: Request, res: Response) => {
     const vc = await pool.query("SELECT * FROM vcs WHERE id = $1", [vcId]);
 
     // Get all steps for this VC
-    const steps = await pool.query(`
+    const steps = await pool.query(
+      `
       SELECT * FROM vc_steps
       WHERE vc_id = $1
       ORDER BY order_index ASC, created_at ASC
-    `, [vcId]);
+    `,
+      [vcId],
+    );
 
     res.json({
       vc: vc.rows[0] || null,
       steps: steps.rows,
-      step_count: steps.rows.length
+      step_count: steps.rows.length,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
