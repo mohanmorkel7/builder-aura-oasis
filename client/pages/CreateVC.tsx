@@ -513,9 +513,8 @@ export default function CreateVC() {
             project_description:
               response.round_description || prevData.project_description,
             priority_level: response.priority_level || prevData.priority_level,
-            start_date: response.start_date || prevData.start_date,
-            targeted_end_date:
-              response.targeted_end_date || prevData.targeted_end_date,
+            start_date: response.start_date ? new Date(response.start_date).toISOString().split('T')[0] : (prevData.start_date || ""),
+            targeted_end_date: response.targeted_end_date ? new Date(response.targeted_end_date).toISOString().split('T')[0] : (prevData.targeted_end_date || ""),
             spoc: response.spoc || prevData.spoc,
             template_id: response.template_id || prevData.template_id,
             billing_currency:
