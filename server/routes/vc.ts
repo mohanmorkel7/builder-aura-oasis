@@ -463,10 +463,6 @@ router.put("/:id", async (req: Request, res: Response) => {
     }
 
     const vcData: UpdateVCData = req.body;
-    console.log(
-      `[DEBUG] PUT /:id - Updating VC ${id} with data:`,
-      JSON.stringify(vcData, null, 2),
-    );
 
     // Email validation if provided
     if (vcData.email && !/\S+@\S+\.\S+/.test(vcData.email)) {
