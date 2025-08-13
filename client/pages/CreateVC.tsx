@@ -730,6 +730,18 @@ export default function CreateVC() {
           if (vcData.country && vcData.country !== "Other") {
             return vcData.country;
           }
+
+          // Fallback: use DOM values if state is empty
+          const domCustomCountry = document.querySelector('#custom_country')?.value?.trim();
+          const domCountryText = document.querySelector('button[role="combobox"]')?.textContent?.trim();
+
+          if (domCountryText === "Other" && domCustomCountry) {
+            return domCustomCountry;
+          }
+          if (domCountryText && domCountryText !== "Other" && COUNTRIES.includes(domCountryText)) {
+            return domCountryText;
+          }
+
           return "";
         })(),
         website: vcData.website,
