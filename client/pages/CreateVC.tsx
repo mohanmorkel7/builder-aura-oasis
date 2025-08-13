@@ -512,20 +512,24 @@ export default function CreateVC() {
             notes: response.notes || prevData.notes,
           }));
 
-          console.log("🐛 DEBUG - After setting vcData from API, country fields should be:", {
-            country: (() => {
-              const savedCountry = response.country || "";
-              if (!savedCountry) return "";
-              if (COUNTRIES.includes(savedCountry)) return savedCountry;
-              return "Other";
-            })(),
-            custom_country: (() => {
-              const savedCountry = response.country || "";
-              if (!savedCountry || COUNTRIES.includes(savedCountry)) return "";
-              return savedCountry;
-            })(),
-            originalApiCountry: response.country
-          });
+          console.log(
+            "🐛 DEBUG - After setting vcData from API, country fields should be:",
+            {
+              country: (() => {
+                const savedCountry = response.country || "";
+                if (!savedCountry) return "";
+                if (COUNTRIES.includes(savedCountry)) return savedCountry;
+                return "Other";
+              })(),
+              custom_country: (() => {
+                const savedCountry = response.country || "";
+                if (!savedCountry || COUNTRIES.includes(savedCountry))
+                  return "";
+                return savedCountry;
+              })(),
+              originalApiCountry: response.country,
+            },
+          );
 
           // Restore the saved tab if available
           const savedTab = localStorage.getItem(
@@ -732,13 +736,21 @@ export default function CreateVC() {
           }
 
           // Fallback: use DOM values if state is empty
-          const domCustomCountry = document.querySelector('#custom_country')?.value?.trim();
-          const domCountryText = document.querySelector('button[role="combobox"]')?.textContent?.trim();
+          const domCustomCountry = document
+            .querySelector("#custom_country")
+            ?.value?.trim();
+          const domCountryText = document
+            .querySelector('button[role="combobox"]')
+            ?.textContent?.trim();
 
           if (domCountryText === "Other" && domCustomCountry) {
             return domCustomCountry;
           }
-          if (domCountryText && domCountryText !== "Other" && COUNTRIES.includes(domCountryText)) {
+          if (
+            domCountryText &&
+            domCountryText !== "Other" &&
+            COUNTRIES.includes(domCountryText)
+          ) {
             return domCountryText;
           }
 
@@ -796,17 +808,26 @@ export default function CreateVC() {
   const handlePartialSave = async () => {
     try {
       // Log current state before doing anything
-      console.log("🐛 DEBUG - handlePartialSave called, current vcData.country:", vcData.country);
-      console.log("🐛 DEBUG - handlePartialSave called, current vcData.custom_country:", vcData.custom_country);
+      console.log(
+        "🐛 DEBUG - handlePartialSave called, current vcData.country:",
+        vcData.country,
+      );
+      console.log(
+        "🐛 DEBUG - handlePartialSave called, current vcData.custom_country:",
+        vcData.custom_country,
+      );
 
       // Check actual DOM values vs state
-      const countryDropdown = document.querySelector('button[role="combobox"]')?.textContent?.trim();
-      const customCountryInput = document.querySelector('#custom_country')?.value;
+      const countryDropdown = document
+        .querySelector('button[role="combobox"]')
+        ?.textContent?.trim();
+      const customCountryInput =
+        document.querySelector("#custom_country")?.value;
       console.log("🐛 DEBUG - DOM vs State comparison:", {
         domCountryDropdown: countryDropdown,
         stateCountry: vcData.country,
         domCustomCountry: customCountryInput,
-        stateCustomCountry: vcData.custom_country
+        stateCustomCountry: vcData.custom_country,
       });
 
       // Determine the final country value to save
@@ -820,15 +841,29 @@ export default function CreateVC() {
         }
 
         // Fallback: if state is empty but DOM has values, use DOM values
-        const domCustomCountry = document.querySelector('#custom_country')?.value?.trim();
-        const domCountryText = document.querySelector('button[role="combobox"]')?.textContent?.trim();
+        const domCustomCountry = document
+          .querySelector("#custom_country")
+          ?.value?.trim();
+        const domCountryText = document
+          .querySelector('button[role="combobox"]')
+          ?.textContent?.trim();
 
         if (domCountryText === "Other" && domCustomCountry) {
-          console.log("🐛 DEBUG - Using DOM fallback for country:", domCustomCountry);
+          console.log(
+            "🐛 DEBUG - Using DOM fallback for country:",
+            domCustomCountry,
+          );
           return domCustomCountry;
         }
-        if (domCountryText && domCountryText !== "Other" && COUNTRIES.includes(domCountryText)) {
-          console.log("🐛 DEBUG - Using DOM fallback for predefined country:", domCountryText);
+        if (
+          domCountryText &&
+          domCountryText !== "Other" &&
+          COUNTRIES.includes(domCountryText)
+        ) {
+          console.log(
+            "🐛 DEBUG - Using DOM fallback for predefined country:",
+            domCountryText,
+          );
           return domCountryText;
         }
 
