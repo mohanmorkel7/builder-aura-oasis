@@ -112,7 +112,7 @@ export default function CreateVC() {
 
   // Track the current draft ID for subsequent saves
   const [currentDraftId, setCurrentDraftId] = useState(
-    resumeData?._resumeFromId || resumeData?.id || null
+    resumeData?._resumeFromId || resumeData?.id || null,
   );
 
   // State for VC data
