@@ -401,11 +401,21 @@ export default function CreateVC() {
   });
 
   const partialSaveMutation = useMutation({
-    mutationFn: (vcData: any) =>
-      apiClient.request("/vc", {
-        method: "POST",
-        body: JSON.stringify({ ...vcData, is_partial: true }),
-      }),
+    mutationFn: (vcData: any) => {
+      // If we're continuing from a draft, update the existing draft
+      if (resumeData && resumeData._resumeFromId) {
+        return apiClient.request(`/vc/${resumeData._resumeFromId}`, {
+          method: "PUT",
+          body: JSON.stringify({ ...vcData, is_partial: true }),
+        });
+      } else {
+        // Create a new draft
+        return apiClient.request("/vc", {
+          method: "POST",
+          body: JSON.stringify({ ...vcData, is_partial: true }),
+        });
+      }
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["vcs"] });
       queryClient.invalidateQueries({ queryKey: ["my-vc-partial-saves"] });
