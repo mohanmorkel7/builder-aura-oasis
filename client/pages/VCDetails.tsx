@@ -1318,7 +1318,7 @@ export default function VCDetails() {
               <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900"></div>
               <p className="mt-2 text-gray-600">Loading steps...</p>
             </div>
-          ) : (
+          ) : vcSteps && vcSteps.length > 0 ? (
             <DraggableStepsList
               steps={vcSteps}
               onReorder={handleReorderSteps}
@@ -1331,6 +1331,62 @@ export default function VCDetails() {
               onDeleteStep={handleDeleteStep}
               leadId={parseInt(id!)}
             />
+          ) : (
+            <div className="space-y-4">
+              {/* Show template steps when no actual steps exist */}
+              {vcSteps.length === 0 &&
+                templateData?.steps &&
+                templateData.steps.length > 0 ? (
+                <>
+                  <div className="text-sm font-medium text-blue-700 mb-2">
+                    📋 Template Steps Reference ({templateData.steps.length} steps)
+                  </div>
+                  <div className="text-xs text-blue-600 mb-2">
+                    These are template steps from "{templateData.name}". Create VC-specific steps to start tracking progress.
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                    {templateData.steps.slice(0, 6).map((step: any, index: number) => (
+                      <div
+                        key={index}
+                        className="p-2 bg-blue-50 border border-blue-200 rounded text-xs"
+                      >
+                        <div className="font-medium text-blue-800">
+                          {index + 1}. {step.name}
+                        </div>
+                        {step.description && (
+                          <div className="text-blue-600 mt-1">{step.description}</div>
+                        )}
+                        <div className="text-blue-500 mt-1">
+                          ~{step.estimated_days || step.default_eta_days || 1} days
+                        </div>
+                      </div>
+                    ))}
+                    {templateData.steps.length > 6 && (
+                      <div className="flex items-center justify-center p-2 bg-blue-100 rounded text-xs text-blue-600">
+                        +{templateData.steps.length - 6} more template steps
+                      </div>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <div className="text-center py-8">
+                  <div className="text-gray-500 mb-4">
+                    <Target className="w-12 h-12 mx-auto opacity-50 mb-2" />
+                    <p className="text-lg font-medium">No steps yet</p>
+                    <p className="text-gray-600 mb-4">
+                      {templateData?.steps && templateData.steps.length > 0
+                        ? `This VC uses the "${templateData.name}" template. Create VC-specific steps to start tracking progress.`
+                        : "Create custom steps to track your funding process for this VC."}
+                    </p>
+                  </div>
+                  {templateData?.steps && templateData.steps.length > 0 && (
+                    <div className="text-xs text-blue-600 mb-4">
+                      💡 Tip: You can create VC-specific steps based on the template, or add completely custom steps.
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           )}
         </CardContent>
       </Card>
