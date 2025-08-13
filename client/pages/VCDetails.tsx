@@ -725,6 +725,42 @@ export default function VCDetails() {
     addCommentMutation.mutate(newComment);
   };
 
+  const handlePopulateTemplateSteps = async () => {
+    if (!templateData?.steps || !id) return;
+
+    try {
+      // Delete existing steps first
+      const deletePromises = vcSteps.map(step =>
+        deleteVCStepMutation.mutateAsync(step.id)
+      );
+      await Promise.all(deletePromises);
+
+      // Create new steps from template
+      const createPromises = templateData.steps.map((templateStep: any, index: number) =>
+        createStepMutation.mutateAsync({
+          name: templateStep.name,
+          description: templateStep.description,
+          priority: "medium",
+          status: "pending",
+          order_index: index,
+          due_date: null,
+          estimated_days: templateStep.default_eta_days || templateStep.estimated_days || 1,
+          created_by: parseInt(user?.id || "1"),
+        })
+      );
+      await Promise.all(createPromises);
+
+      // Refresh the VC data
+      refetchSteps();
+      refetchVC();
+
+      alert("Template steps have been successfully applied!");
+    } catch (error) {
+      console.error("Failed to populate template steps:", error);
+      alert("Failed to populate template steps. Please try again.");
+    }
+  };
+
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "in-progress":
