@@ -976,6 +976,18 @@ export function useMyPartialSaves(userId?: number) {
   });
 }
 
+export function useMyVCPartialSaves(userId?: number) {
+  return useQuery({
+    queryKey: ["my-vc-partial-saves", userId],
+    queryFn: async () => {
+      return await apiClient.getMyVCPartialSaves(userId);
+    },
+    enabled: !!userId,
+    retry: 2,
+    retryDelay: 1000,
+  });
+}
+
 export function useLead(id: number) {
   return useQuery({
     queryKey: ["leads", id],
