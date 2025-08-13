@@ -26,7 +26,7 @@ async function isDatabaseAvailable() {
 // Get all VCs
 router.get("/", async (req: Request, res: Response) => {
   try {
-    const { investor_category, status, search } = req.query;
+    const { investor_category, status, search, partial_saves_only, created_by } = req.query;
 
     let vcs;
     try {
