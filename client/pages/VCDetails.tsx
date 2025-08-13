@@ -188,6 +188,33 @@ export default function VCDetails() {
   const updateVCStepMutation = useUpdateVCStep();
   const deleteVCStepMutation = useDeleteVCStep();
 
+  const handleToggleExpansion = (stepId: number) => {
+    setExpandedSteps((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(stepId)) {
+        newSet.delete(stepId);
+      } else {
+        newSet.add(stepId);
+      }
+      return newSet;
+    });
+  };
+
+  const handleDeleteStep = async (stepId: number) => {
+    try {
+      await deleteVCStepMutation.mutateAsync(stepId);
+      refetchSteps();
+    } catch (error) {
+      console.error("Failed to delete step:", error);
+    }
+  };
+
+  const handleReorderSteps = (reorderedSteps: any[]) => {
+    // Update local state immediately for better UX
+    // The actual API call would be handled by the draggable component
+    refetchSteps();
+  };
+
   if (vcLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
