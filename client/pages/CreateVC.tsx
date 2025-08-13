@@ -725,12 +725,7 @@ export default function CreateVC() {
         is_partial: true,
       };
 
-      console.log("🐛 DEBUG - partialData.country:", partialData.country);
-      console.log("🐛 DEBUG - Full partialData payload:", partialData);
-
-      console.log("🐛 DEBUG - About to call partialSaveMutation with country:", partialData.country);
       const result = await partialSaveMutation.mutateAsync(partialData);
-      console.log("🐛 DEBUG - Partial save mutation result:", result);
 
       // Save the current active tab for restoration when continuing
       localStorage.setItem(
