@@ -580,8 +580,37 @@ router.get("/:id/steps", async (req: Request, res: Response) => {
       console.log(`🔍 Fetching VC steps for VC ID: ${vcId}`);
       if (await isDatabaseAvailable()) {
         console.log("✅ Database available, using VCStepRepository");
+
+        // First check if VC exists in database
+        try {
+          const vcExists = await VCRepository.findById(vcId);
+          console.log(`🔍 VC ${vcId} exists in database:`, !!vcExists);
+          if (vcExists) {
+            console.log(`📋 VC details:`, { id: vcExists.id, round_title: vcExists.round_title, template_id: vcExists.template_id });
+          }
+        } catch (vcError) {
+          console.log("❌ Error checking VC existence:", vcError.message);
+        }
+
+        // Now fetch steps with detailed query logging
+        console.log(`🔍 Executing query: SELECT * FROM vc_steps WHERE vc_id = ${vcId} ORDER BY order_index ASC, created_at ASC`);
         steps = await VCStepRepository.findByVCId(vcId);
-        console.log(`📊 Found ${steps?.length || 0} steps from database`);
+        console.log(`📊 Database query returned ${steps?.length || 0} steps`);
+
+        if (steps && steps.length > 0) {
+          console.log("📝 First step preview:", {
+            id: steps[0].id,
+            name: steps[0].name,
+            status: steps[0].status,
+            vc_id: steps[0].vc_id
+          });
+        } else {
+          console.log("⚠️ No steps found in database for VC", vcId);
+          // Fallback to mock data if no database steps
+          console.log("🔄 Falling back to mock data since no database steps found");
+          steps = await MockDataService.getVCSteps(vcId);
+          console.log(`📊 Mock fallback returned ${steps?.length || 0} steps`);
+        }
       } else {
         console.log("⚠️ Database unavailable, using MockDataService");
         steps = await MockDataService.getVCSteps(vcId);
