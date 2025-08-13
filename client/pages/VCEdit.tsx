@@ -1377,13 +1377,106 @@ export default function VCEdit() {
                 <Label htmlFor="project_description">Round Description</Label>
                 <Textarea
                   id="project_description"
-                  rows={4}
-                  placeholder="Describe the funding round objectives and use of funds"
+                  placeholder="Describe the funding round, use of funds, and key details..."
                   value={vcData.project_description}
                   onChange={(e) =>
                     handleInputChange("project_description", e.target.value)
                   }
+                  rows={4}
                 />
+              </div>
+
+              {/* Template Selection - Moved to bottom */}
+              <div className="border-t pt-6 mt-6">
+                <h4 className="text-lg font-medium text-gray-900 mb-4">
+                  Template Selection
+                </h4>
+
+                <div>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="template">
+                      Choose Template ({templates.length} available)
+                      {templatesLoading && (
+                        <span className="text-blue-500">(Loading...)</span>
+                      )}
+                      {templatesError && (
+                        <span className="text-red-500">(Error)</span>
+                      )}
+                      {!templatesLoading && !templatesError && (
+                        <span className="text-green-500">
+                          ({templates.length} available)
+                        </span>
+                      )}
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2 mt-1">
+                    <Select
+                      value={selectedTemplate}
+                      onValueChange={(value) => {
+                        setSelectedTemplate(value);
+                        handleInputChange(
+                          "template_id",
+                          value === "manual" ? "" : value,
+                        );
+                      }}
+                      disabled={templatesLoading}
+                    >
+                      <SelectTrigger className="flex-1">
+                        <SelectValue
+                          placeholder={
+                            templatesLoading
+                              ? "Loading templates..."
+                              : templatesError
+                                ? "Failed to load templates"
+                                : "Select a VC template or use manual"
+                          }
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="manual">
+                          Manual (Create from scratch)
+                        </SelectItem>
+                        {templates.map((template: any) => (
+                          <SelectItem
+                            key={template.id}
+                            value={template.id.toString()}
+                          >
+                            {template.name}
+                          </SelectItem>
+                        ))}
+                        {templates.length === 0 && !templatesLoading && (
+                          <SelectItem value="no-templates" disabled>
+                            No VC templates available
+                          </SelectItem>
+                        )}
+                      </SelectContent>
+                    </Select>
+                    {selectedTemplate !== "manual" && templateDetails && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => previewTemplateDetails(templateDetails)}
+                        className="px-3"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </Button>
+                    )}
+                  </div>
+
+                  {/* Template Description */}
+                  {selectedTemplate !== "manual" && templateDetails && (
+                    <div className="mt-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                      <p className="text-sm text-blue-800">
+                        <strong>{templateDetails.name}:</strong> {templateDetails.description}
+                      </p>
+                      {templateDetails.steps && templateDetails.steps.length > 0 && (
+                        <p className="text-xs text-blue-600 mt-1">
+                          This template includes {templateDetails.steps.length} predefined steps.
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             </CardContent>
           </Card>
