@@ -435,6 +435,17 @@ export default function CreateVC() {
     }
   }, [user?.email]);
 
+  // Debug country initialization when resuming from draft
+  useEffect(() => {
+    if (resumeData?.country) {
+      console.log("🐛 DEBUG - Initial country state after resuming from draft:");
+      console.log("resumeData.country:", resumeData.country);
+      console.log("vcData.country:", vcData.country);
+      console.log("vcData.custom_country:", vcData.custom_country);
+      console.log("Is resumeData.country in COUNTRIES?", COUNTRIES.includes(resumeData.country));
+    }
+  }, [resumeData?.country, vcData.country, vcData.custom_country]);
+
   const createVCMutation = useMutation({
     mutationFn: (vcData: any) =>
       apiClient.request("/vc", {
