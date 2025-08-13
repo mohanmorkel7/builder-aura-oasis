@@ -524,9 +524,8 @@ export default function VCDetails() {
       try {
         return await apiClient.request(`/vc/${id}`);
       } catch (error) {
-        // For 404 errors, only log a warning instead of error
+        // For 404 errors, handle silently
         if (error?.message?.includes('404')) {
-          console.warn(`VC with ID ${id} not found in database`);
           const mockData = getMockVC(id);
           if (!mockData) {
             // If mock data doesn't exist either, throw the original 404 error
