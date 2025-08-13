@@ -63,10 +63,7 @@ import {
   Edit,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
-import {
-  useCreateFollowUp,
-  useUsers,
-} from "@/hooks/useApi";
+import { useCreateFollowUp, useUsers } from "@/hooks/useApi";
 import { apiClient } from "@/lib/api";
 import { formatToISTDateTime } from "@/lib/dateUtils";
 
@@ -243,7 +240,8 @@ export function VCEnhancedStepItem({
         is_rich_text: isRichText,
         message_type: "text" as const,
         created_at: new Date().toISOString(),
-        attachments: stagedAttachments.length > 0 ? stagedAttachments : undefined,
+        attachments:
+          stagedAttachments.length > 0 ? stagedAttachments : undefined,
       };
 
       setChatMessages((prev) => [...prev, messageData]);
@@ -285,12 +283,19 @@ export function VCEnhancedStepItem({
     }
   };
 
-  const handleEditMessage = (messageId: number, messageText: string, isRichText: boolean) => {
+  const handleEditMessage = (
+    messageId: number,
+    messageText: string,
+    isRichText: boolean,
+  ) => {
     setEditingMessageId(messageId);
     setEditMessageText(messageText);
   };
 
-  const handleSaveEdit = async (messageId: number, originalIsRichText: boolean) => {
+  const handleSaveEdit = async (
+    messageId: number,
+    originalIsRichText: boolean,
+  ) => {
     try {
       setChatMessages((prev) =>
         prev.map((msg) =>
@@ -320,7 +325,9 @@ export function VCEnhancedStepItem({
     if (!messageToDelete) return;
 
     try {
-      setChatMessages((prev) => prev.filter((msg) => msg.id !== messageToDelete));
+      setChatMessages((prev) =>
+        prev.filter((msg) => msg.id !== messageToDelete),
+      );
       setDeleteConfirmOpen(false);
       setMessageToDelete(null);
     } catch (error) {
@@ -365,9 +372,7 @@ export function VCEnhancedStepItem({
           <CollapsibleTrigger className="flex-1 flex items-center justify-between text-left">
             <div className="flex-1">
               <div className="flex items-center space-x-2">
-                <span className="font-medium text-gray-900">
-                  {step.name}
-                </span>
+                <span className="font-medium text-gray-900">{step.name}</span>
                 <div className="flex items-center space-x-2">
                   {step.estimated_days && (
                     <Badge variant="outline" className="text-xs">
@@ -375,11 +380,16 @@ export function VCEnhancedStepItem({
                     </Badge>
                   )}
                   {step.priority && (
-                    <Badge variant="outline" className={`text-xs ${
-                      step.priority === 'high' ? 'bg-red-50 text-red-700 border-red-200' :
-                      step.priority === 'medium' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' :
-                      'bg-green-50 text-green-700 border-green-200'
-                    }`}>
+                    <Badge
+                      variant="outline"
+                      className={`text-xs ${
+                        step.priority === "high"
+                          ? "bg-red-50 text-red-700 border-red-200"
+                          : step.priority === "medium"
+                            ? "bg-yellow-50 text-yellow-700 border-yellow-200"
+                            : "bg-green-50 text-green-700 border-green-200"
+                      }`}
+                    >
                       {step.priority} priority
                     </Badge>
                   )}
@@ -515,7 +525,8 @@ export function VCEnhancedStepItem({
                                 {message.message_type !== "system" && (
                                   <>
                                     {/* Only show edit/delete for own messages */}
-                                    {message.user_id === parseInt(user?.id || "0") && (
+                                    {message.user_id ===
+                                      parseInt(user?.id || "0") && (
                                       <>
                                         <Button
                                           size="sm"
@@ -601,7 +612,9 @@ export function VCEnhancedStepItem({
                               ) : (
                                 <div
                                   dangerouslySetInnerHTML={{
-                                    __html: processMessageContent(message.message),
+                                    __html: processMessageContent(
+                                      message.message,
+                                    ),
                                   }}
                                 />
                               )}
@@ -609,18 +622,24 @@ export function VCEnhancedStepItem({
                               {message.attachments &&
                                 message.attachments.length > 0 && (
                                   <div className="mt-2 space-y-1">
-                                    {message.attachments.map((attachment, idx) => (
-                                      <div
-                                        key={idx}
-                                        className="flex items-center space-x-2 text-xs bg-gray-100 px-2 py-1 rounded"
-                                      >
-                                        <FileText className="w-3 h-3" />
-                                        <span>{attachment.file_name}</span>
-                                        <span className="text-gray-500">
-                                          ({(attachment.file_size / 1024).toFixed(1)} KB)
-                                        </span>
-                                      </div>
-                                    ))}
+                                    {message.attachments.map(
+                                      (attachment, idx) => (
+                                        <div
+                                          key={idx}
+                                          className="flex items-center space-x-2 text-xs bg-gray-100 px-2 py-1 rounded"
+                                        >
+                                          <FileText className="w-3 h-3" />
+                                          <span>{attachment.file_name}</span>
+                                          <span className="text-gray-500">
+                                            (
+                                            {(
+                                              attachment.file_size / 1024
+                                            ).toFixed(1)}{" "}
+                                            KB)
+                                          </span>
+                                        </div>
+                                      ),
+                                    )}
                                   </div>
                                 )}
                             </div>
@@ -698,7 +717,9 @@ export function VCEnhancedStepItem({
                             <Input
                               type="date"
                               value={followUpDueDate}
-                              onChange={(e) => setFollowUpDueDate(e.target.value)}
+                              onChange={(e) =>
+                                setFollowUpDueDate(e.target.value)
+                              }
                             />
                           </div>
                           <div className="flex space-x-2">
@@ -731,7 +752,7 @@ export function VCEnhancedStepItem({
                           Rich text formatting
                         </Label>
                       </div>
-                      
+
                       {isRichText ? (
                         <RichTextEditor
                           value={newMessage}
@@ -753,7 +774,7 @@ export function VCEnhancedStepItem({
                           }}
                         />
                       )}
-                      
+
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-2">
                           <input
@@ -775,7 +796,9 @@ export function VCEnhancedStepItem({
                         <Button
                           size="sm"
                           onClick={handleSendMessage}
-                          disabled={!newMessage.trim() && stagedAttachments.length === 0}
+                          disabled={
+                            !newMessage.trim() && stagedAttachments.length === 0
+                          }
                         >
                           <Send className="w-4 h-4 mr-1" />
                           Send
@@ -796,7 +819,8 @@ export function VCEnhancedStepItem({
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Message</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this message? This action cannot be undone.
+              Are you sure you want to delete this message? This action cannot
+              be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

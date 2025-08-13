@@ -149,7 +149,6 @@ export default function VCDetails() {
     enabled: !!id,
   });
 
-
   // Create step mutation
   const createStepMutation = useMutation({
     mutationFn: async (stepData: any) => {
@@ -245,7 +244,6 @@ export default function VCDetails() {
       created_by: parseInt(user?.id || "1"),
     });
   };
-
 
   const getRoundStageDisplay = (stage: string) => {
     return (
@@ -535,7 +533,8 @@ export default function VCDetails() {
                 Funding Process Steps
               </CardTitle>
               <CardDescription>
-                Track your fundraising milestones and progress with drag-and-drop organization
+                Track your fundraising milestones and progress with
+                drag-and-drop organization
               </CardDescription>
             </div>
             <Button
@@ -582,7 +581,6 @@ export default function VCDetails() {
           )}
         </CardContent>
       </Card>
-
 
       {/* Add Step Dialog */}
       <Dialog open={showAddStep} onOpenChange={setShowAddStep}>
