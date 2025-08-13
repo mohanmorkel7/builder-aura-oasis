@@ -112,7 +112,7 @@ export default function CreateVC() {
 
   // Check URL parameters for draft ID (fallback when location state is lost)
   const urlParams = new URLSearchParams(location.search);
-  const draftIdFromUrl = urlParams.get('draftId');
+  const draftIdFromUrl = urlParams.get("draftId");
 
   // Track the current draft ID for subsequent saves
   const [currentDraftId, setCurrentDraftId] = useState(
@@ -124,10 +124,16 @@ export default function CreateVC() {
     if (resumeData && (resumeData._resumeFromId || resumeData.id)) {
       const draftId = resumeData._resumeFromId || resumeData.id;
       setCurrentDraftId(draftId);
-      console.log("useEffect: Setting currentDraftId from resumeData to:", draftId);
+      console.log(
+        "useEffect: Setting currentDraftId from resumeData to:",
+        draftId,
+      );
     } else if (draftIdFromUrl) {
       setCurrentDraftId(draftIdFromUrl);
-      console.log("useEffect: Setting currentDraftId from URL to:", draftIdFromUrl);
+      console.log(
+        "useEffect: Setting currentDraftId from URL to:",
+        draftIdFromUrl,
+      );
     }
   }, [resumeData, draftIdFromUrl]);
 

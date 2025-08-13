@@ -274,7 +274,7 @@ export default function VCDashboard() {
     });
     // Navigate to create VC page with partial data (include URL param as backup)
     navigate(`/vc/create?draftId=${partialData.id}`, {
-      state: { resumeData: partialData }
+      state: { resumeData: partialData },
     });
   };
 
