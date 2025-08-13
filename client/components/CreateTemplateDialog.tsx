@@ -158,20 +158,28 @@ export default function CreateTemplateDialog({
   const createTemplateMutation = useMutation({
     mutationFn: async (data: any) => {
       console.log("Create template:", data);
-      // Return success with mock ID
-      return {
-        success: true,
-        data: {
-          id: Math.floor(Math.random() * 1000) + 100,
-          ...data,
-          created_at: new Date().toISOString(),
-        },
-      };
+      try {
+        const result = await apiClient.request("/templates-production", {
+          method: "POST",
+          body: JSON.stringify(data),
+        });
+        return {
+          success: true,
+          data: result,
+        };
+      } catch (error) {
+        console.error("Failed to create template:", error);
+        throw error;
+      }
     },
-    onSuccess: () => {
-      console.log("Template creation queued for when online");
+    onSuccess: (result) => {
+      console.log("Template created successfully:", result);
       onSuccess();
       resetForm();
+    },
+    onError: (error) => {
+      console.error("Template creation failed:", error);
+      alert("Failed to create template. Please try again.");
     },
   });
 
