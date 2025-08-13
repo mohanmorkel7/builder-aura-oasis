@@ -614,9 +614,14 @@ export default function CreateVC() {
             Back to VC Dashboard
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Create VC</h1>
+            <h1 className="text-3xl font-bold text-gray-900">
+              {resumeData ? "Resume VC Draft" : "Create VC"}
+            </h1>
             <p className="text-gray-600">
-              Create a new venture capital opportunity
+              {resumeData
+                ? "Continue working on your saved VC draft"
+                : "Create a new venture capital opportunity"
+              }
             </p>
           </div>
         </div>
