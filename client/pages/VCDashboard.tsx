@@ -271,10 +271,11 @@ export default function VCDashboard() {
       id: partialData.id,
       _resumeFromId: partialData.id,
       roundTitle: partialData.round_title,
+      country: partialData.country, // Include country in the debug log
     });
     // Navigate to create VC page with partial data (include URL param as backup)
     navigate(`/vc/create?draftId=${partialData.id}`, {
-      state: { resumeData: partialData },
+      state: { resumeData: { ...partialData, _resumeFromId: partialData.id } },
     });
   };
 
