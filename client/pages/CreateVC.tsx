@@ -679,6 +679,28 @@ export default function CreateVC() {
             });
           }, 100);
 
+          // Force template synchronization after API data is loaded
+          setTimeout(() => {
+            const apiTemplateId = response.template_id;
+            if (apiTemplateId) {
+              const templateIdStr = apiTemplateId.toString();
+              console.log("🔄 Force syncing template after API load:", {
+                apiTemplateId,
+                templateIdStr,
+                currentSelectedTemplate: selectedTemplate,
+              });
+              if (templateIdStr !== selectedTemplate) {
+                console.log("✅ Force setting selectedTemplate to:", templateIdStr);
+                setSelectedTemplate(templateIdStr);
+              }
+            } else {
+              console.log("❌ No template_id in API response, force setting to manual");
+              if (selectedTemplate !== "manual") {
+                setSelectedTemplate("manual");
+              }
+            }
+          }, 200);
+
           console.log(
             "�� DEBUG - After setting vcData from API, country fields should be:",
             {
