@@ -119,7 +119,11 @@ export default function EditTemplateDialog({
   };
 
   // Fetch template data from API
-  const { data: template, isLoading, error } = useQuery({
+  const {
+    data: template,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["template", templateId],
     queryFn: async () => {
       if (!templateId) return null;
@@ -141,10 +145,13 @@ export default function EditTemplateDialog({
     mutationFn: async (data: any) => {
       console.log("Update template:", data);
       try {
-        const result = await apiClient.request(`/templates-production/${templateId}`, {
-          method: "PUT",
-          body: JSON.stringify(data),
-        });
+        const result = await apiClient.request(
+          `/templates-production/${templateId}`,
+          {
+            method: "PUT",
+            body: JSON.stringify(data),
+          },
+        );
         return { success: true, data: result };
       } catch (error) {
         console.error("Failed to update template:", error);
@@ -154,7 +161,9 @@ export default function EditTemplateDialog({
     onSuccess: () => {
       console.log("Template updated successfully");
       queryClient.invalidateQueries({ queryKey: ["template", templateId] });
-      queryClient.invalidateQueries({ queryKey: ["templates-with-categories"] });
+      queryClient.invalidateQueries({
+        queryKey: ["templates-with-categories"],
+      });
       onClose();
     },
     onError: (error) => {

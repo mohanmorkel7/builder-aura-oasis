@@ -266,7 +266,11 @@ export default function ViewTemplateDialog({
   };
 
   // Fetch template data from API
-  const { data: template, isLoading, error } = useQuery({
+  const {
+    data: template,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["template", templateId],
     queryFn: async () => {
       if (!templateId) return null;
