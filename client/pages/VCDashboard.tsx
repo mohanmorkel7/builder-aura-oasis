@@ -1356,142 +1356,321 @@ export default function VCDashboard() {
         })()}
       </div>
 
-      {/* VC Opportunities List */}
-      <Card>
-        <CardHeader>
-          <CardTitle>VC List ({filteredVCs.length})</CardTitle>
-          <CardDescription>
-            Manage your venture capital funding rounds
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {vcLoading ? (
-            <div className="text-center py-8">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-              <p className="mt-2 text-gray-600">Loading VCs...</p>
-            </div>
-          ) : filteredVCs.length > 0 ? (
-            <div className="space-y-4">
-              {filteredVCs.map((vc: any) => (
-                <div
-                  key={vc.id}
-                  className="border rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
-                  onClick={() => navigate(`/vc/${vc.id}`)}
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-start gap-3">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <h3 className="font-semibold text-lg">
-                              {vc.round_title || "Untitled Round"}
-                            </h3>
-                            <Badge variant="secondary">{vc.vc_id}</Badge>
-                            {vc.status && (
-                              <Badge
-                                className={`${statusColors[vc.status as keyof typeof statusColors]} border-0`}
-                              >
-                                {getStatusIcon(vc.status)}
-                                <span className="ml-1 capitalize">
-                                  {vc.status.replace("-", " ")}
-                                </span>
-                              </Badge>
-                            )}
-                          </div>
-
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
-                            <div>
-                              <p className="text-sm text-gray-600">Investor</p>
-                              <p className="font-medium">
-                                {vc.investor_name || "N/A"}
-                              </p>
-                              {vc.investor_category && (
+      {/* VC Opportunities List or Saved Drafts */}
+      {activeTab === "vcs" ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>VC List ({filteredVCs.length})</CardTitle>
+            <CardDescription>
+              Manage your venture capital funding rounds
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {vcLoading ? (
+              <div className="text-center py-8">
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+                <p className="mt-2 text-gray-600">Loading VCs...</p>
+              </div>
+            ) : filteredVCs.length > 0 ? (
+              <div className="space-y-4">
+                {filteredVCs.map((vc: any) => (
+                  <div
+                    key={vc.id}
+                    className="border rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
+                    onClick={() => navigate(`/vc/${vc.id}`)}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-start gap-3">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <h3 className="font-semibold text-lg">
+                                {vc.round_title || "Untitled Round"}
+                              </h3>
+                              <Badge variant="secondary">{vc.vc_id}</Badge>
+                              {vc.status && (
                                 <Badge
-                                  className={`${investorCategoryColors[vc.investor_category as keyof typeof investorCategoryColors]} border-0 text-xs`}
+                                  className={`${statusColors[vc.status as keyof typeof statusColors]} border-0`}
                                 >
-                                  {vc.investor_category
-                                    .replace("_", " ")
-                                    .toUpperCase()}
+                                  {getStatusIcon(vc.status)}
+                                  <span className="ml-1 capitalize">
+                                    {vc.status.replace("-", " ")}
+                                  </span>
                                 </Badge>
                               )}
                             </div>
 
-                            <div>
-                              <p className="text-sm text-gray-600">
-                                Round Details
-                              </p>
-                              <p className="font-medium">
-                                {vc.round_stage
-                                  ? vc.round_stage
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+                              <div>
+                                <p className="text-sm text-gray-600">Investor</p>
+                                <p className="font-medium">
+                                  {vc.investor_name || "N/A"}
+                                </p>
+                                {vc.investor_category && (
+                                  <Badge
+                                    className={`${investorCategoryColors[vc.investor_category as keyof typeof investorCategoryColors]} border-0 text-xs`}
+                                  >
+                                    {vc.investor_category
                                       .replace("_", " ")
-                                      .toUpperCase()
-                                  : "N/A"}
-                              </p>
-                              <p className="text-sm text-gray-500">
-                                {formatCurrency(
-                                  vc.round_size,
-                                  vc.billing_currency,
+                                      .toUpperCase()}
+                                  </Badge>
                                 )}
-                              </p>
+                              </div>
+
+                              <div>
+                                <p className="text-sm text-gray-600">
+                                  Round Details
+                                </p>
+                                <p className="font-medium">
+                                  {vc.round_stage
+                                    ? vc.round_stage
+                                        .replace("_", " ")
+                                        .toUpperCase()
+                                    : "N/A"}
+                                </p>
+                                <p className="text-sm text-gray-500">
+                                  {formatCurrency(
+                                    vc.round_size,
+                                    vc.billing_currency,
+                                  )}
+                                </p>
+                              </div>
+
+                              <div>
+                                <p className="text-sm text-gray-600">Contact</p>
+                                <p className="font-medium">
+                                  {vc.contact_person || "N/A"}
+                                </p>
+                                <p className="text-sm text-gray-500">
+                                  {vc.email || "N/A"}
+                                </p>
+                              </div>
                             </div>
 
-                            <div>
-                              <p className="text-sm text-gray-600">Contact</p>
-                              <p className="font-medium">
-                                {vc.contact_person || "N/A"}
-                              </p>
-                              <p className="text-sm text-gray-500">
-                                {vc.email || "N/A"}
-                              </p>
+                            <div className="flex items-center gap-4 text-sm text-gray-500">
+                              <div className="flex items-center gap-1">
+                                {getSourceIcon(vc.lead_source)}
+                                <span className="capitalize">
+                                  {vc.lead_source?.replace("-", " ")}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Calendar className="w-4 h-4" />
+                                <span>Created {formatToIST(vc.created_at)}</span>
+                              </div>
+                              {vc.priority_level && (
+                                <Badge
+                                  className={`${priorityColors[vc.priority_level as keyof typeof priorityColors]} border-0 text-xs`}
+                                >
+                                  {vc.priority_level.toUpperCase()}
+                                </Badge>
+                              )}
                             </div>
-                          </div>
-
-                          <div className="flex items-center gap-4 text-sm text-gray-500">
-                            <div className="flex items-center gap-1">
-                              {getSourceIcon(vc.lead_source)}
-                              <span className="capitalize">
-                                {vc.lead_source?.replace("-", " ")}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Calendar className="w-4 h-4" />
-                              <span>Created {formatToIST(vc.created_at)}</span>
-                            </div>
-                            {vc.priority_level && (
-                              <Badge
-                                className={`${priorityColors[vc.priority_level as keyof typeof priorityColors]} border-0 text-xs`}
-                              >
-                                {vc.priority_level.toUpperCase()}
-                              </Badge>
-                            )}
                           </div>
                         </div>
                       </div>
+
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/vc/${vc.id}`);
+                          }}
+                        >
+                          <Eye className="w-4 h-4 mr-1" />
+                          View
+                        </Button>
+
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/vc/${vc.id}/edit`);
+                          }}
+                        >
+                          <Edit className="w-4 h-4 mr-1" />
+                          Edit
+                        </Button>
+
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="text-red-600 hover:text-red-700"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>
+                                Delete VC Opportunity
+                              </AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Are you sure you want to delete "{vc.round_title}
+                                "? This action cannot be undone.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => handleDeleteVC(vc.id)}
+                                className="bg-red-600 hover:bg-red-700"
+                              >
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <Target className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  No VCs Found
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  {searchTerm ||
+                  statusFilter !== "all" ||
+                  categoryFilter !== "all"
+                    ? "Try adjusting your filters or search terms."
+                    : "Get started by creating your first VC round."}
+                </p>
+                <Button onClick={() => navigate("/vc/create")}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create VC
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      ) : (
+        /* Saved Drafts Tab */
+        partialSavesLoading ? (
+          <Card>
+            <CardContent className="p-6 text-center">
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+              <p className="mt-2 text-gray-600">Loading saved drafts...</p>
+            </CardContent>
+          </Card>
+        ) : vcPartialSaves.length === 0 ? (
+          <Card>
+            <CardContent className="p-6 text-center">
+              <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                No Saved Drafts
+              </h3>
+              <p className="text-gray-600 mb-4">
+                Draft VCs will appear here when you save your progress using the
+                "Save Draft" button while creating a VC.
+              </p>
+              <Button onClick={() => navigate("/vc/create")}>
+                <Plus className="w-4 h-4 mr-2" />
+                Create VC
+              </Button>
+            </CardContent>
+          </Card>
+        ) : (
+          vcPartialSaves.map((partialSave: any) => {
+            const info = getVCPartialSaveInfo(partialSave);
+            const lastSaved = new Date(info.lastSaved);
+            const formatDateForInput = (dateString: string) => {
+              if (!dateString) return "";
+              const date = new Date(dateString);
+              return date.toISOString().split("T")[0];
+            };
+
+            return (
+              <Card
+                key={partialSave.id}
+                className="hover:shadow-md transition-shadow"
+              >
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="mb-3">
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          {partialSave.investor_name === "PARTIAL_SAVE_IN_PROGRESS"
+                            ? "Unsaved VC Draft"
+                            : partialSave.round_title || "Untitled VC Draft"}
+                        </h3>
+                        <div className="flex items-center space-x-4 text-sm text-gray-500 mt-1">
+                          <span>
+                            Last saved:{" "}
+                            {lastSaved.toLocaleDateString("en-US", {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </span>
+                        </div>
+
+                        {partialSave.investor_name &&
+                          partialSave.investor_name !== "PARTIAL_SAVE_IN_PROGRESS" && (
+                            <>
+                              <span className="text-gray-600">Investor: </span>
+                              <span className="text-blue-600">
+                                {partialSave.investor_name}
+                              </span>
+                            </>
+                          )}
+
+                        {partialSave.lead_source && (
+                          <>
+                            <span className="text-gray-600">Source: </span>
+                            <span className="capitalize">
+                              {partialSave.lead_source.replace("-", " ")}
+                            </span>
+                          </>
+                        )}
+                      </div>
+
+                      {partialSave.round_description && (
+                        <div className="mb-3">
+                          <p className="text-sm text-gray-600 line-clamp-2">
+                            {partialSave.round_description}
+                          </p>
+                        </div>
+                      )}
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center space-x-2">
                       <Button
-                        variant="outline"
                         size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(`/vc/${vc.id}`);
-                        }}
-                      >
-                        <Eye className="w-4 h-4 mr-1" />
-                        View
-                      </Button>
+                        onClick={() => {
+                          try {
+                            const resumeData = {
+                              ...partialSave,
+                              id: partialSave.id,
+                              _resumeFromId: partialSave.id,
+                              _lastSaved: info.lastSaved,
+                            };
 
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(`/vc/${vc.id}/edit`);
+                            handleResumeVCPartialSave(resumeData);
+                          } catch (error) {
+                            console.error(
+                              "Error resuming VC partial save:",
+                              error,
+                            );
+                            alert(
+                              "Error resuming draft. Please try again or create a new VC.",
+                            );
+                          }
                         }}
                       >
-                        <Edit className="w-4 h-4 mr-1" />
-                        Edit
+                        <Play className="w-4 h-4 mr-1" />
+                        Continue
                       </Button>
 
                       <AlertDialog>
@@ -1500,25 +1679,30 @@ export default function VCDashboard() {
                             variant="outline"
                             size="sm"
                             className="text-red-600 hover:text-red-700"
-                            onClick={(e) => e.stopPropagation()}
                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
-                            <AlertDialogTitle>
-                              Delete VC Opportunity
-                            </AlertDialogTitle>
+                            <AlertDialogTitle>Delete Draft</AlertDialogTitle>
                             <AlertDialogDescription>
-                              Are you sure you want to delete "{vc.round_title}
-                              "? This action cannot be undone.
+                              Are you sure you want to delete this saved draft?
+                              This action cannot be undone.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
                             <AlertDialogAction
-                              onClick={() => handleDeleteVC(vc.id)}
+                              onClick={() =>
+                                handleDeleteVCPartialSave(
+                                  partialSave.id,
+                                  partialSave.investor_name ===
+                                    "PARTIAL_SAVE_IN_PROGRESS"
+                                    ? "Unsaved VC Draft"
+                                    : partialSave.round_title || "Untitled VC Draft",
+                                )
+                              }
                               className="bg-red-600 hover:bg-red-700"
                             >
                               Delete
@@ -1528,30 +1712,16 @@ export default function VCDashboard() {
                       </AlertDialog>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-8">
-              <Target className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                No VCs Found
-              </h3>
-              <p className="text-gray-600 mb-4">
-                {searchTerm ||
-                statusFilter !== "all" ||
-                categoryFilter !== "all"
-                  ? "Try adjusting your filters or search terms."
-                  : "Get started by creating your first VC round."}
-              </p>
-              <Button onClick={() => navigate("/vc/create")}>
-                <Plus className="w-4 h-4 mr-2" />
-                Create VC
-              </Button>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+
+                  <div className="text-sm text-gray-500">
+                    Created: {formatToIST(partialSave.created_at)}
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })
+        )
+      )}
     </div>
   );
 }
