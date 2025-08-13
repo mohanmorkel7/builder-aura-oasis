@@ -590,7 +590,16 @@ export default function CreateVC() {
         address: vcData.address,
         city: vcData.city,
         state: vcData.state,
-        country: vcData.custom_country || vcData.country,
+        country: (() => {
+          // Same logic as partial save for consistency
+          if (vcData.country === "Other" && vcData.custom_country?.trim()) {
+            return vcData.custom_country.trim();
+          }
+          if (vcData.country && vcData.country !== "Other") {
+            return vcData.country;
+          }
+          return "";
+        })(),
         website: vcData.website,
         company_size: vcData.company_size,
         industry: vcData.industry,
