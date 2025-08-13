@@ -677,12 +677,6 @@ export default function CreateVC() {
         is_partial: true,
       };
 
-      console.log("DEBUG: Form state before save:", {
-        vcData_country: vcData.country,
-        partialData_country: partialData.country,
-        form_state_country: vcData.country
-      });
-
       await partialSaveMutation.mutateAsync(partialData);
 
       // Save the current active tab for restoration when continuing
