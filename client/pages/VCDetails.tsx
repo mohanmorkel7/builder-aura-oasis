@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/lib/auth-context";
 import { apiClient } from "@/lib/api";
+import { useTemplate } from "@/hooks/useApi";
 import { DraggableStepsList } from "@/components/DraggableStepsList";
 import { Button } from "@/components/ui/button";
 import {
