@@ -1203,9 +1203,18 @@ export default function VCDetails() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>Round Steps</CardTitle>
+              <CardTitle>
+                {templateLoading
+                  ? "Loading..."
+                  : templateData?.name
+                    ? `${templateData.name} Pipeline`
+                    : "Round Steps"}
+              </CardTitle>
               <CardDescription>
-                Track the progress of this funding round
+                {templateLoading
+                  ? "Loading template details..."
+                  : templateData?.description ||
+                    "Track the progress of this funding round"}
               </CardDescription>
             </div>
             <Dialog open={isAddStepOpen} onOpenChange={setIsAddStepOpen}>
