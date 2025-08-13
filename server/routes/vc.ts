@@ -238,7 +238,7 @@ router.get("/progress", async (req: Request, res: Response) => {
               COALESCE(COUNT(vs.id) FILTER (WHERE vs.status = 'completed') * 20, 0) as total_completed_probability
             FROM vcs v
             LEFT JOIN vc_steps vs ON v.id = vs.vc_id
-            WHERE v.status IN ('in-progress', 'won')
+            WHERE v.status IN ('in-progress', 'won') AND (v.is_partial = false OR v.is_partial IS NULL)
             GROUP BY v.id, v.round_title, v.investor_name, v.status
           ),
           completed_steps_data AS (
