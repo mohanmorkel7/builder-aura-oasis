@@ -819,10 +819,10 @@ export default function CreateVC() {
 
       // Check actual DOM values vs state
       const countryDropdown = document
-        .querySelector('button[role="combobox"]')
+        .querySelector('label[for="country"]')
+        ?.nextElementSibling?.querySelector('span')
         ?.textContent?.trim();
-      const customCountryInput =
-        document.querySelector("#custom_country")?.value;
+      const customCountryInput = document.querySelector("#custom_country")?.value;
       console.log("🐛 DEBUG - DOM vs State comparison:", {
         domCountryDropdown: countryDropdown,
         stateCountry: vcData.country,
