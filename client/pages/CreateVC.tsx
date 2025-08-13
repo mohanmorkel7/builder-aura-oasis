@@ -652,10 +652,10 @@ export default function CreateVC() {
           </Button>
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
-              {resumeData ? "Resume VC Draft" : "Create VC"}
+              {currentDraftId ? "Edit VC Draft" : "Create VC"}
             </h1>
             <p className="text-gray-600">
-              {resumeData
+              {currentDraftId
                 ? "Continue working on your saved VC draft"
                 : "Create a new venture capital opportunity"}
             </p>
