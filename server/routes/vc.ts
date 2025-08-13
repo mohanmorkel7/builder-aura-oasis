@@ -576,11 +576,11 @@ router.get("/:id/steps", async (req: Request, res: Response) => {
         steps = await VCStepRepository.findByVCId(vcId);
       } else {
         // Return mock steps when database is unavailable
-        steps = await MockDataService.getLeadSteps(vcId);
+        steps = await MockDataService.getVCSteps(vcId);
       }
     } catch (dbError) {
       console.log("Database error, using mock data:", dbError.message);
-      steps = await MockDataService.getLeadSteps(vcId);
+      steps = await MockDataService.getVCSteps(vcId);
     }
 
     res.json(steps);
