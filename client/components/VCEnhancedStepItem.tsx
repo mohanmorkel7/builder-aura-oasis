@@ -50,19 +50,20 @@ import {
   Send,
   Trash2,
   GripVertical,
-  Target,
-  Calendar,
-  DollarSign,
-  User,
+  Reply,
+  Paperclip,
+  X,
+  Bold,
+  Italic,
+  Link,
+  AlignLeft,
+  List,
   Image,
   Eye,
   Edit,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import {
-  useVCStepChats,
-  useCreateVCStepChat,
-  useDeleteVCStepChat,
   useCreateFollowUp,
   useUsers,
 } from "@/hooks/useApi";
@@ -71,11 +72,10 @@ import { formatToISTDateTime } from "@/lib/dateUtils";
 
 interface VCEnhancedStepItemProps {
   step: any;
-  vcId: number;
   isExpanded: boolean;
   onToggleExpansion: () => void;
-  onStatusChange: (stepId: number, status: string) => void;
-  onDelete: (stepId: number) => void;
+  onUpdateStatus: (stepId: number, status: string) => void;
+  onDeleteStep: (stepId: number) => void;
   isDragOverlay?: boolean;
 }
 
@@ -92,11 +92,10 @@ interface ChatMessage {
 
 export function VCEnhancedStepItem({
   step,
-  vcId,
   isExpanded,
   onToggleExpansion,
-  onStatusChange,
-  onDelete,
+  onUpdateStatus,
+  onDeleteStep,
   isDragOverlay = false,
 }: VCEnhancedStepItemProps) {
   const { user } = useAuth();
@@ -105,16 +104,6 @@ export function VCEnhancedStepItem({
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const { data: users = [], isLoading: usersLoading } = useUsers();
 
-  // Chat-related queries and mutations
-  const {
-    data: chatMessages = [],
-    isLoading: chatLoading,
-    error: chatError,
-  } = useVCStepChats(step.id);
-  const createChatMutation = useCreateVCStepChat();
-  const deleteChatMutation = useDeleteVCStepChat();
-  const createFollowUpMutation = useCreateFollowUp();
-
   const {
     attributes,
     listeners,
@@ -122,10 +111,7 @@ export function VCEnhancedStepItem({
     transform,
     transition,
     isDragging,
-  } = useSortable({
-    id: step.id,
-    disabled: step.isTemplate || isDragOverlay,
-  });
+  } = useSortable({ id: step.id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -133,13 +119,37 @@ export function VCEnhancedStepItem({
     opacity: isDragging ? 0.5 : 1,
   };
 
+  // Filter active users and format for dropdown
+  const teamMembers = users
+    .filter((user: any) => user.status === "active")
+    .map((user: any) => ({
+      id: user.id,
+      name: `${user.first_name} ${user.last_name}`,
+      role: user.role,
+    }));
+
+  // Mock chat data for VC steps (similar structure to leads)
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
+    {
+      id: 1,
+      user_name: "System",
+      message: `VC step "${step.name}" created for funding tracking`,
+      is_rich_text: false,
+      message_type: "system",
+      created_at: new Date().toISOString(),
+    },
+  ]);
+
+  const chatLoading = false;
+  const chatError = null;
+
+  // Sort messages by created_at in ascending order (latest last for bottom scroll)
   const sortedMessages = React.useMemo(() => {
-    const sorted = [...chatMessages].sort(
+    return [...chatMessages].sort(
       (a, b) =>
         new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
     );
-    return sorted;
-  }, [chatMessages, step.id]);
+  }, [chatMessages]);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -149,14 +159,8 @@ export function VCEnhancedStepItem({
     }
   }, [sortedMessages]);
 
-  // Debug logging
-  React.useEffect(() => {
-    if (chatError) {
-      console.error("Chat loading error for VC step", step.id, ":", chatError);
-    }
-  }, [chatError, step.id]);
-
   const [newMessage, setNewMessage] = useState("");
+  const [isRichText, setIsRichText] = useState(false);
   const [stagedAttachments, setStagedAttachments] = useState<any[]>([]);
 
   // Follow-up related states
@@ -173,6 +177,8 @@ export function VCEnhancedStepItem({
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [messageToDelete, setMessageToDelete] = useState<number | null>(null);
 
+  const createFollowUpMutation = useCreateFollowUp();
+
   // Function to highlight mentions and make follow-up IDs clickable
   const processMessageContent = (messageText: string) => {
     if (!user) return messageText;
@@ -180,523 +186,475 @@ export function VCEnhancedStepItem({
     let processedText = messageText;
 
     // Look for mentions of current user (case insensitive)
-    const mentionPattern = new RegExp(
-      `@(${user.first_name}\\s*${user.last_name}|${user.first_name}|${user.last_name})`,
-      "gi",
+    const userNamePattern = new RegExp(`@${user.name}`, "gi");
+    processedText = processedText.replace(
+      userNamePattern,
+      `<span class="bg-red-100 text-red-700 px-1 rounded font-medium">@${user.name}</span>`,
     );
 
-    processedText = processedText.replace(mentionPattern, (match) => {
-      return `<span class="bg-yellow-200 px-1 rounded font-medium">${match}</span>`;
-    });
-
-    // Look for follow-up IDs (#123) and make them clickable
+    // Make follow-up IDs clickable (#13, #14, etc.)
     const followUpPattern = /#(\d+)/g;
-    processedText = processedText.replace(followUpPattern, (match, id) => {
-      return `<button class="text-blue-600 hover:text-blue-800 underline font-medium" onclick="window.open('/follow-ups/${id}', '_blank')">${match}</button>`;
-    });
+    processedText = processedText.replace(
+      followUpPattern,
+      `<span class="follow-up-link bg-blue-100 text-blue-700 px-2 py-1 rounded font-medium cursor-pointer hover:bg-blue-200"
+        data-follow-up-id="$1"
+        onclick="window.location.href='/follow-ups?id=$1'"
+      >#$1</span>`,
+    );
 
     return processedText;
   };
 
-  const handleSendMessage = async () => {
-    if (!newMessage.trim() && stagedAttachments.length === 0) return;
-
-    try {
-      console.log("Sending VC step chat message:", {
-        step_id: step.id,
-        vc_id: vcId,
-        message: newMessage,
-        attachments: stagedAttachments,
-      });
-
-      const chatData = {
-        message: newMessage,
-        user_name: `${user?.first_name} ${user?.last_name}` || "Unknown User",
-        user_id: parseInt(user?.id || "1"),
-        is_rich_text: false,
-        message_type: "text" as const,
-        attachments: stagedAttachments,
-      };
-
-      await createChatMutation.mutateAsync({
-        stepId: step.id,
-        chatData,
-      });
-
-      setNewMessage("");
-      setStagedAttachments([]);
-    } catch (error) {
-      console.error("Failed to send VC step message:", error);
-    }
-  };
+  // Don't render if step is invalid
+  if (!step || !step.id) {
+    return null;
+  }
 
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const files = event.target.files;
-    if (!files || files.length === 0) return;
+    if (!files || files.length === 0 || !user) return;
 
-    const file = files[0];
-    const formData = new FormData();
-    formData.append("file", file);
+    // Stage the attachments for sending
+    const newAttachments = Array.from(files).map((file) => ({
+      file_name: file.name,
+      file_size: file.size,
+      file_type: file.type,
+    }));
 
-    try {
-      console.log("Uploading VC step file:", file.name);
-
-      // For now, just stage the file info - you might want to upload to a file service
-      const fileInfo = {
-        name: file.name,
-        size: file.size,
-        type: file.type,
-        url: URL.createObjectURL(file), // Temporary URL for preview
-      };
-
-      setStagedAttachments((prev) => [...prev, fileInfo]);
-    } catch (error) {
-      console.error("Failed to upload VC step file:", error);
-    }
+    setStagedAttachments((prev) => [...prev, ...newAttachments]);
+    event.target.value = "";
   };
 
   const removeAttachment = (index: number) => {
     setStagedAttachments((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "completed":
-        return <CheckCircle className="w-4 h-4 text-green-600" />;
-      case "in-progress":
-        return <Clock className="w-4 h-4 text-blue-600" />;
-      case "pending":
-        return <Target className="w-4 h-4 text-gray-400" />;
-      default:
-        return <Target className="w-4 h-4 text-gray-400" />;
+  const handleSendMessage = async () => {
+    if (!newMessage.trim() && stagedAttachments.length === 0) return;
+
+    try {
+      const messageData = {
+        id: Date.now(),
+        user_name: user?.name || "Anonymous",
+        user_id: parseInt(user?.id || "0"),
+        message: newMessage.trim(),
+        is_rich_text: isRichText,
+        message_type: "text" as const,
+        created_at: new Date().toISOString(),
+        attachments: stagedAttachments.length > 0 ? stagedAttachments : undefined,
+      };
+
+      setChatMessages((prev) => [...prev, messageData]);
+      setNewMessage("");
+      setStagedAttachments([]);
+    } catch (error) {
+      console.error("Failed to send message:", error);
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "completed":
-        return "bg-green-100 text-green-800 border-green-200";
-      case "in-progress":
-        return "bg-blue-100 text-blue-800 border-blue-200";
-      case "pending":
-        return "bg-gray-100 text-gray-800 border-gray-200";
-      default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
-    }
-  };
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "high":
-        return "bg-red-100 text-red-800 border-red-200";
-      case "medium":
-        return "bg-yellow-100 text-yellow-800 border-yellow-200";
-      case "low":
-        return "bg-green-100 text-green-800 border-green-200";
-      default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
-    }
+  const handleFollowUp = (messageId: number) => {
+    setCreateFollowUp(true);
   };
 
   const handleCreateFollowUp = async () => {
-    if (!followUpNotes.trim()) return;
+    if (!followUpNotes.trim() || !followUpAssignTo || !followUpDueDate) {
+      alert("Please fill in all follow-up fields");
+      return;
+    }
 
     try {
-      const followUpData = {
-        type: "vc_step",
-        related_id: step.id,
-        notes: followUpNotes,
-        assigned_to: followUpAssignTo ? parseInt(followUpAssignTo) : user?.id,
-        due_date: followUpDueDate || null,
-        status: "pending",
+      await createFollowUpMutation.mutateAsync({
+        title: `VC Step Follow-up: ${step.name}`,
+        description: followUpNotes,
+        assigned_to: parseInt(followUpAssignTo),
+        due_date: followUpDueDate,
         priority: "medium",
+        vc_id: step.vc_id,
+        vc_step_id: step.id,
         created_by: parseInt(user?.id || "1"),
-      };
+      });
 
-      await createFollowUpMutation.mutateAsync(followUpData);
-
-      // Reset form
       setCreateFollowUp(false);
       setFollowUpNotes("");
       setFollowUpAssignTo("");
       setFollowUpDueDate("");
-
-      // Send a system message about the follow-up
-      const systemChatData = {
-        message: `📅 Follow-up created: ${followUpNotes}`,
-        user_name: "System",
-        user_id: null,
-        is_rich_text: false,
-        message_type: "system" as const,
-        attachments: [],
-      };
-
-      await createChatMutation.mutateAsync({
-        stepId: step.id,
-        chatData: systemChatData,
-      });
     } catch (error) {
-      console.error("Failed to create VC follow-up:", error);
+      console.error("Failed to create follow-up:", error);
     }
   };
 
-  if (isDragOverlay) {
-    return (
-      <Card className="shadow-lg">
-        <CardHeader className="pb-2">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              {getStatusIcon(step.status)}
-              <div>
-                <CardTitle className="text-sm">{step.name}</CardTitle>
-                <CardDescription className="text-xs">
-                  {step.description}
-                </CardDescription>
-              </div>
-            </div>
-          </div>
-        </CardHeader>
-      </Card>
-    );
-  }
+  const handleEditMessage = (messageId: number, messageText: string, isRichText: boolean) => {
+    setEditingMessageId(messageId);
+    setEditMessageText(messageText);
+  };
+
+  const handleSaveEdit = async (messageId: number, originalIsRichText: boolean) => {
+    try {
+      setChatMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === messageId
+            ? { ...msg, message: editMessageText.trim() }
+            : msg,
+        ),
+      );
+      setEditingMessageId(null);
+      setEditMessageText("");
+    } catch (error) {
+      console.error("Failed to edit message:", error);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingMessageId(null);
+    setEditMessageText("");
+  };
+
+  const handleDeleteMessage = (messageId: number) => {
+    setMessageToDelete(messageId);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDeleteMessage = async () => {
+    if (!messageToDelete) return;
+
+    try {
+      setChatMessages((prev) => prev.filter((msg) => msg.id !== messageToDelete));
+      setDeleteConfirmOpen(false);
+      setMessageToDelete(null);
+    } catch (error) {
+      console.error("Failed to delete message:", error);
+    }
+  };
+
+  const cancelDeleteMessage = () => {
+    setDeleteConfirmOpen(false);
+    setMessageToDelete(null);
+  };
 
   return (
-    <Card
+    <div
       ref={setNodeRef}
       style={style}
-      className={`transition-all duration-200 ${
-        step.isTemplate
-          ? "bg-blue-50 border-blue-200"
-          : isExpanded
-            ? "shadow-md"
-            : "hover:shadow-sm"
-      } ${isDragging ? "opacity-50" : ""}`}
+      className={`border rounded-lg bg-white ${isDragOverlay ? "shadow-2xl" : ""}`}
     >
       <Collapsible open={isExpanded} onOpenChange={onToggleExpansion}>
-        <CollapsibleTrigger asChild>
-          <CardHeader className="pb-2 cursor-pointer hover:bg-gray-50">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                {!step.isTemplate && (
-                  <div
-                    {...attributes}
-                    {...listeners}
-                    className="cursor-grab active:cursor-grabbing p-1 hover:bg-gray-200 rounded"
-                  >
-                    <GripVertical className="w-4 h-4 text-gray-400" />
-                  </div>
-                )}
-                {getStatusIcon(step.status)}
-                <div className="flex-1">
-                  <CardTitle className="text-sm flex items-center gap-2">
-                    {step.name}
-                    {step.isTemplate && (
-                      <Badge variant="outline" className="text-xs">
-                        Template
-                      </Badge>
-                    )}
-                  </CardTitle>
-                  <CardDescription className="text-xs">
-                    {step.description}
-                  </CardDescription>
+        <div className="flex items-center space-x-4 p-4">
+          {/* Drag Handle */}
+          <div
+            {...attributes}
+            {...listeners}
+            className="flex-shrink-0 cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600"
+            title="Drag to reorder"
+          >
+            <GripVertical className="w-5 h-5" />
+          </div>
+
+          {/* Status Icon */}
+          <div className="flex-shrink-0">
+            {step.status === "completed" ? (
+              <CheckCircle className="w-6 h-6 text-green-600" />
+            ) : step.status === "in_progress" ? (
+              <Clock className="w-6 h-6 text-blue-600" />
+            ) : (
+              <div className="w-6 h-6 border-2 border-gray-300 rounded-full" />
+            )}
+          </div>
+
+          <CollapsibleTrigger className="flex-1 flex items-center justify-between text-left">
+            <div className="flex-1">
+              <div className="flex items-center space-x-2">
+                <span className="font-medium text-gray-900">
+                  {step.name}
+                </span>
+                <div className="flex items-center space-x-2">
+                  {step.estimated_days && (
+                    <Badge variant="outline" className="text-xs">
+                      {step.estimated_days}d ETA
+                    </Badge>
+                  )}
+                  {step.priority && (
+                    <Badge variant="outline" className={`text-xs ${
+                      step.priority === 'high' ? 'bg-red-50 text-red-700 border-red-200' :
+                      step.priority === 'medium' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' :
+                      'bg-green-50 text-green-700 border-green-200'
+                    }`}>
+                      {step.priority} priority
+                    </Badge>
+                  )}
+                  {!chatLoading && sortedMessages.length > 0 && (
+                    <Badge variant="outline" className="text-xs">
+                      {sortedMessages.length} message
+                      {sortedMessages.length !== 1 ? "s" : ""}
+                    </Badge>
+                  )}
                 </div>
               </div>
-
-              <div className="flex items-center space-x-2">
-                <Badge className={`text-xs ${getStatusColor(step.status)}`}>
-                  {step.status.replace("_", " ").toUpperCase()}
-                </Badge>
-                {step.priority && (
-                  <Badge
-                    variant="outline"
-                    className={`text-xs ${getPriorityColor(step.priority)}`}
-                  >
-                    {step.priority.toUpperCase()}
-                  </Badge>
-                )}
-                {isExpanded ? (
-                  <ChevronDown className="w-4 h-4 text-gray-500" />
-                ) : (
-                  <ChevronRight className="w-4 h-4 text-gray-500" />
-                )}
+              <div className="text-sm text-gray-600 mt-1">
+                {step.description}
+              </div>
+              <div className="text-sm text-gray-600">
+                {step.status === "completed" &&
+                  step.completed_date &&
+                  `Completed on ${new Date(step.completed_date).toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" })}`}
+                {step.status !== "completed" &&
+                  step.due_date &&
+                  `Due: ${new Date(step.due_date).toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" })}`}
               </div>
             </div>
-          </CardHeader>
-        </CollapsibleTrigger>
+            {isExpanded ? (
+              <ChevronDown className="w-4 h-4" />
+            ) : (
+              <ChevronRight className="w-4 h-4" />
+            )}
+          </CollapsibleTrigger>
+
+          <div className="flex items-center space-x-2">
+            <Select
+              value={step.status}
+              onValueChange={(value) => onUpdateStatus(step.id, value)}
+            >
+              <SelectTrigger className="w-32">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="in_progress">In Progress</SelectItem>
+                <SelectItem value="completed">Completed</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onDeleteStep(step.id)}
+              className="text-red-600 hover:text-red-700"
+              title="Delete this step"
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
 
         <CollapsibleContent>
-          <CardContent className="pt-0">
-            {!step.isTemplate && (
-              <>
-                {/* Status Update Section */}
-                <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-                  <Label className="text-sm font-medium mb-2 block">
-                    Update Status
-                  </Label>
-                  <div className="flex gap-2">
-                    <Button
-                      size="sm"
-                      variant={
-                        step.status === "pending" ? "default" : "outline"
-                      }
-                      onClick={() => onStatusChange(step.id, "pending")}
-                    >
-                      <Target className="w-3 h-3 mr-1" />
-                      Pending
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant={
-                        step.status === "in_progress" ? "default" : "outline"
-                      }
-                      onClick={() => onStatusChange(step.id, "in_progress")}
-                    >
-                      <Clock className="w-3 h-3 mr-1" />
-                      In Progress
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant={
-                        step.status === "completed" ? "default" : "outline"
-                      }
-                      onClick={() => onStatusChange(step.id, "completed")}
-                    >
-                      <CheckCircle className="w-3 h-3 mr-1" />
-                      Completed
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Step Details */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                  <div className="space-y-2 text-sm">
-                    {step.due_date && (
-                      <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4 text-gray-500" />
-                        <span className="text-gray-600">Due:</span>
-                        <span>{formatToISTDateTime(step.due_date)}</span>
-                      </div>
-                    )}
-                    {step.assigned_to && (
-                      <div className="flex items-center gap-2">
-                        <User className="w-4 h-4 text-gray-500" />
-                        <span className="text-gray-600">Assigned to:</span>
-                        <span>
-                          {users.find((u) => u.id === step.assigned_to)
-                            ?.first_name || "Unknown"}
+          <div className="border-t bg-gray-50">
+            <div className="p-4">
+              {/* Full Chat Functionality for All Steps */}
+              <Card className="border-0 shadow-lg">
+                <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 pb-4 rounded-t-lg">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                        Team Chat
+                      </CardTitle>
+                      <CardDescription className="text-gray-600">
+                        Real-time collaboration for this VC step
+                      </CardDescription>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      {sortedMessages.length > 0 && (
+                        <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
+                          {sortedMessages.length} messages
                         </span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="space-y-2 text-sm">
-                    {step.estimated_days && (
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-4 h-4 text-gray-500" />
-                        <span className="text-gray-600">Estimated:</span>
-                        <span>{step.estimated_days} days</span>
-                      </div>
-                    )}
-                    {step.progress !== undefined && (
-                      <div className="flex items-center gap-2">
-                        <Target className="w-4 h-4 text-gray-500" />
-                        <span className="text-gray-600">Progress:</span>
-                        <span>{step.progress}%</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Team Chat Section */}
-                <div className="border-t pt-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <Label className="text-sm font-medium flex items-center gap-2">
-                      <MessageCircle className="w-4 h-4" />
-                      Team Chat ({sortedMessages.length})
-                      <Badge
-                        variant="outline"
-                        className="text-xs text-blue-600"
-                      >
-                        Demo Mode
-                      </Badge>
-                    </Label>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setCreateFollowUp(!createFollowUp)}
-                    >
-                      <Calendar className="w-3 h-3 mr-1" />
-                      Follow-up
-                    </Button>
-                  </div>
-
-                  {/* Follow-up Creation */}
-                  {createFollowUp && (
-                    <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                      <Label className="text-sm font-medium mb-2 block">
-                        Create Follow-up
-                      </Label>
-                      <div className="space-y-2">
-                        <Textarea
-                          placeholder="Follow-up notes..."
-                          value={followUpNotes}
-                          onChange={(e) => setFollowUpNotes(e.target.value)}
-                          className="text-sm"
-                          rows={2}
-                        />
-                        <div className="flex gap-2">
-                          <Select
-                            value={followUpAssignTo}
-                            onValueChange={setFollowUpAssignTo}
-                          >
-                            <SelectTrigger className="text-xs">
-                              <SelectValue placeholder="Assign to..." />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {users.map((user) => (
-                                <SelectItem
-                                  key={user.id}
-                                  value={user.id.toString()}
-                                >
-                                  {user.first_name} {user.last_name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <Input
-                            type="date"
-                            value={followUpDueDate}
-                            onChange={(e) => setFollowUpDueDate(e.target.value)}
-                            className="text-xs"
-                          />
-                          <Button size="sm" onClick={handleCreateFollowUp}>
-                            Create
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => setCreateFollowUp(false)}
-                          >
-                            Cancel
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Chat Messages */}
-                  {chatLoading ? (
-                    <div className="text-center py-4">
-                      <div className="text-sm text-gray-500">
-                        Loading chat...
-                      </div>
-                    </div>
-                  ) : (
-                    <div
-                      ref={messagesContainerRef}
-                      className="max-h-64 overflow-y-auto space-y-2 mb-3 border rounded-lg p-2 bg-gray-50"
-                    >
-                      {sortedMessages.length === 0 ? (
-                        <div className="text-center py-4">
-                          <div className="text-sm text-gray-500">
-                            No messages yet. Start the conversation!
-                          </div>
-                        </div>
-                      ) : (
-                        sortedMessages.map((message: ChatMessage) => (
-                          <div
-                            key={message.id}
-                            className={`p-2 rounded text-sm ${
-                              message.message_type === "system"
-                                ? "bg-blue-100 border-l-4 border-blue-500"
-                                : message.user_id === parseInt(user?.id || "0")
-                                  ? "bg-blue-500 text-white ml-8"
-                                  : "bg-white border mr-8"
-                            }`}
-                          >
-                            <div className="flex justify-between items-start">
-                              <div className="flex-1">
-                                {message.message_type !== "system" && (
-                                  <div className="font-medium text-xs mb-1">
-                                    {message.user_name}
-                                  </div>
-                                )}
-                                <div
-                                  dangerouslySetInnerHTML={{
-                                    __html: processMessageContent(
-                                      message.message,
-                                    ),
-                                  }}
-                                />
-                                {message.attachments &&
-                                  message.attachments.length > 0 && (
-                                    <div className="mt-2 space-y-1">
-                                      {message.attachments.map(
-                                        (attachment, index) => (
-                                          <div
-                                            key={index}
-                                            className="flex items-center gap-2 text-xs"
-                                          >
-                                            <FileText className="w-3 h-3" />
-                                            <span>{attachment.name}</span>
-                                            {attachment.url && (
-                                              <Button
-                                                size="sm"
-                                                variant="ghost"
-                                                className="h-auto p-0 text-xs"
-                                                onClick={() =>
-                                                  window.open(
-                                                    attachment.url,
-                                                    "_blank",
-                                                  )
-                                                }
-                                              >
-                                                <Download className="w-3 h-3" />
-                                              </Button>
-                                            )}
-                                          </div>
-                                        ),
-                                      )}
-                                    </div>
-                                  )}
-                              </div>
-                              <div className="text-xs opacity-75 ml-2">
-                                {formatToISTDateTime(message.created_at)}
-                              </div>
-                            </div>
-                          </div>
-                        ))
                       )}
                     </div>
-                  )}
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {/* Chat Messages */}
+                  <div
+                    ref={messagesContainerRef}
+                    className="space-y-3 max-h-96 overflow-y-auto"
+                  >
+                    {chatLoading && (
+                      <div className="text-center py-4 text-gray-500">
+                        Loading messages...
+                      </div>
+                    )}
+                    {chatError && (
+                      <div className="text-center py-4 text-red-500">
+                        Error loading messages: {chatError.message}
+                      </div>
+                    )}
+                    {!chatLoading &&
+                      !chatError &&
+                      sortedMessages.map((message, index) => (
+                        <div
+                          key={`msg-${message.id}-${index}`}
+                          className={`flex space-x-3 p-3 rounded border ${
+                            message.message_type === "system"
+                              ? "bg-blue-50 border-blue-200"
+                              : message.user_id === parseInt(user?.id || "0")
+                                ? "bg-green-50 border-green-200"
+                                : "bg-white"
+                          }`}
+                        >
+                          <div
+                            className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium ${
+                              message.message_type === "system"
+                                ? "bg-orange-500"
+                                : "bg-blue-500"
+                            }`}
+                          >
+                            {message.message_type === "system"
+                              ? "📋"
+                              : message.user_name.charAt(0)}
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-sm font-medium text-gray-900">
+                                {message.user_id === parseInt(user?.id || "0")
+                                  ? "Me"
+                                  : message.user_name}
+                              </span>
+                              <div className="flex items-center space-x-2">
+                                <span className="text-xs text-gray-500">
+                                  {formatToISTDateTime(message.created_at)}
+                                </span>
+                                {message.message_type !== "system" && (
+                                  <>
+                                    {/* Only show edit/delete for own messages */}
+                                    {message.user_id === parseInt(user?.id || "0") && (
+                                      <>
+                                        <Button
+                                          size="sm"
+                                          variant="ghost"
+                                          onClick={() =>
+                                            handleEditMessage(
+                                              message.id,
+                                              message.message,
+                                              message.is_rich_text,
+                                            )
+                                          }
+                                          className="text-gray-600 hover:text-gray-700"
+                                        >
+                                          <Edit className="w-3 h-3" />
+                                        </Button>
+                                        <Button
+                                          size="sm"
+                                          variant="ghost"
+                                          onClick={() =>
+                                            handleDeleteMessage(message.id)
+                                          }
+                                          className="text-red-600 hover:text-red-700"
+                                        >
+                                          <Trash2 className="w-3 h-3" />
+                                        </Button>
+                                      </>
+                                    )}
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      onClick={() => handleFollowUp(message.id)}
+                                      className="text-blue-600 hover:text-blue-700"
+                                    >
+                                      <Reply className="w-3 h-3 mr-1" />
+                                      Follow-up
+                                    </Button>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                            <div className="text-sm text-gray-700">
+                              {editingMessageId === message.id ? (
+                                <div className="space-y-2">
+                                  {message.is_rich_text ? (
+                                    <RichTextEditor
+                                      value={editMessageText}
+                                      onChange={setEditMessageText}
+                                      placeholder="Edit your message with rich formatting..."
+                                      className="min-h-[80px] border-gray-200"
+                                    />
+                                  ) : (
+                                    <Textarea
+                                      value={editMessageText}
+                                      onChange={(e) =>
+                                        setEditMessageText(e.target.value)
+                                      }
+                                      className="min-h-[60px]"
+                                      placeholder="Edit your message..."
+                                    />
+                                  )}
+                                  <div className="flex space-x-2">
+                                    <Button
+                                      size="sm"
+                                      onClick={() =>
+                                        handleSaveEdit(
+                                          message.id,
+                                          message.is_rich_text,
+                                        )
+                                      }
+                                      disabled={!editMessageText.trim()}
+                                    >
+                                      Save
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={handleCancelEdit}
+                                    >
+                                      Cancel
+                                    </Button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div
+                                  dangerouslySetInnerHTML={{
+                                    __html: processMessageContent(message.message),
+                                  }}
+                                />
+                              )}
+                              {/* Show attachments */}
+                              {message.attachments &&
+                                message.attachments.length > 0 && (
+                                  <div className="mt-2 space-y-1">
+                                    {message.attachments.map((attachment, idx) => (
+                                      <div
+                                        key={idx}
+                                        className="flex items-center space-x-2 text-xs bg-gray-100 px-2 py-1 rounded"
+                                      >
+                                        <FileText className="w-3 h-3" />
+                                        <span>{attachment.file_name}</span>
+                                        <span className="text-gray-500">
+                                          ({(attachment.file_size / 1024).toFixed(1)} KB)
+                                        </span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
 
-                  {/* Staged Attachments */}
+                  {/* Staged Attachments Display */}
                   {stagedAttachments.length > 0 && (
-                    <div className="mb-3">
-                      <Label className="text-xs text-gray-600 mb-1 block">
+                    <div className="border-t pt-3">
+                      <Label className="text-sm font-medium mb-2 block">
                         Attachments ({stagedAttachments.length})
                       </Label>
-                      <div className="space-y-1">
+                      <div className="space-y-2">
                         {stagedAttachments.map((attachment, index) => (
                           <div
                             key={index}
-                            className="flex items-center justify-between p-2 bg-gray-100 rounded text-xs"
+                            className="flex items-center justify-between p-2 bg-gray-100 rounded text-sm"
                           >
-                            <div className="flex items-center gap-2">
-                              <FileText className="w-3 h-3" />
-                              <span>{attachment.name}</span>
+                            <div className="flex items-center space-x-2">
+                              <FileText className="w-4 h-4" />
+                              <span>{attachment.file_name}</span>
                               <span className="text-gray-500">
-                                ({(attachment.size / 1024).toFixed(1)} KB)
+                                ({(attachment.file_size / 1024).toFixed(1)} KB)
                               </span>
                             </div>
                             <Button
                               size="sm"
                               variant="ghost"
                               onClick={() => removeAttachment(index)}
-                              className="h-auto p-1"
+                              className="text-red-600 hover:text-red-700"
                             >
-                              <Trash2 className="w-3 h-3" />
+                              <X className="w-4 h-4" />
                             </Button>
                           </div>
                         ))}
@@ -704,81 +662,153 @@ export function VCEnhancedStepItem({
                     </div>
                   )}
 
-                  {/* Message Input */}
-                  <div className="flex gap-2">
-                    <div className="flex-1">
-                      <Textarea
-                        placeholder="Type your message..."
-                        value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
-                        className="text-sm resize-none"
-                        rows={2}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" && !e.shiftKey) {
-                            e.preventDefault();
-                            handleSendMessage();
-                          }
-                        }}
-                      />
+                  {/* Follow-up Creation Section */}
+                  {createFollowUp && (
+                    <div className="border-t pt-4">
+                      <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                        <Label className="text-sm font-medium mb-3 block">
+                          Create Follow-up Task
+                        </Label>
+                        <div className="space-y-3">
+                          <Textarea
+                            placeholder="Follow-up description..."
+                            value={followUpNotes}
+                            onChange={(e) => setFollowUpNotes(e.target.value)}
+                            className="min-h-[60px]"
+                          />
+                          <div className="grid grid-cols-2 gap-3">
+                            <Select
+                              value={followUpAssignTo}
+                              onValueChange={setFollowUpAssignTo}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Assign to..." />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {teamMembers.map((member) => (
+                                  <SelectItem
+                                    key={member.id}
+                                    value={member.id.toString()}
+                                  >
+                                    {member.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <Input
+                              type="date"
+                              value={followUpDueDate}
+                              onChange={(e) => setFollowUpDueDate(e.target.value)}
+                            />
+                          </div>
+                          <div className="flex space-x-2">
+                            <Button size="sm" onClick={handleCreateFollowUp}>
+                              Create Follow-up
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => setCreateFollowUp(false)}
+                            >
+                              Cancel
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex flex-col gap-1">
-                      <Button
-                        size="sm"
-                        onClick={handleSendMessage}
-                        disabled={
-                          !newMessage.trim() && stagedAttachments.length === 0
-                        }
-                      >
-                        <Send className="w-3 h-3" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => fileInputRef.current?.click()}
-                      >
-                        <Upload className="w-3 h-3" />
-                      </Button>
+                  )}
+
+                  {/* Message Input Section */}
+                  <div className="border-t pt-4">
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <Checkbox
+                          id="rich-text"
+                          checked={isRichText}
+                          onCheckedChange={setIsRichText}
+                        />
+                        <Label htmlFor="rich-text" className="text-sm">
+                          Rich text formatting
+                        </Label>
+                      </div>
+                      
+                      {isRichText ? (
+                        <RichTextEditor
+                          value={newMessage}
+                          onChange={setNewMessage}
+                          placeholder="Type your message with rich formatting..."
+                          className="min-h-[100px] border-gray-300"
+                        />
+                      ) : (
+                        <Textarea
+                          value={newMessage}
+                          onChange={(e) => setNewMessage(e.target.value)}
+                          placeholder="Type your message here... Use @username to mention team members"
+                          className="min-h-[60px] resize-none"
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" && !e.shiftKey) {
+                              e.preventDefault();
+                              handleSendMessage();
+                            }
+                          }}
+                        />
+                      )}
+                      
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="file"
+                            ref={fileInputRef}
+                            onChange={handleFileUpload}
+                            multiple
+                            className="hidden"
+                          />
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => fileInputRef.current?.click()}
+                          >
+                            <Paperclip className="w-4 h-4 mr-1" />
+                            Attach Files
+                          </Button>
+                        </div>
+                        <Button
+                          size="sm"
+                          onClick={handleSendMessage}
+                          disabled={!newMessage.trim() && stagedAttachments.length === 0}
+                        >
+                          <Send className="w-4 h-4 mr-1" />
+                          Send
+                        </Button>
+                      </div>
                     </div>
                   </div>
-
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    className="hidden"
-                    onChange={handleFileUpload}
-                    multiple
-                  />
-                </div>
-
-                {/* Delete Step Button */}
-                <div className="border-t pt-4 flex justify-end">
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    onClick={() => onDelete(step.id)}
-                  >
-                    <Trash2 className="w-3 h-3 mr-1" />
-                    Delete Step
-                  </Button>
-                </div>
-              </>
-            )}
-
-            {/* Template Step Display */}
-            {step.isTemplate && (
-              <div className="text-center py-4">
-                <div className="text-sm text-blue-600 mb-2">
-                  📋 This is a template step
-                </div>
-                <div className="text-xs text-blue-500">
-                  Create a VC-specific step to start tracking progress and
-                  enable team collaboration.
-                </div>
-              </div>
-            )}
-          </CardContent>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
         </CollapsibleContent>
       </Collapsible>
-    </Card>
+
+      {/* Delete Message Confirmation Dialog */}
+      <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Message</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this message? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={cancelDeleteMessage}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDeleteMessage}>
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
   );
 }
