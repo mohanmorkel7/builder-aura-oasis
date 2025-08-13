@@ -2354,7 +2354,8 @@ export class MockDataService {
           id: 1,
           vc_id: vcId,
           name: "Business Plan Validation",
-          description: "Review and validate the comprehensive business plan and financial projections",
+          description:
+            "Review and validate the comprehensive business plan and financial projections",
           status: "completed",
           order_index: 1,
           due_date: "2024-03-05",
@@ -2369,7 +2370,8 @@ export class MockDataService {
           id: 2,
           vc_id: vcId,
           name: "Angel Investor Outreach",
-          description: "Initial outreach to angel investors and presentation of opportunity",
+          description:
+            "Initial outreach to angel investors and presentation of opportunity",
           status: "in_progress",
           order_index: 2,
           due_date: "2024-03-20",
@@ -2383,7 +2385,8 @@ export class MockDataService {
           id: 3,
           vc_id: vcId,
           name: "Pitch Presentation",
-          description: "Formal pitch presentation to interested angel investors",
+          description:
+            "Formal pitch presentation to interested angel investors",
           status: "pending",
           order_index: 3,
           due_date: "2024-03-25",
@@ -2397,7 +2400,8 @@ export class MockDataService {
           id: 4,
           vc_id: vcId,
           name: "Due Diligence Review",
-          description: "Comprehensive due diligence review of company financials and operations",
+          description:
+            "Comprehensive due diligence review of company financials and operations",
           status: "pending",
           order_index: 4,
           estimated_days: 7,
@@ -2410,7 +2414,8 @@ export class MockDataService {
           id: 5,
           vc_id: vcId,
           name: "Term Sheet Negotiation",
-          description: "Negotiate and finalize term sheet with lead angel investor",
+          description:
+            "Negotiate and finalize term sheet with lead angel investor",
           status: "pending",
           order_index: 5,
           estimated_days: 4,
@@ -2436,7 +2441,8 @@ export class MockDataService {
           id: 7,
           vc_id: vcId,
           name: "Funding Closure",
-          description: "Finalize funding round and transfer of investment capital",
+          description:
+            "Finalize funding round and transfer of investment capital",
           status: "pending",
           order_index: 7,
           estimated_days: 2,
