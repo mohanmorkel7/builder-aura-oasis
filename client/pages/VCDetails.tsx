@@ -86,11 +86,10 @@ export default function VCDetails() {
       try {
         return await apiClient.request("/vc");
       } catch (error) {
-        console.warn("Could not fetch available VCs:", error);
         return [];
       }
     },
-    enabled: !!error, // Only fetch when there's an error
+    enabled: !!error && error?.message?.includes('404'), // Only fetch when there's a 404 error
     retry: 1,
     staleTime: 5 * 60 * 1000,
   });
