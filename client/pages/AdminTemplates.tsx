@@ -382,10 +382,14 @@ export default function AdminTemplates() {
           </p>
         </div>
 
-        <Button onClick={() => {
-          console.log("Create Template button clicked!");
-          setIsCreateDialogOpen(true);
-        }}>
+        <Button
+          onClick={() => {
+            console.log("Create Template button clicked!");
+            alert("Button clicked! Opening dialog...");
+            setIsCreateDialogOpen(true);
+          }}
+          className="bg-blue-600 hover:bg-blue-700"
+        >
           <Plus className="w-4 h-4 mr-2" />
           Create Template
         </Button>
