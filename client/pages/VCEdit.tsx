@@ -1395,68 +1395,37 @@ export default function VCEdit() {
             <CardHeader>
               <CardTitle>Additional Information</CardTitle>
               <CardDescription>
-                Template selection and additional notes
+                Any additional notes, documents, or configuration
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {/* Template Selection */}
               <div>
-                <Label htmlFor="template_selection">Template Selection</Label>
-                <div className="flex space-x-2 mt-2">
-                  <Select
-                    value={selectedTemplate}
-                    onValueChange={(value) => {
-                      setSelectedTemplate(value);
-                      handleInputChange("template_id", value === "manual" ? "" : value);
-                    }}
-                  >
-                    <SelectTrigger className="flex-1">
-                      <SelectValue placeholder="Choose a template or create manually" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="manual">Create Manually</SelectItem>
-                      {templates.map((template: any) => (
-                        <SelectItem key={template.id} value={template.id.toString()}>
-                          {template.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {selectedTemplate !== "manual" && templateDetails && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => previewTemplateDetails(templateDetails)}
-                      className="px-3"
-                    >
-                      <Eye className="w-4 h-4" />
-                    </Button>
-                  )}
-                </div>
-                
-                {/* Template Description */}
-                {selectedTemplate !== "manual" && templateDetails && (
-                  <div className="mt-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                    <p className="text-sm text-blue-800">
-                      <strong>{templateDetails.name}:</strong> {templateDetails.description}
-                    </p>
-                    {templateDetails.steps && templateDetails.steps.length > 0 && (
-                      <p className="text-xs text-blue-600 mt-1">
-                        This template includes {templateDetails.steps.length} predefined steps.
-                      </p>
-                    )}
-                  </div>
-                )}
+                <Label htmlFor="probability">Success Probability (%)</Label>
+                <Input
+                  id="probability"
+                  type="number"
+                  min="0"
+                  max="100"
+                  placeholder="0"
+                  value={vcData.probability}
+                  onChange={(e) =>
+                    handleInputChange("probability", e.target.value)
+                  }
+                />
+                <p className="text-sm text-gray-500 mt-1">
+                  Default: 0% - Estimate the likelihood of closing this VC
+                  opportunity
+                </p>
               </div>
 
               <div>
                 <Label htmlFor="notes">Notes</Label>
                 <Textarea
                   id="notes"
-                  rows={4}
-                  placeholder="Additional notes about this VC opportunity"
+                  placeholder="Any additional notes about this VC opportunity..."
                   value={vcData.notes}
                   onChange={(e) => handleInputChange("notes", e.target.value)}
+                  rows={4}
                 />
               </div>
             </CardContent>
