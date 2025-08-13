@@ -642,11 +642,29 @@ export default function CreateVC() {
 
   const handlePartialSave = async () => {
     try {
-      const countryValue = vcData.custom_country || vcData.country;
+      // Determine the final country value to save
+      const countryValue = (() => {
+        // If user selected "Other" and provided custom country, use that
+        if (vcData.country === "Other" && vcData.custom_country?.trim()) {
+          return vcData.custom_country.trim();
+        }
+        // If user selected a predefined country, use that
+        if (vcData.country && vcData.country !== "Other") {
+          return vcData.country;
+        }
+        // Fallback to empty string
+        return "";
+      })();
+
       console.log("🐛 DEBUG - Partial Save Country Debug:");
       console.log("vcData.country:", vcData.country);
       console.log("vcData.custom_country:", vcData.custom_country);
       console.log("final countryValue:", countryValue);
+      console.log("country save logic:", {
+        isOther: vcData.country === "Other",
+        hasCustom: !!vcData.custom_country?.trim(),
+        hasPredefined: !!(vcData.country && vcData.country !== "Other")
+      });
 
       const partialData = {
         lead_source: vcData.lead_source || "other",
