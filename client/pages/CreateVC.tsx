@@ -658,7 +658,7 @@ export default function CreateVC() {
           }, 100);
 
           console.log(
-            "🐛 DEBUG - After setting vcData from API, country fields should be:",
+            "�� DEBUG - After setting vcData from API, country fields should be:",
             {
               country: (() => {
                 const savedCountry = response.country || "";
@@ -1078,6 +1078,7 @@ export default function CreateVC() {
         start_date: vcData.start_date || null,
         targeted_end_date: vcData.targeted_end_date || null,
         spoc: vcData.spoc,
+        template_id: vcData.template_id || null,
         billing_currency: vcData.billing_currency,
         notes: vcData.notes,
         contacts: JSON.stringify(vcData.contacts),
