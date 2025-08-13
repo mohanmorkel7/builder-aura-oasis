@@ -258,6 +258,9 @@ export class VCRepository {
       RETURNING *
     `;
 
+    const countryValue = vcData.country || null;
+    console.log("🐛 DEBUG - VCRepository.create - Country value for DB:", countryValue);
+
     const values = [
       vcId,
       vcData.lead_source,
@@ -277,7 +280,7 @@ export class VCRepository {
       vcData.address || null,
       vcData.city || null,
       vcData.state || null,
-      vcData.country || null,
+      countryValue,
       vcData.website || null,
       vcData.potential_lead_investor || false,
       vcData.minimum_size || null,
@@ -293,6 +296,8 @@ export class VCRepository {
       vcData.notes || null,
       vcData.is_partial || false,
     ];
+
+    console.log("🐛 DEBUG - VCRepository.create - Value at position 18 (country):", values[18]);
 
     const result = await pool.query(query, values);
     return result.rows[0];
