@@ -311,7 +311,9 @@ export class VCRepository {
     });
 
     if (fields.length === 0) {
-      console.log(`[DEBUG VCRepository.update] No fields to update, returning existing record`);
+      console.log(
+        `[DEBUG VCRepository.update] No fields to update, returning existing record`,
+      );
       return this.findById(id);
     }
 

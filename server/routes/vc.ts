@@ -463,7 +463,10 @@ router.put("/:id", async (req: Request, res: Response) => {
     }
 
     const vcData: UpdateVCData = req.body;
-    console.log(`[DEBUG] PUT /:id - Updating VC ${id} with data:`, JSON.stringify(vcData, null, 2));
+    console.log(
+      `[DEBUG] PUT /:id - Updating VC ${id} with data:`,
+      JSON.stringify(vcData, null, 2),
+    );
 
     // Email validation if provided
     if (vcData.email && !/\S+@\S+\.\S+/.test(vcData.email)) {
@@ -476,7 +479,9 @@ router.put("/:id", async (req: Request, res: Response) => {
     let vc;
     try {
       if (await isDatabaseAvailable()) {
-        console.log(`[DEBUG] Database available, calling VCRepository.update(${id}, data)`);
+        console.log(
+          `[DEBUG] Database available, calling VCRepository.update(${id}, data)`,
+        );
         vc = await VCRepository.update(id, vcData);
         console.log(`[DEBUG] VCRepository.update returned:`, vc);
       } else {
