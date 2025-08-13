@@ -379,7 +379,10 @@ export default function AdminTemplates() {
           </p>
         </div>
 
-        <Button onClick={() => setIsCreateDialogOpen(true)}>
+        <Button onClick={() => {
+          console.log("Create Template button clicked!");
+          setIsCreateDialogOpen(true);
+        }}>
           <Plus className="w-4 h-4 mr-2" />
           Create Template
         </Button>
