@@ -79,6 +79,22 @@ export default function VCDetails() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
+  // Fetch available VCs to suggest alternatives on 404
+  const { data: availableVCs = [] } = useQuery({
+    queryKey: ["available-vcs"],
+    queryFn: async () => {
+      try {
+        return await apiClient.request("/vc");
+      } catch (error) {
+        console.warn("Could not fetch available VCs:", error);
+        return [];
+      }
+    },
+    enabled: !!error, // Only fetch when there's an error
+    retry: 1,
+    staleTime: 5 * 60 * 1000,
+  });
+
   // Mock VC details data (replacing failing API calls)
   const getMockVC = (vcId: string) => {
     const mockVCs = {
