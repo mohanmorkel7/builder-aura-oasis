@@ -94,7 +94,7 @@ export default function EditTemplateDialog({
   const [newTag, setNewTag] = useState("");
   const [activeTab, setActiveTab] = useState("basic");
 
-  // Use fallback template data for offline mode
+  // Use fallback template data
   const getFallbackTemplate = (id: number) => {
     return {
       id,
