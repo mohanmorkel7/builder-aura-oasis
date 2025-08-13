@@ -369,30 +369,10 @@ export default function VCDashboard() {
             Manage venture capital funding rounds
           </p>
         </div>
-        <div className="flex items-center space-x-3">
-          <div className="flex space-x-1">
-            <Button
-              variant={activeTab === "vcs" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setActiveTab("vcs")}
-            >
-              <Target className="w-4 h-4 mr-2" />
-              VCs ({filteredVCs.length})
-            </Button>
-            <Button
-              variant={activeTab === "drafts" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setActiveTab("drafts")}
-            >
-              <FileText className="w-4 h-4 mr-2" />
-              Saved Drafts ({vcPartialSaves.length})
-            </Button>
-          </div>
-          <Button onClick={() => navigate("/vc/create")}>
-            <Plus className="w-4 h-4 mr-2" />
-            Create VC
-          </Button>
-        </div>
+        <Button onClick={() => navigate("/vc/create")}>
+          <Plus className="w-4 h-4 mr-2" />
+          Create VC
+        </Button>
       </div>
 
       {/* Statistics Cards - Enhanced with Gradients */}
@@ -498,10 +478,32 @@ export default function VCDashboard() {
         </div>
       )}
 
-      {/* Filters and Search */}
+      {/* Tabs and Search/Filters */}
       <Card>
         <CardContent className="p-6">
-          <div className="flex flex-col md:flex-row gap-4">
+          {/* Tab Navigation */}
+          <div className="flex items-center gap-4 mb-4">
+            <Button
+              variant={activeTab === "vcs" ? "default" : "outline"}
+              onClick={() => setActiveTab("vcs")}
+              className="flex items-center gap-2"
+            >
+              <Target className="w-4 h-4" />
+              VCs ({filteredVCs.length})
+            </Button>
+            <Button
+              variant={activeTab === "drafts" ? "default" : "outline"}
+              onClick={() => setActiveTab("drafts")}
+              className="flex items-center gap-2"
+            >
+              <FileText className="w-4 h-4" />
+              Saved Drafts ({vcPartialSaves.length})
+            </Button>
+          </div>
+
+          {/* Search and Filters - Only show for VCs tab */}
+          {activeTab === "vcs" && (
+            <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1">
               <div className="relative">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
@@ -561,7 +563,8 @@ export default function VCDashboard() {
                 <SelectItem value="investor_name-desc">Investor Z-A</SelectItem>
               </SelectContent>
             </Select>
-          </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
