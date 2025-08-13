@@ -763,6 +763,11 @@ export default function VCDetails() {
                 : "The VC opportunity you're looking for doesn't exist or you don't have permission to view it."
               }
             </p>
+            {is404Error && (
+              <p className="text-sm text-gray-500 mb-4">
+                Try visiting the VC Dashboard to see available opportunities, or check if the ID is correct.
+              </p>
+            )}
             <Button onClick={handleBack}>
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to VC Dashboard
