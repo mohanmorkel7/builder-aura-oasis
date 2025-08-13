@@ -1449,7 +1449,32 @@ export default function VCDetails() {
             </div>
           )}
 
-          {/* Actual Steps Section */}
+          {/* Current Steps Section */}
+          {vcSteps && vcSteps.length > 0 && (
+            <div className="mb-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-sm font-medium text-gray-700">
+                  📋 Current Tracking Steps ({vcSteps.length} steps)
+                </div>
+                {templateData?.steps && templateData.steps.length > 0 && (
+                  <div className="text-xs text-gray-600">
+                    {vcSteps.some(step =>
+                      templateData.steps.some((tStep: any) => tStep.name === step.name)
+                    ) ? "✅ Template-based steps" : "⚠️ Generic steps"}
+                  </div>
+                )}
+              </div>
+              {templateData?.steps && templateData.steps.length > 0 &&
+               !vcSteps.some(step =>
+                 templateData.steps.some((tStep: any) => tStep.name === step.name)
+               ) && (
+                <div className="text-xs text-yellow-700 bg-yellow-50 p-2 rounded border border-yellow-200">
+                  💡 Your current steps are generic. Consider using the template steps above for better VC tracking.
+                </div>
+              )}
+            </div>
+          )}
+
           {stepsLoading ? (
             <div className="text-center py-8">
               <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900"></div>
