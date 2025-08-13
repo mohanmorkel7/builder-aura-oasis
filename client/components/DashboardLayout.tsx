@@ -161,9 +161,15 @@ const getNotificationsFromFollowUps = async (
       })
       .catch((error) => {
         // Better error classification
-        if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
-          console.warn("Network connectivity issue - follow-ups API unreachable:", error.message);
-        } else if (error.message.includes('timeout')) {
+        if (
+          error.name === "TypeError" &&
+          error.message.includes("Failed to fetch")
+        ) {
+          console.warn(
+            "Network connectivity issue - follow-ups API unreachable:",
+            error.message,
+          );
+        } else if (error.message.includes("timeout")) {
           console.warn("Follow-ups API timeout:", error.message);
         } else {
           console.warn("Follow-ups API call failed:", error.message);
@@ -297,16 +303,23 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           }
         } catch (error) {
           // Enhanced error handling for different types of failures
-          const errorMsg = error?.message || 'Unknown error';
+          const errorMsg = error?.message || "Unknown error";
 
-          if (error?.name === 'TypeError' && errorMsg.includes('Failed to fetch')) {
+          if (
+            error?.name === "TypeError" &&
+            errorMsg.includes("Failed to fetch")
+          ) {
             if (!networkIssueDetected) {
-              console.warn("Network connectivity issue detected - notifications will retry later");
+              console.warn(
+                "Network connectivity issue detected - notifications will retry later",
+              );
               setNetworkIssueDetected(true);
             }
             setNotifications([]);
           } else if (errorMsg.includes("timeout")) {
-            console.warn("Notifications API timeout - will retry on next cycle");
+            console.warn(
+              "Notifications API timeout - will retry on next cycle",
+            );
             setNotifications([]);
           } else if (
             errorMsg.includes("HTML instead of JSON") ||
@@ -332,9 +345,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     const timeoutId = setTimeout(() => {
       // Wrap in try-catch to prevent any unhandled promise rejections
       fetchNotifications().catch((error) => {
-        const errorMsg = error?.message || 'Unknown error';
-        if (error?.name === 'TypeError' && errorMsg.includes('Failed to fetch')) {
-          console.warn("Initial notifications fetch failed due to network connectivity");
+        const errorMsg = error?.message || "Unknown error";
+        if (
+          error?.name === "TypeError" &&
+          errorMsg.includes("Failed to fetch")
+        ) {
+          console.warn(
+            "Initial notifications fetch failed due to network connectivity",
+          );
         } else {
           console.warn("Notifications fetch failed silently:", errorMsg);
         }
@@ -347,9 +365,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       // Only refresh if notifications are still enabled
       if (notificationsEnabled) {
         fetchNotifications().catch((error) => {
-          const errorMsg = error?.message || 'Unknown error';
-          if (error?.name === 'TypeError' && errorMsg.includes('Failed to fetch')) {
-            console.warn("Periodic notifications refresh failed due to network connectivity");
+          const errorMsg = error?.message || "Unknown error";
+          if (
+            error?.name === "TypeError" &&
+            errorMsg.includes("Failed to fetch")
+          ) {
+            console.warn(
+              "Periodic notifications refresh failed due to network connectivity",
+            );
           } else {
             console.warn("Notifications refresh failed silently:", errorMsg);
           }
@@ -513,7 +536,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 <p className="text-xs text-gray-500">
                   {unreadCount} unread notifications
                   {networkIssueDetected && (
-                    <span className="text-orange-500 ml-2">(Network issue detected)</span>
+                    <span className="text-orange-500 ml-2">
+                      (Network issue detected)
+                    </span>
                   )}
                 </p>
               </div>
