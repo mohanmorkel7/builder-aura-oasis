@@ -776,6 +776,13 @@ export default function CreateVC() {
       console.log("Current vcData.custom_country:", vcData.custom_country);
     }
 
+    // Debug template_id field changes
+    if (field === "template_id") {
+      console.log(`🔄 DEBUG - handleInputChange: template_id = "${value}"`);
+      console.log("Current vcData.template_id:", vcData.template_id);
+      console.log("Current selectedTemplate:", selectedTemplate);
+    }
+
     const newData = {
       ...vcData,
       [field]: value,
