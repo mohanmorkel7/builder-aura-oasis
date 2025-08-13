@@ -166,8 +166,11 @@ export default function VCDetails() {
   // Create step mutation
   const createStepMutation = useMutation({
     mutationFn: async (stepData: any) => {
-      const response = await apiClient.post(`/api/vc/${id}/steps`, stepData);
-      return response.data;
+      const response = await apiClient.request(`/vc/${id}/steps`, {
+        method: "POST",
+        body: JSON.stringify(stepData),
+      });
+      return response;
     },
     onSuccess: () => {
       refetchSteps();
