@@ -232,8 +232,8 @@ export default function AdminTemplates() {
 
   const duplicateTemplateMutation = useMutation({
     mutationFn: async (templateId: number) => {
-      console.log("Duplicate template (offline mode):", templateId);
-      // In offline mode, just return success
+      console.log("Duplicate template:", templateId);
+      // Return success
       return { success: true, message: "Template duplication queued" };
     },
     onSuccess: () => {
