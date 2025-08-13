@@ -575,6 +575,12 @@ export default function VCDetails() {
     staleTime: 1 * 60 * 1000,
   });
 
+  // Fetch template data if VC has a template_id
+  const templateId = (vc as any)?.template_id;
+  const { data: templateData, isLoading: templateLoading } = useTemplate(
+    templateId || 0,
+  );
+
   // Fetch available VCs to suggest alternatives on 404 errors
   const { data: availableVCs = [] } = useQuery({
     queryKey: ["available-vcs"],
