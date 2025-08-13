@@ -85,8 +85,53 @@ export default function CreateTemplateDialog({
   console.log("Safe categories:", safeCategories);
   console.log("Safe categories count:", safeCategories.length);
 
-  // Ensure categories is always an array
-  const safeCategories = Array.isArray(categories) ? categories : [];
+  // Ensure categories is always an array with fallback
+  const fallbackCategories = [
+    {
+      id: 1,
+      name: "Product",
+      description: "Product development templates",
+      color: "#3B82F6",
+      icon: "Package",
+    },
+    {
+      id: 2,
+      name: "Leads",
+      description: "Lead management templates",
+      color: "#10B981",
+      icon: "Target",
+    },
+    {
+      id: 3,
+      name: "FinOps",
+      description: "Financial operations templates",
+      color: "#F59E0B",
+      icon: "DollarSign",
+    },
+    {
+      id: 4,
+      name: "Onboarding",
+      description: "Onboarding templates",
+      color: "#8B5CF6",
+      icon: "UserPlus",
+    },
+    {
+      id: 5,
+      name: "Support",
+      description: "Customer support templates",
+      color: "#EF4444",
+      icon: "Headphones",
+    },
+    {
+      id: 6,
+      name: "VC",
+      description: "Venture Capital templates",
+      color: "#6366F1",
+      icon: "TrendingUp",
+    },
+  ];
+
+  const safeCategories = Array.isArray(categories) && categories.length > 0 ? categories : fallbackCategories;
   const { user } = useAuth();
   const [templateData, setTemplateData] = useState({
     name: "",
