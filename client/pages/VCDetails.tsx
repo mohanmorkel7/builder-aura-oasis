@@ -148,11 +148,6 @@ export default function VCDetails() {
     enabled: !!id,
   });
 
-  // Fetch template details if VC has template_id
-  const { data: templateData, isLoading: templateLoading } = useTemplate(
-    vcData?.template_id,
-    { enabled: !!vcData?.template_id },
-  );
 
   // Create step mutation
   const createStepMutation = useMutation({
