@@ -1345,9 +1345,37 @@ export default function VCDetails() {
                     steps)
                   </div>
                   <div className="text-xs text-blue-600 mb-2">
-                    These are template steps from "{templateData.name}". Create
-                    VC-specific steps to start tracking progress.
+                    These are template steps from "{templateData.name}".{" "}
+                    {vcSteps.length > 0
+                      ? "You have existing steps, but you can replace them with template steps."
+                      : "Create VC-specific steps to start tracking progress."
+                    }
                   </div>
+                  {vcSteps.length > 0 && (
+                    <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                      <div className="text-sm font-medium text-yellow-800 mb-2">
+                        ⚠️ Current Steps vs Template Steps
+                      </div>
+                      <div className="text-xs text-yellow-700 mb-2">
+                        You have {vcSteps.length} existing steps, but this VC uses the "{templateData.name}" template
+                        with {templateData.steps.length} specialized steps. Consider replacing your current steps
+                        with template steps for better tracking.
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="text-xs"
+                        onClick={() => {
+                          if (confirm("This will replace all existing steps with template steps. Are you sure?")) {
+                            // TODO: Implement template step population
+                            alert("Template step population not implemented yet - please create steps manually based on the template.");
+                          }
+                        }}
+                      >
+                        Replace with Template Steps
+                      </Button>
+                    </div>
+                  )}
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                     {templateData.steps
                       .slice(0, 6)
