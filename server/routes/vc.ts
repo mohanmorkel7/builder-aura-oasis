@@ -559,6 +559,31 @@ router.delete("/:id", async (req: Request, res: Response) => {
 
 // VC Steps endpoints
 
+// Debug endpoint to check database tables
+router.get("/debug/tables", async (req: Request, res: Response) => {
+  try {
+    const tables = await pool.query(`
+      SELECT table_name FROM information_schema.tables
+      WHERE table_schema = 'public'
+      AND table_name LIKE '%vc%'
+      ORDER BY table_name
+    `);
+
+    const vcCount = await pool.query("SELECT COUNT(*) as count FROM vcs");
+    const stepsCount = await pool.query("SELECT COUNT(*) as count FROM vc_steps");
+
+    res.json({
+      tables: tables.rows,
+      counts: {
+        vcs: vcCount.rows[0].count,
+        vc_steps: stepsCount.rows[0].count
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Get steps for a VC
 router.get("/:id/steps", async (req: Request, res: Response) => {
   try {
