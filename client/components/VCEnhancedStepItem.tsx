@@ -230,7 +230,9 @@ export function VCEnhancedStepItem({
     }
   };
 
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const files = event.target.files;
     if (!files || files.length === 0) return;
 
@@ -240,7 +242,7 @@ export function VCEnhancedStepItem({
 
     try {
       console.log("Uploading VC step file:", file.name);
-      
+
       // For now, just stage the file info - you might want to upload to a file service
       const fileInfo = {
         name: file.name,
@@ -436,7 +438,9 @@ export function VCEnhancedStepItem({
                   <div className="flex gap-2">
                     <Button
                       size="sm"
-                      variant={step.status === "pending" ? "default" : "outline"}
+                      variant={
+                        step.status === "pending" ? "default" : "outline"
+                      }
                       onClick={() => onStatusChange(step.id, "pending")}
                     >
                       <Target className="w-3 h-3 mr-1" />
@@ -454,7 +458,9 @@ export function VCEnhancedStepItem({
                     </Button>
                     <Button
                       size="sm"
-                      variant={step.status === "completed" ? "default" : "outline"}
+                      variant={
+                        step.status === "completed" ? "default" : "outline"
+                      }
                       onClick={() => onStatusChange(step.id, "completed")}
                     >
                       <CheckCircle className="w-3 h-3 mr-1" />
@@ -478,8 +484,8 @@ export function VCEnhancedStepItem({
                         <User className="w-4 h-4 text-gray-500" />
                         <span className="text-gray-600">Assigned to:</span>
                         <span>
-                          {users.find((u) => u.id === step.assigned_to)?.first_name ||
-                            "Unknown"}
+                          {users.find((u) => u.id === step.assigned_to)
+                            ?.first_name || "Unknown"}
                         </span>
                       </div>
                     )}
@@ -508,7 +514,10 @@ export function VCEnhancedStepItem({
                     <Label className="text-sm font-medium flex items-center gap-2">
                       <MessageCircle className="w-4 h-4" />
                       Team Chat ({sortedMessages.length})
-                      <Badge variant="outline" className="text-xs text-blue-600">
+                      <Badge
+                        variant="outline"
+                        className="text-xs text-blue-600"
+                      >
                         Demo Mode
                       </Badge>
                     </Label>
@@ -579,7 +588,9 @@ export function VCEnhancedStepItem({
                   {/* Chat Messages */}
                   {chatLoading ? (
                     <div className="text-center py-4">
-                      <div className="text-sm text-gray-500">Loading chat...</div>
+                      <div className="text-sm text-gray-500">
+                        Loading chat...
+                      </div>
                     </div>
                   ) : (
                     <div
@@ -613,7 +624,9 @@ export function VCEnhancedStepItem({
                                 )}
                                 <div
                                   dangerouslySetInnerHTML={{
-                                    __html: processMessageContent(message.message),
+                                    __html: processMessageContent(
+                                      message.message,
+                                    ),
                                   }}
                                 />
                                 {message.attachments &&
@@ -758,8 +771,8 @@ export function VCEnhancedStepItem({
                   📋 This is a template step
                 </div>
                 <div className="text-xs text-blue-500">
-                  Create a VC-specific step to start tracking progress and enable
-                  team collaboration.
+                  Create a VC-specific step to start tracking progress and
+                  enable team collaboration.
                 </div>
               </div>
             )}

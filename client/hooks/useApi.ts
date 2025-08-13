@@ -1581,7 +1581,9 @@ export function useVCStepChats(stepId: number) {
     queryKey: ["vc-step-chats", stepId],
     queryFn: async () => {
       // Return empty array since VC step chat endpoints are not implemented yet
-      console.log(`VC step chats not implemented yet for step ${stepId}, returning empty array`);
+      console.log(
+        `VC step chats not implemented yet for step ${stepId}, returning empty array`,
+      );
       return [];
     },
     enabled: false, // Disable the query entirely until endpoints are implemented
@@ -1593,14 +1595,22 @@ export function useVCStepChats(stepId: number) {
 export function useCreateVCStepChat() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ stepId, chatData }: { stepId: number; chatData: any }) => {
+    mutationFn: async ({
+      stepId,
+      chatData,
+    }: {
+      stepId: number;
+      chatData: any;
+    }) => {
       // Mock implementation until VC step chat endpoints are implemented
-      console.log(`VC step chat creation not implemented yet for step ${stepId}, returning mock response`);
+      console.log(
+        `VC step chat creation not implemented yet for step ${stepId}, returning mock response`,
+      );
       return {
         id: Date.now(),
         ...chatData,
         created_at: new Date().toISOString(),
-        step_id: stepId
+        step_id: stepId,
       };
     },
     onSuccess: (_, { stepId }) => {
@@ -1615,7 +1625,9 @@ export function useDeleteVCStepChat() {
   return useMutation({
     mutationFn: async (chatId: number) => {
       // Mock implementation until VC step chat deletion endpoints are implemented
-      console.log(`VC step chat deletion not implemented yet for chat ${chatId}, returning mock success`);
+      console.log(
+        `VC step chat deletion not implemented yet for chat ${chatId}, returning mock success`,
+      );
       return { success: true };
     },
     onSuccess: () => {

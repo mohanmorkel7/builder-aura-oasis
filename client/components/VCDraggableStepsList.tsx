@@ -113,7 +113,8 @@ export function VCDraggableStepsList({
           ? {
               ...item,
               status,
-              completed_date: status === "completed" ? new Date().toISOString() : null,
+              completed_date:
+                status === "completed" ? new Date().toISOString() : null,
             }
           : item,
       ),
@@ -124,7 +125,8 @@ export function VCDraggableStepsList({
       stepId,
       stepData: {
         status,
-        completed_date: status === "completed" ? new Date().toISOString() : null,
+        completed_date:
+          status === "completed" ? new Date().toISOString() : null,
       },
     });
   };
@@ -164,7 +166,9 @@ export function VCDraggableStepsList({
     setActiveId(null);
   };
 
-  const activeItem = activeId ? items.find((item) => item.id === activeId) : null;
+  const activeItem = activeId
+    ? items.find((item) => item.id === activeId)
+    : null;
 
   if (!items || items.length === 0) {
     return (
@@ -185,7 +189,10 @@ export function VCDraggableStepsList({
       onDragCancel={handleDragCancel}
       modifiers={[restrictToVerticalAxis, restrictToParentElement]}
     >
-      <SortableContext items={items.map((item) => item.id)} strategy={verticalListSortingStrategy}>
+      <SortableContext
+        items={items.map((item) => item.id)}
+        strategy={verticalListSortingStrategy}
+      >
         <div className="space-y-2">
           {items.map((step) => (
             <VCEnhancedStepItem
