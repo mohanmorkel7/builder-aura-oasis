@@ -120,6 +120,27 @@ export default function VCDashboard() {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [activeTab, setActiveTab] = useState<"vcs" | "drafts">("vcs");
 
+  // Get user ID for partial saves
+  const userId = user?.id ? parseInt(user.id) : undefined;
+
+  // Fetch VC partial saves
+  const {
+    data: vcPartialSaves = [],
+    isLoading: partialSavesLoading,
+    refetch: refetchVCPartialSaves,
+  } = useMyVCPartialSaves(userId);
+
+  // Delete mutation for partial saves
+  const deleteVC = useMutation({
+    mutationFn: (vcId: number) =>
+      apiClient.request(`/vc/${vcId}`, { method: "DELETE" }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["vcs"] });
+      queryClient.invalidateQueries({ queryKey: ["my-vc-partial-saves"] });
+      queryClient.invalidateQueries({ queryKey: ["vc-stats"] });
+    },
+  });
+
   // Fetch VC data from database
   const {
     data: vcList = [],
