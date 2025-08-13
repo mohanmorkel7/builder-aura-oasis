@@ -80,8 +80,14 @@ export default function CreateTemplateDialog({
   // Debug: Log categories to see what we're receiving
   console.log("CreateTemplateDialog received categories:", categories);
   console.log("Categories count:", categories?.length || 0);
-  console.log("Category names:", categories?.map(c => c.name));
-  console.log("VC category found:", categories?.find(c => c.name === 'VC'));
+  console.log(
+    "Category names:",
+    categories?.map((c) => c.name),
+  );
+  console.log(
+    "VC category found:",
+    categories?.find((c) => c.name === "VC"),
+  );
   console.log("Safe categories:", safeCategories);
   console.log("Safe categories count:", safeCategories.length);
 
@@ -131,7 +137,10 @@ export default function CreateTemplateDialog({
     },
   ];
 
-  const safeCategories = Array.isArray(categories) && categories.length > 0 ? categories : fallbackCategories;
+  const safeCategories =
+    Array.isArray(categories) && categories.length > 0
+      ? categories
+      : fallbackCategories;
   const { user } = useAuth();
   const [templateData, setTemplateData] = useState({
     name: "",
