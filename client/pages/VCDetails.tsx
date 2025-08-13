@@ -730,7 +730,10 @@ export default function VCDetails() {
     );
   }
 
-  if (error || !vc) {
+  // Enhanced error handling with better 404 detection
+  if (error || (!isLoading && !vc)) {
+    const is404Error = error?.message?.includes('404') || error?.message?.includes('Not Found');
+
     return (
       <div className="p-6">
         <div className="flex items-center justify-center h-64">
@@ -740,8 +743,10 @@ export default function VCDetails() {
               VC Opportunity Not Found
             </h3>
             <p className="text-gray-600 mb-4">
-              The VC opportunity you're looking for doesn't exist or you don't
-              have permission to view it.
+              {is404Error
+                ? `VC with ID ${id} was not found in the database. It may have been deleted or doesn't exist.`
+                : "The VC opportunity you're looking for doesn't exist or you don't have permission to view it."
+              }
             </p>
             <Button onClick={handleBack}>
               <ArrowLeft className="w-4 h-4 mr-2" />
