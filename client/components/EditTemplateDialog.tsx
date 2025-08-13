@@ -136,16 +136,30 @@ export default function EditTemplateDialog({
     staleTime: 5 * 60 * 1000,
   });
 
-  // Update template mutation (offline mode)
+  // Update template mutation
   const updateTemplateMutation = useMutation({
     mutationFn: async (data: any) => {
       console.log("Update template:", data);
-      // Return success
-      return { success: true, data };
+      try {
+        const result = await apiClient.request(`/templates-production/${templateId}`, {
+          method: "PUT",
+          body: JSON.stringify(data),
+        });
+        return { success: true, data: result };
+      } catch (error) {
+        console.error("Failed to update template:", error);
+        throw error;
+      }
     },
     onSuccess: () => {
       console.log("Template updated successfully");
+      queryClient.invalidateQueries({ queryKey: ["template", templateId] });
+      queryClient.invalidateQueries({ queryKey: ["templates-with-categories"] });
       onClose();
+    },
+    onError: (error) => {
+      console.error("Template update failed:", error);
+      alert("Failed to update template. Please try again.");
     },
   });
 
