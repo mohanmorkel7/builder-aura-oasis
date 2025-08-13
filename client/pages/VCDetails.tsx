@@ -573,7 +573,7 @@ export default function VCDetails() {
                 Funding Process Steps
               </CardTitle>
               <CardDescription>
-                Track your fundraising milestones and progress
+                Track your fundraising milestones and progress with drag-and-drop organization
               </CardDescription>
             </div>
             <Button
@@ -586,80 +586,36 @@ export default function VCDetails() {
           </div>
         </CardHeader>
 
-        <CardContent className="p-6">
+        <CardContent className="p-0">
           {stepsLoading ? (
             <div className="flex justify-center py-8">
               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-600"></div>
             </div>
+          ) : vcSteps && vcSteps.length > 0 ? (
+            <VCDraggableStepsList
+              vcId={parseInt(id!)}
+              steps={vcSteps}
+              expandedSteps={expandedSteps}
+              onToggleExpansion={handleToggleExpansion}
+              onDeleteStep={handleDeleteStep}
+              onReorderSteps={handleReorderSteps}
+            />
           ) : (
-            <div className="space-y-4">
-              {vcSteps && vcSteps.length > 0 ? (
-                vcSteps.map((step: any, index: number) => (
-                  <div
-                    key={step.id}
-                    className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg hover:border-purple-200 hover:bg-purple-50/30 transition-all"
-                  >
-                    <div className="flex-shrink-0">
-                      {getStepStatusIcon(step.status)}
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-gray-900">
-                        {step.name}
-                      </h4>
-                      {step.description && (
-                        <p className="text-sm text-gray-600 mt-1">
-                          {step.description}
-                        </p>
-                      )}
-                      <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
-                        <span>Priority: {step.priority}</span>
-                        <span>ETA: {step.estimated_days} days</span>
-                        {step.due_date && (
-                          <span>
-                            Due: {new Date(step.due_date).toLocaleDateString()}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Select
-                        value={step.status}
-                        onValueChange={(value) =>
-                          handleUpdateStepStatus(step.id, value)
-                        }
-                      >
-                        <SelectTrigger className="w-32">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="pending">Pending</SelectItem>
-                          <SelectItem value="in_progress">
-                            In Progress
-                          </SelectItem>
-                          <SelectItem value="completed">Completed</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="text-center py-8">
-                  <Zap className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    No Steps Yet
-                  </h3>
-                  <p className="text-gray-600 mb-4">
-                    Start tracking your fundraising process by adding steps
-                  </p>
-                  <Button
-                    onClick={() => setShowAddStep(true)}
-                    className="bg-purple-600 hover:bg-purple-700"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add First Step
-                  </Button>
-                </div>
-              )}
+            <div className="text-center py-8 px-6">
+              <Zap className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                No Steps Yet
+              </h3>
+              <p className="text-gray-600 mb-4">
+                Start tracking your fundraising process by adding steps
+              </p>
+              <Button
+                onClick={() => setShowAddStep(true)}
+                className="bg-purple-600 hover:bg-purple-700"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add First Step
+              </Button>
             </div>
           )}
         </CardContent>
