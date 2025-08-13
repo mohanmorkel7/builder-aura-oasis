@@ -65,7 +65,7 @@ router.get("/", async (req: Request, res: Response) => {
       }
     } catch (dbError) {
       console.log("Database error, using mock data:", dbError.message);
-      vcs = await MockDataService.getAllLeads();
+      vcs = await MockDataService.getAllVCs();
     }
 
     res.json(vcs);
