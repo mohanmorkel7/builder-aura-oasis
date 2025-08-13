@@ -1941,7 +1941,6 @@ export default function CreateVC() {
                   Template Selection
                 </h4>
 
-
                 <div>
                   <div className="flex items-center justify-between">
                     <Label htmlFor="template">
