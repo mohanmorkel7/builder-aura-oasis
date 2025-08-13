@@ -666,6 +666,7 @@ export default function VCDetails() {
   const [isAddStepOpen, setIsAddStepOpen] = useState(false);
   const [expandedSteps, setExpandedSteps] = useState<Set<number>>(new Set());
   const [newComment, setNewComment] = useState("");
+  const [isPopulatingTemplate, setIsPopulatingTemplate] = useState(false);
 
   const resetNewStepForm = () => {
     setNewStepForm({
