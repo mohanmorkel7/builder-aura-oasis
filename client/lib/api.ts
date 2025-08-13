@@ -1118,27 +1118,20 @@ export class ApiClient {
         ); // Reduced to 5 seconds
       });
 
-      // Add retry logic for follow-ups
-      let lastError: Error | null = null;
-      for (let attempt = 1; attempt <= 2; attempt++) {
-        try {
-          const requestPromise = this.request(endpoint);
-          const result = await Promise.race([requestPromise, timeoutPromise]);
-          console.log(
-            "Follow-ups fetch successful, got",
-            Array.isArray(result) ? result.length : "non-array",
-            "items",
-          );
-          return result;
-        } catch (error) {
-          lastError = error as Error;
-          console.warn(`Follow-ups request attempt ${attempt} failed:`, error);
-
-          if (attempt < 2) {
-            // Wait before retry
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-          }
-        }
+      // Single attempt with fast timeout
+      try {
+        const requestPromise = this.request(endpoint);
+        const result = await Promise.race([requestPromise, timeoutPromise]);
+        console.log(
+          "Follow-ups fetch successful, got",
+          Array.isArray(result) ? result.length : "non-array",
+          "items",
+        );
+        return result;
+      } catch (error) {
+        console.warn("Follow-ups request failed:", error);
+        // Return empty array immediately on timeout/error
+        return [];
       }
 
       throw lastError;
