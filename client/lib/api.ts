@@ -599,6 +599,13 @@ export class ApiClient {
     return this.request(`/leads${params}`);
   }
 
+  async getMyVCPartialSaves(userId?: number) {
+    const params = userId
+      ? `?created_by=${userId}&partial_saves_only=true`
+      : "?partial_saves_only=true";
+    return this.request(`/vc${params}`);
+  }
+
   async getLead(id: number) {
     return this.request(`/leads/${id}`);
   }
