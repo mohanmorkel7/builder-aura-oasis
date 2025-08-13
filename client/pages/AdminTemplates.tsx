@@ -414,6 +414,11 @@ export default function AdminTemplates() {
           <DialogHeader>
             <DialogTitle>Create New Template</DialogTitle>
           </DialogHeader>
+          <div className="p-4">
+            <p>Dialog is working! This is a test.</p>
+            <Button onClick={() => setIsCreateDialogOpen(false)}>Close Test</Button>
+          </div>
+          {/* Temporarily comment out the complex component to test if dialog opens
           <CreateTemplateDialog
             onSuccess={() => {
               console.log("Template creation success, closing dialog");
@@ -424,6 +429,7 @@ export default function AdminTemplates() {
             }}
             categories={categories}
           />
+          */}
         </DialogContent>
       </Dialog>
 
