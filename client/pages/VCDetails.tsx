@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/lib/auth-context";
 import { apiClient } from "@/lib/api";
-import { useTemplate, useUpdateVCStep, useDeleteVCStep } from "@/hooks/useApi";
+import { useUpdateVCStep, useDeleteVCStep } from "@/hooks/useApi";
 import { Button } from "@/components/ui/button";
 import {
   Card,
