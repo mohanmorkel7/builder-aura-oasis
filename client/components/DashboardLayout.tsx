@@ -65,7 +65,7 @@ const navigationItems: NavigationItem[] = [
   {
     name: "VC",
     href: "/vc",
-    icon: Target,
+    icon: Megaphone,
     roles: ["admin", "sales", "product"],
   },
   {
