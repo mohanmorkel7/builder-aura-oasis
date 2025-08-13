@@ -160,14 +160,22 @@ export default function CreateVC() {
           city: resumeData.city || "",
           state: resumeData.state || "",
           // Handle country initialization correctly
-          country: COUNTRIES.includes(resumeData.country || "")
-            ? resumeData.country || ""
-            : resumeData.country
-              ? "Other"
-              : "",
-          custom_country: COUNTRIES.includes(resumeData.country || "")
-            ? ""
-            : resumeData.country || "",
+          country: (() => {
+            const savedCountry = resumeData.country || "";
+            // If no country was saved, return empty
+            if (!savedCountry) return "";
+            // If saved country is in our predefined list, use it directly
+            if (COUNTRIES.includes(savedCountry)) return savedCountry;
+            // If saved country is not in our list, set dropdown to "Other"
+            return "Other";
+          })(),
+          custom_country: (() => {
+            const savedCountry = resumeData.country || "";
+            // If saved country is in our predefined list, no custom country needed
+            if (!savedCountry || COUNTRIES.includes(savedCountry)) return "";
+            // If saved country is not in our list, store it as custom country
+            return savedCountry;
+          })(),
           website: resumeData.website || "",
           potential_lead_investor: resumeData.potential_lead_investor || false,
           minimum_size: resumeData.minimum_size || "",
