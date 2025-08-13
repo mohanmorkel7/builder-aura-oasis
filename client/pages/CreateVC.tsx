@@ -696,8 +696,11 @@ export default function CreateVC() {
     console.log("🐛 DEBUG - Component initialized/updated:");
     console.log("resumeData:", resumeData);
     console.log("resumeData?.country:", resumeData?.country);
+    console.log("resumeData?.template_id:", resumeData?.template_id);
     console.log("vcData.country:", vcData.country);
     console.log("vcData.custom_country:", vcData.custom_country);
+    console.log("vcData.template_id:", vcData.template_id);
+    console.log("selectedTemplate:", selectedTemplate);
     console.log("currentDraftId:", currentDraftId);
     if (resumeData?.country) {
       console.log(
@@ -705,7 +708,7 @@ export default function CreateVC() {
         COUNTRIES.includes(resumeData.country),
       );
     }
-  }, [resumeData, vcData.country, vcData.custom_country, currentDraftId]);
+  }, [resumeData, vcData.country, vcData.custom_country, vcData.template_id, selectedTemplate, currentDraftId]);
 
   const createVCMutation = useMutation({
     mutationFn: (vcData: any) =>
