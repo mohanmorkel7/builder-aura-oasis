@@ -140,13 +140,29 @@ export default function VCDetails() {
     data: vcSteps,
     isLoading: stepsLoading,
     refetch: refetchSteps,
+    error: stepsError,
   } = useQuery({
     queryKey: ["vc-steps", id],
     queryFn: async () => {
-      const response = await apiClient.request(`/vc/${id}/steps`);
-      return response;
+      console.log("🔍 Fetching VC steps for ID:", id);
+      try {
+        const response = await apiClient.request(`/vc/${id}/steps`, {
+          headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+          }
+        });
+        console.log("✅ VC Steps API Response:", response);
+        console.log("📊 Steps count:", Array.isArray(response) ? response.length : 'Not an array');
+        return response;
+      } catch (error) {
+        console.error("❌ VC Steps API Error:", error);
+        throw error;
+      }
     },
     enabled: !!id,
+    staleTime: 0, // Don't cache
+    cacheTime: 0, // Don't cache
   });
 
   // Create step mutation
