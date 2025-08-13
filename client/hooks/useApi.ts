@@ -1575,22 +1575,18 @@ export function useReorderVCSteps() {
   });
 }
 
-// VC Step chat hooks
+// VC Step chat hooks - Disabled until backend endpoints are implemented
 export function useVCStepChats(stepId: number) {
   return useQuery({
     queryKey: ["vc-step-chats", stepId],
     queryFn: async () => {
-      try {
-        return await apiClient.request(`/vc/steps/${stepId}/chats`);
-      } catch (error) {
-        // Return empty array if endpoint doesn't exist yet
-        console.log(`VC step chats endpoint not available for step ${stepId}, using empty array`);
-        return [];
-      }
+      // Return empty array since VC step chat endpoints are not implemented yet
+      console.log(`VC step chats not implemented yet for step ${stepId}, returning empty array`);
+      return [];
     },
-    enabled: !!stepId && stepId > 0,
-    retry: false, // Don't retry failed requests
-    staleTime: Infinity, // Cache forever since endpoint doesn't exist
+    enabled: false, // Disable the query entirely until endpoints are implemented
+    retry: false,
+    staleTime: Infinity,
   });
 }
 
