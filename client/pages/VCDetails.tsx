@@ -96,7 +96,7 @@ export default function VCDetails() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  
+
   const [isEditMode, setIsEditMode] = useState(false);
   const [showAddStep, setShowAddStep] = useState(false);
   const [newStep, setNewStep] = useState({
@@ -158,10 +158,10 @@ export default function VCDetails() {
   });
 
   // Fetch template details if VC has template_id
-  const {
-    data: templateData,
-    isLoading: templateLoading,
-  } = useTemplate(vcData?.template_id, { enabled: !!vcData?.template_id });
+  const { data: templateData, isLoading: templateLoading } = useTemplate(
+    vcData?.template_id,
+    { enabled: !!vcData?.template_id },
+  );
 
   // Create step mutation
   const createStepMutation = useMutation({
@@ -175,7 +175,12 @@ export default function VCDetails() {
     onSuccess: () => {
       refetchSteps();
       setShowAddStep(false);
-      setNewStep({ name: "", description: "", priority: "medium", estimated_days: 1 });
+      setNewStep({
+        name: "",
+        description: "",
+        priority: "medium",
+        estimated_days: 1,
+      });
     },
   });
 
@@ -253,9 +258,12 @@ export default function VCDetails() {
   };
 
   const getRoundStageDisplay = (stage: string) => {
-    return stage?.split('_').map(word => 
-      word.charAt(0).toUpperCase() + word.slice(1)
-    ).join(' ') || 'N/A';
+    return (
+      stage
+        ?.split("_")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ") || "N/A"
+    );
   };
 
   return (
@@ -277,13 +285,17 @@ export default function VCDetails() {
               <>
                 <Database className="h-4 w-4 text-emerald-600" />
                 <Wifi className="h-4 w-4 text-emerald-600" />
-                <span className="text-sm font-medium text-emerald-700">Live Database</span>
+                <span className="text-sm font-medium text-emerald-700">
+                  Live Database
+                </span>
               </>
             ) : (
               <>
                 <Database className="h-4 w-4 text-amber-600" />
                 <WifiOff className="h-4 w-4 text-amber-600" />
-                <span className="text-sm font-medium text-amber-700">Mock Data Mode</span>
+                <span className="text-sm font-medium text-amber-700">
+                  Mock Data Mode
+                </span>
               </>
             )}
           </div>
@@ -317,21 +329,31 @@ export default function VCDetails() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <Badge 
-                  variant="outline" 
-                  className={statusColors[vcData.status as keyof typeof statusColors]}
-                >
-                  {vcData.status?.replace('_', ' ').toUpperCase()}
-                </Badge>
-                <Badge 
+                <Badge
                   variant="outline"
-                  className={investorCategoryColors[vcData.investor_category as keyof typeof investorCategoryColors]}
+                  className={
+                    statusColors[vcData.status as keyof typeof statusColors]
+                  }
                 >
-                  {vcData.investor_category?.replace('_', ' ').toUpperCase()}
+                  {vcData.status?.replace("_", " ").toUpperCase()}
                 </Badge>
-                <Badge 
+                <Badge
                   variant="outline"
-                  className={roundStageColors[vcData.round_stage as keyof typeof roundStageColors]}
+                  className={
+                    investorCategoryColors[
+                      vcData.investor_category as keyof typeof investorCategoryColors
+                    ]
+                  }
+                >
+                  {vcData.investor_category?.replace("_", " ").toUpperCase()}
+                </Badge>
+                <Badge
+                  variant="outline"
+                  className={
+                    roundStageColors[
+                      vcData.round_stage as keyof typeof roundStageColors
+                    ]
+                  }
                 >
                   {getRoundStageDisplay(vcData.round_stage)}
                 </Badge>
@@ -343,10 +365,10 @@ export default function VCDetails() {
                 {vcData.vc_id}
               </div>
               <div className="text-3xl font-bold text-indigo-600">
-                {vcData.round_size || 'TBD'}
+                {vcData.round_size || "TBD"}
               </div>
               <div className="text-sm text-gray-600">
-                @ {vcData.valuation || 'TBD'} valuation
+                @ {vcData.valuation || "TBD"} valuation
               </div>
             </div>
           </div>
@@ -371,7 +393,7 @@ export default function VCDetails() {
                 {vcData.email && (
                   <div className="flex items-center gap-3">
                     <Mail className="h-4 w-4 text-gray-500" />
-                    <a 
+                    <a
                       href={`mailto:${vcData.email}`}
                       className="text-indigo-600 hover:underline"
                     >
@@ -382,7 +404,7 @@ export default function VCDetails() {
                 {vcData.phone && (
                   <div className="flex items-center gap-3">
                     <Phone className="h-4 w-4 text-gray-500" />
-                    <a 
+                    <a
                       href={`tel:${vcData.phone}`}
                       className="text-indigo-600 hover:underline"
                     >
@@ -393,13 +415,13 @@ export default function VCDetails() {
                 {vcData.website && (
                   <div className="flex items-center gap-3">
                     <Globe className="h-4 w-4 text-gray-500" />
-                    <a 
+                    <a
                       href={vcData.website}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-indigo-600 hover:underline"
                     >
-                      {vcData.website.replace(/^https?:\/\//, '')}
+                      {vcData.website.replace(/^https?:\/\//, "")}
                     </a>
                   </div>
                 )}
@@ -415,27 +437,37 @@ export default function VCDetails() {
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Round Size</span>
-                  <span className="font-semibold">{vcData.round_size || 'TBD'}</span>
+                  <span className="font-semibold">
+                    {vcData.round_size || "TBD"}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Valuation</span>
-                  <span className="font-semibold">{vcData.valuation || 'TBD'}</span>
+                  <span className="font-semibold">
+                    {vcData.valuation || "TBD"}
+                  </span>
                 </div>
                 {vcData.minimum_size && (
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600">Min. Investment</span>
-                    <span className="font-semibold">${(vcData.minimum_size / 1000000).toFixed(1)}M</span>
+                    <span className="font-semibold">
+                      ${(vcData.minimum_size / 1000000).toFixed(1)}M
+                    </span>
                   </div>
                 )}
                 {vcData.maximum_size && (
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600">Max. Investment</span>
-                    <span className="font-semibold">${(vcData.maximum_size / 1000000).toFixed(1)}M</span>
+                    <span className="font-semibold">
+                      ${(vcData.maximum_size / 1000000).toFixed(1)}M
+                    </span>
                   </div>
                 )}
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Currency</span>
-                  <span className="font-semibold">{vcData.billing_currency || 'USD'}</span>
+                  <span className="font-semibold">
+                    {vcData.billing_currency || "USD"}
+                  </span>
                 </div>
               </div>
             </div>
@@ -465,18 +497,23 @@ export default function VCDetails() {
                 )}
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Priority</span>
-                  <Badge variant="outline" className={
-                    vcData.priority_level === 'high' ? 'border-red-200 text-red-700' :
-                    vcData.priority_level === 'medium' ? 'border-yellow-200 text-yellow-700' :
-                    'border-green-200 text-green-700'
-                  }>
+                  <Badge
+                    variant="outline"
+                    className={
+                      vcData.priority_level === "high"
+                        ? "border-red-200 text-red-700"
+                        : vcData.priority_level === "medium"
+                          ? "border-yellow-200 text-yellow-700"
+                          : "border-green-200 text-green-700"
+                    }
+                  >
                     {vcData.priority_level?.toUpperCase()}
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Lead Investor</span>
                   <span className="font-semibold">
-                    {vcData.potential_lead_investor ? 'Yes' : 'No'}
+                    {vcData.potential_lead_investor ? "Yes" : "No"}
                   </span>
                 </div>
               </div>
@@ -511,7 +548,7 @@ export default function VCDetails() {
                 Track your fundraising milestones and progress
               </CardDescription>
             </div>
-            <Button 
+            <Button
               onClick={() => setShowAddStep(true)}
               className="bg-purple-600 hover:bg-purple-700 text-white"
             >
@@ -530,7 +567,7 @@ export default function VCDetails() {
             <div className="space-y-4">
               {vcSteps && vcSteps.length > 0 ? (
                 vcSteps.map((step: any, index: number) => (
-                  <div 
+                  <div
                     key={step.id}
                     className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg hover:border-purple-200 hover:bg-purple-50/30 transition-all"
                   >
@@ -538,29 +575,39 @@ export default function VCDetails() {
                       {getStepStatusIcon(step.status)}
                     </div>
                     <div className="flex-1">
-                      <h4 className="font-semibold text-gray-900">{step.name}</h4>
+                      <h4 className="font-semibold text-gray-900">
+                        {step.name}
+                      </h4>
                       {step.description && (
-                        <p className="text-sm text-gray-600 mt-1">{step.description}</p>
+                        <p className="text-sm text-gray-600 mt-1">
+                          {step.description}
+                        </p>
                       )}
                       <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
                         <span>Priority: {step.priority}</span>
                         <span>ETA: {step.estimated_days} days</span>
                         {step.due_date && (
-                          <span>Due: {new Date(step.due_date).toLocaleDateString()}</span>
+                          <span>
+                            Due: {new Date(step.due_date).toLocaleDateString()}
+                          </span>
                         )}
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <Select
                         value={step.status}
-                        onValueChange={(value) => handleUpdateStepStatus(step.id, value)}
+                        onValueChange={(value) =>
+                          handleUpdateStepStatus(step.id, value)
+                        }
                       >
                         <SelectTrigger className="w-32">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="pending">Pending</SelectItem>
-                          <SelectItem value="in_progress">In Progress</SelectItem>
+                          <SelectItem value="in_progress">
+                            In Progress
+                          </SelectItem>
                           <SelectItem value="completed">Completed</SelectItem>
                         </SelectContent>
                       </Select>
@@ -576,7 +623,7 @@ export default function VCDetails() {
                   <p className="text-gray-600 mb-4">
                     Start tracking your fundraising process by adding steps
                   </p>
-                  <Button 
+                  <Button
                     onClick={() => setShowAddStep(true)}
                     className="bg-purple-600 hover:bg-purple-700"
                   >
@@ -605,16 +652,25 @@ export default function VCDetails() {
           <CardContent className="p-6">
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <h4 className="font-semibold text-gray-900 mb-3">Template Steps</h4>
+                <h4 className="font-semibold text-gray-900 mb-3">
+                  Template Steps
+                </h4>
                 <div className="space-y-2">
                   {templateData.steps?.map((step: any, index: number) => (
-                    <div key={index} className="flex items-center gap-3 p-2 rounded border border-emerald-200 bg-emerald-50/50">
+                    <div
+                      key={index}
+                      className="flex items-center gap-3 p-2 rounded border border-emerald-200 bg-emerald-50/50"
+                    >
                       <div className="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center text-xs font-semibold text-emerald-700">
                         {index + 1}
                       </div>
                       <div className="flex-1">
-                        <div className="font-medium text-gray-900">{step.name}</div>
-                        <div className="text-xs text-gray-600">{step.description}</div>
+                        <div className="font-medium text-gray-900">
+                          {step.name}
+                        </div>
+                        <div className="text-xs text-gray-600">
+                          {step.description}
+                        </div>
                       </div>
                       <div className="text-xs text-emerald-600 font-medium">
                         {step.estimated_days || 1}d
@@ -624,7 +680,9 @@ export default function VCDetails() {
                 </div>
               </div>
               <div>
-                <h4 className="font-semibold text-gray-900 mb-3">Template Benefits</h4>
+                <h4 className="font-semibold text-gray-900 mb-3">
+                  Template Benefits
+                </h4>
                 <ul className="space-y-2 text-sm text-gray-600">
                   <li className="flex items-start gap-2">
                     <CheckCircle className="h-4 w-4 text-emerald-600 mt-0.5 flex-shrink-0" />
@@ -660,7 +718,9 @@ export default function VCDetails() {
               <Input
                 id="step-name"
                 value={newStep.name}
-                onChange={(e) => setNewStep({ ...newStep, name: e.target.value })}
+                onChange={(e) =>
+                  setNewStep({ ...newStep, name: e.target.value })
+                }
                 placeholder="e.g., Initial Pitch Presentation"
               />
             </div>
@@ -669,7 +729,9 @@ export default function VCDetails() {
               <Textarea
                 id="step-description"
                 value={newStep.description}
-                onChange={(e) => setNewStep({ ...newStep, description: e.target.value })}
+                onChange={(e) =>
+                  setNewStep({ ...newStep, description: e.target.value })
+                }
                 placeholder="Describe what needs to be accomplished in this step"
               />
             </div>
@@ -678,7 +740,7 @@ export default function VCDetails() {
                 <Label htmlFor="priority">Priority</Label>
                 <Select
                   value={newStep.priority}
-                  onValueChange={(value: "low" | "medium" | "high") => 
+                  onValueChange={(value: "low" | "medium" | "high") =>
                     setNewStep({ ...newStep, priority: value })
                   }
                 >
@@ -698,7 +760,12 @@ export default function VCDetails() {
                   id="estimated-days"
                   type="number"
                   value={newStep.estimated_days}
-                  onChange={(e) => setNewStep({ ...newStep, estimated_days: parseInt(e.target.value) || 1 })}
+                  onChange={(e) =>
+                    setNewStep({
+                      ...newStep,
+                      estimated_days: parseInt(e.target.value) || 1,
+                    })
+                  }
                   min="1"
                 />
               </div>
@@ -708,7 +775,7 @@ export default function VCDetails() {
             <Button variant="outline" onClick={() => setShowAddStep(false)}>
               Cancel
             </Button>
-            <Button 
+            <Button
               onClick={handleAddStep}
               disabled={!newStep.name.trim() || createStepMutation.isPending}
               className="bg-purple-600 hover:bg-purple-700"
