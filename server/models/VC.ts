@@ -95,6 +95,7 @@ export interface CreateVCData {
   created_by: number;
   assigned_to?: number;
   notes?: string;
+  is_partial?: boolean;
 }
 
 export interface UpdateVCData {
