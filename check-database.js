@@ -68,10 +68,11 @@ async function checkDatabase() {
 
       if (parseInt(countResult.rows[0].count) > 0) {
         console.log("\n📝 Sample VC data:");
-        const sampleData = await client.query("SELECT id, round_title, investor_name, status FROM vcs LIMIT 3");
+        const sampleData = await client.query(
+          "SELECT id, round_title, investor_name, status FROM vcs LIMIT 3",
+        );
         console.table(sampleData.rows);
       }
-
     } else {
       console.log("❌ VCs table does NOT exist!");
       console.log("💡 You need to run: node setup-database.js");
@@ -79,7 +80,6 @@ async function checkDatabase() {
 
     client.release();
     console.log("\n🔌 Database connection closed");
-    
   } catch (error) {
     console.error("❌ Database check failed:", error.message);
     console.log("");
