@@ -205,17 +205,29 @@ export default function CreateVC() {
           priority_level: resumeData.priority_level || "medium",
           start_date: (() => {
             try {
-              return resumeData.start_date ? new Date(resumeData.start_date).toISOString().split('T')[0] : "";
+              return resumeData.start_date
+                ? new Date(resumeData.start_date).toISOString().split("T")[0]
+                : "";
             } catch (e) {
-              console.warn("Failed to parse resumeData start_date:", resumeData.start_date);
+              console.warn(
+                "Failed to parse resumeData start_date:",
+                resumeData.start_date,
+              );
               return "";
             }
           })(),
           targeted_end_date: (() => {
             try {
-              return resumeData.targeted_end_date ? new Date(resumeData.targeted_end_date).toISOString().split('T')[0] : "";
+              return resumeData.targeted_end_date
+                ? new Date(resumeData.targeted_end_date)
+                    .toISOString()
+                    .split("T")[0]
+                : "";
             } catch (e) {
-              console.warn("Failed to parse resumeData targeted_end_date:", resumeData.targeted_end_date);
+              console.warn(
+                "Failed to parse resumeData targeted_end_date:",
+                resumeData.targeted_end_date,
+              );
               return "";
             }
           })(),
@@ -464,7 +476,7 @@ export default function CreateVC() {
             start_date: response.start_date,
             targeted_end_date: response.targeted_end_date,
             start_date_type: typeof response.start_date,
-            targeted_end_date_type: typeof response.targeted_end_date
+            targeted_end_date_type: typeof response.targeted_end_date,
           });
 
           // Update the VC data with the fetched draft
@@ -529,17 +541,29 @@ export default function CreateVC() {
             priority_level: response.priority_level || prevData.priority_level,
             start_date: (() => {
               try {
-                return response.start_date ? new Date(response.start_date).toISOString().split('T')[0] : (prevData.start_date || "");
+                return response.start_date
+                  ? new Date(response.start_date).toISOString().split("T")[0]
+                  : prevData.start_date || "";
               } catch (e) {
-                console.warn("Failed to parse start_date:", response.start_date);
+                console.warn(
+                  "Failed to parse start_date:",
+                  response.start_date,
+                );
                 return prevData.start_date || "";
               }
             })(),
             targeted_end_date: (() => {
               try {
-                return response.targeted_end_date ? new Date(response.targeted_end_date).toISOString().split('T')[0] : (prevData.targeted_end_date || "");
+                return response.targeted_end_date
+                  ? new Date(response.targeted_end_date)
+                      .toISOString()
+                      .split("T")[0]
+                  : prevData.targeted_end_date || "";
               } catch (e) {
-                console.warn("Failed to parse targeted_end_date:", response.targeted_end_date);
+                console.warn(
+                  "Failed to parse targeted_end_date:",
+                  response.targeted_end_date,
+                );
                 return prevData.targeted_end_date || "";
               }
             })(),
@@ -555,7 +579,7 @@ export default function CreateVC() {
           setTimeout(() => {
             console.log("🐛 DEBUG - Final date values in state:", {
               start_date: vcData.start_date,
-              targeted_end_date: vcData.targeted_end_date
+              targeted_end_date: vcData.targeted_end_date,
             });
           }, 100);
 
