@@ -498,6 +498,13 @@ export default function CreateVC() {
             probability: response.probability || prevData.probability,
             notes: response.notes || prevData.notes,
           }));
+
+          // Restore the saved tab if available
+          const savedTab = localStorage.getItem(`vc_draft_${currentDraftId}_tab`);
+          if (savedTab && savedTab !== activeTab) {
+            console.log("🐛 DEBUG - Restoring saved tab:", savedTab);
+            setActiveTab(savedTab);
+          }
         } catch (error) {
           console.error("🐛 ERROR - Failed to fetch draft data:", error);
         }
@@ -505,7 +512,7 @@ export default function CreateVC() {
     };
 
     fetchDraftData();
-  }, [currentDraftId, resumeData]);
+  }, [currentDraftId, resumeData, activeTab]);
 
   // Debug country initialization when resuming from draft
   useEffect(() => {
