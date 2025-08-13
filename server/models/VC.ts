@@ -275,6 +275,7 @@ export class VCRepository {
       vcData.created_by,
       vcData.assigned_to || null,
       vcData.notes || null,
+      vcData.is_partial || false,
     ];
 
     const result = await pool.query(query, values);
