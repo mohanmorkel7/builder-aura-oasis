@@ -478,70 +478,93 @@ export default function VCDashboard() {
         </div>
       )}
 
-      {/* Filters and Search */}
+      {/* Tabs and Search/Filters */}
       <Card>
         <CardContent className="p-6">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder="Search VCs, investors, or round titles..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-            </div>
-
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full md:w-[200px]">
-                <SelectValue placeholder="Filter by status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="in-progress">In Progress</SelectItem>
-                <SelectItem value="won">Won</SelectItem>
-                <SelectItem value="lost">Lost</SelectItem>
-                <SelectItem value="completed">Completed</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-              <SelectTrigger className="w-full md:w-[200px]">
-                <SelectValue placeholder="Filter by investor type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Investors</SelectItem>
-                <SelectItem value="angel">Angel</SelectItem>
-                <SelectItem value="vc">VC</SelectItem>
-                <SelectItem value="private_equity">Private Equity</SelectItem>
-                <SelectItem value="family_office">Family Office</SelectItem>
-                <SelectItem value="merchant_banker">Merchant Banker</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select
-              value={`${sortBy}-${sortOrder}`}
-              onValueChange={(value) => {
-                const [field, order] = value.split("-");
-                setSortBy(field);
-                setSortOrder(order as "asc" | "desc");
-              }}
+          {/* Tab Navigation */}
+          <div className="flex items-center gap-4 mb-4">
+            <Button
+              variant={activeTab === "vcs" ? "default" : "outline"}
+              onClick={() => setActiveTab("vcs")}
+              className="flex items-center gap-2"
             >
-              <SelectTrigger className="w-full md:w-[200px]">
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="created_at-desc">Newest First</SelectItem>
-                <SelectItem value="created_at-asc">Oldest First</SelectItem>
-                <SelectItem value="round_title-asc">Round A-Z</SelectItem>
-                <SelectItem value="round_title-desc">Round Z-A</SelectItem>
-                <SelectItem value="investor_name-asc">Investor A-Z</SelectItem>
-                <SelectItem value="investor_name-desc">Investor Z-A</SelectItem>
-              </SelectContent>
-            </Select>
+              <Target className="w-4 h-4" />
+              VCs ({filteredVCs.length})
+            </Button>
+            <Button
+              variant={activeTab === "drafts" ? "default" : "outline"}
+              onClick={() => setActiveTab("drafts")}
+              className="flex items-center gap-2"
+            >
+              <FileText className="w-4 h-4" />
+              Saved Drafts ({vcPartialSaves.length})
+            </Button>
           </div>
+
+          {/* Search and Filters - Only show for VCs tab */}
+          {activeTab === "vcs" && (
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1">
+                <div className="relative">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Search VCs, investors, or round titles..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-full md:w-[200px]">
+                  <SelectValue placeholder="Filter by status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Status</SelectItem>
+                  <SelectItem value="in-progress">In Progress</SelectItem>
+                  <SelectItem value="won">Won</SelectItem>
+                  <SelectItem value="lost">Lost</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                <SelectTrigger className="w-full md:w-[200px]">
+                  <SelectValue placeholder="Filter by investor type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Investors</SelectItem>
+                  <SelectItem value="angel">Angel</SelectItem>
+                  <SelectItem value="vc">VC</SelectItem>
+                  <SelectItem value="private_equity">Private Equity</SelectItem>
+                  <SelectItem value="family_office">Family Office</SelectItem>
+                  <SelectItem value="merchant_banker">Merchant Banker</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select
+                value={`${sortBy}-${sortOrder}`}
+                onValueChange={(value) => {
+                  const [field, order] = value.split("-");
+                  setSortBy(field);
+                  setSortOrder(order as "asc" | "desc");
+                }}
+              >
+                <SelectTrigger className="w-full md:w-[200px]">
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="created_at-desc">Newest First</SelectItem>
+                  <SelectItem value="created_at-asc">Oldest First</SelectItem>
+                  <SelectItem value="round_title-asc">Round A-Z</SelectItem>
+                  <SelectItem value="round_title-desc">Round Z-A</SelectItem>
+                  <SelectItem value="investor_name-asc">Investor A-Z</SelectItem>
+                  <SelectItem value="investor_name-desc">Investor Z-A</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
         </CardContent>
       </Card>
 
