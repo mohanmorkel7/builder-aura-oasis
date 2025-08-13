@@ -574,12 +574,46 @@ router.get("/debug/tables", async (req: Request, res: Response) => {
       "SELECT COUNT(*) as count FROM vc_steps",
     );
 
+    // Get all vc_steps to see what's in the table
+    const allSteps = await pool.query(`
+      SELECT vs.*, v.round_title
+      FROM vc_steps vs
+      LEFT JOIN vcs v ON vs.vc_id = v.id
+      ORDER BY vs.vc_id, vs.order_index
+    `);
+
     res.json({
       tables: tables.rows,
       counts: {
         vcs: vcCount.rows[0].count,
         vc_steps: stepsCount.rows[0].count,
       },
+      all_vc_steps: allSteps.rows
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Debug endpoint to check specific VC steps
+router.get("/debug/:id/steps", async (req: Request, res: Response) => {
+  try {
+    const vcId = parseInt(req.params.id);
+
+    // Get VC details
+    const vc = await pool.query("SELECT * FROM vcs WHERE id = $1", [vcId]);
+
+    // Get all steps for this VC
+    const steps = await pool.query(`
+      SELECT * FROM vc_steps
+      WHERE vc_id = $1
+      ORDER BY order_index ASC, created_at ASC
+    `, [vcId]);
+
+    res.json({
+      vc: vc.rows[0] || null,
+      steps: steps.rows,
+      step_count: steps.rows.length
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
