@@ -1093,7 +1093,9 @@ export default function CreateVC() {
                         : undefined
                     }
                     onValueChange={(value) => {
+                      console.log("DEBUG: Country onValueChange called with:", value);
                       handleInputChange("country", value);
+                      console.log("DEBUG: After handleInputChange, vcData.country should be:", value);
                       if (value !== "Other") {
                         handleInputChange("custom_country", "");
                       }
