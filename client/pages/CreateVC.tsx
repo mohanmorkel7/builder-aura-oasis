@@ -203,8 +203,22 @@ export default function CreateVC() {
           round_stage: resumeData.round_stage || "",
           project_description: resumeData.round_description || "",
           priority_level: resumeData.priority_level || "medium",
-          start_date: resumeData.start_date ? new Date(resumeData.start_date).toISOString().split('T')[0] : "",
-          targeted_end_date: resumeData.targeted_end_date ? new Date(resumeData.targeted_end_date).toISOString().split('T')[0] : "",
+          start_date: (() => {
+            try {
+              return resumeData.start_date ? new Date(resumeData.start_date).toISOString().split('T')[0] : "";
+            } catch (e) {
+              console.warn("Failed to parse resumeData start_date:", resumeData.start_date);
+              return "";
+            }
+          })(),
+          targeted_end_date: (() => {
+            try {
+              return resumeData.targeted_end_date ? new Date(resumeData.targeted_end_date).toISOString().split('T')[0] : "";
+            } catch (e) {
+              console.warn("Failed to parse resumeData targeted_end_date:", resumeData.targeted_end_date);
+              return "";
+            }
+          })(),
           spoc: resumeData.spoc || "",
           template_id: resumeData.template_id || "",
           billing_currency: resumeData.billing_currency || "INR",
