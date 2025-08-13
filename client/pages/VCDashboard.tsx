@@ -272,8 +272,10 @@ export default function VCDashboard() {
       _resumeFromId: partialData.id,
       roundTitle: partialData.round_title,
     });
-    // Navigate to create VC page with partial data
-    navigate("/vc/create", { state: { resumeData: partialData } });
+    // Navigate to create VC page with partial data (include URL param as backup)
+    navigate(`/vc/create?draftId=${partialData.id}`, {
+      state: { resumeData: partialData }
+    });
   };
 
   const handleDeleteVCPartialSave = async (
