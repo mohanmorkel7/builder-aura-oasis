@@ -436,7 +436,12 @@ export default function CreateVC() {
       }
     },
     onSuccess: (response: any) => {
-      console.log("Partial save success - currentDraftId:", currentDraftId, "response:", response);
+      console.log(
+        "Partial save success - currentDraftId:",
+        currentDraftId,
+        "response:",
+        response,
+      );
 
       // If this was a new draft (no currentDraftId), set the draft ID from the response
       if (!currentDraftId && response.data?.id) {
