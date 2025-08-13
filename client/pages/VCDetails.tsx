@@ -509,8 +509,23 @@ export default function VCDetails() {
         return await apiClient.request(`/vc/${id}`);
       } catch (error) {
         console.error("Failed to fetch VC details:", error);
-        // Fallback to mock data if API fails
-        return getMockVC(id);
+
+        // For 404 errors, try mock data but if that's also null, throw the error
+        if (error?.message?.includes('404')) {
+          const mockData = getMockVC(id);
+          if (!mockData) {
+            // If mock data doesn't exist either, throw the original 404 error
+            throw error;
+          }
+          return mockData;
+        }
+
+        // For other errors, try mock data as fallback
+        const mockData = getMockVC(id);
+        if (!mockData) {
+          throw error;
+        }
+        return mockData;
       }
     },
     enabled: !!id,
