@@ -111,8 +111,8 @@ export default function VCDetails() {
     queryKey: ["database-status"],
     queryFn: async () => {
       try {
-        const response = await apiClient.get("/api/database/status");
-        return response.data;
+        const response = await apiClient.request("/database/status");
+        return response;
       } catch (error) {
         return { isDatabaseAvailable: false, error: "Database check failed" };
       }
@@ -132,10 +132,9 @@ export default function VCDetails() {
     queryFn: async () => {
       console.log("🔍 Fetching VC details for ID:", id);
       try {
-        const response = await apiClient.get(`/api/vc/${id}`);
+        const response = await apiClient.request(`/vc/${id}`);
         console.log("✅ VC API Response:", response);
-        console.log("✅ VC Data:", response.data);
-        return response.data;
+        return response;
       } catch (error) {
         console.error("❌ VC API Error:", error);
         throw error;
@@ -152,8 +151,8 @@ export default function VCDetails() {
   } = useQuery({
     queryKey: ["vc-steps", id],
     queryFn: async () => {
-      const response = await apiClient.get(`/api/vc/${id}/steps`);
-      return response.data;
+      const response = await apiClient.request(`/vc/${id}/steps`);
+      return response;
     },
     enabled: !!id,
   });
