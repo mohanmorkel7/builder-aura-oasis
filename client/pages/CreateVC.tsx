@@ -364,7 +364,7 @@ export default function CreateVC() {
             category: "VC",
             created_by: "System",
             created_at: new Date().toISOString(),
-          }
+          },
         ];
       }
     },

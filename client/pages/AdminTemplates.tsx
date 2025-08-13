@@ -294,7 +294,6 @@ export default function AdminTemplates() {
         </Button>
       </div>
 
-
       {/* Create Template Dialog */}
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
         <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
