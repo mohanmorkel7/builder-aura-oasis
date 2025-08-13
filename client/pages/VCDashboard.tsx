@@ -258,6 +258,46 @@ export default function VCDashboard() {
     }
   };
 
+  const handleResumeVCPartialSave = (partialData: any) => {
+    console.log("Navigating to CreateVC with resumeData:", {
+      id: partialData.id,
+      _resumeFromId: partialData.id,
+      roundTitle: partialData.round_title,
+    });
+    // Navigate to create VC page with partial data
+    navigate("/vc/create", { state: { resumeData: partialData } });
+  };
+
+  const handleDeleteVCPartialSave = async (
+    partialSaveId: number,
+    partialSaveName: string,
+  ) => {
+    try {
+      await deleteVC.mutateAsync(partialSaveId);
+      console.log(`Draft ${partialSaveName} deleted successfully`);
+      // Refresh partial saves
+      refetchVCPartialSaves();
+    } catch (error) {
+      console.error("Failed to delete draft:", error);
+      alert("Failed to delete draft. Please try again.");
+    }
+  };
+
+  const getVCPartialSaveInfo = (partialSave: any) => {
+    try {
+      const notes = JSON.parse(partialSave.notes || "{}");
+      return {
+        lastSaved: notes.lastSaved || partialSave.created_at,
+        completedTabs: notes.completedTabs || [],
+      };
+    } catch (error) {
+      return {
+        lastSaved: partialSave.created_at,
+        completedTabs: [],
+      };
+    }
+  };
+
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "in-progress":
