@@ -446,6 +446,12 @@ export default function CreateVC() {
         try {
           const response = await apiClient.request(`/vc/${currentDraftId}`);
           console.log("🐛 DEBUG - Fetched draft data:", response);
+          console.log("🐛 DEBUG - Date fields from API:", {
+            start_date: response.start_date,
+            targeted_end_date: response.targeted_end_date,
+            start_date_type: typeof response.start_date,
+            targeted_end_date_type: typeof response.targeted_end_date
+          });
 
           // Update the VC data with the fetched draft
           setVcData((prevData) => ({
