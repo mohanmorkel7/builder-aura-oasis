@@ -1133,8 +1133,10 @@ export default function CreateVC() {
                         : undefined
                     }
                     onValueChange={(value) => {
+                      console.log("🐛 DEBUG - Country dropdown changed to:", value);
                       handleInputChange("country", value);
                       if (value !== "Other") {
+                        console.log("🐛 DEBUG - Clearing custom_country because not Other");
                         handleInputChange("custom_country", "");
                       }
                     }}
