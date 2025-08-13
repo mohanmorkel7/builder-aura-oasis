@@ -780,9 +780,31 @@ export default function VCDetails() {
                 : "The VC opportunity you're looking for doesn't exist or you don't have permission to view it."
               }
             </p>
-            {is404Error && (
+            {is404Error && availableVCs.length > 0 && (
+              <div className="text-sm text-gray-500 mb-4">
+                <p className="mb-2">Available VCs:</p>
+                <div className="flex flex-wrap gap-2">
+                  {availableVCs.slice(0, 5).map((vc: any) => (
+                    <Button
+                      key={vc.id}
+                      variant="outline"
+                      size="sm"
+                      onClick={() => navigate(`/vc/${vc.id}`)}
+                    >
+                      VC #{vc.id}: {vc.round_title || vc.investor_name || 'Untitled'}
+                    </Button>
+                  ))}
+                </div>
+                {availableVCs.length > 5 && (
+                  <p className="mt-2 text-xs">
+                    ...and {availableVCs.length - 5} more available in the VC Dashboard
+                  </p>
+                )}
+              </div>
+            )}
+            {is404Error && availableVCs.length === 0 && (
               <p className="text-sm text-gray-500 mb-4">
-                Try visiting the VC Dashboard to see available opportunities, or check if the ID is correct.
+                No VCs found in the database. Try creating a new VC opportunity.
               </p>
             )}
             <Button onClick={handleBack}>
