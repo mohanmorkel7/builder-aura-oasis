@@ -512,6 +512,21 @@ export default function CreateVC() {
             notes: response.notes || prevData.notes,
           }));
 
+          console.log("🐛 DEBUG - After setting vcData from API, country fields should be:", {
+            country: (() => {
+              const savedCountry = response.country || "";
+              if (!savedCountry) return "";
+              if (COUNTRIES.includes(savedCountry)) return savedCountry;
+              return "Other";
+            })(),
+            custom_country: (() => {
+              const savedCountry = response.country || "";
+              if (!savedCountry || COUNTRIES.includes(savedCountry)) return "";
+              return savedCountry;
+            })(),
+            originalApiCountry: response.country
+          });
+
           // Restore the saved tab if available
           const savedTab = localStorage.getItem(
             `vc_draft_${currentDraftId}_tab`,
@@ -1309,7 +1324,7 @@ export default function CreateVC() {
                   <div></div>
 
                   <div>
-                    <Label htmlFor="minimum_size">Minimum Size (₹)</Label>
+                    <Label htmlFor="minimum_size">Minimum Size (���)</Label>
                     <Input
                       id="minimum_size"
                       placeholder="e.g., 10000000"
