@@ -732,23 +732,25 @@ export default function VCDetails() {
     setIsPopulatingTemplate(true);
     try {
       // Delete existing steps first
-      const deletePromises = vcSteps.map(step =>
-        deleteVCStepMutation.mutateAsync(step.id)
+      const deletePromises = vcSteps.map((step) =>
+        deleteVCStepMutation.mutateAsync(step.id),
       );
       await Promise.all(deletePromises);
 
       // Create new steps from template
-      const createPromises = templateData.steps.map((templateStep: any, index: number) =>
-        createStepMutation.mutateAsync({
-          name: templateStep.name,
-          description: templateStep.description,
-          priority: "medium",
-          status: "pending",
-          order_index: index,
-          due_date: null,
-          estimated_days: templateStep.default_eta_days || templateStep.estimated_days || 1,
-          created_by: parseInt(user?.id || "1"),
-        })
+      const createPromises = templateData.steps.map(
+        (templateStep: any, index: number) =>
+          createStepMutation.mutateAsync({
+            name: templateStep.name,
+            description: templateStep.description,
+            priority: "medium",
+            status: "pending",
+            order_index: index,
+            due_date: null,
+            estimated_days:
+              templateStep.default_eta_days || templateStep.estimated_days || 1,
+            created_by: parseInt(user?.id || "1"),
+          }),
       );
       await Promise.all(createPromises);
 
@@ -756,7 +758,9 @@ export default function VCDetails() {
       refetchSteps();
       refetchVC();
 
-      alert("Template steps have been successfully applied! You now have VC-specific tracking steps.");
+      alert(
+        "Template steps have been successfully applied! You now have VC-specific tracking steps.",
+      );
     } catch (error) {
       console.error("Failed to populate template steps:", error);
       alert("Failed to populate template steps. Please try again.");
@@ -1401,20 +1405,27 @@ export default function VCDetails() {
                   📊 Template Overview ({templateData.steps.length} steps,
                   {(() => {
                     const totalProbability = templateData.steps.reduce(
-                      (sum: number, step: any) => sum + (step.probability_percent || 20), 0
+                      (sum: number, step: any) =>
+                        sum + (step.probability_percent || 20),
+                      0,
                     );
                     return ` ${totalProbability}% total probability`;
-                  })()})
+                  })()}
+                  )
                 </div>
                 <div className="text-xs text-blue-700 max-h-24 overflow-y-auto">
                   {templateData.steps.map((step: any, index: number) => (
-                    <div key={step.id} className="flex justify-between items-center py-1">
+                    <div
+                      key={step.id}
+                      className="flex justify-between items-center py-1"
+                    >
                       <span className="flex items-center space-x-2">
                         <span className="text-blue-500">○</span>
                         <span>{step.name}</span>
                       </span>
                       <span className="font-medium">
-                        {step.probability_percent || 20}% (~{step.default_eta_days || step.estimated_days || 1}d)
+                        {step.probability_percent || 20}% (~
+                        {step.default_eta_days || step.estimated_days || 1}d)
                       </span>
                     </div>
                   ))}
@@ -1437,7 +1448,8 @@ export default function VCDetails() {
                     )}
                     <div className="flex items-center justify-between text-xs">
                       <span className="text-blue-500 flex items-center gap-1">
-                        ⏱️ {step.estimated_days || step.default_eta_days || 1} days
+                        ⏱️ {step.estimated_days || step.default_eta_days || 1}{" "}
+                        days
                       </span>
                       <span className="text-blue-500 flex items-center gap-1">
                         📈 {step.probability_percent || 20}%
@@ -1445,7 +1457,9 @@ export default function VCDetails() {
                     </div>
                     {step.is_required && (
                       <div className="mt-1">
-                        <span className="text-xs bg-red-100 text-red-700 px-1 rounded">Required</span>
+                        <span className="text-xs bg-red-100 text-red-700 px-1 rounded">
+                          Required
+                        </span>
                       </div>
                     )}
                   </div>
@@ -1463,20 +1477,28 @@ export default function VCDetails() {
                 </div>
                 {templateData?.steps && templateData.steps.length > 0 && (
                   <div className="text-xs text-gray-600">
-                    {vcSteps.some(step =>
-                      templateData.steps.some((tStep: any) => tStep.name === step.name)
-                    ) ? "✅ Template-based steps" : "⚠️ Generic steps"}
+                    {vcSteps.some((step) =>
+                      templateData.steps.some(
+                        (tStep: any) => tStep.name === step.name,
+                      ),
+                    )
+                      ? "✅ Template-based steps"
+                      : "⚠️ Generic steps"}
                   </div>
                 )}
               </div>
-              {templateData?.steps && templateData.steps.length > 0 &&
-               !vcSteps.some(step =>
-                 templateData.steps.some((tStep: any) => tStep.name === step.name)
-               ) && (
-                <div className="text-xs text-yellow-700 bg-yellow-50 p-2 rounded border border-yellow-200">
-                  💡 Your current steps are generic. Consider using the template steps above for better VC tracking.
-                </div>
-              )}
+              {templateData?.steps &&
+                templateData.steps.length > 0 &&
+                !vcSteps.some((step) =>
+                  templateData.steps.some(
+                    (tStep: any) => tStep.name === step.name,
+                  ),
+                ) && (
+                  <div className="text-xs text-yellow-700 bg-yellow-50 p-2 rounded border border-yellow-200">
+                    💡 Your current steps are generic. Consider using the
+                    template steps above for better VC tracking.
+                  </div>
+                )}
             </div>
           )}
 
