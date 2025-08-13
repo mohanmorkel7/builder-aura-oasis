@@ -289,6 +289,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             "notifications",
           );
           setNotifications(realNotifications);
+
+          // Reset network issue flag on successful fetch
+          if (networkIssueDetected) {
+            console.log("Network connectivity restored");
+            setNetworkIssueDetected(false);
+          }
         } catch (error) {
           // Enhanced error handling for different types of failures
           const errorMsg = error?.message || 'Unknown error';
