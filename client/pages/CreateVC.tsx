@@ -677,12 +677,6 @@ export default function CreateVC() {
         is_partial: true,
       };
 
-      console.log("DEBUG: Saving draft with data:", {
-        country: partialData.country,
-        vcData_country: vcData.country,
-        vcData_custom_country: vcData.custom_country,
-        computed_country: vcData.custom_country || vcData.country,
-      });
 
       await partialSaveMutation.mutateAsync(partialData);
 
