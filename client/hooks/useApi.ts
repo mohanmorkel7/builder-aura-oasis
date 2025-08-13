@@ -1515,3 +1515,102 @@ export function useUploadTicketAttachment() {
     },
   });
 }
+
+// VC Step hooks
+export function useUpdateVCStep() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ stepId, stepData }: { stepId: number; stepData: any }) =>
+      apiClient.request(`/vc/steps/${stepId}`, {
+        method: "PUT",
+        body: JSON.stringify(stepData),
+      }),
+    onSuccess: (data: any) => {
+      // Get the vc_id from the response to invalidate specific queries
+      if (data && data.vc_id) {
+        // Invalidate specific VC steps and VC data
+        queryClient.invalidateQueries({
+          queryKey: ["vc-steps", data.vc_id],
+        });
+        queryClient.invalidateQueries({ queryKey: ["vc", data.vc_id] });
+      }
+      // Also invalidate broader queries as fallback
+      queryClient.invalidateQueries({ queryKey: ["vc-steps"] });
+      queryClient.invalidateQueries({ queryKey: ["vcs"] });
+    },
+  });
+}
+
+export function useDeleteVCStep() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (stepId: number) =>
+      apiClient.request(`/vc/steps/${stepId}`, {
+        method: "DELETE",
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["vc-steps"] });
+      queryClient.invalidateQueries({ queryKey: ["vcs"] });
+    },
+  });
+}
+
+export function useReorderVCSteps() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      vcId,
+      stepOrders,
+    }: {
+      vcId: number;
+      stepOrders: { id: number; order_index: number }[];
+    }) =>
+      apiClient.request(`/vc/${vcId}/steps/reorder`, {
+        method: "PUT",
+        body: JSON.stringify({ stepOrders }),
+      }),
+    onSuccess: (_, { vcId }) => {
+      queryClient.invalidateQueries({ queryKey: ["vc-steps", vcId] });
+    },
+  });
+}
+
+// VC Step chat hooks
+export function useVCStepChats(stepId: number) {
+  return useQuery({
+    queryKey: ["vc-step-chats", stepId],
+    queryFn: () =>
+      apiClient.request(`/vc/steps/${stepId}/chats`).catch(() => {
+        // Return empty array if endpoint doesn't exist yet
+        return [];
+      }),
+    enabled: !!stepId && stepId > 0,
+  });
+}
+
+export function useCreateVCStepChat() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ stepId, chatData }: { stepId: number; chatData: any }) =>
+      apiClient.request(`/vc/steps/${stepId}/chats`, {
+        method: "POST",
+        body: JSON.stringify(chatData),
+      }),
+    onSuccess: (_, { stepId }) => {
+      queryClient.invalidateQueries({ queryKey: ["vc-step-chats", stepId] });
+    },
+  });
+}
+
+export function useDeleteVCStepChat() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (chatId: number) =>
+      apiClient.request(`/vc/step-chats/${chatId}`, {
+        method: "DELETE",
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["vc-step-chats"] });
+    },
+  });
+}
