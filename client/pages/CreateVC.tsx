@@ -110,6 +110,11 @@ export default function CreateVC() {
   const isEditMode = !!id;
   const resumeData = location.state?.resumeData;
 
+  // Track the current draft ID for subsequent saves
+  const [currentDraftId, setCurrentDraftId] = useState(
+    resumeData?._resumeFromId || null
+  );
+
   // State for VC data
   const [vcData, setVcData] = useState(
     resumeData
