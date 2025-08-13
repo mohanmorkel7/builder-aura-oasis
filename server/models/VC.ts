@@ -230,8 +230,6 @@ export class VCRepository {
   }
 
   static async create(vcData: CreateVCData): Promise<VC> {
-    // DEBUG: Log country field in VCRepository.create
-    console.log("🐛 DEBUG - VCRepository.create - Received country:", vcData.country);
 
     // Generate VC ID
     const vcIdQuery = `
@@ -259,7 +257,6 @@ export class VCRepository {
     `;
 
     const countryValue = vcData.country || null;
-    console.log("🐛 DEBUG - VCRepository.create - Country value for DB:", countryValue);
 
     const values = [
       vcId,
@@ -297,18 +294,11 @@ export class VCRepository {
       vcData.is_partial || false,
     ];
 
-    console.log("🐛 DEBUG - VCRepository.create - Value at position 18 (country):", values[18]);
-
-    console.log("🐛 DEBUG - VCRepository.create - About to execute query with country value:", countryValue);
     const result = await pool.query(query, values);
-    console.log("🐛 DEBUG - VCRepository.create - Query result country:", result.rows[0].country);
     return result.rows[0];
   }
 
   static async update(id: number, vcData: UpdateVCData): Promise<VC | null> {
-    console.log("🐛 DEBUG - VCRepository.update - ID:", id);
-    console.log("🐛 DEBUG - VCRepository.update - Received country:", vcData.country);
-    console.log("🐛 DEBUG - VCRepository.update - UpdateVCData keys:", Object.keys(vcData));
 
     const fields = [];
     const values = [];
