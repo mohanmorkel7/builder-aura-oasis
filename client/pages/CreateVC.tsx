@@ -501,6 +501,13 @@ export default function CreateVC() {
   });
 
   const handleInputChange = (field: string, value: any) => {
+    // Debug country field changes
+    if (field === "country" || field === "custom_country") {
+      console.log(`🐛 DEBUG - handleInputChange: ${field} = "${value}"`);
+      console.log("Current vcData.country:", vcData.country);
+      console.log("Current vcData.custom_country:", vcData.custom_country);
+    }
+
     const newData = {
       ...vcData,
       [field]: value,
