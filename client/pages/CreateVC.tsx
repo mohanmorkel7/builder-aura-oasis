@@ -314,7 +314,9 @@ export default function CreateVC() {
     }
     return "lead-info";
   });
-  const [selectedTemplate, setSelectedTemplate] = useState<string>("manual");
+  const [selectedTemplate, setSelectedTemplate] = useState<string>(
+    resumeData?.template_id ? resumeData.template_id.toString() : "manual"
+  );
   const [isTemplatePreviewOpen, setIsTemplatePreviewOpen] = useState(false);
   const [previewTemplate, setPreviewTemplate] = useState<any>(null);
 
@@ -508,17 +510,31 @@ export default function CreateVC() {
 
   // Synchronize selectedTemplate with loaded template_id from draft data
   useEffect(() => {
-    if (vcData.template_id && vcData.template_id !== selectedTemplate) {
+    console.log("🔄 Template sync useEffect triggered:", {
+      "vcData.template_id": vcData.template_id,
+      selectedTemplate,
+      "vcData.template_id type": typeof vcData.template_id,
+      "selectedTemplate type": typeof selectedTemplate,
+    });
+
+    // Convert template_id to string for comparison since Select component uses strings
+    const templateIdStr = vcData.template_id ? vcData.template_id.toString() : "";
+
+    if (templateIdStr && templateIdStr !== selectedTemplate) {
       console.log(
-        "Synchronizing selectedTemplate with loaded template_id:",
-        vcData.template_id,
+        "✅ Synchronizing selectedTemplate with loaded template_id:",
+        templateIdStr,
+        "Previous selectedTemplate:",
+        selectedTemplate,
       );
-      setSelectedTemplate(vcData.template_id);
-    } else if (!vcData.template_id && selectedTemplate !== "manual") {
-      console.log("No template_id in draft, setting to manual");
+      setSelectedTemplate(templateIdStr);
+    } else if (!templateIdStr && selectedTemplate !== "manual") {
+      console.log("❌ No template_id in draft, setting to manual");
       setSelectedTemplate("manual");
+    } else {
+      console.log("✨ Template sync - no change needed");
     }
-  }, [vcData.template_id]);
+  }, [vcData.template_id, vcData.investor_name]); // Added vcData.investor_name to trigger when draft data is fully loaded
 
   // Fetch draft data if we have a draftId but no resumeData
   useEffect(() => {
@@ -1851,6 +1867,16 @@ export default function CreateVC() {
                 <h4 className="text-lg font-medium text-gray-900 mb-4">
                   Template Selection
                 </h4>
+
+                {/* Debug info for template selection */}
+                <div className="bg-gray-100 p-2 rounded text-xs mb-4 font-mono">
+                  <div>🔍 Debug - Template State:</div>
+                  <div>selectedTemplate: "{selectedTemplate}"</div>
+                  <div>vcData.template_id: "{vcData.template_id}"</div>
+                  <div>templates.length: {templates.length}</div>
+                  <div>templateDetailsLoading: {templateDetailsLoading ? "true" : "false"}</div>
+                </div>
+
                 <div>
                   <div className="flex items-center justify-between">
                     <Label htmlFor="template">
