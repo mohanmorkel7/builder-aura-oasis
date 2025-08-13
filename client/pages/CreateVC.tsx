@@ -373,108 +373,121 @@ export default function CreateVC() {
     cacheTime: 5 * 60 * 1000, // Shorter cache time
   });
 
-  // Get template details with immediate mock data fallback
-  const getTemplateDetails = (templateId: string) => {
-    if (!templateId || templateId === "manual") return null;
+  // Fetch template details from API when a template is selected
+  const {
+    data: templateDetails,
+    isLoading: templateDetailsLoading,
+    error: templateDetailsError,
+  } = useQuery({
+    queryKey: ["template-details", selectedTemplate],
+    queryFn: async () => {
+      if (!selectedTemplate || selectedTemplate === "manual") return null;
+      try {
+        const result = await apiClient.request(
+          `/templates-production/${selectedTemplate}`,
+        );
+        console.log("Template details fetched:", result);
+        return result;
+      } catch (error) {
+        console.error("Failed to fetch template details:", error);
 
-    const id = parseInt(templateId);
-
-    // Return mock template data immediately for VC templates
-    if (id === 7) {
-      return {
-        id: 7,
-        name: "Series A Funding Process",
-        description: "Complete workflow for Series A funding rounds",
-        steps: [
-          {
-            id: 1,
-            name: "Initial Pitch Deck Review",
-            description: "Review and refine pitch deck",
-            probability_percent: 15,
-          },
-          {
-            id: 2,
-            name: "Management Presentation",
-            description: "Present to investment committee",
-            probability_percent: 25,
-          },
-          {
-            id: 3,
-            name: "Due Diligence Initiation",
-            description: "Begin comprehensive due diligence",
-            probability_percent: 35,
-          },
-          {
-            id: 4,
-            name: "Term Sheet Negotiation",
-            description: "Negotiate terms and valuation",
-            probability_percent: 50,
-          },
-          {
-            id: 5,
-            name: "Legal Documentation",
-            description: "Draft and finalize legal agreements",
-            probability_percent: 75,
-          },
-          {
-            id: 6,
-            name: "Final Approval",
-            description: "Board approval and closing",
-            probability_percent: 100,
-          },
-        ],
-        created_by: "VC Team",
-        created_at: new Date().toISOString(),
-      };
-    }
-
-    if (id === 8) {
-      return {
-        id: 8,
-        name: "Seed Round Management",
-        description: "Template for managing seed funding rounds",
-        steps: [
-          {
-            id: 1,
-            name: "Product Demo",
-            description: "Demonstrate product capabilities",
-            probability_percent: 20,
-          },
-          {
-            id: 2,
-            name: "Market Analysis",
-            description: "Present market opportunity",
-            probability_percent: 40,
-          },
-          {
-            id: 3,
-            name: "Financial Review",
-            description: "Review financial projections",
-            probability_percent: 60,
-          },
-          {
-            id: 4,
-            name: "Investment Agreement",
-            description: "Finalize investment terms",
-            probability_percent: 80,
-          },
-          {
-            id: 5,
-            name: "Closing",
-            description: "Complete the funding round",
-            probability_percent: 100,
-          },
-        ],
-        created_by: "VC Team",
-        created_at: new Date().toISOString(),
-      };
-    }
-
-    return null;
-  };
-
-  const templateDetails = getTemplateDetails(selectedTemplate);
-  const templateDetailsLoading = false;
+        // Fallback to mock data for specific known templates
+        const id = parseInt(selectedTemplate);
+        if (id === 7) {
+          return {
+            id: 7,
+            name: "Series A Funding Process",
+            description: "Complete workflow for Series A funding rounds",
+            steps: [
+              {
+                id: 1,
+                name: "Initial Pitch Deck Review",
+                description: "Review and refine pitch deck",
+                probability_percent: 15,
+              },
+              {
+                id: 2,
+                name: "Management Presentation",
+                description: "Present to investment committee",
+                probability_percent: 25,
+              },
+              {
+                id: 3,
+                name: "Due Diligence Initiation",
+                description: "Begin comprehensive due diligence",
+                probability_percent: 35,
+              },
+              {
+                id: 4,
+                name: "Term Sheet Negotiation",
+                description: "Negotiate terms and valuation",
+                probability_percent: 50,
+              },
+              {
+                id: 5,
+                name: "Legal Documentation",
+                description: "Draft and finalize legal agreements",
+                probability_percent: 75,
+              },
+              {
+                id: 6,
+                name: "Final Approval",
+                description: "Board approval and closing",
+                probability_percent: 100,
+              },
+            ],
+            created_by: "VC Team",
+            category: { id: 6, name: "VC", color: "#6366F1", icon: "Megaphone" },
+          };
+        }
+        if (id === 8) {
+          return {
+            id: 8,
+            name: "Seed Round Management",
+            description: "Template for managing seed funding rounds",
+            steps: [
+              {
+                id: 1,
+                name: "Product Demo",
+                description: "Demonstrate product capabilities",
+                probability_percent: 20,
+              },
+              {
+                id: 2,
+                name: "Market Analysis",
+                description: "Present market opportunity",
+                probability_percent: 40,
+              },
+              {
+                id: 3,
+                name: "Financial Review",
+                description: "Review financial projections",
+                probability_percent: 60,
+              },
+              {
+                id: 4,
+                name: "Investment Agreement",
+                description: "Finalize investment terms",
+                probability_percent: 80,
+              },
+              {
+                id: 5,
+                name: "Closing",
+                description: "Complete the funding round",
+                probability_percent: 100,
+              },
+            ],
+            created_by: "VC Team",
+            category: { id: 6, name: "VC", color: "#6366F1", icon: "Megaphone" },
+          };
+        }
+        throw error;
+      }
+    },
+    enabled: !!selectedTemplate && selectedTemplate !== "manual",
+    retry: 2,
+    staleTime: 5 * 60 * 1000,
+  });
 
   // Initialize lead_created_by with user email when user loads or changes
   useEffect(() => {
