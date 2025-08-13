@@ -144,6 +144,7 @@ export interface UpdateVCData {
   targeted_end_date?: string;
   spoc?: string;
   billing_currency?: VC["billing_currency"];
+  template_id?: number;
   assigned_to?: number;
   notes?: string;
   is_partial?: boolean;
