@@ -108,7 +108,7 @@ router.get("/stats", async (req: Request, res: Response) => {
       }
     } catch (dbError) {
       console.log("Database error, using mock data:", dbError.message);
-      const mockVCs = await MockDataService.getAllLeads();
+      const mockVCs = await MockDataService.getAllVCs();
       stats = {
         total: mockVCs.length,
         in_progress: mockVCs.filter((vc: any) => vc.status === "in-progress")
