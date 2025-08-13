@@ -476,8 +476,11 @@ router.put("/:id", async (req: Request, res: Response) => {
     let vc;
     try {
       if (await isDatabaseAvailable()) {
+        console.log(`[DEBUG] Database available, calling VCRepository.update(${id}, data)`);
         vc = await VCRepository.update(id, vcData);
+        console.log(`[DEBUG] VCRepository.update returned:`, vc);
       } else {
+        console.log(`[DEBUG] Database not available, using mock update`);
         // Mock update when database is unavailable
         vc = {
           id,
