@@ -512,6 +512,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 <h3 className="font-medium text-gray-900">Notifications</h3>
                 <p className="text-xs text-gray-500">
                   {unreadCount} unread notifications
+                  {networkIssueDetected && (
+                    <span className="text-orange-500 ml-2">(Network issue detected)</span>
+                  )}
                 </p>
               </div>
               <div className="max-h-80 overflow-y-auto">
