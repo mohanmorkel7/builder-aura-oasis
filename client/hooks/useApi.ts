@@ -1594,22 +1594,18 @@ export function useCreateVCStepChat() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ stepId, chatData }: { stepId: number; chatData: any }) => {
-      try {
-        return await apiClient.request(`/vc/steps/${stepId}/chats`, {
-          method: "POST",
-          body: JSON.stringify(chatData),
-        });
-      } catch (error) {
-        console.log(`VC step chat creation endpoint not available for step ${stepId}`);
-        // Return mock success response
-        return { id: Date.now(), ...chatData, created_at: new Date().toISOString() };
-      }
+      // Mock implementation until VC step chat endpoints are implemented
+      console.log(`VC step chat creation not implemented yet for step ${stepId}, returning mock response`);
+      return {
+        id: Date.now(),
+        ...chatData,
+        created_at: new Date().toISOString(),
+        step_id: stepId
+      };
     },
     onSuccess: (_, { stepId }) => {
-      queryClient.invalidateQueries({ queryKey: ["vc-step-chats", stepId] });
-    },
-    onError: (error) => {
-      console.log("VC step chat creation failed:", error);
+      // Don't invalidate queries since they're disabled
+      console.log(`Mock VC step chat created for step ${stepId}`);
     },
   });
 }
