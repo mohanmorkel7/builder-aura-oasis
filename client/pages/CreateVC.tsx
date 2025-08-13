@@ -268,9 +268,13 @@ export default function CreateVC() {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [activeTab, setActiveTab] = useState(
-    resumeData?.last_active_tab || "lead-info"
-  );
+  const [activeTab, setActiveTab] = useState(() => {
+    if (resumeData) {
+      const savedTab = localStorage.getItem(`vc_draft_${resumeData.id}_tab`);
+      return savedTab || "lead-info";
+    }
+    return "lead-info";
+  });
   const [selectedTemplate, setSelectedTemplate] = useState<string>("manual");
   const [isTemplatePreviewOpen, setIsTemplatePreviewOpen] = useState(false);
   const [previewTemplate, setPreviewTemplate] = useState<any>(null);
