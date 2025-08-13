@@ -530,7 +530,19 @@ export default function CreateVC() {
       };
 
       const result = await createVCMutation.mutateAsync(submitData);
-      navigate(`/vc/${result.id}`);
+
+      // If we were resuming from a draft, delete the draft
+      if (resumeData && resumeData._resumeFromId) {
+        try {
+          await apiClient.request(`/vc/${resumeData._resumeFromId}`, { method: "DELETE" });
+          queryClient.invalidateQueries({ queryKey: ["my-vc-partial-saves"] });
+        } catch (error) {
+          console.error("Failed to delete draft after creation:", error);
+          // Don't block navigation on draft deletion failure
+        }
+      }
+
+      navigate(`/vc/${result.data?.id || result.id}`);
     } catch (error) {
       console.error("Failed to create VC:", error);
       alert("Failed to create VC. Please try again.");
