@@ -407,23 +407,14 @@ export default function CreateVC() {
 
   const partialSaveMutation = useMutation({
     mutationFn: (vcData: any) => {
-      console.log("Partial save - currentDraftId:", currentDraftId);
-      console.log("Partial save - vcData sample:", {
-        investor_name: vcData.investor_name,
-        contact_person: vcData.contact_person,
-        email: vcData.email,
-      });
-
       // If we have a current draft ID, update the existing draft
       if (currentDraftId) {
-        console.log("Updating existing draft with ID:", currentDraftId);
         return apiClient.request(`/vc/${currentDraftId}`, {
           method: "PUT",
           body: JSON.stringify({ ...vcData, is_partial: true }),
         });
       } else {
         // Create a new draft
-        console.log("Creating new draft");
         return apiClient.request("/vc", {
           method: "POST",
           body: JSON.stringify({ ...vcData, is_partial: true }),
