@@ -516,14 +516,15 @@ export default function CreateVC() {
       "vcData.template_id type": typeof vcData.template_id,
       "selectedTemplate type": typeof selectedTemplate,
       "vcData.investor_name": vcData.investor_name,
-      "currentDraftId": currentDraftId,
+      currentDraftId: currentDraftId,
     });
 
     // Only sync if we have meaningful data (indicating draft is loaded)
     // Skip if we're still in initial state or if investor_name indicates partial save
-    const isDraftDataLoaded = vcData.investor_name &&
-                               vcData.investor_name !== "PARTIAL_SAVE_IN_PROGRESS" &&
-                               vcData.investor_name.trim() !== "";
+    const isDraftDataLoaded =
+      vcData.investor_name &&
+      vcData.investor_name !== "PARTIAL_SAVE_IN_PROGRESS" &&
+      vcData.investor_name.trim() !== "";
 
     if (!isDraftDataLoaded && currentDraftId) {
       console.log("🔄 Draft data not fully loaded yet, skipping template sync");
@@ -690,11 +691,16 @@ export default function CreateVC() {
                 currentSelectedTemplate: selectedTemplate,
               });
               if (templateIdStr !== selectedTemplate) {
-                console.log("✅ Force setting selectedTemplate to:", templateIdStr);
+                console.log(
+                  "✅ Force setting selectedTemplate to:",
+                  templateIdStr,
+                );
                 setSelectedTemplate(templateIdStr);
               }
             } else {
-              console.log("❌ No template_id in API response, force setting to manual");
+              console.log(
+                "❌ No template_id in API response, force setting to manual",
+              );
               if (selectedTemplate !== "manual") {
                 setSelectedTemplate("manual");
               }
