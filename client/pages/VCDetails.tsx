@@ -893,13 +893,13 @@ export default function VCDetails() {
               )}
 
               {/* Progress Bar Section - Similar to LeadDetails */}
-              {vcSteps.length > 0 &&
+              {vcSteps && vcSteps.length > 0 &&
                 (() => {
                   const completedSteps = vcSteps.filter(
-                    (step) => step.status === "completed",
+                    (step) => step?.status === "completed",
                   ).length;
                   const inProgressSteps = vcSteps.filter(
-                    (step) => step.status === "in-progress",
+                    (step) => step?.status === "in-progress",
                   ).length;
                   const totalSteps = vcSteps.length;
 
