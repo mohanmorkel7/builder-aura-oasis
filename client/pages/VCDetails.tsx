@@ -1348,8 +1348,7 @@ export default function VCDetails() {
                     These are template steps from "{templateData.name}".{" "}
                     {vcSteps.length > 0
                       ? "You have existing steps, but you can replace them with template steps."
-                      : "Create VC-specific steps to start tracking progress."
-                    }
+                      : "Create VC-specific steps to start tracking progress."}
                   </div>
                   {vcSteps.length > 0 && (
                     <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
@@ -1357,18 +1356,26 @@ export default function VCDetails() {
                         ⚠️ Current Steps vs Template Steps
                       </div>
                       <div className="text-xs text-yellow-700 mb-2">
-                        You have {vcSteps.length} existing steps, but this VC uses the "{templateData.name}" template
-                        with {templateData.steps.length} specialized steps. Consider replacing your current steps
-                        with template steps for better tracking.
+                        You have {vcSteps.length} existing steps, but this VC
+                        uses the "{templateData.name}" template with{" "}
+                        {templateData.steps.length} specialized steps. Consider
+                        replacing your current steps with template steps for
+                        better tracking.
                       </div>
                       <Button
                         size="sm"
                         variant="outline"
                         className="text-xs"
                         onClick={() => {
-                          if (confirm("This will replace all existing steps with template steps. Are you sure?")) {
+                          if (
+                            confirm(
+                              "This will replace all existing steps with template steps. Are you sure?",
+                            )
+                          ) {
                             // TODO: Implement template step population
-                            alert("Template step population not implemented yet - please create steps manually based on the template.");
+                            alert(
+                              "Template step population not implemented yet - please create steps manually based on the template.",
+                            );
                           }
                         }}
                       >
@@ -1411,12 +1418,15 @@ export default function VCDetails() {
                     <Target className="w-12 h-12 mx-auto opacity-50 mb-2" />
                     <p className="text-lg font-medium">Template Available</p>
                     <p className="text-gray-600 mb-4">
-                      This VC uses the "{templateData.name}" template with {templateData.steps.length} specialized steps.
-                      View the template steps above and create your VC-specific tracking steps.
+                      This VC uses the "{templateData.name}" template with{" "}
+                      {templateData.steps.length} specialized steps. View the
+                      template steps above and create your VC-specific tracking
+                      steps.
                     </p>
                   </div>
                   <div className="text-xs text-blue-600 mb-4">
-                    ���� Tip: Use the template steps as a guide to create VC-specific tracking steps.
+                    ���� Tip: Use the template steps as a guide to create
+                    VC-specific tracking steps.
                   </div>
                 </div>
               ) : (
@@ -1425,7 +1435,8 @@ export default function VCDetails() {
                     <Target className="w-12 h-12 mx-auto opacity-50 mb-2" />
                     <p className="text-lg font-medium">No steps yet</p>
                     <p className="text-gray-600 mb-4">
-                      Create custom steps to track your funding process for this VC.
+                      Create custom steps to track your funding process for this
+                      VC.
                     </p>
                   </div>
                 </div>
