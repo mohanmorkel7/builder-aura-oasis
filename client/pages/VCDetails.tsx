@@ -4,7 +4,7 @@ import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/lib/auth-context";
 import { apiClient } from "@/lib/api";
 import { useTemplate } from "@/hooks/useApi";
-import { DraggableStepsList } from "@/components/DraggableStepsList";
+import { VCDraggableStepsList } from "@/components/VCDraggableStepsList";
 import { Button } from "@/components/ui/button";
 import {
   Card,
