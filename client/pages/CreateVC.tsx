@@ -1161,9 +1161,10 @@ export default function CreateVC() {
                       id="custom_country"
                       placeholder="Enter country name"
                       value={vcData.custom_country}
-                      onChange={(e) =>
-                        handleInputChange("custom_country", e.target.value)
-                      }
+                      onChange={(e) => {
+                        console.log("🐛 DEBUG - Custom country changed to:", e.target.value);
+                        handleInputChange("custom_country", e.target.value);
+                      }}
                     />
                   </div>
                 )}
