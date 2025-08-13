@@ -110,19 +110,26 @@ export default function CreateVC() {
   const isEditMode = !!id;
   const resumeData = location.state?.resumeData;
 
+  // Check URL parameters for draft ID (fallback when location state is lost)
+  const urlParams = new URLSearchParams(location.search);
+  const draftIdFromUrl = urlParams.get('draftId');
+
   // Track the current draft ID for subsequent saves
   const [currentDraftId, setCurrentDraftId] = useState(
-    resumeData?._resumeFromId || resumeData?.id || null,
+    resumeData?._resumeFromId || resumeData?.id || draftIdFromUrl || null,
   );
 
-  // Ensure currentDraftId is properly set when resumeData changes
+  // Ensure currentDraftId is properly set when resumeData changes or URL changes
   useEffect(() => {
     if (resumeData && (resumeData._resumeFromId || resumeData.id)) {
       const draftId = resumeData._resumeFromId || resumeData.id;
       setCurrentDraftId(draftId);
-      console.log("useEffect: Setting currentDraftId to:", draftId);
+      console.log("useEffect: Setting currentDraftId from resumeData to:", draftId);
+    } else if (draftIdFromUrl) {
+      setCurrentDraftId(draftIdFromUrl);
+      console.log("useEffect: Setting currentDraftId from URL to:", draftIdFromUrl);
     }
-  }, [resumeData]);
+  }, [resumeData, draftIdFromUrl]);
 
   // Debug: Log currentDraftId changes
   useEffect(() => {
