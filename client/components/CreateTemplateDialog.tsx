@@ -197,6 +197,11 @@ export default function CreateTemplateDialog({
   };
 
   const handleSubmit = () => {
+    console.log("Handle submit called");
+    console.log("Template data:", templateData);
+    console.log("Steps:", steps);
+    console.log("User:", user);
+
     const submitData = {
       ...templateData,
       category_id: templateData.category_id
@@ -214,7 +219,6 @@ export default function CreateTemplateDialog({
         auto_alert: step.auto_alert,
         email_reminder: step.email_reminder,
         step_category_id: step.step_category_id,
-
         required_documents: step.required_documents,
         approval_required: step.approval_required,
         parallel_execution: step.parallel_execution,
@@ -222,6 +226,7 @@ export default function CreateTemplateDialog({
       })),
     };
 
+    console.log("Submit data:", submitData);
     createTemplateMutation.mutate(submitData);
   };
 
