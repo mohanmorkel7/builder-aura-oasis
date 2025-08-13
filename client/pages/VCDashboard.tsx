@@ -118,6 +118,7 @@ export default function VCDashboard() {
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("created_at");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [activeTab, setActiveTab] = useState<"vcs" | "drafts">("vcs");
 
   // Fetch VC data from database
   const {
