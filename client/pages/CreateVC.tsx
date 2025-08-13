@@ -494,7 +494,7 @@ export default function CreateVC() {
                 ? JSON.parse(response.contacts)
                 : response.contacts
               : prevData.contacts,
-            round_title: response.round_title || prevData.round_title,
+            round_title: response.round_title === "Draft VC - In Progress" ? "" : (response.round_title || prevData.round_title),
             round_size: response.round_size || prevData.round_size,
             valuation: response.valuation || prevData.valuation,
             round_stage: response.round_stage || prevData.round_stage,
