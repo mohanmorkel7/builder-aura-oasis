@@ -108,6 +108,7 @@ export interface CreateVCData {
   targeted_end_date?: string;
   spoc?: string;
   billing_currency?: VC["billing_currency"];
+  template_id?: number;
   created_by: number;
   assigned_to?: number;
   notes?: string;
