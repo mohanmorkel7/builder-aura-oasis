@@ -642,7 +642,16 @@ export default function CreateVC() {
               }
             })(),
             spoc: response.spoc || prevData.spoc,
-            template_id: response.template_id || prevData.template_id,
+            template_id: (() => {
+              const templateId = response.template_id || prevData.template_id;
+              console.log("🔄 DEBUG - Loading template_id from API:", {
+                "response.template_id": response.template_id,
+                "prevData.template_id": prevData.template_id,
+                "final templateId": templateId,
+                "templateId type": typeof templateId,
+              });
+              return templateId;
+            })(),
             billing_currency:
               response.billing_currency || prevData.billing_currency,
             probability: response.probability || prevData.probability,
@@ -1810,7 +1819,7 @@ export default function CreateVC() {
                   <Label htmlFor="valuation">Valuation</Label>
                   <Input
                     id="valuation"
-                    placeholder="e.g., $100M, ₹500Cr"
+                    placeholder="e.g., $100M, ��500Cr"
                     value={vcData.valuation}
                     onChange={(e) =>
                       handleInputChange("valuation", e.target.value)
