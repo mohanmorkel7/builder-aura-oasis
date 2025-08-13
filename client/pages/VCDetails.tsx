@@ -1376,9 +1376,7 @@ export default function VCDetails() {
                           "This will replace all existing steps with template steps. Are you sure?",
                         )
                       ) {
-                        alert(
-                          "Template step population not implemented yet - please create steps manually based on the template.",
-                        );
+                        handlePopulateTemplateSteps();
                       }
                     }}
                   >
