@@ -1,15 +1,19 @@
 # VC Country Field Saving Fix
 
 ## Problem Identified
+
 The user reported that when creating a VC draft and then continuing from the saved draft, the country field was not being saved correctly to the database.
 
 ## Root Cause Analysis
+
 The issue was in the country field initialization logic when resuming from a draft in `client/pages/CreateVC.tsx`. The original logic had complex nested ternary operators that could potentially cause issues in edge cases.
 
 ## Fix Applied
 
 ### 1. Improved Country Initialization Logic (Lines 163-178)
+
 **Before:**
+
 ```javascript
 country: COUNTRIES.includes(resumeData.country || "")
   ? resumeData.country || ""
@@ -22,6 +26,7 @@ custom_country: COUNTRIES.includes(resumeData.country || "")
 ```
 
 **After:**
+
 ```javascript
 country: (() => {
   const savedCountry = resumeData.country || "";
@@ -42,12 +47,15 @@ custom_country: (() => {
 ```
 
 ### 2. Enhanced Country Saving Logic (Lines 651-659)
+
 **Before:**
+
 ```javascript
 country: vcData.custom_country || vcData.country,
 ```
 
 **After:**
+
 ```javascript
 country: (() => {
   // If user selected "Other" and provided custom country, use that
@@ -64,9 +72,11 @@ country: (() => {
 ```
 
 ### 3. Consistent Logic in Final Submit (Lines 593-601)
+
 Applied the same improved logic to the final submit function to ensure consistency between partial saves and final submissions.
 
 ### 4. Added Debugging Support
+
 - Added debugging logs to track country field changes
 - Added useEffect to debug initial state when resuming from draft
 - Console logs help identify exactly what values are being processed
@@ -74,24 +84,27 @@ Applied the same improved logic to the final submit function to ensure consisten
 ## How the Fix Works
 
 ### Scenario 1: User selects "India" (predefined country)
+
 1. **Initial Save**: Saves `country: "India"`
 2. **Resume Draft**: Sets `country: "India"`, `custom_country: ""`
 3. **Save Again**: Saves `country: "India"`
-✅ **Result**: Country preserved correctly
+   ✅ **Result**: Country preserved correctly
 
 ### Scenario 2: User selects "Netherlands" (custom country)
+
 1. **Initial Save**: Saves `country: "Netherlands"`
 2. **Resume Draft**: Sets `country: "Other"`, `custom_country: "Netherlands"`
 3. **UI Shows**: Dropdown shows "Other", custom field shows "Netherlands"
 4. **Save Again**: Saves `country: "Netherlands"`
-✅ **Result**: Country preserved correctly
+   ✅ **Result**: Country preserved correctly
 
 ### Scenario 3: User selects "Other" and enters "Brazil"
+
 1. **Initial Save**: Saves `country: "Brazil"`
 2. **Resume Draft**: Sets `country: "Other"`, `custom_country: "Brazil"`
 3. **UI Shows**: Dropdown shows "Other", custom field shows "Brazil"
 4. **Save Again**: Saves `country: "Brazil"`
-✅ **Result**: Country preserved correctly
+   ✅ **Result**: Country preserved correctly
 
 ## Testing Instructions
 
@@ -104,10 +117,12 @@ To test the fix:
 5. **Save again** and verify the country is preserved in the database
 
 ## Files Modified
+
 - `client/pages/CreateVC.tsx`: Improved country field initialization and saving logic
 - Added debugging support for troubleshooting
 
 ## Impact
+
 - ✅ Country field now saves correctly in all scenarios
 - ✅ Draft continuation preserves country data
 - ✅ Consistent behavior between partial saves and final submissions

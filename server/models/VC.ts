@@ -230,7 +230,6 @@ export class VCRepository {
   }
 
   static async create(vcData: CreateVCData): Promise<VC> {
-
     // Generate VC ID
     const vcIdQuery = `
       SELECT COUNT(*) + 1 as next_id FROM vcs
@@ -299,7 +298,6 @@ export class VCRepository {
   }
 
   static async update(id: number, vcData: UpdateVCData): Promise<VC | null> {
-
     const fields = [];
     const values = [];
     let paramCount = 1;

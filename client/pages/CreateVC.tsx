@@ -438,11 +438,16 @@ export default function CreateVC() {
   // Debug country initialization when resuming from draft
   useEffect(() => {
     if (resumeData?.country) {
-      console.log("🐛 DEBUG - Initial country state after resuming from draft:");
+      console.log(
+        "🐛 DEBUG - Initial country state after resuming from draft:",
+      );
       console.log("resumeData.country:", resumeData.country);
       console.log("vcData.country:", vcData.country);
       console.log("vcData.custom_country:", vcData.custom_country);
-      console.log("Is resumeData.country in COUNTRIES?", COUNTRIES.includes(resumeData.country));
+      console.log(
+        "Is resumeData.country in COUNTRIES?",
+        COUNTRIES.includes(resumeData.country),
+      );
     }
   }, [resumeData?.country, vcData.country, vcData.custom_country]);
 
@@ -679,7 +684,7 @@ export default function CreateVC() {
       console.log("🐛 DEBUG - Partial Save Country:", {
         dropdown: vcData.country,
         custom: vcData.custom_country,
-        finalValue: countryValue
+        finalValue: countryValue,
       });
 
       const partialData = {
@@ -1135,10 +1140,15 @@ export default function CreateVC() {
                         : undefined
                     }
                     onValueChange={(value) => {
-                      console.log("🐛 DEBUG - Country dropdown changed to:", value);
+                      console.log(
+                        "🐛 DEBUG - Country dropdown changed to:",
+                        value,
+                      );
                       handleInputChange("country", value);
                       if (value !== "Other") {
-                        console.log("🐛 DEBUG - Clearing custom_country because not Other");
+                        console.log(
+                          "🐛 DEBUG - Clearing custom_country because not Other",
+                        );
                         handleInputChange("custom_country", "");
                       }
                     }}
@@ -1164,7 +1174,10 @@ export default function CreateVC() {
                       placeholder="Enter country name"
                       value={vcData.custom_country}
                       onChange={(e) => {
-                        console.log("🐛 DEBUG - Custom country changed to:", e.target.value);
+                        console.log(
+                          "🐛 DEBUG - Custom country changed to:",
+                          e.target.value,
+                        );
                         handleInputChange("custom_country", e.target.value);
                       }}
                     />
