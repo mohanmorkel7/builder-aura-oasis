@@ -289,24 +289,32 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           );
           setNotifications(realNotifications);
         } catch (error) {
-          console.warn(
-            "Failed to fetch notifications (non-critical):",
-            error.message,
-          );
+          // Enhanced error handling for different types of failures
+          const errorMsg = error?.message || 'Unknown error';
 
-          // Check if it's a server routing issue
-          if (
-            error.message.includes("HTML instead of JSON") ||
-            error.message.includes("Server routing error")
+          if (error?.name === 'TypeError' && errorMsg.includes('Failed to fetch')) {
+            console.warn("Network connectivity issue - notifications disabled temporarily");
+            // Don't disable notifications permanently for network issues
+            setNotifications([]);
+          } else if (errorMsg.includes("timeout")) {
+            console.warn("Notifications API timeout - will retry on next cycle");
+            setNotifications([]);
+          } else if (
+            errorMsg.includes("HTML instead of JSON") ||
+            errorMsg.includes("Server routing error")
           ) {
             console.error(
               "Backend server appears to be down or misconfigured. Disabling notifications.",
             );
             setNotificationsEnabled(false);
+            setNotifications([]);
+          } else {
+            console.warn(
+              "Failed to fetch notifications (non-critical):",
+              errorMsg,
+            );
+            setNotifications([]);
           }
-
-          // Always return empty array on error to prevent UI crashes
-          setNotifications([]);
         }
       }
     };
