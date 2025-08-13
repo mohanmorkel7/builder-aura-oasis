@@ -542,10 +542,7 @@ export default function VCDetails() {
   });
 
   // Fetch VC comments from API
-  const {
-    data: vcComments,
-    isLoading: commentsLoading,
-  } = useQuery({
+  const { data: vcComments, isLoading: commentsLoading } = useQuery({
     queryKey: ["vc-comments", id],
     queryFn: async () => {
       if (!id) throw new Error("VC ID is required");
