@@ -1087,6 +1087,7 @@ export default function CreateVC() {
         is_partial: true,
       };
 
+      console.log("🚀 DEBUG - Saving partial data:", partialData);
       const result = await partialSaveMutation.mutateAsync(partialData);
 
       // Save the current active tab for restoration when continuing
