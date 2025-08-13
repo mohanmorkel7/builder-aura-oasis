@@ -26,6 +26,7 @@ import {
   DollarSign,
   ChevronDown,
   ChevronRight,
+  Megaphone,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { apiClient } from "@/lib/api";
