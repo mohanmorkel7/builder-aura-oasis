@@ -221,8 +221,8 @@ export default function AdminTemplates() {
 
   const deleteTemplateMutation = useMutation({
     mutationFn: async (templateId: number) => {
-      console.log("Delete template (offline mode):", templateId);
-      // In offline mode, just return success
+      console.log("Delete template:", templateId);
+      // Return success
       return { success: true, message: "Template marked for deletion" };
     },
     onSuccess: () => {
