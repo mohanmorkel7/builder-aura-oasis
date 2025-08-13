@@ -1579,12 +1579,18 @@ export function useReorderVCSteps() {
 export function useVCStepChats(stepId: number) {
   return useQuery({
     queryKey: ["vc-step-chats", stepId],
-    queryFn: () =>
-      apiClient.request(`/vc/steps/${stepId}/chats`).catch(() => {
+    queryFn: async () => {
+      try {
+        return await apiClient.request(`/vc/steps/${stepId}/chats`);
+      } catch (error) {
         // Return empty array if endpoint doesn't exist yet
+        console.log(`VC step chats endpoint not available for step ${stepId}, using empty array`);
         return [];
-      }),
+      }
+    },
     enabled: !!stepId && stepId > 0,
+    retry: false, // Don't retry failed requests
+    staleTime: Infinity, // Cache forever since endpoint doesn't exist
   });
 }
 
