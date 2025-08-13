@@ -129,6 +129,7 @@ export interface UpdateVCData {
   billing_currency?: VC["billing_currency"];
   assigned_to?: number;
   notes?: string;
+  is_partial?: boolean;
 }
 
 export class VCRepository {
