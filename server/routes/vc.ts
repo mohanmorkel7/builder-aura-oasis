@@ -47,7 +47,7 @@ router.get("/", async (req: Request, res: Response) => {
         }
       } else {
         // Return mock VC data when database is unavailable
-        vcs = await MockDataService.getAllLeads(); // Using leads mock data for now
+        vcs = await MockDataService.getAllVCs(); // Using proper VC mock data
 
         // Filter mock data based on query parameters
         if (status && status !== "all") {
