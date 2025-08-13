@@ -1405,23 +1405,29 @@ export default function VCDetails() {
                     )}
                   </div>
                 </>
+              ) : templateData?.steps && templateData.steps.length > 0 ? (
+                <div className="text-center py-8">
+                  <div className="text-blue-600 mb-4">
+                    <Target className="w-12 h-12 mx-auto opacity-50 mb-2" />
+                    <p className="text-lg font-medium">Template Available</p>
+                    <p className="text-gray-600 mb-4">
+                      This VC uses the "{templateData.name}" template with {templateData.steps.length} specialized steps.
+                      View the template steps above and create your VC-specific tracking steps.
+                    </p>
+                  </div>
+                  <div className="text-xs text-blue-600 mb-4">
+                    ���� Tip: Use the template steps as a guide to create VC-specific tracking steps.
+                  </div>
+                </div>
               ) : (
                 <div className="text-center py-8">
                   <div className="text-gray-500 mb-4">
                     <Target className="w-12 h-12 mx-auto opacity-50 mb-2" />
                     <p className="text-lg font-medium">No steps yet</p>
                     <p className="text-gray-600 mb-4">
-                      {templateData?.steps && templateData.steps.length > 0
-                        ? `This VC uses the "${templateData.name}" template. Create VC-specific steps to start tracking progress.`
-                        : "Create custom steps to track your funding process for this VC."}
+                      Create custom steps to track your funding process for this VC.
                     </p>
                   </div>
-                  {templateData?.steps && templateData.steps.length > 0 && (
-                    <div className="text-xs text-blue-600 mb-4">
-                      💡 Tip: You can create VC-specific steps based on the
-                      template, or add completely custom steps.
-                    </div>
-                  )}
                 </div>
               )}
             </div>
