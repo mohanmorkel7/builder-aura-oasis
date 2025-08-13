@@ -512,7 +512,7 @@ function AppRoutes() {
         element={
           <ProtectedRoute allowedRoles={["admin", "sales"]}>
             <DashboardLayout>
-              <CreateVC />
+              <VCEdit />
             </DashboardLayout>
           </ProtectedRoute>
         }
