@@ -509,7 +509,7 @@ export default function VCDetails() {
         return await apiClient.request(`/vc/${id}`);
       } catch (error) {
         // For 404 errors, handle silently
-        if (error?.message?.includes('404')) {
+        if (error?.message?.includes("404")) {
           const mockData = getMockVC(id);
           if (!mockData) {
             // If mock data doesn't exist either, throw the original 404 error
@@ -584,7 +584,7 @@ export default function VCDetails() {
         return [];
       }
     },
-    enabled: !!error && error?.message?.includes('404'), // Only fetch when there's a 404 error
+    enabled: !!error && error?.message?.includes("404"), // Only fetch when there's a 404 error
     retry: 1,
     staleTime: 5 * 60 * 1000,
   });
@@ -762,7 +762,8 @@ export default function VCDetails() {
 
   // Enhanced error handling with better 404 detection
   if (error || (!isLoading && !vc)) {
-    const is404Error = error?.message?.includes('404') || error?.message?.includes('Not Found');
+    const is404Error =
+      error?.message?.includes("404") || error?.message?.includes("Not Found");
 
     return (
       <div className="p-6">
@@ -775,8 +776,7 @@ export default function VCDetails() {
             <p className="text-gray-600 mb-4">
               {is404Error
                 ? `VC with ID ${id} was not found in the database. It may have been deleted or doesn't exist.`
-                : "The VC opportunity you're looking for doesn't exist or you don't have permission to view it."
-              }
+                : "The VC opportunity you're looking for doesn't exist or you don't have permission to view it."}
             </p>
             {is404Error && availableVCs.length > 0 && (
               <div className="text-sm text-gray-500 mb-4">
@@ -789,13 +789,15 @@ export default function VCDetails() {
                       size="sm"
                       onClick={() => navigate(`/vc/${vc.id}`)}
                     >
-                      VC #{vc.id}: {vc.round_title || vc.investor_name || 'Untitled'}
+                      VC #{vc.id}:{" "}
+                      {vc.round_title || vc.investor_name || "Untitled"}
                     </Button>
                   ))}
                 </div>
                 {availableVCs.length > 5 && (
                   <p className="mt-2 text-xs">
-                    ...and {availableVCs.length - 5} more available in the VC Dashboard
+                    ...and {availableVCs.length - 5} more available in the VC
+                    Dashboard
                   </p>
                 )}
               </div>
@@ -950,7 +952,8 @@ export default function VCDetails() {
               )}
 
               {/* Progress Bar Section - Similar to LeadDetails */}
-              {vcSteps && vcSteps.length > 0 &&
+              {vcSteps &&
+                vcSteps.length > 0 &&
                 (() => {
                   const completedSteps = vcSteps.filter(
                     (step) => step?.status === "completed",
