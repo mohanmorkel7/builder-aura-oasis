@@ -48,10 +48,13 @@ CREATE TABLE IF NOT EXISTS vcs (
     
     -- Billing
     billing_currency VARCHAR(3) DEFAULT 'INR' CHECK (billing_currency IN ('INR', 'USD', 'AED')),
-    
+
+    -- Template association
+    template_id INTEGER REFERENCES onboarding_templates(id) ON DELETE SET NULL,
+
     -- Additional contacts (JSON field)
     contacts TEXT, -- JSON array of contact objects
-    
+
     -- Metadata
     created_by INTEGER REFERENCES users(id),
     assigned_to INTEGER REFERENCES users(id),
