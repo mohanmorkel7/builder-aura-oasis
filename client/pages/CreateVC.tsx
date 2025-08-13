@@ -194,7 +194,7 @@ export default function CreateVC() {
                   linkedin: "",
                 },
               ],
-          round_title: resumeData.round_title || "",
+          round_title: resumeData.round_title === "Draft VC - In Progress" ? "" : (resumeData.round_title || ""),
           round_size: resumeData.round_size || "",
           valuation: resumeData.valuation || "",
           round_stage: resumeData.round_stage || "",
