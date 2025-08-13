@@ -85,12 +85,8 @@ export default function AdminTemplates() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-
-  // Debug dialog state
-  console.log("isCreateDialogOpen:", isCreateDialogOpen);
   const [viewTemplateId, setViewTemplateId] = useState<number | null>(null);
   const [editTemplateId, setEditTemplateId] = useState<number | null>(null);
-  const [testButtonClicked, setTestButtonClicked] = useState(false);
 
   // Fetch categories from database
   const {
@@ -383,45 +379,20 @@ export default function AdminTemplates() {
           </p>
         </div>
 
-        <div className="flex gap-2">
-          <Button
-            onClick={() => {
-              console.log("Test button clicked!");
-              setTestButtonClicked(!testButtonClicked);
-            }}
-            variant="outline"
-          >
-            Test Button {testButtonClicked ? "✓" : ""}
-          </Button>
-          <Button
-            onClick={() => {
-              console.log("Create Template button clicked!");
-              alert("Button clicked! Opening dialog...");
-              setIsCreateDialogOpen(true);
-            }}
-            className="bg-blue-600 hover:bg-blue-700"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Create Template
-          </Button>
-        </div>
+        <Button onClick={() => setIsCreateDialogOpen(true)}>
+          <Plus className="w-4 h-4 mr-2" />
+          Create Template
+        </Button>
       </div>
 
       {/* Create Template Dialog */}
-      {console.log("Rendering dialog, open:", isCreateDialogOpen)}
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
         <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Create New Template</DialogTitle>
           </DialogHeader>
-          <div className="p-4">
-            <p>Dialog is working! This is a test.</p>
-            <Button onClick={() => setIsCreateDialogOpen(false)}>Close Test</Button>
-          </div>
-          {/* Temporarily comment out the complex component to test if dialog opens
           <CreateTemplateDialog
             onSuccess={() => {
-              console.log("Template creation success, closing dialog");
               setIsCreateDialogOpen(false);
               queryClient.invalidateQueries({
                 queryKey: ["templates-admin"],
@@ -429,7 +400,6 @@ export default function AdminTemplates() {
             }}
             categories={categories}
           />
-          */}
         </DialogContent>
       </Dialog>
 
