@@ -306,6 +306,10 @@ export class VCRepository {
   }
 
   static async update(id: number, vcData: UpdateVCData): Promise<VC | null> {
+    console.log("🐛 DEBUG - VCRepository.update - ID:", id);
+    console.log("🐛 DEBUG - VCRepository.update - Received country:", vcData.country);
+    console.log("🐛 DEBUG - VCRepository.update - UpdateVCData keys:", Object.keys(vcData));
+
     const fields = [];
     const values = [];
     let paramCount = 1;
