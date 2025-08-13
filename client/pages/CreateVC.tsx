@@ -943,6 +943,7 @@ export default function CreateVC() {
         created_by: parseInt(user.id),
       };
 
+      console.log("🚀 DEBUG - Submitting final data:", submitData);
       const result = await createVCMutation.mutateAsync(submitData);
 
       // If we were working with a draft, delete the draft
