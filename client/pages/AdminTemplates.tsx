@@ -166,11 +166,9 @@ export default function AdminTemplates() {
     },
   ];
 
-  // Use fallback categories directly to avoid network issues
-  const categories = fallbackCategories;
-  const categoriesError = null; // No error since we're using fallback
-
-  console.log("Using fallback categories directly:", categories);
+  console.log("Fetched categories:", categories);
+  console.log("Categories loading:", categoriesLoading);
+  console.log("Categories error:", categoriesError);
 
   // Fallback templates data
   const fallbackTemplates = [
