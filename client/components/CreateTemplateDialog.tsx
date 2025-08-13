@@ -31,6 +31,7 @@ import {
   Headphones,
   Megaphone,
   BarChart3,
+  TrendingUp,
 } from "lucide-react";
 
 interface TemplateCategory {
