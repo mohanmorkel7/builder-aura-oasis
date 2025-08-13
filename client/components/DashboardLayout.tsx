@@ -323,17 +323,30 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     const timeoutId = setTimeout(() => {
       // Wrap in try-catch to prevent any unhandled promise rejections
       fetchNotifications().catch((error) => {
-        console.warn("Notifications fetch failed silently:", error.message);
+        const errorMsg = error?.message || 'Unknown error';
+        if (error?.name === 'TypeError' && errorMsg.includes('Failed to fetch')) {
+          console.warn("Initial notifications fetch failed due to network connectivity");
+        } else {
+          console.warn("Notifications fetch failed silently:", errorMsg);
+        }
         setNotifications([]);
       });
-    }, 2000); // Increased delay to ensure page is fully loaded
+    }, 3000); // Increased delay to ensure page is fully loaded and network is stable
 
-    // Refresh notifications every 60 seconds (less frequent to avoid issues)
+    // Refresh notifications every 2 minutes (less frequent to avoid network issues)
     const interval = setInterval(() => {
-      fetchNotifications().catch((error) => {
-        console.warn("Notifications refresh failed silently:", error.message);
-      });
-    }, 60000);
+      // Only refresh if notifications are still enabled
+      if (notificationsEnabled) {
+        fetchNotifications().catch((error) => {
+          const errorMsg = error?.message || 'Unknown error';
+          if (error?.name === 'TypeError' && errorMsg.includes('Failed to fetch')) {
+            console.warn("Periodic notifications refresh failed due to network connectivity");
+          } else {
+            console.warn("Notifications refresh failed silently:", errorMsg);
+          }
+        });
+      }
+    }, 120000); // Increased to 2 minutes
 
     return () => {
       clearTimeout(timeoutId);
