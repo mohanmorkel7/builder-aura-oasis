@@ -95,7 +95,7 @@ router.get("/stats", async (req: Request, res: Response) => {
         stats = await VCRepository.getStats();
       } else {
         // Return mock stats when database is unavailable
-        const mockVCs = await MockDataService.getAllLeads();
+        const mockVCs = await MockDataService.getAllVCs();
         stats = {
           total: mockVCs.length,
           in_progress: mockVCs.filter((vc: any) => vc.status === "in-progress")
