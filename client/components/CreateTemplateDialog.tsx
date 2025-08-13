@@ -119,7 +119,7 @@ export default function CreateTemplateDialog({
       name: "VC",
       description: "Venture Capital templates",
       color: "#6366F1",
-      icon: "TrendingUp",
+      icon: "Megaphone",
     },
   ];
 
