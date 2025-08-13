@@ -574,20 +574,6 @@ export default function VCDetails() {
     staleTime: 1 * 60 * 1000,
   });
 
-  // Fetch available VCs to suggest alternatives on 404 (after error is defined)
-  const { data: availableVCs = [] } = useQuery({
-    queryKey: ["available-vcs"],
-    queryFn: async () => {
-      try {
-        return await apiClient.request("/vc");
-      } catch (error) {
-        return [];
-      }
-    },
-    enabled: !!error && error?.message?.includes('404'), // Only fetch when there's a 404 error
-    retry: 1,
-    staleTime: 5 * 60 * 1000,
-  });
 
   // Ensure data is always arrays/objects to prevent undefined errors
   const vcSteps = Array.isArray(vcStepsData) ? vcStepsData : [];
