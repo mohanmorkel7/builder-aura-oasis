@@ -1386,32 +1386,63 @@ export default function VCDetails() {
               </div>
               <div className="text-xs text-blue-600 mb-3">
                 {vcSteps.length > 0
-                  ? `${templateData.name} template provides ${templateData.steps.length} specialized VC steps. Your current ${vcSteps.length} steps are generic.`
-                  : `Create steps based on the ${templateData.name} template for better VC tracking.`}
+                  ? `🎯 ${templateData.name} template provides ${templateData.steps.length} specialized VC steps. Your current ${vcSteps.length} steps are generic.`
+                  : `✨ Create steps based on the ${templateData.name} template for better VC tracking.`}
               </div>
+
+              {/* Template Steps Overview like Lead Dashboard */}
+              <div className="p-3 bg-blue-50 border border-blue-200 rounded-md mb-3">
+                <div className="text-sm font-medium text-blue-700 mb-2">
+                  📊 Template Overview ({templateData.steps.length} steps,
+                  {(() => {
+                    const totalProbability = templateData.steps.reduce(
+                      (sum: number, step: any) => sum + (step.probability_percent || 20), 0
+                    );
+                    return ` ${totalProbability}% total probability`;
+                  })()})
+                </div>
+                <div className="text-xs text-blue-700 max-h-24 overflow-y-auto">
+                  {templateData.steps.map((step: any, index: number) => (
+                    <div key={step.id} className="flex justify-between items-center py-1">
+                      <span className="flex items-center space-x-2">
+                        <span className="text-blue-500">○</span>
+                        <span>{step.name}</span>
+                      </span>
+                      <span className="font-medium">
+                        {step.probability_percent || 20}% (~{step.default_eta_days || step.estimated_days || 1}d)
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                 {templateData.steps.map((step: any, index: number) => (
                   <div
                     key={step.id}
-                    className="p-3 bg-white border border-blue-300 rounded-lg"
+                    className="p-3 bg-white border border-blue-300 rounded-lg hover:shadow-sm transition-all"
                   >
                     <div className="font-medium text-blue-800 text-sm mb-1">
                       {index + 1}. {step.name}
                     </div>
                     {step.description && (
-                      <div className="text-blue-600 text-xs mb-2">
+                      <div className="text-blue-600 text-xs mb-2 line-clamp-2">
                         {step.description}
                       </div>
                     )}
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-blue-500">
-                        ~{step.estimated_days || step.default_eta_days || 1}{" "}
-                        days
+                      <span className="text-blue-500 flex items-center gap-1">
+                        ⏱️ {step.estimated_days || step.default_eta_days || 1} days
                       </span>
-                      <span className="text-blue-500">
-                        {step.probability_percent || 20}% prob
+                      <span className="text-blue-500 flex items-center gap-1">
+                        📈 {step.probability_percent || 20}%
                       </span>
                     </div>
+                    {step.is_required && (
+                      <div className="mt-1">
+                        <span className="text-xs bg-red-100 text-red-700 px-1 rounded">Required</span>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
