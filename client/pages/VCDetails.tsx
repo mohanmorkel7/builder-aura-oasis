@@ -1043,7 +1043,7 @@ export default function VCDetails() {
                                   ) : step.status === "in-progress" ? (
                                     <span className="text-blue-600">⋯</span>
                                   ) : (
-                                    <span className="text-gray-400">○</span>
+                                    <span className="text-gray-400">��</span>
                                   )}
                                   <span
                                     className={
@@ -1328,17 +1328,13 @@ export default function VCDetails() {
               <p className="mt-2 text-gray-600">Loading steps...</p>
             </div>
           ) : vcSteps && vcSteps.length > 0 ? (
-            <DraggableStepsList
+            <VCDraggableStepsList
+              vcId={parseInt(id!)}
               steps={vcSteps}
-              onReorder={handleReorderSteps}
-              onStatusChange={(stepId, status) => {
-                // Handle step status change
-                console.log("Status change:", stepId, status);
-              }}
               expandedSteps={expandedSteps}
               onToggleExpansion={handleToggleExpansion}
               onDeleteStep={handleDeleteStep}
-              leadId={parseInt(id!)}
+              onReorderSteps={handleReorderSteps}
             />
           ) : (
             <div className="space-y-4">
