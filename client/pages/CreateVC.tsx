@@ -384,6 +384,8 @@ export default function CreateVC() {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["vcs"] });
+      queryClient.invalidateQueries({ queryKey: ["my-vc-partial-saves"] });
+      queryClient.invalidateQueries({ queryKey: ["vc-stats"] });
     },
   });
 
@@ -1281,7 +1283,7 @@ export default function CreateVC() {
                   <Label htmlFor="round_size">Round Size</Label>
                   <Input
                     id="round_size"
-                    placeholder="e.g., $10M, ���50Cr"
+                    placeholder="e.g., $10M, ₹50Cr"
                     value={vcData.round_size}
                     onChange={(e) =>
                       handleInputChange("round_size", e.target.value)
