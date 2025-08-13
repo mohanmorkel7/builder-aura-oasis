@@ -315,7 +315,7 @@ export default function CreateVC() {
     return "lead-info";
   });
   const [selectedTemplate, setSelectedTemplate] = useState<string>(
-    resumeData?.template_id ? resumeData.template_id.toString() : "manual"
+    resumeData?.template_id ? resumeData.template_id.toString() : "manual",
   );
   const [isTemplatePreviewOpen, setIsTemplatePreviewOpen] = useState(false);
   const [previewTemplate, setPreviewTemplate] = useState<any>(null);
@@ -518,7 +518,9 @@ export default function CreateVC() {
     });
 
     // Convert template_id to string for comparison since Select component uses strings
-    const templateIdStr = vcData.template_id ? vcData.template_id.toString() : "";
+    const templateIdStr = vcData.template_id
+      ? vcData.template_id.toString()
+      : "";
 
     if (templateIdStr && templateIdStr !== selectedTemplate) {
       console.log(
@@ -708,7 +710,14 @@ export default function CreateVC() {
         COUNTRIES.includes(resumeData.country),
       );
     }
-  }, [resumeData, vcData.country, vcData.custom_country, vcData.template_id, selectedTemplate, currentDraftId]);
+  }, [
+    resumeData,
+    vcData.country,
+    vcData.custom_country,
+    vcData.template_id,
+    selectedTemplate,
+    currentDraftId,
+  ]);
 
   const createVCMutation = useMutation({
     mutationFn: (vcData: any) =>
@@ -1877,7 +1886,10 @@ export default function CreateVC() {
                   <div>selectedTemplate: "{selectedTemplate}"</div>
                   <div>vcData.template_id: "{vcData.template_id}"</div>
                   <div>templates.length: {templates.length}</div>
-                  <div>templateDetailsLoading: {templateDetailsLoading ? "true" : "false"}</div>
+                  <div>
+                    templateDetailsLoading:{" "}
+                    {templateDetailsLoading ? "true" : "false"}
+                  </div>
                 </div>
 
                 <div>
