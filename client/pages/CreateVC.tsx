@@ -346,7 +346,26 @@ export default function CreateVC() {
         }
       } catch (error) {
         console.error("VC templates fetch error:", error);
-        return [];
+        console.log("Falling back to mock VC templates");
+        // Return mock templates when database is not available
+        return [
+          {
+            id: 7,
+            name: "Series A Funding Process",
+            description: "Complete workflow for Series A funding rounds",
+            category: "VC",
+            created_by: "System",
+            created_at: new Date().toISOString(),
+          },
+          {
+            id: 8,
+            name: "Seed Round Management",
+            description: "Template for managing seed funding rounds",
+            category: "VC",
+            created_by: "System",
+            created_at: new Date().toISOString(),
+          }
+        ];
       }
     },
     retry: 1,
