@@ -437,7 +437,12 @@ export default function CreateVC() {
               },
             ],
             created_by: "VC Team",
-            category: { id: 6, name: "VC", color: "#6366F1", icon: "Megaphone" },
+            category: {
+              id: 6,
+              name: "VC",
+              color: "#6366F1",
+              icon: "Megaphone",
+            },
           };
         }
         if (id === 8) {
@@ -478,7 +483,12 @@ export default function CreateVC() {
               },
             ],
             created_by: "VC Team",
-            category: { id: 6, name: "VC", color: "#6366F1", icon: "Megaphone" },
+            category: {
+              id: 6,
+              name: "VC",
+              color: "#6366F1",
+              icon: "Megaphone",
+            },
           };
         }
         throw error;
