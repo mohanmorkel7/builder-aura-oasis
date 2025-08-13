@@ -162,7 +162,9 @@ export default function CreateVC() {
           // Handle country initialization correctly
           country: COUNTRIES.includes(resumeData.country || "")
             ? resumeData.country || ""
-            : resumeData.country ? "Other" : "",
+            : resumeData.country
+              ? "Other"
+              : "",
           custom_country: COUNTRIES.includes(resumeData.country || "")
             ? ""
             : resumeData.country || "",
