@@ -1374,6 +1374,7 @@ export default function VCDetails() {
                     size="sm"
                     variant="outline"
                     className="text-xs"
+                    disabled={isPopulatingTemplate}
                     onClick={() => {
                       if (
                         confirm(
@@ -1384,7 +1385,7 @@ export default function VCDetails() {
                       }
                     }}
                   >
-                    Use Template
+                    {isPopulatingTemplate ? "Applying..." : "Use Template"}
                   </Button>
                 )}
               </div>
