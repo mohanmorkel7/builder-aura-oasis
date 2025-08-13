@@ -601,7 +601,9 @@ export default function VCDetails() {
   const vcComments = Array.isArray(vcCommentsData) ? vcCommentsData : [];
   const refetchComments = () => {};
 
-  // Mutations
+  // VC-specific mutations
+  const deleteVCStepMutation = useDeleteVCStep();
+
   const createStepMutation = useMutation({
     mutationFn: (stepData: any) =>
       apiClient.request(`/vc/${id}/steps`, {
