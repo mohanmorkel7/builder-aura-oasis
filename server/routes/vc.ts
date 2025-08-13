@@ -570,20 +570,34 @@ router.get("/:id/steps", async (req: Request, res: Response) => {
       });
     }
 
+    // Set cache control headers to prevent 304 responses
+    res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+
     let steps;
     try {
+      console.log(`🔍 Fetching VC steps for VC ID: ${vcId}`);
       if (await isDatabaseAvailable()) {
+        console.log("✅ Database available, using VCStepRepository");
         steps = await VCStepRepository.findByVCId(vcId);
+        console.log(`📊 Found ${steps?.length || 0} steps from database`);
       } else {
-        // Return mock steps when database is unavailable
+        console.log("⚠️ Database unavailable, using MockDataService");
         steps = await MockDataService.getVCSteps(vcId);
+        console.log(`📊 Found ${steps?.length || 0} mock steps`);
       }
     } catch (dbError) {
-      console.log("Database error, using mock data:", dbError.message);
+      console.log("❌ Database error, using mock data:", dbError.message);
       steps = await MockDataService.getVCSteps(vcId);
+      console.log(`📊 Fallback: Found ${steps?.length || 0} mock steps`);
     }
 
-    res.json(steps);
+    // Ensure we always return an array
+    const responseSteps = Array.isArray(steps) ? steps : [];
+    console.log(`🚀 Returning ${responseSteps.length} steps for VC ${vcId}`);
+
+    res.json(responseSteps);
   } catch (error) {
     console.error("Error fetching VC steps:", error);
     res.status(500).json({
