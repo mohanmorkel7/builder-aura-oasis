@@ -96,8 +96,8 @@ export default function CreateTemplateDialog({
 
   const createTemplateMutation = useMutation({
     mutationFn: async (data: any) => {
-      console.log("Create template (offline mode):", data);
-      // In offline mode, just return success with mock ID
+      console.log("Create template:", data);
+      // Return success with mock ID
       return {
         success: true,
         data: {
