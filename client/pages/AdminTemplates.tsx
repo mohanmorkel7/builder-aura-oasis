@@ -223,16 +223,50 @@ export default function AdminTemplates() {
     },
   ];
 
-  // Use fallback templates directly to avoid network issues
-  const templates = fallbackTemplates;
-  const isLoading = false;
+  // Fetch templates from database
+  const {
+    data: templates = [],
+    isLoading: templatesLoading,
+    error: templatesError,
+  } = useQuery({
+    queryKey: ["templates-with-categories"],
+    queryFn: async () => {
+      try {
+        return await apiClient.request("/templates-production/with-categories");
+      } catch (error) {
+        console.error("Failed to fetch templates:", error);
+        // Return fallback templates if API fails
+        return fallbackTemplates;
+      }
+    },
+    retry: 2,
+    staleTime: 2 * 60 * 1000,
+  });
 
-  // Use fallback stats directly to avoid network issues
-  const stats = {
-    total_templates: fallbackTemplates.length,
-    active_templates: fallbackTemplates.filter((t) => t.is_active).length,
-    total_usage: fallbackTemplates.reduce((sum, t) => sum + t.usage_count, 0),
-  };
+  // Fetch template stats from database
+  const {
+    data: stats,
+    isLoading: statsLoading,
+  } = useQuery({
+    queryKey: ["template-stats"],
+    queryFn: async () => {
+      try {
+        return await apiClient.request("/templates-production/stats");
+      } catch (error) {
+        console.error("Failed to fetch template stats:", error);
+        // Return fallback stats if API fails
+        return {
+          total_templates: fallbackTemplates.length,
+          active_templates: fallbackTemplates.filter((t) => t.is_active).length,
+          total_usage: fallbackTemplates.reduce((sum, t) => sum + t.usage_count, 0),
+        };
+      }
+    },
+    retry: 2,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const isLoading = templatesLoading || categoriesLoading || statsLoading;
 
   const deleteTemplateMutation = useMutation({
     mutationFn: async (templateId: number) => {
