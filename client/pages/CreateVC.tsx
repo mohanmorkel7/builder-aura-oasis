@@ -799,15 +799,28 @@ export default function CreateVC() {
 
       // Determine the final country value to save
       const countryValue = (() => {
-        // If user selected "Other" and provided custom country, use that
+        // First try using the state values
         if (vcData.country === "Other" && vcData.custom_country?.trim()) {
           return vcData.custom_country.trim();
         }
-        // If user selected a predefined country, use that
         if (vcData.country && vcData.country !== "Other") {
           return vcData.country;
         }
-        // Fallback to empty string
+
+        // Fallback: if state is empty but DOM has values, use DOM values
+        const domCustomCountry = document.querySelector('#custom_country')?.value?.trim();
+        const domCountryText = document.querySelector('button[role="combobox"]')?.textContent?.trim();
+
+        if (domCountryText === "Other" && domCustomCountry) {
+          console.log("🐛 DEBUG - Using DOM fallback for country:", domCustomCountry);
+          return domCustomCountry;
+        }
+        if (domCountryText && domCountryText !== "Other" && COUNTRIES.includes(domCountryText)) {
+          console.log("🐛 DEBUG - Using DOM fallback for predefined country:", domCountryText);
+          return domCountryText;
+        }
+
+        // Final fallback
         return "";
       })();
 
