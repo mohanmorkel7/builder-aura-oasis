@@ -508,6 +508,9 @@ export function VCEnhancedStepItem({
                     <Label className="text-sm font-medium flex items-center gap-2">
                       <MessageCircle className="w-4 h-4" />
                       Team Chat ({sortedMessages.length})
+                      <Badge variant="outline" className="text-xs text-blue-600">
+                        Demo Mode
+                      </Badge>
                     </Label>
                     <Button
                       size="sm"
