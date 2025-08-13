@@ -118,8 +118,23 @@ export default function EditTemplateDialog({
     };
   };
 
-  const template = templateId ? getFallbackTemplate(templateId) : null;
-  const isLoading = false;
+  // Fetch template data from API
+  const { data: template, isLoading, error } = useQuery({
+    queryKey: ["template", templateId],
+    queryFn: async () => {
+      if (!templateId) return null;
+      try {
+        return await apiClient.request(`/templates-production/${templateId}`);
+      } catch (error) {
+        console.error("Failed to fetch template:", error);
+        // Fallback to mock data if API fails
+        return getFallbackTemplate(templateId);
+      }
+    },
+    enabled: !!templateId,
+    retry: 2,
+    staleTime: 5 * 60 * 1000,
+  });
 
   // Update template mutation (offline mode)
   const updateTemplateMutation = useMutation({
