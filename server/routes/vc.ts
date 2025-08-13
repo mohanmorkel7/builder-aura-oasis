@@ -31,7 +31,10 @@ router.get("/", async (req: Request, res: Response) => {
     let vcs;
     try {
       if (await isDatabaseAvailable()) {
-        if (search) {
+        if (partial_saves_only === "true") {
+          // Get partial saves only
+          vcs = await VCRepository.findPartialSaves(created_by ? parseInt(created_by as string) : undefined);
+        } else if (search) {
           vcs = await VCRepository.search(search as string);
         } else if (investor_category) {
           vcs = await VCRepository.findByInvestorCategory(
