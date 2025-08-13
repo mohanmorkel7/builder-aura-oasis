@@ -114,6 +114,7 @@ CREATE INDEX IF NOT EXISTS idx_vcs_investor_category ON vcs(investor_category);
 CREATE INDEX IF NOT EXISTS idx_vcs_created_by ON vcs(created_by);
 CREATE INDEX IF NOT EXISTS idx_vcs_created_at ON vcs(created_at);
 CREATE INDEX IF NOT EXISTS idx_vcs_round_stage ON vcs(round_stage);
+CREATE INDEX IF NOT EXISTS idx_vcs_template_id ON vcs(template_id);
 
 CREATE INDEX IF NOT EXISTS idx_vc_steps_vc_id ON vc_steps(vc_id);
 CREATE INDEX IF NOT EXISTS idx_vc_steps_status ON vc_steps(status);
