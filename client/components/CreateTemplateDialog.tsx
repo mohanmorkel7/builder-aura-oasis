@@ -634,7 +634,15 @@ export default function CreateTemplateDialog({
           Reset
         </Button>
         <Button
-          onClick={handleSubmit}
+          onClick={() => {
+            console.log("Submit button clicked!");
+            console.log("Button disabled state:", {
+              nameEmpty: !templateData.name.trim(),
+              noSteps: steps.length === 0,
+              pending: createTemplateMutation.isPending,
+            });
+            handleSubmit();
+          }}
           disabled={
             !templateData.name.trim() ||
             steps.length === 0 ||
