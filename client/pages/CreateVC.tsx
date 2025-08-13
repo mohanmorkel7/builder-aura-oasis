@@ -1088,15 +1088,10 @@ export default function CreateVC() {
                         : undefined
                     }
                     onValueChange={(value) => {
-                      console.log("DEBUG: Country select changed to:", value);
                       handleInputChange("country", value);
                       if (value !== "Other") {
                         handleInputChange("custom_country", "");
                       }
-                      console.log(
-                        "DEBUG: After country change, vcData.country:",
-                        vcData.country,
-                      );
                     }}
                   >
                     <SelectTrigger>
