@@ -137,7 +137,6 @@ export default function CreateVC() {
     }
   }, [resumeData, draftIdFromUrl]);
 
-
   // State for VC data
   const [vcData, setVcData] = useState(
     resumeData
@@ -674,7 +673,10 @@ export default function CreateVC() {
       await partialSaveMutation.mutateAsync(partialData);
 
       // Save the current active tab for restoration when continuing
-      localStorage.setItem(`vc_draft_${currentDraftId || 'new'}_tab`, activeTab);
+      localStorage.setItem(
+        `vc_draft_${currentDraftId || "new"}_tab`,
+        activeTab,
+      );
 
       alert(
         currentDraftId
