@@ -2312,6 +2312,7 @@ export class MockDataService {
         probability: 45,
         assigned_to: 3,
         created_by: 1,
+        template_id: 5, // Seed Round Management template
         created_at: "2024-03-01T11:00:00Z",
         updated_at: "2024-03-15T13:20:00Z",
         is_partial: false,
