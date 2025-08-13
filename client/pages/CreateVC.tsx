@@ -740,7 +740,8 @@ export default function CreateVC() {
             .querySelector("#custom_country")
             ?.value?.trim();
           const domCountryText = document
-            .querySelector('button[role="combobox"]')
+            .querySelector('label[for="country"]')
+            ?.nextElementSibling?.querySelector('span')
             ?.textContent?.trim();
 
           if (domCountryText === "Other" && domCustomCountry) {
