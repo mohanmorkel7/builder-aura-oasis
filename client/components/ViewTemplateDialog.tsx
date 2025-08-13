@@ -270,7 +270,7 @@ export default function ViewTemplateDialog({
   const isLoading = false;
 
   console.log(
-    "ViewTemplateDialog (offline mode) - Template ID:",
+    "ViewTemplateDialog - Template ID:",
     templateId,
     "Template:",
     template,
