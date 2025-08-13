@@ -88,10 +88,27 @@ export default function AdminTemplates() {
   const [viewTemplateId, setViewTemplateId] = useState<number | null>(null);
   const [editTemplateId, setEditTemplateId] = useState<number | null>(null);
 
-  // Server connectivity status (using fallback data mode)
-  const serverConnected = false;
+  // Fetch categories from database
+  const {
+    data: categories = [],
+    isLoading: categoriesLoading,
+    error: categoriesError,
+  } = useQuery({
+    queryKey: ["template-categories"],
+    queryFn: async () => {
+      try {
+        return await apiClient.request("/templates-production/categories");
+      } catch (error) {
+        console.error("Failed to fetch categories:", error);
+        // Return fallback categories if API fails
+        return fallbackCategories;
+      }
+    },
+    retry: 2,
+    staleTime: 5 * 60 * 1000,
+  });
 
-  // Fallback categories data
+  // Fallback categories data (for when API fails)
   const fallbackCategories = [
     {
       id: 1,
