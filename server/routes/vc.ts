@@ -391,6 +391,11 @@ router.post("/", async (req: Request, res: Response) => {
   try {
     const vcData: CreateVCData = req.body;
 
+    // DEBUG: Log country field specifically
+    console.log("🐛 DEBUG - VC Create API - Received country:", vcData.country);
+    console.log("🐛 DEBUG - VC Create API - Full payload keys:", Object.keys(vcData));
+    console.log("🐛 DEBUG - VC Create API - is_partial:", vcData.is_partial);
+
     // Basic validation
     if (!vcData.created_by) {
       return res.status(400).json({
@@ -416,7 +421,9 @@ router.post("/", async (req: Request, res: Response) => {
     let vc;
     try {
       if (await isDatabaseAvailable()) {
+        console.log("�� DEBUG - About to call VCRepository.create with country:", vcData.country);
         vc = await VCRepository.create(vcData);
+        console.log("🐛 DEBUG - VCRepository.create returned country:", vc.country);
       } else {
         // Create mock VC when database is unavailable
         vc = {
@@ -464,6 +471,11 @@ router.put("/:id", async (req: Request, res: Response) => {
 
     const vcData: UpdateVCData = req.body;
 
+    // DEBUG: Log country field for updates
+    console.log("🐛 DEBUG - VC Update API - ID:", id);
+    console.log("🐛 DEBUG - VC Update API - Received country:", vcData.country);
+    console.log("🐛 DEBUG - VC Update API - is_partial:", vcData.is_partial);
+
     // Email validation if provided
     if (vcData.email && !/\S+@\S+\.\S+/.test(vcData.email)) {
       return res.status(400).json({
@@ -475,7 +487,9 @@ router.put("/:id", async (req: Request, res: Response) => {
     let vc;
     try {
       if (await isDatabaseAvailable()) {
+        console.log("🐛 DEBUG - About to call VCRepository.update with country:", vcData.country);
         vc = await VCRepository.update(id, vcData);
+        console.log("🐛 DEBUG - VCRepository.update returned country:", vc?.country);
       } else {
         // Mock update when database is unavailable
         vc = {
