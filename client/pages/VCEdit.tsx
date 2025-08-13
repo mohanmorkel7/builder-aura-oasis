@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/lib/auth-context";
 import { apiClient } from "@/lib/api";
+import TemplatePreviewModal from "@/components/TemplatePreviewModal";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -23,6 +24,7 @@ import {
 } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Accordion,
   AccordionContent,
@@ -30,72 +32,69 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
   ArrowLeft,
   Save,
   Building,
   Mail,
   Phone,
   MapPin,
-  Calendar,
   DollarSign,
-  User,
-  Info,
-  Briefcase,
-  Target,
   Users,
+  Calendar,
+  Plus,
+  Trash2,
+  AlertCircle,
+  FileText,
+  Eye,
   Globe,
-  Award,
-  Zap,
-  PiggyBank,
-  TrendingUp,
+  User,
+  MessageSquare,
+  ExternalLink,
+  UserCheck,
+  PhoneCall,
+  Presentation,
+  HelpCircle,
 } from "lucide-react";
 
-const leadSources = [
-  { value: "email", label: "Email", icon: Mail },
-  { value: "social-media", label: "Social Media", icon: Users },
-  { value: "phone", label: "Phone", icon: Phone },
-  { value: "website", label: "Website", icon: Globe },
-  { value: "referral", label: "Referral", icon: Award },
-  { value: "cold-call", label: "Cold Call", icon: Phone },
-  { value: "event", label: "Event", icon: Briefcase },
-  { value: "other", label: "Other", icon: Zap },
-];
-
-const priorities = [
-  { value: "low", label: "Low", color: "bg-gray-100 text-gray-700" },
-  { value: "medium", label: "Medium", color: "bg-yellow-100 text-yellow-700" },
-  { value: "high", label: "High", color: "bg-orange-100 text-orange-700" },
-];
-
-const statuses = [
-  { value: "in-progress", label: "In Progress" },
-  { value: "won", label: "Won" },
-  { value: "lost", label: "Lost" },
-  { value: "completed", label: "Completed" },
-];
-
-const investorCategories = [
-  { value: "angel", label: "Angel Investor" },
-  { value: "vc", label: "Venture Capital" },
+const INVESTOR_CATEGORIES = [
+  { value: "angel", label: "Angel" },
+  { value: "vc", label: "VC" },
   { value: "private_equity", label: "Private Equity" },
   { value: "family_office", label: "Family Office" },
   { value: "merchant_banker", label: "Merchant Banker" },
 ];
 
-const roundStages = [
+const ROUND_STAGES = [
   { value: "pre_seed", label: "Pre-Seed" },
   { value: "seed", label: "Seed" },
   { value: "series_a", label: "Series A" },
   { value: "series_b", label: "Series B" },
   { value: "series_c", label: "Series C" },
   { value: "bridge", label: "Bridge" },
-  { value: "mezzanine", label: "Mezzanine" },
+  { value: "growth", label: "Growth" },
+  { value: "ipo", label: "IPO" },
 ];
 
-const currencies = [
-  { value: "INR", label: "INR (Indian Rupee)" },
-  { value: "USD", label: "USD (US Dollar)" },
-  { value: "AED", label: "AED (UAE Dirham)" },
+const COUNTRIES = [
+  "India",
+  "United States",
+  "United Kingdom",
+  "Singapore",
+  "UAE",
+  "Canada",
+  "Australia",
+  "Germany",
+  "France",
+  "Japan",
+  "Other",
 ];
 
 export default function VCEdit() {
@@ -104,18 +103,19 @@ export default function VCEdit() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  const [formData, setFormData] = useState({
+  // State for VC data
+  const [vcData, setVcData] = useState({
+    // Lead Info
     lead_source: "",
     lead_source_value: "",
-    lead_created_by: "",
-    status: "",
-    round_title: "",
-    round_description: "",
-    round_stage: "",
-    round_size: "",
-    valuation: "",
+    lead_created_by: user?.email || "",
+    status: "in-progress",
+
+    // Investor and Contact Info
     investor_category: "",
     investor_name: "",
+    company_size: "",
+    industry: "",
     contact_person: "",
     email: "",
     phone: "",
@@ -123,36 +123,60 @@ export default function VCEdit() {
     city: "",
     state: "",
     country: "",
+    custom_country: "",
     website: "",
     potential_lead_investor: false,
     minimum_size: "",
     maximum_size: "",
     minimum_arr_requirement: "",
-    priority_level: "",
+
+    // Additional contacts
+    contacts: [
+      {
+        contact_name: "",
+        designation: "",
+        phone: "",
+        email: "",
+        linkedin: "",
+      },
+    ] as Array<{
+      contact_name: string;
+      designation: string;
+      phone: string;
+      email: string;
+      linkedin: string;
+    }>,
+
+    // Deal Details (Round Information)
+    round_title: "",
+    round_size: "",
+    valuation: "",
+    round_stage: "",
+    project_description: "",
+    priority_level: "medium",
     start_date: "",
     targeted_end_date: "",
     spoc: "",
-    billing_currency: "",
     template_id: "",
+
+    // Billing and Commercials
+    billing_currency: "INR",
+
+    // Additional fields
+    probability: "0",
     notes: "",
   });
 
-  const [contacts, setContacts] = useState([
-    {
-      contact_name: "",
-      email: "",
-      phone: "",
-      designation: "",
-      linkedin: "",
-    },
-  ]);
-
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [activeTab, setActiveTab] = useState("lead-info");
+  const [selectedTemplate, setSelectedTemplate] = useState<string>("manual");
+  const [isTemplatePreviewOpen, setIsTemplatePreviewOpen] = useState(false);
+  const [previewTemplate, setPreviewTemplate] = useState<any>(null);
 
   // Fetch VC details
   const {
-    data: vcData,
+    data: vcDataFromAPI,
     isLoading: vcLoading,
     error: vcError,
   } = useQuery({
@@ -164,16 +188,180 @@ export default function VCEdit() {
     enabled: !!id,
   });
 
-  // Fetch templates
+  // Get VC templates
   const {
     data: templates = [],
     isLoading: templatesLoading,
+    error: templatesError,
   } = useQuery({
-    queryKey: ["templates"],
+    queryKey: ["templates-by-category", "VC"],
     queryFn: async () => {
-      const response = await apiClient.request("/templates");
-      return response;
+      try {
+        // First, try to get the VC category ID
+        const categories = await apiClient.request(
+          "/templates-production/categories",
+        );
+        const vcCategory = categories.find((cat: any) => cat.name === "VC");
+
+        if (vcCategory) {
+          const result = await apiClient.request(
+            `/templates-production/category/${vcCategory.id}`,
+          );
+          return result;
+        } else {
+          return [];
+        }
+      } catch (error) {
+        console.error("VC templates fetch error:", error);
+        // Return mock templates when database is not available
+        return [
+          {
+            id: 7,
+            name: "Series A Funding Process",
+            description: "Complete workflow for Series A funding rounds",
+            category: "VC",
+            created_by: "System",
+            created_at: new Date().toISOString(),
+          },
+          {
+            id: 8,
+            name: "Seed Round Management",
+            description: "Template for managing seed funding rounds",
+            category: "VC",
+            created_by: "System",
+            created_at: new Date().toISOString(),
+          },
+        ];
+      }
     },
+    retry: 2,
+    staleTime: 1 * 60 * 1000,
+    cacheTime: 5 * 60 * 1000,
+  });
+
+  // Fetch template details when a template is selected
+  const {
+    data: templateDetails,
+    isLoading: templateDetailsLoading,
+    error: templateDetailsError,
+  } = useQuery({
+    queryKey: ["template-details", selectedTemplate],
+    queryFn: async () => {
+      if (!selectedTemplate || selectedTemplate === "manual") return null;
+      try {
+        const result = await apiClient.request(
+          `/templates-production/${selectedTemplate}`,
+        );
+        return result;
+      } catch (error) {
+        console.error("Failed to fetch template details:", error);
+
+        // Fallback to mock data for specific known templates
+        const id = parseInt(selectedTemplate);
+        if (id === 7) {
+          return {
+            id: 7,
+            name: "Series A Funding Process",
+            description: "Complete workflow for Series A funding rounds",
+            steps: [
+              {
+                id: 1,
+                name: "Initial Pitch Deck Review",
+                description: "Review and refine pitch deck",
+                probability_percent: 15,
+              },
+              {
+                id: 2,
+                name: "Management Presentation",
+                description: "Present to investment committee",
+                probability_percent: 25,
+              },
+              {
+                id: 3,
+                name: "Due Diligence Initiation",
+                description: "Begin comprehensive due diligence",
+                probability_percent: 35,
+              },
+              {
+                id: 4,
+                name: "Term Sheet Negotiation",
+                description: "Negotiate terms and valuation",
+                probability_percent: 50,
+              },
+              {
+                id: 5,
+                name: "Legal Documentation",
+                description: "Draft and finalize legal agreements",
+                probability_percent: 75,
+              },
+              {
+                id: 6,
+                name: "Final Approval",
+                description: "Board approval and closing",
+                probability_percent: 100,
+              },
+            ],
+            created_by: "VC Team",
+            category: {
+              id: 6,
+              name: "VC",
+              color: "#6366F1",
+              icon: "Megaphone",
+            },
+          };
+        }
+        if (id === 8) {
+          return {
+            id: 8,
+            name: "Seed Round Management",
+            description: "Template for managing seed funding rounds",
+            steps: [
+              {
+                id: 1,
+                name: "Product Demo",
+                description: "Demonstrate product capabilities",
+                probability_percent: 20,
+              },
+              {
+                id: 2,
+                name: "Market Analysis",
+                description: "Present market opportunity",
+                probability_percent: 40,
+              },
+              {
+                id: 3,
+                name: "Financial Review",
+                description: "Review financial projections",
+                probability_percent: 60,
+              },
+              {
+                id: 4,
+                name: "Investment Agreement",
+                description: "Finalize investment terms",
+                probability_percent: 80,
+              },
+              {
+                id: 5,
+                name: "Closing",
+                description: "Complete the funding round",
+                probability_percent: 100,
+              },
+            ],
+            created_by: "VC Team",
+            category: {
+              id: 6,
+              name: "VC",
+              color: "#6366F1",
+              icon: "Megaphone",
+            },
+          };
+        }
+        throw error;
+      }
+    },
+    enabled: !!selectedTemplate && selectedTemplate !== "manual",
+    retry: 2,
+    staleTime: 5 * 60 * 1000,
   });
 
   // Update VC mutation
@@ -198,140 +386,236 @@ export default function VCEdit() {
 
   // Load VC data into form when available
   useEffect(() => {
-    if (vcData) {
-      setFormData({
-        lead_source: vcData.lead_source || "",
-        lead_source_value: vcData.lead_source_value || "",
-        lead_created_by: vcData.lead_created_by || "",
-        status: vcData.status || "",
-        round_title: vcData.round_title || "",
-        round_description: vcData.round_description || "",
-        round_stage: vcData.round_stage || "",
-        round_size: vcData.round_size || "",
-        valuation: vcData.valuation || "",
-        investor_category: vcData.investor_category || "",
-        investor_name: vcData.investor_name || "",
-        contact_person: vcData.contact_person || "",
-        email: vcData.email || "",
-        phone: vcData.phone || "",
-        address: vcData.address || "",
-        city: vcData.city || "",
-        state: vcData.state || "",
-        country: vcData.country || "",
-        website: vcData.website || "",
-        potential_lead_investor: vcData.potential_lead_investor || false,
-        minimum_size: vcData.minimum_size?.toString() || "",
-        maximum_size: vcData.maximum_size?.toString() || "",
-        minimum_arr_requirement: vcData.minimum_arr_requirement?.toString() || "",
-        priority_level: vcData.priority_level || "",
-        start_date: vcData.start_date || "",
-        targeted_end_date: vcData.targeted_end_date || "",
-        spoc: vcData.spoc || "",
-        billing_currency: vcData.billing_currency || "",
-        template_id: vcData.template_id?.toString() || "",
-        notes: vcData.notes || "",
+    if (vcDataFromAPI) {
+      setVcData({
+        lead_source: vcDataFromAPI.lead_source || "",
+        lead_source_value: vcDataFromAPI.lead_source_value || "",
+        lead_created_by: vcDataFromAPI.lead_created_by || user?.email || "",
+        status: vcDataFromAPI.status || "in-progress",
+        investor_category: vcDataFromAPI.investor_category || "",
+        investor_name: vcDataFromAPI.investor_name || "",
+        company_size: vcDataFromAPI.company_size || "",
+        industry: vcDataFromAPI.industry || "",
+        contact_person: vcDataFromAPI.contact_person || "",
+        email: vcDataFromAPI.email || "",
+        phone: vcDataFromAPI.phone || "",
+        address: vcDataFromAPI.address || "",
+        city: vcDataFromAPI.city || "",
+        state: vcDataFromAPI.state || "",
+        // Handle country initialization correctly
+        country: (() => {
+          const savedCountry = vcDataFromAPI.country || "";
+          if (!savedCountry) return "";
+          if (COUNTRIES.includes(savedCountry)) return savedCountry;
+          return "Other";
+        })(),
+        custom_country: (() => {
+          const savedCountry = vcDataFromAPI.country || "";
+          if (!savedCountry || COUNTRIES.includes(savedCountry)) return "";
+          return savedCountry;
+        })(),
+        website: vcDataFromAPI.website || "",
+        potential_lead_investor: vcDataFromAPI.potential_lead_investor || false,
+        minimum_size: vcDataFromAPI.minimum_size?.toString() || "",
+        maximum_size: vcDataFromAPI.maximum_size?.toString() || "",
+        minimum_arr_requirement: vcDataFromAPI.minimum_arr_requirement?.toString() || "",
+        contacts: vcDataFromAPI.contacts
+          ? typeof vcDataFromAPI.contacts === "string"
+            ? JSON.parse(vcDataFromAPI.contacts)
+            : vcDataFromAPI.contacts
+          : [
+              {
+                contact_name: "",
+                designation: "",
+                phone: "",
+                email: "",
+                linkedin: "",
+              },
+            ],
+        round_title: vcDataFromAPI.round_title || "",
+        round_size: vcDataFromAPI.round_size || "",
+        valuation: vcDataFromAPI.valuation || "",
+        round_stage: vcDataFromAPI.round_stage || "",
+        project_description: vcDataFromAPI.round_description || "",
+        priority_level: vcDataFromAPI.priority_level || "medium",
+        start_date: (() => {
+          try {
+            return vcDataFromAPI.start_date
+              ? new Date(vcDataFromAPI.start_date).toISOString().split("T")[0]
+              : "";
+          } catch (e) {
+            console.warn("Failed to parse start_date:", vcDataFromAPI.start_date);
+            return "";
+          }
+        })(),
+        targeted_end_date: (() => {
+          try {
+            return vcDataFromAPI.targeted_end_date
+              ? new Date(vcDataFromAPI.targeted_end_date)
+                  .toISOString()
+                  .split("T")[0]
+              : "";
+          } catch (e) {
+            console.warn("Failed to parse targeted_end_date:", vcDataFromAPI.targeted_end_date);
+            return "";
+          }
+        })(),
+        spoc: vcDataFromAPI.spoc || "",
+        template_id: vcDataFromAPI.template_id?.toString() || "",
+        billing_currency: vcDataFromAPI.billing_currency || "INR",
+        probability: vcDataFromAPI.probability?.toString() || "0",
+        notes: vcDataFromAPI.notes || "",
       });
 
-      if (vcData.contacts && vcData.contacts.length > 0) {
-        setContacts(vcData.contacts);
+      // Set selected template
+      if (vcDataFromAPI.template_id) {
+        setSelectedTemplate(vcDataFromAPI.template_id.toString());
       }
     }
-  }, [vcData]);
+  }, [vcDataFromAPI, user?.email]);
 
   const handleInputChange = (field: string, value: any) => {
-    setFormData((prev) => ({
-      ...prev,
+    const newData = {
+      ...vcData,
       [field]: value,
-    }));
-    
+    };
+
+    // Clear lead_source_value when lead_source changes
+    if (field === "lead_source") {
+      newData.lead_source_value = "";
+    }
+
+    setVcData(newData);
+
     // Clear error when user starts typing
     if (errors[field]) {
-      setErrors((prev) => ({
-        ...prev,
-        [field]: "",
-      }));
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
     }
   };
 
-  const handleContactChange = (index: number, field: string, value: string) => {
-    setContacts((prev) => {
-      const newContacts = [...prev];
-      newContacts[index] = {
-        ...newContacts[index],
-        [field]: value,
-      };
-      return newContacts;
-    });
+  // Contact management functions
+  const updateContact = (index: number, field: string, value: string) => {
+    const newContacts = [...vcData.contacts];
+    newContacts[index] = { ...newContacts[index], [field]: value };
+    setVcData((prev) => ({ ...prev, contacts: newContacts }));
   };
 
   const addContact = () => {
-    setContacts((prev) => [
+    setVcData((prev) => ({
       ...prev,
-      {
-        contact_name: "",
-        email: "",
-        phone: "",
-        designation: "",
-        linkedin: "",
-      },
-    ]);
+      contacts: [
+        ...prev.contacts,
+        {
+          contact_name: "",
+          designation: "",
+          phone: "",
+          email: "",
+          linkedin: "",
+        },
+      ],
+    }));
   };
 
   const removeContact = (index: number) => {
-    if (contacts.length > 1) {
-      setContacts((prev) => prev.filter((_, i) => i !== index));
+    if (vcData.contacts.length > 1) {
+      const newContacts = vcData.contacts.filter((_, i) => i !== index);
+      setVcData((prev) => ({ ...prev, contacts: newContacts }));
     }
   };
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.investor_name.trim()) {
-      newErrors.investor_name = "Investor name is required";
-    }
-
-    if (!formData.round_title.trim()) {
+    // Required fields validation
+    if (!vcData.round_title.trim()) {
       newErrors.round_title = "Round title is required";
     }
-
-    if (!formData.status) {
-      newErrors.status = "Status is required";
+    if (!vcData.investor_name.trim()) {
+      newErrors.investor_name = "Investor name is required";
     }
-
-    if (!formData.lead_source) {
+    if (!vcData.investor_category) {
+      newErrors.investor_category = "Investor category is required";
+    }
+    if (!vcData.lead_source) {
       newErrors.lead_source = "Lead source is required";
     }
-
-    if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Invalid email format";
+    if (!vcData.email.trim()) {
+      newErrors.email = "Email is required";
+    }
+    if (vcData.email && !/\S+@\S+\.\S+/.test(vcData.email)) {
+      newErrors.email = "Please enter a valid email address";
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const handleSubmit = async () => {
     if (!validateForm()) {
       return;
     }
 
     setIsSubmitting(true);
-
     try {
+      // Prepare VC data for submission
       const submitData = {
-        ...formData,
-        minimum_size: formData.minimum_size ? parseInt(formData.minimum_size) : null,
-        maximum_size: formData.maximum_size ? parseInt(formData.maximum_size) : null,
-        minimum_arr_requirement: formData.minimum_arr_requirement ? parseInt(formData.minimum_arr_requirement) : null,
-        template_id: formData.template_id ? parseInt(formData.template_id) : null,
-        contacts: contacts.filter(contact => contact.contact_name.trim() || contact.email.trim()),
+        lead_source: vcData.lead_source,
+        lead_source_value: vcData.lead_source_value,
+        lead_created_by: vcData.lead_created_by,
+        status: vcData.status,
+        round_title: vcData.round_title,
+        round_description: vcData.project_description,
+        round_stage: vcData.round_stage || null,
+        round_size: vcData.round_size,
+        valuation: vcData.valuation,
+        investor_category: vcData.investor_category,
+        investor_name: vcData.investor_name,
+        contact_person: vcData.contact_person,
+        email: vcData.email,
+        phone: vcData.phone,
+        address: vcData.address,
+        city: vcData.city,
+        state: vcData.state,
+        country: (() => {
+          if (vcData.country === "Other" && vcData.custom_country?.trim()) {
+            return vcData.custom_country.trim();
+          }
+          if (vcData.country && vcData.country !== "Other") {
+            return vcData.country;
+          }
+          return "";
+        })(),
+        website: vcData.website,
+        company_size: vcData.company_size,
+        industry: vcData.industry,
+        potential_lead_investor: vcData.potential_lead_investor,
+        minimum_size: vcData.minimum_size
+          ? parseInt(vcData.minimum_size)
+          : null,
+        maximum_size: vcData.maximum_size
+          ? parseInt(vcData.maximum_size)
+          : null,
+        minimum_arr_requirement: vcData.minimum_arr_requirement
+          ? parseInt(vcData.minimum_arr_requirement)
+          : null,
+        priority_level: vcData.priority_level,
+        start_date: vcData.start_date || null,
+        targeted_end_date: vcData.targeted_end_date || null,
+        spoc: vcData.spoc,
+        template_id: vcData.template_id || null,
+        billing_currency: vcData.billing_currency,
+        notes: vcData.notes,
+        contacts: JSON.stringify(vcData.contacts),
       };
 
       await updateVCMutation.mutateAsync(submitData);
     } catch (error) {
-      console.error("Submit error:", error);
+      console.error("Failed to update VC:", error);
+      alert("Failed to update VC. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -339,6 +623,11 @@ export default function VCEdit() {
 
   const handleBack = () => {
     navigate(`/vc/${id}`);
+  };
+
+  const previewTemplateDetails = (template: any) => {
+    setPreviewTemplate(template);
+    setIsTemplatePreviewOpen(true);
   };
 
   if (vcLoading) {
@@ -349,7 +638,7 @@ export default function VCEdit() {
     );
   }
 
-  if (vcError || !vcData) {
+  if (vcError || !vcDataFromAPI) {
     return (
       <div className="p-6">
         <div className="text-center text-red-600">
@@ -360,7 +649,7 @@ export default function VCEdit() {
   }
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
+    <div className="p-6 max-w-6xl mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-4">
@@ -369,11 +658,19 @@ export default function VCEdit() {
             Back to VC Details
           </Button>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Edit VC</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Edit VC</h1>
             <p className="text-gray-600">
-              Update VC information and funding details
+              Update venture capital opportunity details
             </p>
           </div>
+        </div>
+        <div className="flex space-x-3">
+          <Button
+            onClick={handleSubmit}
+            disabled={isSubmitting || updateVCMutation.isPending}
+          >
+            {isSubmitting ? "Updating..." : "Update VC"}
+          </Button>
         </div>
       </div>
 
@@ -383,577 +680,796 @@ export default function VCEdit() {
         </Alert>
       )}
 
-      <form onSubmit={handleSubmit}>
-        <Tabs defaultValue="basic" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="basic">Basic Info</TabsTrigger>
-            <TabsTrigger value="funding">Funding Details</TabsTrigger>
-            <TabsTrigger value="contacts">Contacts</TabsTrigger>
-            <TabsTrigger value="settings">Settings</TabsTrigger>
-          </TabsList>
+      {/* Form Tabs */}
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="lead-info">Lead Information</TabsTrigger>
+          <TabsTrigger value="investor-contact">
+            Investor Information
+          </TabsTrigger>
+          <TabsTrigger value="deal-details">Round Information</TabsTrigger>
+          <TabsTrigger value="additional">Additional Information</TabsTrigger>
+        </TabsList>
 
-          {/* Basic Information Tab */}
-          <TabsContent value="basic" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Basic Information</CardTitle>
-                <CardDescription>
-                  Essential VC and investor details
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="investor_name">Investor Name *</Label>
-                    <Input
-                      id="investor_name"
-                      value={formData.investor_name}
-                      onChange={(e) => handleInputChange("investor_name", e.target.value)}
-                      className={errors.investor_name ? "border-red-500" : ""}
-                    />
-                    {errors.investor_name && (
-                      <p className="text-sm text-red-500 mt-1">{errors.investor_name}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <Label htmlFor="round_title">Round Title *</Label>
-                    <Input
-                      id="round_title"
-                      value={formData.round_title}
-                      onChange={(e) => handleInputChange("round_title", e.target.value)}
-                      className={errors.round_title ? "border-red-500" : ""}
-                    />
-                    {errors.round_title && (
-                      <p className="text-sm text-red-500 mt-1">{errors.round_title}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <Label htmlFor="status">Status *</Label>
-                    <Select
-                      value={formData.status}
-                      onValueChange={(value) => handleInputChange("status", value)}
-                    >
-                      <SelectTrigger className={errors.status ? "border-red-500" : ""}>
-                        <SelectValue placeholder="Select status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {statuses.map((status) => (
-                          <SelectItem key={status.value} value={status.value}>
-                            {status.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {errors.status && (
-                      <p className="text-sm text-red-500 mt-1">{errors.status}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <Label htmlFor="priority_level">Priority Level</Label>
-                    <Select
-                      value={formData.priority_level}
-                      onValueChange={(value) => handleInputChange("priority_level", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select priority" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {priorities.map((priority) => (
-                          <SelectItem key={priority.value} value={priority.value}>
-                            {priority.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="lead_source">Lead Source *</Label>
-                    <Select
-                      value={formData.lead_source}
-                      onValueChange={(value) => handleInputChange("lead_source", value)}
-                    >
-                      <SelectTrigger className={errors.lead_source ? "border-red-500" : ""}>
-                        <SelectValue placeholder="Select source" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {leadSources.map((source) => (
-                          <SelectItem key={source.value} value={source.value}>
-                            <div className="flex items-center space-x-2">
-                              <source.icon className="w-4 h-4" />
-                              <span>{source.label}</span>
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {errors.lead_source && (
-                      <p className="text-sm text-red-500 mt-1">{errors.lead_source}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <Label htmlFor="lead_source_value">Lead Source Value</Label>
-                    <Input
-                      id="lead_source_value"
-                      value={formData.lead_source_value}
-                      onChange={(e) => handleInputChange("lead_source_value", e.target.value)}
-                      placeholder="e.g., referral name, website URL"
-                    />
-                  </div>
-                </div>
-
+        {/* Lead Info Tab */}
+        <TabsContent value="lead-info" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Lead Information</CardTitle>
+              <CardDescription>
+                Basic information about this VC opportunity lead
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-4">
                 <div>
-                  <Label htmlFor="round_description">Round Description</Label>
-                  <Textarea
-                    id="round_description"
-                    value={formData.round_description}
-                    onChange={(e) => handleInputChange("round_description", e.target.value)}
-                    rows={3}
-                    placeholder="Describe the funding round and objectives"
+                  <Label htmlFor="lead_created_by">Lead Created By</Label>
+                  <Input
+                    id="lead_created_by"
+                    placeholder="Name of person who created this lead"
+                    value={vcData.lead_created_by}
+                    onChange={(e) =>
+                      handleInputChange("lead_created_by", e.target.value)
+                    }
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="notes">Notes</Label>
-                  <Textarea
-                    id="notes"
-                    value={formData.notes}
-                    onChange={(e) => handleInputChange("notes", e.target.value)}
-                    rows={3}
-                    placeholder="Additional notes about this VC opportunity"
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Funding Details Tab */}
-          <TabsContent value="funding" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Funding Details</CardTitle>
-                <CardDescription>
-                  Investment and funding specifics
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="investor_category">Investor Category</Label>
-                    <Select
-                      value={formData.investor_category}
-                      onValueChange={(value) => handleInputChange("investor_category", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {investorCategories.map((category) => (
-                          <SelectItem key={category.value} value={category.value}>
-                            {category.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="round_stage">Round Stage</Label>
-                    <Select
-                      value={formData.round_stage}
-                      onValueChange={(value) => handleInputChange("round_stage", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select stage" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {roundStages.map((stage) => (
-                          <SelectItem key={stage.value} value={stage.value}>
-                            {stage.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="round_size">Round Size</Label>
-                    <Input
-                      id="round_size"
-                      value={formData.round_size}
-                      onChange={(e) => handleInputChange("round_size", e.target.value)}
-                      placeholder="e.g., $5M, ₹50Cr"
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="valuation">Valuation</Label>
-                    <Input
-                      id="valuation"
-                      value={formData.valuation}
-                      onChange={(e) => handleInputChange("valuation", e.target.value)}
-                      placeholder="e.g., $50M, ₹400Cr"
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="minimum_size">Minimum Investment (₹)</Label>
-                    <Input
-                      id="minimum_size"
-                      type="number"
-                      value={formData.minimum_size}
-                      onChange={(e) => handleInputChange("minimum_size", e.target.value)}
-                      placeholder="e.g., 10000000"
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="maximum_size">Maximum Investment (₹)</Label>
-                    <Input
-                      id="maximum_size"
-                      type="number"
-                      value={formData.maximum_size}
-                      onChange={(e) => handleInputChange("maximum_size", e.target.value)}
-                      placeholder="e.g., 100000000"
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="minimum_arr_requirement">Min ARR Requirement (₹)</Label>
-                    <Input
-                      id="minimum_arr_requirement"
-                      type="number"
-                      value={formData.minimum_arr_requirement}
-                      onChange={(e) => handleInputChange("minimum_arr_requirement", e.target.value)}
-                      placeholder="e.g., 5000000"
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="billing_currency">Currency</Label>
-                    <Select
-                      value={formData.billing_currency}
-                      onValueChange={(value) => handleInputChange("billing_currency", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select currency" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {currencies.map((currency) => (
-                          <SelectItem key={currency.value} value={currency.value}>
-                            {currency.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="start_date">Start Date</Label>
-                    <Input
-                      id="start_date"
-                      type="date"
-                      value={formData.start_date}
-                      onChange={(e) => handleInputChange("start_date", e.target.value)}
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="targeted_end_date">Target End Date</Label>
-                    <Input
-                      id="targeted_end_date"
-                      type="date"
-                      value={formData.targeted_end_date}
-                      onChange={(e) => handleInputChange("targeted_end_date", e.target.value)}
-                    />
-                  </div>
+                  <Label htmlFor="lead_source">Lead Source *</Label>
+                  <Select
+                    value={vcData.lead_source}
+                    onValueChange={(value) =>
+                      handleInputChange("lead_source", value)
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select how you found this lead" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="email">
+                        <div className="flex items-center gap-2">
+                          <Mail className="w-4 h-4" />
+                          Email
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="social-media">
+                        <div className="flex items-center gap-2">
+                          <MessageSquare className="w-4 h-4" />
+                          Social Media
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="phone">
+                        <div className="flex items-center gap-2">
+                          <Phone className="w-4 h-4" />
+                          Phone
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="website">
+                        <div className="flex items-center gap-2">
+                          <Globe className="w-4 h-4" />
+                          Website
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="referral">
+                        <div className="flex items-center gap-2">
+                          <UserCheck className="w-4 h-4" />
+                          Referral
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="cold-call">
+                        <div className="flex items-center gap-2">
+                          <PhoneCall className="w-4 h-4" />
+                          Cold Call
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="event">
+                        <div className="flex items-center gap-2">
+                          <Presentation className="w-4 h-4" />
+                          Event
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="other">
+                        <div className="flex items-center gap-2">
+                          <HelpCircle className="w-4 h-4" />
+                          Other
+                        </div>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {errors.lead_source && (
+                    <p className="text-sm text-red-600 mt-1">
+                      {errors.lead_source}
+                    </p>
+                  )}
                 </div>
 
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    id="potential_lead_investor"
-                    checked={formData.potential_lead_investor}
-                    onChange={(e) => handleInputChange("potential_lead_investor", e.target.checked)}
-                    className="rounded border-gray-300"
-                  />
-                  <Label htmlFor="potential_lead_investor">
-                    Potential Lead Investor
-                  </Label>
+                {/* Dynamic Lead Source Value */}
+                {vcData.lead_source && (
+                  <div>
+                    <Label htmlFor="lead_source_value">
+                      {vcData.lead_source === "email" && "Email Address"}
+                      {vcData.lead_source === "phone" && "Phone Number"}
+                      {vcData.lead_source === "social-media" &&
+                        "Social Media Profile/Link"}
+                      {vcData.lead_source === "website" && "Website URL"}
+                      {vcData.lead_source === "referral" &&
+                        "Referral Source/Contact"}
+                      {vcData.lead_source === "cold-call" &&
+                        "Phone Number Called"}
+                      {vcData.lead_source === "event" && "Event Name/Details"}
+                      {vcData.lead_source === "other" && "Source Details"}
+                    </Label>
+                    <div className="relative mt-1">
+                      {vcData.lead_source === "email" && (
+                        <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      )}
+                      {vcData.lead_source === "phone" && (
+                        <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      )}
+                      {vcData.lead_source === "website" && (
+                        <Globe className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      )}
+                      <Input
+                        id="lead_source_value"
+                        value={vcData.lead_source_value}
+                        onChange={(e) =>
+                          handleInputChange("lead_source_value", e.target.value)
+                        }
+                        className="pl-10"
+                        placeholder={
+                          vcData.lead_source === "email"
+                            ? "contact@investor.com"
+                            : vcData.lead_source === "phone"
+                              ? "+1 (555) 000-0000"
+                              : vcData.lead_source === "social-media"
+                                ? "LinkedIn profile or social media link"
+                                : vcData.lead_source === "website"
+                                  ? "https://investor.com"
+                                  : vcData.lead_source === "referral"
+                                    ? "Name of person who referred"
+                                    : vcData.lead_source === "cold-call"
+                                      ? "+1 (555) 000-0000"
+                                      : vcData.lead_source === "event"
+                                        ? "Conference name or event details"
+                                        : "Describe the source"
+                        }
+                      />
+                    </div>
+                  </div>
+                )}
+
+                <div>
+                  <Label htmlFor="status">Status</Label>
+                  <Select
+                    value={vcData.status}
+                    onValueChange={(value) => handleInputChange("status", value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="in-progress">In Progress</SelectItem>
+                      <SelectItem value="won">Won</SelectItem>
+                      <SelectItem value="lost">Lost</SelectItem>
+                      <SelectItem value="completed">Completed</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-          {/* Contacts Tab */}
-          <TabsContent value="contacts" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Contact Information</CardTitle>
-                <CardDescription>
-                  Manage contact details for this VC
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="contact_person">Primary Contact</Label>
-                    <Input
-                      id="contact_person"
-                      value={formData.contact_person}
-                      onChange={(e) => handleInputChange("contact_person", e.target.value)}
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) => handleInputChange("email", e.target.value)}
-                      className={errors.email ? "border-red-500" : ""}
-                    />
-                    {errors.email && (
-                      <p className="text-sm text-red-500 mt-1">{errors.email}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <Label htmlFor="phone">Phone</Label>
-                    <Input
-                      id="phone"
-                      value={formData.phone}
-                      onChange={(e) => handleInputChange("phone", e.target.value)}
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="website">Website</Label>
-                    <Input
-                      id="website"
-                      value={formData.website}
-                      onChange={(e) => handleInputChange("website", e.target.value)}
-                      placeholder="https://example.com"
-                    />
-                  </div>
+        {/* Investor and Contact Info Tab */}
+        <TabsContent value="investor-contact" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Investor Information</CardTitle>
+              <CardDescription>
+                Details about the investor and contact information
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="investor_category">Investor Category *</Label>
+                  <Select
+                    value={vcData.investor_category}
+                    onValueChange={(value) =>
+                      handleInputChange("investor_category", value)
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select investor category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {INVESTOR_CATEGORIES.map((category) => (
+                        <SelectItem key={category.value} value={category.value}>
+                          {category.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {errors.investor_category && (
+                    <p className="text-sm text-red-600 mt-1">
+                      {errors.investor_category}
+                    </p>
+                  )}
                 </div>
 
                 <div>
-                  <Label htmlFor="address">Address</Label>
+                  <Label htmlFor="investor_name">Investor Name *</Label>
+                  <Input
+                    id="investor_name"
+                    placeholder="Name of the investor/firm"
+                    value={vcData.investor_name}
+                    onChange={(e) =>
+                      handleInputChange("investor_name", e.target.value)
+                    }
+                    className={errors.investor_name ? "border-red-500" : ""}
+                  />
+                  {errors.investor_name && (
+                    <p className="text-sm text-red-600 mt-1">
+                      {errors.investor_name}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <Label htmlFor="contact_person">Contact Person</Label>
+                  <Input
+                    id="contact_person"
+                    placeholder="Primary contact person"
+                    value={vcData.contact_person}
+                    onChange={(e) =>
+                      handleInputChange("contact_person", e.target.value)
+                    }
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="email">Email *</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="contact@investor.com"
+                    value={vcData.email}
+                    onChange={(e) => handleInputChange("email", e.target.value)}
+                    className={errors.email ? "border-red-500" : ""}
+                  />
+                  {errors.email && (
+                    <p className="text-sm text-red-600 mt-1">{errors.email}</p>
+                  )}
+                </div>
+
+                <div>
+                  <Label htmlFor="phone">Phone</Label>
+                  <Input
+                    id="phone"
+                    placeholder="+1 (555) 123-4567"
+                    value={vcData.phone}
+                    onChange={(e) => handleInputChange("phone", e.target.value)}
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="website">Website</Label>
+                  <Input
+                    id="website"
+                    placeholder="https://investor.com"
+                    value={vcData.website}
+                    onChange={(e) =>
+                      handleInputChange("website", e.target.value)
+                    }
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="company_size">Company/Fund Size</Label>
+                  <Select
+                    value={vcData.company_size}
+                    onValueChange={(value) =>
+                      handleInputChange("company_size", value)
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select fund/company size" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="startup">
+                        Startup Fund ($1M-$10M)
+                      </SelectItem>
+                      <SelectItem value="small">
+                        Small Fund ($10M-$50M)
+                      </SelectItem>
+                      <SelectItem value="medium">
+                        Medium Fund ($50M-$200M)
+                      </SelectItem>
+                      <SelectItem value="large">
+                        Large Fund ($200M-$1B)
+                      </SelectItem>
+                      <SelectItem value="mega">
+                        Mega Fund ($1B+)
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="industry">Industry Focus</Label>
+                  <Input
+                    id="industry"
+                    placeholder="e.g., Technology, Healthcare, Fintech"
+                    value={vcData.industry}
+                    onChange={(e) =>
+                      handleInputChange("industry", e.target.value)
+                    }
+                  />
+                </div>
+              </div>
+
+              {/* Address Information */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-900">Address</h3>
+                <div>
+                  <Label htmlFor="address">Street Address</Label>
                   <Input
                     id="address"
-                    value={formData.address}
-                    onChange={(e) => handleInputChange("address", e.target.value)}
+                    placeholder="Street address"
+                    value={vcData.address}
+                    onChange={(e) =>
+                      handleInputChange("address", e.target.value)
+                    }
                   />
                 </div>
-
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <Label htmlFor="city">City</Label>
                     <Input
                       id="city"
-                      value={formData.city}
-                      onChange={(e) => handleInputChange("city", e.target.value)}
+                      placeholder="City"
+                      value={vcData.city}
+                      onChange={(e) =>
+                        handleInputChange("city", e.target.value)
+                      }
                     />
                   </div>
-
                   <div>
-                    <Label htmlFor="state">State</Label>
+                    <Label htmlFor="state">State/Region</Label>
                     <Input
                       id="state"
-                      value={formData.state}
-                      onChange={(e) => handleInputChange("state", e.target.value)}
+                      placeholder="State or region"
+                      value={vcData.state}
+                      onChange={(e) =>
+                        handleInputChange("state", e.target.value)
+                      }
                     />
                   </div>
-
                   <div>
                     <Label htmlFor="country">Country</Label>
-                    <Input
-                      id="country"
-                      value={formData.country}
-                      onChange={(e) => handleInputChange("country", e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                {/* Additional Contacts */}
-                <Accordion type="single" collapsible>
-                  <AccordionItem value="additional-contacts">
-                    <AccordionTrigger>
-                      Additional Contacts ({contacts.length})
-                    </AccordionTrigger>
-                    <AccordionContent className="space-y-4">
-                      {contacts.map((contact, index) => (
-                        <div key={index} className="border rounded-lg p-4 space-y-3">
-                          <div className="flex items-center justify-between">
-                            <h4 className="font-medium">Contact {index + 1}</h4>
-                            {contacts.length > 1 && (
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => removeContact(index)}
-                              >
-                                Remove
-                              </Button>
-                            )}
-                          </div>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <div>
-                              <Label>Name</Label>
-                              <Input
-                                value={contact.contact_name}
-                                onChange={(e) =>
-                                  handleContactChange(index, "contact_name", e.target.value)
-                                }
-                              />
-                            </div>
-                            <div>
-                              <Label>Email</Label>
-                              <Input
-                                type="email"
-                                value={contact.email}
-                                onChange={(e) =>
-                                  handleContactChange(index, "email", e.target.value)
-                                }
-                              />
-                            </div>
-                            <div>
-                              <Label>Phone</Label>
-                              <Input
-                                value={contact.phone}
-                                onChange={(e) =>
-                                  handleContactChange(index, "phone", e.target.value)
-                                }
-                              />
-                            </div>
-                            <div>
-                              <Label>Designation</Label>
-                              <Input
-                                value={contact.designation}
-                                onChange={(e) =>
-                                  handleContactChange(index, "designation", e.target.value)
-                                }
-                              />
-                            </div>
-                            <div className="md:col-span-2">
-                              <Label>LinkedIn</Label>
-                              <Input
-                                value={contact.linkedin}
-                                onChange={(e) =>
-                                  handleContactChange(index, "linkedin", e.target.value)
-                                }
-                                placeholder="https://linkedin.com/in/username"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={addContact}
-                        className="w-full"
-                      >
-                        <Users className="w-4 h-4 mr-2" />
-                        Add Contact
-                      </Button>
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Settings Tab */}
-          <TabsContent value="settings" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Settings & Configuration</CardTitle>
-                <CardDescription>
-                  Template assignment and additional settings
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="template_id">Template</Label>
                     <Select
-                      value={formData.template_id}
-                      onValueChange={(value) => handleInputChange("template_id", value)}
+                      value={vcData.country}
+                      onValueChange={(value) =>
+                        handleInputChange("country", value)
+                      }
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select template" />
+                        <SelectValue placeholder="Select country" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">No Template</SelectItem>
-                        {templates.map((template: any) => (
-                          <SelectItem key={template.id} value={template.id.toString()}>
-                            {template.name}
+                        {COUNTRIES.map((country) => (
+                          <SelectItem key={country} value={country}>
+                            {country}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
-
-                  <div>
-                    <Label htmlFor="spoc">SPOC</Label>
-                    <Input
-                      id="spoc"
-                      value={formData.spoc}
-                      onChange={(e) => handleInputChange("spoc", e.target.value)}
-                      placeholder="Single Point of Contact"
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="lead_created_by">Lead Created By</Label>
-                    <Input
-                      id="lead_created_by"
-                      value={formData.lead_created_by}
-                      onChange={(e) => handleInputChange("lead_created_by", e.target.value)}
-                    />
-                  </div>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-
-        {/* Submit Buttons */}
-        <div className="flex items-center justify-end space-x-4 pt-6 border-t">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleBack}
-            disabled={isSubmitting}
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-            className="min-w-[120px]"
-          >
-            {isSubmitting ? (
-              <div className="flex items-center space-x-2">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                <span>Saving...</span>
+                {vcData.country === "Other" && (
+                  <div>
+                    <Label htmlFor="custom_country">Specify Country</Label>
+                    <Input
+                      id="custom_country"
+                      placeholder="Enter country name"
+                      value={vcData.custom_country}
+                      onChange={(e) =>
+                        handleInputChange("custom_country", e.target.value)
+                      }
+                    />
+                  </div>
+                )}
               </div>
-            ) : (
-              <>
-                <Save className="w-4 h-4 mr-2" />
-                Save Changes
-              </>
-            )}
-          </Button>
-        </div>
-      </form>
+
+              {/* Additional Contacts */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Additional Contacts
+                  </h3>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={addContact}
+                    size="sm"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Contact
+                  </Button>
+                </div>
+                {vcData.contacts.map((contact, index) => (
+                  <Card key={index} className="p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="font-medium">Contact {index + 1}</h4>
+                      {vcData.contacts.length > 1 && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => removeContact(index)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      )}
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div>
+                        <Label>Name</Label>
+                        <Input
+                          value={contact.contact_name}
+                          onChange={(e) =>
+                            updateContact(index, "contact_name", e.target.value)
+                          }
+                          placeholder="Contact name"
+                        />
+                      </div>
+                      <div>
+                        <Label>Designation</Label>
+                        <Input
+                          value={contact.designation}
+                          onChange={(e) =>
+                            updateContact(index, "designation", e.target.value)
+                          }
+                          placeholder="Job title"
+                        />
+                      </div>
+                      <div>
+                        <Label>Email</Label>
+                        <Input
+                          type="email"
+                          value={contact.email}
+                          onChange={(e) =>
+                            updateContact(index, "email", e.target.value)
+                          }
+                          placeholder="email@company.com"
+                        />
+                      </div>
+                      <div>
+                        <Label>Phone</Label>
+                        <Input
+                          value={contact.phone}
+                          onChange={(e) =>
+                            updateContact(index, "phone", e.target.value)
+                          }
+                          placeholder="+1 (555) 000-0000"
+                        />
+                      </div>
+                      <div className="md:col-span-2">
+                        <Label>LinkedIn</Label>
+                        <Input
+                          value={contact.linkedin}
+                          onChange={(e) =>
+                            updateContact(index, "linkedin", e.target.value)
+                          }
+                          placeholder="https://linkedin.com/in/username"
+                        />
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Deal Details Tab */}
+        <TabsContent value="deal-details" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Round Information</CardTitle>
+              <CardDescription>
+                Details about the funding round and investment terms
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="round_title">Round Title *</Label>
+                  <Input
+                    id="round_title"
+                    placeholder="e.g., Series A Funding"
+                    value={vcData.round_title}
+                    onChange={(e) =>
+                      handleInputChange("round_title", e.target.value)
+                    }
+                    className={errors.round_title ? "border-red-500" : ""}
+                  />
+                  {errors.round_title && (
+                    <p className="text-sm text-red-600 mt-1">
+                      {errors.round_title}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <Label htmlFor="round_stage">Round Stage</Label>
+                  <Select
+                    value={vcData.round_stage}
+                    onValueChange={(value) =>
+                      handleInputChange("round_stage", value)
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select round stage" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {ROUND_STAGES.map((stage) => (
+                        <SelectItem key={stage.value} value={stage.value}>
+                          {stage.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="round_size">Round Size</Label>
+                  <Input
+                    id="round_size"
+                    placeholder="e.g., $10M, ₹75Cr"
+                    value={vcData.round_size}
+                    onChange={(e) =>
+                      handleInputChange("round_size", e.target.value)
+                    }
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="valuation">Valuation</Label>
+                  <Input
+                    id="valuation"
+                    placeholder="e.g., $50M, ₹400Cr"
+                    value={vcData.valuation}
+                    onChange={(e) =>
+                      handleInputChange("valuation", e.target.value)
+                    }
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="minimum_size">Minimum Investment (₹)</Label>
+                  <Input
+                    id="minimum_size"
+                    type="number"
+                    placeholder="e.g., 10000000"
+                    value={vcData.minimum_size}
+                    onChange={(e) =>
+                      handleInputChange("minimum_size", e.target.value)
+                    }
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="maximum_size">Maximum Investment (₹)</Label>
+                  <Input
+                    id="maximum_size"
+                    type="number"
+                    placeholder="e.g., 100000000"
+                    value={vcData.maximum_size}
+                    onChange={(e) =>
+                      handleInputChange("maximum_size", e.target.value)
+                    }
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="minimum_arr_requirement">
+                    Minimum ARR Requirement (₹)
+                  </Label>
+                  <Input
+                    id="minimum_arr_requirement"
+                    type="number"
+                    placeholder="e.g., 5000000"
+                    value={vcData.minimum_arr_requirement}
+                    onChange={(e) =>
+                      handleInputChange("minimum_arr_requirement", e.target.value)
+                    }
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="priority_level">Priority Level</Label>
+                  <Select
+                    value={vcData.priority_level}
+                    onValueChange={(value) =>
+                      handleInputChange("priority_level", value)
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select priority" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="low">Low</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="high">High</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="start_date">Start Date</Label>
+                  <Input
+                    id="start_date"
+                    type="date"
+                    value={vcData.start_date}
+                    onChange={(e) =>
+                      handleInputChange("start_date", e.target.value)
+                    }
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="targeted_end_date">Target End Date</Label>
+                  <Input
+                    id="targeted_end_date"
+                    type="date"
+                    value={vcData.targeted_end_date}
+                    onChange={(e) =>
+                      handleInputChange("targeted_end_date", e.target.value)
+                    }
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="billing_currency">Currency</Label>
+                  <Select
+                    value={vcData.billing_currency}
+                    onValueChange={(value) =>
+                      handleInputChange("billing_currency", value)
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select currency" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="INR">INR (Indian Rupee)</SelectItem>
+                      <SelectItem value="USD">USD (US Dollar)</SelectItem>
+                      <SelectItem value="AED">AED (UAE Dirham)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="spoc">SPOC (Single Point of Contact)</Label>
+                  <Input
+                    id="spoc"
+                    placeholder="Internal contact person"
+                    value={vcData.spoc}
+                    onChange={(e) => handleInputChange("spoc", e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="potential_lead_investor"
+                  checked={vcData.potential_lead_investor}
+                  onCheckedChange={(checked) =>
+                    handleInputChange("potential_lead_investor", checked)
+                  }
+                />
+                <Label htmlFor="potential_lead_investor">
+                  Potential Lead Investor
+                </Label>
+              </div>
+
+              <div>
+                <Label htmlFor="project_description">Round Description</Label>
+                <Textarea
+                  id="project_description"
+                  rows={4}
+                  placeholder="Describe the funding round objectives and use of funds"
+                  value={vcData.project_description}
+                  onChange={(e) =>
+                    handleInputChange("project_description", e.target.value)
+                  }
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Additional Information Tab */}
+        <TabsContent value="additional" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Additional Information</CardTitle>
+              <CardDescription>
+                Template selection and additional notes
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Template Selection */}
+              <div>
+                <Label htmlFor="template_selection">Template Selection</Label>
+                <div className="flex space-x-2 mt-2">
+                  <Select
+                    value={selectedTemplate}
+                    onValueChange={(value) => {
+                      setSelectedTemplate(value);
+                      handleInputChange("template_id", value === "manual" ? "" : value);
+                    }}
+                  >
+                    <SelectTrigger className="flex-1">
+                      <SelectValue placeholder="Choose a template or create manually" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="manual">Create Manually</SelectItem>
+                      {templates.map((template: any) => (
+                        <SelectItem key={template.id} value={template.id.toString()}>
+                          {template.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {selectedTemplate !== "manual" && templateDetails && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => previewTemplateDetails(templateDetails)}
+                      className="px-3"
+                    >
+                      <Eye className="w-4 h-4" />
+                    </Button>
+                  )}
+                </div>
+                
+                {/* Template Description */}
+                {selectedTemplate !== "manual" && templateDetails && (
+                  <div className="mt-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <p className="text-sm text-blue-800">
+                      <strong>{templateDetails.name}:</strong> {templateDetails.description}
+                    </p>
+                    {templateDetails.steps && templateDetails.steps.length > 0 && (
+                      <p className="text-xs text-blue-600 mt-1">
+                        This template includes {templateDetails.steps.length} predefined steps.
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <Label htmlFor="notes">Notes</Label>
+                <Textarea
+                  id="notes"
+                  rows={4}
+                  placeholder="Additional notes about this VC opportunity"
+                  value={vcData.notes}
+                  onChange={(e) => handleInputChange("notes", e.target.value)}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+
+      {/* Template Preview Modal */}
+      <TemplatePreviewModal
+        isOpen={isTemplatePreviewOpen}
+        onClose={() => setIsTemplatePreviewOpen(false)}
+        template={previewTemplate}
+      />
     </div>
   );
 }
