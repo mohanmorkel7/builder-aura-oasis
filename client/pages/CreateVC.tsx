@@ -368,9 +368,9 @@ export default function CreateVC() {
         ];
       }
     },
-    retry: 1,
-    staleTime: 5 * 60 * 1000,
-    cacheTime: 10 * 60 * 1000,
+    retry: 2,
+    staleTime: 1 * 60 * 1000, // Shorter stale time to check DB more frequently
+    cacheTime: 5 * 60 * 1000, // Shorter cache time
   });
 
   // Get template details with immediate mock data fallback
