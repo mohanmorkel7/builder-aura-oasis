@@ -296,6 +296,8 @@ export class VCRepository {
   }
 
   static async update(id: number, vcData: UpdateVCData): Promise<VC | null> {
+    console.log(`[DEBUG VCRepository.update] Updating VC ${id} with:`, vcData);
+
     const fields = [];
     const values = [];
     let paramCount = 1;
@@ -309,6 +311,7 @@ export class VCRepository {
     });
 
     if (fields.length === 0) {
+      console.log(`[DEBUG VCRepository.update] No fields to update, returning existing record`);
       return this.findById(id);
     }
 
@@ -316,13 +319,18 @@ export class VCRepository {
     values.push(id);
 
     const query = `
-      UPDATE vcs 
+      UPDATE vcs
       SET ${fields.join(", ")}
       WHERE id = $${paramCount}
       RETURNING *
     `;
 
+    console.log(`[DEBUG VCRepository.update] Executing query:`, query);
+    console.log(`[DEBUG VCRepository.update] With values:`, values);
+
     const result = await pool.query(query, values);
+    console.log(`[DEBUG VCRepository.update] Query result:`, result.rows[0]);
+
     return result.rows[0] || null;
   }
 
