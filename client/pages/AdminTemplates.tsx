@@ -392,6 +392,7 @@ export default function AdminTemplates() {
       </div>
 
       {/* Create Template Dialog */}
+      {console.log("Rendering dialog, open:", isCreateDialogOpen)}
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
         <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
@@ -399,6 +400,7 @@ export default function AdminTemplates() {
           </DialogHeader>
           <CreateTemplateDialog
             onSuccess={() => {
+              console.log("Template creation success, closing dialog");
               setIsCreateDialogOpen(false);
               queryClient.invalidateQueries({
                 queryKey: ["templates-admin"],
