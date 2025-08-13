@@ -56,6 +56,7 @@ CREATE TABLE IF NOT EXISTS vcs (
     created_by INTEGER REFERENCES users(id),
     assigned_to INTEGER REFERENCES users(id),
     notes TEXT,
+    is_partial BOOLEAN DEFAULT false,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
