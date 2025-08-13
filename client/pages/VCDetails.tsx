@@ -693,12 +693,9 @@ export default function VCDetails() {
 
   const handleDeleteStep = async (stepId: number) => {
     try {
-      await apiClient.request(`/vc/${id}/steps/${stepId}`, {
-        method: "DELETE",
-      });
-      queryClient.invalidateQueries({ queryKey: ["vc-steps", id] });
+      await deleteVCStepMutation.mutateAsync(stepId);
     } catch (error) {
-      console.error("Failed to delete step:", error);
+      console.error("Failed to delete VC step:", error);
     }
   };
 
