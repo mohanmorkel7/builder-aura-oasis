@@ -99,6 +99,7 @@ export default function VCDetails() {
 
   const [isEditMode, setIsEditMode] = useState(false);
   const [showAddStep, setShowAddStep] = useState(false);
+  const [expandedSteps, setExpandedSteps] = useState<Set<number>>(new Set());
   const [newStep, setNewStep] = useState({
     name: "",
     description: "",
