@@ -299,7 +299,9 @@ export class VCRepository {
 
     console.log("🐛 DEBUG - VCRepository.create - Value at position 18 (country):", values[18]);
 
+    console.log("🐛 DEBUG - VCRepository.create - About to execute query with country value:", countryValue);
     const result = await pool.query(query, values);
+    console.log("🐛 DEBUG - VCRepository.create - Query result country:", result.rows[0].country);
     return result.rows[0];
   }
 
