@@ -435,6 +435,78 @@ export default function CreateVC() {
     }
   }, [user?.email]);
 
+  // Fetch draft data if we have a draftId but no resumeData
+  useEffect(() => {
+    const fetchDraftData = async () => {
+      if (currentDraftId && !resumeData) {
+        console.log("🐛 DEBUG - Fetching draft data for ID:", currentDraftId);
+        try {
+          const response = await apiClient.request(`/vc/${currentDraftId}`);
+          console.log("🐛 DEBUG - Fetched draft data:", response);
+
+          // Update the VC data with the fetched draft
+          setVcData(prevData => ({
+            ...prevData,
+            lead_source: response.lead_source || prevData.lead_source,
+            lead_source_value: response.lead_source_value || prevData.lead_source_value,
+            lead_created_by: response.lead_created_by || prevData.lead_created_by,
+            status: response.status || prevData.status,
+            investor_category: response.investor_category || prevData.investor_category,
+            investor_name: response.investor_name === "PARTIAL_SAVE_IN_PROGRESS" ? "" : (response.investor_name || prevData.investor_name),
+            company_size: response.company_size || prevData.company_size,
+            industry: response.industry || prevData.industry,
+            contact_person: response.contact_person || prevData.contact_person,
+            email: response.email || prevData.email,
+            phone: response.phone || prevData.phone,
+            address: response.address || prevData.address,
+            city: response.city || prevData.city,
+            state: response.state || prevData.state,
+            // Handle country field properly
+            country: (() => {
+              const savedCountry = response.country || "";
+              console.log("🐛 DEBUG - Fetched country from API:", savedCountry);
+              if (!savedCountry) return "";
+              if (COUNTRIES.includes(savedCountry)) return savedCountry;
+              return "Other";
+            })(),
+            custom_country: (() => {
+              const savedCountry = response.country || "";
+              if (!savedCountry || COUNTRIES.includes(savedCountry)) return "";
+              return savedCountry;
+            })(),
+            website: response.website || prevData.website,
+            potential_lead_investor: response.potential_lead_investor || prevData.potential_lead_investor,
+            minimum_size: response.minimum_size || prevData.minimum_size,
+            maximum_size: response.maximum_size || prevData.maximum_size,
+            minimum_arr_requirement: response.minimum_arr_requirement || prevData.minimum_arr_requirement,
+            contacts: response.contacts
+              ? typeof response.contacts === "string"
+                ? JSON.parse(response.contacts)
+                : response.contacts
+              : prevData.contacts,
+            round_title: response.round_title || prevData.round_title,
+            round_size: response.round_size || prevData.round_size,
+            valuation: response.valuation || prevData.valuation,
+            round_stage: response.round_stage || prevData.round_stage,
+            project_description: response.round_description || prevData.project_description,
+            priority_level: response.priority_level || prevData.priority_level,
+            start_date: response.start_date || prevData.start_date,
+            targeted_end_date: response.targeted_end_date || prevData.targeted_end_date,
+            spoc: response.spoc || prevData.spoc,
+            template_id: response.template_id || prevData.template_id,
+            billing_currency: response.billing_currency || prevData.billing_currency,
+            probability: response.probability || prevData.probability,
+            notes: response.notes || prevData.notes,
+          }));
+        } catch (error) {
+          console.error("🐛 ERROR - Failed to fetch draft data:", error);
+        }
+      }
+    };
+
+    fetchDraftData();
+  }, [currentDraftId, resumeData]);
+
   // Debug country initialization when resuming from draft
   useEffect(() => {
     console.log("🐛 DEBUG - Component initialized/updated:");
