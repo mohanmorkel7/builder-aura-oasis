@@ -509,7 +509,10 @@ export default function CreateVC() {
   // Synchronize selectedTemplate with loaded template_id from draft data
   useEffect(() => {
     if (vcData.template_id && vcData.template_id !== selectedTemplate) {
-      console.log("Synchronizing selectedTemplate with loaded template_id:", vcData.template_id);
+      console.log(
+        "Synchronizing selectedTemplate with loaded template_id:",
+        vcData.template_id,
+      );
       setSelectedTemplate(vcData.template_id);
     } else if (!vcData.template_id && selectedTemplate !== "manual") {
       console.log("No template_id in draft, setting to manual");
