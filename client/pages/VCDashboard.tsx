@@ -364,10 +364,30 @@ export default function VCDashboard() {
             Manage venture capital funding rounds
           </p>
         </div>
-        <Button onClick={() => navigate("/vc/create")}>
-          <Plus className="w-4 h-4 mr-2" />
-          Create VC
-        </Button>
+        <div className="flex items-center space-x-3">
+          <div className="flex space-x-1">
+            <Button
+              variant={activeTab === "vcs" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setActiveTab("vcs")}
+            >
+              <Target className="w-4 h-4 mr-2" />
+              VCs ({filteredVCs.length})
+            </Button>
+            <Button
+              variant={activeTab === "drafts" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setActiveTab("drafts")}
+            >
+              <FileText className="w-4 h-4 mr-2" />
+              Saved Drafts ({vcPartialSaves.length})
+            </Button>
+          </div>
+          <Button onClick={() => navigate("/vc/create")}>
+            <Plus className="w-4 h-4 mr-2" />
+            Create VC
+          </Button>
+        </div>
       </div>
 
       {/* Statistics Cards - Enhanced with Gradients */}
