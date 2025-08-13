@@ -1337,8 +1337,11 @@ export default function VCDetails() {
             />
           ) : (
             <div className="space-y-4">
-              {/* Show template steps when no actual steps exist */}
-              {vcSteps.length === 0 &&
+              {/* Show template steps when no actual steps exist OR when VC has template but generic steps */}
+              {((vcSteps.length === 0) ||
+                (templateData?.steps && templateData.steps.length > 0 && vcSteps.every(step =>
+                  !templateData.steps.some(tStep => tStep.name === step.name)
+                ))) &&
               templateData?.steps &&
               templateData.steps.length > 0 ? (
                 <>
