@@ -244,10 +244,7 @@ export default function AdminTemplates() {
   });
 
   // Fetch template stats from database
-  const {
-    data: stats,
-    isLoading: statsLoading,
-  } = useQuery({
+  const { data: stats, isLoading: statsLoading } = useQuery({
     queryKey: ["template-stats"],
     queryFn: async () => {
       try {
@@ -258,7 +255,10 @@ export default function AdminTemplates() {
         return {
           total_templates: fallbackTemplates.length,
           active_templates: fallbackTemplates.filter((t) => t.is_active).length,
-          total_usage: fallbackTemplates.reduce((sum, t) => sum + t.usage_count, 0),
+          total_usage: fallbackTemplates.reduce(
+            (sum, t) => sum + t.usage_count,
+            0,
+          ),
         };
       }
     },
@@ -285,7 +285,9 @@ export default function AdminTemplates() {
     onSuccess: () => {
       console.log("Template deleted successfully");
       // Refresh the templates list
-      queryClient.invalidateQueries({ queryKey: ["templates-with-categories"] });
+      queryClient.invalidateQueries({
+        queryKey: ["templates-with-categories"],
+      });
       queryClient.invalidateQueries({ queryKey: ["template-stats"] });
     },
   });
@@ -294,11 +296,18 @@ export default function AdminTemplates() {
     mutationFn: async (templateId: number) => {
       console.log("Duplicate template:", templateId);
       try {
-        const result = await apiClient.request(`/templates-production/${templateId}/duplicate`, {
-          method: "POST",
-          body: JSON.stringify({ created_by: user?.id || 1 }),
-        });
-        return { success: true, data: result, message: "Template duplicated successfully" };
+        const result = await apiClient.request(
+          `/templates-production/${templateId}/duplicate`,
+          {
+            method: "POST",
+            body: JSON.stringify({ created_by: user?.id || 1 }),
+          },
+        );
+        return {
+          success: true,
+          data: result,
+          message: "Template duplicated successfully",
+        };
       } catch (error) {
         console.error("Failed to duplicate template:", error);
         // Return success for mock behavior if API fails
@@ -308,7 +317,9 @@ export default function AdminTemplates() {
     onSuccess: () => {
       console.log("Template duplicated successfully");
       // Refresh the templates list
-      queryClient.invalidateQueries({ queryKey: ["templates-with-categories"] });
+      queryClient.invalidateQueries({
+        queryKey: ["templates-with-categories"],
+      });
       queryClient.invalidateQueries({ queryKey: ["template-stats"] });
     },
   });
