@@ -106,8 +106,9 @@ export default function CreateVC() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  // Check if we're in edit mode
+  // Check if we're in edit mode or resuming from draft
   const isEditMode = !!id;
+  const resumeData = location.state?.resumeData;
 
   // State for VC data
   const [vcData, setVcData] = useState({
