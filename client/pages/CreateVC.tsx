@@ -565,13 +565,14 @@ export default function CreateVC() {
 
       const result = await createVCMutation.mutateAsync(submitData);
 
-      // If we were resuming from a draft, delete the draft
-      if (resumeData && resumeData._resumeFromId) {
+      // If we were working with a draft, delete the draft
+      if (currentDraftId) {
         try {
-          await apiClient.request(`/vc/${resumeData._resumeFromId}`, {
+          await apiClient.request(`/vc/${currentDraftId}`, {
             method: "DELETE",
           });
           queryClient.invalidateQueries({ queryKey: ["my-vc-partial-saves"] });
+          setCurrentDraftId(null); // Clear the draft ID
         } catch (error) {
           console.error("Failed to delete draft after creation:", error);
           // Don't block navigation on draft deletion failure
