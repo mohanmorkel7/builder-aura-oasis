@@ -260,30 +260,6 @@ export default function VCDetails() {
     });
   };
 
-  const handleUpdateStepStatus = async (stepId: number, newStatus: string) => {
-    try {
-      await updateVCStepMutation.mutateAsync({
-        stepId,
-        updates: { status: newStatus },
-      });
-      refetchSteps();
-    } catch (error) {
-      console.error("Failed to update step:", error);
-    }
-  };
-
-  const getStepStatusIcon = (status: string) => {
-    switch (status) {
-      case "completed":
-        return <CheckCircle className="h-5 w-5 text-emerald-600" />;
-      case "in_progress":
-        return <Clock className="h-5 w-5 text-amber-600" />;
-      case "pending":
-        return <Target className="h-5 w-5 text-gray-500" />;
-      default:
-        return <AlertCircle className="h-5 w-5 text-gray-400" />;
-    }
-  };
 
   const getRoundStageDisplay = (stage: string) => {
     return (
