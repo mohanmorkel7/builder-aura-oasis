@@ -169,6 +169,8 @@ export default function AdminTemplates() {
   console.log("Fetched categories:", categories);
   console.log("Categories loading:", categoriesLoading);
   console.log("Categories error:", categoriesError);
+  console.log("Categories with VC:", categories?.filter(c => c.name === 'VC'));
+  console.log("All category names:", categories?.map(c => c.name));
 
   // Fallback templates data
   const fallbackTemplates = [
