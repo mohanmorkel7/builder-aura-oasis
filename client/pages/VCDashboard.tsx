@@ -62,6 +62,7 @@ import {
   PieChart,
   BarChart3,
   Activity,
+  Play,
 } from "lucide-react";
 import { formatToIST } from "@/lib/dateUtils";
 
