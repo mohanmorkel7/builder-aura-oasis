@@ -1112,10 +1112,7 @@ export class ApiClient {
 
       // Add a timeout and retry logic specifically for follow-ups
       const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(
-          () => reject(new Error("Follow-ups request timeout")),
-          5000,
-        ); // Reduced to 5 seconds
+        setTimeout(() => reject(new Error("Follow-ups request timeout")), 5000); // Reduced to 5 seconds
       });
 
       // Single attempt with fast timeout
