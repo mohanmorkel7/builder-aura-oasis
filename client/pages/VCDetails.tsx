@@ -729,6 +729,7 @@ export default function VCDetails() {
   const handlePopulateTemplateSteps = async () => {
     if (!templateData?.steps || !id) return;
 
+    setIsPopulatingTemplate(true);
     try {
       // Delete existing steps first
       const deletePromises = vcSteps.map(step =>
@@ -755,10 +756,12 @@ export default function VCDetails() {
       refetchSteps();
       refetchVC();
 
-      alert("Template steps have been successfully applied!");
+      alert("Template steps have been successfully applied! You now have VC-specific tracking steps.");
     } catch (error) {
       console.error("Failed to populate template steps:", error);
       alert("Failed to populate template steps. Please try again.");
+    } finally {
+      setIsPopulatingTemplate(false);
     }
   };
 
