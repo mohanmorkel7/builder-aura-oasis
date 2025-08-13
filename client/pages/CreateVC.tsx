@@ -159,7 +159,7 @@ export default function CreateVC() {
     notes: resumeData.notes || "",
     documents: [],
   } : {
-    // Lead Info
+    // Default Lead Info
     lead_source: "" as const,
     lead_source_value: "",
     lead_created_by: user?.email || "",
