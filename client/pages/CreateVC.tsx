@@ -515,7 +515,20 @@ export default function CreateVC() {
       selectedTemplate,
       "vcData.template_id type": typeof vcData.template_id,
       "selectedTemplate type": typeof selectedTemplate,
+      "vcData.investor_name": vcData.investor_name,
+      "currentDraftId": currentDraftId,
     });
+
+    // Only sync if we have meaningful data (indicating draft is loaded)
+    // Skip if we're still in initial state or if investor_name indicates partial save
+    const isDraftDataLoaded = vcData.investor_name &&
+                               vcData.investor_name !== "PARTIAL_SAVE_IN_PROGRESS" &&
+                               vcData.investor_name.trim() !== "";
+
+    if (!isDraftDataLoaded && currentDraftId) {
+      console.log("🔄 Draft data not fully loaded yet, skipping template sync");
+      return;
+    }
 
     // Convert template_id to string for comparison since Select component uses strings
     const templateIdStr = vcData.template_id
@@ -536,7 +549,7 @@ export default function CreateVC() {
     } else {
       console.log("✨ Template sync - no change needed");
     }
-  }, [vcData.template_id, vcData.investor_name]); // Added vcData.investor_name to trigger when draft data is fully loaded
+  }, [vcData.template_id, vcData.investor_name, currentDraftId]); // Track multiple fields to ensure proper timing
 
   // Fetch draft data if we have a draftId but no resumeData
   useEffect(() => {
@@ -1819,7 +1832,7 @@ export default function CreateVC() {
                   <Label htmlFor="valuation">Valuation</Label>
                   <Input
                     id="valuation"
-                    placeholder="e.g., $100M, ��500Cr"
+                    placeholder="e.g., $100M, ₹500Cr"
                     value={vcData.valuation}
                     onChange={(e) =>
                       handleInputChange("valuation", e.target.value)
