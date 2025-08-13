@@ -634,7 +634,7 @@ export default function CreateVC() {
       };
 
       await partialSaveMutation.mutateAsync(partialData);
-      alert("VC data saved as draft!");
+      alert(currentDraftId ? "Draft updated successfully!" : "VC data saved as draft!");
     } catch (error) {
       console.error("Failed to save partial VC:", error);
       alert("Failed to save draft. Please try again.");
