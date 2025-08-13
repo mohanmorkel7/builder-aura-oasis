@@ -520,7 +520,7 @@ export default function VCDetails() {
 
   // Fetch VC steps from API
   const {
-    data: vcSteps,
+    data: vcStepsData,
     isLoading: stepsLoading,
     error: stepsError,
     refetch: refetchSteps,
@@ -542,7 +542,7 @@ export default function VCDetails() {
   });
 
   // Fetch VC comments from API
-  const { data: vcComments, isLoading: commentsLoading } = useQuery({
+  const { data: vcCommentsData, isLoading: commentsLoading } = useQuery({
     queryKey: ["vc-comments", id],
     queryFn: async () => {
       if (!id) throw new Error("VC ID is required");
@@ -558,6 +558,10 @@ export default function VCDetails() {
     retry: 2,
     staleTime: 1 * 60 * 1000,
   });
+
+  // Ensure data is always arrays/objects to prevent undefined errors
+  const vcSteps = Array.isArray(vcStepsData) ? vcStepsData : [];
+  const vcComments = Array.isArray(vcCommentsData) ? vcCommentsData : [];
   const refetchComments = () => {};
 
   // Mutations
