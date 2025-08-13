@@ -495,16 +495,72 @@ export default function VCDetails() {
     return commentsByVC[vcId as keyof typeof commentsByVC] || [];
   };
 
-  const vc = getMockVC(id || "");
-  const vcSteps = getMockVCSteps(id || "");
-  const vcComments = getMockVCComments(id || "");
-  const isLoading = false;
-  const stepsLoading = false;
-  const commentsLoading = false;
-  const error = vc ? null : new Error("VC not found");
-  const stepsError = null;
-  const refetchVC = () => {};
-  const refetchSteps = () => {};
+  // Fetch VC details from API
+  const {
+    data: vc,
+    isLoading,
+    error,
+    refetch: refetchVC,
+  } = useQuery({
+    queryKey: ["vc", id],
+    queryFn: async () => {
+      if (!id) throw new Error("VC ID is required");
+      try {
+        return await apiClient.request(`/vc/${id}`);
+      } catch (error) {
+        console.error("Failed to fetch VC details:", error);
+        // Fallback to mock data if API fails
+        return getMockVC(id);
+      }
+    },
+    enabled: !!id,
+    retry: 2,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // Fetch VC steps from API
+  const {
+    data: vcSteps,
+    isLoading: stepsLoading,
+    error: stepsError,
+    refetch: refetchSteps,
+  } = useQuery({
+    queryKey: ["vc-steps", id],
+    queryFn: async () => {
+      if (!id) throw new Error("VC ID is required");
+      try {
+        return await apiClient.request(`/vc/${id}/steps`);
+      } catch (error) {
+        console.error("Failed to fetch VC steps:", error);
+        // Fallback to mock data if API fails
+        return getMockVCSteps(id);
+      }
+    },
+    enabled: !!id,
+    retry: 2,
+    staleTime: 2 * 60 * 1000,
+  });
+
+  // Fetch VC comments from API
+  const {
+    data: vcComments,
+    isLoading: commentsLoading,
+  } = useQuery({
+    queryKey: ["vc-comments", id],
+    queryFn: async () => {
+      if (!id) throw new Error("VC ID is required");
+      try {
+        return await apiClient.request(`/vc/${id}/comments`);
+      } catch (error) {
+        console.error("Failed to fetch VC comments:", error);
+        // Fallback to mock data if API fails
+        return getMockVCComments(id);
+      }
+    },
+    enabled: !!id,
+    retry: 2,
+    staleTime: 1 * 60 * 1000,
+  });
   const refetchComments = () => {};
 
   // Mutations
