@@ -60,6 +60,7 @@ export interface VC {
   created_at?: string;
   updated_at?: string;
   notes?: string;
+  is_partial?: boolean;
 }
 
 export interface CreateVCData {
