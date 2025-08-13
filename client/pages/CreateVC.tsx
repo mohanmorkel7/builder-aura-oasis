@@ -677,7 +677,6 @@ export default function CreateVC() {
         is_partial: true,
       };
 
-
       await partialSaveMutation.mutateAsync(partialData);
 
       // Save the current active tab for restoration when continuing
