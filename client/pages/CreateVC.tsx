@@ -137,10 +137,6 @@ export default function CreateVC() {
     }
   }, [resumeData, draftIdFromUrl]);
 
-  // Debug: Log currentDraftId changes
-  useEffect(() => {
-    console.log("DEBUG: currentDraftId changed to:", currentDraftId);
-  }, [currentDraftId]);
 
   // State for VC data
   const [vcData, setVcData] = useState(
