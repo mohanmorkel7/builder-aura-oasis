@@ -786,6 +786,7 @@ export default function CreateVC() {
         dropdown: vcData.country,
         custom: vcData.custom_country,
         finalValue: countryValue,
+        allVcData: vcData, // Log entire vcData to see what's in state
       });
 
       const partialData = {
