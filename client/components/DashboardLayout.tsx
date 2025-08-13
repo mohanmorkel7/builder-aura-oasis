@@ -294,8 +294,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           const errorMsg = error?.message || 'Unknown error';
 
           if (error?.name === 'TypeError' && errorMsg.includes('Failed to fetch')) {
-            console.warn("Network connectivity issue - notifications disabled temporarily");
-            // Don't disable notifications permanently for network issues
+            if (!networkIssueDetected) {
+              console.warn("Network connectivity issue detected - notifications will retry later");
+              setNetworkIssueDetected(true);
+            }
             setNotifications([]);
           } else if (errorMsg.includes("timeout")) {
             console.warn("Notifications API timeout - will retry on next cycle");
