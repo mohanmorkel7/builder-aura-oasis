@@ -1614,21 +1614,12 @@ export function useDeleteVCStepChat() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (chatId: number) => {
-      try {
-        return await apiClient.request(`/vc/step-chats/${chatId}`, {
-          method: "DELETE",
-        });
-      } catch (error) {
-        console.log(`VC step chat deletion endpoint not available for chat ${chatId}`);
-        // Return mock success response
-        return { success: true };
-      }
+      // Mock implementation until VC step chat deletion endpoints are implemented
+      console.log(`VC step chat deletion not implemented yet for chat ${chatId}, returning mock success`);
+      return { success: true };
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["vc-step-chats"] });
-    },
-    onError: (error) => {
-      console.log("VC step chat deletion failed:", error);
+      console.log("Mock VC step chat deleted");
     },
   });
 }
