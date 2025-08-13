@@ -70,6 +70,7 @@ const iconMap = {
   Megaphone,
   Settings,
   BarChart3,
+  TrendingUp,
 };
 
 export default function CreateTemplateDialog({
