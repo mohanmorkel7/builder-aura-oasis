@@ -43,7 +43,7 @@ async function addIsPartialColumn() {
 
     // Execute the migration
     await client.query(migrationSQL);
-    
+
     console.log("✅ Migration completed successfully!");
     console.log("🎉 is_partial column added to VCs table");
 
@@ -64,7 +64,6 @@ async function addIsPartialColumn() {
 
     client.release();
     console.log("🔌 Database connection closed");
-    
   } catch (error) {
     console.error("❌ Migration failed:", error);
     console.log("");
