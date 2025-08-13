@@ -23,7 +23,7 @@ export default function ViewTemplateDialog({
   isOpen,
   onClose,
 }: ViewTemplateDialogProps) {
-  // Fallback template data for offline mode
+  // Fallback template data
   const getFallbackTemplate = (id: number) => {
     const templates = {
       1: {
