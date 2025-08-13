@@ -885,7 +885,7 @@ export default function CreateVC() {
         lead_source_value: vcData.lead_source_value,
         lead_created_by: vcData.lead_created_by,
         status: vcData.status,
-        round_title: vcData.round_title || "Draft VC - In Progress",
+        round_title: vcData.round_title,
         round_description: vcData.project_description,
         round_stage: vcData.round_stage || null,
         round_size: vcData.round_size,
