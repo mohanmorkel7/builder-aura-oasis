@@ -513,8 +513,22 @@ export default function CreateVC() {
             project_description:
               response.round_description || prevData.project_description,
             priority_level: response.priority_level || prevData.priority_level,
-            start_date: response.start_date ? new Date(response.start_date).toISOString().split('T')[0] : (prevData.start_date || ""),
-            targeted_end_date: response.targeted_end_date ? new Date(response.targeted_end_date).toISOString().split('T')[0] : (prevData.targeted_end_date || ""),
+            start_date: (() => {
+              try {
+                return response.start_date ? new Date(response.start_date).toISOString().split('T')[0] : (prevData.start_date || "");
+              } catch (e) {
+                console.warn("Failed to parse start_date:", response.start_date);
+                return prevData.start_date || "";
+              }
+            })(),
+            targeted_end_date: (() => {
+              try {
+                return response.targeted_end_date ? new Date(response.targeted_end_date).toISOString().split('T')[0] : (prevData.targeted_end_date || "");
+              } catch (e) {
+                console.warn("Failed to parse targeted_end_date:", response.targeted_end_date);
+                return prevData.targeted_end_date || "";
+              }
+            })(),
             spoc: response.spoc || prevData.spoc,
             template_id: response.template_id || prevData.template_id,
             billing_currency:
