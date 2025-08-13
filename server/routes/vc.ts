@@ -571,9 +571,9 @@ router.get("/:id/steps", async (req: Request, res: Response) => {
     }
 
     // Set cache control headers to prevent 304 responses
-    res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
-    res.set('Pragma', 'no-cache');
-    res.set('Expires', '0');
+    res.set("Cache-Control", "no-cache, no-store, must-revalidate");
+    res.set("Pragma", "no-cache");
+    res.set("Expires", "0");
 
     let steps;
     try {

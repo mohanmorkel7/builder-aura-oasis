@@ -148,12 +148,15 @@ export default function VCDetails() {
       try {
         const response = await apiClient.request(`/vc/${id}/steps`, {
           headers: {
-            'Cache-Control': 'no-cache',
-            'Pragma': 'no-cache'
-          }
+            "Cache-Control": "no-cache",
+            Pragma: "no-cache",
+          },
         });
         console.log("✅ VC Steps API Response:", response);
-        console.log("📊 Steps count:", Array.isArray(response) ? response.length : 'Not an array');
+        console.log(
+          "📊 Steps count:",
+          Array.isArray(response) ? response.length : "Not an array",
+        );
         return response;
       } catch (error) {
         console.error("❌ VC Steps API Error:", error);
