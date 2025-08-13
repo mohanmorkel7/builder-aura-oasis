@@ -225,6 +225,11 @@ export default function VCDashboard() {
   // Filter and sort VCs (status and category filtering is done server-side)
   const filteredVCs = vcList
     .filter((vc: any) => {
+      // Exclude partial saves from main VC list
+      if (vc.is_partial === true || vc.investor_name === "PARTIAL_SAVE_IN_PROGRESS") {
+        return false;
+      }
+
       // Only apply search filtering on client-side since status/category are server-side
       if (!searchTerm) return true;
 
