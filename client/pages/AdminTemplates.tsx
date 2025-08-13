@@ -90,6 +90,7 @@ export default function AdminTemplates() {
   console.log("isCreateDialogOpen:", isCreateDialogOpen);
   const [viewTemplateId, setViewTemplateId] = useState<number | null>(null);
   const [editTemplateId, setEditTemplateId] = useState<number | null>(null);
+  const [testButtonClicked, setTestButtonClicked] = useState(false);
 
   // Fetch categories from database
   const {
