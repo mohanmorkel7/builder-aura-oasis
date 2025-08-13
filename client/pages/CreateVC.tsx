@@ -671,6 +671,10 @@ export default function CreateVC() {
       };
 
       await partialSaveMutation.mutateAsync(partialData);
+
+      // Save the current active tab for restoration when continuing
+      localStorage.setItem(`vc_draft_${currentDraftId || 'new'}_tab`, activeTab);
+
       alert(
         currentDraftId
           ? "Draft updated successfully!"
