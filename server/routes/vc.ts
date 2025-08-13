@@ -570,14 +570,16 @@ router.get("/debug/tables", async (req: Request, res: Response) => {
     `);
 
     const vcCount = await pool.query("SELECT COUNT(*) as count FROM vcs");
-    const stepsCount = await pool.query("SELECT COUNT(*) as count FROM vc_steps");
+    const stepsCount = await pool.query(
+      "SELECT COUNT(*) as count FROM vc_steps",
+    );
 
     res.json({
       tables: tables.rows,
       counts: {
         vcs: vcCount.rows[0].count,
-        vc_steps: stepsCount.rows[0].count
-      }
+        vc_steps: stepsCount.rows[0].count,
+      },
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -608,29 +610,39 @@ router.get("/:id/steps", async (req: Request, res: Response) => {
       let databaseAvailable = false;
       try {
         databaseAvailable = await isDatabaseAvailable();
-        console.log(`🔍 Database availability check result: ${databaseAvailable}`);
+        console.log(
+          `🔍 Database availability check result: ${databaseAvailable}`,
+        );
       } catch (error) {
         console.log("❌ Database availability check failed:", error.message);
         databaseAvailable = false;
       }
 
       if (databaseAvailable) {
-        console.log("✅ Database available, attempting to use VCStepRepository");
+        console.log(
+          "✅ Database available, attempting to use VCStepRepository",
+        );
 
         try {
           // Test actual connection with a simple query first
-          const testQuery = await pool.query('SELECT 1 as test');
+          const testQuery = await pool.query("SELECT 1 as test");
           console.log("✅ Database connection test successful");
 
           // First check if VC exists in database
           const vcExists = await VCRepository.findById(vcId);
           console.log(`🔍 VC ${vcId} exists in database:`, !!vcExists);
           if (vcExists) {
-            console.log(`📋 VC details:`, { id: vcExists.id, round_title: vcExists.round_title, template_id: vcExists.template_id });
+            console.log(`📋 VC details:`, {
+              id: vcExists.id,
+              round_title: vcExists.round_title,
+              template_id: vcExists.template_id,
+            });
           }
 
           // Now fetch steps with detailed query logging
-          console.log(`🔍 Executing query: SELECT * FROM vc_steps WHERE vc_id = ${vcId} ORDER BY order_index ASC, created_at ASC`);
+          console.log(
+            `🔍 Executing query: SELECT * FROM vc_steps WHERE vc_id = ${vcId} ORDER BY order_index ASC, created_at ASC`,
+          );
           steps = await VCStepRepository.findByVCId(vcId);
           console.log(`📊 Database query returned ${steps?.length || 0} steps`);
 
@@ -639,14 +651,17 @@ router.get("/:id/steps", async (req: Request, res: Response) => {
               id: steps[0].id,
               name: steps[0].name,
               status: steps[0].status,
-              vc_id: steps[0].vc_id
+              vc_id: steps[0].vc_id,
             });
           } else {
             console.log("⚠️ No steps found in database for VC", vcId);
             throw new Error("No database steps found - fallback to mock");
           }
         } catch (dbConnectionError) {
-          console.log("❌ Database connection/query error:", dbConnectionError.message);
+          console.log(
+            "❌ Database connection/query error:",
+            dbConnectionError.message,
+          );
           throw dbConnectionError; // This will trigger the catch block below
         }
       } else {
@@ -664,7 +679,7 @@ router.get("/:id/steps", async (req: Request, res: Response) => {
           id: steps[0].id,
           name: steps[0].name,
           status: steps[0].status,
-          vc_id: steps[0].vc_id
+          vc_id: steps[0].vc_id,
         });
       }
     }
