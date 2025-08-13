@@ -129,7 +129,7 @@ export default function EditTemplateDialog({
       return { success: true, data };
     },
     onSuccess: () => {
-      console.log("Template update queued for when online");
+      console.log("Template updated successfully");
       onClose();
     },
   });
