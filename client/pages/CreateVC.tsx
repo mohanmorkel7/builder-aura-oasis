@@ -115,6 +115,15 @@ export default function CreateVC() {
     resumeData?._resumeFromId || resumeData?.id || null,
   );
 
+  // Ensure currentDraftId is properly set when resumeData changes
+  useEffect(() => {
+    if (resumeData && (resumeData._resumeFromId || resumeData.id)) {
+      const draftId = resumeData._resumeFromId || resumeData.id;
+      setCurrentDraftId(draftId);
+      console.log("useEffect: Setting currentDraftId to:", draftId);
+    }
+  }, [resumeData]);
+
   // State for VC data
   const [vcData, setVcData] = useState(
     resumeData
