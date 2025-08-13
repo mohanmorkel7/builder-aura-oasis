@@ -524,6 +524,14 @@ export default function CreateVC() {
             notes: response.notes || prevData.notes,
           }));
 
+          // Debug: Check what dates were actually set
+          setTimeout(() => {
+            console.log("🐛 DEBUG - Final date values in state:", {
+              start_date: vcData.start_date,
+              targeted_end_date: vcData.targeted_end_date
+            });
+          }, 100);
+
           console.log(
             "🐛 DEBUG - After setting vcData from API, country fields should be:",
             {
