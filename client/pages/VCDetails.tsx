@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/lib/auth-context";
 import { apiClient } from "@/lib/api";
-import { useTemplate } from "@/hooks/useApi";
+import { useTemplate, useUpdateVCStep, useDeleteVCStep } from "@/hooks/useApi";
 import { VCDraggableStepsList } from "@/components/VCDraggableStepsList";
 import { Button } from "@/components/ui/button";
 import {
@@ -1043,7 +1043,7 @@ export default function VCDetails() {
                                   ) : step.status === "in-progress" ? (
                                     <span className="text-blue-600">⋯</span>
                                   ) : (
-                                    <span className="text-gray-400">��</span>
+                                    <span className="text-gray-400">○</span>
                                   )}
                                   <span
                                     className={
