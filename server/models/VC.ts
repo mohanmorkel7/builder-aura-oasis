@@ -292,6 +292,7 @@ export class VCRepository {
       vcData.targeted_end_date || null,
       vcData.spoc || null,
       vcData.billing_currency || "INR",
+      vcData.template_id || null,
       vcData.created_by,
       vcData.assigned_to || null,
       vcData.notes || null,
