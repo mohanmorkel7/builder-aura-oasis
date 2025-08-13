@@ -634,6 +634,12 @@ export default function CreateVC() {
 
   const handlePartialSave = async () => {
     try {
+      const countryValue = vcData.custom_country || vcData.country;
+      console.log("🐛 DEBUG - Partial Save Country Debug:");
+      console.log("vcData.country:", vcData.country);
+      console.log("vcData.custom_country:", vcData.custom_country);
+      console.log("final countryValue:", countryValue);
+
       const partialData = {
         lead_source: vcData.lead_source || "other",
         lead_source_value: vcData.lead_source_value,
@@ -652,7 +658,7 @@ export default function CreateVC() {
         address: vcData.address,
         city: vcData.city,
         state: vcData.state,
-        country: vcData.custom_country || vcData.country,
+        country: countryValue,
         website: vcData.website,
         company_size: vcData.company_size,
         industry: vcData.industry,
@@ -677,7 +683,12 @@ export default function CreateVC() {
         is_partial: true,
       };
 
-      await partialSaveMutation.mutateAsync(partialData);
+      console.log("🐛 DEBUG - partialData.country:", partialData.country);
+      console.log("🐛 DEBUG - Full partialData payload:", partialData);
+
+      console.log("🐛 DEBUG - About to call partialSaveMutation with country:", partialData.country);
+      const result = await partialSaveMutation.mutateAsync(partialData);
+      console.log("🐛 DEBUG - Partial save mutation result:", result);
 
       // Save the current active tab for restoration when continuing
       localStorage.setItem(
