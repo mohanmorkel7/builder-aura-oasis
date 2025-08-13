@@ -230,6 +230,9 @@ export class VCRepository {
   }
 
   static async create(vcData: CreateVCData): Promise<VC> {
+    // DEBUG: Log country field in VCRepository.create
+    console.log("🐛 DEBUG - VCRepository.create - Received country:", vcData.country);
+
     // Generate VC ID
     const vcIdQuery = `
       SELECT COUNT(*) + 1 as next_id FROM vcs
