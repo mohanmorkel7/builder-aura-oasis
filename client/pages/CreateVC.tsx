@@ -268,7 +268,9 @@ export default function CreateVC() {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [activeTab, setActiveTab] = useState("lead-info");
+  const [activeTab, setActiveTab] = useState(
+    resumeData?.last_active_tab || "lead-info"
+  );
   const [selectedTemplate, setSelectedTemplate] = useState<string>("manual");
   const [isTemplatePreviewOpen, setIsTemplatePreviewOpen] = useState(false);
   const [previewTemplate, setPreviewTemplate] = useState<any>(null);
@@ -691,9 +693,7 @@ export default function CreateVC() {
           </Button>
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
-              {currentDraftId
-                ? `Edit VC Draft (ID: ${currentDraftId})`
-                : "Create VC"}
+              {currentDraftId ? "Edit VC Draft" : "Create VC"}
             </h1>
             <p className="text-gray-600">
               {currentDraftId
@@ -709,7 +709,7 @@ export default function CreateVC() {
             disabled={partialSaveMutation.isPending}
           >
             <Save className="w-4 h-4 mr-2" />
-            Save Draft
+            {currentDraftId ? "Update Draft" : "Save Draft"}
           </Button>
           <Button
             onClick={handleSubmit}
