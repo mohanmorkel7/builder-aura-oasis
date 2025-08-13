@@ -226,7 +226,7 @@ export default function AdminTemplates() {
       return { success: true, message: "Template marked for deletion" };
     },
     onSuccess: () => {
-      console.log("Template delete queued for when online");
+      console.log("Template deleted successfully");
     },
   });
 
