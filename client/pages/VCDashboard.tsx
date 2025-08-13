@@ -478,31 +478,10 @@ export default function VCDashboard() {
         </div>
       )}
 
-      {/* Tabs and Search/Filters */}
-      <Card>
-        <CardContent className="p-6">
-          {/* Tab Navigation */}
-          <div className="flex items-center gap-4 mb-4">
-            <Button
-              variant={activeTab === "vcs" ? "default" : "outline"}
-              onClick={() => setActiveTab("vcs")}
-              className="flex items-center gap-2"
-            >
-              <Target className="w-4 h-4" />
-              VCs ({filteredVCs.length})
-            </Button>
-            <Button
-              variant={activeTab === "drafts" ? "default" : "outline"}
-              onClick={() => setActiveTab("drafts")}
-              className="flex items-center gap-2"
-            >
-              <FileText className="w-4 h-4" />
-              Saved Drafts ({vcPartialSaves.length})
-            </Button>
-          </div>
-
-          {/* Search and Filters - Only show for VCs tab */}
-          {activeTab === "vcs" && (
+      {/* Search and Filters - Only show for VCs tab */}
+      {activeTab === "vcs" && (
+        <Card>
+          <CardContent className="p-6">
             <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1">
               <div className="relative">
@@ -564,9 +543,9 @@ export default function VCDashboard() {
               </SelectContent>
             </Select>
             </div>
-          )}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
 
       {/* VC Progress Dashboard */}
       {progressLoading ? (
@@ -1364,16 +1343,34 @@ export default function VCDashboard() {
         })()}
       </div>
 
-      {/* VC Opportunities List or Saved Drafts */}
+      {/* Tab Navigation */}
+      <Card>
+        <CardContent className="p-6">
+          <div className="flex items-center gap-4 mb-4">
+            <Button
+              variant={activeTab === "vcs" ? "default" : "outline"}
+              onClick={() => setActiveTab("vcs")}
+              className="flex items-center gap-2"
+            >
+              <Target className="w-4 h-4" />
+              VCs ({filteredVCs.length})
+            </Button>
+            <Button
+              variant={activeTab === "drafts" ? "default" : "outline"}
+              onClick={() => setActiveTab("drafts")}
+              className="flex items-center gap-2"
+            >
+              <FileText className="w-4 h-4" />
+              Saved Drafts ({vcPartialSaves.length})
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Content based on active tab */}
       {activeTab === "vcs" ? (
         <Card>
-          <CardHeader>
-            <CardTitle>VC List ({filteredVCs.length})</CardTitle>
-            <CardDescription>
-              Manage your venture capital funding rounds
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+          <CardContent className="p-6">
             {vcLoading ? (
               <div className="text-center py-8">
                 <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
