@@ -360,12 +360,12 @@ router.get("/:id", async (req: Request, res: Response) => {
         vc = await VCRepository.findById(id);
       } else {
         // Return mock VC data when database is unavailable
-        const mockVCs = await MockDataService.getAllLeads();
+        const mockVCs = await MockDataService.getAllVCs();
         vc = mockVCs.find((v: any) => v.id === id);
       }
     } catch (dbError) {
       console.log("Database error, using mock data:", dbError.message);
-      const mockVCs = await MockDataService.getAllLeads();
+      const mockVCs = await MockDataService.getAllVCs();
       vc = mockVCs.find((v: any) => v.id === id);
     }
 
