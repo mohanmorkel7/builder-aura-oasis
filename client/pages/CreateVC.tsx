@@ -609,6 +609,7 @@ export default function CreateVC() {
             method: "DELETE",
           });
           queryClient.invalidateQueries({ queryKey: ["my-vc-partial-saves"] });
+          localStorage.removeItem(`vc_draft_${currentDraftId}_tab`); // Clean up saved tab
           setCurrentDraftId(null); // Clear the draft ID
         } catch (error) {
           console.error("Failed to delete draft after creation:", error);
