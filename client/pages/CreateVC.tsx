@@ -678,7 +678,7 @@ export default function CreateVC() {
           </Button>
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
-              {currentDraftId ? "Edit VC Draft" : "Create VC"}
+              {currentDraftId ? "Edit VC Draft" : "Create VC"} {/* DEBUG: currentDraftId = {currentDraftId} */}
             </h1>
             <p className="text-gray-600">
               {currentDraftId
