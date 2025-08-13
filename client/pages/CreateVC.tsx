@@ -676,14 +676,10 @@ export default function CreateVC() {
         return "";
       })();
 
-      console.log("🐛 DEBUG - Partial Save Country Debug:");
-      console.log("vcData.country:", vcData.country);
-      console.log("vcData.custom_country:", vcData.custom_country);
-      console.log("final countryValue:", countryValue);
-      console.log("country save logic:", {
-        isOther: vcData.country === "Other",
-        hasCustom: !!vcData.custom_country?.trim(),
-        hasPredefined: !!(vcData.country && vcData.country !== "Other")
+      console.log("🐛 DEBUG - Partial Save Country:", {
+        dropdown: vcData.country,
+        custom: vcData.custom_country,
+        finalValue: countryValue
       });
 
       const partialData = {
