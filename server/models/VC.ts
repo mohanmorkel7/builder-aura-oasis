@@ -135,10 +135,29 @@ export interface UpdateVCData {
 export class VCRepository {
   static async findAll(): Promise<VC[]> {
     const query = `
-      SELECT * FROM vcs 
+      SELECT * FROM vcs
+      WHERE is_partial = false OR is_partial IS NULL
       ORDER BY created_at DESC
     `;
     const result = await pool.query(query);
+    return result.rows;
+  }
+
+  static async findPartialSaves(createdBy?: number): Promise<VC[]> {
+    let query = `
+      SELECT * FROM vcs
+      WHERE is_partial = true
+    `;
+    const values: any[] = [];
+
+    if (createdBy) {
+      query += ` AND created_by = $1`;
+      values.push(createdBy);
+    }
+
+    query += ` ORDER BY created_at DESC`;
+
+    const result = await pool.query(query, values);
     return result.rows;
   }
 
