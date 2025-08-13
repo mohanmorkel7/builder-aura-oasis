@@ -26,7 +26,10 @@ async function addIsPartialColumn() {
     console.log("✅ Database connection successful!");
 
     // Read the migration script
-    const migrationPath = path.join(__dirname, "server/database/add-vc-partial-column.sql");
+    const migrationPath = path.join(
+      __dirname,
+      "server/database/add-vc-partial-column.sql",
+    );
     const migrationSQL = fs.readFileSync(migrationPath, "utf8");
 
     console.log("📄 Running migration script...");
@@ -34,7 +37,7 @@ async function addIsPartialColumn() {
 
     // Execute the migration
     await client.query(migrationSQL);
-    
+
     console.log("✅ Migration completed successfully!");
     console.log("🎉 is_partial column added to VCs table");
 
@@ -55,7 +58,6 @@ async function addIsPartialColumn() {
 
     client.release();
     console.log("🔌 Database connection closed");
-    
   } catch (error) {
     console.error("❌ Migration failed:", error);
     console.log("");
