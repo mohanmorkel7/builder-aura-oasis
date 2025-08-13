@@ -67,6 +67,9 @@ export interface VC {
   // Billing
   billing_currency?: "INR" | "USD" | "AED";
 
+  // Template association
+  template_id?: number;
+
   // Metadata
   created_by?: number;
   assigned_to?: number;
