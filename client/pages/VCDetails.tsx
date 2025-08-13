@@ -1326,7 +1326,8 @@ export default function VCDetails() {
             <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
               <div className="flex items-center justify-between mb-3">
                 <div className="text-sm font-medium text-blue-700">
-                  📋 Template Steps Reference ({templateData.steps.length} steps)
+                  📋 Template Steps Reference ({templateData.steps.length}{" "}
+                  steps)
                 </div>
                 {vcSteps.length > 0 && (
                   <Button
@@ -1334,8 +1335,14 @@ export default function VCDetails() {
                     variant="outline"
                     className="text-xs"
                     onClick={() => {
-                      if (confirm("This will replace all existing steps with template steps. Are you sure?")) {
-                        alert("Template step population not implemented yet - please create steps manually based on the template.");
+                      if (
+                        confirm(
+                          "This will replace all existing steps with template steps. Are you sure?",
+                        )
+                      ) {
+                        alert(
+                          "Template step population not implemented yet - please create steps manually based on the template.",
+                        );
                       }
                     }}
                   >
@@ -1346,8 +1353,7 @@ export default function VCDetails() {
               <div className="text-xs text-blue-600 mb-3">
                 {vcSteps.length > 0
                   ? `${templateData.name} template provides ${templateData.steps.length} specialized VC steps. Your current ${vcSteps.length} steps are generic.`
-                  : `Create steps based on the ${templateData.name} template for better VC tracking.`
-                }
+                  : `Create steps based on the ${templateData.name} template for better VC tracking.`}
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                 {templateData.steps.map((step: any, index: number) => (
@@ -1365,7 +1371,8 @@ export default function VCDetails() {
                     )}
                     <div className="flex items-center justify-between text-xs">
                       <span className="text-blue-500">
-                        ~{step.estimated_days || step.default_eta_days || 1} days
+                        ~{step.estimated_days || step.default_eta_days || 1}{" "}
+                        days
                       </span>
                       <span className="text-blue-500">
                         {step.probability_percent || 20}% prob
