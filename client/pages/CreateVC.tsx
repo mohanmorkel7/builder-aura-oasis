@@ -783,6 +783,20 @@ export default function CreateVC() {
 
   const handlePartialSave = async () => {
     try {
+      // Log current state before doing anything
+      console.log("🐛 DEBUG - handlePartialSave called, current vcData.country:", vcData.country);
+      console.log("🐛 DEBUG - handlePartialSave called, current vcData.custom_country:", vcData.custom_country);
+
+      // Check actual DOM values vs state
+      const countryDropdown = document.querySelector('button[role="combobox"]')?.textContent?.trim();
+      const customCountryInput = document.querySelector('#custom_country')?.value;
+      console.log("🐛 DEBUG - DOM vs State comparison:", {
+        domCountryDropdown: countryDropdown,
+        stateCountry: vcData.country,
+        domCustomCountry: customCountryInput,
+        stateCustomCountry: vcData.custom_country
+      });
+
       // Determine the final country value to save
       const countryValue = (() => {
         // If user selected "Other" and provided custom country, use that
@@ -801,7 +815,6 @@ export default function CreateVC() {
         dropdown: vcData.country,
         custom: vcData.custom_country,
         finalValue: countryValue,
-        allVcData: vcData, // Log entire vcData to see what's in state
       });
 
       const partialData = {
@@ -1324,7 +1337,7 @@ export default function CreateVC() {
                   <div></div>
 
                   <div>
-                    <Label htmlFor="minimum_size">Minimum Size (���)</Label>
+                    <Label htmlFor="minimum_size">Minimum Size (₹)</Label>
                     <Input
                       id="minimum_size"
                       placeholder="e.g., 10000000"
