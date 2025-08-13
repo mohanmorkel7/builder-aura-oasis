@@ -270,6 +270,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   const [notifications, setNotifications] = React.useState<Notification[]>([]);
   const [notificationsEnabled, setNotificationsEnabled] = React.useState(true);
+  const [networkIssueDetected, setNetworkIssueDetected] = React.useState(false);
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   // Fetch real notifications on component mount
