@@ -151,7 +151,7 @@ const getNotificationsFromFollowUps = async (
 
     // Add timeout to prevent hanging requests
     const timeoutPromise = new Promise<never>((_, reject) => {
-      setTimeout(() => reject(new Error("Request timeout")), 15000); // Increased to 15 seconds
+      setTimeout(() => reject(new Error("Request timeout")), 10000); // Reduced to 10 seconds
     });
 
     const followUpsPromise = apiClient
@@ -160,7 +160,14 @@ const getNotificationsFromFollowUps = async (
         userRole: "all",
       })
       .catch((error) => {
-        console.warn("Follow-ups API call failed, using fallback:", error);
+        // Better error classification
+        if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+          console.warn("Network connectivity issue - follow-ups API unreachable:", error.message);
+        } else if (error.message.includes('timeout')) {
+          console.warn("Follow-ups API timeout:", error.message);
+        } else {
+          console.warn("Follow-ups API call failed:", error.message);
+        }
         return []; // Return empty array as fallback
       });
 
