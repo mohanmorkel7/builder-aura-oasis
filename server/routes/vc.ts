@@ -603,38 +603,51 @@ router.get("/:id/steps", async (req: Request, res: Response) => {
     let steps;
     try {
       console.log(`🔍 Fetching VC steps for VC ID: ${vcId}`);
-      if (await isDatabaseAvailable()) {
-        console.log("✅ Database available, using VCStepRepository");
 
-        // First check if VC exists in database
+      // Always try database first, but be ready to catch connection errors
+      let databaseAvailable = false;
+      try {
+        databaseAvailable = await isDatabaseAvailable();
+        console.log(`🔍 Database availability check result: ${databaseAvailable}`);
+      } catch (error) {
+        console.log("❌ Database availability check failed:", error.message);
+        databaseAvailable = false;
+      }
+
+      if (databaseAvailable) {
+        console.log("✅ Database available, attempting to use VCStepRepository");
+
         try {
+          // Test actual connection with a simple query first
+          const testQuery = await pool.query('SELECT 1 as test');
+          console.log("✅ Database connection test successful");
+
+          // First check if VC exists in database
           const vcExists = await VCRepository.findById(vcId);
           console.log(`🔍 VC ${vcId} exists in database:`, !!vcExists);
           if (vcExists) {
             console.log(`📋 VC details:`, { id: vcExists.id, round_title: vcExists.round_title, template_id: vcExists.template_id });
           }
-        } catch (vcError) {
-          console.log("❌ Error checking VC existence:", vcError.message);
-        }
 
-        // Now fetch steps with detailed query logging
-        console.log(`🔍 Executing query: SELECT * FROM vc_steps WHERE vc_id = ${vcId} ORDER BY order_index ASC, created_at ASC`);
-        steps = await VCStepRepository.findByVCId(vcId);
-        console.log(`📊 Database query returned ${steps?.length || 0} steps`);
+          // Now fetch steps with detailed query logging
+          console.log(`🔍 Executing query: SELECT * FROM vc_steps WHERE vc_id = ${vcId} ORDER BY order_index ASC, created_at ASC`);
+          steps = await VCStepRepository.findByVCId(vcId);
+          console.log(`📊 Database query returned ${steps?.length || 0} steps`);
 
-        if (steps && steps.length > 0) {
-          console.log("📝 First step preview:", {
-            id: steps[0].id,
-            name: steps[0].name,
-            status: steps[0].status,
-            vc_id: steps[0].vc_id
-          });
-        } else {
-          console.log("⚠️ No steps found in database for VC", vcId);
-          // Fallback to mock data if no database steps
-          console.log("🔄 Falling back to mock data since no database steps found");
-          steps = await MockDataService.getVCSteps(vcId);
-          console.log(`📊 Mock fallback returned ${steps?.length || 0} steps`);
+          if (steps && steps.length > 0) {
+            console.log("📝 First step preview:", {
+              id: steps[0].id,
+              name: steps[0].name,
+              status: steps[0].status,
+              vc_id: steps[0].vc_id
+            });
+          } else {
+            console.log("⚠️ No steps found in database for VC", vcId);
+            throw new Error("No database steps found - fallback to mock");
+          }
+        } catch (dbConnectionError) {
+          console.log("❌ Database connection/query error:", dbConnectionError.message);
+          throw dbConnectionError; // This will trigger the catch block below
         }
       } else {
         console.log("⚠️ Database unavailable, using MockDataService");
@@ -645,6 +658,15 @@ router.get("/:id/steps", async (req: Request, res: Response) => {
       console.log("❌ Database error, using mock data:", dbError.message);
       steps = await MockDataService.getVCSteps(vcId);
       console.log(`📊 Fallback: Found ${steps?.length || 0} mock steps`);
+
+      if (steps && steps.length > 0) {
+        console.log("📝 Mock data first step preview:", {
+          id: steps[0].id,
+          name: steps[0].name,
+          status: steps[0].status,
+          vc_id: steps[0].vc_id
+        });
+      }
     }
 
     // Ensure we always return an array
