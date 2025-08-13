@@ -23,12 +23,25 @@ export interface VC {
   // Round Information (instead of Project Information)
   round_title?: string;
   round_description?: string;
-  round_stage?: "pre_seed" | "seed" | "series_a" | "series_b" | "series_c" | "bridge" | "growth" | "ipo";
+  round_stage?:
+    | "pre_seed"
+    | "seed"
+    | "series_a"
+    | "series_b"
+    | "series_c"
+    | "bridge"
+    | "growth"
+    | "ipo";
   round_size?: string;
   valuation?: string;
 
   // Investor Information (instead of Client Information)
-  investor_category?: "angel" | "vc" | "private_equity" | "family_office" | "merchant_banker";
+  investor_category?:
+    | "angel"
+    | "vc"
+    | "private_equity"
+    | "family_office"
+    | "merchant_banker";
   investor_name?: string;
   contact_person?: string;
   email?: string;
@@ -431,7 +444,10 @@ export class VCStepRepository {
     return result.rows[0];
   }
 
-  static async update(id: number, stepData: UpdateVCStepData): Promise<VCStep | null> {
+  static async update(
+    id: number,
+    stepData: UpdateVCStepData,
+  ): Promise<VCStep | null> {
     const fields = [];
     const values = [];
     let paramCount = 1;
@@ -473,7 +489,7 @@ export class VCStepRepository {
 
   static async reorderSteps(
     vcId: number,
-    stepOrders: Array<{ id: number; order_index: number }>
+    stepOrders: Array<{ id: number; order_index: number }>,
   ): Promise<void> {
     const updatePromises = stepOrders.map(({ id, order_index }) => {
       const query = `

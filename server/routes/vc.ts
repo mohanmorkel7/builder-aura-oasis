@@ -26,14 +26,22 @@ async function isDatabaseAvailable() {
 // Get all VCs
 router.get("/", async (req: Request, res: Response) => {
   try {
-    const { investor_category, status, search, partial_saves_only, created_by } = req.query;
+    const {
+      investor_category,
+      status,
+      search,
+      partial_saves_only,
+      created_by,
+    } = req.query;
 
     let vcs;
     try {
       if (await isDatabaseAvailable()) {
         if (partial_saves_only === "true") {
           // Get partial saves only
-          vcs = await VCRepository.findPartialSaves(created_by ? parseInt(created_by as string) : undefined);
+          vcs = await VCRepository.findPartialSaves(
+            created_by ? parseInt(created_by as string) : undefined,
+          );
         } else if (search) {
           vcs = await VCRepository.search(search as string);
         } else if (investor_category) {

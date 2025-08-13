@@ -2073,7 +2073,8 @@ export class MockDataService {
         lead_created_by: "admin@banani.com",
         status: "in-progress",
         round_title: "Series A Funding",
-        round_description: "Raising Series A for product expansion and market growth",
+        round_description:
+          "Raising Series A for product expansion and market growth",
         round_stage: "series_a",
         round_size: "$10M",
         valuation: "$50M",

@@ -111,117 +111,128 @@ export default function CreateVC() {
   const resumeData = location.state?.resumeData;
 
   // State for VC data
-  const [vcData, setVcData] = useState(resumeData ? {
-    // Initialize with resume data
-    lead_source: resumeData.lead_source || "",
-    lead_source_value: resumeData.lead_source_value || "",
-    lead_created_by: resumeData.lead_created_by || user?.email || "",
-    status: resumeData.status || "in-progress",
-    investor_category: resumeData.investor_category || "",
-    investor_name: resumeData.investor_name === "PARTIAL_SAVE_IN_PROGRESS" ? "" : (resumeData.investor_name || ""),
-    company_size: resumeData.company_size || "",
-    industry: resumeData.industry || "",
-    contact_person: resumeData.contact_person || "",
-    email: resumeData.email || "",
-    phone: resumeData.phone || "",
-    address: resumeData.address || "",
-    city: resumeData.city || "",
-    state: resumeData.state || "",
-    country: resumeData.country || "",
-    custom_country: "",
-    website: resumeData.website || "",
-    potential_lead_investor: resumeData.potential_lead_investor || false,
-    minimum_size: resumeData.minimum_size || "",
-    maximum_size: resumeData.maximum_size || "",
-    minimum_arr_requirement: resumeData.minimum_arr_requirement || "",
-    contacts: resumeData.contacts ? (typeof resumeData.contacts === 'string' ? JSON.parse(resumeData.contacts) : resumeData.contacts) : [
-      {
-        contact_name: "",
-        designation: "",
-        phone: "",
-        email: "",
-        linkedin: "",
-      },
-    ],
-    round_title: resumeData.round_title || "",
-    round_size: resumeData.round_size || "",
-    valuation: resumeData.valuation || "",
-    round_stage: resumeData.round_stage || "",
-    project_description: resumeData.round_description || "",
-    priority_level: resumeData.priority_level || "medium",
-    start_date: resumeData.start_date || "",
-    targeted_end_date: resumeData.targeted_end_date || "",
-    spoc: resumeData.spoc || "",
-    template_id: resumeData.template_id || "",
-    billing_currency: resumeData.billing_currency || "INR",
-    flat_fee_config: [],
-    probability: resumeData.probability || "0",
-    notes: resumeData.notes || "",
-    documents: [],
-  } : {
-    // Default Lead Info
-    lead_source: "" as const,
-    lead_source_value: "",
-    lead_created_by: user?.email || "",
-    status: "in-progress" as const,
+  const [vcData, setVcData] = useState(
+    resumeData
+      ? {
+          // Initialize with resume data
+          lead_source: resumeData.lead_source || "",
+          lead_source_value: resumeData.lead_source_value || "",
+          lead_created_by: resumeData.lead_created_by || user?.email || "",
+          status: resumeData.status || "in-progress",
+          investor_category: resumeData.investor_category || "",
+          investor_name:
+            resumeData.investor_name === "PARTIAL_SAVE_IN_PROGRESS"
+              ? ""
+              : resumeData.investor_name || "",
+          company_size: resumeData.company_size || "",
+          industry: resumeData.industry || "",
+          contact_person: resumeData.contact_person || "",
+          email: resumeData.email || "",
+          phone: resumeData.phone || "",
+          address: resumeData.address || "",
+          city: resumeData.city || "",
+          state: resumeData.state || "",
+          country: resumeData.country || "",
+          custom_country: "",
+          website: resumeData.website || "",
+          potential_lead_investor: resumeData.potential_lead_investor || false,
+          minimum_size: resumeData.minimum_size || "",
+          maximum_size: resumeData.maximum_size || "",
+          minimum_arr_requirement: resumeData.minimum_arr_requirement || "",
+          contacts: resumeData.contacts
+            ? typeof resumeData.contacts === "string"
+              ? JSON.parse(resumeData.contacts)
+              : resumeData.contacts
+            : [
+                {
+                  contact_name: "",
+                  designation: "",
+                  phone: "",
+                  email: "",
+                  linkedin: "",
+                },
+              ],
+          round_title: resumeData.round_title || "",
+          round_size: resumeData.round_size || "",
+          valuation: resumeData.valuation || "",
+          round_stage: resumeData.round_stage || "",
+          project_description: resumeData.round_description || "",
+          priority_level: resumeData.priority_level || "medium",
+          start_date: resumeData.start_date || "",
+          targeted_end_date: resumeData.targeted_end_date || "",
+          spoc: resumeData.spoc || "",
+          template_id: resumeData.template_id || "",
+          billing_currency: resumeData.billing_currency || "INR",
+          flat_fee_config: [],
+          probability: resumeData.probability || "0",
+          notes: resumeData.notes || "",
+          documents: [],
+        }
+      : {
+          // Default Lead Info
+          lead_source: "" as const,
+          lead_source_value: "",
+          lead_created_by: user?.email || "",
+          status: "in-progress" as const,
 
-    // Investor and Contact Info
-    investor_category: "",
-    investor_name: "",
-    company_size: "",
-    industry: "",
-    contact_person: "",
-    email: "",
-    phone: "",
-    address: "",
-    city: "",
-    state: "",
-    country: "",
-    custom_country: "",
-    website: "",
-    potential_lead_investor: false,
-    minimum_size: "",
-    maximum_size: "",
-    minimum_arr_requirement: "",
+          // Investor and Contact Info
+          investor_category: "",
+          investor_name: "",
+          company_size: "",
+          industry: "",
+          contact_person: "",
+          email: "",
+          phone: "",
+          address: "",
+          city: "",
+          state: "",
+          country: "",
+          custom_country: "",
+          website: "",
+          potential_lead_investor: false,
+          minimum_size: "",
+          maximum_size: "",
+          minimum_arr_requirement: "",
 
-    // Additional contacts (similar to CreateLead)
-    contacts: [
-      {
-        contact_name: "",
-        designation: "",
-        phone: "",
-        email: "",
-        linkedin: "",
-      },
-    ] as Array<{
-      contact_name: string;
-      designation: string;
-      phone: string;
-      email: string;
-      linkedin: string;
-    }>,
+          // Additional contacts (similar to CreateLead)
+          contacts: [
+            {
+              contact_name: "",
+              designation: "",
+              phone: "",
+              email: "",
+              linkedin: "",
+            },
+          ] as Array<{
+            contact_name: string;
+            designation: string;
+            phone: string;
+            email: string;
+            linkedin: string;
+          }>,
 
-    // Deal Details (Round Information)
-    round_title: "",
-    round_size: "",
-    valuation: "",
-    round_stage: "",
-    project_description: "",
-    priority_level: "medium" as const,
-    start_date: "",
-    targeted_end_date: "",
-    spoc: "",
-    template_id: "",
+          // Deal Details (Round Information)
+          round_title: "",
+          round_size: "",
+          valuation: "",
+          round_stage: "",
+          project_description: "",
+          priority_level: "medium" as const,
+          start_date: "",
+          targeted_end_date: "",
+          spoc: "",
+          template_id: "",
 
-    // Billing and Commercials
-    billing_currency: "INR" as const,
-    flat_fee_config: [] as any[],
+          // Billing and Commercials
+          billing_currency: "INR" as const,
+          flat_fee_config: [] as any[],
 
-    // Additional fields
-    probability: "0",
-    notes: "",
-    documents: [] as any[],
-  });
+          // Additional fields
+          probability: "0",
+          notes: "",
+          documents: [] as any[],
+        },
+  );
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -537,7 +548,9 @@ export default function CreateVC() {
       // If we were resuming from a draft, delete the draft
       if (resumeData && resumeData._resumeFromId) {
         try {
-          await apiClient.request(`/vc/${resumeData._resumeFromId}`, { method: "DELETE" });
+          await apiClient.request(`/vc/${resumeData._resumeFromId}`, {
+            method: "DELETE",
+          });
           queryClient.invalidateQueries({ queryKey: ["my-vc-partial-saves"] });
         } catch (error) {
           console.error("Failed to delete draft after creation:", error);
@@ -623,8 +636,7 @@ export default function CreateVC() {
             <p className="text-gray-600">
               {resumeData
                 ? "Continue working on your saved VC draft"
-                : "Create a new venture capital opportunity"
-              }
+                : "Create a new venture capital opportunity"}
             </p>
           </div>
         </div>

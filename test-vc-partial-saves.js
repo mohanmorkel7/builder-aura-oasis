@@ -13,7 +13,9 @@ async function testVCEndpoints() {
 
     // Test 2: Get partial saves only
     console.log("\n2. Testing GET /vc?partial_saves_only=true");
-    const partialSavesResponse = await fetch(`${API_BASE}/vc?partial_saves_only=true`);
+    const partialSavesResponse = await fetch(
+      `${API_BASE}/vc?partial_saves_only=true`,
+    );
     const partialSaves = await partialSavesResponse.json();
     console.log(`Found ${partialSaves.length} partial saves`);
 
@@ -28,24 +30,29 @@ async function testVCEndpoints() {
       investor_name: "PARTIAL_SAVE_IN_PROGRESS",
       email: "test@example.com",
       created_by: 1,
-      is_partial: true
+      is_partial: true,
     };
 
     const createResponse = await fetch(`${API_BASE}/vc`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(partialSaveData)
+      body: JSON.stringify(partialSaveData),
     });
 
     if (createResponse.ok) {
       const created = await createResponse.json();
-      console.log("Partial save created successfully:", created.data?.id || created.id);
+      console.log(
+        "Partial save created successfully:",
+        created.data?.id || created.id,
+      );
 
       // Test 4: Verify partial save appears in partial saves list
       console.log("\n4. Verifying partial save in list");
-      const updatedPartialSavesResponse = await fetch(`${API_BASE}/vc?partial_saves_only=true`);
+      const updatedPartialSavesResponse = await fetch(
+        `${API_BASE}/vc?partial_saves_only=true`,
+      );
       const updatedPartialSaves = await updatedPartialSavesResponse.json();
       console.log(`Now found ${updatedPartialSaves.length} partial saves`);
 
@@ -54,14 +61,16 @@ async function testVCEndpoints() {
       if (createdId) {
         console.log("\n5. Cleaning up test partial save");
         const deleteResponse = await fetch(`${API_BASE}/vc/${createdId}`, {
-          method: "DELETE"
+          method: "DELETE",
         });
         console.log("Cleanup successful:", deleteResponse.ok);
       }
     } else {
-      console.error("Failed to create partial save:", await createResponse.text());
+      console.error(
+        "Failed to create partial save:",
+        await createResponse.text(),
+      );
     }
-
   } catch (error) {
     console.error("Test error:", error.message);
   }
