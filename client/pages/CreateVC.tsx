@@ -1941,17 +1941,6 @@ export default function CreateVC() {
                   Template Selection
                 </h4>
 
-                {/* Debug info for template selection */}
-                <div className="bg-gray-100 p-2 rounded text-xs mb-4 font-mono">
-                  <div>🔍 Debug - Template State:</div>
-                  <div>selectedTemplate: "{selectedTemplate}"</div>
-                  <div>vcData.template_id: "{vcData.template_id}"</div>
-                  <div>templates.length: {templates.length}</div>
-                  <div>
-                    templateDetailsLoading:{" "}
-                    {templateDetailsLoading ? "true" : "false"}
-                  </div>
-                </div>
 
                 <div>
                   <div className="flex items-center justify-between">
