@@ -85,6 +85,9 @@ export default function AdminTemplates() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+
+  // Debug dialog state
+  console.log("isCreateDialogOpen:", isCreateDialogOpen);
   const [viewTemplateId, setViewTemplateId] = useState<number | null>(null);
   const [editTemplateId, setEditTemplateId] = useState<number | null>(null);
 
