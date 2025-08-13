@@ -130,8 +130,16 @@ export default function VCDetails() {
   } = useQuery({
     queryKey: ["vc", id],
     queryFn: async () => {
-      const response = await apiClient.get(`/api/vc/${id}`);
-      return response.data;
+      console.log("🔍 Fetching VC details for ID:", id);
+      try {
+        const response = await apiClient.get(`/api/vc/${id}`);
+        console.log("✅ VC API Response:", response);
+        console.log("✅ VC Data:", response.data);
+        return response.data;
+      } catch (error) {
+        console.error("❌ VC API Error:", error);
+        throw error;
+      }
     },
     enabled: !!id,
   });
