@@ -124,8 +124,8 @@ export default function EditTemplateDialog({
   // Update template mutation (offline mode)
   const updateTemplateMutation = useMutation({
     mutationFn: async (data: any) => {
-      console.log("Update template (offline mode):", data);
-      // In offline mode, just return success
+      console.log("Update template:", data);
+      // Return success
       return { success: true, data };
     },
     onSuccess: () => {
