@@ -159,8 +159,13 @@ export default function CreateVC() {
           address: resumeData.address || "",
           city: resumeData.city || "",
           state: resumeData.state || "",
-          country: resumeData.country || "",
-          custom_country: "",
+          // Handle country initialization correctly
+          country: COUNTRIES.includes(resumeData.country || "")
+            ? resumeData.country || ""
+            : resumeData.country ? "Other" : "",
+          custom_country: COUNTRIES.includes(resumeData.country || "")
+            ? ""
+            : resumeData.country || "",
           website: resumeData.website || "",
           potential_lead_investor: resumeData.potential_lead_investor || false,
           minimum_size: resumeData.minimum_size || "",
