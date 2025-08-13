@@ -112,7 +112,7 @@ export default function CreateVC() {
 
   // Track the current draft ID for subsequent saves
   const [currentDraftId, setCurrentDraftId] = useState(
-    resumeData?._resumeFromId || null
+    resumeData?._resumeFromId || null,
   );
 
   // State for VC data
@@ -634,7 +634,11 @@ export default function CreateVC() {
       };
 
       await partialSaveMutation.mutateAsync(partialData);
-      alert(currentDraftId ? "Draft updated successfully!" : "VC data saved as draft!");
+      alert(
+        currentDraftId
+          ? "Draft updated successfully!"
+          : "VC data saved as draft!",
+      );
     } catch (error) {
       console.error("Failed to save partial VC:", error);
       alert("Failed to save draft. Please try again.");
