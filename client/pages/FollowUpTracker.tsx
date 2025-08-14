@@ -489,8 +489,11 @@ export default function FollowUpTracker() {
             Follow-up Tracker
           </h1>
           <p className="text-gray-600 mt-1">
-            Track and manage follow-up tasks from leads and VC rounds
-            {isAdmin ? "" : " (VC follow-ups require admin access)"}
+            Track and manage follow-up tasks from {
+              isAdmin ? "leads and VC rounds" :
+              isVC ? "VC rounds" :
+              "leads"
+            }
           </p>
         </div>
         <div className="flex items-center space-x-2">
