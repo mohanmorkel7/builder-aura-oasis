@@ -1065,9 +1065,14 @@ router.get("/:id/comments", async (req: Request, res: Response) => {
       });
     }
 
+    console.log(`💬 Fetching comments for VC ${vcId}`);
+
     let comments = [];
     try {
-      if (await isDatabaseAvailable()) {
+      const dbAvailable = await isDatabaseAvailable();
+      console.log(`🔍 Database available for VC comments: ${dbAvailable}`);
+
+      if (dbAvailable) {
         const query = `
           SELECT c.*, u.first_name || ' ' || u.last_name as created_by_name
           FROM vc_comments c
@@ -1075,9 +1080,12 @@ router.get("/:id/comments", async (req: Request, res: Response) => {
           WHERE c.vc_id = $1
           ORDER BY c.created_at ASC
         `;
+        console.log(`📝 Executing query: ${query} with vcId: ${vcId}`);
         const result = await pool.query(query, [vcId]);
         comments = result.rows;
+        console.log(`📊 Found ${comments.length} comments in database`);
       } else {
+        console.log("⚠️ Database not available, using mock comments");
         // Mock comments when database is unavailable
         comments = [
           {
