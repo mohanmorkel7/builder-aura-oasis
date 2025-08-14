@@ -358,6 +358,7 @@ export function EnhancedStepItem({
       const result = await createChatMutation.mutateAsync({
         stepId: step.id,
         chatData,
+        isVC,
       });
       console.log("Message sent successfully:", result);
 
