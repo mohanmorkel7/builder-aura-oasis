@@ -1510,7 +1510,7 @@ export default function VCDashboard() {
               className="flex items-center gap-2"
             >
               <Target className="w-4 h-4" />
-              VCs ({filteredVCs.length})
+              VCs ({(filteredVCs || []).length})
             </Button>
             <Button
               variant={activeTab === "drafts" ? "default" : "outline"}
