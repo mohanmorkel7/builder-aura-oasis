@@ -554,9 +554,9 @@ router.post("/", async (req: Request, res: Response) => {
               for (const templateStep of templateStepsResult.rows) {
                 const vcStepQuery = `
                   INSERT INTO vc_steps (
-                    vc_id, name, description, order_index, created_by, status
+                    vc_id, name, description, order_index, created_by, status, probability_percent
                   )
-                  VALUES ($1, $2, $3, $4, $5, 'pending')
+                  VALUES ($1, $2, $3, $4, $5, 'pending', $6)
                   RETURNING *
                 `;
 
@@ -566,6 +566,7 @@ router.post("/", async (req: Request, res: Response) => {
                   templateStep.description,
                   templateStep.step_order,
                   vcData.created_by,
+                  templateStep.probability_percent,
                 ]);
               }
               console.log(
