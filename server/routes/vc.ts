@@ -918,12 +918,18 @@ router.put("/steps/:stepId", async (req: Request, res: Response) => {
     }
 
     const stepData: UpdateVCStepData = req.body;
+    console.log(`🔄 Updating VC step ${stepId} with data:`, stepData);
 
     let step;
     try {
-      if (await isDatabaseAvailable()) {
+      const dbAvailable = await isDatabaseAvailable();
+      console.log(`🔍 Database available for step update: ${dbAvailable}`);
+
+      if (dbAvailable) {
         step = await VCStepRepository.update(stepId, stepData);
+        console.log(`✅ VC step ${stepId} updated in database:`, step);
       } else {
+        console.log("⚠️ Database not available, using mock update");
         // Mock update when database is unavailable
         step = {
           id: stepId,
@@ -932,7 +938,8 @@ router.put("/steps/:stepId", async (req: Request, res: Response) => {
         };
       }
     } catch (dbError) {
-      console.log("Database error, using mock data:", dbError.message);
+      console.error("❌ Database error during step update:", dbError);
+      console.log("🔄 Falling back to mock update");
       step = {
         id: stepId,
         ...stepData,
