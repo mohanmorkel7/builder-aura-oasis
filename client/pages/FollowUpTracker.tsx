@@ -393,9 +393,13 @@ export default function FollowUpTracker() {
         ? "vc"
         : "lead");
 
-    // Filter out VC follow-ups if user is not admin
-    if (followUpType === "vc" && !isAdmin) {
-      return false;
+    // Role-based filtering for follow-up visibility
+    if (followUpType === "vc" && !isAdmin && !isVC) {
+      return false; // VC follow-ups only for admin and VC roles
+    }
+
+    if (followUpType === "lead" && isVC && !isAdmin) {
+      return false; // Lead follow-ups hidden from VC role unless admin
     }
 
     const searchLower = searchTerm.toLowerCase();
