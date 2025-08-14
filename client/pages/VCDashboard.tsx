@@ -574,7 +574,7 @@ export default function VCDashboard() {
                     VC Templates
                   </p>
                   <p className="text-2xl font-bold text-purple-900">
-                    {vcTemplates.length}
+                    {(vcTemplates || []).length}
                   </p>
                 </div>
                 <div className="bg-purple-200 p-3 rounded-full">
