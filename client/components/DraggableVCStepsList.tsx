@@ -166,6 +166,7 @@ export function DraggableVCStepsList({
               onToggleExpansion={() => onToggleExpansion(step.id)}
               onUpdateStatus={handleUpdateStatus}
               onDeleteStep={() => onDeleteStep(step.id)}
+              isVC={true}
             />
           ))}
         </div>
