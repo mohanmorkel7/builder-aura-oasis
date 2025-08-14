@@ -323,7 +323,7 @@ router.get("/progress", async (req: Request, res: Response) => {
           for (const vc of vcsResult.rows) {
             const stepsQueryPromise = pool.query(
               `
-              SELECT vs.id, vs.name, vs.status, vs.order_index
+              SELECT vs.id, vs.name, vs.status, vs.order_index, vs.probability_percent
               FROM vc_steps vs
               WHERE vs.vc_id = $1
               ORDER BY vs.order_index ASC
@@ -1406,7 +1406,7 @@ router.post("/steps/:stepId/chats", async (req: Request, res: Response) => {
     try {
       const dbAvailable = await isDatabaseAvailable();
       console.log(
-        `🔍 Database available for creating VC step chat: ${dbAvailable}`,
+        `�� Database available for creating VC step chat: ${dbAvailable}`,
       );
 
       if (dbAvailable) {
