@@ -603,28 +603,15 @@ export default function VCDashboard() {
                       )
                     : 100;
 
-                // Get all available steps from VC data
-                const allAvailableSteps = Array.from(
-                  new Set(
-                    vcProgressData.flatMap((vc: any) => [
-                      ...vc.completed_steps.map((step: any) => step.name),
-                      ...(vc.current_step ? [vc.current_step.name] : []),
-                    ]),
-                  ),
-                );
-
-                const allSteps = allAvailableSteps.sort((a, b) => {
-                  // Define order for VC steps
-                  const stepOrder = [
-                    "Initial Pitch",
-                    "Product Demo",
-                    "Due Diligence",
-                    "Term Sheet",
-                    "Legal Review",
-                    "Final Approval",
-                  ];
-                  return stepOrder.indexOf(a) - stepOrder.indexOf(b);
-                });
+                // Define all possible VC steps in order (regardless of whether they're used)
+                const allSteps = [
+                  "Initial Pitch",
+                  "Product Demo",
+                  "Due Diligence",
+                  "Term Sheet",
+                  "Legal Review",
+                  "Final Approval",
+                ];
 
                 // Define colors for different steps
                 const stepColors = [
