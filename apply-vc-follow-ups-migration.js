@@ -65,15 +65,14 @@ async function applyVCFollowUpsMigration() {
       CREATE INDEX IF NOT EXISTS idx_follow_ups_vc_context ON follow_ups(vc_id, vc_step_id)
     `);
 
-    // Add constraint to ensure follow-up belongs to either lead or VC context (not both)
+    // Add constraint to ensure follow-up doesn't belong to both lead and VC context simultaneously
     console.log("Adding constraint...");
     try {
       await client.query(`
-        ALTER TABLE follow_ups 
-        ADD CONSTRAINT chk_follow_up_context 
+        ALTER TABLE follow_ups
+        ADD CONSTRAINT chk_follow_up_context
         CHECK (
-          (lead_id IS NOT NULL AND vc_id IS NULL) OR 
-          (lead_id IS NULL AND vc_id IS NOT NULL)
+          NOT (lead_id IS NOT NULL AND vc_id IS NOT NULL)
         )
       `);
     } catch (constraintError) {
