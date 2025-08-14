@@ -695,15 +695,32 @@ export default function VCDashboard() {
                       )
                     : 100;
 
-                // Define all VC steps in order - show all regardless of usage
-                const allSteps = [
-                  "Initial Pitch",
-                  "Product Demo",
-                  "Due Diligence",
-                  "Term Sheet",
-                  "Legal Review",
-                  "Final Approval",
-                ];
+                // Extract all unique step names from VC progress data
+                const allStepsSet = new Set<string>();
+                vcProgressData.forEach((vc: any) => {
+                  if (vc.all_steps && Array.isArray(vc.all_steps)) {
+                    vc.all_steps.forEach((step: any) => {
+                      if (step.name) {
+                        allStepsSet.add(step.name);
+                      }
+                    });
+                  }
+                });
+
+                // Convert to array and ensure consistent ordering
+                const allSteps = Array.from(allStepsSet).sort();
+
+                // If no steps found from data, use fallback
+                if (allSteps.length === 0) {
+                  allSteps.push(
+                    "Initial Pitch",
+                    "Product Demo",
+                    "Due Diligence",
+                    "Term Sheet",
+                    "Legal Review",
+                    "Final Approval"
+                  );
+                }
 
                 // Define colors for different steps
                 const stepColors = [
