@@ -285,44 +285,83 @@ router.get("/progress", async (req: Request, res: Response) => {
     try {
       if (await isDatabaseAvailable()) {
         console.log("VC progress dashboard endpoint called");
+        progressData = [];
 
-        // Test simple query first
-        const testQuery = await pool.query("SELECT COUNT(*) FROM vcs");
-        console.log(`Total VCs in database: ${testQuery.rows[0].count}`);
+        // Quick timeout for database operations to prevent hanging
+        const queryTimeout = 5000; // 5 seconds
 
-        const testStepsQuery = await pool.query("SELECT COUNT(*) FROM vc_steps WHERE vc_id = 11");
-        console.log(`Steps for VC 11: ${testStepsQuery.rows[0].count}`);
+        try {
+          const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error("Database query timeout")), queryTimeout);
+          });
 
-        // For now, return the real VC 11 data based on your database
-        progressData = [{
-          vc_id: 11,
-          round_title: "Test VC Round",  // You can update this with real data
-          investor_name: "Real VC Investor", // You can update this with real data
-          status: "in-progress",
-          completed_count: 1,
-          total_completed_probability: 17,
-          completed_steps: [{
-            name: "First Introduction Call",
-            probability: 16.67,
-            status: "completed"
-          }],
-          current_step: {
-            name: "Product Demo",
-            probability: 16.67
-          },
-          all_steps: [
-            { name: "First Introduction Call", status: "completed", probability: 16.67 },
-            { name: "Product Demo", status: "pending", probability: 16.67 },
-            { name: "Query clarifications", status: "pending", probability: 16.67 },
-            { name: "Scope Collection", status: "pending", probability: 16.67 },
-            { name: "Scope Finalization", status: "pending", probability: 16.67 },
-            { name: "Info-Sec clearance", status: "pending", probability: 16.67 },
-            { name: "Commercial Finalization", status: "pending", probability: 16.67 },
-            { name: "Contract - Deal closure", status: "pending", probability: 16.67 }
-          ]
-        }];
+          // Get VCs with timeout
+          const vcsQueryPromise = pool.query(`
+            SELECT DISTINCT
+              v.id as vc_id,
+              v.round_title,
+              v.investor_name,
+              v.status as vc_status
+            FROM vcs v
+            WHERE (v.is_partial IS NULL OR v.is_partial = false)
+            ORDER BY v.id
+            LIMIT 10
+          `);
 
-        console.log(`Returning ${progressData.length} VC progress records`);
+          const vcsResult = await Promise.race([vcsQueryPromise, timeoutPromise]);
+          console.log(`Found ${vcsResult.rows.length} VCs for progress tracking`);
+
+          // If we have VCs, process them quickly
+          for (const vc of vcsResult.rows) {
+            const stepsQueryPromise = pool.query(`
+              SELECT vs.id, vs.name, vs.status, vs.order_index,
+                     COALESCE(vs.probability_percent, 16.67) as probability_percent
+              FROM vc_steps vs
+              WHERE vs.vc_id = $1
+              ORDER BY vs.order_index
+            `, [vc.vc_id]);
+
+            try {
+              const stepsResult = await Promise.race([stepsQueryPromise, new Promise((_, reject) => {
+                setTimeout(() => reject(new Error("Steps query timeout")), 2000);
+              })]);
+
+              const steps = stepsResult.rows;
+              const completedSteps = steps.filter(s => s.status === "completed");
+              const currentStep = steps.find(s => s.status === "in_progress") || steps.find(s => s.status === "pending");
+
+              progressData.push({
+                vc_id: vc.vc_id,
+                round_title: vc.round_title,
+                investor_name: vc.investor_name,
+                status: vc.vc_status,
+                completed_count: completedSteps.length,
+                total_completed_probability: Math.round(completedSteps.reduce((sum, step) => sum + (step.probability_percent || 16.67), 0)),
+                completed_steps: completedSteps.map(step => ({
+                  name: step.name,
+                  probability: step.probability_percent || 16.67,
+                  status: step.status,
+                })),
+                current_step: currentStep ? {
+                  name: currentStep.name,
+                  probability: currentStep.probability_percent || 16.67,
+                } : null,
+                all_steps: steps.map(step => ({
+                  name: step.name,
+                  status: step.status,
+                  probability: step.probability_percent || 16.67,
+                })),
+              });
+            } catch (stepError) {
+              console.warn(`Skipping VC ${vc.vc_id} due to steps query timeout`);
+            }
+          }
+
+          console.log(`Returning ${progressData.length} VC progress records`);
+        } catch (dbError) {
+          console.warn("Database query timed out, falling back to mock data");
+          throw dbError; // Let it fall through to mock data
+        }
       } else {
         // Return mock progress data when database is unavailable
         progressData = [
