@@ -191,20 +191,24 @@ export default function VCDetails() {
   const updateVCStepMutation = useUpdateVCStep();
   const deleteVCStepMutation = useDeleteVCStep();
 
-  // Calculate completion percentage based on step completion
+  // Calculate completion percentage based on actual step probability percentages
   const calculateCompletionPercentage = () => {
     if (vcSteps && vcSteps.length > 0) {
-      const completedSteps = vcSteps.filter(
-        (step: any) => step.status === "completed",
-      ).length;
-      const inProgressSteps = vcSteps.filter(
-        (step: any) => step.status === "in_progress",
-      ).length;
-      const totalSteps = vcSteps.length;
+      // Sum probability_percent of completed steps
+      const completedProbability = vcSteps
+        .filter((step: any) => step.status === "completed")
+        .reduce((sum: number, step: any) => {
+          return sum + (step.probability_percent || 0);
+        }, 0);
 
-      return Math.round(
-        ((completedSteps + inProgressSteps * 0.5) / totalSteps) * 100,
-      );
+      // Add half probability for in-progress steps
+      const inProgressProbability = vcSteps
+        .filter((step: any) => step.status === "in_progress")
+        .reduce((sum: number, step: any) => {
+          return sum + (step.probability_percent || 0) * 0.5;
+        }, 0);
+
+      return Math.round(completedProbability + inProgressProbability);
     }
 
     return vcData?.probability || 0;
