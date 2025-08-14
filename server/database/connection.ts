@@ -2,13 +2,13 @@ import { Pool } from "pg";
 import fs from "fs";
 import path from "path";
 
-// Use environment variables or fallback values for local development
+// Use environment variables or fallback values
 const dbConfig = {
-  user: process.env.PG_USER || "postgres",
-  host: process.env.PG_HOST || "localhost",
-  database: process.env.PG_DB || "banani_crm",
-  password: process.env.PG_PASSWORD || "password",
-  port: Number(process.env.PG_PORT) || 5432,
+  user: process.env.PG_USER || "crmuser",
+  host: process.env.PG_HOST || "10.30.11.95",
+  database: process.env.PG_DB || "crm_test",
+  password: process.env.PG_PASSWORD || "myl@p@y-crm$102019",
+  port: Number(process.env.PG_PORT) || 2019,
   ssl: false, // Change to { rejectUnauthorized: false } if required in production
 };
 
