@@ -703,8 +703,8 @@ export default function VCDashboard() {
                           All VCs Progress Overview (
                           {(vcProgressData || []).length} rounds)
                         </div>
-                        <div className="overflow-x-auto">
-                          <div className="min-w-max">
+                        <div className="w-full">
+                          <div className="w-full">
                             {/* Chart Container with Y-axis labels */}
                             <div
                               className="flex"
@@ -1106,7 +1106,7 @@ export default function VCDashboard() {
                                     (vcProgressData || []).reduce(
                                       (sum: number, vc: any) => {
                                         console.log(
-                                          `🔢 VC ${vc.vc_id}: total_completed_probability = ${vc.total_completed_probability}`,
+                                          `�� VC ${vc.vc_id}: total_completed_probability = ${vc.total_completed_probability}`,
                                         );
                                         return (
                                           sum +
