@@ -911,7 +911,7 @@ export default function VCDashboard() {
                       </div>
 
                       {/* Step-wise Distribution Chart - Right Side */}
-                      <div className="bg-gray-50 p-4 rounded-lg">
+                      <div className="bg-gray-50 p-4 rounded-lg overflow-hidden">
                         <div className="text-sm font-medium text-gray-700 mb-4">
                           Step-wise Distribution - VC Count by Step
                         </div>
