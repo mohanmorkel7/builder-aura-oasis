@@ -421,64 +421,30 @@ export default function VCEdit() {
         minimum_arr_requirement:
           vcDataFromAPI.minimum_arr_requirement?.toString() || "",
         contacts: (() => {
-          console.log("🔍 DEBUG - Raw contacts from API:", vcDataFromAPI.contacts);
-          console.log("🔍 DEBUG - Type of contacts:", typeof vcDataFromAPI.contacts);
+          console.log("🔍 CONTACTS DEBUG - Raw from API:", vcDataFromAPI.contacts);
 
-          if (!vcDataFromAPI.contacts) {
-            console.log("🔍 DEBUG - No contacts found, using default");
-            return [
-              {
-                contact_name: "",
-                designation: "",
-                phone: "",
-                email: "",
-                linkedin: "",
-              },
-            ];
+          let contacts = vcDataFromAPI.contacts;
+          if (!contacts) {
+            console.log("🔍 CONTACTS DEBUG - No contacts, using default empty contact");
+            return [{ contact_name: "", designation: "", phone: "", email: "", linkedin: "" }];
           }
 
-          let parsedContacts;
-          if (typeof vcDataFromAPI.contacts === "string") {
+          if (typeof contacts === "string") {
             try {
-              parsedContacts = JSON.parse(vcDataFromAPI.contacts);
-              console.log("🔍 DEBUG - Parsed contacts from string:", parsedContacts);
+              contacts = JSON.parse(contacts);
+              console.log("🔍 CONTACTS DEBUG - Parsed from JSON string:", contacts);
             } catch (e) {
-              console.error("🔍 DEBUG - Failed to parse contacts string:", e);
-              return [
-                {
-                  contact_name: "",
-                  designation: "",
-                  phone: "",
-                  email: "",
-                  linkedin: "",
-                },
-              ];
+              console.error("🔍 CONTACTS DEBUG - JSON parse error:", e);
+              return [{ contact_name: "", designation: "", phone: "", email: "", linkedin: "" }];
             }
-          } else {
-            parsedContacts = vcDataFromAPI.contacts;
-            console.log("🔍 DEBUG - Using contacts as object:", parsedContacts);
           }
 
-          // Ensure contacts is an array and has proper structure
-          if (!Array.isArray(parsedContacts)) {
-            console.log("🔍 DEBUG - Contacts is not an array, wrapping in array");
-            parsedContacts = [parsedContacts];
+          if (!Array.isArray(contacts)) {
+            contacts = [contacts];
           }
 
-          // Ensure each contact has all required fields
-          const processedContacts = parsedContacts.map((contact, index) => {
-            console.log(`🔍 DEBUG - Processing contact ${index}:`, contact);
-            return {
-              contact_name: contact.contact_name || "",
-              designation: contact.designation || "",
-              phone: contact.phone || "",
-              email: contact.email || "",
-              linkedin: contact.linkedin || "",
-            };
-          });
-
-          console.log("🔍 DEBUG - Final processed contacts:", processedContacts);
-          return processedContacts;
+          console.log("🔍 CONTACTS DEBUG - Final contacts array:", contacts);
+          return contacts;
         })(),
         round_title: vcDataFromAPI.round_title || "",
         round_size: vcDataFromAPI.round_size || "",
