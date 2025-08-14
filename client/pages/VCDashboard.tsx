@@ -724,10 +724,14 @@ export default function VCDashboard() {
                 } else {
                   // Sort steps according to proper VC process order
                   const stepsArray = Array.from(allStepsSet);
-                  allSteps = properStepOrder.filter(step => stepsArray.includes(step));
+                  allSteps = properStepOrder.filter((step) =>
+                    stepsArray.includes(step),
+                  );
 
                   // Add any additional steps not in standard order
-                  const additionalSteps = stepsArray.filter(step => !properStepOrder.includes(step));
+                  const additionalSteps = stepsArray.filter(
+                    (step) => !properStepOrder.includes(step),
+                  );
                   allSteps.push(...additionalSteps);
                 }
 
