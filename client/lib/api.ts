@@ -64,12 +64,18 @@ export class ApiClient {
           fetchError,
         );
 
-        // Check if it's a network connectivity issue
+        // Check if it's a network connectivity issue or timeout
         if (
           fetchError instanceof TypeError &&
           fetchError.message.includes("Failed to fetch")
         ) {
           console.error("Network connectivity issue detected");
+        } else if (fetchError.message === "Request timeout") {
+          console.error("Request timed out - server may be unresponsive");
+          // For timeouts, increment failure count for circuit breaker
+          this.failureCount++;
+          this.lastFailureTime = Date.now();
+          throw new Error("API request timed out - server may be unresponsive");
         }
 
         // Try native fetch one more time before XMLHttpRequest fallback
