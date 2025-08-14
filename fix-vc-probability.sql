@@ -4,12 +4,12 @@ ADD COLUMN IF NOT EXISTS probability_percent DECIMAL(5,2);
 
 -- Update existing VC steps to get probability_percent from their corresponding template steps
 -- This assumes VCs were created from templates and step names match
-UPDATE vc_steps 
+UPDATE vc_steps vs
 SET probability_percent = ts.probability_percent
 FROM vcs v
-JOIN template_steps ts ON (v.template_id = ts.template_id AND vc_steps.name = ts.name)
-WHERE vc_steps.vc_id = v.id
-  AND vc_steps.probability_percent IS NULL;
+JOIN template_steps ts ON (v.template_id = ts.template_id AND vs.name = ts.name)
+WHERE vs.vc_id = v.id
+  AND vs.probability_percent IS NULL;
 
 -- For any remaining null values, use equal distribution per VC
 UPDATE vc_steps 
