@@ -314,14 +314,22 @@ export default function FollowUpTracker() {
       console.log("Found follow-up for status update:", followUp);
 
       if (followUp && user) {
+        // Determine if this is a VC follow-up
+        const followUpType =
+          followUp.type ||
+          (followUp.vc_id || followUp.vc_round_title || followUp.investor_name
+            ? "vc"
+            : "lead");
+
         const notificationData = {
-          stepId: followUp.step_id,
+          stepId: followUpType === "vc" ? followUp.vc_step_id : followUp.step_id,
           userId: parseInt(user.id),
           userName: user.name,
           followUpTitle:
             followUp.title ||
             followUp.description?.substring(0, 50) + "..." ||
             `Follow-up #${followUpId}`,
+          isVC: followUpType === "vc",
         };
 
         console.log("Updating follow-up status with notification:", {
