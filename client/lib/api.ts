@@ -137,6 +137,7 @@ export class ApiClient {
             console.error("Second attempt also timed out - server likely down");
             this.failureCount++;
             this.lastFailureTime = Date.now();
+            this.checkOfflineMode();
             throw new Error(
               "API request timed out - backend server may be down",
             );
