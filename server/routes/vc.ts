@@ -350,8 +350,8 @@ router.get("/progress", async (req: Request, res: Response) => {
                 steps.find((s) => s.status === "in_progress") ||
                 steps.find((s) => s.status === "pending");
 
-              // Use default probability of 16.67% per step (assuming 6 steps = 100%)
-              const defaultProbability = 16.67;
+              // Calculate equal probability distribution based on actual step count
+              const defaultProbability = steps.length > 0 ? 100 / steps.length : 0;
 
               progressData.push({
                 vc_id: vc.vc_id,
@@ -821,7 +821,7 @@ router.get("/:id/steps", async (req: Request, res: Response) => {
       try {
         databaseAvailable = await isDatabaseAvailable();
         console.log(
-          `🔍 Database availability check result: ${databaseAvailable}`,
+          `��� Database availability check result: ${databaseAvailable}`,
         );
       } catch (error) {
         console.log("❌ Database availability check failed:", error.message);
