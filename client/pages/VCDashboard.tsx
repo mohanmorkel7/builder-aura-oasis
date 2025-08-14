@@ -381,6 +381,19 @@ export default function VCDashboard() {
         </Button>
       </div>
 
+      {/* Debug Info */}
+      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+        <h3 className="text-sm font-medium text-yellow-800 mb-2">Debug Info</h3>
+        <p className="text-xs text-yellow-700">
+          VC Follow-ups Data: {vcFollowUps.length} items (Loading: {followUpsLoading ? 'Yes' : 'No'})
+        </p>
+        {vcFollowUps.length > 0 && (
+          <pre className="text-xs text-yellow-700 mt-2">
+            {JSON.stringify(vcFollowUps.slice(0, 2), null, 2)}
+          </pre>
+        )}
+      </div>
+
       {/* Statistics Cards - Enhanced with Gradients */}
       {statsLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
