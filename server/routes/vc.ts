@@ -1230,7 +1230,10 @@ router.get("/steps/:stepId/chats", async (req: Request, res: Response) => {
 
       if (dbAvailable) {
         // Check if this is actually a VC step
-        const stepCheck = await pool.query("SELECT vc_id FROM vc_steps WHERE id = $1", [stepId]);
+        const stepCheck = await pool.query(
+          "SELECT vc_id FROM vc_steps WHERE id = $1",
+          [stepId],
+        );
 
         if (stepCheck.rows.length === 0) {
           return res.status(404).json({
@@ -1251,7 +1254,7 @@ router.get("/steps/:stepId/chats", async (req: Request, res: Response) => {
         const result = await pool.query(query, [vcId]);
 
         // Format to match step chat structure
-        chats = result.rows.map(comment => ({
+        chats = result.rows.map((comment) => ({
           id: comment.id,
           step_id: stepId,
           user_id: comment.created_by,
@@ -1260,7 +1263,7 @@ router.get("/steps/:stepId/chats", async (req: Request, res: Response) => {
           message_type: "text",
           is_rich_text: true,
           created_at: comment.created_at,
-          attachments: []
+          attachments: [],
         }));
 
         console.log(`📊 Found ${chats.length} VC comments as step chats`);
@@ -1277,8 +1280,8 @@ router.get("/steps/:stepId/chats", async (req: Request, res: Response) => {
             message_type: "text",
             is_rich_text: true,
             created_at: new Date().toISOString(),
-            attachments: []
-          }
+            attachments: [],
+          },
         ];
       }
     } catch (dbError) {
@@ -1307,9 +1310,19 @@ router.post("/steps/:stepId/chats", async (req: Request, res: Response) => {
       });
     }
 
-    const { user_id, user_name, message, message_type = "text", is_rich_text = true } = req.body;
+    const {
+      user_id,
+      user_name,
+      message,
+      message_type = "text",
+      is_rich_text = true,
+    } = req.body;
 
-    console.log(`💬 Creating chat for VC step ${stepId}:`, { user_id, user_name, message });
+    console.log(`💬 Creating chat for VC step ${stepId}:`, {
+      user_id,
+      user_name,
+      message,
+    });
 
     if (!message || !message.trim()) {
       return res.status(400).json({
@@ -1321,11 +1334,16 @@ router.post("/steps/:stepId/chats", async (req: Request, res: Response) => {
     let chat;
     try {
       const dbAvailable = await isDatabaseAvailable();
-      console.log(`🔍 Database available for creating VC step chat: ${dbAvailable}`);
+      console.log(
+        `🔍 Database available for creating VC step chat: ${dbAvailable}`,
+      );
 
       if (dbAvailable) {
         // Check if this is actually a VC step and get the VC ID
-        const stepCheck = await pool.query("SELECT vc_id FROM vc_steps WHERE id = $1", [stepId]);
+        const stepCheck = await pool.query(
+          "SELECT vc_id FROM vc_steps WHERE id = $1",
+          [stepId],
+        );
 
         if (stepCheck.rows.length === 0) {
           return res.status(404).json({
@@ -1346,7 +1364,7 @@ router.post("/steps/:stepId/chats", async (req: Request, res: Response) => {
           vcId,
           message.trim(),
           user_id,
-          user_name
+          user_name,
         ]);
 
         const comment = result.rows[0];
@@ -1361,7 +1379,7 @@ router.post("/steps/:stepId/chats", async (req: Request, res: Response) => {
           message_type: "text",
           is_rich_text: true,
           created_at: comment.created_at,
-          attachments: []
+          attachments: [],
         };
 
         console.log(`✅ VC step chat created:`, chat);
@@ -1377,7 +1395,7 @@ router.post("/steps/:stepId/chats", async (req: Request, res: Response) => {
           message_type,
           is_rich_text,
           created_at: new Date().toISOString(),
-          attachments: []
+          attachments: [],
         };
       }
     } catch (dbError) {
@@ -1392,7 +1410,7 @@ router.post("/steps/:stepId/chats", async (req: Request, res: Response) => {
         message_type,
         is_rich_text,
         created_at: new Date().toISOString(),
-        attachments: []
+        attachments: [],
       };
     }
 

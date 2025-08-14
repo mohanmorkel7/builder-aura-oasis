@@ -1275,7 +1275,15 @@ export function useStepChats(stepId: number, isVC: boolean = false) {
 export function useCreateStepChat() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ stepId, chatData, isVC = false }: { stepId: number; chatData: any; isVC?: boolean }) => {
+    mutationFn: ({
+      stepId,
+      chatData,
+      isVC = false,
+    }: {
+      stepId: number;
+      chatData: any;
+      isVC?: boolean;
+    }) => {
       if (isVC) {
         // Use VC step chat endpoint
         return apiClient.request(`/vc/steps/${stepId}/chats`, {
@@ -1290,7 +1298,9 @@ export function useCreateStepChat() {
     onSuccess: (data, { stepId, isVC = false }) => {
       console.log("Chat created successfully:", data);
       // Invalidate and refetch the chat query
-      const queryKey = isVC ? ["vc-step-chats", stepId] : ["step-chats", stepId];
+      const queryKey = isVC
+        ? ["vc-step-chats", stepId]
+        : ["step-chats", stepId];
       queryClient.invalidateQueries({ queryKey });
       // Also trigger an immediate refetch
       queryClient.refetchQueries({ queryKey });
