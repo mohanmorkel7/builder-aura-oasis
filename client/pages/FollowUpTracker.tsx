@@ -233,6 +233,19 @@ export default function FollowUpTracker() {
   const isSales = user?.role === "sales";
   const isVC = user?.role === "vc" || user?.role === "venture";
 
+  // Helper function to check if user can see a follow-up based on role
+  const canViewFollowUp = (followUp: FollowUp) => {
+    const followUpType = followUp.type ||
+      (followUp.vc_id || followUp.vc_round_title || followUp.investor_name
+        ? "vc"
+        : "lead");
+
+    if (isAdmin) return true; // Admin sees all
+    if (followUpType === "vc" && !isVC) return false; // VC follow-ups only for VC/admin
+    if (followUpType === "lead" && isVC) return false; // Lead follow-ups hidden from VC role
+    return true;
+  };
+
   // Fetch follow-ups data from API
   useEffect(() => {
     const fetchFollowUps = async () => {
