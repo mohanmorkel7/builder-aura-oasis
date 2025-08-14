@@ -182,10 +182,11 @@ export default function VCDashboard() {
   const { data: vcFollowUps = [], isLoading: followUpsLoading } = useQuery({
     queryKey: ["vc-follow-ups"],
     queryFn: async () => {
-      return await apiClient.request("/vc/follow-ups");
+      return await apiClient.request(`/vc/follow-ups?t=${Date.now()}`);
     },
     retry: 2,
-    staleTime: 30000, // 30 seconds
+    staleTime: 0, // No caching to ensure fresh data
+    cacheTime: 0, // Don't cache the result
   });
 
   // Fetch VC progress data from database
