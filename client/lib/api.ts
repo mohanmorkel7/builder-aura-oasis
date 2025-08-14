@@ -74,8 +74,12 @@ export class ApiClient {
 
         // Try native fetch one more time before XMLHttpRequest fallback
         try {
-          console.log("Attempting second fetch...");
-          response = await fetch(url, config);
+          console.log("Attempting second fetch with shorter timeout...");
+          const shortTimeoutPromise = new Promise<never>((_, reject) => {
+            setTimeout(() => reject(new Error("Request timeout")), 8000); // 8 seconds
+          });
+          const secondFetchPromise = fetch(url, config);
+          response = await Promise.race([secondFetchPromise, shortTimeoutPromise]);
         } catch (secondFetchError) {
           console.error(
             "Second fetch attempt failed, using XMLHttpRequest:",
