@@ -1520,23 +1520,30 @@ export function useUploadTicketAttachment() {
 export function useUpdateVCStep() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ stepId, stepData }: { stepId: number; stepData: any }) =>
-      apiClient.request(`/vc/steps/${stepId}`, {
+    mutationFn: ({ stepId, stepData }: { stepId: number; stepData: any }) => {
+      console.log("🔄 Updating VC step:", stepId, stepData);
+      return apiClient.request(`/vc/steps/${stepId}`, {
         method: "PUT",
         body: JSON.stringify(stepData),
-      }),
+      });
+    },
     onSuccess: (data: any) => {
+      console.log("✅ VC step update successful:", data);
       // Get the vc_id from the response to invalidate specific queries
-      if (data && data.vc_id) {
+      if (data && data.data && data.data.vc_id) {
+        console.log("🔄 Invalidating queries for VC:", data.data.vc_id);
         // Invalidate specific VC steps and VC data
         queryClient.invalidateQueries({
-          queryKey: ["vc-steps", data.vc_id],
+          queryKey: ["vc-steps", data.data.vc_id.toString()],
         });
-        queryClient.invalidateQueries({ queryKey: ["vc", data.vc_id] });
+        queryClient.invalidateQueries({ queryKey: ["vc", data.data.vc_id.toString()] });
       }
       // Also invalidate broader queries as fallback
       queryClient.invalidateQueries({ queryKey: ["vc-steps"] });
       queryClient.invalidateQueries({ queryKey: ["vcs"] });
+    },
+    onError: (error: any) => {
+      console.error("❌ VC step update failed:", error);
     },
   });
 }
