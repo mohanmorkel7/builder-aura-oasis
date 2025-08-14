@@ -174,6 +174,8 @@ const getNotificationsFromFollowUps = async (
             "Follow-ups API timeout (network or database slow):",
             error.message,
           );
+        } else if (error.message.includes("Offline mode")) {
+          console.warn("Follow-ups API blocked - app is in offline mode");
         } else {
           console.warn("Follow-ups API call failed:", error.message);
         }
