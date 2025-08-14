@@ -229,7 +229,7 @@ export class VCRepository {
         COUNT(CASE WHEN status = 'completed' THEN 1 END) as completed
       FROM vcs
     `;
-    const result = await pool.query(query);
+    const result = await withTimeout(pool.query(query), 5000);
     return {
       total: parseInt(result.rows[0].total),
       in_progress: parseInt(result.rows[0].in_progress),
