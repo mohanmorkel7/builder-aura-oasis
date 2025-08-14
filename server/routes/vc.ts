@@ -35,19 +35,19 @@ router.get("/debug/connection", async (req: Request, res: Response) => {
         database_available: true,
         current_time: testQuery.rows[0].current_time,
         vcs_table_columns: tableCheck.rows,
-        message: "Database connection working properly"
+        message: "Database connection working properly",
       });
     } else {
       res.json({
         database_available: false,
-        message: "Database not available, using mock data"
+        message: "Database not available, using mock data",
       });
     }
   } catch (error) {
     console.error("Debug connection error:", error);
     res.status(500).json({
       error: error.message,
-      database_available: false
+      database_available: false,
     });
   }
 });
@@ -464,7 +464,9 @@ router.post("/", async (req: Request, res: Response) => {
 
         // If template_id is provided, create VC steps from template
         if (vc && vcData.template_id) {
-          console.log(`🔧 Creating VC steps from template ${vcData.template_id} for VC ${vc.id}`);
+          console.log(
+            `🔧 Creating VC steps from template ${vcData.template_id} for VC ${vc.id}`,
+          );
 
           try {
             // Get template steps
@@ -474,7 +476,9 @@ router.post("/", async (req: Request, res: Response) => {
               WHERE template_id = $1
               ORDER BY step_order ASC
             `;
-            const templateStepsResult = await pool.query(templateStepsQuery, [vcData.template_id]);
+            const templateStepsResult = await pool.query(templateStepsQuery, [
+              vcData.template_id,
+            ]);
 
             if (templateStepsResult.rows.length > 0) {
               // Create VC steps from template steps
@@ -492,12 +496,16 @@ router.post("/", async (req: Request, res: Response) => {
                   templateStep.name,
                   templateStep.description,
                   templateStep.step_order,
-                  vcData.created_by
+                  vcData.created_by,
                 ]);
               }
-              console.log(`Created ${templateStepsResult.rows.length} VC steps from template`);
+              console.log(
+                `Created ${templateStepsResult.rows.length} VC steps from template`,
+              );
             } else {
-              console.log(`No template steps found for template ${vcData.template_id}`);
+              console.log(
+                `No template steps found for template ${vcData.template_id}`,
+              );
             }
           } catch (stepError) {
             console.error("Error creating VC steps from template:", stepError);
@@ -505,7 +513,9 @@ router.post("/", async (req: Request, res: Response) => {
           }
         }
       } else {
-        console.log("⚠️ Database not available, using mock data for VC creation");
+        console.log(
+          "⚠️ Database not available, using mock data for VC creation",
+        );
         // Create mock VC when database is unavailable
         vc = {
           id: Math.floor(Math.random() * 1000) + 100,
