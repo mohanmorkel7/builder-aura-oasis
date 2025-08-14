@@ -35,30 +35,74 @@ router.post("/", async (req: Request, res: Response) => {
 
     if (await isDatabaseAvailable()) {
       try {
-        // First try to insert with the full schema including follow_up_type, lead_id, step_id, vc_id, and vc_step_id
-        const query = `
-          INSERT INTO follow_ups (
-            client_id, lead_id, step_id, vc_id, vc_step_id, title, description, due_date,
-            follow_up_type, assigned_to, created_by, message_id
-          )
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
-          RETURNING *
-        `;
+        // Check if VC columns exist in follow_ups table
+        const columnCheck = await pool.query(`
+          SELECT column_name
+          FROM information_schema.columns
+          WHERE table_name = 'follow_ups'
+          AND column_name IN ('vc_id', 'vc_step_id')
+        `);
 
-        const values = [
-          client_id || null,
-          lead_id || null,
-          step_id || null,
-          vc_id || null,
-          vc_step_id || null,
-          title,
-          description || null,
-          due_date || null,
-          follow_up_type,
-          assigned_to || null,
-          created_by,
-          message_id || null,
-        ];
+        const hasVCColumns = columnCheck.rows.length === 2;
+
+        let query, values;
+
+        if (hasVCColumns) {
+          // Full query with VC support
+          query = `
+            INSERT INTO follow_ups (
+              client_id, lead_id, step_id, vc_id, vc_step_id, title, description, due_date,
+              follow_up_type, assigned_to, created_by, message_id
+            )
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+            RETURNING *
+          `;
+
+          values = [
+            client_id || null,
+            lead_id || null,
+            step_id || null,
+            vc_id || null,
+            vc_step_id || null,
+            title,
+            description || null,
+            due_date || null,
+            follow_up_type,
+            assigned_to || null,
+            created_by,
+            message_id || null,
+          ];
+        } else {
+          // Legacy query without VC support
+          if (vc_id || vc_step_id) {
+            console.log("⚠️ VC follow-up requested but VC columns don't exist in follow_ups table");
+            return res.status(400).json({
+              error: "VC follow-ups not supported. Database migration required."
+            });
+          }
+
+          query = `
+            INSERT INTO follow_ups (
+              client_id, lead_id, step_id, title, description, due_date,
+              follow_up_type, assigned_to, created_by, message_id
+            )
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+            RETURNING *
+          `;
+
+          values = [
+            client_id || null,
+            lead_id || null,
+            step_id || null,
+            title,
+            description || null,
+            due_date || null,
+            follow_up_type,
+            assigned_to || null,
+            created_by,
+            message_id || null,
+          ];
+        }
 
         const result = await pool.query(query, values);
         const followUp = result.rows[0];
