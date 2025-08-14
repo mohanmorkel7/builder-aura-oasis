@@ -7,7 +7,7 @@ export class ApiClient {
   private readonly CIRCUIT_BREAKER_TIMEOUT = 30000; // 30 seconds
   private isOfflineMode = false;
   private offlineDetectedAt = 0;
-  private readonly OFFLINE_THRESHOLD = 3; // Number of consecutive failures to trigger offline mode
+  private readonly OFFLINE_THRESHOLD = 2; // Number of consecutive failures to trigger offline mode
 
   // Method to reset circuit breaker (for development/demo mode)
   public resetCircuitBreaker() {
