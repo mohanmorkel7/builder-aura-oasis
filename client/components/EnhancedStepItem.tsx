@@ -102,6 +102,7 @@ export function EnhancedStepItem({
   onUpdateStatus,
   onDeleteStep,
   isDragOverlay = false,
+  isVC = false,
 }: EnhancedStepItemProps) {
   const { user } = useAuth();
   const navigate = useNavigate();
