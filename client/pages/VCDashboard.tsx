@@ -1553,7 +1553,10 @@ export default function VCDashboard() {
                             <AlertDialogFooter>
                               <AlertDialogCancel>Cancel</AlertDialogCancel>
                               <AlertDialogAction
-                                onClick={() => handleDeleteVC(vc.id)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDeleteVC(vc.id);
+                                }}
                                 className="bg-red-600 hover:bg-red-700"
                               >
                                 Delete
