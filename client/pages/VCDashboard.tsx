@@ -1139,13 +1139,13 @@ export default function VCDashboard() {
                           Avg Progress
                         </div>
                         <div className="text-2xl font-bold text-orange-900">
-                          {Math.round(
+                          {vcProgressData.length > 0 ? Math.round(
                             vcProgressData.reduce(
                               (sum: number, vc: any) =>
-                                sum + vc.total_completed_probability,
+                                sum + (vc.total_completed_probability || 0),
                               0,
                             ) / vcProgressData.length,
-                          )}
+                          ) : 0}
                           %
                         </div>
                       </div>
