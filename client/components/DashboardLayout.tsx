@@ -170,7 +170,7 @@ const getNotificationsFromFollowUps = async (
             error.message,
           );
         } else if (error.message.includes("timeout")) {
-          console.warn("Follow-ups API timeout:", error.message);
+          console.warn("Follow-ups API timeout (network or database slow):", error.message);
         } else {
           console.warn("Follow-ups API call failed:", error.message);
         }
