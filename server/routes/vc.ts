@@ -425,7 +425,7 @@ router.post("/", async (req: Request, res: Response) => {
 
         // If template_id is provided, create VC steps from template
         if (vc && vcData.template_id) {
-          console.log(`Creating VC steps from template ${vcData.template_id} for VC ${vc.id}`);
+          console.log(`🔧 Creating VC steps from template ${vcData.template_id} for VC ${vc.id}`);
 
           try {
             // Get template steps
