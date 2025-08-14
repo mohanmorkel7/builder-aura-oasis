@@ -88,10 +88,10 @@ export function DraggableVCStepsList({
         const newIndex = items.findIndex((item) => item.id === over.id);
 
         const newItems = arrayMove(items, oldIndex, newIndex);
-        
+
         // Call the parent's reorder function
         onReorderSteps(newItems);
-        
+
         return newItems;
       });
     }
@@ -120,7 +120,9 @@ export function DraggableVCStepsList({
     updateStepMutation.mutate({ stepId, stepData });
   };
 
-  const activeStep = activeId ? items.find((item) => item.id === activeId) : null;
+  const activeStep = activeId
+    ? items.find((item) => item.id === activeId)
+    : null;
 
   if (items.length === 0) {
     return (
