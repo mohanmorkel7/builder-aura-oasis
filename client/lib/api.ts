@@ -85,7 +85,10 @@ export class ApiClient {
             setTimeout(() => reject(new Error("Request timeout")), 8000); // 8 seconds
           });
           const secondFetchPromise = fetch(url, config);
-          response = await Promise.race([secondFetchPromise, shortTimeoutPromise]);
+          response = await Promise.race([
+            secondFetchPromise,
+            shortTimeoutPromise,
+          ]);
         } catch (secondFetchError) {
           console.error(
             "Second fetch attempt failed, using XMLHttpRequest:",
@@ -97,7 +100,9 @@ export class ApiClient {
             console.error("Second attempt also timed out - server likely down");
             this.failureCount++;
             this.lastFailureTime = Date.now();
-            throw new Error("API request timed out - backend server may be down");
+            throw new Error(
+              "API request timed out - backend server may be down",
+            );
           }
 
           // Fallback to XMLHttpRequest if fetch is blocked or intercepted (but not for timeouts)
@@ -108,7 +113,9 @@ export class ApiClient {
             console.error("All request methods failed:", xhrError);
             this.failureCount++;
             this.lastFailureTime = Date.now();
-            throw new Error("All request methods failed - backend server may be unavailable");
+            throw new Error(
+              "All request methods failed - backend server may be unavailable",
+            );
           }
         }
       }

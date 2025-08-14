@@ -163,7 +163,10 @@ export default function VCDashboard() {
       } catch (error) {
         console.error("Failed to fetch VCs:", error);
         // Return empty array as fallback when backend is down
-        if (error.message.includes("timeout") || error.message.includes("unavailable")) {
+        if (
+          error.message.includes("timeout") ||
+          error.message.includes("unavailable")
+        ) {
           return [];
         }
         throw error;
@@ -171,7 +174,10 @@ export default function VCDashboard() {
     },
     retry: (failureCount, error) => {
       // Don't retry if it's a timeout or server unavailable error
-      if (error.message.includes("timeout") || error.message.includes("unavailable")) {
+      if (
+        error.message.includes("timeout") ||
+        error.message.includes("unavailable")
+      ) {
         return false;
       }
       return failureCount < 3;
