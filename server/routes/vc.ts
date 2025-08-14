@@ -295,13 +295,13 @@ router.get("/progress", async (req: Request, res: Response) => {
             v.investor_name,
             v.status as vc_status
           FROM vcs v
-          WHERE v.status IN ('in-progress', 'won')
-            AND (v.is_partial IS NULL OR v.is_partial = false)
+          WHERE (v.is_partial IS NULL OR v.is_partial = false)
           ORDER BY v.id
         `;
 
         const vcsResult = await pool.query(vcsQuery);
         console.log(`Found ${vcsResult.rows.length} VCs for progress tracking`);
+        console.log('VCs found:', vcsResult.rows.map(vc => ({ id: vc.vc_id, title: vc.round_title, status: vc.vc_status })));
 
         for (const vc of vcsResult.rows) {
           try {
@@ -1114,7 +1114,7 @@ router.get("/:id/comments", async (req: Request, res: Response) => {
     let comments = [];
     try {
       const dbAvailable = await isDatabaseAvailable();
-      console.log(`🔍 Database available for VC comments: ${dbAvailable}`);
+      console.log(`���� Database available for VC comments: ${dbAvailable}`);
 
       if (dbAvailable) {
         const query = `
