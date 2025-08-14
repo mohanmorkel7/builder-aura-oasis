@@ -946,10 +946,26 @@ export function useLeads(salesRepId?: number) {
   return useQuery({
     queryKey: ["leads", salesRepId],
     queryFn: async () => {
-      return await apiClient.getLeads(salesRepId);
+      try {
+        return await apiClient.getLeads(salesRepId);
+      } catch (error) {
+        console.error("Failed to fetch leads:", error);
+        // Return empty array when backend is down
+        if (error.message.includes("timeout") || error.message.includes("unavailable") || error.message.includes("Offline mode")) {
+          return [];
+        }
+        throw error;
+      }
     },
-    retry: 3,
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    retry: (failureCount, error) => {
+      // Don't retry if it's a timeout, offline, or server unavailable error
+      if (error.message.includes("timeout") || error.message.includes("unavailable") || error.message.includes("Offline mode")) {
+        console.log("Not retrying due to offline/timeout condition");
+        return false;
+      }
+      return failureCount < 2;
+    },
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 15000),
   });
 }
 
