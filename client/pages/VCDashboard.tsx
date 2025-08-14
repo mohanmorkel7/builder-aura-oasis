@@ -1090,22 +1090,16 @@ export default function VCDashboard() {
         {(() => {
           // Filter follow-ups by due status
           const now = new Date();
-          console.log("🔍 VCDashboard - VC Follow-ups raw data:", vcFollowUps);
-          console.log("🔍 VCDashboard - Current time:", now);
-
           const currentDueFollowUps = vcFollowUps.filter((followUp: any) => {
             if (!followUp.due_date) return false;
             const dueDate = new Date(followUp.due_date);
             const diffDays = Math.ceil(
               (dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
             );
-            console.log(`🔍 Follow-up "${followUp.title}": due_date=${followUp.due_date}, dueDate=${dueDate}, diffDays=${diffDays}, status=${followUp.status}`);
             return (
               diffDays >= 0 && diffDays <= 7 && followUp.status !== "completed"
             ); // Due within 7 days
           });
-
-          console.log("🔍 VCDashboard - Current due follow-ups:", currentDueFollowUps);
 
           const overdueFollowUps = vcFollowUps.filter((followUp: any) => {
             if (!followUp.due_date) return false;
