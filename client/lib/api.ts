@@ -47,7 +47,15 @@ export class ApiClient {
       try {
         // Store original fetch in case it gets overridden by third-party scripts
         const originalFetch = window.fetch.bind(window);
-        response = await originalFetch(url, config);
+
+        // Add timeout to prevent hanging requests
+        const timeoutMs = 15000; // 15 seconds
+        const timeoutPromise = new Promise<never>((_, reject) => {
+          setTimeout(() => reject(new Error("Request timeout")), timeoutMs);
+        });
+
+        const fetchPromise = originalFetch(url, config);
+        response = await Promise.race([fetchPromise, timeoutPromise]);
       } catch (fetchError) {
         console.error(
           "Primary fetch failed for URL:",
