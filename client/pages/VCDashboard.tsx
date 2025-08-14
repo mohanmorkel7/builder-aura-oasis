@@ -179,14 +179,18 @@ export default function VCDashboard() {
   });
 
   // Fetch VC follow-ups from database
-  const { data: vcFollowUps = [], isLoading: followUpsLoading } = useQuery({
+  const { data: vcFollowUps = [], isLoading: followUpsLoading, refetch: refetchFollowUps } = useQuery({
     queryKey: ["vc-follow-ups"],
     queryFn: async () => {
-      return await apiClient.request(`/vc/follow-ups?t=${Date.now()}`);
+      const response = await apiClient.request("/vc/follow-ups");
+      console.log("🔍 VCDashboard - API response:", response);
+      return response;
     },
     retry: 2,
-    staleTime: 0, // No caching to ensure fresh data
-    cacheTime: 0, // Don't cache the result
+    staleTime: 0,
+    cacheTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
   });
 
   // Fetch VC progress data from database
