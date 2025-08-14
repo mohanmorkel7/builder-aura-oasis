@@ -314,19 +314,12 @@ export const AuthProvider = React.memo(function AuthProvider({
         }
 
         if (userData) {
-          console.log("Demo login successful for:", userData.name, userData.role);
           setUser(userData);
           localStorage.setItem("banani_user", JSON.stringify(userData));
           setIsLoading(false);
           return true;
-        } else {
-          console.log("No userData created - Email check failed for:", email);
         }
-      } else {
-        console.log("Password check failed - Expected: 'password', Got:", password);
       }
-
-      console.log("Login failed - returning false");
       setIsLoading(false);
       return false;
     }
