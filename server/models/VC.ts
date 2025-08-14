@@ -255,12 +255,12 @@ export class VCRepository {
         address, city, state, country, website,
         potential_lead_investor, minimum_size, maximum_size, minimum_arr_requirement,
         priority_level, start_date, targeted_end_date, spoc,
-        billing_currency, template_id, created_by, assigned_to, notes, is_partial
+        billing_currency, template_id, contacts, created_by, assigned_to, notes, is_partial
       )
       VALUES (
         $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
         $11, $12, $13, $14, $15, $16, $17, $18, $19, $20,
-        $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34
+        $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35
       )
       RETURNING *
     `;
