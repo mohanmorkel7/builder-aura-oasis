@@ -718,7 +718,7 @@ export default function VCDashboard() {
                     "Due Diligence",
                     "Term Sheet",
                     "Legal Review",
-                    "Final Approval"
+                    "Final Approval",
                   );
                 }
 
