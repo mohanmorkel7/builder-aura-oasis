@@ -276,23 +276,18 @@ export function VCEnhancedStepItem({
       });
 
       // Add a system message to the chat indicating follow-up was created
-      try {
-        const systemMessage = {
-          message: `📋 Follow-up task created: "${followUpNotes}" - Due: ${new Date(followUpDueDate).toLocaleDateString()}`,
-          message_type: "system",
-          user_id: parseInt(user?.id || "1"),
-          user_name: user?.first_name || "System",
-          is_rich_text: false,
-        };
+      const systemMessage = {
+        id: Date.now(),
+        message: `📋 Follow-up task created: "${followUpNotes}" - Due: ${new Date(followUpDueDate).toLocaleDateString()}`,
+        message_type: "system" as const,
+        user_id: parseInt(user?.id || "1"),
+        user_name: "System",
+        is_rich_text: false,
+        created_at: new Date().toISOString(),
+      };
 
-        await sendMessageMutation.mutateAsync(systemMessage);
-
-        // Refresh chat messages to show the new system message
-        refetchMessages();
-      } catch (messageError) {
-        console.error("Failed to send system message:", messageError);
-        // Continue anyway since the follow-up was created successfully
-      }
+      // Add the system message to the local chat state immediately
+      setChatMessages((prev) => [...prev, systemMessage]);
 
       setCreateFollowUp(false);
       setFollowUpNotes("");
