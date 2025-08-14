@@ -320,7 +320,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             console.warn(
               "Notifications API timeout - will retry on next cycle",
             );
-            setNotifications([]);
+            // Instead of clearing notifications, keep existing ones if any
+            if (notifications.length === 0) {
+              setNotifications([]);
+            }
           } else if (
             errorMsg.includes("HTML instead of JSON") ||
             errorMsg.includes("Server routing error")
