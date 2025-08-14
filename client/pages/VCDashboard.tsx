@@ -1228,7 +1228,7 @@ export default function VCDashboard() {
         {(() => {
           // Filter follow-ups by due status
           const now = new Date();
-          const currentDueFollowUps = vcFollowUps.filter((followUp: any) => {
+          const currentDueFollowUps = (vcFollowUps || []).filter((followUp: any) => {
             if (!followUp.due_date || followUp.status === "completed")
               return false;
 
