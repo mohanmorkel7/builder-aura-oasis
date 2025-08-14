@@ -81,6 +81,7 @@ interface EnhancedStepItemProps {
   onUpdateStatus: (stepId: number, status: string) => void;
   onDeleteStep: (stepId: number) => void;
   isDragOverlay?: boolean;
+  isVC?: boolean; // Flag to indicate if this is for VC (disables step-level chat)
 }
 
 interface ChatMessage {
