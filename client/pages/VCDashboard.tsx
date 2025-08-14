@@ -158,10 +158,26 @@ export default function VCDashboard() {
       const queryString = params.toString();
       const url = queryString ? `/vc?${queryString}` : "/vc";
 
-      return await apiClient.request(url);
+      try {
+        return await apiClient.request(url);
+      } catch (error) {
+        console.error("Failed to fetch VCs:", error);
+        // Return empty array as fallback when backend is down
+        if (error.message.includes("timeout") || error.message.includes("unavailable")) {
+          return [];
+        }
+        throw error;
+      }
     },
-    retry: 2,
+    retry: (failureCount, error) => {
+      // Don't retry if it's a timeout or server unavailable error
+      if (error.message.includes("timeout") || error.message.includes("unavailable")) {
+        return false;
+      }
+      return failureCount < 3;
+    },
     staleTime: 30000, // 30 seconds
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
   });
 
   // Fetch VC statistics from database
