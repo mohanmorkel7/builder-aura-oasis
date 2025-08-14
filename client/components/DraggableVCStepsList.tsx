@@ -99,16 +99,25 @@ export function DraggableVCStepsList({
     setActiveId(null);
   }
 
-  const handleUpdateStep = async (stepId: number, updateData: any) => {
-    try {
-      await updateStepMutation.mutateAsync({
-        stepId,
-        stepData: updateData,
-      });
-    } catch (error) {
-      console.error("Failed to update VC step:", error);
-      throw error;
+  const handleUpdateStatus = (stepId: number, status: string) => {
+    const step = items.find((item) => item.id === stepId);
+    if (!step) {
+      console.error("VC Step not found:", stepId);
+      return;
     }
+
+    // Don't allow status updates on template steps
+    if (step.isTemplate) {
+      console.warn("Cannot update status on template step:", stepId);
+      alert(
+        "Cannot update status on template steps. Please create actual VC steps first.",
+      );
+      return;
+    }
+
+    const stepData = { status };
+    console.log("Updating VC step status:", stepId, "to:", status);
+    updateStepMutation.mutate({ stepId, stepData });
   };
 
   const activeStep = activeId ? items.find((item) => item.id === activeId) : null;
