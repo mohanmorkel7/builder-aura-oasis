@@ -275,19 +275,35 @@ export function VCEnhancedStepItem({
         created_by: parseInt(user?.id || "1"),
       });
 
-      // Add a system message to the chat indicating follow-up was created
-      const systemMessage = {
-        id: Date.now(),
-        message: `📋 Follow-up task created: "${followUpNotes}" - Due: ${new Date(followUpDueDate).toLocaleDateString()}`,
-        message_type: "system" as const,
-        user_id: parseInt(user?.id || "1"),
-        user_name: "System",
-        is_rich_text: false,
-        created_at: new Date().toISOString(),
-      };
+      // Send system message to API so it persists in database
+      const systemMessageText = `📋 Follow-up task created: "${followUpNotes}" - Due: ${new Date(followUpDueDate).toLocaleDateString()}`;
 
-      // Add the system message to the local chat state immediately
-      setChatMessages((prev) => [...prev, systemMessage]);
+      try {
+        const systemMessageData = await sendMessageMutation.mutateAsync({
+          user_id: parseInt(user?.id || "1"),
+          user_name: "System",
+          message: systemMessageText,
+          message_type: "system",
+          is_rich_text: false,
+          attachments: [],
+        });
+
+        // Add to local state if API call successful
+        setChatMessages((prev) => [...prev, systemMessageData]);
+      } catch (messageError) {
+        console.error("Failed to save system message:", messageError);
+        // Fallback: add to local state only
+        const systemMessage = {
+          id: Date.now(),
+          message: systemMessageText,
+          message_type: "system" as const,
+          user_id: parseInt(user?.id || "1"),
+          user_name: "System",
+          is_rich_text: false,
+          created_at: new Date().toISOString(),
+        };
+        setChatMessages((prev) => [...prev, systemMessage]);
+      }
 
       setCreateFollowUp(false);
       setFollowUpNotes("");
