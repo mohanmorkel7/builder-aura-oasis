@@ -1091,7 +1091,8 @@ export default function VCDashboard() {
           // Filter follow-ups by due status
           const now = new Date();
           const currentDueFollowUps = vcFollowUps.filter((followUp: any) => {
-            if (!followUp.due_date || followUp.status === "completed") return false;
+            if (!followUp.due_date || followUp.status === "completed")
+              return false;
 
             try {
               const dueDate = new Date(followUp.due_date);
@@ -1104,13 +1105,18 @@ export default function VCDashboard() {
               // Due within next 7 days (including today)
               return diffDays >= 0 && diffDays <= 7;
             } catch (error) {
-              console.error("Error parsing due_date:", followUp.due_date, error);
+              console.error(
+                "Error parsing due_date:",
+                followUp.due_date,
+                error,
+              );
               return false;
             }
           });
 
           const overdueFollowUps = vcFollowUps.filter((followUp: any) => {
-            if (!followUp.due_date || followUp.status === "completed") return false;
+            if (!followUp.due_date || followUp.status === "completed")
+              return false;
 
             try {
               const dueDate = new Date(followUp.due_date);
@@ -1119,7 +1125,11 @@ export default function VCDashboard() {
 
               return dueDate < now;
             } catch (error) {
-              console.error("Error parsing due_date for overdue check:", followUp.due_date, error);
+              console.error(
+                "Error parsing due_date for overdue check:",
+                followUp.due_date,
+                error,
+              );
               return false;
             }
           });
