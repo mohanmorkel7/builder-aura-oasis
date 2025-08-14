@@ -338,7 +338,7 @@ router.get("/progress", async (req: Request, res: Response) => {
                 new Promise((_, reject) => {
                   setTimeout(
                     () => reject(new Error("Steps query timeout")),
-                    2000,
+                    8000,
                   );
                 }),
               ]);
