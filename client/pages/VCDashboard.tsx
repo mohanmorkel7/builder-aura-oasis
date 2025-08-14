@@ -163,10 +163,7 @@ export default function VCDashboard() {
       } catch (error) {
         console.error("Failed to fetch VCs:", error);
         // Return empty array as fallback when backend is down
-        if (
-          error.message.includes("timeout") ||
-          error.message.includes("unavailable")
-        ) {
+        if (error.message.includes("timeout") || error.message.includes("unavailable")) {
           return [];
         }
         throw error;
@@ -174,10 +171,7 @@ export default function VCDashboard() {
     },
     retry: (failureCount, error) => {
       // Don't retry if it's a timeout or server unavailable error
-      if (
-        error.message.includes("timeout") ||
-        error.message.includes("unavailable")
-      ) {
+      if (error.message.includes("timeout") || error.message.includes("unavailable")) {
         return false;
       }
       return failureCount < 3;
@@ -194,10 +188,26 @@ export default function VCDashboard() {
   } = useQuery({
     queryKey: ["vc-stats"],
     queryFn: async () => {
-      return await apiClient.request("/vc/stats");
+      try {
+        return await apiClient.request("/vc/stats");
+      } catch (error) {
+        console.error("Failed to fetch VC stats:", error);
+        // Return default stats when backend is down
+        if (error.message.includes("timeout") || error.message.includes("unavailable")) {
+          return { total: 0, in_progress: 0, won: 0, lost: 0 };
+        }
+        throw error;
+      }
     },
-    retry: 2,
+    retry: (failureCount, error) => {
+      // Don't retry if it's a timeout or server unavailable error
+      if (error.message.includes("timeout") || error.message.includes("unavailable")) {
+        return false;
+      }
+      return failureCount < 3;
+    },
     staleTime: 60000, // 1 minute
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 
   // Fetch VC follow-ups from database
