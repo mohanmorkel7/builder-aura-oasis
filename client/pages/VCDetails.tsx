@@ -890,7 +890,10 @@ export default function VCDetails() {
                       onDeleteStep={handleDeleteStep}
                       onUpdateStep={async (stepId: number, stepData: any) => {
                         try {
-                          await updateVCStepMutation.mutateAsync({ stepId, stepData });
+                          await updateVCStepMutation.mutateAsync({
+                            stepId,
+                            stepData,
+                          });
                           refetchSteps();
                         } catch (error) {
                           console.error("Failed to update step:", error);

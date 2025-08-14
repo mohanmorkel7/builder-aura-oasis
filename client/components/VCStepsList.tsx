@@ -59,11 +59,11 @@ export function VCStepsList({
   const [updatingSteps, setUpdatingSteps] = useState<Set<number>>(new Set());
 
   const handleStatusChange = async (stepId: number, newStatus: string) => {
-    setUpdatingSteps(prev => new Set([...prev, stepId]));
+    setUpdatingSteps((prev) => new Set([...prev, stepId]));
     try {
       await onUpdateStep(stepId, { status: newStatus });
     } finally {
-      setUpdatingSteps(prev => {
+      setUpdatingSteps((prev) => {
         const newSet = new Set(prev);
         newSet.delete(stepId);
         return newSet;
@@ -84,7 +84,8 @@ export function VCStepsList({
   return (
     <div className="space-y-3">
       {steps.map((step, index) => {
-        const StatusIcon = stepStatusIcons[step.status as keyof typeof stepStatusIcons] || Clock;
+        const StatusIcon =
+          stepStatusIcons[step.status as keyof typeof stepStatusIcons] || Clock;
         const isExpanded = expandedSteps.has(step.id);
         const isUpdating = updatingSteps.has(step.id);
 
@@ -99,7 +100,7 @@ export function VCStepsList({
                     </span>
                     <StatusIcon className="w-4 h-4 text-gray-400" />
                   </div>
-                  
+
                   <div className="flex-1">
                     <h4 className="font-medium text-gray-900">{step.name}</h4>
                     {step.description && (
@@ -112,15 +113,23 @@ export function VCStepsList({
                   <div className="flex items-center space-x-2">
                     <Badge
                       variant="outline"
-                      className={stepStatusColors[step.status as keyof typeof stepStatusColors]}
+                      className={
+                        stepStatusColors[
+                          step.status as keyof typeof stepStatusColors
+                        ]
+                      }
                     >
                       {step.status.replace("_", " ").toUpperCase()}
                     </Badge>
-                    
+
                     {step.priority && (
                       <Badge
                         variant="outline"
-                        className={priorityColors[step.priority as keyof typeof priorityColors]}
+                        className={
+                          priorityColors[
+                            step.priority as keyof typeof priorityColors
+                          ]
+                        }
                       >
                         {step.priority.toUpperCase()}
                       </Badge>
@@ -150,7 +159,9 @@ export function VCStepsList({
                       </label>
                       <Select
                         value={step.status}
-                        onValueChange={(value) => handleStatusChange(step.id, value)}
+                        onValueChange={(value) =>
+                          handleStatusChange(step.id, value)
+                        }
                         disabled={isUpdating}
                       >
                         <SelectTrigger className="mt-1">
@@ -158,7 +169,9 @@ export function VCStepsList({
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="pending">Pending</SelectItem>
-                          <SelectItem value="in_progress">In Progress</SelectItem>
+                          <SelectItem value="in_progress">
+                            In Progress
+                          </SelectItem>
                           <SelectItem value="completed">Completed</SelectItem>
                         </SelectContent>
                       </Select>
@@ -180,7 +193,9 @@ export function VCStepsList({
                   {step.due_date && (
                     <div className="flex items-center space-x-2 mt-3 text-sm text-gray-600">
                       <Calendar className="w-4 h-4" />
-                      <span>Due: {new Date(step.due_date).toLocaleDateString()}</span>
+                      <span>
+                        Due: {new Date(step.due_date).toLocaleDateString()}
+                      </span>
                     </div>
                   )}
 

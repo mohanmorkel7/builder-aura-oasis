@@ -1153,7 +1153,9 @@ router.post("/:id/comments", async (req: Request, res: Response) => {
     let comment;
     try {
       const dbAvailable = await isDatabaseAvailable();
-      console.log(`🔍 Database available for creating VC comment: ${dbAvailable}`);
+      console.log(
+        `🔍 Database available for creating VC comment: ${dbAvailable}`,
+      );
 
       if (dbAvailable) {
         const query = `
