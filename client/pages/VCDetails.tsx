@@ -403,8 +403,8 @@ export default function VCDetails() {
                     </summary>
                     <div className="mt-2 p-3 bg-gray-50 rounded border space-y-1">
                       {vcSteps.map((step, index) => {
-                        // Use equal distribution since probability_percent doesn't exist in database
-                        const stepProbability = 100 / vcSteps.length;
+                        // Use actual database probability_percent or fallback to equal distribution
+                        const stepProbability = step.probability_percent || (100 / vcSteps.length);
                         return (
                           <div
                             key={step.id}
