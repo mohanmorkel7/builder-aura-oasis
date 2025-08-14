@@ -179,6 +179,7 @@ export function DraggableVCStepsList({
             onToggleExpansion={() => {}}
             onUpdateStatus={() => {}}
             onDeleteStep={() => {}}
+            isVC={true}
             isDragOverlay
           />
         ) : null}
