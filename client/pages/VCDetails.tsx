@@ -198,17 +198,20 @@ export default function VCDetails() {
       const completedProbability = vcSteps
         .filter((step: any) => step.status === "completed")
         .reduce((sum: number, step: any) => {
-          return sum + (step.probability_percent || 0);
+          const probability = parseFloat(step.probability_percent) || 0;
+          return sum + probability;
         }, 0);
 
       // Add half probability for in-progress steps
       const inProgressProbability = vcSteps
         .filter((step: any) => step.status === "in_progress")
         .reduce((sum: number, step: any) => {
-          return sum + (step.probability_percent || 0) * 0.5;
+          const probability = parseFloat(step.probability_percent) || 0;
+          return sum + probability * 0.5;
         }, 0);
 
-      return Math.round(completedProbability + inProgressProbability);
+      const total = completedProbability + inProgressProbability;
+      return isNaN(total) ? 0 : Math.round(total);
     }
 
     return vcData?.probability || 0;
