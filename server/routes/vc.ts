@@ -350,10 +350,6 @@ router.get("/progress", async (req: Request, res: Response) => {
                 steps.find((s) => s.status === "in_progress") ||
                 steps.find((s) => s.status === "pending");
 
-              // Calculate equal probability distribution based on actual step count
-              const defaultProbability =
-                steps.length > 0 ? 100 / steps.length : 0;
-
               progressData.push({
                 vc_id: vc.vc_id,
                 round_title: vc.round_title,
@@ -362,25 +358,25 @@ router.get("/progress", async (req: Request, res: Response) => {
                 completed_count: completedSteps.length,
                 total_completed_probability: Math.round(
                   completedSteps.reduce(
-                    (sum, step) => sum + defaultProbability,
+                    (sum, step) => sum + (step.probability_percent || 0),
                     0,
                   ),
                 ),
                 completed_steps: completedSteps.map((step) => ({
                   name: step.name,
-                  probability: defaultProbability,
+                  probability: step.probability_percent || 0,
                   status: step.status,
                 })),
                 current_step: currentStep
                   ? {
                       name: currentStep.name,
-                      probability: defaultProbability,
+                      probability: currentStep.probability_percent || 0,
                     }
                   : null,
                 all_steps: steps.map((step) => ({
                   name: step.name,
                   status: step.status,
-                  probability: defaultProbability,
+                  probability: step.probability_percent || 0,
                 })),
               });
             } catch (stepError) {
@@ -1406,7 +1402,7 @@ router.post("/steps/:stepId/chats", async (req: Request, res: Response) => {
     try {
       const dbAvailable = await isDatabaseAvailable();
       console.log(
-        `�� Database available for creating VC step chat: ${dbAvailable}`,
+        `🔍 Database available for creating VC step chat: ${dbAvailable}`,
       );
 
       if (dbAvailable) {
