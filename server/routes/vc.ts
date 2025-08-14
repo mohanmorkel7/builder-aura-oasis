@@ -285,6 +285,7 @@ router.get("/progress", async (req: Request, res: Response) => {
     try {
       if (await isDatabaseAvailable()) {
         console.log("VC progress dashboard endpoint called");
+        progressData = []; // Initialize the array
 
         // Get all VCs for progress tracking (similar to lead approach)
         const vcsQuery = `
@@ -303,54 +304,61 @@ router.get("/progress", async (req: Request, res: Response) => {
         console.log(`Found ${vcsResult.rows.length} VCs for progress tracking`);
 
         for (const vc of vcsResult.rows) {
-          // Get ALL steps for this VC with their status (like lead dashboard)
-          const stepsQuery = `
-            SELECT
-              vs.id,
-              vs.name,
-              vs.status,
-              vs.order_index,
-              COALESCE(vs.probability_percent, 16.67) as probability_percent
-            FROM vc_steps vs
-            WHERE vs.vc_id = $1
-            ORDER BY vs.order_index
-          `;
+          try {
+            // Get ALL steps for this VC with their status (like lead dashboard)
+            const stepsQuery = `
+              SELECT
+                vs.id,
+                vs.name,
+                vs.status,
+                vs.order_index,
+                COALESCE(vs.probability_percent, 16.67) as probability_percent
+              FROM vc_steps vs
+              WHERE vs.vc_id = $1
+              ORDER BY vs.order_index
+            `;
 
-          const stepsResult = await pool.query(stepsQuery, [vc.vc_id]);
-          const steps = stepsResult.rows;
-          const completedSteps = steps.filter((s) => s.status === "completed");
-          const currentStep =
-            steps.find((s) => s.status === "in_progress") ||
-            steps.find((s) => s.status === "pending");
+            const stepsResult = await pool.query(stepsQuery, [vc.vc_id]);
+            const steps = stepsResult.rows;
+            const completedSteps = steps.filter((s) => s.status === "completed");
+            const currentStep =
+              steps.find((s) => s.status === "in_progress") ||
+              steps.find((s) => s.status === "pending");
 
-          progressData.push({
-            vc_id: vc.vc_id,
-            round_title: vc.round_title,
-            investor_name: vc.investor_name,
-            status: vc.vc_status,
-            completed_count: completedSteps.length,
-            total_completed_probability: completedSteps.reduce(
-              (sum, step) => sum + (step.probability_percent || 16.67),
-              0,
-            ),
-            completed_steps: completedSteps.map((step) => ({
-              name: step.name,
-              probability: step.probability_percent || 16.67,
-              status: step.status,
-            })),
-            current_step: currentStep
-              ? {
-                  name: currentStep.name,
-                  probability: currentStep.probability_percent || 16.67,
-                }
-              : null,
-            all_steps: steps.map((step) => ({
-              name: step.name,
-              status: step.status,
-              probability: step.probability_percent || 16.67,
-            })),
-          });
+            progressData.push({
+              vc_id: vc.vc_id,
+              round_title: vc.round_title,
+              investor_name: vc.investor_name,
+              status: vc.vc_status,
+              completed_count: completedSteps.length,
+              total_completed_probability: Math.round(completedSteps.reduce(
+                (sum, step) => sum + (step.probability_percent || 16.67),
+                0,
+              )),
+              completed_steps: completedSteps.map((step) => ({
+                name: step.name,
+                probability: step.probability_percent || 16.67,
+                status: step.status,
+              })),
+              current_step: currentStep
+                ? {
+                    name: currentStep.name,
+                    probability: currentStep.probability_percent || 16.67,
+                  }
+                : null,
+              all_steps: steps.map((step) => ({
+                name: step.name,
+                status: step.status,
+                probability: step.probability_percent || 16.67,
+              })),
+            });
+          } catch (stepError) {
+            console.error(`Error processing steps for VC ${vc.vc_id}:`, stepError);
+            // Continue processing other VCs
+          }
         }
+
+        console.log(`Returning ${progressData.length} VC progress records`);
       } else {
         // Return mock progress data when database is unavailable
         progressData = [
