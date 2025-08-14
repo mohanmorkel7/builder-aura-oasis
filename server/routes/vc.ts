@@ -326,7 +326,7 @@ router.get("/progress", async (req: Request, res: Response) => {
               SELECT vs.id, vs.name, vs.status, vs.order_index
               FROM vc_steps vs
               WHERE vs.vc_id = $1
-              ORDER BY vs.order_index
+              ORDER BY vs.order_index ASC
             `,
               [vc.vc_id],
             );
