@@ -602,7 +602,7 @@ export class VCCommentRepository {
           ORDER BY c.created_at ASC
         `;
         const result = await pool.query(query, [stepId]);
-        return result.rows;
+        return result.rows.map(row => this.formatComment(row));
       } else {
         // step_id column doesn't exist, return empty array for now
         console.log("⚠️ step_id column not found in vc_comments table");
