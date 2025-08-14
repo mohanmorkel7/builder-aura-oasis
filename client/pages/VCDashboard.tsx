@@ -179,7 +179,11 @@ export default function VCDashboard() {
   });
 
   // Fetch VC follow-ups from database
-  const { data: vcFollowUps = [], isLoading: followUpsLoading, refetch: refetchFollowUps } = useQuery({
+  const {
+    data: vcFollowUps = [],
+    isLoading: followUpsLoading,
+    refetch: refetchFollowUps,
+  } = useQuery({
     queryKey: ["vc-follow-ups"],
     queryFn: async () => {
       const response = await apiClient.request("/vc/follow-ups");
