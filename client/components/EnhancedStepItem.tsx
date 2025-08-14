@@ -438,10 +438,14 @@ export function EnhancedStepItem({
       state: {
         messageId,
         stepId: step.id,
-        leadId: step.lead_id,
+        ...(isVC
+          ? { vcId: step.vc_id, vcStepId: step.id }
+          : { leadId: step.lead_id }
+        ),
         stepName: step.name,
         fromChat: true,
         createSystemMessage: true, // Flag to indicate system message should be created
+        isVC: isVC, // Add flag to indicate if this is from VC context
       },
     });
   };
