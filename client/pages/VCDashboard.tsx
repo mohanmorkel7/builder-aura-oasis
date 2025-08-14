@@ -1731,7 +1731,7 @@ export default function VCDashboard() {
             <p className="mt-2 text-gray-600">Loading saved drafts...</p>
           </CardContent>
         </Card>
-      ) : vcPartialSaves.length === 0 ? (
+      ) : (vcPartialSaves || []).length === 0 ? (
         <Card>
           <CardContent className="p-6 text-center">
             <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
