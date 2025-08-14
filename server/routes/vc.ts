@@ -352,7 +352,7 @@ router.get("/progress", async (req: Request, res: Response) => {
 
               // Debug logging for probability calculation
               const completedProbabilities = completedSteps.map(
-                (step) => step.probability_percent || 0,
+                (step) => parseFloat(step.probability_percent) || 0,
               );
               const totalCompletedProbability = Math.round(
                 completedSteps.reduce(
