@@ -259,7 +259,12 @@ export class ApiClient {
       // Try to parse as JSON
       try {
         const result = JSON.parse(responseText);
-        // Reset failure count on successful request
+        // Reset failure count and offline mode on successful request
+        if (this.isOfflineMode) {
+          console.log("🟢 Connection restored - exiting offline mode");
+          this.isOfflineMode = false;
+          this.offlineDetectedAt = 0;
+        }
         this.failureCount = 0;
         return result;
       } catch (jsonError) {
