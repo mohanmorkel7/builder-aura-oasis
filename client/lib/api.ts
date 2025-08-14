@@ -85,7 +85,7 @@ export class ApiClient {
         const originalFetch = window.fetch.bind(window);
 
         // Add timeout to prevent hanging requests
-        const timeoutMs = 15000; // 15 seconds
+        const timeoutMs = 8000; // 8 seconds
         const timeoutPromise = new Promise<never>((_, reject) => {
           setTimeout(() => reject(new Error("Request timeout")), timeoutMs);
         });
