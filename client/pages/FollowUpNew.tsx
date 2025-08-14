@@ -259,11 +259,11 @@ export default function FollowUpNew() {
       <Alert>
         <Info className="h-4 w-4" />
         <AlertDescription>
-          {isLeadFollowUp ? (
+          {isFromChat ? (
             <>
-              Creating follow-up for lead step:{" "}
-              <strong>{leadContext?.stepName}</strong>
-              {leadContext?.messageId && ` (Message #${leadContext.messageId})`}
+              Creating follow-up for {isVC ? "VC" : "lead"} step:{" "}
+              <strong>{context?.stepName}</strong>
+              {context?.messageId && ` (Message #${context.messageId})`}
             </>
           ) : hasClientId ? (
             <>
