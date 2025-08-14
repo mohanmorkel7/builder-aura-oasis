@@ -707,19 +707,28 @@ export default function VCDashboard() {
                   }
                 });
 
-                // Convert to array and ensure consistent ordering
-                const allSteps = Array.from(allStepsSet).sort();
+                // Define proper VC process order (bottom to top)
+                const properStepOrder = [
+                  "Initial Pitch",
+                  "Product Demo",
+                  "Due Diligence",
+                  "Term Sheet",
+                  "Legal Review",
+                  "Final Approval",
+                ];
 
                 // If no steps found from data, use fallback
-                if (allSteps.length === 0) {
-                  allSteps.push(
-                    "Initial Pitch",
-                    "Product Demo",
-                    "Due Diligence",
-                    "Term Sheet",
-                    "Legal Review",
-                    "Final Approval",
-                  );
+                let allSteps: string[];
+                if (allStepsSet.size === 0) {
+                  allSteps = [...properStepOrder];
+                } else {
+                  // Sort steps according to proper VC process order
+                  const stepsArray = Array.from(allStepsSet);
+                  allSteps = properStepOrder.filter(step => stepsArray.includes(step));
+
+                  // Add any additional steps not in standard order
+                  const additionalSteps = stepsArray.filter(step => !properStepOrder.includes(step));
+                  allSteps.push(...additionalSteps);
                 }
 
                 // Define colors for different steps
