@@ -1354,24 +1354,6 @@ export default function VCEdit() {
                   />
                 </div>
 
-                <div>
-                  <Label htmlFor="billing_currency">Currency</Label>
-                  <Select
-                    value={vcData.billing_currency}
-                    onValueChange={(value) =>
-                      handleInputChange("billing_currency", value)
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select currency" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="INR">INR (Indian Rupee)</SelectItem>
-                      <SelectItem value="USD">USD (US Dollar)</SelectItem>
-                      <SelectItem value="AED">AED (UAE Dirham)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
 
                 <div>
                   <Label htmlFor="spoc">SPOC (Single Point of Contact)</Label>
