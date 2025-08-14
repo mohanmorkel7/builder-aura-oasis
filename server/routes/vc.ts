@@ -854,7 +854,9 @@ router.get("/:id/steps", async (req: Request, res: Response) => {
             `🔍 Executing query: SELECT * FROM vc_steps WHERE vc_id = ${vcId} ORDER BY order_index ASC, created_at ASC`,
           );
           steps = await VCStepRepository.findByVCId(vcId);
-          console.log(`��� Database query returned ${steps?.length || 0} steps`);
+          console.log(
+            `��� Database query returned ${steps?.length || 0} steps`,
+          );
 
           if (steps && steps.length > 0) {
             console.log("📝 First step preview:", {
