@@ -634,9 +634,9 @@ export default function LeadDashboard() {
                             <div className="flex">
                               <div className="w-48 pr-4"></div>
                               <div
-                                className="flex"
+                                className="flex flex-1"
                                 style={{
-                                  width: `${leadProgressData.length * 80}px`,
+                                  minWidth: `${Math.min(leadProgressData.length * 60, 800)}px`,
                                 }}
                               >
                                 {leadProgressData.map((leadProgress: any) => {
