@@ -107,9 +107,14 @@ export default function FollowUpNew() {
       // Create the follow-up using the API
       const followUpData = {
         ...followUp,
-        client_id: !isLeadFollowUp && hasClientId ? clientId : undefined,
-        lead_id: isLeadFollowUp ? leadContext?.leadId : undefined,
-        message_id: isLeadFollowUp ? leadContext?.messageId : undefined,
+        client_id: !isFromChat && hasClientId ? clientId : undefined,
+        // Lead context
+        lead_id: isFromChat && !isVC ? context?.leadId : undefined,
+        step_id: isFromChat && !isVC ? context?.stepId : undefined,
+        // VC context
+        vc_id: isFromChat && isVC ? context?.vcId : undefined,
+        vc_step_id: isFromChat && isVC ? context?.vcStepId : undefined,
+        message_id: isFromChat ? context?.messageId : undefined,
         created_by: parseInt(user?.id || "0"),
         follow_up_type: followUp.type,
       };
