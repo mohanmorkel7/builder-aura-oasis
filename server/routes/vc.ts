@@ -646,7 +646,56 @@ router.put("/:id", async (req: Request, res: Response) => {
     let vc;
     try {
       if (await isDatabaseAvailable()) {
+        // Get current VC to check if template_id is changing
+        const currentVC = await VCRepository.findById(id);
+
+        // Update the VC record
         vc = await VCRepository.update(id, vcData);
+
+        // If template_id changed, regenerate VC steps from new template
+        if (vcData.template_id && vcData.template_id !== currentVC?.template_id) {
+          console.log(`🔧 Template changed from ${currentVC?.template_id} to ${vcData.template_id} for VC ${id}`);
+
+          try {
+            // Delete existing VC steps
+            await pool.query('DELETE FROM vc_steps WHERE vc_id = $1', [id]);
+            console.log(`Deleted existing steps for VC ${id}`);
+
+            // Get new template steps
+            const templateStepsQuery = `
+              SELECT id, name, description, step_order, default_eta_days, probability_percent
+              FROM template_steps
+              WHERE template_id = $1
+              ORDER BY step_order ASC
+            `;
+            const templateStepsResult = await pool.query(templateStepsQuery, [vcData.template_id]);
+
+            if (templateStepsResult.rows.length > 0) {
+              // Create new VC steps from template
+              for (const templateStep of templateStepsResult.rows) {
+                const vcStepQuery = `
+                  INSERT INTO vc_steps (
+                    vc_id, name, description, order_index, created_by, status, probability_percent
+                  )
+                  VALUES ($1, $2, $3, $4, $5, 'pending', $6)
+                  RETURNING *
+                `;
+
+                await pool.query(vcStepQuery, [
+                  id,
+                  templateStep.name,
+                  templateStep.description,
+                  templateStep.step_order,
+                  currentVC?.created_by || 1,
+                  templateStep.probability_percent,
+                ]);
+              }
+              console.log(`Created ${templateStepsResult.rows.length} new VC steps from template ${vcData.template_id}`);
+            }
+          } catch (stepError) {
+            console.error("Error updating VC steps from template:", stepError);
+          }
+        }
       } else {
         // Mock update when database is unavailable
         vc = {
