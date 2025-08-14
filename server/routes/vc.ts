@@ -215,7 +215,7 @@ router.get("/follow-ups", async (req: Request, res: Response) => {
           ORDER BY f.due_date ASC
           LIMIT 50
         `;
-        const result = await pool.query(query);
+        const result = await withTimeout(pool.query(query), 5000);
         followUps = result.rows;
       } else {
         // Return mock follow-ups when database is unavailable
@@ -616,7 +616,7 @@ router.post("/", async (req: Request, res: Response) => {
       }
     } catch (dbError) {
       console.error("❌ Database error during VC creation:", dbError);
-      console.log("🔄 Falling back to mock data");
+      console.log("��� Falling back to mock data");
       vc = {
         id: Math.floor(Math.random() * 1000) + 100,
         vc_id: `#VC${String(Math.floor(Math.random() * 100) + 1).padStart(3, "0")}`,
