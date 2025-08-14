@@ -7,6 +7,7 @@ export interface FollowUpStatusChangeData {
   userId: number;
   userName: string;
   followUpTitle?: string;
+  isVC?: boolean;
 }
 
 /**
