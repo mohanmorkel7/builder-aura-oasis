@@ -380,19 +380,19 @@ router.get("/progress", async (req: Request, res: Response) => {
                 total_completed_probability: totalCompletedProbability,
                 completed_steps: completedSteps.map((step) => ({
                   name: step.name,
-                  probability: step.probability_percent || 0,
+                  probability: parseFloat(step.probability_percent) || 0,
                   status: step.status,
                 })),
                 current_step: currentStep
                   ? {
                       name: currentStep.name,
-                      probability: currentStep.probability_percent || 0,
+                      probability: parseFloat(currentStep.probability_percent) || 0,
                     }
                   : null,
                 all_steps: steps.map((step) => ({
                   name: step.name,
                   status: step.status,
-                  probability: step.probability_percent || 0,
+                  probability: parseFloat(step.probability_percent) || 0,
                 })),
               });
             } catch (stepError) {
