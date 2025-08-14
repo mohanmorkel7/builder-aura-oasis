@@ -530,3 +530,104 @@ export class VCStepRepository {
     await Promise.all(updatePromises);
   }
 }
+
+// VC Comment interfaces
+export interface VCComment {
+  id: number;
+  vc_id: number;
+  step_id?: number;
+  message: string;
+  message_type: "text" | "image" | "file";
+  is_rich_text: boolean;
+  attachments: any[];
+  user_id?: number;
+  user_name: string;
+  created_by: number;
+  created_by_name: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CreateVCCommentData {
+  vc_id: number;
+  step_id?: number;
+  message: string;
+  message_type?: "text" | "image" | "file";
+  is_rich_text?: boolean;
+  attachments?: any[];
+  user_id?: number;
+  user_name: string;
+  created_by: number;
+}
+
+export class VCCommentRepository {
+  static async findByStepId(stepId: number): Promise<VCComment[]> {
+    const query = `
+      SELECT c.*, u.first_name || ' ' || u.last_name as user_name
+      FROM vc_comments c
+      LEFT JOIN users u ON c.created_by = u.id
+      WHERE c.step_id = $1
+      ORDER BY c.created_at ASC
+    `;
+    const result = await pool.query(query, [stepId]);
+    return result.rows;
+  }
+
+  static async create(commentData: CreateVCCommentData): Promise<VCComment> {
+    const query = `
+      INSERT INTO vc_comments
+      (vc_id, step_id, message, message_type, is_rich_text, attachments, user_id, user_name, created_by, created_by_name)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, (SELECT first_name || ' ' || last_name FROM users WHERE id = $9))
+      RETURNING *
+    `;
+
+    const values = [
+      commentData.vc_id,
+      commentData.step_id || null,
+      commentData.message,
+      commentData.message_type || "text",
+      commentData.is_rich_text || false,
+      JSON.stringify(commentData.attachments || []),
+      commentData.user_id || null,
+      commentData.user_name,
+      commentData.created_by,
+    ];
+
+    const result = await pool.query(query, values);
+    return result.rows[0];
+  }
+
+  static async update(
+    id: number,
+    updateData: { message: string; is_rich_text: boolean },
+  ): Promise<boolean> {
+    const query = `
+      UPDATE vc_comments
+      SET message = $2, is_rich_text = $3, updated_at = NOW()
+      WHERE id = $1
+    `;
+    const result = await pool.query(query, [
+      id,
+      updateData.message,
+      updateData.is_rich_text,
+    ]);
+    return result.rowCount > 0;
+  }
+
+  static async delete(id: number): Promise<boolean> {
+    const query = "DELETE FROM vc_comments WHERE id = $1";
+    const result = await pool.query(query, [id]);
+    return result.rowCount > 0;
+  }
+
+  static async findById(id: number): Promise<VCComment> {
+    const query = `
+      SELECT c.*, u.first_name || ' ' || u.last_name as user_name
+      FROM vc_comments c
+      LEFT JOIN users u ON c.created_by = u.id
+      WHERE c.id = $1
+    `;
+    const result = await pool.query(query, [id]);
+    return result.rows[0];
+  }
+}
