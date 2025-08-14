@@ -343,7 +343,7 @@ export function EnhancedStepItem({
     // Prevent step-level chat for VCs - they should use the main VC comments system
     if (isVC) {
       alert(
-        "Step-level chat is disabled for VCs. Please use the main VC team chat instead.",
+        "Step-level chat is disabled for VCs. Please use the 'Team Chat' section in the right sidebar instead.",
       );
       return;
     }
