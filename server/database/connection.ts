@@ -3,14 +3,26 @@ import fs from "fs";
 import path from "path";
 
 // Use environment variables or fallback values
-const pool = new Pool({
+const dbConfig = {
   user: process.env.PG_USER || "crmuser",
   host: process.env.PG_HOST || "10.30.11.95",
   database: process.env.PG_DB || "crm_test",
   password: process.env.PG_PASSWORD || "myl@p@y-crm$102019",
   port: Number(process.env.PG_PORT) || 2019,
   ssl: false, // Change to { rejectUnauthorized: false } if required in production
+};
+
+// Log the actual connection parameters being used (hide password for security)
+console.log("🔗 Database connection config:", {
+  user: dbConfig.user,
+  host: dbConfig.host,
+  database: dbConfig.database,
+  port: dbConfig.port,
+  password: dbConfig.password ? "[SET]" : "[NOT SET]",
+  ssl: dbConfig.ssl
 });
+
+const pool = new Pool(dbConfig);
 
 // Check if database is available
 export async function isDatabaseAvailable(): Promise<boolean> {
