@@ -229,10 +229,26 @@ export default function VCDashboard() {
   const { data: vcProgressData = [], isLoading: progressLoading } = useQuery({
     queryKey: ["vc-progress"],
     queryFn: async () => {
-      return await apiClient.request("/vc/progress");
+      try {
+        return await apiClient.request("/vc/progress");
+      } catch (error) {
+        console.error("Failed to fetch VC progress:", error);
+        // Return empty array when backend is down
+        if (error.message.includes("timeout") || error.message.includes("unavailable") || error.message.includes("Offline mode")) {
+          return [];
+        }
+        throw error;
+      }
     },
-    retry: 2,
+    retry: (failureCount, error) => {
+      // Don't retry if it's a timeout, offline, or server unavailable error
+      if (error.message.includes("timeout") || error.message.includes("unavailable") || error.message.includes("Offline mode")) {
+        return false;
+      }
+      return failureCount < 2;
+    },
     staleTime: 30000, // 30 seconds
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 15000),
   });
 
   // Fetch VC templates for quick insights
