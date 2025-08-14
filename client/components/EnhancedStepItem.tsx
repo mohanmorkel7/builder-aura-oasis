@@ -581,7 +581,8 @@ export function EnhancedStepItem({
                   {step.probability_percent !== undefined &&
                     step.probability_percent !== null && (
                       <Badge variant="outline" className="text-xs">
-                        {parseFloat(step.probability_percent).toString()}% weight
+                        {parseFloat(step.probability_percent).toString()}%
+                        weight
                       </Badge>
                     )}
                   {!chatLoading && sortedMessages.length > 0 && (
