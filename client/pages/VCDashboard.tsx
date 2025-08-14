@@ -195,17 +195,13 @@ export default function VCDashboard() {
     queryKey: ["vc-stats"],
     queryFn: async () => {
       try {
-        return await apiClient.request("/vc/stats");
+        const result = await apiClient.request("/vc/stats");
+        // Ensure we return a valid object even if the API returns null/undefined
+        return result || { total: 0, in_progress: 0, won: 0, lost: 0 };
       } catch (error) {
         console.error("Failed to fetch VC stats:", error);
-        // Return default stats when backend is down
-        if (
-          error.message.includes("timeout") ||
-          error.message.includes("unavailable")
-        ) {
-          return { total: 0, in_progress: 0, won: 0, lost: 0 };
-        }
-        throw error;
+        // Always return default stats when any error occurs
+        return { total: 0, in_progress: 0, won: 0, lost: 0 };
       }
     },
     retry: (failureCount, error) => {
