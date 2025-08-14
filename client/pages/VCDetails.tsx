@@ -335,6 +335,23 @@ export default function VCDetails() {
     );
   };
 
+  const handleSendComment = async () => {
+    if (!newComment.trim()) return;
+
+    try {
+      await addCommentMutation.mutateAsync({ message: newComment.trim() });
+    } catch (error) {
+      console.error("Failed to send comment:", error);
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSendComment();
+    }
+  };
+
   if (vcLoading) {
     return (
       <div className="p-6">
