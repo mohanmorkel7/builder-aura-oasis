@@ -2,10 +2,12 @@ import { Router, Request, Response } from "express";
 import {
   VCRepository,
   VCStepRepository,
+  VCCommentRepository,
   CreateVCData,
   UpdateVCData,
   CreateVCStepData,
   UpdateVCStepData,
+  CreateVCCommentData,
 } from "../models/VC";
 import { MockDataService } from "../services/mockData";
 import { DatabaseValidator, ValidationSchemas } from "../utils/validation";
