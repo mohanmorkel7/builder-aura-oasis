@@ -284,63 +284,73 @@ router.get("/progress", async (req: Request, res: Response) => {
     let progressData = [];
     try {
       if (await isDatabaseAvailable()) {
-        const query = `
-          WITH vc_step_summary AS (
-            SELECT
-              v.id as vc_id,
-              v.round_title,
-              v.investor_name,
-              v.status,
-              COUNT(vs.id) FILTER (WHERE vs.status = 'completed') as completed_count,
-              -- Use a default probability of 20% per step
-              COALESCE(COUNT(vs.id) FILTER (WHERE vs.status = 'completed') * 20, 0) as total_completed_probability
-            FROM vcs v
-            LEFT JOIN vc_steps vs ON v.id = vs.vc_id
-            WHERE v.status IN ('in-progress', 'won') AND (v.is_partial = false OR v.is_partial IS NULL)
-            GROUP BY v.id, v.round_title, v.investor_name, v.status
-          ),
-          completed_steps_data AS (
-            SELECT
-              vs.vc_id,
-              json_agg(
-                json_build_object(
-                  'name', vs.name,
-                  'probability', 20,
-                  'status', vs.status
-                )
-                ORDER BY vs.order_index
-              ) as completed_steps
-            FROM vc_steps vs
-            WHERE vs.status = 'completed'
-            GROUP BY vs.vc_id
-          ),
-          current_step_data AS (
-            SELECT DISTINCT ON (vs.vc_id)
-              vs.vc_id,
-              json_build_object(
-                'name', vs.name,
-                'probability', 20
-              ) as current_step
-            FROM vc_steps vs
-            WHERE vs.status = 'in_progress'
-            ORDER BY vs.vc_id, vs.order_index
-          )
-          SELECT
-            vss.vc_id,
-            vss.round_title,
-            vss.investor_name,
-            vss.status,
-            vss.completed_count,
-            vss.total_completed_probability,
-            COALESCE(csd.completed_steps, '[]'::json) as completed_steps,
-            COALESCE(csdt.current_step, 'null'::json) as current_step
-          FROM vc_step_summary vss
-          LEFT JOIN completed_steps_data csd ON vss.vc_id = csd.vc_id
-          LEFT JOIN current_step_data csdt ON vss.vc_id = csdt.vc_id
-          ORDER BY vss.round_title
+        console.log("VC progress dashboard endpoint called");
+
+        // Get all VCs for progress tracking (similar to lead approach)
+        const vcsQuery = `
+          SELECT DISTINCT
+            v.id as vc_id,
+            v.round_title,
+            v.investor_name,
+            v.status as vc_status
+          FROM vcs v
+          WHERE v.status IN ('in-progress', 'won')
+            AND (v.is_partial IS NULL OR v.is_partial = false)
+          ORDER BY v.id
         `;
-        const result = await pool.query(query);
-        progressData = result.rows;
+
+        const vcsResult = await pool.query(vcsQuery);
+        console.log(`Found ${vcsResult.rows.length} VCs for progress tracking`);
+
+        for (const vc of vcsResult.rows) {
+          // Get ALL steps for this VC with their status (like lead dashboard)
+          const stepsQuery = `
+            SELECT
+              vs.id,
+              vs.name,
+              vs.status,
+              vs.order_index,
+              COALESCE(vs.probability_percent, 16.67) as probability_percent
+            FROM vc_steps vs
+            WHERE vs.vc_id = $1
+            ORDER BY vs.order_index
+          `;
+
+          const stepsResult = await pool.query(stepsQuery, [vc.vc_id]);
+          const steps = stepsResult.rows;
+          const completedSteps = steps.filter((s) => s.status === "completed");
+          const currentStep =
+            steps.find((s) => s.status === "in_progress") ||
+            steps.find((s) => s.status === "pending");
+
+          progressData.push({
+            vc_id: vc.vc_id,
+            round_title: vc.round_title,
+            investor_name: vc.investor_name,
+            status: vc.vc_status,
+            completed_count: completedSteps.length,
+            total_completed_probability: completedSteps.reduce(
+              (sum, step) => sum + (step.probability_percent || 16.67),
+              0,
+            ),
+            completed_steps: completedSteps.map((step) => ({
+              name: step.name,
+              probability: step.probability_percent || 16.67,
+              status: step.status,
+            })),
+            current_step: currentStep
+              ? {
+                  name: currentStep.name,
+                  probability: currentStep.probability_percent || 16.67,
+                }
+              : null,
+            all_steps: steps.map((step) => ({
+              name: step.name,
+              status: step.status,
+              probability: step.probability_percent || 16.67,
+            })),
+          });
+        }
       } else {
         // Return mock progress data when database is unavailable
         progressData = [
