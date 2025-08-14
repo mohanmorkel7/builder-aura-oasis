@@ -1317,12 +1317,15 @@ export function useEditStepChat() {
     mutationFn: ({
       chatId,
       updateData,
+      isVC = false,
     }: {
       chatId: number;
       updateData: { message: string; is_rich_text: boolean };
-    }) => apiClient.editStepChat(chatId, updateData),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["step-chats"] });
+      isVC?: boolean;
+    }) => apiClient.editStepChat(chatId, updateData, isVC),
+    onSuccess: (_, variables) => {
+      const queryKey = variables.isVC ? ["vc-step-chats"] : ["step-chats"];
+      queryClient.invalidateQueries({ queryKey });
     },
   });
 }
@@ -1330,9 +1333,16 @@ export function useEditStepChat() {
 export function useDeleteStepChat() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (chatId: number) => apiClient.deleteStepChat(chatId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["step-chats"] });
+    mutationFn: ({
+      chatId,
+      isVC = false,
+    }: {
+      chatId: number;
+      isVC?: boolean;
+    }) => apiClient.deleteStepChat(chatId, isVC),
+    onSuccess: (_, variables) => {
+      const queryKey = variables.isVC ? ["vc-step-chats"] : ["step-chats"];
+      queryClient.invalidateQueries({ queryKey });
     },
   });
 }
