@@ -303,33 +303,6 @@ export default function VCDetails() {
     );
   };
 
-  const handleSendComment = async () => {
-    if (!newComment.trim()) {
-      alert("Please enter a message before sending.");
-      return;
-    }
-
-    if (!user?.id) {
-      alert("You must be logged in to send comments.");
-      return;
-    }
-
-    try {
-      console.log("🔍 Sending VC comment with user:", user);
-      await addCommentMutation.mutateAsync({ message: newComment.trim() });
-      console.log("✅ VC comment sent successfully");
-    } catch (error) {
-      console.error("❌ Failed to send VC comment:", error);
-      alert("Failed to send comment. Please try again.");
-    }
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSendComment();
-    }
-  };
 
   if (vcLoading) {
     return (
