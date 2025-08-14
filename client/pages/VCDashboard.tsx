@@ -320,7 +320,7 @@ export default function VCDashboard() {
   });
 
   // Filter and sort VCs (status and category filtering is done server-side)
-  const filteredVCs = vcList
+  const filteredVCs = (vcList || [])
     .filter((vc: any) => {
       // Exclude partial saves from main VC list
       if (
