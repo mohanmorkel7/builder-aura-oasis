@@ -303,6 +303,11 @@ export default function VCDashboard() {
         const categories = await apiClient.request(
           "/templates-production/categories",
         );
+        // Add null safety check for categories
+        if (!categories || !Array.isArray(categories)) {
+          console.warn("No categories data received");
+          return [];
+        }
         const vcCategory = categories.find((cat: any) => cat.name === "VC");
 
         if (vcCategory) {
