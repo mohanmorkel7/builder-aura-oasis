@@ -562,15 +562,34 @@ export interface CreateVCCommentData {
 
 export class VCCommentRepository {
   static async findByStepId(stepId: number): Promise<VCComment[]> {
-    const query = `
-      SELECT c.*, u.first_name || ' ' || u.last_name as user_name
-      FROM vc_comments c
-      LEFT JOIN users u ON c.created_by = u.id
-      WHERE c.step_id = $1
-      ORDER BY c.created_at ASC
-    `;
-    const result = await pool.query(query, [stepId]);
-    return result.rows;
+    try {
+      // First check if step_id column exists
+      const columnCheck = await pool.query(`
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_name = 'vc_comments' AND column_name = 'step_id'
+      `);
+
+      if (columnCheck.rows.length > 0) {
+        // step_id column exists, use it
+        const query = `
+          SELECT c.*, u.first_name || ' ' || u.last_name as user_name
+          FROM vc_comments c
+          LEFT JOIN users u ON c.created_by = u.id
+          WHERE c.step_id = $1
+          ORDER BY c.created_at ASC
+        `;
+        const result = await pool.query(query, [stepId]);
+        return result.rows;
+      } else {
+        // step_id column doesn't exist, return empty array for now
+        console.log("⚠️ step_id column not found in vc_comments table");
+        return [];
+      }
+    } catch (error) {
+      console.error("Error in findByStepId:", error);
+      throw error;
+    }
   }
 
   static async findByVCId(vcId: number): Promise<VCComment[]> {
