@@ -756,6 +756,7 @@ export default function App() {
                 </div>
               }
             >
+              <OfflineIndicator />
               <AppRoutes />
             </React.Suspense>
           </BrowserRouter>
