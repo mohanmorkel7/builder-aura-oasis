@@ -1275,14 +1275,25 @@ export function useStepChats(stepId: number, isVC: boolean = false) {
 export function useCreateStepChat() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ stepId, chatData }: { stepId: number; chatData: any }) =>
-      apiClient.createStepChat(stepId, chatData),
-    onSuccess: (data, { stepId }) => {
+    mutationFn: ({ stepId, chatData, isVC = false }: { stepId: number; chatData: any; isVC?: boolean }) => {
+      if (isVC) {
+        // Use VC step chat endpoint
+        return apiClient.request(`/vc/steps/${stepId}/chats`, {
+          method: "POST",
+          body: JSON.stringify(chatData),
+        });
+      } else {
+        // Use lead step chat endpoint
+        return apiClient.createStepChat(stepId, chatData);
+      }
+    },
+    onSuccess: (data, { stepId, isVC = false }) => {
       console.log("Chat created successfully:", data);
       // Invalidate and refetch the chat query
-      queryClient.invalidateQueries({ queryKey: ["step-chats", stepId] });
+      const queryKey = isVC ? ["vc-step-chats", stepId] : ["step-chats", stepId];
+      queryClient.invalidateQueries({ queryKey });
       // Also trigger an immediate refetch
-      queryClient.refetchQueries({ queryKey: ["step-chats", stepId] });
+      queryClient.refetchQueries({ queryKey });
     },
     onError: (error) => {
       console.error("Failed to create chat:", error);
@@ -1553,7 +1564,7 @@ export function useUpdateVCStep() {
       queryClient.invalidateQueries({ queryKey: ["vcs"] });
     },
     onError: (error: any) => {
-      console.error("❌ VC step update failed:", error);
+      console.error("��� VC step update failed:", error);
     },
   });
 }
