@@ -1446,7 +1446,9 @@ router.put("/chats/:id", async (req: Request, res: Response) => {
         console.log(`✅ Successfully updated VC chat:`, updatedChat);
         res.json(updatedChat);
       } else {
-        console.log("Database unavailable, returning success for VC chat update");
+        console.log(
+          "Database unavailable, returning success for VC chat update",
+        );
         res.json({ id, message, is_rich_text: is_rich_text || false });
       }
     } catch (dbError) {
@@ -1482,7 +1484,9 @@ router.delete("/chats/:id", async (req: Request, res: Response) => {
         console.log(`✅ Successfully deleted VC chat ${id}`);
         res.json({ success: true });
       } else {
-        console.log("Database unavailable, returning success for VC chat deletion");
+        console.log(
+          "Database unavailable, returning success for VC chat deletion",
+        );
         res.json({ success: true });
       }
     } catch (dbError) {
