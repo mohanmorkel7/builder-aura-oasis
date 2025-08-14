@@ -180,7 +180,7 @@ export class VCRepository {
 
     query += ` ORDER BY created_at DESC`;
 
-    const result = await pool.query(query, values);
+    const result = await withTimeout(pool.query(query, values), 5000);
     return result.rows;
   }
 
