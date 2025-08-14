@@ -5,7 +5,7 @@ import {
   UpdateTemplateData,
 } from "../models/Template";
 import { DatabaseValidator } from "../utils/validation";
-import { pool } from "../database/connection";
+import { pool, isDatabaseAvailable, withTimeout } from "../database/connection";
 
 const router = Router();
 
