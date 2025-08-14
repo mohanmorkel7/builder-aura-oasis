@@ -55,6 +55,8 @@ import {
   PiggyBank,
   TrendingUp,
   Briefcase,
+  Send,
+  MessageSquare,
 } from "lucide-react";
 import { formatToISTDateTime } from "@/lib/dateUtils";
 
