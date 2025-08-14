@@ -676,7 +676,7 @@ export default function VCDashboard() {
           </CardContent>
         </Card>
       ) : (
-        vcProgressData.length > 0 && (
+        (vcProgressData || []).length > 0 && (
           <Card className="max-w-full">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
