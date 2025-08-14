@@ -372,7 +372,7 @@ router.get("/", async (req: Request, res: Response) => {
                  l.project_title as lead_project_title,
                  ls.name as step_name,
                  v.round_title as vc_round_title,
-                 v.investor_name as vc_investor_name,
+                 v.investor_name as investor_name,
                  vs.name as vc_step_name
           FROM follow_ups f
           LEFT JOIN users u ON f.assigned_to = u.id
