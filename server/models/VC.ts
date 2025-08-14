@@ -1,4 +1,4 @@
-import { pool } from "../database/connection";
+import { pool, withTimeout } from "../database/connection";
 
 export interface VC {
   id: number;
