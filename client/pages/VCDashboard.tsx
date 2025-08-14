@@ -763,7 +763,7 @@ export default function VCDashboard() {
                       {/* VC Progress Chart - Left Side */}
                       <div className="bg-gray-50 p-4 rounded-lg">
                         <div className="text-sm font-medium text-gray-700 mb-4">
-                          All VCs Progress Overview ({vcProgressData.length}{" "}
+                          All VCs Progress Overview ({(vcProgressData || []).length}{" "}
                           rounds)
                         </div>
                         <div className="overflow-x-auto">
@@ -803,7 +803,7 @@ export default function VCDashboard() {
                                 className="relative"
                                 style={{
                                   height: `${chartHeight}px`,
-                                  width: `${vcProgressData.length * 120}px`,
+                                  width: `${(vcProgressData || []).length * 120}px`,
                                 }}
                               >
                                 {/* Grid Lines */}
@@ -834,10 +834,10 @@ export default function VCDashboard() {
                                   className="absolute inset-0 flex"
                                   style={{ paddingTop: "0px" }}
                                 >
-                                  {vcProgressData.map(
+                                  {(vcProgressData || []).map(
                                     (vcProgress: any, vcIndex: number) => {
                                       const vcWidth =
-                                        100 / vcProgressData.length;
+                                        100 / Math.max((vcProgressData || []).length, 1);
                                       return (
                                         <div
                                           key={vcProgress.vc_id}
@@ -845,7 +845,7 @@ export default function VCDashboard() {
                                           style={{ width: `${vcWidth}%` }}
                                         >
                                           {/* Completed Steps */}
-                                          {vcProgress.completed_steps.map(
+                                          {(vcProgress.completed_steps || []).map(
                                             (step: any) => {
                                               const stepIndex =
                                                 allSteps.indexOf(step.name);
@@ -929,11 +929,11 @@ export default function VCDashboard() {
                               <div
                                 className="flex"
                                 style={{
-                                  width: `${vcProgressData.length * 120}px`,
+                                  width: `${(vcProgressData || []).length * 120}px`,
                                 }}
                               >
-                                {vcProgressData.map((vcProgress: any) => {
-                                  const vcWidth = 100 / vcProgressData.length;
+                                {(vcProgressData || []).map((vcProgress: any) => {
+                                  const vcWidth = 100 / Math.max((vcProgressData || []).length, 1);
                                   return (
                                     <div
                                       key={vcProgress.vc_id}
@@ -970,7 +970,7 @@ export default function VCDashboard() {
                               // Calculate step-wise distribution (only in-progress/current steps)
                               const stepDistribution = allSteps.map(
                                 (stepName: string) => {
-                                  const currentVCsCount = vcProgressData.filter(
+                                  const currentVCsCount = (vcProgressData || []).filter(
                                     (vc: any) =>
                                       vc.current_step?.name === stepName,
                                   ).length;
@@ -1120,8 +1120,8 @@ export default function VCDashboard() {
                           Total Completed Steps
                         </div>
                         <div className="text-2xl font-bold text-green-900">
-                          {vcProgressData.reduce(
-                            (sum: number, vc: any) => sum + vc.completed_count,
+                          {(vcProgressData || []).reduce(
+                            (sum: number, vc: any) => sum + (vc.completed_count || 0),
                             0,
                           )}
                         </div>
@@ -1133,7 +1133,7 @@ export default function VCDashboard() {
                         </div>
                         <div className="text-2xl font-bold text-blue-900">
                           {
-                            vcProgressData.filter((vc: any) => vc.current_step)
+                            (vcProgressData || []).filter((vc: any) => vc.current_step)
                               .length
                           }
                         </div>
@@ -1146,9 +1146,9 @@ export default function VCDashboard() {
                         <div className="text-2xl font-bold text-orange-900">
                           {(() => {
                             const avgProgress =
-                              vcProgressData.length > 0
+                              (vcProgressData || []).length > 0
                                 ? Math.round(
-                                    vcProgressData.reduce(
+                                    (vcProgressData || []).reduce(
                                       (sum: number, vc: any) => {
                                         console.log(
                                           `🔢 VC ${vc.vc_id}: total_completed_probability = ${vc.total_completed_probability}`,
@@ -1159,7 +1159,7 @@ export default function VCDashboard() {
                                         );
                                       },
                                       0,
-                                    ) / vcProgressData.length,
+                                    ) / (vcProgressData || []).length,
                                   )
                                 : 0;
                             console.log(
@@ -1183,7 +1183,7 @@ export default function VCDashboard() {
                         vcProgressData,
                       )}
                       <div className="space-y-2">
-                        {vcProgressData.map((vc: any) => (
+                        {(vcProgressData || []).map((vc: any) => (
                           <div
                             key={vc.vc_id}
                             className="flex items-center justify-between p-2 bg-gray-50 rounded cursor-pointer hover:bg-gray-100 transition-colors"
