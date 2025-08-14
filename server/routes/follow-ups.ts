@@ -75,9 +75,12 @@ router.post("/", async (req: Request, res: Response) => {
         } else {
           // Legacy query without VC support
           if (vc_id || vc_step_id) {
-            console.log("⚠️ VC follow-up requested but VC columns don't exist in follow_ups table");
+            console.log(
+              "⚠️ VC follow-up requested but VC columns don't exist in follow_ups table",
+            );
             return res.status(400).json({
-              error: "VC follow-ups not supported. Database migration required."
+              error:
+                "VC follow-ups not supported. Database migration required.",
             });
           }
 
@@ -404,7 +407,9 @@ router.get("/", async (req: Request, res: Response) => {
           ${whereClause}
           ORDER BY f.created_at DESC
         `;
-        console.log("⚠️ VC columns not found in follow_ups table, using legacy query");
+        console.log(
+          "⚠️ VC columns not found in follow_ups table, using legacy query",
+        );
       }
 
       const result = await pool.query(query, queryParams);
