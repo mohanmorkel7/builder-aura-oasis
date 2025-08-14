@@ -1235,8 +1235,6 @@ export class ApiClient {
         // Return empty array immediately on timeout/error
         return [];
       }
-
-      throw lastError;
     } catch (error) {
       console.error("Failed to fetch follow-ups:", error);
 
