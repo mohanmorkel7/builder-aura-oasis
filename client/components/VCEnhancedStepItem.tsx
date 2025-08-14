@@ -280,22 +280,28 @@ export function VCEnhancedStepItem({
 
       try {
         // Use the correct VC steps chat API endpoint
-        const systemMessageResponse = await apiClient.request(`/vc/steps/${step.id}/chats`, {
-          method: "POST",
-          body: JSON.stringify({
-            user_id: parseInt(user?.id || "1"),
-            user_name: "System",
-            message: systemMessageText,
-            message_type: "system",
-            is_rich_text: false,
-            attachments: [],
-          }),
-        });
+        const systemMessageResponse = await apiClient.request(
+          `/vc/steps/${step.id}/chats`,
+          {
+            method: "POST",
+            body: JSON.stringify({
+              user_id: parseInt(user?.id || "1"),
+              user_name: "System",
+              message: systemMessageText,
+              message_type: "system",
+              is_rich_text: false,
+              attachments: [],
+            }),
+          },
+        );
 
         // Add to local state if API call successful
         setChatMessages((prev) => [...prev, systemMessageResponse]);
       } catch (messageError) {
-        console.error("Failed to save system message to VC chat:", messageError);
+        console.error(
+          "Failed to save system message to VC chat:",
+          messageError,
+        );
         // Fallback: add to local state only
         const systemMessage = {
           id: Date.now(),
