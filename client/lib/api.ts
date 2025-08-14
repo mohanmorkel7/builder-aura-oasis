@@ -91,8 +91,25 @@ export class ApiClient {
             "Second fetch attempt failed, using XMLHttpRequest:",
             secondFetchError,
           );
-          // Fallback to XMLHttpRequest if fetch is blocked or intercepted
-          response = await this.xmlHttpRequestFallback(url, config);
+
+          // If it's a timeout, don't try XMLHttpRequest fallback
+          if (secondFetchError.message === "Request timeout") {
+            console.error("Second attempt also timed out - server likely down");
+            this.failureCount++;
+            this.lastFailureTime = Date.now();
+            throw new Error("API request timed out - backend server may be down");
+          }
+
+          // Fallback to XMLHttpRequest if fetch is blocked or intercepted (but not for timeouts)
+          try {
+            response = await this.xmlHttpRequestFallback(url, config);
+          } catch (xhrError) {
+            // If all methods fail, throw a descriptive error
+            console.error("All request methods failed:", xhrError);
+            this.failureCount++;
+            this.lastFailureTime = Date.now();
+            throw new Error("All request methods failed - backend server may be unavailable");
+          }
         }
       }
 
