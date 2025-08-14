@@ -122,7 +122,7 @@ export class ApiClient {
         try {
           console.log("Attempting second fetch with shorter timeout...");
           const shortTimeoutPromise = new Promise<never>((_, reject) => {
-            setTimeout(() => reject(new Error("Request timeout")), 8000); // 8 seconds
+            setTimeout(() => reject(new Error("Request timeout")), 5000); // 5 seconds
           });
           const secondFetchPromise = fetch(url, config);
           response = await Promise.race([
