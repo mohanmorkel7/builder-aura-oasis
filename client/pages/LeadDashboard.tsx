@@ -439,7 +439,7 @@ export default function LeadDashboard() {
                     {/* Two Charts in Same Line */}
                     <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                       {/* Lead Progress Chart - Left Side */}
-                      <div className="bg-gray-50 p-4 rounded-lg">
+                      <div className="bg-gray-50 p-4 rounded-lg overflow-hidden">
                         <div className="text-sm font-medium text-gray-700 mb-4">
                           All Leads Progress ({leadProgressData.length} leads)
                         </div>
