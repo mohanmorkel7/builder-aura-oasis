@@ -418,7 +418,8 @@ export default function VCEdit() {
         potential_lead_investor: vcDataFromAPI.potential_lead_investor || false,
         minimum_size: vcDataFromAPI.minimum_size?.toString() || "",
         maximum_size: vcDataFromAPI.maximum_size?.toString() || "",
-        minimum_arr_requirement: vcDataFromAPI.minimum_arr_requirement?.toString() || "",
+        minimum_arr_requirement:
+          vcDataFromAPI.minimum_arr_requirement?.toString() || "",
         contacts: vcDataFromAPI.contacts
           ? typeof vcDataFromAPI.contacts === "string"
             ? JSON.parse(vcDataFromAPI.contacts)
@@ -444,7 +445,10 @@ export default function VCEdit() {
               ? new Date(vcDataFromAPI.start_date).toISOString().split("T")[0]
               : "";
           } catch (e) {
-            console.warn("Failed to parse start_date:", vcDataFromAPI.start_date);
+            console.warn(
+              "Failed to parse start_date:",
+              vcDataFromAPI.start_date,
+            );
             return "";
           }
         })(),
@@ -456,7 +460,10 @@ export default function VCEdit() {
                   .split("T")[0]
               : "";
           } catch (e) {
-            console.warn("Failed to parse targeted_end_date:", vcDataFromAPI.targeted_end_date);
+            console.warn(
+              "Failed to parse targeted_end_date:",
+              vcDataFromAPI.targeted_end_date,
+            );
             return "";
           }
         })(),
@@ -641,9 +648,7 @@ export default function VCEdit() {
   if (vcError || !vcDataFromAPI) {
     return (
       <div className="p-6">
-        <div className="text-center text-red-600">
-          Error loading VC details
-        </div>
+        <div className="text-center text-red-600">Error loading VC details</div>
       </div>
     );
   }
@@ -842,7 +847,9 @@ export default function VCEdit() {
                   <Label htmlFor="status">Status</Label>
                   <Select
                     value={vcData.status}
-                    onValueChange={(value) => handleInputChange("status", value)}
+                    onValueChange={(value) =>
+                      handleInputChange("status", value)
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select status" />
@@ -988,9 +995,7 @@ export default function VCEdit() {
                       <SelectItem value="large">
                         Large Fund ($200M-$1B)
                       </SelectItem>
-                      <SelectItem value="mega">
-                        Mega Fund ($1B+)
-                      </SelectItem>
+                      <SelectItem value="mega">Mega Fund ($1B+)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -1310,7 +1315,6 @@ export default function VCEdit() {
                   />
                 </div>
 
-
                 <div>
                   <Label htmlFor="priority_level">Priority Level</Label>
                   <Select
@@ -1353,7 +1357,6 @@ export default function VCEdit() {
                     }
                   />
                 </div>
-
 
                 <div>
                   <Label htmlFor="spoc">SPOC (Single Point of Contact)</Label>
@@ -1460,13 +1463,16 @@ export default function VCEdit() {
                   {selectedTemplate !== "manual" && templateDetails && (
                     <div className="mt-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
                       <p className="text-sm text-blue-800">
-                        <strong>{templateDetails.name}:</strong> {templateDetails.description}
+                        <strong>{templateDetails.name}:</strong>{" "}
+                        {templateDetails.description}
                       </p>
-                      {templateDetails.steps && templateDetails.steps.length > 0 && (
-                        <p className="text-xs text-blue-600 mt-1">
-                          This template includes {templateDetails.steps.length} predefined steps.
-                        </p>
-                      )}
+                      {templateDetails.steps &&
+                        templateDetails.steps.length > 0 && (
+                          <p className="text-xs text-blue-600 mt-1">
+                            This template includes{" "}
+                            {templateDetails.steps.length} predefined steps.
+                          </p>
+                        )}
                     </div>
                   )}
                 </div>
