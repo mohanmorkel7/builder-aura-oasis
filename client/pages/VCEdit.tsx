@@ -387,6 +387,8 @@ export default function VCEdit() {
   // Load VC data into form when available
   useEffect(() => {
     if (vcDataFromAPI) {
+      console.log("🔧 FULL API DATA:", vcDataFromAPI);
+      console.log("🔧 API contacts field:", vcDataFromAPI.contacts);
       setVcData({
         lead_source: vcDataFromAPI.lead_source || "",
         lead_source_value: vcDataFromAPI.lead_source_value || "",
