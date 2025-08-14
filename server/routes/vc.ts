@@ -653,12 +653,17 @@ router.put("/:id", async (req: Request, res: Response) => {
         vc = await VCRepository.update(id, vcData);
 
         // If template_id changed, regenerate VC steps from new template
-        if (vcData.template_id && vcData.template_id !== currentVC?.template_id) {
-          console.log(`🔧 Template changed from ${currentVC?.template_id} to ${vcData.template_id} for VC ${id}`);
+        if (
+          vcData.template_id &&
+          vcData.template_id !== currentVC?.template_id
+        ) {
+          console.log(
+            `🔧 Template changed from ${currentVC?.template_id} to ${vcData.template_id} for VC ${id}`,
+          );
 
           try {
             // Delete existing VC steps
-            await pool.query('DELETE FROM vc_steps WHERE vc_id = $1', [id]);
+            await pool.query("DELETE FROM vc_steps WHERE vc_id = $1", [id]);
             console.log(`Deleted existing steps for VC ${id}`);
 
             // Get new template steps
@@ -668,7 +673,9 @@ router.put("/:id", async (req: Request, res: Response) => {
               WHERE template_id = $1
               ORDER BY step_order ASC
             `;
-            const templateStepsResult = await pool.query(templateStepsQuery, [vcData.template_id]);
+            const templateStepsResult = await pool.query(templateStepsQuery, [
+              vcData.template_id,
+            ]);
 
             if (templateStepsResult.rows.length > 0) {
               // Create new VC steps from template
@@ -690,7 +697,9 @@ router.put("/:id", async (req: Request, res: Response) => {
                   templateStep.probability_percent,
                 ]);
               }
-              console.log(`Created ${templateStepsResult.rows.length} new VC steps from template ${vcData.template_id}`);
+              console.log(
+                `Created ${templateStepsResult.rows.length} new VC steps from template ${vcData.template_id}`,
+              );
             }
           } catch (stepError) {
             console.error("Error updating VC steps from template:", stepError);

@@ -578,11 +578,12 @@ export function EnhancedStepItem({
                       📋 Template
                     </Badge>
                   )}
-                  {step.probability_percent !== undefined && step.probability_percent !== null && (
-                    <Badge variant="outline" className="text-xs">
-                      {step.probability_percent}% weight
-                    </Badge>
-                  )}
+                  {step.probability_percent !== undefined &&
+                    step.probability_percent !== null && (
+                      <Badge variant="outline" className="text-xs">
+                        {step.probability_percent}% weight
+                      </Badge>
+                    )}
                   {!chatLoading && sortedMessages.length > 0 && (
                     <Badge variant="outline" className="text-xs">
                       {sortedMessages.length} message

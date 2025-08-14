@@ -39,7 +39,7 @@ async function addProbabilityColumn() {
 
     // Update existing records with equal distribution
     console.log("Updating existing records with equal distribution...");
-    
+
     // Get all VCs and calculate equal distribution for each
     const vcsResult = await client.query(`
       SELECT DISTINCT vc_id FROM vc_steps ORDER BY vc_id
@@ -47,23 +47,32 @@ async function addProbabilityColumn() {
 
     for (const vc of vcsResult.rows) {
       const vcId = vc.vc_id;
-      
+
       // Count steps for this VC
-      const stepCountResult = await client.query(`
+      const stepCountResult = await client.query(
+        `
         SELECT COUNT(*) as count FROM vc_steps WHERE vc_id = $1
-      `, [vcId]);
-      
+      `,
+        [vcId],
+      );
+
       const stepCount = parseInt(stepCountResult.rows[0].count);
-      const equalProbability = stepCount > 0 ? Math.round((100 / stepCount) * 100) / 100 : 0;
-      
+      const equalProbability =
+        stepCount > 0 ? Math.round((100 / stepCount) * 100) / 100 : 0;
+
       // Update all steps for this VC
-      await client.query(`
+      await client.query(
+        `
         UPDATE vc_steps 
         SET probability_percent = $1 
         WHERE vc_id = $2
-      `, [equalProbability, vcId]);
-      
-      console.log(`  - VC ${vcId}: ${stepCount} steps, ${equalProbability}% each`);
+      `,
+        [equalProbability, vcId],
+      );
+
+      console.log(
+        `  - VC ${vcId}: ${stepCount} steps, ${equalProbability}% each`,
+      );
     }
 
     client.release();
@@ -81,7 +90,6 @@ async function addProbabilityColumn() {
     verifyResult.rows.forEach((row) => {
       console.log(`  - ${row.name}: ${row.probability_percent}%`);
     });
-
   } catch (error) {
     console.error("❌ Migration failed:", error);
   } finally {
