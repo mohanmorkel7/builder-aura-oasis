@@ -150,9 +150,8 @@ export class ApiClient {
             this.failureCount++;
             this.lastFailureTime = Date.now();
             this.checkOfflineMode();
-            throw new Error(
-              "API request timed out - backend server may be down",
-            );
+            // Return null instead of throwing for second timeout
+            return null;
           }
 
           // Fallback to XMLHttpRequest if fetch is blocked or intercepted (but not for timeouts)
