@@ -457,7 +457,7 @@ export default function VCDashboard() {
                 <div>
                   <p className="text-blue-600 text-sm font-medium">Total VCs</p>
                   <p className="text-2xl font-bold text-blue-900">
-                    {(vcStats?.total) || 0}
+                    {vcStats?.total || 0}
                   </p>
                 </div>
                 <div className="bg-blue-200 p-3 rounded-full">
@@ -475,7 +475,7 @@ export default function VCDashboard() {
                     In Progress
                   </p>
                   <p className="text-2xl font-bold text-orange-900">
-                    {(vcStats?.in_progress) || 0}
+                    {vcStats?.in_progress || 0}
                   </p>
                 </div>
                 <div className="bg-orange-200 p-3 rounded-full">
@@ -493,7 +493,7 @@ export default function VCDashboard() {
                     Successful Rounds
                   </p>
                   <p className="text-2xl font-bold text-green-900">
-                    {(vcStats?.won) || 0}
+                    {vcStats?.won || 0}
                   </p>
                 </div>
                 <div className="bg-green-200 p-3 rounded-full">
@@ -700,8 +700,8 @@ export default function VCDashboard() {
                       {/* VC Progress Chart - Left Side */}
                       <div className="bg-gray-50 p-4 rounded-lg">
                         <div className="text-sm font-medium text-gray-700 mb-4">
-                          All VCs Progress Overview ({(vcProgressData || []).length}{" "}
-                          rounds)
+                          All VCs Progress Overview (
+                          {(vcProgressData || []).length} rounds)
                         </div>
                         <div className="overflow-x-auto">
                           <div className="min-w-max">
@@ -774,7 +774,11 @@ export default function VCDashboard() {
                                   {(vcProgressData || []).map(
                                     (vcProgress: any, vcIndex: number) => {
                                       const vcWidth =
-                                        100 / Math.max((vcProgressData || []).length, 1);
+                                        100 /
+                                        Math.max(
+                                          (vcProgressData || []).length,
+                                          1,
+                                        );
                                       return (
                                         <div
                                           key={vcProgress.vc_id}
@@ -782,38 +786,39 @@ export default function VCDashboard() {
                                           style={{ width: `${vcWidth}%` }}
                                         >
                                           {/* Completed Steps */}
-                                          {(vcProgress.completed_steps || []).map(
-                                            (step: any) => {
-                                              const stepIndex =
-                                                allSteps.indexOf(step.name);
-                                              if (stepIndex === -1) return null;
-                                              const stepHeight =
-                                                chartHeight / allSteps.length;
-                                              const yPosition =
-                                                (allSteps.length -
-                                                  1 -
-                                                  stepIndex) *
-                                                stepHeight;
-                                              return (
-                                                <div
-                                                  key={step.name}
-                                                  className="absolute left-1/2 transform -translate-x-1/2 w-8 rounded transition-all duration-300 cursor-pointer group flex items-center justify-center"
-                                                  style={{
-                                                    top: `${yPosition}px`,
-                                                    height: `${stepHeight}px`,
-                                                    backgroundColor:
-                                                      getStepColor(stepIndex),
-                                                    opacity: 0.8,
-                                                  }}
-                                                  title={`${vcProgress.round_title}: ${step.name} - ${step.probability}% (Completed)`}
-                                                >
-                                                  <span className="text-xs font-bold text-gray-800">
-                                                    {step.probability}%
-                                                  </span>
-                                                </div>
-                                              );
-                                            },
-                                          )}
+                                          {(
+                                            vcProgress.completed_steps || []
+                                          ).map((step: any) => {
+                                            const stepIndex = allSteps.indexOf(
+                                              step.name,
+                                            );
+                                            if (stepIndex === -1) return null;
+                                            const stepHeight =
+                                              chartHeight / allSteps.length;
+                                            const yPosition =
+                                              (allSteps.length -
+                                                1 -
+                                                stepIndex) *
+                                              stepHeight;
+                                            return (
+                                              <div
+                                                key={step.name}
+                                                className="absolute left-1/2 transform -translate-x-1/2 w-8 rounded transition-all duration-300 cursor-pointer group flex items-center justify-center"
+                                                style={{
+                                                  top: `${yPosition}px`,
+                                                  height: `${stepHeight}px`,
+                                                  backgroundColor:
+                                                    getStepColor(stepIndex),
+                                                  opacity: 0.8,
+                                                }}
+                                                title={`${vcProgress.round_title}: ${step.name} - ${step.probability}% (Completed)`}
+                                              >
+                                                <span className="text-xs font-bold text-gray-800">
+                                                  {step.probability}%
+                                                </span>
+                                              </div>
+                                            );
+                                          })}
 
                                           {/* Current Step */}
                                           {vcProgress.current_step &&
@@ -869,27 +874,36 @@ export default function VCDashboard() {
                                   width: `${(vcProgressData || []).length * 120}px`,
                                 }}
                               >
-                                {(vcProgressData || []).map((vcProgress: any) => {
-                                  const vcWidth = 100 / Math.max((vcProgressData || []).length, 1);
-                                  return (
-                                    <div
-                                      key={vcProgress.vc_id}
-                                      className="text-center"
-                                      style={{ width: `${vcWidth}%` }}
-                                    >
-                                      <div className="text-xs font-medium text-gray-700 mb-1">
-                                        {vcProgress.round_title}
+                                {(vcProgressData || []).map(
+                                  (vcProgress: any) => {
+                                    const vcWidth =
+                                      100 /
+                                      Math.max(
+                                        (vcProgressData || []).length,
+                                        1,
+                                      );
+                                    return (
+                                      <div
+                                        key={vcProgress.vc_id}
+                                        className="text-center"
+                                        style={{ width: `${vcWidth}%` }}
+                                      >
+                                        <div className="text-xs font-medium text-gray-700 mb-1">
+                                          {vcProgress.round_title}
+                                        </div>
+                                        <div className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-full mb-1 inline-block">
+                                          {
+                                            vcProgress.total_completed_probability
+                                          }
+                                          %
+                                        </div>
+                                        <div className="text-sm font-semibold text-gray-800 break-words px-1">
+                                          {vcProgress.investor_name}
+                                        </div>
                                       </div>
-                                      <div className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-full mb-1 inline-block">
-                                        {vcProgress.total_completed_probability}
-                                        %
-                                      </div>
-                                      <div className="text-sm font-semibold text-gray-800 break-words px-1">
-                                        {vcProgress.investor_name}
-                                      </div>
-                                    </div>
-                                  );
-                                })}
+                                    );
+                                  },
+                                )}
                               </div>
                             </div>
                           </div>
@@ -907,7 +921,9 @@ export default function VCDashboard() {
                               // Calculate step-wise distribution (only in-progress/current steps)
                               const stepDistribution = allSteps.map(
                                 (stepName: string) => {
-                                  const currentVCsCount = (vcProgressData || []).filter(
+                                  const currentVCsCount = (
+                                    vcProgressData || []
+                                  ).filter(
                                     (vc: any) =>
                                       vc.current_step?.name === stepName,
                                   ).length;
@@ -1058,7 +1074,8 @@ export default function VCDashboard() {
                         </div>
                         <div className="text-2xl font-bold text-green-900">
                           {(vcProgressData || []).reduce(
-                            (sum: number, vc: any) => sum + (vc.completed_count || 0),
+                            (sum: number, vc: any) =>
+                              sum + (vc.completed_count || 0),
                             0,
                           )}
                         </div>
@@ -1070,8 +1087,9 @@ export default function VCDashboard() {
                         </div>
                         <div className="text-2xl font-bold text-blue-900">
                           {
-                            (vcProgressData || []).filter((vc: any) => vc.current_step)
-                              .length
+                            (vcProgressData || []).filter(
+                              (vc: any) => vc.current_step,
+                            ).length
                           }
                         </div>
                       </div>
@@ -1165,29 +1183,33 @@ export default function VCDashboard() {
         {(() => {
           // Filter follow-ups by due status
           const now = new Date();
-          const currentDueFollowUps = (vcFollowUps || []).filter((followUp: any) => {
-            if (!followUp.due_date || followUp.status === "completed")
-              return false;
+          const currentDueFollowUps = (vcFollowUps || []).filter(
+            (followUp: any) => {
+              if (!followUp.due_date || followUp.status === "completed")
+                return false;
 
-            const dueDate = new Date(followUp.due_date);
-            if (isNaN(dueDate.getTime())) return false;
+              const dueDate = new Date(followUp.due_date);
+              if (isNaN(dueDate.getTime())) return false;
 
-            const timeDiff = dueDate.getTime() - now.getTime();
-            const diffDays = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+              const timeDiff = dueDate.getTime() - now.getTime();
+              const diffDays = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
 
-            // Show follow-ups due within the next 7 days
-            return diffDays >= 0 && diffDays <= 7;
-          });
+              // Show follow-ups due within the next 7 days
+              return diffDays >= 0 && diffDays <= 7;
+            },
+          );
 
-          const overdueFollowUps = (vcFollowUps || []).filter((followUp: any) => {
-            if (!followUp.due_date || followUp.status === "completed")
-              return false;
+          const overdueFollowUps = (vcFollowUps || []).filter(
+            (followUp: any) => {
+              if (!followUp.due_date || followUp.status === "completed")
+                return false;
 
-            const dueDate = new Date(followUp.due_date);
-            if (isNaN(dueDate.getTime())) return false;
+              const dueDate = new Date(followUp.due_date);
+              if (isNaN(dueDate.getTime())) return false;
 
-            return dueDate < now;
-          });
+              return dueDate < now;
+            },
+          );
 
           return (
             <>

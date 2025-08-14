@@ -25,12 +25,18 @@ console.log("🔗 Database connection config:", {
 const pool = new Pool(dbConfig);
 
 // Add timeout wrapper for database operations
-export function withTimeout<T>(promise: Promise<T>, timeoutMs: number = 5000): Promise<T> {
+export function withTimeout<T>(
+  promise: Promise<T>,
+  timeoutMs: number = 5000,
+): Promise<T> {
   return Promise.race([
     promise,
     new Promise<T>((_, reject) =>
-      setTimeout(() => reject(new Error('Database operation timeout')), timeoutMs)
-    )
+      setTimeout(
+        () => reject(new Error("Database operation timeout")),
+        timeoutMs,
+      ),
+    ),
   ]);
 }
 
