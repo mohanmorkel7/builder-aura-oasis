@@ -13,7 +13,33 @@ export class ApiClient {
   public resetCircuitBreaker() {
     this.failureCount = 0;
     this.lastFailureTime = 0;
+    this.isOfflineMode = false;
+    this.offlineDetectedAt = 0;
     console.log("Circuit breaker reset");
+  }
+
+  // Check if we should enter offline mode
+  private checkOfflineMode() {
+    if (this.failureCount >= this.OFFLINE_THRESHOLD && !this.isOfflineMode) {
+      this.isOfflineMode = true;
+      this.offlineDetectedAt = Date.now();
+      console.warn("🔴 Offline mode activated - backend server appears to be down");
+      console.warn("📱 The app will show cached/mock data until the server is restored");
+    }
+  }
+
+  // Check if we should try to exit offline mode
+  private shouldRetryConnection(): boolean {
+    if (!this.isOfflineMode) return true;
+
+    const timeSinceOffline = Date.now() - this.offlineDetectedAt;
+    const retryInterval = 60000; // Retry every 60 seconds when offline
+
+    return timeSinceOffline > retryInterval;
+  }
+
+  public isOffline(): boolean {
+    return this.isOfflineMode;
   }
   public async request<T>(
     endpoint: string,
