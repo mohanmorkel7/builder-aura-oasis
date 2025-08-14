@@ -240,7 +240,6 @@ export const AuthProvider = React.memo(function AuthProvider({
         let userData: User | null = null;
 
         if (email === "admin@banani.com") {
-          console.log("Admin email matched, creating admin user data");
           userData = {
             id: "1",
             name: "John Doe",
