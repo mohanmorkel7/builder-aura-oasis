@@ -392,52 +392,52 @@ export default function VCDetails() {
                     of {vcSteps?.length || 0} steps
                   </div>
                 </div>
-
-                {/* Step-by-step breakdown */}
-                {vcSteps && vcSteps.length > 0 && (
-                  <div className="mt-2 text-xs text-gray-600">
-                    <details className="cursor-pointer">
-                      <summary className="hover:text-gray-800 select-none">
-                        📊 View detailed progress breakdown
-                      </summary>
-                      <div className="mt-2 p-3 bg-gray-50 rounded border space-y-1">
-                        {vcSteps.map((step, index) => {
-                          const stepProbability =
-                            step.probability_percent || 100 / vcSteps.length;
-                          return (
-                            <div
-                              key={step.id}
-                              className="flex justify-between items-center"
-                            >
-                              <span className="flex items-center space-x-2">
-                                {step.status === "completed" ? (
-                                  <span className="text-green-600">✓</span>
-                                ) : step.status === "in_progress" ? (
-                                  <span className="text-blue-600">⋯</span>
-                                ) : (
-                                  <span className="text-gray-400">○</span>
-                                )}
-                                <span
-                                  className={
-                                    step.status === "completed"
-                                      ? "line-through text-gray-500"
-                                      : ""
-                                  }
-                                >
-                                  {step.name}
-                                </span>
-                              </span>
-                              <span className="font-medium">
-                                {Math.round(stepProbability)}%
-                              </span>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </details>
-                  </div>
-                )}
               </div>
+
+              {/* Step-by-step breakdown - moved below */}
+              {vcSteps && vcSteps.length > 0 && (
+                <div className="mt-3 text-xs text-gray-600">
+                  <details className="cursor-pointer">
+                    <summary className="hover:text-gray-800 select-none">
+                      📊 View detailed progress breakdown
+                    </summary>
+                    <div className="mt-2 p-3 bg-gray-50 rounded border space-y-1">
+                      {vcSteps.map((step, index) => {
+                        const stepProbability =
+                          step.probability_percent || 100 / vcSteps.length;
+                        return (
+                          <div
+                            key={step.id}
+                            className="flex justify-between items-center"
+                          >
+                            <span className="flex items-center space-x-2">
+                              {step.status === "completed" ? (
+                                <span className="text-green-600">✓</span>
+                              ) : step.status === "in_progress" ? (
+                                <span className="text-blue-600">⋯</span>
+                              ) : (
+                                <span className="text-gray-400">○</span>
+                              )}
+                              <span
+                                className={
+                                  step.status === "completed"
+                                    ? "line-through text-gray-500"
+                                    : ""
+                                }
+                              >
+                                {step.name}
+                              </span>
+                            </span>
+                            <span className="font-medium">
+                              {Math.round(stepProbability)}%
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </details>
+                </div>
+              )}
             </div>
           </div>
         </div>
