@@ -310,13 +310,18 @@ router.get("/", async (req: Request, res: Response) => {
                cl.client_name,
                l.client_name as lead_client_name,
                l.project_title as lead_project_title,
-               ls.name as step_name
+               ls.name as step_name,
+               v.round_title as vc_round_title,
+               v.investor_name as vc_investor_name,
+               vs.name as vc_step_name
         FROM follow_ups f
         LEFT JOIN users u ON f.assigned_to = u.id
         LEFT JOIN users c ON f.created_by = c.id
         LEFT JOIN clients cl ON f.client_id = cl.id
         LEFT JOIN leads l ON f.lead_id = l.id
         LEFT JOIN lead_steps ls ON f.step_id = ls.id
+        LEFT JOIN vcs v ON f.vc_id = v.id
+        LEFT JOIN vc_steps vs ON f.vc_step_id = vs.id
         ${whereClause}
         ORDER BY f.created_at DESC
       `;
