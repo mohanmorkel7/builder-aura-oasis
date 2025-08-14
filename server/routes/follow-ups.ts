@@ -412,7 +412,25 @@ router.get("/", async (req: Request, res: Response) => {
         );
       }
 
+      console.log("📊 Follow-ups query:", query);
+      console.log("📊 Query params:", queryParams);
+
       const result = await pool.query(query, queryParams);
+
+      console.log(`📊 Found ${result.rows.length} follow-ups`);
+
+      // Debug VC follow-ups specifically
+      const vcFollowUps = result.rows.filter(row => row.vc_id);
+      if (vcFollowUps.length > 0) {
+        console.log("🔍 VC Follow-ups found:", vcFollowUps.map(f => ({
+          id: f.id,
+          vc_id: f.vc_id,
+          vc_round_title: f.vc_round_title,
+          vc_investor_name: f.vc_investor_name,
+          vc_step_name: f.vc_step_name
+        })));
+      }
+
       res.json(result.rows);
     } else {
       // Return mock data from MockDataService when database is unavailable
