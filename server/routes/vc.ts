@@ -320,7 +320,9 @@ router.get("/progress", async (req: Request, res: Response) => {
 
             const stepsResult = await pool.query(stepsQuery, [vc.vc_id]);
             const steps = stepsResult.rows;
-            const completedSteps = steps.filter((s) => s.status === "completed");
+            const completedSteps = steps.filter(
+              (s) => s.status === "completed",
+            );
             const currentStep =
               steps.find((s) => s.status === "in_progress") ||
               steps.find((s) => s.status === "pending");
@@ -331,10 +333,12 @@ router.get("/progress", async (req: Request, res: Response) => {
               investor_name: vc.investor_name,
               status: vc.vc_status,
               completed_count: completedSteps.length,
-              total_completed_probability: Math.round(completedSteps.reduce(
-                (sum, step) => sum + (step.probability_percent || 16.67),
-                0,
-              )),
+              total_completed_probability: Math.round(
+                completedSteps.reduce(
+                  (sum, step) => sum + (step.probability_percent || 16.67),
+                  0,
+                ),
+              ),
               completed_steps: completedSteps.map((step) => ({
                 name: step.name,
                 probability: step.probability_percent || 16.67,
@@ -353,7 +357,10 @@ router.get("/progress", async (req: Request, res: Response) => {
               })),
             });
           } catch (stepError) {
-            console.error(`Error processing steps for VC ${vc.vc_id}:`, stepError);
+            console.error(
+              `Error processing steps for VC ${vc.vc_id}:`,
+              stepError,
+            );
             // Continue processing other VCs
           }
         }
