@@ -415,8 +415,13 @@ router.post("/", async (req: Request, res: Response) => {
 
     let vc;
     try {
-      if (await isDatabaseAvailable()) {
+      const dbAvailable = await isDatabaseAvailable();
+      console.log("🔍 Database available for VC creation:", dbAvailable);
+      console.log("🔍 VC data being created:", JSON.stringify(vcData, null, 2));
+
+      if (dbAvailable) {
         vc = await VCRepository.create(vcData);
+        console.log("✅ VC created successfully:", vc);
 
         // If template_id is provided, create VC steps from template
         if (vc && vcData.template_id) {
