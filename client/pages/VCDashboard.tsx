@@ -1090,6 +1090,10 @@ export default function VCDashboard() {
         {(() => {
           // Filter follow-ups by due status
           const now = new Date();
+          console.log("🔍 VCDashboard Debug - vcFollowUps:", vcFollowUps);
+          console.log("🔍 VCDashboard Debug - vcFollowUps length:", vcFollowUps.length);
+          console.log("🔍 VCDashboard Debug - followUpsLoading:", followUpsLoading);
+
           const currentDueFollowUps = vcFollowUps.filter((followUp: any) => {
             if (!followUp.due_date || followUp.status === "completed")
               return false;
