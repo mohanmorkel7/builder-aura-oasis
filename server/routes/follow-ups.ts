@@ -35,13 +35,13 @@ router.post("/", async (req: Request, res: Response) => {
 
     if (await isDatabaseAvailable()) {
       try {
-        // First try to insert with the full schema including follow_up_type, lead_id, and step_id
+        // First try to insert with the full schema including follow_up_type, lead_id, step_id, vc_id, and vc_step_id
         const query = `
           INSERT INTO follow_ups (
-            client_id, lead_id, step_id, title, description, due_date,
+            client_id, lead_id, step_id, vc_id, vc_step_id, title, description, due_date,
             follow_up_type, assigned_to, created_by, message_id
           )
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
           RETURNING *
         `;
 
@@ -49,6 +49,8 @@ router.post("/", async (req: Request, res: Response) => {
           client_id || null,
           lead_id || null,
           step_id || null,
+          vc_id || null,
+          vc_step_id || null,
           title,
           description || null,
           due_date || null,
