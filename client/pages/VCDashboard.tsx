@@ -1535,7 +1535,7 @@ export default function VCDashboard() {
               </div>
             ) : (filteredVCs || []).length > 0 ? (
               <div className="space-y-4">
-                {filteredVCs.map((vc: any) => (
+                {(filteredVCs || []).map((vc: any) => (
                   <div
                     key={vc.id}
                     className="border rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
