@@ -170,6 +170,12 @@ export class ApiClient {
         }
       }
 
+      // Handle null response from network errors
+      if (response === null) {
+        console.warn("Network error - returning empty response");
+        return [];
+      }
+
       if (!response.ok) {
         console.log(
           "API Response not OK. Status:",
