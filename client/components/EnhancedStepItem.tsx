@@ -139,11 +139,12 @@ export function EnhancedStepItem({
   // For template steps, isTemplate is true, so they should use 0 (disabled)
   const stepId = step.isTemplate === true ? 0 : step.id;
 
+  // Disable step chat for VCs - they use the main VC comments system instead
   const {
     data: chatMessages = [],
     isLoading: chatLoading,
     error: chatError,
-  } = useStepChats(stepId);
+  } = useStepChats(isVC ? -1 : stepId); // Use invalid ID for VCs to disable
   const createChatMutation = useCreateStepChat();
   const editChatMutation = useEditStepChat();
   const deleteChatMutation = useDeleteStepChat();
