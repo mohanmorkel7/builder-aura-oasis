@@ -46,11 +46,18 @@ export class ApiClient {
     options: RequestInit = {},
     retryCount = 0,
   ): Promise<T> {
+    // Offline mode check
+    if (this.isOfflineMode && !this.shouldRetryConnection()) {
+      console.warn(`🔴 Request to ${endpoint} blocked - app is in offline mode`);
+      throw new Error("Offline mode: Backend server is unavailable");
+    }
+
     // Circuit breaker check
     const now = Date.now();
     if (
       this.failureCount >= this.CIRCUIT_BREAKER_THRESHOLD &&
-      now - this.lastFailureTime < this.CIRCUIT_BREAKER_TIMEOUT
+      now - this.lastFailureTime < this.CIRCUIT_BREAKER_TIMEOUT &&
+      !this.isOfflineMode // Allow retries when trying to exit offline mode
     ) {
       throw new Error(
         "Circuit breaker: Too many failures, please wait before retrying",
