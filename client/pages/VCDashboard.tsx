@@ -1085,16 +1085,6 @@ export default function VCDashboard() {
         )
       )}
 
-      {/* Debug Info */}
-      <div className="bg-yellow-50 border border-yellow-200 rounded p-4 mb-4">
-        <strong>Debug:</strong> vcFollowUps.length = {vcFollowUps.length}, Loading = {followUpsLoading ? 'true' : 'false'}
-        {vcFollowUps.length > 0 && (
-          <div className="mt-2 text-xs">
-            First item: {JSON.stringify(vcFollowUps[0], null, 2)}
-          </div>
-        )}
-      </div>
-
       {/* Follow-up Status Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {(() => {
