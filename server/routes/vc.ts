@@ -266,7 +266,6 @@ router.get("/follow-ups", async (req: Request, res: Response) => {
       ];
     }
 
-    console.log("🔍 Returning VC follow-ups:", followUps.length, "items");
     res.json(followUps);
   } catch (error) {
     console.error("Error fetching VC follow-ups:", error);
