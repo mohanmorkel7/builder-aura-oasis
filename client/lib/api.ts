@@ -27,7 +27,7 @@ export class ApiClient {
         "🔴 Offline mode activated - backend server appears to be down",
       );
       console.warn(
-        "📱 The app will show cached/mock data until the server is restored",
+        "���� The app will show cached/mock data until the server is restored",
       );
     }
   }
@@ -158,13 +158,13 @@ export class ApiClient {
           try {
             response = await this.xmlHttpRequestFallback(url, config);
           } catch (xhrError) {
-            // If all methods fail, throw a descriptive error
+            // If all methods fail, increment failure count and return null
             console.error("All request methods failed:", xhrError);
             this.failureCount++;
             this.lastFailureTime = Date.now();
-            throw new Error(
-              "All request methods failed - backend server may be unavailable",
-            );
+            this.checkOfflineMode();
+            // Return null instead of throwing when all methods fail
+            return null;
           }
         }
       }
