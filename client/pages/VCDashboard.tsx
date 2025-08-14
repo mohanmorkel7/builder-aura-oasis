@@ -167,18 +167,8 @@ export default function VCDashboard() {
         return [];
       }
     },
-    retry: (failureCount, error) => {
-      // Don't retry if it's a timeout or server unavailable error
-      if (
-        error.message.includes("timeout") ||
-        error.message.includes("unavailable")
-      ) {
-        return false;
-      }
-      return failureCount < 3;
-    },
+    retry: false, // Don't retry on errors, return fallback data instead
     staleTime: 30000, // 30 seconds
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
   });
 
   // Fetch VC statistics from database
