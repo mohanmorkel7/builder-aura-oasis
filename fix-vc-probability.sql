@@ -12,13 +12,13 @@ WHERE vs.vc_id = v.id
   AND vs.probability_percent IS NULL;
 
 -- For any remaining null values, use equal distribution per VC
-UPDATE vc_steps 
+UPDATE vc_steps vs
 SET probability_percent = (
     SELECT ROUND((100.0 / COUNT(*))::numeric, 2)
-    FROM vc_steps vs2 
-    WHERE vs2.vc_id = vc_steps.vc_id
+    FROM vc_steps vs2
+    WHERE vs2.vc_id = vs.vc_id
 )
-WHERE probability_percent IS NULL;
+WHERE vs.probability_percent IS NULL;
 
 -- Verify the results for VC 11
 SELECT 
