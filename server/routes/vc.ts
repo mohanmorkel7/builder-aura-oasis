@@ -1244,21 +1244,44 @@ router.get("/steps/:stepId/chats", async (req: Request, res: Response) => {
           });
         }
 
-        // Get VC comments for this specific step using the repository
-        const comments = await VCCommentRepository.findByStepId(stepId);
+        try {
+          // Try to get VC comments for this specific step using the repository
+          const comments = await VCCommentRepository.findByStepId(stepId);
 
-        // Format to match step chat structure
-        chats = comments.map((comment) => ({
-          id: comment.id,
-          step_id: stepId,
-          user_id: comment.user_id || comment.created_by,
-          user_name: comment.created_by_name || comment.user_name,
-          message: comment.message,
-          message_type: comment.message_type || "text",
-          is_rich_text: comment.is_rich_text,
-          created_at: comment.created_at,
-          attachments: comment.attachments || [],
-        }));
+          // Format to match step chat structure
+          chats = comments.map((comment) => ({
+            id: comment.id,
+            step_id: stepId,
+            user_id: comment.user_id || comment.created_by,
+            user_name: comment.created_by_name || comment.user_name,
+            message: comment.message,
+            message_type: comment.message_type || "text",
+            is_rich_text: comment.is_rich_text,
+            created_at: comment.created_at,
+            attachments: comment.attachments || [],
+          }));
+        } catch (dbError) {
+          console.log(
+            `⚠️ Step-level chat not available (${dbError.message}), falling back to VC-level comments`,
+          );
+
+          // Fall back to VC-level comments if step_id column doesn't exist
+          const vcId = stepCheck.rows[0].vc_id;
+          const vcComments = await VCCommentRepository.findByVCId(vcId);
+
+          // Format to match step chat structure
+          chats = vcComments.map((comment) => ({
+            id: comment.id,
+            step_id: stepId,
+            user_id: comment.user_id || comment.created_by,
+            user_name: comment.created_by_name || comment.user_name,
+            message: comment.message,
+            message_type: comment.message_type || "text",
+            is_rich_text: comment.is_rich_text || true,
+            created_at: comment.created_at,
+            attachments: comment.attachments || [],
+          }));
+        }
 
         console.log(`📊 Found ${chats.length} VC comments as step chats`);
       } else {
