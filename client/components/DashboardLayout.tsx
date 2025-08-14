@@ -170,7 +170,10 @@ const getNotificationsFromFollowUps = async (
             error.message,
           );
         } else if (error.message.includes("timeout")) {
-          console.warn("Follow-ups API timeout (network or database slow):", error.message);
+          console.warn(
+            "Follow-ups API timeout (network or database slow):",
+            error.message,
+          );
         } else {
           console.warn("Follow-ups API call failed:", error.message);
         }
@@ -182,7 +185,9 @@ const getNotificationsFromFollowUps = async (
       followUps = await Promise.race([followUpsPromise, timeoutPromise]);
     } catch (error) {
       if (error.message === "Request timeout") {
-        console.warn("Follow-ups API request timed out after 10 seconds - using empty fallback");
+        console.warn(
+          "Follow-ups API request timed out after 10 seconds - using empty fallback",
+        );
         return [];
       }
       throw error; // Re-throw other errors

@@ -292,7 +292,10 @@ router.get("/progress", async (req: Request, res: Response) => {
 
         try {
           const timeoutPromise = new Promise((_, reject) => {
-            setTimeout(() => reject(new Error("Database query timeout")), queryTimeout);
+            setTimeout(
+              () => reject(new Error("Database query timeout")),
+              queryTimeout,
+            );
           });
 
           // Get VCs with timeout
@@ -308,27 +311,45 @@ router.get("/progress", async (req: Request, res: Response) => {
             LIMIT 10
           `);
 
-          const vcsResult = await Promise.race([vcsQueryPromise, timeoutPromise]);
-          console.log(`Found ${vcsResult.rows.length} VCs for progress tracking`);
+          const vcsResult = await Promise.race([
+            vcsQueryPromise,
+            timeoutPromise,
+          ]);
+          console.log(
+            `Found ${vcsResult.rows.length} VCs for progress tracking`,
+          );
 
           // If we have VCs, process them quickly
           for (const vc of vcsResult.rows) {
-            const stepsQueryPromise = pool.query(`
+            const stepsQueryPromise = pool.query(
+              `
               SELECT vs.id, vs.name, vs.status, vs.order_index,
                      COALESCE(vs.probability_percent, 16.67) as probability_percent
               FROM vc_steps vs
               WHERE vs.vc_id = $1
               ORDER BY vs.order_index
-            `, [vc.vc_id]);
+            `,
+              [vc.vc_id],
+            );
 
             try {
-              const stepsResult = await Promise.race([stepsQueryPromise, new Promise((_, reject) => {
-                setTimeout(() => reject(new Error("Steps query timeout")), 2000);
-              })]);
+              const stepsResult = await Promise.race([
+                stepsQueryPromise,
+                new Promise((_, reject) => {
+                  setTimeout(
+                    () => reject(new Error("Steps query timeout")),
+                    2000,
+                  );
+                }),
+              ]);
 
               const steps = stepsResult.rows;
-              const completedSteps = steps.filter(s => s.status === "completed");
-              const currentStep = steps.find(s => s.status === "in_progress") || steps.find(s => s.status === "pending");
+              const completedSteps = steps.filter(
+                (s) => s.status === "completed",
+              );
+              const currentStep =
+                steps.find((s) => s.status === "in_progress") ||
+                steps.find((s) => s.status === "pending");
 
               progressData.push({
                 vc_id: vc.vc_id,
@@ -336,24 +357,33 @@ router.get("/progress", async (req: Request, res: Response) => {
                 investor_name: vc.investor_name,
                 status: vc.vc_status,
                 completed_count: completedSteps.length,
-                total_completed_probability: Math.round(completedSteps.reduce((sum, step) => sum + (step.probability_percent || 16.67), 0)),
-                completed_steps: completedSteps.map(step => ({
+                total_completed_probability: Math.round(
+                  completedSteps.reduce(
+                    (sum, step) => sum + (step.probability_percent || 16.67),
+                    0,
+                  ),
+                ),
+                completed_steps: completedSteps.map((step) => ({
                   name: step.name,
                   probability: step.probability_percent || 16.67,
                   status: step.status,
                 })),
-                current_step: currentStep ? {
-                  name: currentStep.name,
-                  probability: currentStep.probability_percent || 16.67,
-                } : null,
-                all_steps: steps.map(step => ({
+                current_step: currentStep
+                  ? {
+                      name: currentStep.name,
+                      probability: currentStep.probability_percent || 16.67,
+                    }
+                  : null,
+                all_steps: steps.map((step) => ({
                   name: step.name,
                   status: step.status,
                   probability: step.probability_percent || 16.67,
                 })),
               });
             } catch (stepError) {
-              console.warn(`Skipping VC ${vc.vc_id} due to steps query timeout`);
+              console.warn(
+                `Skipping VC ${vc.vc_id} due to steps query timeout`,
+              );
             }
           }
 
