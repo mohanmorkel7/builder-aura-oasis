@@ -19,7 +19,7 @@ console.log("🔗 Database connection config:", {
   database: dbConfig.database,
   port: dbConfig.port,
   password: dbConfig.password ? "[SET]" : "[NOT SET]",
-  ssl: dbConfig.ssl
+  ssl: dbConfig.ssl,
 });
 
 const pool = new Pool(dbConfig);

@@ -356,7 +356,8 @@ router.get("/progress", async (req: Request, res: Response) => {
               );
               const totalCompletedProbability = Math.round(
                 completedSteps.reduce(
-                  (sum, step) => sum + (parseFloat(step.probability_percent) || 0),
+                  (sum, step) =>
+                    sum + (parseFloat(step.probability_percent) || 0),
                   0,
                 ),
               );
@@ -386,7 +387,8 @@ router.get("/progress", async (req: Request, res: Response) => {
                 current_step: currentStep
                   ? {
                       name: currentStep.name,
-                      probability: parseFloat(currentStep.probability_percent) || 0,
+                      probability:
+                        parseFloat(currentStep.probability_percent) || 0,
                     }
                   : null,
                 all_steps: steps.map((step) => ({
