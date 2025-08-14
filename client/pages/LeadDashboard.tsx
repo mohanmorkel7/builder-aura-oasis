@@ -923,9 +923,11 @@ export default function LeadDashboard() {
       {/* Follow-up Status Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {(() => {
-          // Filter follow-ups by due status
+          // Filter follow-ups by due status, excluding VC follow-ups
           const now = new Date();
-          const currentDueFollowUps = followUpsData.filter((followUp: any) => {
+          const leadFollowUpsOnly = followUpsData.filter((followUp: any) => !followUp.vc_id);
+
+          const currentDueFollowUps = leadFollowUpsOnly.filter((followUp: any) => {
             if (!followUp.due_date) return false;
             const dueDate = new Date(followUp.due_date);
             const diffDays = Math.ceil(
@@ -936,7 +938,7 @@ export default function LeadDashboard() {
             ); // Due within 7 days
           });
 
-          const overdueFollowUps = followUpsData.filter((followUp: any) => {
+          const overdueFollowUps = leadFollowUpsOnly.filter((followUp: any) => {
             if (!followUp.due_date) return false;
             const dueDate = new Date(followUp.due_date);
             return dueDate < now && followUp.status !== "completed";
