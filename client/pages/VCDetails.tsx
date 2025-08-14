@@ -191,6 +191,39 @@ export default function VCDetails() {
   const updateVCStepMutation = useUpdateVCStep();
   const deleteVCStepMutation = useDeleteVCStep();
 
+  // Team chat state and queries
+  const [newComment, setNewComment] = useState("");
+
+  // Fetch VC comments
+  const {
+    data: comments = [],
+    isLoading: commentsLoading,
+    refetch: refetchComments,
+  } = useQuery({
+    queryKey: ["vc-comments", id],
+    queryFn: async () => {
+      const response = await apiClient.request(`/vc/${id}/comments`);
+      return response;
+    },
+    enabled: !!id,
+    refetchInterval: 30000, // Refetch every 30 seconds for real-time updates
+  });
+
+  // Add comment mutation
+  const addCommentMutation = useMutation({
+    mutationFn: async (commentData: { message: string }) => {
+      const response = await apiClient.request(`/vc/${id}/comments`, {
+        method: "POST",
+        body: JSON.stringify(commentData),
+      });
+      return response;
+    },
+    onSuccess: () => {
+      refetchComments();
+      setNewComment("");
+    },
+  });
+
   // Calculate completion percentage based on step completion
   const calculateCompletionPercentage = () => {
     if (vcSteps && vcSteps.length > 0) {
