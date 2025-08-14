@@ -191,7 +191,7 @@ export default function FollowUpNew() {
     );
   }
 
-  if (!isLeadFollowUp && hasClientId && (error || !client)) {
+  if (!isFromChat && hasClientId && (error || !client)) {
     return (
       <div className="p-6">
         <div className="text-center text-red-600">
