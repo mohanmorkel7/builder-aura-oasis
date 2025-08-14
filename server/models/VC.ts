@@ -734,6 +734,6 @@ export class VCCommentRepository {
       WHERE c.id = $1
     `;
     const result = await pool.query(query, [id]);
-    return result.rows[0];
+    return this.formatComment(result.rows[0]);
   }
 }
