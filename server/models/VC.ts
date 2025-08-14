@@ -462,7 +462,10 @@ export class VCStepRepository {
     id: number,
     stepData: UpdateVCStepData,
   ): Promise<VCStep | null> {
-    console.log(`🔧 VCStepRepository.update called for step ${id} with data:`, stepData);
+    console.log(
+      `🔧 VCStepRepository.update called for step ${id} with data:`,
+      stepData,
+    );
 
     const fields = [];
     const values = [];
@@ -477,7 +480,9 @@ export class VCStepRepository {
     });
 
     if (fields.length === 0) {
-      console.log(`⚠️ No fields to update for step ${id}, returning current data`);
+      console.log(
+        `⚠️ No fields to update for step ${id}, returning current data`,
+      );
       return this.findById(id);
     }
 

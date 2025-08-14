@@ -1536,7 +1536,9 @@ export function useUpdateVCStep() {
         queryClient.invalidateQueries({
           queryKey: ["vc-steps", data.data.vc_id.toString()],
         });
-        queryClient.invalidateQueries({ queryKey: ["vc", data.data.vc_id.toString()] });
+        queryClient.invalidateQueries({
+          queryKey: ["vc", data.data.vc_id.toString()],
+        });
       }
       // Also invalidate broader queries as fallback
       queryClient.invalidateQueries({ queryKey: ["vc-steps"] });

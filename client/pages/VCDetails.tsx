@@ -363,9 +363,7 @@ export default function VCDetails() {
   if (vcError || !vcData) {
     return (
       <div className="p-6">
-        <div className="text-center text-red-600">
-          Error loading VC details
-        </div>
+        <div className="text-center text-red-600">Error loading VC details</div>
       </div>
     );
   }
@@ -396,9 +394,7 @@ export default function VCDetails() {
                 {vcData.status.replace("-", " ")}
               </Badge>
             </div>
-            <p className="text-gray-600 mt-1">
-              VC Details & Funding Pipeline
-            </p>
+            <p className="text-gray-600 mt-1">VC Details & Funding Pipeline</p>
             {/* Enhanced Progress Bar */}
             <div className="mt-3">
               <div className="flex items-center space-x-3">
@@ -440,7 +436,8 @@ export default function VCDetails() {
                   </div>
                   <div className="text-xs text-gray-500">
                     {vcSteps
-                      ? vcSteps.filter((s: any) => s.status === "completed").length
+                      ? vcSteps.filter((s: any) => s.status === "completed")
+                          .length
                       : 0}{" "}
                     of {vcSteps?.length || 0} steps
                   </div>
@@ -492,9 +489,7 @@ export default function VCDetails() {
                               title={vcData.lead_source_value}
                             >
                               {vcData.lead_source === "email" ? (
-                                <a
-                                  href={`mailto:${vcData.lead_source_value}`}
-                                >
+                                <a href={`mailto:${vcData.lead_source_value}`}>
                                   {vcData.lead_source_value}
                                 </a>
                               ) : vcData.lead_source === "phone" ||
@@ -505,9 +500,7 @@ export default function VCDetails() {
                               ) : vcData.lead_source === "website" ? (
                                 <a
                                   href={
-                                    vcData.lead_source_value.startsWith(
-                                      "http",
-                                    )
+                                    vcData.lead_source_value.startsWith("http")
                                       ? vcData.lead_source_value
                                       : `https://${vcData.lead_source_value}`
                                   }
@@ -563,7 +556,9 @@ export default function VCDetails() {
                           ]
                         }
                       >
-                        {vcData.investor_category?.replace("_", " ").toUpperCase()}
+                        {vcData.investor_category
+                          ?.replace("_", " ")
+                          .toUpperCase()}
                       </Badge>
                     </div>
                   </div>
@@ -837,7 +832,9 @@ export default function VCDetails() {
                           createStepMutation.isPending
                         }
                       >
-                        {createStepMutation.isPending ? "Adding..." : "Add Step"}
+                        {createStepMutation.isPending
+                          ? "Adding..."
+                          : "Add Step"}
                       </Button>
                     </DialogFooter>
                   </DialogContent>
@@ -969,9 +966,7 @@ export default function VCDetails() {
                 <Button
                   className="w-full justify-start"
                   variant="outline"
-                  onClick={() =>
-                    window.open(`tel:${vcData.phone}`, "_self")
-                  }
+                  onClick={() => window.open(`tel:${vcData.phone}`, "_self")}
                 >
                   <Phone className="w-4 h-4 mr-2" />
                   Call {vcData.contact_person}
@@ -991,9 +986,7 @@ export default function VCDetails() {
                 <Button
                   className="w-full justify-start"
                   variant="outline"
-                  onClick={() =>
-                    window.open(vcData.website, "_blank")
-                  }
+                  onClick={() => window.open(vcData.website, "_blank")}
                 >
                   <Globe className="w-4 h-4 mr-2" />
                   Visit Website
@@ -1024,7 +1017,10 @@ export default function VCDetails() {
                     </div>
                   ) : (
                     comments.map((comment: any) => (
-                      <div key={comment.id} className="bg-gray-50 rounded-lg p-3">
+                      <div
+                        key={comment.id}
+                        className="bg-gray-50 rounded-lg p-3"
+                      >
                         <div className="flex items-center justify-between mb-1">
                           <span className="font-medium text-sm text-gray-900">
                             {comment.created_by_name || "Unknown User"}
@@ -1053,7 +1049,9 @@ export default function VCDetails() {
                   />
                   <Button
                     onClick={handleSendComment}
-                    disabled={!newComment.trim() || addCommentMutation.isPending}
+                    disabled={
+                      !newComment.trim() || addCommentMutation.isPending
+                    }
                     size="sm"
                     className="self-end"
                   >
