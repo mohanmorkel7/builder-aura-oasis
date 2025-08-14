@@ -11,7 +11,7 @@ import {
 } from "../models/VC";
 import { MockDataService } from "../services/mockData";
 import { DatabaseValidator, ValidationSchemas } from "../utils/validation";
-import { pool } from "../database/connection";
+import { pool, isDatabaseAvailable } from "../database/connection";
 
 const router = Router();
 
