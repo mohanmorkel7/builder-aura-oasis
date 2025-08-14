@@ -15,6 +15,21 @@ import { pool } from "../database/connection";
 
 const router = Router();
 
+// Check if step_id column exists in vc_comments table
+async function hasStepIdColumn(): Promise<boolean> {
+  try {
+    const result = await pool.query(`
+      SELECT column_name
+      FROM information_schema.columns
+      WHERE table_name = 'vc_comments' AND column_name = 'step_id'
+    `);
+    return result.rows.length > 0;
+  } catch (error) {
+    console.log("Could not check for step_id column:", error.message);
+    return false;
+  }
+}
+
 // Debug endpoint to test database connection and VC creation
 router.get("/debug/connection", async (req: Request, res: Response) => {
   try {
