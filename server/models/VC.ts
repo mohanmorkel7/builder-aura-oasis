@@ -462,6 +462,8 @@ export class VCStepRepository {
     id: number,
     stepData: UpdateVCStepData,
   ): Promise<VCStep | null> {
+    console.log(`🔧 VCStepRepository.update called for step ${id} with data:`, stepData);
+
     const fields = [];
     const values = [];
     let paramCount = 1;
@@ -475,6 +477,7 @@ export class VCStepRepository {
     });
 
     if (fields.length === 0) {
+      console.log(`⚠️ No fields to update for step ${id}, returning current data`);
       return this.findById(id);
     }
 
@@ -482,13 +485,18 @@ export class VCStepRepository {
     values.push(id);
 
     const query = `
-      UPDATE vc_steps 
+      UPDATE vc_steps
       SET ${fields.join(", ")}
       WHERE id = $${paramCount}
       RETURNING *
     `;
 
+    console.log(`📝 Executing query: ${query}`);
+    console.log(`📊 Query values:`, values);
+
     const result = await pool.query(query, values);
+    console.log(`✅ Update result for step ${id}:`, result.rows[0]);
+
     return result.rows[0] || null;
   }
 
