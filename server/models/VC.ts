@@ -573,6 +573,18 @@ export class VCCommentRepository {
     return result.rows;
   }
 
+  static async findByVCId(vcId: number): Promise<VCComment[]> {
+    const query = `
+      SELECT c.*, u.first_name || ' ' || u.last_name as user_name
+      FROM vc_comments c
+      LEFT JOIN users u ON c.created_by = u.id
+      WHERE c.vc_id = $1
+      ORDER BY c.created_at ASC
+    `;
+    const result = await pool.query(query, [vcId]);
+    return result.rows;
+  }
+
   static async create(commentData: CreateVCCommentData): Promise<VCComment> {
     const query = `
       INSERT INTO vc_comments
