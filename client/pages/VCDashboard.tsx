@@ -695,44 +695,42 @@ export default function VCDashboard() {
                       )
                     : 100;
 
-                // Extract all unique step names from VC progress data
+                // Extract all unique step names with their order from VC progress data
+                const stepOrderMap = new Map<string, number>();
                 const allStepsSet = new Set<string>();
+
                 vcProgressData.forEach((vc: any) => {
                   if (vc.all_steps && Array.isArray(vc.all_steps)) {
-                    vc.all_steps.forEach((step: any) => {
+                    vc.all_steps.forEach((step: any, index: number) => {
                       if (step.name) {
                         allStepsSet.add(step.name);
+                        // Use the index from the ordered all_steps array as order
+                        if (!stepOrderMap.has(step.name)) {
+                          stepOrderMap.set(step.name, index);
+                        }
                       }
                     });
                   }
                 });
 
-                // Define proper VC process order (bottom to top)
-                const properStepOrder = [
-                  "Initial Pitch",
-                  "Product Demo",
-                  "Due Diligence",
-                  "Term Sheet",
-                  "Legal Review",
-                  "Final Approval",
-                ];
-
-                // If no steps found from data, use fallback
+                // If no steps found from data, use fallback with proper order
                 let allSteps: string[];
                 if (allStepsSet.size === 0) {
-                  allSteps = [...properStepOrder];
+                  allSteps = [
+                    "Initial Pitch",
+                    "Product Demo",
+                    "Due Diligence",
+                    "Term Sheet",
+                    "Legal Review",
+                    "Final Approval",
+                  ];
                 } else {
-                  // Sort steps according to proper VC process order
-                  const stepsArray = Array.from(allStepsSet);
-                  allSteps = properStepOrder.filter((step) =>
-                    stepsArray.includes(step),
-                  );
-
-                  // Add any additional steps not in standard order
-                  const additionalSteps = stepsArray.filter(
-                    (step) => !properStepOrder.includes(step),
-                  );
-                  allSteps.push(...additionalSteps);
+                  // Sort steps by their order index from database
+                  allSteps = Array.from(allStepsSet).sort((a, b) => {
+                    const orderA = stepOrderMap.get(a) ?? 999;
+                    const orderB = stepOrderMap.get(b) ?? 999;
+                    return orderA - orderB;
+                  });
                 }
 
                 // Define colors for different steps
