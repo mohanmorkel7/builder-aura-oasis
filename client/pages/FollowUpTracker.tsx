@@ -228,8 +228,10 @@ export default function FollowUpTracker() {
   const [activeTab, setActiveTab] = useState("all");
   const [typeFilter, setTypeFilter] = useState<string>("all"); // Filter for lead vs VC follow-ups
 
-  // Check if user is admin to show VC follow-ups
+  // Check user role for follow-up visibility
   const isAdmin = user?.role === "admin";
+  const isSales = user?.role === "sales";
+  const isVC = user?.role === "vc" || user?.role === "venture";
 
   // Fetch follow-ups data from API
   useEffect(() => {
