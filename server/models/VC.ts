@@ -162,7 +162,7 @@ export class VCRepository {
       WHERE is_partial = false OR is_partial IS NULL
       ORDER BY created_at DESC
     `;
-    const result = await pool.query(query);
+    const result = await withTimeout(pool.query(query), 5000);
     return result.rows;
   }
 
