@@ -1310,46 +1310,6 @@ export default function VCEdit() {
                   />
                 </div>
 
-                <div>
-                  <Label htmlFor="minimum_size">Minimum Investment (₹)</Label>
-                  <Input
-                    id="minimum_size"
-                    type="number"
-                    placeholder="e.g., 10000000"
-                    value={vcData.minimum_size}
-                    onChange={(e) =>
-                      handleInputChange("minimum_size", e.target.value)
-                    }
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="maximum_size">Maximum Investment (₹)</Label>
-                  <Input
-                    id="maximum_size"
-                    type="number"
-                    placeholder="e.g., 100000000"
-                    value={vcData.maximum_size}
-                    onChange={(e) =>
-                      handleInputChange("maximum_size", e.target.value)
-                    }
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="minimum_arr_requirement">
-                    Minimum ARR Requirement (₹)
-                  </Label>
-                  <Input
-                    id="minimum_arr_requirement"
-                    type="number"
-                    placeholder="e.g., 5000000"
-                    value={vcData.minimum_arr_requirement}
-                    onChange={(e) =>
-                      handleInputChange("minimum_arr_requirement", e.target.value)
-                    }
-                  />
-                </div>
 
                 <div>
                   <Label htmlFor="priority_level">Priority Level</Label>
