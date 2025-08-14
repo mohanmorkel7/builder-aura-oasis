@@ -420,15 +420,18 @@ router.get("/", async (req: Request, res: Response) => {
       console.log(`📊 Found ${result.rows.length} follow-ups`);
 
       // Debug VC follow-ups specifically
-      const vcFollowUps = result.rows.filter(row => row.vc_id);
+      const vcFollowUps = result.rows.filter((row) => row.vc_id);
       if (vcFollowUps.length > 0) {
-        console.log("🔍 VC Follow-ups found:", vcFollowUps.map(f => ({
-          id: f.id,
-          vc_id: f.vc_id,
-          vc_round_title: f.vc_round_title,
-          investor_name: f.investor_name,
-          vc_step_name: f.vc_step_name
-        })));
+        console.log(
+          "🔍 VC Follow-ups found:",
+          vcFollowUps.map((f) => ({
+            id: f.id,
+            vc_id: f.vc_id,
+            vc_round_title: f.vc_round_title,
+            investor_name: f.investor_name,
+            vc_step_name: f.vc_step_name,
+          })),
+        );
       }
 
       res.json(result.rows);

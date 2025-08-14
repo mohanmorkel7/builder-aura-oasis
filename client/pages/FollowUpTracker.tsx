@@ -235,7 +235,8 @@ export default function FollowUpTracker() {
 
   // Helper function to check if user can see a follow-up based on role
   const canViewFollowUp = (followUp: FollowUp) => {
-    const followUpType = followUp.type ||
+    const followUpType =
+      followUp.type ||
       (followUp.vc_id || followUp.vc_round_title || followUp.investor_name
         ? "vc"
         : "lead");
@@ -337,7 +338,8 @@ export default function FollowUpTracker() {
             : "lead");
 
         const notificationData = {
-          stepId: followUpType === "vc" ? followUp.vc_step_id : followUp.step_id,
+          stepId:
+            followUpType === "vc" ? followUp.vc_step_id : followUp.step_id,
           userId: parseInt(user.id),
           userName: user.name,
           followUpTitle:
@@ -498,11 +500,8 @@ export default function FollowUpTracker() {
             Follow-up Tracker
           </h1>
           <p className="text-gray-600 mt-1">
-            Track and manage follow-up tasks from {
-              isAdmin ? "leads and VC rounds" :
-              isVC ? "VC rounds" :
-              "leads"
-            }
+            Track and manage follow-up tasks from{" "}
+            {isAdmin ? "leads and VC rounds" : isVC ? "VC rounds" : "leads"}
           </p>
         </div>
         <div className="flex items-center space-x-2">
@@ -524,8 +523,8 @@ export default function FollowUpTracker() {
                 <p className="text-yellow-600 text-sm font-medium">Pending</p>
                 <p className="text-2xl font-bold text-yellow-900">
                   {
-                    followUps.filter((f) =>
-                      f.status === "pending" && canViewFollowUp(f)
+                    followUps.filter(
+                      (f) => f.status === "pending" && canViewFollowUp(f),
                     ).length
                   }
                 </p>
@@ -542,8 +541,8 @@ export default function FollowUpTracker() {
                 <p className="text-blue-600 text-sm font-medium">In Progress</p>
                 <p className="text-2xl font-bold text-blue-900">
                   {
-                    followUps.filter((f) =>
-                      f.status === "in_progress" && canViewFollowUp(f)
+                    followUps.filter(
+                      (f) => f.status === "in_progress" && canViewFollowUp(f),
                     ).length
                   }
                 </p>
@@ -560,8 +559,8 @@ export default function FollowUpTracker() {
                 <p className="text-green-600 text-sm font-medium">Completed</p>
                 <p className="text-2xl font-bold text-green-900">
                   {
-                    followUps.filter((f) =>
-                      f.status === "completed" && canViewFollowUp(f)
+                    followUps.filter(
+                      (f) => f.status === "completed" && canViewFollowUp(f),
                     ).length
                   }
                 </p>
@@ -581,7 +580,9 @@ export default function FollowUpTracker() {
                     followUps.filter((f) => {
                       const isOverdueStatus =
                         f.status === "overdue" ||
-                        (f.status !== "completed" && f.due_date && isOverdue(f.due_date));
+                        (f.status !== "completed" &&
+                          f.due_date &&
+                          isOverdue(f.due_date));
                       return isOverdueStatus && canViewFollowUp(f);
                     }).length
                   }

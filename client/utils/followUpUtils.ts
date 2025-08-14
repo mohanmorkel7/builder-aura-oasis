@@ -16,8 +16,15 @@ export interface FollowUpStatusChangeData {
 export async function notifyFollowUpStatusChange(
   data: FollowUpStatusChangeData,
 ) {
-  const { followUpId, newStatus, stepId, userId, userName, followUpTitle, isVC } =
-    data;
+  const {
+    followUpId,
+    newStatus,
+    stepId,
+    userId,
+    userName,
+    followUpTitle,
+    isVC,
+  } = data;
 
   console.log("Follow-up notification data:", data);
 
@@ -64,7 +71,7 @@ export async function notifyFollowUpStatusChange(
       ? `/api/vc/steps/${stepId}/chats`
       : `/api/leads/steps/${stepId}/chats`;
 
-    console.log(`Using ${isVC ? 'VC' : 'Lead'} endpoint:`, endpoint);
+    console.log(`Using ${isVC ? "VC" : "Lead"} endpoint:`, endpoint);
 
     const response = await fetch(endpoint, {
       method: "POST",
