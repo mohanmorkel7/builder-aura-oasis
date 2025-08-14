@@ -1110,8 +1110,12 @@ export default function VCDashboard() {
           const overdueFollowUps = vcFollowUps.filter((followUp: any) => {
             if (!followUp.due_date) return false;
             const dueDate = new Date(followUp.due_date);
-            return dueDate < now && followUp.status !== "completed";
+            const isOverdue = dueDate < now && followUp.status !== "completed";
+            console.log(`🔍 Overdue check "${followUp.title}": due_date=${followUp.due_date}, dueDate=${dueDate}, isOverdue=${isOverdue}, status=${followUp.status}`);
+            return isOverdue;
           });
+
+          console.log("🔍 VCDashboard - Overdue follow-ups:", overdueFollowUps);
 
           return (
             <>
