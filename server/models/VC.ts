@@ -696,7 +696,7 @@ export class VCCommentRepository {
       `;
 
       const result = await pool.query(query, values);
-      return result.rows[0];
+      return this.formatComment(result.rows[0]);
     } catch (error) {
       console.error("Error in VCCommentRepository.create:", error);
       throw error;
