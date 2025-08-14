@@ -466,6 +466,7 @@ router.post("/", async (req: Request, res: Response) => {
           }
         }
       } else {
+        console.log("⚠️ Database not available, using mock data for VC creation");
         // Create mock VC when database is unavailable
         vc = {
           id: Math.floor(Math.random() * 1000) + 100,
@@ -474,9 +475,11 @@ router.post("/", async (req: Request, res: Response) => {
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         };
+        console.log("📝 Mock VC created:", vc);
       }
     } catch (dbError) {
-      console.log("Database error, using mock data:", dbError.message);
+      console.error("❌ Database error during VC creation:", dbError);
+      console.log("🔄 Falling back to mock data");
       vc = {
         id: Math.floor(Math.random() * 1000) + 100,
         vc_id: `#VC${String(Math.floor(Math.random() * 100) + 1).padStart(3, "0")}`,
@@ -484,6 +487,7 @@ router.post("/", async (req: Request, res: Response) => {
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
+      console.log("📝 Fallback mock VC created:", vc);
     }
 
     res.status(201).json({
