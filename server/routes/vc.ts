@@ -351,7 +351,8 @@ router.get("/progress", async (req: Request, res: Response) => {
                 steps.find((s) => s.status === "pending");
 
               // Calculate equal probability distribution based on actual step count
-              const defaultProbability = steps.length > 0 ? 100 / steps.length : 0;
+              const defaultProbability =
+                steps.length > 0 ? 100 / steps.length : 0;
 
               progressData.push({
                 vc_id: vc.vc_id,
