@@ -288,7 +288,7 @@ router.get("/progress", async (req: Request, res: Response) => {
         progressData = [];
 
         // Quick timeout for database operations to prevent hanging
-        const queryTimeout = 5000; // 5 seconds
+        const queryTimeout = 10000; // 10 seconds
 
         try {
           const timeoutPromise = new Promise((_, reject) => {
