@@ -479,6 +479,7 @@ export function EnhancedStepItem({
           message: editMessageText.trim(),
           is_rich_text: originalIsRichText, // Preserve the original format
         },
+        isVC,
       });
       setEditingMessageId(null);
       setEditMessageText("");
