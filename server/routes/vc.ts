@@ -350,18 +350,29 @@ router.get("/progress", async (req: Request, res: Response) => {
                 steps.find((s) => s.status === "in_progress") ||
                 steps.find((s) => s.status === "pending");
 
+              // Debug logging for probability calculation
+              const completedProbabilities = completedSteps.map(step => step.probability_percent || 0);
+              const totalCompletedProbability = Math.round(
+                completedSteps.reduce(
+                  (sum, step) => sum + (step.probability_percent || 0),
+                  0,
+                ),
+              );
+
+              console.log(`📊 VC ${vc.vc_id} progress calculation:`, {
+                completedSteps: completedSteps.length,
+                completedProbabilities,
+                totalCompletedProbability,
+                allStepsProbabilities: steps.map(s => ({ name: s.name, prob: s.probability_percent }))
+              });
+
               progressData.push({
                 vc_id: vc.vc_id,
                 round_title: vc.round_title,
                 investor_name: vc.investor_name,
                 status: vc.vc_status,
                 completed_count: completedSteps.length,
-                total_completed_probability: Math.round(
-                  completedSteps.reduce(
-                    (sum, step) => sum + (step.probability_percent || 0),
-                    0,
-                  ),
-                ),
+                total_completed_probability: totalCompletedProbability,
                 completed_steps: completedSteps.map((step) => ({
                   name: step.name,
                   probability: step.probability_percent || 0,
