@@ -151,8 +151,12 @@ export default function FollowUpNew() {
       }
 
       // Navigate back based on context
-      if (isLeadFollowUp) {
-        navigate(`/leads`);
+      if (isFromChat) {
+        if (isVC) {
+          navigate(`/vc/${context?.vcId}`);
+        } else {
+          navigate(`/leads`);
+        }
       } else if (hasClientId) {
         navigate(`/sales/client/${id}`);
       } else {
