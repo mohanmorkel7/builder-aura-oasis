@@ -111,6 +111,7 @@ export class ApiClient {
           // For timeouts, increment failure count for circuit breaker
           this.failureCount++;
           this.lastFailureTime = Date.now();
+          this.checkOfflineMode();
           throw new Error("API request timed out - server may be unresponsive");
         }
 
