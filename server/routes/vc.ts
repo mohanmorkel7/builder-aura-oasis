@@ -1393,7 +1393,11 @@ router.post("/steps/:stepId/chats", async (req: Request, res: Response) => {
           is_rich_text:
             comment.is_rich_text !== undefined ? comment.is_rich_text : true,
           created_at: comment.created_at,
-          attachments: comment.attachments || [],
+          attachments: comment.attachments
+            ? (typeof comment.attachments === 'string'
+                ? JSON.parse(comment.attachments)
+                : comment.attachments)
+            : [],
         };
 
         console.log(`✅ VC step chat created:`, chat);
