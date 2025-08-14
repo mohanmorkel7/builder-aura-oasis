@@ -106,6 +106,9 @@ export class ApiClient {
           fetchError.message.includes("Failed to fetch")
         ) {
           console.error("Network connectivity issue detected");
+          this.failureCount++;
+          this.lastFailureTime = Date.now();
+          this.checkOfflineMode();
         } else if (fetchError.message === "Request timeout") {
           console.error("Request timed out - server may be unresponsive");
           // For timeouts, increment failure count for circuit breaker
