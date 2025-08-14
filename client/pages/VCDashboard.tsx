@@ -1533,7 +1533,7 @@ export default function VCDashboard() {
                 <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
                 <p className="mt-2 text-gray-600">Loading VCs...</p>
               </div>
-            ) : filteredVCs.length > 0 ? (
+            ) : (filteredVCs || []).length > 0 ? (
               <div className="space-y-4">
                 {filteredVCs.map((vc: any) => (
                   <div
