@@ -869,9 +869,9 @@ export default function VCDashboard() {
                             <div className="flex">
                               <div className="w-48 pr-4"></div>
                               <div
-                                className="flex"
+                                className="flex flex-1"
                                 style={{
-                                  width: `${(vcProgressData || []).length * 120}px`,
+                                  minWidth: `${Math.min((vcProgressData || []).length * 80, 800)}px`,
                                 }}
                               >
                                 {(vcProgressData || []).map(
