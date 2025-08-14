@@ -951,7 +951,11 @@ export function useLeads(salesRepId?: number) {
       } catch (error) {
         console.error("Failed to fetch leads:", error);
         // Return empty array when backend is down
-        if (error.message.includes("timeout") || error.message.includes("unavailable") || error.message.includes("Offline mode")) {
+        if (
+          error.message.includes("timeout") ||
+          error.message.includes("unavailable") ||
+          error.message.includes("Offline mode")
+        ) {
           return [];
         }
         throw error;
@@ -959,7 +963,11 @@ export function useLeads(salesRepId?: number) {
     },
     retry: (failureCount, error) => {
       // Don't retry if it's a timeout, offline, or server unavailable error
-      if (error.message.includes("timeout") || error.message.includes("unavailable") || error.message.includes("Offline mode")) {
+      if (
+        error.message.includes("timeout") ||
+        error.message.includes("unavailable") ||
+        error.message.includes("Offline mode")
+      ) {
         console.log("Not retrying due to offline/timeout condition");
         return false;
       }
@@ -1146,7 +1154,11 @@ export function useTemplateStepDashboard() {
       } catch (error) {
         console.error("Failed to fetch template step dashboard:", error);
         // Return empty array when backend is down
-        if (error.message.includes("timeout") || error.message.includes("unavailable") || error.message.includes("Offline mode")) {
+        if (
+          error.message.includes("timeout") ||
+          error.message.includes("unavailable") ||
+          error.message.includes("Offline mode")
+        ) {
           return [];
         }
         throw error;
@@ -1154,7 +1166,11 @@ export function useTemplateStepDashboard() {
     },
     retry: (failureCount, error) => {
       // Don't retry if it's a timeout, offline, or server unavailable error
-      if (error.message.includes("timeout") || error.message.includes("unavailable") || error.message.includes("Offline mode")) {
+      if (
+        error.message.includes("timeout") ||
+        error.message.includes("unavailable") ||
+        error.message.includes("Offline mode")
+      ) {
         return false;
       }
       return failureCount < 2;

@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import { RefreshCw, Wifi, WifiOff } from 'lucide-react';
-import { apiClient } from '@/lib/api';
+import React, { useState, useEffect } from "react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { RefreshCw, Wifi, WifiOff } from "lucide-react";
+import { apiClient } from "@/lib/api";
 
 export function OfflineIndicator() {
   const [isOffline, setIsOffline] = useState(false);
@@ -25,10 +25,10 @@ export function OfflineIndicator() {
     try {
       // Reset circuit breaker and try a simple request
       apiClient.resetCircuitBreaker();
-      await apiClient.request('/users');
+      await apiClient.request("/users");
       setIsOffline(false);
     } catch (error) {
-      console.log('Retry failed, server still offline');
+      console.log("Retry failed, server still offline");
     } finally {
       setIsRetrying(false);
     }
@@ -61,7 +61,7 @@ export function OfflineIndicator() {
             <Wifi className="h-3 w-3" />
           )}
           <span className="ml-1 text-xs">
-            {isRetrying ? 'Retrying...' : 'Retry'}
+            {isRetrying ? "Retrying..." : "Retry"}
           </span>
         </Button>
       </AlertDescription>

@@ -23,8 +23,12 @@ export class ApiClient {
     if (this.failureCount >= this.OFFLINE_THRESHOLD && !this.isOfflineMode) {
       this.isOfflineMode = true;
       this.offlineDetectedAt = Date.now();
-      console.warn("🔴 Offline mode activated - backend server appears to be down");
-      console.warn("📱 The app will show cached/mock data until the server is restored");
+      console.warn(
+        "🔴 Offline mode activated - backend server appears to be down",
+      );
+      console.warn(
+        "📱 The app will show cached/mock data until the server is restored",
+      );
     }
   }
 
@@ -48,7 +52,9 @@ export class ApiClient {
   ): Promise<T> {
     // Offline mode check
     if (this.isOfflineMode && !this.shouldRetryConnection()) {
-      console.warn(`🔴 Request to ${endpoint} blocked - app is in offline mode`);
+      console.warn(
+        `🔴 Request to ${endpoint} blocked - app is in offline mode`,
+      );
       throw new Error("Offline mode: Backend server is unavailable");
     }
 
