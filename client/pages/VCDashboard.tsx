@@ -1140,18 +1140,26 @@ export default function VCDashboard() {
                         </div>
                         <div className="text-2xl font-bold text-orange-900">
                           {(() => {
-                            const avgProgress = vcProgressData.length > 0
-                              ? Math.round(
-                                  vcProgressData.reduce(
-                                    (sum: number, vc: any) => {
-                                      console.log(`🔢 VC ${vc.vc_id}: total_completed_probability = ${vc.total_completed_probability}`);
-                                      return sum + (vc.total_completed_probability || 0);
-                                    },
-                                    0,
-                                  ) / vcProgressData.length,
-                                )
-                              : 0;
-                            console.log(`📊 Average Progress Calculated: ${avgProgress}%`);
+                            const avgProgress =
+                              vcProgressData.length > 0
+                                ? Math.round(
+                                    vcProgressData.reduce(
+                                      (sum: number, vc: any) => {
+                                        console.log(
+                                          `🔢 VC ${vc.vc_id}: total_completed_probability = ${vc.total_completed_probability}`,
+                                        );
+                                        return (
+                                          sum +
+                                          (vc.total_completed_probability || 0)
+                                        );
+                                      },
+                                      0,
+                                    ) / vcProgressData.length,
+                                  )
+                                : 0;
+                            console.log(
+                              `📊 Average Progress Calculated: ${avgProgress}%`,
+                            );
                             return avgProgress;
                           })()}
                           %
@@ -1165,7 +1173,10 @@ export default function VCDashboard() {
                         Quick VC Summary:
                       </div>
                       {/* Debug logging */}
-                      {console.log("🐛 VC Progress Data for debugging:", vcProgressData)}
+                      {console.log(
+                        "🐛 VC Progress Data for debugging:",
+                        vcProgressData,
+                      )}
                       <div className="space-y-2">
                         {vcProgressData.map((vc: any) => (
                           <div
