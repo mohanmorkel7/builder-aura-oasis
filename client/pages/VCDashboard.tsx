@@ -1518,7 +1518,7 @@ export default function VCDashboard() {
               className="flex items-center gap-2"
             >
               <FileText className="w-4 h-4" />
-              Saved Drafts ({vcPartialSaves.length})
+              Saved Drafts ({(vcPartialSaves || []).length})
             </Button>
           </div>
         </CardContent>
