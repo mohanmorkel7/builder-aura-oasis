@@ -1256,10 +1256,18 @@ export function useReorderLeadSteps() {
 }
 
 // Lead chat hooks
-export function useStepChats(stepId: number) {
+export function useStepChats(stepId: number, isVC: boolean = false) {
   return useQuery({
-    queryKey: ["step-chats", stepId],
-    queryFn: () => apiClient.getStepChats(stepId),
+    queryKey: isVC ? ["vc-step-chats", stepId] : ["step-chats", stepId],
+    queryFn: () => {
+      if (isVC) {
+        // Use VC step chat endpoint
+        return apiClient.request(`/vc/steps/${stepId}/chats`);
+      } else {
+        // Use lead step chat endpoint
+        return apiClient.getStepChats(stepId);
+      }
+    },
     enabled: !!stepId && stepId > 0,
   });
 }
