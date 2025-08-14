@@ -882,13 +882,20 @@ export default function VCDetails() {
                   );
                 } else {
                   return (
-                    <DraggableStepsList
-                      leadId={vcId}
+                    <VCStepsList
+                      vcId={vcId}
                       steps={vcSteps}
                       expandedSteps={expandedSteps}
                       onToggleExpansion={handleToggleExpansion}
                       onDeleteStep={handleDeleteStep}
-                      onReorderSteps={handleReorderSteps}
+                      onUpdateStep={async (stepId: number, stepData: any) => {
+                        try {
+                          await updateVCStepMutation.mutateAsync({ stepId, stepData });
+                          refetchSteps();
+                        } catch (error) {
+                          console.error("Failed to update step:", error);
+                        }
+                      }}
                     />
                   );
                 }
