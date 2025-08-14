@@ -194,23 +194,25 @@ router.get("/follow-ups", async (req: Request, res: Response) => {
       if (await isDatabaseAvailable()) {
         const query = `
           SELECT
-            vs.id,
-            vs.vc_id,
-            vs.name as title,
-            vs.description,
-            vs.due_date,
-            vs.status,
-            vs.assigned_to,
+            f.id,
+            f.vc_id,
+            f.title,
+            f.description,
+            f.due_date,
+            f.status,
+            f.assigned_to,
+            f.follow_up_type,
             vs.name as step_name,
             v.round_title,
-            u.first_name || ' ' || u.last_name as assigned_user_name
-          FROM vc_steps vs
-          LEFT JOIN vcs v ON vs.vc_id = v.id
-          LEFT JOIN users u ON vs.assigned_to = u.id
-          WHERE vs.status IN ('pending', 'in_progress')
-            AND vs.due_date IS NOT NULL
-            AND vs.due_date >= CURRENT_DATE - INTERVAL '30 days'
-          ORDER BY vs.due_date ASC
+            CONCAT(u.first_name, ' ', u.last_name) as assigned_user_name
+          FROM follow_ups f
+          LEFT JOIN vcs v ON f.vc_id = v.id
+          LEFT JOIN vc_steps vs ON f.vc_step_id = vs.id
+          LEFT JOIN users u ON f.assigned_to = u.id
+          WHERE f.vc_id IS NOT NULL
+            AND f.status IN ('pending', 'in_progress', 'completed')
+            AND f.due_date IS NOT NULL
+          ORDER BY f.due_date ASC
           LIMIT 50
         `;
         const result = await pool.query(query);
