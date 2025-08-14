@@ -350,6 +350,9 @@ router.get("/progress", async (req: Request, res: Response) => {
                 steps.find((s) => s.status === "in_progress") ||
                 steps.find((s) => s.status === "pending");
 
+              // Use default probability of 16.67% per step (assuming 6 steps = 100%)
+              const defaultProbability = 16.67;
+
               progressData.push({
                 vc_id: vc.vc_id,
                 round_title: vc.round_title,
@@ -358,25 +361,25 @@ router.get("/progress", async (req: Request, res: Response) => {
                 completed_count: completedSteps.length,
                 total_completed_probability: Math.round(
                   completedSteps.reduce(
-                    (sum, step) => sum + (step.probability_percent || 16.67),
+                    (sum, step) => sum + defaultProbability,
                     0,
                   ),
                 ),
                 completed_steps: completedSteps.map((step) => ({
                   name: step.name,
-                  probability: step.probability_percent || 16.67,
+                  probability: defaultProbability,
                   status: step.status,
                 })),
                 current_step: currentStep
                   ? {
                       name: currentStep.name,
-                      probability: currentStep.probability_percent || 16.67,
+                      probability: defaultProbability,
                     }
                   : null,
                 all_steps: steps.map((step) => ({
                   name: step.name,
                   status: step.status,
-                  probability: step.probability_percent || 16.67,
+                  probability: defaultProbability,
                 })),
               });
             } catch (stepError) {
@@ -851,7 +854,7 @@ router.get("/:id/steps", async (req: Request, res: Response) => {
             `🔍 Executing query: SELECT * FROM vc_steps WHERE vc_id = ${vcId} ORDER BY order_index ASC, created_at ASC`,
           );
           steps = await VCStepRepository.findByVCId(vcId);
-          console.log(`📊 Database query returned ${steps?.length || 0} steps`);
+          console.log(`��� Database query returned ${steps?.length || 0} steps`);
 
           if (steps && steps.length > 0) {
             console.log("📝 First step preview:", {
