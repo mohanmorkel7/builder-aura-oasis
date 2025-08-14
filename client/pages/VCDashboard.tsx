@@ -1749,7 +1749,7 @@ export default function VCDashboard() {
           </CardContent>
         </Card>
       ) : (
-        vcPartialSaves.map((partialSave: any) => {
+        (vcPartialSaves || []).map((partialSave: any) => {
           const info = getVCPartialSaveInfo(partialSave);
           const lastSaved = new Date(info.lastSaved);
           const formatDateForInput = (dateString: string) => {
