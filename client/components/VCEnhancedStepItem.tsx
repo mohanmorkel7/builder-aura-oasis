@@ -263,6 +263,7 @@ export function VCEnhancedStepItem({
     }
 
     try {
+      // Create the follow-up task
       await createFollowUpMutation.mutateAsync({
         title: `VC Step Follow-up: ${step.name}`,
         description: followUpNotes,
@@ -273,6 +274,17 @@ export function VCEnhancedStepItem({
         vc_step_id: step.id,
         created_by: parseInt(user?.id || "1"),
       });
+
+      // Add a system message to the chat indicating follow-up was created
+      const systemMessage = {
+        message: `📋 Follow-up task created: "${followUpNotes}" - Due: ${new Date(followUpDueDate).toLocaleDateString()}`,
+        message_type: "system",
+        user_id: parseInt(user?.id || "1"),
+        user_name: user?.first_name || "System",
+        is_rich_text: false,
+      };
+
+      await sendMessageMutation.mutateAsync(systemMessage);
 
       setCreateFollowUp(false);
       setFollowUpNotes("");
