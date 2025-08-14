@@ -9,16 +9,7 @@ import { pool, isDatabaseAvailable, withTimeout } from "../database/connection";
 
 const router = Router();
 
-// Production database availability check with graceful fallback
-async function isDatabaseAvailable() {
-  try {
-    await pool.query("SELECT 1");
-    return true;
-  } catch (error) {
-    console.log("Database unavailable:", error.message);
-    return false;
-  }
-}
+// Using centralized isDatabaseAvailable function from connection.ts
 
 // Production database availability check - fail fast if no database
 async function requireDatabase() {
