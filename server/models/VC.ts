@@ -605,27 +605,80 @@ export class VCCommentRepository {
   }
 
   static async create(commentData: CreateVCCommentData): Promise<VCComment> {
-    const query = `
-      INSERT INTO vc_comments
-      (vc_id, step_id, message, message_type, is_rich_text, attachments, user_id, user_name, created_by, created_by_name)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, (SELECT first_name || ' ' || last_name FROM users WHERE id = $9))
-      RETURNING *
-    `;
+    try {
+      // Check which columns exist in the table
+      const columnCheck = await pool.query(`
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_name = 'vc_comments'
+      `);
 
-    const values = [
-      commentData.vc_id,
-      commentData.step_id || null,
-      commentData.message,
-      commentData.message_type || "text",
-      commentData.is_rich_text || false,
-      JSON.stringify(commentData.attachments || []),
-      commentData.user_id || null,
-      commentData.user_name,
-      commentData.created_by,
-    ];
+      const availableColumns = columnCheck.rows.map(row => row.column_name);
+      const hasStepId = availableColumns.includes('step_id');
+      const hasMessageType = availableColumns.includes('message_type');
+      const hasIsRichText = availableColumns.includes('is_rich_text');
+      const hasAttachments = availableColumns.includes('attachments');
+      const hasUserId = availableColumns.includes('user_id');
+      const hasUserName = availableColumns.includes('user_name');
 
-    const result = await pool.query(query, values);
-    return result.rows[0];
+      // Build query based on available columns
+      let fields = ['vc_id', 'message', 'created_by', 'created_by_name'];
+      let values = [
+        commentData.vc_id,
+        commentData.message,
+        commentData.created_by,
+        commentData.user_name,
+      ];
+      let placeholders = ['$1', '$2', '$3', '$4'];
+
+      if (hasStepId && commentData.step_id) {
+        fields.push('step_id');
+        values.push(commentData.step_id);
+        placeholders.push(`$${values.length}`);
+      }
+
+      if (hasMessageType) {
+        fields.push('message_type');
+        values.push(commentData.message_type || 'text');
+        placeholders.push(`$${values.length}`);
+      }
+
+      if (hasIsRichText) {
+        fields.push('is_rich_text');
+        values.push(commentData.is_rich_text || false);
+        placeholders.push(`$${values.length}`);
+      }
+
+      if (hasAttachments) {
+        fields.push('attachments');
+        values.push(JSON.stringify(commentData.attachments || []));
+        placeholders.push(`$${values.length}`);
+      }
+
+      if (hasUserId && commentData.user_id) {
+        fields.push('user_id');
+        values.push(commentData.user_id);
+        placeholders.push(`$${values.length}`);
+      }
+
+      if (hasUserName) {
+        fields.push('user_name');
+        values.push(commentData.user_name);
+        placeholders.push(`$${values.length}`);
+      }
+
+      const query = `
+        INSERT INTO vc_comments (${fields.join(', ')})
+        VALUES (${placeholders.join(', ')})
+        RETURNING *
+      `;
+
+      const result = await pool.query(query, values);
+      return result.rows[0];
+    } catch (error) {
+      console.error("Error in VCCommentRepository.create:", error);
+      throw error;
+    }
   }
 
   static async update(
