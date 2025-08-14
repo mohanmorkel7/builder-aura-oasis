@@ -13,6 +13,45 @@ import { pool } from "../database/connection";
 
 const router = Router();
 
+// Debug endpoint to test database connection and VC creation
+router.get("/debug/connection", async (req: Request, res: Response) => {
+  try {
+    const dbAvailable = await isDatabaseAvailable();
+    console.log("Database availability:", dbAvailable);
+
+    if (dbAvailable) {
+      // Test basic query
+      const testQuery = await pool.query("SELECT NOW() as current_time");
+
+      // Test VC table exists
+      const tableCheck = await pool.query(`
+        SELECT column_name, data_type
+        FROM information_schema.columns
+        WHERE table_name = 'vcs'
+        ORDER BY ordinal_position
+      `);
+
+      res.json({
+        database_available: true,
+        current_time: testQuery.rows[0].current_time,
+        vcs_table_columns: tableCheck.rows,
+        message: "Database connection working properly"
+      });
+    } else {
+      res.json({
+        database_available: false,
+        message: "Database not available, using mock data"
+      });
+    }
+  } catch (error) {
+    console.error("Debug connection error:", error);
+    res.status(500).json({
+      error: error.message,
+      database_available: false
+    });
+  }
+});
+
 // Enhanced helper function with better error handling
 async function isDatabaseAvailable() {
   try {
