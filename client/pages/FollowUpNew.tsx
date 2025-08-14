@@ -122,8 +122,8 @@ export default function FollowUpNew() {
       console.log("Creating follow-up:", followUpData);
       await createFollowUpMutation.mutateAsync(followUpData);
 
-      // Create system message for lead follow-up with assigned user info
-      if (isLeadFollowUp && leadContext?.createSystemMessage && user) {
+      // Create system message for chat follow-up with assigned user info
+      if (isFromChat && context?.createSystemMessage && user) {
         const assignedUser = users.find(
           (u: any) => u.id.toString() === followUp.assigned_to,
         );
