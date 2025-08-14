@@ -172,13 +172,10 @@ export function DraggableVCStepsList({
         {activeStep ? (
           <EnhancedStepItem
             step={activeStep}
-            index={items.findIndex((item) => item.id === activeStep.id)}
             isExpanded={false}
             onToggleExpansion={() => {}}
-            onDelete={() => {}}
-            onUpdateStep={() => {}}
-            vcId={vcId}
-            isVC={true}
+            onUpdateStatus={() => {}}
+            onDeleteStep={() => {}}
             isDragOverlay
           />
         ) : null}
