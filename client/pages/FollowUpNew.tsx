@@ -183,7 +183,7 @@ export default function FollowUpNew() {
     }
   };
 
-  if (!isLeadFollowUp && hasClientId && isLoading) {
+  if (!isFromChat && hasClientId && isLoading) {
     return (
       <div className="p-6">
         <div className="text-center">Loading client details...</div>
