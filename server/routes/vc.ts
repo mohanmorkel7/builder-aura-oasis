@@ -1134,6 +1134,8 @@ router.post("/:id/comments", async (req: Request, res: Response) => {
     }
 
     const { message, created_by } = req.body;
+    console.log(`💬 Creating comment for VC ${vcId}:`, { message, created_by });
+
     if (!message || !message.trim()) {
       return res.status(400).json({
         success: false,
@@ -1141,21 +1143,36 @@ router.post("/:id/comments", async (req: Request, res: Response) => {
       });
     }
 
+    if (!created_by) {
+      return res.status(400).json({
+        success: false,
+        error: "created_by is required",
+      });
+    }
+
     let comment;
     try {
-      if (await isDatabaseAvailable()) {
+      const dbAvailable = await isDatabaseAvailable();
+      console.log(`🔍 Database available for creating VC comment: ${dbAvailable}`);
+
+      if (dbAvailable) {
         const query = `
           INSERT INTO vc_comments (vc_id, message, created_by, created_by_name)
           VALUES ($1, $2, $3, (SELECT first_name || ' ' || last_name FROM users WHERE id = $3))
           RETURNING *, (SELECT first_name || ' ' || last_name FROM users WHERE id = created_by) as created_by_name
         `;
+        console.log(`📝 Executing query: ${query}`);
+        console.log(`📊 Query values:`, [vcId, message.trim(), created_by]);
+
         const result = await pool.query(query, [
           vcId,
           message.trim(),
           created_by,
         ]);
         comment = result.rows[0];
+        console.log(`✅ VC comment created in database:`, comment);
       } else {
+        console.log("⚠️ Database not available, creating mock comment");
         // Mock comment creation when database is unavailable
         comment = {
           id: Math.floor(Math.random() * 1000) + 1,
