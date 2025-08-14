@@ -483,10 +483,10 @@ export default function LeadDashboard() {
 
                               {/* Chart Grid and Lead Positions */}
                               <div
-                                className="relative"
+                                className="relative flex-1"
                                 style={{
                                   height: `${chartHeight}px`,
-                                  width: `${leadProgressData.length * 80}px`,
+                                  minWidth: `${Math.min(leadProgressData.length * 60, 800)}px`,
                                 }}
                               >
                                 {/* Grid Lines */}
