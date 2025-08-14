@@ -1210,4 +1210,200 @@ router.post("/:id/comments", async (req: Request, res: Response) => {
   }
 });
 
+// Get step chats for VC steps
+router.get("/steps/:stepId/chats", async (req: Request, res: Response) => {
+  try {
+    const stepId = parseInt(req.params.stepId);
+    if (isNaN(stepId)) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid step ID",
+      });
+    }
+
+    console.log(`💬 Fetching chats for VC step ${stepId}`);
+
+    let chats = [];
+    try {
+      const dbAvailable = await isDatabaseAvailable();
+      console.log(`🔍 Database available for VC step chats: ${dbAvailable}`);
+
+      if (dbAvailable) {
+        // Check if this is actually a VC step
+        const stepCheck = await pool.query("SELECT vc_id FROM vc_steps WHERE id = $1", [stepId]);
+
+        if (stepCheck.rows.length === 0) {
+          return res.status(404).json({
+            success: false,
+            error: "VC step not found",
+          });
+        }
+
+        // For now, use the VC comments as step chats (could be expanded later)
+        const vcId = stepCheck.rows[0].vc_id;
+        const query = `
+          SELECT c.*, u.first_name || ' ' || u.last_name as user_name
+          FROM vc_comments c
+          LEFT JOIN users u ON c.created_by = u.id
+          WHERE c.vc_id = $1
+          ORDER BY c.created_at ASC
+        `;
+        const result = await pool.query(query, [vcId]);
+
+        // Format to match step chat structure
+        chats = result.rows.map(comment => ({
+          id: comment.id,
+          step_id: stepId,
+          user_id: comment.created_by,
+          user_name: comment.created_by_name || comment.user_name,
+          message: comment.message,
+          message_type: "text",
+          is_rich_text: true,
+          created_at: comment.created_at,
+          attachments: []
+        }));
+
+        console.log(`📊 Found ${chats.length} VC comments as step chats`);
+      } else {
+        console.log("⚠️ Database not available, using mock step chats for VC");
+        // Mock step chats when database is unavailable
+        chats = [
+          {
+            id: 1,
+            step_id: stepId,
+            user_id: 1,
+            user_name: "VC Team",
+            message: "Step discussion started",
+            message_type: "text",
+            is_rich_text: true,
+            created_at: new Date().toISOString(),
+            attachments: []
+          }
+        ];
+      }
+    } catch (dbError) {
+      console.error("❌ Database error fetching VC step chats:", dbError);
+      chats = [];
+    }
+
+    res.json(chats);
+  } catch (error) {
+    console.error("Error fetching VC step chats:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to fetch VC step chats",
+    });
+  }
+});
+
+// Create step chat for VC steps
+router.post("/steps/:stepId/chats", async (req: Request, res: Response) => {
+  try {
+    const stepId = parseInt(req.params.stepId);
+    if (isNaN(stepId)) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid step ID",
+      });
+    }
+
+    const { user_id, user_name, message, message_type = "text", is_rich_text = true } = req.body;
+
+    console.log(`💬 Creating chat for VC step ${stepId}:`, { user_id, user_name, message });
+
+    if (!message || !message.trim()) {
+      return res.status(400).json({
+        success: false,
+        error: "Message is required",
+      });
+    }
+
+    let chat;
+    try {
+      const dbAvailable = await isDatabaseAvailable();
+      console.log(`🔍 Database available for creating VC step chat: ${dbAvailable}`);
+
+      if (dbAvailable) {
+        // Check if this is actually a VC step and get the VC ID
+        const stepCheck = await pool.query("SELECT vc_id FROM vc_steps WHERE id = $1", [stepId]);
+
+        if (stepCheck.rows.length === 0) {
+          return res.status(404).json({
+            success: false,
+            error: "VC step not found",
+          });
+        }
+
+        const vcId = stepCheck.rows[0].vc_id;
+
+        // Create a VC comment for this step discussion
+        const query = `
+          INSERT INTO vc_comments (vc_id, message, created_by, created_by_name)
+          VALUES ($1, $2, $3, $4)
+          RETURNING *, (SELECT first_name || ' ' || last_name FROM users WHERE id = created_by) as user_name
+        `;
+        const result = await pool.query(query, [
+          vcId,
+          message.trim(),
+          user_id,
+          user_name
+        ]);
+
+        const comment = result.rows[0];
+
+        // Format response to match step chat structure
+        chat = {
+          id: comment.id,
+          step_id: stepId,
+          user_id: comment.created_by,
+          user_name: comment.created_by_name || comment.user_name,
+          message: comment.message,
+          message_type: "text",
+          is_rich_text: true,
+          created_at: comment.created_at,
+          attachments: []
+        };
+
+        console.log(`✅ VC step chat created:`, chat);
+      } else {
+        console.log("⚠️ Database not available, creating mock VC step chat");
+        // Mock step chat when database is unavailable
+        chat = {
+          id: Math.floor(Math.random() * 1000) + 1,
+          step_id: stepId,
+          user_id,
+          user_name,
+          message: message.trim(),
+          message_type,
+          is_rich_text,
+          created_at: new Date().toISOString(),
+          attachments: []
+        };
+      }
+    } catch (dbError) {
+      console.error("❌ Database error creating VC step chat:", dbError);
+      // Fallback to mock
+      chat = {
+        id: Math.floor(Math.random() * 1000) + 1,
+        step_id: stepId,
+        user_id,
+        user_name,
+        message: message.trim(),
+        message_type,
+        is_rich_text,
+        created_at: new Date().toISOString(),
+        attachments: []
+      };
+    }
+
+    res.status(201).json(chat);
+  } catch (error) {
+    console.error("Error creating VC step chat:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to create VC step chat",
+    });
+  }
+});
+
 export default router;
