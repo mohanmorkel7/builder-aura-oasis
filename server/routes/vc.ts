@@ -190,11 +190,8 @@ router.get("/stats", async (req: Request, res: Response) => {
 router.get("/follow-ups", async (req: Request, res: Response) => {
   try {
     let followUps = [];
-    console.log("🔍 VC Follow-ups endpoint called");
     try {
-      const dbAvailable = await isDatabaseAvailable();
-      console.log("🔍 Database available:", dbAvailable);
-      if (dbAvailable) {
+      if (await isDatabaseAvailable()) {
         const query = `
           SELECT
             vs.id,
