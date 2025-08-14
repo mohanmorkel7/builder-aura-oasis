@@ -94,6 +94,7 @@ import AdminTemplates from "@/pages/AdminTemplates";
 import FinOpsDashboard from "@/pages/FinOpsDashboard";
 import FinOpsAutomation from "@/pages/FinOpsAutomation";
 import NotFound from "@/pages/NotFound";
+import { OfflineIndicator } from "@/components/OfflineIndicator";
 
 // Protected Route Component
 function ProtectedRoute({
