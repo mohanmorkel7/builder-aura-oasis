@@ -1,13 +1,17 @@
-const { Pool } = require("pg");
+import { Pool } from "pg";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
 // Database configuration
+// Use environment variables or fallback values
 const pool = new Pool({
-  user: process.env.PG_USER || "postgres",
-  host: process.env.PG_HOST || "localhost",
-  database: process.env.PG_DB || "crm_dev",
-  password: process.env.PG_PASSWORD || "password",
-  port: Number(process.env.PG_PORT) || 5432,
-  ssl: false,
+  user: process.env.PG_USER || "crmuser",
+  host: process.env.PG_HOST || "10.30.11.95",
+  database: process.env.PG_DB || "crm_test",
+  password: process.env.PG_PASSWORD || "myl@p@y-crm$102019",
+  port: Number(process.env.PG_PORT) || 2019,
+  ssl: false, // Change to { rejectUnauthorized: false } if required in production
 });
 
 async function fixVCAttachments() {
