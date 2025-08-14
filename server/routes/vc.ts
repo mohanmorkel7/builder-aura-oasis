@@ -1270,7 +1270,8 @@ router.get("/steps/:stepId/chats", async (req: Request, res: Response) => {
           user_name: comment.created_by_name || comment.user_name,
           message: comment.message,
           message_type: comment.message_type || "text",
-          is_rich_text: comment.is_rich_text !== undefined ? comment.is_rich_text : true,
+          is_rich_text:
+            comment.is_rich_text !== undefined ? comment.is_rich_text : true,
           created_at: comment.created_at,
           attachments: comment.attachments || [],
         }));
@@ -1385,7 +1386,8 @@ router.post("/steps/:stepId/chats", async (req: Request, res: Response) => {
           user_name: comment.created_by_name || comment.user_name,
           message: comment.message,
           message_type: comment.message_type || "text",
-          is_rich_text: comment.is_rich_text !== undefined ? comment.is_rich_text : true,
+          is_rich_text:
+            comment.is_rich_text !== undefined ? comment.is_rich_text : true,
           created_at: comment.created_at,
           attachments: comment.attachments || [],
         };

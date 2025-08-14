@@ -613,63 +613,63 @@ export class VCCommentRepository {
         WHERE table_name = 'vc_comments'
       `);
 
-      const availableColumns = columnCheck.rows.map(row => row.column_name);
-      const hasStepId = availableColumns.includes('step_id');
-      const hasMessageType = availableColumns.includes('message_type');
-      const hasIsRichText = availableColumns.includes('is_rich_text');
-      const hasAttachments = availableColumns.includes('attachments');
-      const hasUserId = availableColumns.includes('user_id');
-      const hasUserName = availableColumns.includes('user_name');
+      const availableColumns = columnCheck.rows.map((row) => row.column_name);
+      const hasStepId = availableColumns.includes("step_id");
+      const hasMessageType = availableColumns.includes("message_type");
+      const hasIsRichText = availableColumns.includes("is_rich_text");
+      const hasAttachments = availableColumns.includes("attachments");
+      const hasUserId = availableColumns.includes("user_id");
+      const hasUserName = availableColumns.includes("user_name");
 
       // Build query based on available columns
-      let fields = ['vc_id', 'message', 'created_by', 'created_by_name'];
+      let fields = ["vc_id", "message", "created_by", "created_by_name"];
       let values = [
         commentData.vc_id,
         commentData.message,
         commentData.created_by,
         commentData.user_name,
       ];
-      let placeholders = ['$1', '$2', '$3', '$4'];
+      let placeholders = ["$1", "$2", "$3", "$4"];
 
       if (hasStepId && commentData.step_id) {
-        fields.push('step_id');
+        fields.push("step_id");
         values.push(commentData.step_id);
         placeholders.push(`$${values.length}`);
       }
 
       if (hasMessageType) {
-        fields.push('message_type');
-        values.push(commentData.message_type || 'text');
+        fields.push("message_type");
+        values.push(commentData.message_type || "text");
         placeholders.push(`$${values.length}`);
       }
 
       if (hasIsRichText) {
-        fields.push('is_rich_text');
+        fields.push("is_rich_text");
         values.push(commentData.is_rich_text || false);
         placeholders.push(`$${values.length}`);
       }
 
       if (hasAttachments) {
-        fields.push('attachments');
+        fields.push("attachments");
         values.push(JSON.stringify(commentData.attachments || []));
         placeholders.push(`$${values.length}`);
       }
 
       if (hasUserId && commentData.user_id) {
-        fields.push('user_id');
+        fields.push("user_id");
         values.push(commentData.user_id);
         placeholders.push(`$${values.length}`);
       }
 
       if (hasUserName) {
-        fields.push('user_name');
+        fields.push("user_name");
         values.push(commentData.user_name);
         placeholders.push(`$${values.length}`);
       }
 
       const query = `
-        INSERT INTO vc_comments (${fields.join(', ')})
-        VALUES (${placeholders.join(', ')})
+        INSERT INTO vc_comments (${fields.join(", ")})
+        VALUES (${placeholders.join(", ")})
         RETURNING *
       `;
 
