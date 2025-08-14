@@ -503,7 +503,10 @@ export function EnhancedStepItem({
     if (!messageToDelete) return;
 
     try {
-      await deleteChatMutation.mutateAsync(messageToDelete);
+      await deleteChatMutation.mutateAsync({
+        chatId: messageToDelete,
+        isVC,
+      });
       setDeleteConfirmOpen(false);
       setMessageToDelete(null);
     } catch (error) {
