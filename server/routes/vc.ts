@@ -417,6 +417,49 @@ router.post("/", async (req: Request, res: Response) => {
     try {
       if (await isDatabaseAvailable()) {
         vc = await VCRepository.create(vcData);
+
+        // If template_id is provided, create VC steps from template
+        if (vc && vcData.template_id) {
+          console.log(`Creating VC steps from template ${vcData.template_id} for VC ${vc.id}`);
+
+          try {
+            // Get template steps
+            const templateStepsQuery = `
+              SELECT id, name, description, step_order, default_eta_days, probability_percent
+              FROM template_steps
+              WHERE template_id = $1
+              ORDER BY step_order ASC
+            `;
+            const templateStepsResult = await pool.query(templateStepsQuery, [vcData.template_id]);
+
+            if (templateStepsResult.rows.length > 0) {
+              // Create VC steps from template steps
+              for (const templateStep of templateStepsResult.rows) {
+                const vcStepQuery = `
+                  INSERT INTO vc_steps (
+                    vc_id, name, description, order_index, created_by, status
+                  )
+                  VALUES ($1, $2, $3, $4, $5, 'pending')
+                  RETURNING *
+                `;
+
+                await pool.query(vcStepQuery, [
+                  vc.id,
+                  templateStep.name,
+                  templateStep.description,
+                  templateStep.step_order,
+                  vcData.created_by
+                ]);
+              }
+              console.log(`Created ${templateStepsResult.rows.length} VC steps from template`);
+            } else {
+              console.log(`No template steps found for template ${vcData.template_id}`);
+            }
+          } catch (stepError) {
+            console.error("Error creating VC steps from template:", stepError);
+            // Don't fail the VC creation if step creation fails
+          }
+        }
       } else {
         // Create mock VC when database is unavailable
         vc = {
