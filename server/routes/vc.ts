@@ -541,7 +541,7 @@ router.post("/", async (req: Request, res: Response) => {
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         };
-        console.log("���� Mock VC created:", vc);
+        console.log("📝 Mock VC created:", vc);
       }
     } catch (dbError) {
       console.error("❌ Database error during VC creation:", dbError);
@@ -1332,6 +1332,9 @@ router.post("/steps/:stepId/chats", async (req: Request, res: Response) => {
       user_id,
       user_name,
       message,
+      message_type,
+      is_rich_text,
+      attachments: req.body.attachments,
     });
 
     if (!message || !message.trim()) {
