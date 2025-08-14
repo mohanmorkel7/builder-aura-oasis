@@ -1001,6 +1001,68 @@ export default function VCDetails() {
               )}
             </CardContent>
           </Card>
+
+          {/* Team Chat */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <MessageSquare className="w-4 h-4" />
+                Team Chat
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {/* Comments List */}
+                <div className="max-h-64 overflow-y-auto space-y-3">
+                  {commentsLoading ? (
+                    <div className="text-center text-gray-500 py-4">
+                      Loading comments...
+                    </div>
+                  ) : comments.length === 0 ? (
+                    <div className="text-center text-gray-500 py-4">
+                      No comments yet. Start a conversation!
+                    </div>
+                  ) : (
+                    comments.map((comment: any) => (
+                      <div key={comment.id} className="bg-gray-50 rounded-lg p-3">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="font-medium text-sm text-gray-900">
+                            {comment.created_by_name || "Unknown User"}
+                          </span>
+                          <span className="text-xs text-gray-500">
+                            {formatToISTDateTime(comment.created_at)}
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-700 whitespace-pre-wrap">
+                          {comment.message}
+                        </p>
+                      </div>
+                    ))
+                  )}
+                </div>
+
+                {/* Add Comment */}
+                <div className="flex gap-2">
+                  <Textarea
+                    placeholder="Type your message..."
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    className="flex-1 min-h-[60px] resize-none"
+                    disabled={addCommentMutation.isPending}
+                  />
+                  <Button
+                    onClick={handleSendComment}
+                    disabled={!newComment.trim() || addCommentMutation.isPending}
+                    size="sm"
+                    className="self-end"
+                  >
+                    <Send className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
