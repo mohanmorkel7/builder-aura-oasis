@@ -1244,28 +1244,20 @@ router.get("/steps/:stepId/chats", async (req: Request, res: Response) => {
           });
         }
 
-        // For now, use the VC comments as step chats (could be expanded later)
-        const vcId = stepCheck.rows[0].vc_id;
-        const query = `
-          SELECT c.*, u.first_name || ' ' || u.last_name as user_name
-          FROM vc_comments c
-          LEFT JOIN users u ON c.created_by = u.id
-          WHERE c.vc_id = $1
-          ORDER BY c.created_at ASC
-        `;
-        const result = await pool.query(query, [vcId]);
+        // Get VC comments for this specific step using the repository
+        const comments = await VCCommentRepository.findByStepId(stepId);
 
         // Format to match step chat structure
-        chats = result.rows.map((comment) => ({
+        chats = comments.map((comment) => ({
           id: comment.id,
           step_id: stepId,
-          user_id: comment.created_by,
+          user_id: comment.user_id || comment.created_by,
           user_name: comment.created_by_name || comment.user_name,
           message: comment.message,
-          message_type: "text",
-          is_rich_text: true,
+          message_type: comment.message_type || "text",
+          is_rich_text: comment.is_rich_text,
           created_at: comment.created_at,
-          attachments: [],
+          attachments: comment.attachments || [],
         }));
 
         console.log(`📊 Found ${chats.length} VC comments as step chats`);
