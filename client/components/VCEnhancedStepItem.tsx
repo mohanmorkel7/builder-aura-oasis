@@ -275,23 +275,27 @@ export function VCEnhancedStepItem({
         created_by: parseInt(user?.id || "1"),
       });
 
-      // Send system message to API so it persists in database
+      // Send system message to VC chat API so it persists in database
       const systemMessageText = `📋 Follow-up task created: "${followUpNotes}" - Due: ${new Date(followUpDueDate).toLocaleDateString()}`;
 
       try {
-        const systemMessageData = await sendMessageMutation.mutateAsync({
-          user_id: parseInt(user?.id || "1"),
-          user_name: "System",
-          message: systemMessageText,
-          message_type: "system",
-          is_rich_text: false,
-          attachments: [],
+        // Use the correct VC steps chat API endpoint
+        const systemMessageResponse = await apiClient.request(`/vc/steps/${step.id}/chats`, {
+          method: "POST",
+          body: JSON.stringify({
+            user_id: parseInt(user?.id || "1"),
+            user_name: "System",
+            message: systemMessageText,
+            message_type: "system",
+            is_rich_text: false,
+            attachments: [],
+          }),
         });
 
         // Add to local state if API call successful
-        setChatMessages((prev) => [...prev, systemMessageData]);
+        setChatMessages((prev) => [...prev, systemMessageResponse]);
       } catch (messageError) {
-        console.error("Failed to save system message:", messageError);
+        console.error("Failed to save system message to VC chat:", messageError);
         // Fallback: add to local state only
         const systemMessage = {
           id: Date.now(),
