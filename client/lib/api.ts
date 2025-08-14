@@ -815,15 +815,18 @@ export class ApiClient {
   async editStepChat(
     chatId: number,
     updateData: { message: string; is_rich_text: boolean },
+    isVC: boolean = false,
   ) {
-    return this.request(`/leads/chats/${chatId}`, {
+    const endpoint = isVC ? `/vc/chats/${chatId}` : `/leads/chats/${chatId}`;
+    return this.request(endpoint, {
       method: "PUT",
       body: JSON.stringify(updateData),
     });
   }
 
-  async deleteStepChat(chatId: number) {
-    return this.request(`/leads/chats/${chatId}`, {
+  async deleteStepChat(chatId: number, isVC: boolean = false) {
+    const endpoint = isVC ? `/vc/chats/${chatId}` : `/leads/chats/${chatId}`;
+    return this.request(endpoint, {
       method: "DELETE",
     });
   }
