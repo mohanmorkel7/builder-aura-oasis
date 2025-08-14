@@ -351,7 +351,9 @@ router.get("/progress", async (req: Request, res: Response) => {
                 steps.find((s) => s.status === "pending");
 
               // Debug logging for probability calculation
-              const completedProbabilities = completedSteps.map(step => step.probability_percent || 0);
+              const completedProbabilities = completedSteps.map(
+                (step) => step.probability_percent || 0,
+              );
               const totalCompletedProbability = Math.round(
                 completedSteps.reduce(
                   (sum, step) => sum + (step.probability_percent || 0),
@@ -363,7 +365,10 @@ router.get("/progress", async (req: Request, res: Response) => {
                 completedSteps: completedSteps.length,
                 completedProbabilities,
                 totalCompletedProbability,
-                allStepsProbabilities: steps.map(s => ({ name: s.name, prob: s.probability_percent }))
+                allStepsProbabilities: steps.map((s) => ({
+                  name: s.name,
+                  prob: s.probability_percent,
+                })),
               });
 
               progressData.push({
