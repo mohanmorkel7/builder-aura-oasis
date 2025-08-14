@@ -690,8 +690,8 @@ export default function VCDashboard() {
             <CardContent>
               {(() => {
                 // Calculate the maximum probability to normalize chart heights
-                const allCompletedSteps = vcProgressData.flatMap(
-                  (vc: any) => vc.completed_steps,
+                const allCompletedSteps = (vcProgressData || []).flatMap(
+                  (vc: any) => vc.completed_steps || [],
                 );
                 const maxProbability =
                   allCompletedSteps.length > 0
