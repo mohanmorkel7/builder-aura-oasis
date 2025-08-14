@@ -112,6 +112,7 @@ export interface CreateVCData {
   spoc?: string;
   billing_currency?: VC["billing_currency"];
   template_id?: number;
+  contacts?: string; // JSON array of contact objects
   created_by: number;
   assigned_to?: number;
   notes?: string;
@@ -148,6 +149,7 @@ export interface UpdateVCData {
   spoc?: string;
   billing_currency?: VC["billing_currency"];
   template_id?: number;
+  contacts?: string; // JSON array of contact objects
   assigned_to?: number;
   notes?: string;
   is_partial?: boolean;
