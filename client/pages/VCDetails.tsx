@@ -191,7 +191,6 @@ export default function VCDetails() {
   const updateVCStepMutation = useUpdateVCStep();
   const deleteVCStepMutation = useDeleteVCStep();
 
-
   // Calculate completion percentage based on step completion
   const calculateCompletionPercentage = () => {
     if (vcSteps && vcSteps.length > 0) {
@@ -302,7 +301,6 @@ export default function VCDetails() {
         .join(" ") || "N/A"
     );
   };
-
 
   if (vcLoading) {
     return (
@@ -946,7 +944,6 @@ export default function VCDetails() {
               )}
             </CardContent>
           </Card>
-
         </div>
       </div>
     </div>

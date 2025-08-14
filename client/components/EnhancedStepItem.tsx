@@ -378,8 +378,7 @@ export function EnhancedStepItem({
             due_date: followUpDueDate || undefined,
             ...(isVC
               ? { vc_id: step.vc_id, vc_step_id: step.id }
-              : { lead_id: step.lead_id, step_id: step.id }
-            ),
+              : { lead_id: step.lead_id, step_id: step.id }),
             created_by: parseInt(user.id),
           };
 
@@ -440,8 +439,7 @@ export function EnhancedStepItem({
         stepId: step.id,
         ...(isVC
           ? { vcId: step.vc_id, vcStepId: step.id }
-          : { leadId: step.lead_id }
-        ),
+          : { leadId: step.lead_id }),
         stepName: step.name,
         fromChat: true,
         createSystemMessage: true, // Flag to indicate system message should be created
