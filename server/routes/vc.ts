@@ -323,8 +323,7 @@ router.get("/progress", async (req: Request, res: Response) => {
           for (const vc of vcsResult.rows) {
             const stepsQueryPromise = pool.query(
               `
-              SELECT vs.id, vs.name, vs.status, vs.order_index,
-                     COALESCE(vs.probability_percent, 16.67) as probability_percent
+              SELECT vs.id, vs.name, vs.status, vs.order_index
               FROM vc_steps vs
               WHERE vs.vc_id = $1
               ORDER BY vs.order_index
