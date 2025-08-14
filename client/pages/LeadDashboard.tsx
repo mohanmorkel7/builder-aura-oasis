@@ -925,18 +925,24 @@ export default function LeadDashboard() {
         {(() => {
           // Filter follow-ups by due status, excluding VC follow-ups
           const now = new Date();
-          const leadFollowUpsOnly = followUpsData.filter((followUp: any) => !followUp.vc_id);
+          const leadFollowUpsOnly = followUpsData.filter(
+            (followUp: any) => !followUp.vc_id,
+          );
 
-          const currentDueFollowUps = leadFollowUpsOnly.filter((followUp: any) => {
-            if (!followUp.due_date) return false;
-            const dueDate = new Date(followUp.due_date);
-            const diffDays = Math.ceil(
-              (dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
-            );
-            return (
-              diffDays >= 0 && diffDays <= 7 && followUp.status !== "completed"
-            ); // Due within 7 days
-          });
+          const currentDueFollowUps = leadFollowUpsOnly.filter(
+            (followUp: any) => {
+              if (!followUp.due_date) return false;
+              const dueDate = new Date(followUp.due_date);
+              const diffDays = Math.ceil(
+                (dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
+              );
+              return (
+                diffDays >= 0 &&
+                diffDays <= 7 &&
+                followUp.status !== "completed"
+              ); // Due within 7 days
+            },
+          );
 
           const overdueFollowUps = leadFollowUpsOnly.filter((followUp: any) => {
             if (!followUp.due_date) return false;
