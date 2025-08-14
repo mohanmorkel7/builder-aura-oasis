@@ -233,10 +233,12 @@ export const AuthProvider = React.memo(function AuthProvider({
 
       console.log("API login failed, error:", errorMessage);
       console.log("Attempting demo credentials fallback...");
+      console.log("Login attempt - Email:", email, "Password length:", password.length);
 
       // Always try demo authentication as fallback when API fails
 
       if (password === "password") {
+        console.log("Password matches 'password', checking email...");
         let userData: User | null = null;
 
         if (email === "admin@banani.com") {
