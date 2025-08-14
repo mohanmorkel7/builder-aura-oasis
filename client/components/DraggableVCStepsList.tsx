@@ -159,14 +159,13 @@ export function DraggableVCStepsList({
       <SortableContext items={items} strategy={verticalListSortingStrategy}>
         <div className="space-y-3">
           {items.map((step, index) => (
-            <EnhancedStepItem
+            <VCEnhancedStepItem
               key={step.id}
               step={step}
               isExpanded={expandedSteps?.has(step.id) || false}
               onToggleExpansion={() => onToggleExpansion(step.id)}
               onUpdateStatus={handleUpdateStatus}
               onDeleteStep={() => onDeleteStep(step.id)}
-              isVC={true}
             />
           ))}
         </div>
