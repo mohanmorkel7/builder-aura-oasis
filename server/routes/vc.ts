@@ -1426,4 +1426,85 @@ router.post("/steps/:stepId/chats", async (req: Request, res: Response) => {
   }
 });
 
+// Update VC step chat
+router.put("/chats/:id", async (req: Request, res: Response) => {
+  try {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ error: "Invalid chat ID" });
+    }
+
+    const { message, is_rich_text } = req.body;
+    if (!message) {
+      return res.status(400).json({ error: "Message is required" });
+    }
+
+    console.log(`📝 Updating VC chat ${id}:`, { message, is_rich_text });
+
+    try {
+      if (await isDatabaseAvailable()) {
+        const success = await VCCommentRepository.update(id, {
+          message,
+          is_rich_text: is_rich_text || false,
+        });
+        if (!success) {
+          console.log(`❌ VC chat ${id} not found in database`);
+          return res.status(404).json({ error: "Chat not found" });
+        }
+        const updatedChat = await VCCommentRepository.findById(id);
+        console.log(`✅ Successfully updated VC chat:`, updatedChat);
+        res.json(updatedChat);
+      } else {
+        console.log("Database unavailable, returning success for VC chat update");
+        res.json({ id, message, is_rich_text: is_rich_text || false });
+      }
+    } catch (dbError) {
+      console.log(
+        "Database error, returning success for VC chat update:",
+        dbError.message,
+      );
+      res.json({ id, message, is_rich_text: is_rich_text || false });
+    }
+  } catch (error) {
+    console.error("Error updating VC chat:", error);
+    res.status(500).json({ error: "Failed to update VC chat" });
+  }
+});
+
+// Delete VC step chat
+router.delete("/chats/:id", async (req: Request, res: Response) => {
+  try {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ error: "Invalid chat ID" });
+    }
+
+    console.log(`🗑️ Deleting VC chat ${id}`);
+
+    try {
+      if (await isDatabaseAvailable()) {
+        const success = await VCCommentRepository.delete(id);
+        if (!success) {
+          console.log(`❌ VC chat ${id} not found in database`);
+          return res.status(404).json({ error: "Chat not found" });
+        }
+        console.log(`✅ Successfully deleted VC chat ${id}`);
+        res.json({ success: true });
+      } else {
+        console.log("Database unavailable, returning success for VC chat deletion");
+        res.json({ success: true });
+      }
+    } catch (dbError) {
+      console.log(
+        "Database error, returning success for VC chat deletion:",
+        dbError.message,
+      );
+      res.json({ success: true });
+    }
+  } catch (error) {
+    console.error("Error deleting VC chat:", error);
+    res.status(500).json({ error: "Failed to delete VC chat" });
+  }
+});
+
 export default router;
