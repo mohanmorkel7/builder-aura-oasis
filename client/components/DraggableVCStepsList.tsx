@@ -172,13 +172,12 @@ export function DraggableVCStepsList({
       </SortableContext>
       <DragOverlay>
         {activeStep ? (
-          <EnhancedStepItem
+          <VCEnhancedStepItem
             step={activeStep}
             isExpanded={false}
             onToggleExpansion={() => {}}
             onUpdateStatus={() => {}}
             onDeleteStep={() => {}}
-            isVC={true}
             isDragOverlay
           />
         ) : null}
