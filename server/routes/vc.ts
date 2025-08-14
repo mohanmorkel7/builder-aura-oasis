@@ -217,7 +217,6 @@ router.get("/follow-ups", async (req: Request, res: Response) => {
         followUps = result.rows;
       } else {
         // Return mock follow-ups when database is unavailable
-        console.log("🔍 Using mock follow-ups data");
         followUps = [
           {
             id: 1,
