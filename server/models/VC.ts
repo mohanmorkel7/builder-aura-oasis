@@ -565,11 +565,11 @@ export class VCCommentRepository {
   private static parseAttachments(attachments: any): any[] {
     if (!attachments) return [];
     if (Array.isArray(attachments)) return attachments;
-    if (typeof attachments === 'string') {
+    if (typeof attachments === "string") {
       try {
         return JSON.parse(attachments);
       } catch (error) {
-        console.warn('Failed to parse attachments:', attachments);
+        console.warn("Failed to parse attachments:", attachments);
         return [];
       }
     }
@@ -602,7 +602,7 @@ export class VCCommentRepository {
           ORDER BY c.created_at ASC
         `;
         const result = await pool.query(query, [stepId]);
-        return result.rows.map(row => this.formatComment(row));
+        return result.rows.map((row) => this.formatComment(row));
       } else {
         // step_id column doesn't exist, return empty array for now
         console.log("⚠️ step_id column not found in vc_comments table");
@@ -623,7 +623,7 @@ export class VCCommentRepository {
       ORDER BY c.created_at ASC
     `;
     const result = await pool.query(query, [vcId]);
-    return result.rows.map(row => this.formatComment(row));
+    return result.rows.map((row) => this.formatComment(row));
   }
 
   static async create(commentData: CreateVCCommentData): Promise<VCComment> {
