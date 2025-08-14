@@ -74,6 +74,24 @@ export async function initializeDatabase() {
           migrationError.message,
         );
       }
+
+      // Run VC probability column migration
+      try {
+        const vcMigrationPath = path.join(
+          __dirname,
+          "add-vc-probability-migration.sql",
+        );
+        if (fs.existsSync(vcMigrationPath)) {
+          const vcMigration = fs.readFileSync(vcMigrationPath, "utf8");
+          await client.query(vcMigration);
+          console.log("VC probability migration applied successfully");
+        }
+      } catch (vcMigrationError) {
+        console.log(
+          "VC probability migration already applied or error:",
+          vcMigrationError.message,
+        );
+      }
     } else {
       console.log("Database schema already exists");
     }
