@@ -1384,19 +1384,6 @@ export default function VCEdit() {
                 </div>
               </div>
 
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="potential_lead_investor"
-                  checked={vcData.potential_lead_investor}
-                  onCheckedChange={(checked) =>
-                    handleInputChange("potential_lead_investor", checked)
-                  }
-                />
-                <Label htmlFor="potential_lead_investor">
-                  Potential Lead Investor
-                </Label>
-              </div>
-
               <div>
                 <Label htmlFor="project_description">Round Description</Label>
                 <Textarea
