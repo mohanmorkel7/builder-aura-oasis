@@ -61,9 +61,10 @@ export default function FollowUpNew() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Check if this is a lead follow-up from chat
-  const isLeadFollowUp = location.state?.fromChat;
-  const leadContext = location.state;
+  // Check if this is a follow-up from chat (either lead or VC)
+  const isFromChat = location.state?.fromChat;
+  const isVC = location.state?.isVC;
+  const context = location.state;
 
   // Check if we have a client ID in the route
   const hasClientId = id && !isNaN(parseInt(id));
@@ -73,7 +74,7 @@ export default function FollowUpNew() {
     data: client,
     isLoading,
     error,
-  } = useClient(clientId && !isLeadFollowUp ? clientId : 0);
+  } = useClient(clientId && !isFromChat ? clientId : 0);
 
   const { data: users = [] } = useUsers();
   const { user } = useAuth();
@@ -106,9 +107,14 @@ export default function FollowUpNew() {
       // Create the follow-up using the API
       const followUpData = {
         ...followUp,
-        client_id: !isLeadFollowUp && hasClientId ? clientId : undefined,
-        lead_id: isLeadFollowUp ? leadContext?.leadId : undefined,
-        message_id: isLeadFollowUp ? leadContext?.messageId : undefined,
+        client_id: !isFromChat && hasClientId ? clientId : undefined,
+        // Lead context
+        lead_id: isFromChat && !isVC ? context?.leadId : undefined,
+        step_id: isFromChat && !isVC ? context?.stepId : undefined,
+        // VC context
+        vc_id: isFromChat && isVC ? context?.vcId : undefined,
+        vc_step_id: isFromChat && isVC ? context?.vcStepId : undefined,
+        message_id: isFromChat ? context?.messageId : undefined,
         created_by: parseInt(user?.id || "0"),
         follow_up_type: followUp.type,
       };
@@ -116,8 +122,8 @@ export default function FollowUpNew() {
       console.log("Creating follow-up:", followUpData);
       await createFollowUpMutation.mutateAsync(followUpData);
 
-      // Create system message for lead follow-up with assigned user info
-      if (isLeadFollowUp && leadContext?.createSystemMessage && user) {
+      // Create system message for chat follow-up with assigned user info
+      if (isFromChat && context?.createSystemMessage && user) {
         const assignedUser = users.find(
           (u: any) => u.id.toString() === followUp.assigned_to,
         );
@@ -128,15 +134,16 @@ export default function FollowUpNew() {
         const systemMessageData = {
           user_id: parseInt(user.id),
           user_name: user.name,
-          message: `📋 Follow-up created for message #${leadContext.messageId} | Assigned to: ${assignedUserName} | Time: ${formatToISTDateTime(new Date())}`,
+          message: `📋 Follow-up created for message #${context.messageId} | Assigned to: ${assignedUserName} | Time: ${formatToISTDateTime(new Date())}`,
           message_type: "system" as const,
           is_rich_text: false,
         };
 
         try {
           await createChatMutation.mutateAsync({
-            stepId: leadContext.stepId,
+            stepId: context.stepId,
             chatData: systemMessageData,
+            isVC: isVC,
           });
         } catch (chatError) {
           console.error("Failed to create system message:", chatError);
@@ -144,8 +151,12 @@ export default function FollowUpNew() {
       }
 
       // Navigate back based on context
-      if (isLeadFollowUp) {
-        navigate(`/leads`);
+      if (isFromChat) {
+        if (isVC) {
+          navigate(`/vc/${context?.vcId}`);
+        } else {
+          navigate(`/leads`);
+        }
       } else if (hasClientId) {
         navigate(`/sales/client/${id}`);
       } else {
@@ -159,8 +170,12 @@ export default function FollowUpNew() {
   };
 
   const handleCancel = () => {
-    if (isLeadFollowUp) {
-      navigate(`/leads`);
+    if (isFromChat) {
+      if (isVC) {
+        navigate(`/vc/${context?.vcId}`);
+      } else {
+        navigate(`/leads`);
+      }
     } else if (hasClientId) {
       navigate(`/sales/client/${id}`);
     } else {
@@ -168,7 +183,7 @@ export default function FollowUpNew() {
     }
   };
 
-  if (!isLeadFollowUp && hasClientId && isLoading) {
+  if (!isFromChat && hasClientId && isLoading) {
     return (
       <div className="p-6">
         <div className="text-center">Loading client details...</div>
@@ -176,7 +191,7 @@ export default function FollowUpNew() {
     );
   }
 
-  if (!isLeadFollowUp && hasClientId && (error || !client)) {
+  if (!isFromChat && hasClientId && (error || !client)) {
     return (
       <div className="p-6">
         <div className="text-center text-red-600">
@@ -196,8 +211,10 @@ export default function FollowUpNew() {
         <div className="flex items-center space-x-4">
           <Button variant="ghost" onClick={handleCancel}>
             <ArrowLeft className="w-4 h-4 mr-2" />
-            {isLeadFollowUp
-              ? "Back to Leads"
+            {isFromChat
+              ? isVC
+                ? "Back to VC"
+                : "Back to Leads"
               : hasClientId
                 ? "Back to Client"
                 : "Back to Follow-ups"}
@@ -207,8 +224,10 @@ export default function FollowUpNew() {
               Schedule Follow-up
             </h1>
             <p className="text-gray-600">
-              {isLeadFollowUp
-                ? `Create a follow-up task for step: ${leadContext?.stepName || "Lead Step"}`
+              {isFromChat
+                ? isVC
+                  ? `Create a follow-up task for VC step: ${context?.stepName || "VC Step"}`
+                  : `Create a follow-up task for step: ${context?.stepName || "Lead Step"}`
                 : hasClientId
                   ? `Create a new follow-up task for ${clientData?.client_name || "Client"}`
                   : "Create a new follow-up task"}
@@ -240,11 +259,11 @@ export default function FollowUpNew() {
       <Alert>
         <Info className="h-4 w-4" />
         <AlertDescription>
-          {isLeadFollowUp ? (
+          {isFromChat ? (
             <>
-              Creating follow-up for lead step:{" "}
-              <strong>{leadContext?.stepName}</strong>
-              {leadContext?.messageId && ` (Message #${leadContext.messageId})`}
+              Creating follow-up for {isVC ? "VC" : "lead"} step:{" "}
+              <strong>{context?.stepName}</strong>
+              {context?.messageId && ` (Message #${context.messageId})`}
             </>
           ) : hasClientId ? (
             <>
