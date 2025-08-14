@@ -443,8 +443,8 @@ export default function LeadDashboard() {
                         <div className="text-sm font-medium text-gray-700 mb-4">
                           All Leads Progress ({leadProgressData.length} leads)
                         </div>
-                        <div className="overflow-x-auto">
-                          <div className="min-w-max">
+                        <div className="w-full">
+                          <div className="w-full">
                             {/* Chart Container with Y-axis labels */}
                             <div
                               className="flex"
