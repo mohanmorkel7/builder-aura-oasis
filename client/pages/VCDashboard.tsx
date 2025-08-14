@@ -159,17 +159,12 @@ export default function VCDashboard() {
       const url = queryString ? `/vc?${queryString}` : "/vc";
 
       try {
-        return await apiClient.request(url);
+        const result = await apiClient.request(url);
+        return result || [];
       } catch (error) {
         console.error("Failed to fetch VCs:", error);
-        // Return empty array as fallback when backend is down
-        if (
-          error.message.includes("timeout") ||
-          error.message.includes("unavailable")
-        ) {
-          return [];
-        }
-        throw error;
+        // Always return empty array when any error occurs
+        return [];
       }
     },
     retry: (failureCount, error) => {
