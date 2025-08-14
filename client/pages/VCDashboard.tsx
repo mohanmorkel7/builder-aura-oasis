@@ -1158,6 +1158,8 @@ export default function VCDashboard() {
                       <div className="text-sm font-medium text-gray-700 mb-3">
                         Quick VC Summary:
                       </div>
+                      {/* Debug logging */}
+                      {console.log("🐛 VC Progress Data for debugging:", vcProgressData)}
                       <div className="space-y-2">
                         {vcProgressData.map((vc: any) => (
                           <div
