@@ -177,7 +177,16 @@ const getNotificationsFromFollowUps = async (
         return []; // Return empty array as fallback
       });
 
-    const followUps = await Promise.race([followUpsPromise, timeoutPromise]);
+    let followUps;
+    try {
+      followUps = await Promise.race([followUpsPromise, timeoutPromise]);
+    } catch (error) {
+      if (error.message === "Request timeout") {
+        console.warn("Follow-ups API request timed out after 10 seconds - using empty fallback");
+        return [];
+      }
+      throw error; // Re-throw other errors
+    }
 
     if (!Array.isArray(followUps)) {
       console.warn("Follow-ups response is not an array:", followUps);
