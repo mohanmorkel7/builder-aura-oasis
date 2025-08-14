@@ -398,6 +398,7 @@ export function EnhancedStepItem({
           await createChatMutation.mutateAsync({
             stepId: step.id,
             chatData: systemChatData,
+            isVC,
           });
         } catch (followUpError) {
           console.error("Failed to create follow-up:", followUpError);
