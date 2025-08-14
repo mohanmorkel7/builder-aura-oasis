@@ -387,8 +387,6 @@ export default function VCEdit() {
   // Load VC data into form when available
   useEffect(() => {
     if (vcDataFromAPI) {
-      console.log("🔧 FULL API DATA:", vcDataFromAPI);
-      console.log("🔧 API contacts field:", vcDataFromAPI.contacts);
       setVcData({
         lead_source: vcDataFromAPI.lead_source || "",
         lead_source_value: vcDataFromAPI.lead_source_value || "",
@@ -422,32 +420,19 @@ export default function VCEdit() {
         maximum_size: vcDataFromAPI.maximum_size?.toString() || "",
         minimum_arr_requirement:
           vcDataFromAPI.minimum_arr_requirement?.toString() || "",
-        contacts: (() => {
-          console.log("🔍 CONTACTS DEBUG - Raw from API:", vcDataFromAPI.contacts);
-
-          let contacts = vcDataFromAPI.contacts;
-          if (!contacts) {
-            console.log("🔍 CONTACTS DEBUG - No contacts, using default empty contact");
-            return [{ contact_name: "", designation: "", phone: "", email: "", linkedin: "" }];
-          }
-
-          if (typeof contacts === "string") {
-            try {
-              contacts = JSON.parse(contacts);
-              console.log("🔍 CONTACTS DEBUG - Parsed from JSON string:", contacts);
-            } catch (e) {
-              console.error("🔍 CONTACTS DEBUG - JSON parse error:", e);
-              return [{ contact_name: "", designation: "", phone: "", email: "", linkedin: "" }];
-            }
-          }
-
-          if (!Array.isArray(contacts)) {
-            contacts = [contacts];
-          }
-
-          console.log("🔍 CONTACTS DEBUG - Final contacts array:", contacts);
-          return contacts;
-        })(),
+        contacts: vcDataFromAPI.contacts
+          ? typeof vcDataFromAPI.contacts === "string"
+            ? JSON.parse(vcDataFromAPI.contacts)
+            : vcDataFromAPI.contacts
+          : [
+              {
+                contact_name: "",
+                designation: "",
+                phone: "",
+                email: "",
+                linkedin: "",
+              },
+            ],
         round_title: vcDataFromAPI.round_title || "",
         round_size: vcDataFromAPI.round_size || "",
         valuation: vcDataFromAPI.valuation || "",
