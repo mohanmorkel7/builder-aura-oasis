@@ -578,9 +578,9 @@ export function EnhancedStepItem({
                       📋 Template
                     </Badge>
                   )}
-                  {step.probability_percent && (
+                  {(step.probability_percent || (!step.probability_percent && step.id)) && (
                     <Badge variant="outline" className="text-xs">
-                      {step.probability_percent}% weight
+                      {step.probability_percent || Math.round(100 / 6)}% weight
                     </Badge>
                   )}
                   {!chatLoading && sortedMessages.length > 0 && (
