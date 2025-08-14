@@ -1092,7 +1092,8 @@ export default function VCDashboard() {
           // Filter follow-ups by due status
           const now = new Date();
           const currentDueFollowUps = vcFollowUps.filter((followUp: any) => {
-            if (!followUp.due_date || followUp.status === "completed") return false;
+            if (!followUp.due_date || followUp.status === "completed")
+              return false;
 
             const dueDate = new Date(followUp.due_date);
             if (isNaN(dueDate.getTime())) return false;
@@ -1105,7 +1106,8 @@ export default function VCDashboard() {
           });
 
           const overdueFollowUps = vcFollowUps.filter((followUp: any) => {
-            if (!followUp.due_date || followUp.status === "completed") return false;
+            if (!followUp.due_date || followUp.status === "completed")
+              return false;
 
             const dueDate = new Date(followUp.due_date);
             if (isNaN(dueDate.getTime())) return false;
