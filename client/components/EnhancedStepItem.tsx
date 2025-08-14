@@ -376,8 +376,10 @@ export function EnhancedStepItem({
             status: "pending" as const,
             assigned_to: followUpAssignTo || user.id,
             due_date: followUpDueDate || undefined,
-            lead_id: step.lead_id,
-            step_id: step.id,
+            ...(isVC
+              ? { vc_id: step.vc_id, vc_step_id: step.id }
+              : { lead_id: step.lead_id, step_id: step.id }
+            ),
             created_by: parseInt(user.id),
           };
 
