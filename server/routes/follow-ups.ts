@@ -303,28 +303,65 @@ router.get("/", async (req: Request, res: Response) => {
         queryParams.push(parseInt(assigned_to as string));
       }
 
-      const query = `
-        SELECT f.*,
-               CONCAT(u.first_name, ' ', u.last_name) as assigned_user_name,
-               CONCAT(c.first_name, ' ', c.last_name) as created_by_name,
-               cl.client_name,
-               l.client_name as lead_client_name,
-               l.project_title as lead_project_title,
-               ls.name as step_name,
-               v.round_title as vc_round_title,
-               v.investor_name as vc_investor_name,
-               vs.name as vc_step_name
-        FROM follow_ups f
-        LEFT JOIN users u ON f.assigned_to = u.id
-        LEFT JOIN users c ON f.created_by = c.id
-        LEFT JOIN clients cl ON f.client_id = cl.id
-        LEFT JOIN leads l ON f.lead_id = l.id
-        LEFT JOIN lead_steps ls ON f.step_id = ls.id
-        LEFT JOIN vcs v ON f.vc_id = v.id
-        LEFT JOIN vc_steps vs ON f.vc_step_id = vs.id
-        ${whereClause}
-        ORDER BY f.created_at DESC
-      `;
+      // Check if VC columns exist in follow_ups table
+      const columnCheck = await pool.query(`
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_name = 'follow_ups'
+        AND column_name IN ('vc_id', 'vc_step_id')
+      `);
+
+      const hasVCColumns = columnCheck.rows.length === 2;
+
+      let query;
+      if (hasVCColumns) {
+        // Full query with VC support
+        query = `
+          SELECT f.*,
+                 CONCAT(u.first_name, ' ', u.last_name) as assigned_user_name,
+                 CONCAT(c.first_name, ' ', c.last_name) as created_by_name,
+                 cl.client_name,
+                 l.client_name as lead_client_name,
+                 l.project_title as lead_project_title,
+                 ls.name as step_name,
+                 v.round_title as vc_round_title,
+                 v.investor_name as vc_investor_name,
+                 vs.name as vc_step_name
+          FROM follow_ups f
+          LEFT JOIN users u ON f.assigned_to = u.id
+          LEFT JOIN users c ON f.created_by = c.id
+          LEFT JOIN clients cl ON f.client_id = cl.id
+          LEFT JOIN leads l ON f.lead_id = l.id
+          LEFT JOIN lead_steps ls ON f.step_id = ls.id
+          LEFT JOIN vcs v ON f.vc_id = v.id
+          LEFT JOIN vc_steps vs ON f.vc_step_id = vs.id
+          ${whereClause}
+          ORDER BY f.created_at DESC
+        `;
+      } else {
+        // Legacy query without VC support
+        query = `
+          SELECT f.*,
+                 CONCAT(u.first_name, ' ', u.last_name) as assigned_user_name,
+                 CONCAT(c.first_name, ' ', c.last_name) as created_by_name,
+                 cl.client_name,
+                 l.client_name as lead_client_name,
+                 l.project_title as lead_project_title,
+                 ls.name as step_name,
+                 NULL as vc_round_title,
+                 NULL as vc_investor_name,
+                 NULL as vc_step_name
+          FROM follow_ups f
+          LEFT JOIN users u ON f.assigned_to = u.id
+          LEFT JOIN users c ON f.created_by = c.id
+          LEFT JOIN clients cl ON f.client_id = cl.id
+          LEFT JOIN leads l ON f.lead_id = l.id
+          LEFT JOIN lead_steps ls ON f.step_id = ls.id
+          ${whereClause}
+          ORDER BY f.created_at DESC
+        `;
+        console.log("⚠️ VC columns not found in follow_ups table, using legacy query");
+      }
 
       const result = await pool.query(query, queryParams);
       res.json(result.rows);
