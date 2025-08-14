@@ -342,7 +342,9 @@ export function EnhancedStepItem({
   const handleSendMessage = async () => {
     // Prevent step-level chat for VCs - they should use the main VC comments system
     if (isVC) {
-      alert("Step-level chat is disabled for VCs. Please use the main VC team chat instead.");
+      alert(
+        "Step-level chat is disabled for VCs. Please use the main VC team chat instead.",
+      );
       return;
     }
 
