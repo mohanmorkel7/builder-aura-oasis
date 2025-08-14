@@ -61,9 +61,10 @@ export default function FollowUpNew() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Check if this is a lead follow-up from chat
-  const isLeadFollowUp = location.state?.fromChat;
-  const leadContext = location.state;
+  // Check if this is a follow-up from chat (either lead or VC)
+  const isFromChat = location.state?.fromChat;
+  const isVC = location.state?.isVC;
+  const context = location.state;
 
   // Check if we have a client ID in the route
   const hasClientId = id && !isNaN(parseInt(id));
