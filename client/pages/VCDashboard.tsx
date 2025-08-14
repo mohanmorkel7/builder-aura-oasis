@@ -1179,7 +1179,7 @@ export default function VCDashboard() {
                             </div>
                             <div className="text-right">
                               <div className="text-sm font-medium text-gray-700">
-                                {vc.total_completed_probability}% completed
+                                {vc.total_completed_probability || 0}% completed
                               </div>
                               <div className="text-xs text-gray-500">
                                 {vc.current_step?.name || "All steps completed"}
