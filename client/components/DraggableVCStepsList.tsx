@@ -18,7 +18,7 @@ import {
   restrictToVerticalAxis,
   restrictToParentElement,
 } from "@dnd-kit/modifiers";
-import { VCEnhancedStepItem } from "./VCEnhancedStepItem";
+import { EnhancedStepItem } from "./EnhancedStepItem";
 import { useReorderVCSteps, useUpdateVCStep } from "@/hooks/useApi";
 
 interface DraggableVCStepsListProps {
