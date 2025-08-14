@@ -578,7 +578,7 @@ export function EnhancedStepItem({
                       📋 Template
                     </Badge>
                   )}
-                  {step.probability_percent && (
+                  {step.probability_percent !== undefined && step.probability_percent !== null && (
                     <Badge variant="outline" className="text-xs">
                       {step.probability_percent}% weight
                     </Badge>
