@@ -251,18 +251,12 @@ export default function VCDashboard() {
     queryKey: ["vc-progress"],
     queryFn: async () => {
       try {
-        return await apiClient.request("/vc/progress");
+        const result = await apiClient.request("/vc/progress");
+        return result || [];
       } catch (error) {
         console.error("Failed to fetch VC progress:", error);
-        // Return empty array when backend is down
-        if (
-          error.message.includes("timeout") ||
-          error.message.includes("unavailable") ||
-          error.message.includes("Offline mode")
-        ) {
-          return [];
-        }
-        throw error;
+        // Always return empty array when any error occurs
+        return [];
       }
     },
     retry: (failureCount, error) => {
