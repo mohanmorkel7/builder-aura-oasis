@@ -16,7 +16,7 @@ export interface FollowUpStatusChangeData {
 export async function notifyFollowUpStatusChange(
   data: FollowUpStatusChangeData,
 ) {
-  const { followUpId, newStatus, stepId, userId, userName, followUpTitle } =
+  const { followUpId, newStatus, stepId, userId, userName, followUpTitle, isVC } =
     data;
 
   console.log("Follow-up notification data:", data);
