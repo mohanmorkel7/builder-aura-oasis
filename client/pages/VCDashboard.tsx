@@ -737,10 +737,10 @@ export default function VCDashboard() {
 
                               {/* Chart Grid and VC Positions */}
                               <div
-                                className="relative"
+                                className="relative flex-1"
                                 style={{
                                   height: `${chartHeight}px`,
-                                  width: `${(vcProgressData || []).length * 120}px`,
+                                  minWidth: `${Math.min((vcProgressData || []).length * 80, 800)}px`,
                                 }}
                               >
                                 {/* Grid Lines */}
@@ -1106,7 +1106,7 @@ export default function VCDashboard() {
                                     (vcProgressData || []).reduce(
                                       (sum: number, vc: any) => {
                                         console.log(
-                                          `�� VC ${vc.vc_id}: total_completed_probability = ${vc.total_completed_probability}`,
+                                          `🔢 VC ${vc.vc_id}: total_completed_probability = ${vc.total_completed_probability}`,
                                         );
                                         return (
                                           sum +
