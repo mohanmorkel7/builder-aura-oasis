@@ -1242,7 +1242,7 @@ export default function VCDashboard() {
             return diffDays >= 0 && diffDays <= 7;
           });
 
-          const overdueFollowUps = vcFollowUps.filter((followUp: any) => {
+          const overdueFollowUps = (vcFollowUps || []).filter((followUp: any) => {
             if (!followUp.due_date || followUp.status === "completed")
               return false;
 
