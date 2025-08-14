@@ -520,7 +520,7 @@ export default function VCDashboard() {
                 <div>
                   <p className="text-blue-600 text-sm font-medium">Total VCs</p>
                   <p className="text-2xl font-bold text-blue-900">
-                    {vcStats.total || 0}
+                    {(vcStats?.total) || 0}
                   </p>
                 </div>
                 <div className="bg-blue-200 p-3 rounded-full">
@@ -538,7 +538,7 @@ export default function VCDashboard() {
                     In Progress
                   </p>
                   <p className="text-2xl font-bold text-orange-900">
-                    {vcStats.in_progress || 0}
+                    {(vcStats?.in_progress) || 0}
                   </p>
                 </div>
                 <div className="bg-orange-200 p-3 rounded-full">
@@ -556,7 +556,7 @@ export default function VCDashboard() {
                     Successful Rounds
                   </p>
                   <p className="text-2xl font-bold text-green-900">
-                    {vcStats.won || 0}
+                    {(vcStats?.won) || 0}
                   </p>
                 </div>
                 <div className="bg-green-200 p-3 rounded-full">
