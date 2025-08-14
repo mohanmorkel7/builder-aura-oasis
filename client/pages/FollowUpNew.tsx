@@ -74,7 +74,7 @@ export default function FollowUpNew() {
     data: client,
     isLoading,
     error,
-  } = useClient(clientId && !isLeadFollowUp ? clientId : 0);
+  } = useClient(clientId && !isFromChat ? clientId : 0);
 
   const { data: users = [] } = useUsers();
   const { user } = useAuth();
