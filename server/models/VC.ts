@@ -561,6 +561,28 @@ export interface CreateVCCommentData {
 }
 
 export class VCCommentRepository {
+  // Helper method to parse attachments
+  private static parseAttachments(attachments: any): any[] {
+    if (!attachments) return [];
+    if (Array.isArray(attachments)) return attachments;
+    if (typeof attachments === 'string') {
+      try {
+        return JSON.parse(attachments);
+      } catch (error) {
+        console.warn('Failed to parse attachments:', attachments);
+        return [];
+      }
+    }
+    return [];
+  }
+
+  // Helper method to format comment with parsed attachments
+  private static formatComment(comment: any): VCComment {
+    return {
+      ...comment,
+      attachments: this.parseAttachments(comment.attachments),
+    };
+  }
   static async findByStepId(stepId: number): Promise<VCComment[]> {
     try {
       // First check if step_id column exists
