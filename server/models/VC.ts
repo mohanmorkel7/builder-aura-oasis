@@ -70,6 +70,9 @@ export interface VC {
   // Template association
   template_id?: number;
 
+  // Additional contacts
+  contacts?: string; // JSON array of contact objects
+
   // Metadata
   created_by?: number;
   assigned_to?: number;
