@@ -814,7 +814,7 @@ router.get("/:id/steps", async (req: Request, res: Response) => {
           }
         } catch (dbConnectionError) {
           console.log(
-            "❌ Database connection/query error:",
+            "�� Database connection/query error:",
             dbConnectionError.message,
           );
           throw dbConnectionError; // This will trigger the catch block below
@@ -1363,66 +1363,32 @@ router.post("/steps/:stepId/chats", async (req: Request, res: Response) => {
 
         const vcId = stepCheck.rows[0].vc_id;
 
-        try {
-          // Create a VC comment for this step discussion using the repository
-          const chatData: CreateVCCommentData = {
-            vc_id: vcId,
-            step_id: stepId,
-            message: message.trim(),
-            message_type,
-            is_rich_text,
-            user_id,
-            user_name,
-            created_by: user_id,
-          };
+        // Create a VC comment for this step discussion using the repository
+        const chatData: CreateVCCommentData = {
+          vc_id: vcId,
+          step_id: stepId,
+          message: message.trim(),
+          message_type,
+          is_rich_text,
+          user_id,
+          user_name,
+          created_by: user_id,
+        };
 
-          const comment = await VCCommentRepository.create(chatData);
+        const comment = await VCCommentRepository.create(chatData);
 
-          // Format response to match step chat structure
-          chat = {
-            id: comment.id,
-            step_id: stepId,
-            user_id: comment.created_by,
-            user_name: comment.created_by_name || comment.user_name,
-            message: comment.message,
-            message_type: comment.message_type,
-            is_rich_text: comment.is_rich_text,
-            created_at: comment.created_at,
-            attachments: comment.attachments || [],
-          };
-        } catch (repositoryError) {
-          console.log(
-            `⚠️ Repository create failed (${repositoryError.message}), using direct query`,
-          );
-
-          // Fall back to direct query without step_id if the repository fails
-          const query = `
-            INSERT INTO vc_comments (vc_id, message, created_by, created_by_name)
-            VALUES ($1, $2, $3, $4)
-            RETURNING *, (SELECT first_name || ' ' || last_name FROM users WHERE id = created_by) as user_name
-          `;
-          const result = await pool.query(query, [
-            vcId,
-            message.trim(),
-            user_id,
-            user_name,
-          ]);
-
-          const comment = result.rows[0];
-
-          // Format response to match step chat structure
-          chat = {
-            id: comment.id,
-            step_id: stepId,
-            user_id: comment.created_by,
-            user_name: comment.created_by_name || comment.user_name,
-            message: comment.message,
-            message_type: "text",
-            is_rich_text: true,
-            created_at: comment.created_at,
-            attachments: [],
-          };
-        }
+        // Format response to match step chat structure
+        chat = {
+          id: comment.id,
+          step_id: stepId,
+          user_id: comment.created_by,
+          user_name: comment.created_by_name || comment.user_name,
+          message: comment.message,
+          message_type: comment.message_type || "text",
+          is_rich_text: comment.is_rich_text !== undefined ? comment.is_rich_text : true,
+          created_at: comment.created_at,
+          attachments: comment.attachments || [],
+        };
 
         console.log(`✅ VC step chat created:`, chat);
       } else {
