@@ -340,6 +340,12 @@ export function EnhancedStepItem({
   };
 
   const handleSendMessage = async () => {
+    // Prevent step-level chat for VCs - they should use the main VC comments system
+    if (isVC) {
+      alert("Step-level chat is disabled for VCs. Please use the main VC team chat instead.");
+      return;
+    }
+
     if ((!newMessage.trim() && stagedAttachments.length === 0) || !user) return;
 
     const messageText = newMessage.trim() || "📎 File attachment";
