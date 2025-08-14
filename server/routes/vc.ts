@@ -1382,7 +1382,10 @@ router.post("/steps/:stepId/chats", async (req: Request, res: Response) => {
 
         console.log(`📝 Creating VC comment with data:`, chatData);
         const comment = await VCCommentRepository.create(chatData);
-        console.log(`✅ Created VC comment:`, { id: comment.id, attachments: comment.attachments });
+        console.log(`✅ Created VC comment:`, {
+          id: comment.id,
+          attachments: comment.attachments,
+        });
 
         // Format response to match step chat structure
         chat = {
