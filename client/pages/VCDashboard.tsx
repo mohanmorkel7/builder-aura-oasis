@@ -624,19 +624,23 @@ export default function VCDashboard() {
                 ];
 
                 // Sort available steps based on the defined order and include all ordered steps that exist in data
-                const allSteps = stepOrder.filter(step =>
-                  allAvailableSteps.includes(step) ||
-                  vcProgressData.some((vc: any) =>
-                    vc.completed_steps.some((s: any) => s.name === step) ||
-                    vc.current_step?.name === step
-                  )
+                const allSteps = stepOrder.filter(
+                  (step) =>
+                    allAvailableSteps.includes(step) ||
+                    vcProgressData.some(
+                      (vc: any) =>
+                        vc.completed_steps.some((s: any) => s.name === step) ||
+                        vc.current_step?.name === step,
+                    ),
                 );
 
                 // If no steps from the predefined order, use available steps sorted
                 if (allSteps.length === 0) {
-                  allSteps.push(...allAvailableSteps.sort((a, b) => {
-                    return stepOrder.indexOf(a) - stepOrder.indexOf(b);
-                  }));
+                  allSteps.push(
+                    ...allAvailableSteps.sort((a, b) => {
+                      return stepOrder.indexOf(a) - stepOrder.indexOf(b);
+                    }),
+                  );
                 }
 
                 // Define colors for different steps
