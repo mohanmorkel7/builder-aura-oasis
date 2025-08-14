@@ -528,16 +528,9 @@ export default function FollowUpTracker() {
                 <p className="text-yellow-600 text-sm font-medium">Pending</p>
                 <p className="text-2xl font-bold text-yellow-900">
                   {
-                    followUps.filter((f) => {
-                      const type =
-                        f.type ||
-                        (f.vc_id || f.vc_round_title || f.investor_name
-                          ? "vc"
-                          : "lead");
-                      return (
-                        f.status === "pending" && (type !== "vc" || isAdmin)
-                      );
-                    }).length
+                    followUps.filter((f) =>
+                      f.status === "pending" && canViewFollowUp(f)
+                    ).length
                   }
                 </p>
               </div>
@@ -553,16 +546,9 @@ export default function FollowUpTracker() {
                 <p className="text-blue-600 text-sm font-medium">In Progress</p>
                 <p className="text-2xl font-bold text-blue-900">
                   {
-                    followUps.filter((f) => {
-                      const type =
-                        f.type ||
-                        (f.vc_id || f.vc_round_title || f.investor_name
-                          ? "vc"
-                          : "lead");
-                      return (
-                        f.status === "in_progress" && (type !== "vc" || isAdmin)
-                      );
-                    }).length
+                    followUps.filter((f) =>
+                      f.status === "in_progress" && canViewFollowUp(f)
+                    ).length
                   }
                 </p>
               </div>
@@ -578,16 +564,9 @@ export default function FollowUpTracker() {
                 <p className="text-green-600 text-sm font-medium">Completed</p>
                 <p className="text-2xl font-bold text-green-900">
                   {
-                    followUps.filter((f) => {
-                      const type =
-                        f.type ||
-                        (f.vc_id || f.vc_round_title || f.investor_name
-                          ? "vc"
-                          : "lead");
-                      return (
-                        f.status === "completed" && (type !== "vc" || isAdmin)
-                      );
-                    }).length
+                    followUps.filter((f) =>
+                      f.status === "completed" && canViewFollowUp(f)
+                    ).length
                   }
                 </p>
               </div>
@@ -604,14 +583,10 @@ export default function FollowUpTracker() {
                 <p className="text-2xl font-bold text-red-900">
                   {
                     followUps.filter((f) => {
-                      const type =
-                        f.type ||
-                        (f.vc_id || f.vc_round_title || f.investor_name
-                          ? "vc"
-                          : "lead");
-                      return (
-                        f.status === "overdue" && (type !== "vc" || isAdmin)
-                      );
+                      const isOverdueStatus =
+                        f.status === "overdue" ||
+                        (f.status !== "completed" && f.due_date && isOverdue(f.due_date));
+                      return isOverdueStatus && canViewFollowUp(f);
                     }).length
                   }
                 </p>
