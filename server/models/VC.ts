@@ -623,7 +623,7 @@ export class VCCommentRepository {
       ORDER BY c.created_at ASC
     `;
     const result = await pool.query(query, [vcId]);
-    return result.rows;
+    return result.rows.map(row => this.formatComment(row));
   }
 
   static async create(commentData: CreateVCCommentData): Promise<VCComment> {
