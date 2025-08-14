@@ -1081,6 +1081,70 @@ export default function VCEdit() {
                 )}
               </div>
 
+              {/* Investment Details */}
+              <div className="border-t pt-6 mt-6">
+                <h3 className="text-lg font-semibold mb-4">
+                  Investment Details
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="potential_lead_investor"
+                      checked={vcData.potential_lead_investor}
+                      onCheckedChange={(checked) =>
+                        handleInputChange("potential_lead_investor", checked)
+                      }
+                    />
+                    <Label htmlFor="potential_lead_investor">
+                      Potential Lead Investor
+                    </Label>
+                  </div>
+
+                  <div></div>
+
+                  <div>
+                    <Label htmlFor="minimum_size">Minimum Size (₹)</Label>
+                    <Input
+                      id="minimum_size"
+                      placeholder="e.g., 10000000"
+                      value={vcData.minimum_size}
+                      onChange={(e) =>
+                        handleInputChange("minimum_size", e.target.value)
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="maximum_size">Maximum Size (₹)</Label>
+                    <Input
+                      id="maximum_size"
+                      placeholder="e.g., 100000000"
+                      value={vcData.maximum_size}
+                      onChange={(e) =>
+                        handleInputChange("maximum_size", e.target.value)
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="minimum_arr_requirement">
+                      Minimum ARR Requirement
+                    </Label>
+                    <Input
+                      id="minimum_arr_requirement"
+                      placeholder="e.g., 50000000"
+                      value={vcData.minimum_arr_requirement}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "minimum_arr_requirement",
+                          e.target.value,
+                        )
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+
               {/* Additional Contacts */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
