@@ -24,14 +24,25 @@ console.log("🔗 Database connection config:", {
 
 const pool = new Pool(dbConfig);
 
-// Check if database is available
+// Add timeout wrapper for database operations
+export function withTimeout<T>(promise: Promise<T>, timeoutMs: number = 5000): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error('Database operation timeout')), timeoutMs)
+    )
+  ]);
+}
+
+// Check if database is available with timeout
 export async function isDatabaseAvailable(): Promise<boolean> {
   try {
-    const client = await pool.connect();
-    await client.query("SELECT 1");
+    const client = await withTimeout(pool.connect(), 3000);
+    await withTimeout(client.query("SELECT 1"), 2000);
     client.release();
     return true;
   } catch (error) {
+    console.log("Database availability check failed:", error.message);
     return false;
   }
 }
