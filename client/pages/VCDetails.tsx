@@ -212,15 +212,24 @@ export default function VCDetails() {
   // Add comment mutation
   const addCommentMutation = useMutation({
     mutationFn: async (commentData: { message: string }) => {
+      const payload = {
+        message: commentData.message,
+        created_by: parseInt(user?.id || "1"), // Use current user ID
+      };
+      console.log("💬 Sending VC comment:", payload);
       const response = await apiClient.request(`/vc/${id}/comments`, {
         method: "POST",
-        body: JSON.stringify(commentData),
+        body: JSON.stringify(payload),
       });
       return response;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log("✅ VC comment created successfully:", data);
       refetchComments();
       setNewComment("");
+    },
+    onError: (error) => {
+      console.error("❌ Failed to create VC comment:", error);
     },
   });
 
