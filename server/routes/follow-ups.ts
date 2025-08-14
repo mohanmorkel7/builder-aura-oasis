@@ -426,7 +426,7 @@ router.get("/", async (req: Request, res: Response) => {
           id: f.id,
           vc_id: f.vc_id,
           vc_round_title: f.vc_round_title,
-          vc_investor_name: f.vc_investor_name,
+          investor_name: f.investor_name,
           vc_step_name: f.vc_step_name
         })));
       }
