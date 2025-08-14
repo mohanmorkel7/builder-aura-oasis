@@ -59,8 +59,14 @@ export async function notifyFollowUpStatusChange(
       "with data:",
       chatData,
     );
-    // Create the system message in the step's chat
-    const response = await fetch(`/api/leads/steps/${stepId}/chats`, {
+    // Create the system message in the step's chat (VC or Lead)
+    const endpoint = isVC
+      ? `/api/vc/steps/${stepId}/chats`
+      : `/api/leads/steps/${stepId}/chats`;
+
+    console.log(`Using ${isVC ? 'VC' : 'Lead'} endpoint:`, endpoint);
+
+    const response = await fetch(endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
