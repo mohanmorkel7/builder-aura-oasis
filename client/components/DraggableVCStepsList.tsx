@@ -160,13 +160,10 @@ export function DraggableVCStepsList({
             <EnhancedStepItem
               key={step.id}
               step={step}
-              index={index}
               isExpanded={expandedSteps?.has(step.id) || false}
               onToggleExpansion={() => onToggleExpansion(step.id)}
-              onDelete={() => onDeleteStep(step.id)}
-              onUpdateStep={handleUpdateStep}
-              vcId={vcId} // Pass vcId instead of leadId
-              isVC={true} // Flag to indicate this is for VC
+              onUpdateStatus={handleUpdateStatus}
+              onDeleteStep={() => onDeleteStep(step.id)}
             />
           ))}
         </div>
