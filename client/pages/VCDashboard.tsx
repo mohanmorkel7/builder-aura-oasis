@@ -704,7 +704,7 @@ export default function VCDashboard() {
                 const stepOrderMap = new Map<string, number>();
                 const allStepsSet = new Set<string>();
 
-                vcProgressData.forEach((vc: any) => {
+                (vcProgressData || []).forEach((vc: any) => {
                   if (vc.all_steps && Array.isArray(vc.all_steps)) {
                     vc.all_steps.forEach((step: any, index: number) => {
                       if (step.name) {
