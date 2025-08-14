@@ -1100,32 +1100,13 @@ export default function VCDashboard() {
         {(() => {
           // Filter follow-ups by due status
           const now = new Date();
-          console.log("���� VCDashboard Debug - vcFollowUps:", vcFollowUps);
+          console.log("🔍 VCDashboard Debug - vcFollowUps:", vcFollowUps);
           console.log("🔍 VCDashboard Debug - vcFollowUps length:", vcFollowUps.length);
           console.log("🔍 VCDashboard Debug - followUpsLoading:", followUpsLoading);
 
+          // Temporarily show all non-completed follow-ups for testing
           const currentDueFollowUps = vcFollowUps.filter((followUp: any) => {
-            if (!followUp.due_date || followUp.status === "completed")
-              return false;
-
-            try {
-              const dueDate = new Date(followUp.due_date);
-              // Check if date is valid
-              if (isNaN(dueDate.getTime())) return false;
-
-              const timeDiff = dueDate.getTime() - now.getTime();
-              const diffDays = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-
-              // Due within next 7 days (including today)
-              return diffDays >= 0 && diffDays <= 7;
-            } catch (error) {
-              console.error(
-                "Error parsing due_date:",
-                followUp.due_date,
-                error,
-              );
-              return false;
-            }
+            return followUp.status !== "completed";
           });
 
           const overdueFollowUps = vcFollowUps.filter((followUp: any) => {
