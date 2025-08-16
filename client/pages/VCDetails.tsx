@@ -697,7 +697,7 @@ export default function VCDetails() {
                           Max. Investment:{" "}
                         </span>
                         <span className="text-gray-900">
-                          ${(vcData.maximum_size / 1000000).toFixed(1)}M
+                          {formatLargeAmount(vcData.maximum_size, vcData.billing_currency)}
                         </span>
                       </div>
                     )}
