@@ -849,6 +849,38 @@ export default function CreateVC() {
     },
   });
 
+  // Navigation functions
+  const handleNextTab = async () => {
+    if (!isLastTab) {
+      // Auto-save when moving to next tab
+      const hasData = vcData.investor_name || vcData.round_title || vcData.email;
+      if (hasData) {
+        try {
+          await partialSaveMutation.mutateAsync();
+        } catch (error) {
+          console.error("Failed to auto-save when navigating:", error);
+        }
+      }
+      const nextTab = TABS[currentTabIndex + 1].value;
+      setActiveTab(nextTab);
+      // Save current tab to localStorage
+      if (currentDraftId) {
+        localStorage.setItem(`vc_draft_${currentDraftId}_tab`, nextTab);
+      }
+    }
+  };
+
+  const handlePreviousTab = () => {
+    if (!isFirstTab) {
+      const prevTab = TABS[currentTabIndex - 1].value;
+      setActiveTab(prevTab);
+      // Save current tab to localStorage
+      if (currentDraftId) {
+        localStorage.setItem(`vc_draft_${currentDraftId}_tab`, prevTab);
+      }
+    }
+  };
+
   const handleInputChange = (field: string, value: any) => {
     // Debug country field changes
     if (field === "country" || field === "custom_country") {
