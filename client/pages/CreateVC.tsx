@@ -325,15 +325,31 @@ export default function CreateVC() {
   const [activeTab, setActiveTab] = useState(() => {
     if (resumeData) {
       const savedTab = localStorage.getItem(`vc_draft_${resumeData.id}_tab`);
-      return savedTab || "lead-info";
+      return savedTab || "lead";
     }
-    return "lead-info";
+    return "lead";
   });
   const [selectedTemplate, setSelectedTemplate] = useState<string>(
     resumeData?.template_id ? resumeData.template_id.toString() : "manual",
   );
   const [isTemplatePreviewOpen, setIsTemplatePreviewOpen] = useState(false);
   const [previewTemplate, setPreviewTemplate] = useState<any>(null);
+
+  // Currency state
+  const [selectedCurrency, setSelectedCurrency] = useState(
+    resumeData?.billing_currency || vcData.billing_currency || "INR"
+  );
+
+  // Navigation helpers
+  const currentTabIndex = TABS.findIndex(tab => tab.value === activeTab);
+  const isFirstTab = currentTabIndex === 0;
+  const isLastTab = currentTabIndex === TABS.length - 1;
+
+  // Get currency symbol
+  const getCurrencySymbol = (currency: string) => {
+    const currencyData = CURRENCIES.find(c => c.value === currency);
+    return currencyData?.symbol || "₹";
+  };
 
   // Get VC templates (category ID for VC templates)
   const {
