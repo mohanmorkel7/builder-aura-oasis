@@ -1008,42 +1008,6 @@ export default function VCEdit() {
                   )}
                 </div>
 
-                <div>
-                  <Label htmlFor="contact_person">Contact Person</Label>
-                  <Input
-                    id="contact_person"
-                    placeholder="Primary contact person"
-                    value={vcData.contact_person}
-                    onChange={(e) =>
-                      handleInputChange("contact_person", e.target.value)
-                    }
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="email">Email *</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="contact@investor.com"
-                    value={vcData.email}
-                    onChange={(e) => handleInputChange("email", e.target.value)}
-                    className={errors.email ? "border-red-500" : ""}
-                  />
-                  {errors.email && (
-                    <p className="text-sm text-red-600 mt-1">{errors.email}</p>
-                  )}
-                </div>
-
-                <div>
-                  <Label htmlFor="phone">Phone</Label>
-                  <Input
-                    id="phone"
-                    placeholder="+1 (555) 123-4567"
-                    value={vcData.phone}
-                    onChange={(e) => handleInputChange("phone", e.target.value)}
-                  />
-                </div>
 
                 <div>
                   <Label htmlFor="website">Website</Label>
