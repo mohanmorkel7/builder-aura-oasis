@@ -1458,7 +1458,7 @@ export default function CreateVC() {
         </TabsContent>
 
         {/* Investor and Contact Info Tab */}
-        <TabsContent value="investor-contact" className="space-y-6">
+        <TabsContent value="investor" className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle>Investor Information</CardTitle>
@@ -1877,7 +1877,7 @@ export default function CreateVC() {
         </TabsContent>
 
         {/* Deal Details Tab */}
-        <TabsContent value="deal-details" className="space-y-6">
+        <TabsContent value="round" className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle>Round Information</CardTitle>
