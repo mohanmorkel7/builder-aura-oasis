@@ -668,7 +668,7 @@ export default function VCDetails() {
                         Round Size:{" "}
                       </span>
                       <span className="text-gray-900">
-                        {vcData.round_size || "TBD"}
+                        {formatCurrency(vcData.round_size, vcData.billing_currency) || "TBD"}
                       </span>
                     </div>
                     <div>
