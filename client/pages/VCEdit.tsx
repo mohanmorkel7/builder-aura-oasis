@@ -99,6 +99,12 @@ const COUNTRIES = [
   "Other",
 ];
 
+const CURRENCIES = [
+  { value: "INR", label: "INR (₹)", symbol: "₹" },
+  { value: "USD", label: "USD ($)", symbol: "$" },
+  { value: "AED", label: "AED (د.إ)", symbol: "د.إ" },
+];
+
 export default function VCEdit() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
