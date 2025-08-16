@@ -1342,10 +1342,12 @@ export default function VCEdit() {
                 </div>
 
                 <div>
-                  <Label htmlFor="round_size">Round Size</Label>
+                  <Label htmlFor="round_size">
+                    Round Size ({getCurrencySymbol(selectedCurrency)})
+                  </Label>
                   <Input
                     id="round_size"
-                    placeholder="e.g., $10M, ₹75Cr"
+                    placeholder={`e.g., ${getCurrencySymbol(selectedCurrency)}10M`}
                     value={vcData.round_size}
                     onChange={(e) =>
                       handleInputChange("round_size", e.target.value)
@@ -1354,10 +1356,12 @@ export default function VCEdit() {
                 </div>
 
                 <div>
-                  <Label htmlFor="valuation">Valuation</Label>
+                  <Label htmlFor="valuation">
+                    Valuation ({getCurrencySymbol(selectedCurrency)})
+                  </Label>
                   <Input
                     id="valuation"
-                    placeholder="e.g., $50M, ₹400Cr"
+                    placeholder={`e.g., ${getCurrencySymbol(selectedCurrency)}100M`}
                     value={vcData.valuation}
                     onChange={(e) =>
                       handleInputChange("valuation", e.target.value)
