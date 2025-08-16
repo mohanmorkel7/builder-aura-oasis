@@ -337,17 +337,17 @@ export default function CreateVC() {
 
   // Currency state
   const [selectedCurrency, setSelectedCurrency] = useState(
-    resumeData?.billing_currency || vcData.billing_currency || "INR"
+    resumeData?.billing_currency || vcData.billing_currency || "INR",
   );
 
   // Navigation helpers
-  const currentTabIndex = TABS.findIndex(tab => tab.value === activeTab);
+  const currentTabIndex = TABS.findIndex((tab) => tab.value === activeTab);
   const isFirstTab = currentTabIndex === 0;
   const isLastTab = currentTabIndex === TABS.length - 1;
 
   // Get currency symbol
   const getCurrencySymbol = (currency: string) => {
-    const currencyData = CURRENCIES.find(c => c.value === currency);
+    const currencyData = CURRENCIES.find((c) => c.value === currency);
     return currencyData?.symbol || "₹";
   };
 
@@ -853,7 +853,8 @@ export default function CreateVC() {
   const handleNextTab = async () => {
     if (!isLastTab) {
       // Auto-save when moving to next tab
-      const hasData = vcData.investor_name || vcData.round_title || vcData.email;
+      const hasData =
+        vcData.investor_name || vcData.round_title || vcData.email;
       if (hasData) {
         try {
           await partialSaveMutation.mutateAsync();
@@ -1243,7 +1244,9 @@ export default function CreateVC() {
         </div>
         <div className="flex items-center space-x-3">
           <div className="flex items-center space-x-2">
-            <Label htmlFor="currency" className="text-sm font-medium">Currency:</Label>
+            <Label htmlFor="currency" className="text-sm font-medium">
+              Currency:
+            </Label>
             <Select
               value={selectedCurrency}
               onValueChange={(value) => {
@@ -1286,7 +1289,9 @@ export default function CreateVC() {
           <TabsTrigger value="lead">📋 Lead Information</TabsTrigger>
           <TabsTrigger value="investor">🏢 Investor Information</TabsTrigger>
           <TabsTrigger value="round">💰 Round Information</TabsTrigger>
-          <TabsTrigger value="additional">📝 Additional Information</TabsTrigger>
+          <TabsTrigger value="additional">
+            📝 Additional Information
+          </TabsTrigger>
         </TabsList>
 
         {/* Lead Info Tab */}
@@ -1712,10 +1717,12 @@ export default function CreateVC() {
                   <div></div>
 
                   <div>
-                    <Label htmlFor="minimum_size">Minimum Size ({getCurrencySymbol(selectedCurrency)})</Label>
+                    <Label htmlFor="minimum_size">
+                      Minimum Size ({getCurrencySymbol(selectedCurrency)})
+                    </Label>
                     <Input
                       id="minimum_size"
-                      placeholder={`e.g., ${getCurrencySymbol(selectedCurrency) === '$' ? '10M' : getCurrencySymbol(selectedCurrency) === 'د.إ' ? '37M' : '10Cr'}`}
+                      placeholder={`e.g., ${getCurrencySymbol(selectedCurrency) === "$" ? "10M" : getCurrencySymbol(selectedCurrency) === "د.إ" ? "37M" : "10Cr"}`}
                       value={vcData.minimum_size}
                       onChange={(e) =>
                         handleInputChange("minimum_size", e.target.value)
@@ -1724,10 +1731,12 @@ export default function CreateVC() {
                   </div>
 
                   <div>
-                    <Label htmlFor="maximum_size">Maximum Size ({getCurrencySymbol(selectedCurrency)})</Label>
+                    <Label htmlFor="maximum_size">
+                      Maximum Size ({getCurrencySymbol(selectedCurrency)})
+                    </Label>
                     <Input
                       id="maximum_size"
-                      placeholder={`e.g., ${getCurrencySymbol(selectedCurrency) === '$' ? '100M' : getCurrencySymbol(selectedCurrency) === 'د.إ' ? '367M' : '100Cr'}`}
+                      placeholder={`e.g., ${getCurrencySymbol(selectedCurrency) === "$" ? "100M" : getCurrencySymbol(selectedCurrency) === "د.إ" ? "367M" : "100Cr"}`}
                       value={vcData.maximum_size}
                       onChange={(e) =>
                         handleInputChange("maximum_size", e.target.value)
@@ -1737,11 +1746,12 @@ export default function CreateVC() {
 
                   <div>
                     <Label htmlFor="minimum_arr_requirement">
-                      Minimum ARR Requirement ({getCurrencySymbol(selectedCurrency)})
+                      Minimum ARR Requirement (
+                      {getCurrencySymbol(selectedCurrency)})
                     </Label>
                     <Input
                       id="minimum_arr_requirement"
-                      placeholder={`e.g., ${getCurrencySymbol(selectedCurrency) === '$' ? '5M' : getCurrencySymbol(selectedCurrency) === 'د.إ' ? '18M' : '5Cr'}`}
+                      placeholder={`e.g., ${getCurrencySymbol(selectedCurrency) === "$" ? "5M" : getCurrencySymbol(selectedCurrency) === "د.إ" ? "18M" : "5Cr"}`}
                       value={vcData.minimum_arr_requirement}
                       onChange={(e) =>
                         handleInputChange(
@@ -1955,7 +1965,9 @@ export default function CreateVC() {
                 </div>
 
                 <div>
-                  <Label htmlFor="round_size">Round Size ({getCurrencySymbol(selectedCurrency)})</Label>
+                  <Label htmlFor="round_size">
+                    Round Size ({getCurrencySymbol(selectedCurrency)})
+                  </Label>
                   <Input
                     id="round_size"
                     placeholder={`e.g., ${getCurrencySymbol(selectedCurrency)}10M`}
@@ -1967,7 +1979,9 @@ export default function CreateVC() {
                 </div>
 
                 <div>
-                  <Label htmlFor="valuation">Valuation ({getCurrencySymbol(selectedCurrency)})</Label>
+                  <Label htmlFor="valuation">
+                    Valuation ({getCurrencySymbol(selectedCurrency)})
+                  </Label>
                   <Input
                     id="valuation"
                     placeholder={`e.g., ${getCurrencySymbol(selectedCurrency)}100M`}

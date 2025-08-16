@@ -129,7 +129,10 @@ export async function initializeDatabase() {
           "update-vc-schema-options.sql",
         );
         if (fs.existsSync(vcOptionsMigrationPath)) {
-          const vcOptionsMigration = fs.readFileSync(vcOptionsMigrationPath, "utf8");
+          const vcOptionsMigration = fs.readFileSync(
+            vcOptionsMigrationPath,
+            "utf8",
+          );
           await client.query(vcOptionsMigration);
           console.log("VC schema options migration applied successfully");
         }
