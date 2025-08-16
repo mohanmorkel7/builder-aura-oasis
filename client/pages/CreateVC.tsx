@@ -1527,10 +1527,10 @@ export default function CreateVC() {
                 </div>
 
                 <div>
-                  <Label htmlFor="contact_person">Contact Person</Label>
+                  <Label htmlFor="contact_person">Primary Contact</Label>
                   <Input
                     id="contact_person"
-                    placeholder="Primary contact person"
+                    placeholder="Name of primary contact person"
                     value={vcData.contact_person}
                     onChange={(e) =>
                       handleInputChange("contact_person", e.target.value)
@@ -1539,7 +1539,7 @@ export default function CreateVC() {
                 </div>
 
                 <div>
-                  <Label htmlFor="email">Email *</Label>
+                  <Label htmlFor="email">Contact Email *</Label>
                   <Input
                     id="email"
                     type="email"
@@ -1554,7 +1554,7 @@ export default function CreateVC() {
                 </div>
 
                 <div>
-                  <Label htmlFor="phone">Phone</Label>
+                  <Label htmlFor="phone">Contact Phone</Label>
                   <Input
                     id="phone"
                     placeholder="+1 (555) 123-4567"
