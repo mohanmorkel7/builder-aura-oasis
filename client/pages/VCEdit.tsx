@@ -1066,10 +1066,10 @@ export default function VCEdit() {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="state">State/Region</Label>
+                    <Label htmlFor="state">State/Province</Label>
                     <Input
                       id="state"
-                      placeholder="State or region"
+                      placeholder="State or Province"
                       value={vcData.state}
                       onChange={(e) =>
                         handleInputChange("state", e.target.value)
