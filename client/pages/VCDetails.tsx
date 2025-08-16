@@ -118,6 +118,35 @@ export default function VCDetails() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const queryClient = useQueryClient();
+
+  // Currency formatting function
+  const formatCurrency = (amount: string | number, currency: string = "INR") => {
+    if (!amount) return "N/A";
+
+    // Convert to string if it's a number
+    const amountStr = typeof amount === 'number' ? amount.toString() : amount;
+
+    // If amount already includes a currency symbol, return as is
+    if (
+      amountStr.includes("$") ||
+      amountStr.includes("₹") ||
+      amountStr.includes("د.إ")
+    ) {
+      return amountStr;
+    }
+
+    const symbol = currency === "USD" ? "$" : currency === "AED" ? "د.إ" : "₹";
+    return `${symbol}${amountStr}`;
+  };
+
+  // Format large numbers with currency
+  const formatLargeAmount = (amount: number, currency: string = "INR") => {
+    if (!amount) return "N/A";
+
+    const symbol = currency === "USD" ? "$" : currency === "AED" ? "د.إ" : "₹";
+    const formatted = (amount / 1000000).toFixed(1);
+    return `${symbol}${formatted}M`;
+  };
   const vcId = parseInt(id || "0");
 
   const [newStepDialog, setNewStepDialog] = useState(false);
