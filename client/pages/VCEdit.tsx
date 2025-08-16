@@ -105,6 +105,13 @@ const CURRENCIES = [
   { value: "AED", label: "AED (د.إ)", symbol: "د.إ" },
 ];
 
+const TABS = [
+  { value: "lead-info", label: "Lead Information", icon: "📋" },
+  { value: "investor-contact", label: "Investor Information", icon: "🏢" },
+  { value: "deal-details", label: "Round Information", icon: "💰" },
+  { value: "additional", label: "Additional Information", icon: "📝" },
+];
+
 export default function VCEdit() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
