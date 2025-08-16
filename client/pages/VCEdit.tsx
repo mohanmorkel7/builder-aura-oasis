@@ -182,6 +182,15 @@ export default function VCEdit() {
   const [isTemplatePreviewOpen, setIsTemplatePreviewOpen] = useState(false);
   const [previewTemplate, setPreviewTemplate] = useState<any>(null);
 
+  // Currency state
+  const [selectedCurrency, setSelectedCurrency] = useState(vcData.billing_currency || "INR");
+
+  // Get currency symbol
+  const getCurrencySymbol = (currency: string) => {
+    const currencyData = CURRENCIES.find(c => c.value === currency);
+    return currencyData?.symbol || "₹";
+  };
+
   // Fetch VC details
   const {
     data: vcDataFromAPI,
