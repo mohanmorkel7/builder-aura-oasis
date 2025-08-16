@@ -1515,7 +1515,6 @@ export default function CreateVC() {
                   )}
                 </div>
 
-
                 <div>
                   <Label htmlFor="website">Website</Label>
                   <Input

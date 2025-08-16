@@ -996,7 +996,6 @@ export default function VCEdit() {
                   )}
                 </div>
 
-
                 <div>
                   <Label htmlFor="website">Website</Label>
                   <Input
