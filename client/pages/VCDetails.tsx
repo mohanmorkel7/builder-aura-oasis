@@ -120,11 +120,14 @@ export default function VCDetails() {
   const queryClient = useQueryClient();
 
   // Currency formatting function
-  const formatCurrency = (amount: string | number, currency: string = "INR") => {
+  const formatCurrency = (
+    amount: string | number,
+    currency: string = "INR",
+  ) => {
     if (!amount) return "N/A";
 
     // Convert to string if it's a number
-    const amountStr = typeof amount === 'number' ? amount.toString() : amount;
+    const amountStr = typeof amount === "number" ? amount.toString() : amount;
 
     // If amount already includes a currency symbol, return as is
     if (
@@ -668,7 +671,10 @@ export default function VCDetails() {
                         Round Size:{" "}
                       </span>
                       <span className="text-gray-900">
-                        {formatCurrency(vcData.round_size, vcData.billing_currency) || "TBD"}
+                        {formatCurrency(
+                          vcData.round_size,
+                          vcData.billing_currency,
+                        ) || "TBD"}
                       </span>
                     </div>
                     <div>
@@ -676,7 +682,10 @@ export default function VCDetails() {
                         Valuation:{" "}
                       </span>
                       <span className="text-gray-900">
-                        {formatCurrency(vcData.valuation, vcData.billing_currency) || "TBD"}
+                        {formatCurrency(
+                          vcData.valuation,
+                          vcData.billing_currency,
+                        ) || "TBD"}
                       </span>
                     </div>
                   </div>
@@ -687,7 +696,10 @@ export default function VCDetails() {
                           Min. Investment:{" "}
                         </span>
                         <span className="text-gray-900">
-                          {formatLargeAmount(vcData.minimum_size, vcData.billing_currency)}
+                          {formatLargeAmount(
+                            vcData.minimum_size,
+                            vcData.billing_currency,
+                          )}
                         </span>
                       </div>
                     )}
@@ -697,7 +709,10 @@ export default function VCDetails() {
                           Max. Investment:{" "}
                         </span>
                         <span className="text-gray-900">
-                          {formatLargeAmount(vcData.maximum_size, vcData.billing_currency)}
+                          {formatLargeAmount(
+                            vcData.maximum_size,
+                            vcData.billing_currency,
+                          )}
                         </span>
                       </div>
                     )}
