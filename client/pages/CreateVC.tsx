@@ -689,7 +689,7 @@ export default function CreateVC() {
             spoc: response.spoc || prevData.spoc,
             template_id: (() => {
               const templateId = response.template_id || prevData.template_id;
-              console.log("🔄 DEBUG - Loading template_id from API:", {
+              console.log("�� DEBUG - Loading template_id from API:", {
                 "response.template_id": response.template_id,
                 "prevData.template_id": prevData.template_id,
                 "final templateId": templateId,
@@ -1888,6 +1888,20 @@ export default function CreateVC() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Navigation Buttons */}
+          <div className="flex justify-between">
+            <Button
+              variant="outline"
+              onClick={handlePreviousTab}
+              disabled={isFirstTab}
+            >
+              Previous
+            </Button>
+            <Button onClick={handleNextTab} disabled={isLastTab}>
+              Next
+            </Button>
+          </div>
         </TabsContent>
 
         {/* Deal Details Tab */}
