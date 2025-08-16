@@ -2202,11 +2202,11 @@ export class MockDataService {
         notes: "Successfully closed! Great partnership for healthcare tech",
         contacts: [
           {
-            contact_name: "David Venture",
-            email: "david@kpcb.com",
-            phone: "+1 (555) 300-3003",
+            contact_name: "Ahmed Investor",
+            email: "ahmed@mevp.com",
+            phone: "+971 50 123 4567",
             designation: "General Partner",
-            linkedin: "https://linkedin.com/in/davidventure",
+            linkedin: "https://linkedin.com/in/ahmedinvestor",
           },
         ],
         probability: 100,
