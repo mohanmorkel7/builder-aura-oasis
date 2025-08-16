@@ -1712,10 +1712,10 @@ export default function CreateVC() {
                   <div></div>
 
                   <div>
-                    <Label htmlFor="minimum_size">Minimum Size (₹)</Label>
+                    <Label htmlFor="minimum_size">Minimum Size ({getCurrencySymbol(selectedCurrency)})</Label>
                     <Input
                       id="minimum_size"
-                      placeholder="e.g., 10000000"
+                      placeholder={`e.g., ${getCurrencySymbol(selectedCurrency) === '$' ? '10M' : getCurrencySymbol(selectedCurrency) === 'د.إ' ? '37M' : '10Cr'}`}
                       value={vcData.minimum_size}
                       onChange={(e) =>
                         handleInputChange("minimum_size", e.target.value)
@@ -1724,10 +1724,10 @@ export default function CreateVC() {
                   </div>
 
                   <div>
-                    <Label htmlFor="maximum_size">Maximum Size (₹)</Label>
+                    <Label htmlFor="maximum_size">Maximum Size ({getCurrencySymbol(selectedCurrency)})</Label>
                     <Input
                       id="maximum_size"
-                      placeholder="e.g., 100000000"
+                      placeholder={`e.g., ${getCurrencySymbol(selectedCurrency) === '$' ? '100M' : getCurrencySymbol(selectedCurrency) === 'د.إ' ? '367M' : '100Cr'}`}
                       value={vcData.maximum_size}
                       onChange={(e) =>
                         handleInputChange("maximum_size", e.target.value)
@@ -1737,11 +1737,11 @@ export default function CreateVC() {
 
                   <div>
                     <Label htmlFor="minimum_arr_requirement">
-                      Minimum ARR Requirement
+                      Minimum ARR Requirement ({getCurrencySymbol(selectedCurrency)})
                     </Label>
                     <Input
                       id="minimum_arr_requirement"
-                      placeholder="e.g., 50000000"
+                      placeholder={`e.g., ${getCurrencySymbol(selectedCurrency) === '$' ? '5M' : getCurrencySymbol(selectedCurrency) === 'د.إ' ? '18M' : '5Cr'}`}
                       value={vcData.minimum_arr_requirement}
                       onChange={(e) =>
                         handleInputChange(
