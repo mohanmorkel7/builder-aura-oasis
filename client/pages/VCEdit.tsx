@@ -595,12 +595,6 @@ export default function VCEdit() {
     if (!vcData.lead_source) {
       newErrors.lead_source = "Lead source is required";
     }
-    if (!vcData.email.trim()) {
-      newErrors.email = "Email is required";
-    }
-    if (vcData.email && !/\S+@\S+\.\S+/.test(vcData.email)) {
-      newErrors.email = "Please enter a valid email address";
-    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
