@@ -70,10 +70,12 @@ const INVESTOR_CATEGORIES = [
   { value: "private_equity", label: "Private Equity" },
   { value: "family_office", label: "Family Office" },
   { value: "merchant_banker", label: "Merchant Banker" },
+  { value: "individual", label: "Individual" },
 ];
 
 const ROUND_STAGES = [
   { value: "pre_seed", label: "Pre-Seed" },
+  { value: "pre_series_a", label: "Pre-Series A" },
   { value: "seed", label: "Seed" },
   { value: "series_a", label: "Series A" },
   { value: "series_b", label: "Series B" },
