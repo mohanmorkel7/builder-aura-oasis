@@ -1955,10 +1955,10 @@ export default function CreateVC() {
                 </div>
 
                 <div>
-                  <Label htmlFor="round_size">Round Size</Label>
+                  <Label htmlFor="round_size">Round Size ({getCurrencySymbol(selectedCurrency)})</Label>
                   <Input
                     id="round_size"
-                    placeholder="e.g., $10M, ₹50Cr"
+                    placeholder={`e.g., ${getCurrencySymbol(selectedCurrency)}10M`}
                     value={vcData.round_size}
                     onChange={(e) =>
                       handleInputChange("round_size", e.target.value)
@@ -1967,10 +1967,10 @@ export default function CreateVC() {
                 </div>
 
                 <div>
-                  <Label htmlFor="valuation">Valuation</Label>
+                  <Label htmlFor="valuation">Valuation ({getCurrencySymbol(selectedCurrency)})</Label>
                   <Input
                     id="valuation"
-                    placeholder="e.g., $100M, ₹500Cr"
+                    placeholder={`e.g., ${getCurrencySymbol(selectedCurrency)}100M`}
                     value={vcData.valuation}
                     onChange={(e) =>
                       handleInputChange("valuation", e.target.value)
