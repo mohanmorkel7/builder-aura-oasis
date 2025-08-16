@@ -1455,6 +1455,20 @@ export default function CreateVC() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Navigation Buttons */}
+          <div className="flex justify-between">
+            <Button
+              variant="outline"
+              onClick={handlePreviousTab}
+              disabled={isFirstTab}
+            >
+              Previous
+            </Button>
+            <Button onClick={handleNextTab} disabled={isLastTab}>
+              Next
+            </Button>
+          </div>
         </TabsContent>
 
         {/* Investor and Contact Info Tab */}
