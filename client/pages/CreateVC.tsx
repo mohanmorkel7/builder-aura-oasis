@@ -1134,7 +1134,7 @@ export default function CreateVC() {
           COUNTRIES.includes(domCountryText)
         ) {
           console.log(
-            "�� DEBUG - Using DOM fallback for predefined country:",
+            "🐛 DEBUG - Using DOM fallback for predefined country:",
             domCountryText,
           );
           return domCountryText;
@@ -1162,8 +1162,6 @@ export default function CreateVC() {
         valuation: vcData.valuation,
         investor_category: vcData.investor_category,
         investor_name: vcData.investor_name || "PARTIAL_SAVE_IN_PROGRESS",
-        contact_person: vcData.contact_person,
-        email: vcData.email,
         phone: vcData.phone,
         address: vcData.address,
         city: vcData.city,
