@@ -687,7 +687,7 @@ export default function VCDetails() {
                           Min. Investment:{" "}
                         </span>
                         <span className="text-gray-900">
-                          ${(vcData.minimum_size / 1000000).toFixed(1)}M
+                          {formatLargeAmount(vcData.minimum_size, vcData.billing_currency)}
                         </span>
                       </div>
                     )}
