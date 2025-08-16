@@ -440,8 +440,6 @@ export default function VCEdit() {
         investor_name: vcDataFromAPI.investor_name || "",
         company_size: vcDataFromAPI.company_size || "",
         industry: vcDataFromAPI.industry || "",
-        contact_person: vcDataFromAPI.contact_person || "",
-        email: vcDataFromAPI.email || "",
         phone: vcDataFromAPI.phone || "",
         address: vcDataFromAPI.address || "",
         city: vcDataFromAPI.city || "",
