@@ -2152,11 +2152,11 @@ export class MockDataService {
         notes: "Interested in fintech solutions, awaiting technical demo",
         contacts: [
           {
-            contact_name: "Sarah Investment",
-            email: "sarah@accel.com",
-            phone: "+1 (555) 200-2002",
+            contact_name: "Arjun Investor",
+            email: "arjun@sequoiacap.com",
+            phone: "+91 9876543210",
             designation: "Principal",
-            linkedin: "https://linkedin.com/in/sarahinvestment",
+            linkedin: "https://linkedin.com/in/arjuninvestor",
           },
         ],
         probability: 60,
