@@ -264,8 +264,6 @@ export default function CreateVC() {
           investor_name: "",
           company_size: "",
           industry: "",
-          contact_person: "",
-          email: "",
           phone: "",
           address: "",
           city: "",
