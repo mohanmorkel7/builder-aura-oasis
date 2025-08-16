@@ -1036,7 +1036,6 @@ export default function VCEdit() {
                     </SelectContent>
                   </Select>
                 </div>
-
               </div>
 
               {/* Address Information */}
