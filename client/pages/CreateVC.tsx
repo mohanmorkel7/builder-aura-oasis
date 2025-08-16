@@ -101,6 +101,19 @@ const COUNTRIES = [
   "Other",
 ];
 
+const CURRENCIES = [
+  { value: "INR", label: "INR (₹)", symbol: "₹" },
+  { value: "USD", label: "USD ($)", symbol: "$" },
+  { value: "AED", label: "AED (د.إ)", symbol: "د.إ" },
+];
+
+const TABS = [
+  { value: "lead", label: "Lead Information", icon: "📋" },
+  { value: "investor", label: "Investor Information", icon: "🏢" },
+  { value: "round", label: "Round Information", icon: "💰" },
+  { value: "additional", label: "Additional Information", icon: "📝" },
+];
+
 export default function CreateVC() {
   const navigate = useNavigate();
   const location = useLocation();
