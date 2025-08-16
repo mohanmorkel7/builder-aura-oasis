@@ -1588,6 +1588,20 @@ export default function VCEdit() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Navigation buttons */}
+          <div className="flex justify-between pt-6">
+            <Button
+              variant="outline"
+              onClick={handlePreviousTab}
+              disabled={isFirstTab}
+            >
+              Previous
+            </Button>
+            <Button onClick={handleNextTab} disabled={isLastTab}>
+              Next
+            </Button>
+          </div>
         </TabsContent>
 
         {/* Additional Information Tab */}
