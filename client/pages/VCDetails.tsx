@@ -676,7 +676,7 @@ export default function VCDetails() {
                         Valuation:{" "}
                       </span>
                       <span className="text-gray-900">
-                        {vcData.valuation || "TBD"}
+                        {formatCurrency(vcData.valuation, vcData.billing_currency) || "TBD"}
                       </span>
                     </div>
                   </div>
