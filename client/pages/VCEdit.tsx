@@ -107,7 +107,7 @@ const CURRENCIES = [
 
 const TABS = [
   { value: "lead-info", label: "Lead Information", icon: "📋" },
-  { value: "investor-contact", label: "Investor Information", icon: "🏢" },
+  { value: "investor-contact", label: "Investor Information", icon: "����" },
   { value: "deal-details", label: "Round Information", icon: "💰" },
   { value: "additional", label: "Additional Information", icon: "📝" },
 ];
@@ -1037,17 +1037,6 @@ export default function VCEdit() {
                   </Select>
                 </div>
 
-                <div>
-                  <Label htmlFor="industry">Industry Focus</Label>
-                  <Input
-                    id="industry"
-                    placeholder="e.g., Technology, Healthcare, Fintech"
-                    value={vcData.industry}
-                    onChange={(e) =>
-                      handleInputChange("industry", e.target.value)
-                    }
-                  />
-                </div>
               </div>
 
               {/* Address Information */}
