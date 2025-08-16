@@ -200,6 +200,11 @@ export default function VCEdit() {
     return currencyData?.symbol || "₹";
   };
 
+  // Navigation helpers
+  const currentTabIndex = TABS.findIndex((tab) => tab.value === activeTab);
+  const isFirstTab = currentTabIndex === 0;
+  const isLastTab = currentTabIndex === TABS.length - 1;
+
   // Fetch VC details
   const {
     data: vcDataFromAPI,
