@@ -1077,12 +1077,19 @@ export default function VCEdit() {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="country">Country</Label>
+                    <Label htmlFor="country">Country *</Label>
                     <Select
-                      value={vcData.country}
-                      onValueChange={(value) =>
-                        handleInputChange("country", value)
+                      value={
+                        vcData.country && vcData.country.trim()
+                          ? vcData.country
+                          : undefined
                       }
+                      onValueChange={(value) => {
+                        handleInputChange("country", value);
+                        if (value !== "Other") {
+                          handleInputChange("custom_country", "");
+                        }
+                      }}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select country" />
