@@ -25,6 +25,7 @@ export interface VC {
   round_description?: string;
   round_stage?:
     | "pre_seed"
+    | "pre_series_a"
     | "seed"
     | "series_a"
     | "series_b"
