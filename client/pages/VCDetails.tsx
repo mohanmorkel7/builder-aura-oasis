@@ -701,14 +701,6 @@ export default function VCDetails() {
                         </span>
                       </div>
                     )}
-                    <div>
-                      <span className="font-medium text-gray-600">
-                        Currency:{" "}
-                      </span>
-                      <span className="text-gray-900">
-                        {vcData.billing_currency || "USD"}
-                      </span>
-                    </div>
                   </div>
                 </div>
 
