@@ -497,6 +497,9 @@ export default function VCEdit() {
       if (vcDataFromAPI.template_id) {
         setSelectedTemplate(vcDataFromAPI.template_id.toString());
       }
+
+      // Set selected currency
+      setSelectedCurrency(vcDataFromAPI.billing_currency || "INR");
     }
   }, [vcDataFromAPI, user?.email]);
 
