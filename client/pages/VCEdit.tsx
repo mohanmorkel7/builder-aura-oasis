@@ -626,8 +626,6 @@ export default function VCEdit() {
         valuation: vcData.valuation,
         investor_category: vcData.investor_category,
         investor_name: vcData.investor_name,
-        contact_person: vcData.contact_person,
-        email: vcData.email,
         phone: vcData.phone,
         address: vcData.address,
         city: vcData.city,
