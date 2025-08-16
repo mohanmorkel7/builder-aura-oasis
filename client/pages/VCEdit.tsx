@@ -1078,11 +1078,7 @@ export default function VCEdit() {
                   <div>
                     <Label htmlFor="country">Country *</Label>
                     <Select
-                      value={
-                        vcData.country && vcData.country.trim()
-                          ? vcData.country
-                          : undefined
-                      }
+                      value={vcData.country || ""}
                       onValueChange={(value) => {
                         handleInputChange("country", value);
                         if (value !== "Other") {
