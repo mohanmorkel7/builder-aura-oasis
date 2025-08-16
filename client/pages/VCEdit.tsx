@@ -415,6 +415,21 @@ export default function VCEdit() {
     },
   });
 
+  // Navigation functions
+  const handleNextTab = () => {
+    if (!isLastTab) {
+      const nextTab = TABS[currentTabIndex + 1].value;
+      setActiveTab(nextTab);
+    }
+  };
+
+  const handlePreviousTab = () => {
+    if (!isFirstTab) {
+      const prevTab = TABS[currentTabIndex - 1].value;
+      setActiveTab(prevTab);
+    }
+  };
+
   // Load VC data into form when available
   useEffect(() => {
     if (vcDataFromAPI) {
