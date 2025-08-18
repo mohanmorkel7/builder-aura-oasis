@@ -667,26 +667,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               </div>
             </div>
           </Link>
-          <div className="space-y-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => navigate("/profile")}
-              className="w-full"
-            >
-              <Settings className="w-4 h-4 mr-2" />
-              Profile
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={logout}
-              className="w-full"
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Sign out
-            </Button>
-          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={logout}
+            className="w-full"
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            Sign out
+          </Button>
         </div>
       </div>
 
