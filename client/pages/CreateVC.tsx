@@ -530,7 +530,10 @@ export default function CreateVC() {
   // Initialize lead_created_by with user email when user loads or changes
   useEffect(() => {
     if (user?.email && !vcData.lead_created_by) {
-      console.log("🐛 DEBUG - Setting lead_created_by to user email:", user.email);
+      console.log(
+        "🐛 DEBUG - Setting lead_created_by to user email:",
+        user.email,
+      );
       handleInputChange("lead_created_by", user.email);
     }
   }, [user?.email, vcData.lead_created_by]);
