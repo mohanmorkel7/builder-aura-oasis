@@ -437,7 +437,10 @@ export default function VCEdit() {
         status: vcDataFromAPI.status || "in-progress",
         investor_category: vcDataFromAPI.investor_category || "",
         investor_name: vcDataFromAPI.investor_name || "",
-        company_size: vcDataFromAPI.company_size || "",
+        company_size: (() => {
+          console.log('🐛 DEBUG - VCEdit company_size loading:', vcDataFromAPI.company_size);
+          return vcDataFromAPI.company_size || "";
+        })(),
         phone: vcDataFromAPI.phone || "",
         address: vcDataFromAPI.address || "",
         city: vcDataFromAPI.city || "",
