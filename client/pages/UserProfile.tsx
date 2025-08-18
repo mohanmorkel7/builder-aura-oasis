@@ -34,6 +34,10 @@ import {
   EyeOff,
   CheckCircle,
   AlertCircle,
+  Phone,
+  Building,
+  Clock,
+  Activity,
 } from "lucide-react";
 
 const roleColors = {
