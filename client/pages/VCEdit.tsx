@@ -496,7 +496,7 @@ export default function VCEdit() {
             const dateStr = vcDataFromAPI.start_date.split("T")[0];
             console.log("🐛 DEBUG - start_date conversion:", {
               original: vcDataFromAPI.start_date,
-              extracted: dateStr
+              extracted: dateStr,
             });
             return dateStr;
           } catch (e) {
@@ -514,7 +514,7 @@ export default function VCEdit() {
             const dateStr = vcDataFromAPI.targeted_end_date.split("T")[0];
             console.log("🐛 DEBUG - targeted_end_date conversion:", {
               original: vcDataFromAPI.targeted_end_date,
-              extracted: dateStr
+              extracted: dateStr,
             });
             return dateStr;
           } catch (e) {

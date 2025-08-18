@@ -1057,7 +1057,12 @@ export default function VCDetails() {
                 <Button
                   className="w-full justify-start"
                   variant="outline"
-                  onClick={() => window.open(`tel:${getPrimaryContact(vcData)?.phone}`, "_self")}
+                  onClick={() =>
+                    window.open(
+                      `tel:${getPrimaryContact(vcData)?.phone}`,
+                      "_self",
+                    )
+                  }
                 >
                   <Phone className="w-4 h-4 mr-2" />
                   Call {getPrimaryContact(vcData)?.contact_name}
