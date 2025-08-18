@@ -297,8 +297,11 @@ export default function VCDashboard() {
   const handleDeleteVC = async (vcId: number) => {
     try {
       await apiClient.request(`/vc/${vcId}`, { method: "DELETE" });
+      // Invalidate all VC queries with any filters
       queryClient.invalidateQueries({ queryKey: ["vcs"] });
       queryClient.invalidateQueries({ queryKey: ["vc-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["my-vc-partial-saves"] });
+      console.log("VC deleted successfully and queries invalidated");
     } catch (error) {
       console.error("Failed to delete VC:", error);
       alert("Failed to delete VC. Please try again.");
