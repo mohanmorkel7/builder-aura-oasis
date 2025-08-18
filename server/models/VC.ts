@@ -53,6 +53,7 @@ export interface VC {
   state?: string;
   country?: string;
   website?: string;
+  company_size?: string;
 
   // Investment Details
   potential_lead_investor?: boolean;
