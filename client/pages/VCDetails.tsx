@@ -709,7 +709,7 @@ export default function VCDetails() {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    {vcData.minimum_size && (
+                    {(vcData.minimum_size || vcData.minimum_size === 0) && (
                       <div>
                         <span className="font-medium text-gray-600">
                           Min. Investment:{" "}
@@ -722,7 +722,7 @@ export default function VCDetails() {
                         </span>
                       </div>
                     )}
-                    {vcData.maximum_size && (
+                    {(vcData.maximum_size || vcData.maximum_size === 0) && (
                       <div>
                         <span className="font-medium text-gray-600">
                           Max. Investment:{" "}
