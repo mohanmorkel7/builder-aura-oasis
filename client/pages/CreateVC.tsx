@@ -167,7 +167,6 @@ export default function CreateVC() {
               ? ""
               : resumeData.investor_name || "",
           company_size: resumeData.company_size || "",
-          industry: resumeData.industry || "",
           phone: resumeData.phone || "",
           address: resumeData.address || "",
           city: resumeData.city || "",
