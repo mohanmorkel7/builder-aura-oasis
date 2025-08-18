@@ -1096,7 +1096,7 @@ export default function VCEdit() {
                 </div>
                 {vcData.country === "Other" && (
                   <div>
-                    <Label htmlFor="custom_country">Specify Country</Label>
+                    <Label htmlFor="custom_country">Custom Country</Label>
                     <Input
                       id="custom_country"
                       placeholder="Enter country name"
