@@ -261,8 +261,6 @@ export default function CreateVC() {
           // Investor and Contact Info
           investor_category: "",
           investor_name: "",
-          company_size: "",
-          industry: "",
           phone: "",
           address: "",
           city: "",
