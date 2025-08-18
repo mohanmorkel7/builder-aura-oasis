@@ -1013,6 +1013,11 @@ export default function CreateVC() {
       };
 
       console.log("🚀 DEBUG - Submitting final data:", submitData);
+      console.log("🚀 DEBUG - Country values at submit time:", {
+        "vcData.country": vcData.country,
+        "vcData.custom_country": vcData.custom_country,
+        "submitData.country": submitData.country
+      });
       const result = await createVCMutation.mutateAsync(submitData);
 
       // If we were working with a draft, delete the draft
