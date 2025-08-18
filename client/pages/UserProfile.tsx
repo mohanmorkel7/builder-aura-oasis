@@ -168,10 +168,20 @@ export default function UserProfile() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{user.name}</h1>
-          <p className="text-gray-600 mt-1">My Profile & Settings</p>
+          <p className="text-gray-600 mt-1">Manage your profile and account settings</p>
+        </div>
+        <div className="flex items-center space-x-2">
+          <Badge variant="outline" className="text-xs">
+            <Shield className="w-3 h-3 mr-1" />
+            {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+          </Badge>
+          <Badge variant="outline" className="text-xs text-green-700 border-green-200">
+            <CheckCircle className="w-3 h-3 mr-1" />
+            Active
+          </Badge>
         </div>
       </div>
 
