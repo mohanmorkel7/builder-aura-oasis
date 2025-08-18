@@ -1028,13 +1028,13 @@ export default function VCDetails() {
               <CardTitle>Quick Actions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              {vcData.email ? (
+              {getPrimaryContact(vcData)?.email ? (
                 <Button
                   className="w-full justify-start"
                   variant="outline"
                   onClick={() =>
                     window.open(
-                      `mailto:${vcData.email}?subject=Follow-up: ${vcData.round_title || vcData.investor_name}&body=Hi ${vcData.contact_person},%0D%0A%0D%0AI wanted to follow up on our discussion regarding ${vcData.round_title || "your investment opportunity"}...`,
+                      `mailto:${getPrimaryContact(vcData)?.email}?subject=Follow-up: ${vcData.round_title || vcData.investor_name}&body=Hi ${getPrimaryContact(vcData)?.contact_name},%0D%0A%0D%0AI wanted to follow up on our discussion regarding ${vcData.round_title || "your investment opportunity"}...`,
                       "_blank",
                     )
                   }
