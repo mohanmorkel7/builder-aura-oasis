@@ -716,6 +716,18 @@ function AppRoutes() {
         }
       />
 
+      {/* User Profile - Available to all authenticated users */}
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <DashboardLayout>
+              <UserProfile />
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+
       {/* Root redirect */}
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
