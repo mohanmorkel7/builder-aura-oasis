@@ -649,31 +649,44 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
         {/* User Profile */}
         <div className="p-4 border-t border-gray-200">
-          <div className="flex items-center space-x-3 mb-3">
-            <Avatar>
-              <AvatarFallback className="bg-primary text-white">
-                {user.name
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 truncate">
-                {user.name}
-              </p>
-              <p className="text-xs text-gray-500 capitalize">{user.role}</p>
+          <Link to="/profile" className="block mb-3">
+            <div className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
+              <Avatar>
+                <AvatarFallback className="bg-primary text-white">
+                  {user.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-900 truncate">
+                  {user.name}
+                </p>
+                <p className="text-xs text-gray-500 capitalize">{user.role}</p>
+              </div>
             </div>
+          </Link>
+          <div className="space-y-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate("/profile")}
+              className="w-full"
+            >
+              <Settings className="w-4 h-4 mr-2" />
+              Profile
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={logout}
+              className="w-full"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Sign out
+            </Button>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={logout}
-            className="w-full"
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            Sign out
-          </Button>
         </div>
       </div>
 
