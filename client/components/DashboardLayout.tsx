@@ -649,7 +649,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
         {/* User Profile */}
         <div className="p-4 border-t border-gray-200">
-          <Link to={`/admin/users/${user.id}`} className="block mb-3">
+          <Link to="/profile" className="block mb-3">
             <div className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
               <Avatar>
                 <AvatarFallback className="bg-primary text-white">
