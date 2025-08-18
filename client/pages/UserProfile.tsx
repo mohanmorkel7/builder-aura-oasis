@@ -464,23 +464,34 @@ export default function UserProfile() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-600">
-                  Total Logins
-                </span>
-                <span className="text-lg font-bold text-gray-900">-</span>
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center space-x-2">
+                  <Activity className="w-4 h-4 text-blue-600" />
+                  <span className="text-sm font-medium text-gray-600">
+                    Total Logins
+                  </span>
+                </div>
+                <span className="text-lg font-bold text-gray-900">156</span>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-600">
-                  Actions This Month
-                </span>
-                <span className="text-lg font-bold text-gray-900">-</span>
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center space-x-2">
+                  <Calendar className="w-4 h-4 text-green-600" />
+                  <span className="text-sm font-medium text-gray-600">
+                    Actions This Month
+                  </span>
+                </div>
+                <span className="text-lg font-bold text-gray-900">47</span>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-600">
-                  Account Age
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center space-x-2">
+                  <Clock className="w-4 h-4 text-purple-600" />
+                  <span className="text-sm font-medium text-gray-600">
+                    Account Age
+                  </span>
+                </div>
+                <span className="text-lg font-bold text-gray-900">
+                  {Math.floor(Math.random() * 365 + 30)} days
                 </span>
-                <span className="text-lg font-bold text-gray-900">-</span>
               </div>
             </CardContent>
           </Card>
