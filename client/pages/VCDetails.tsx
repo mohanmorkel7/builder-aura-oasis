@@ -623,18 +623,18 @@ export default function VCDetails() {
                         Contact Person:
                       </span>
                       <span className="text-gray-900">
-                        {vcData.contact_person || "Not provided"}
+                        {getPrimaryContact(vcData)?.contact_name || "Not provided"}
                       </span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <Mail className="w-4 h-4 text-gray-400" />
                       <span className="font-medium text-gray-600">Email:</span>
-                      {vcData.email ? (
+                      {getPrimaryContact(vcData)?.email ? (
                         <a
-                          href={`mailto:${vcData.email}`}
+                          href={`mailto:${getPrimaryContact(vcData)?.email}`}
                           className="text-blue-600 hover:underline"
                         >
-                          {vcData.email}
+                          {getPrimaryContact(vcData)?.email}
                         </a>
                       ) : (
                         <span className="text-gray-900">Not provided</span>
@@ -644,7 +644,7 @@ export default function VCDetails() {
                       <Phone className="w-4 h-4 text-gray-400" />
                       <span className="font-medium text-gray-600">Phone:</span>
                       <span className="text-gray-900">
-                        {vcData.phone || "Not provided"}
+                        {getPrimaryContact(vcData)?.phone || "Not provided"}
                       </span>
                     </div>
                     <div className="flex items-center space-x-2">
