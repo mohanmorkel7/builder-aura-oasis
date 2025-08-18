@@ -985,37 +985,9 @@ export default function CreateVC() {
         address: vcData.address,
         city: vcData.city,
         state: vcData.state,
-        country: (() => {
-          // Same logic as partial save for consistency
-          if (vcData.country === "Other" && vcData.custom_country?.trim()) {
-            return vcData.custom_country.trim();
-          }
-          if (vcData.country && vcData.country !== "Other") {
-            return vcData.country;
-          }
-
-          // Fallback: use DOM values if state is empty
-          const domCustomCountry = document
-            .querySelector("#custom_country")
-            ?.value?.trim();
-          const domCountryText = document
-            .querySelector('label[for="country"]')
-            ?.nextElementSibling?.querySelector("span")
-            ?.textContent?.trim();
-
-          if (domCountryText === "Other" && domCustomCountry) {
-            return domCustomCountry;
-          }
-          if (
-            domCountryText &&
-            domCountryText !== "Other" &&
-            COUNTRIES.includes(domCountryText)
-          ) {
-            return domCountryText;
-          }
-
-          return "";
-        })(),
+        country: vcData.country === "Other" && vcData.custom_country?.trim()
+          ? vcData.custom_country.trim()
+          : vcData.country || null,
         website: vcData.website,
         company_size: vcData.company_size,
         potential_lead_investor: vcData.potential_lead_investor,
