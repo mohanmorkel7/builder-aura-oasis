@@ -928,16 +928,11 @@ export default function CreateVC() {
       return newData;
     });
 
-    // Additional debugging for country field
+    // Additional debugging for country field - check state persistence
     if (field === "country") {
-      console.log("🐛 DEBUG - setVcData called with country:", newData.country);
-      // Check state after React's next render
       setTimeout(() => {
-        console.log(
-          "🐛 DEBUG - vcData.country after state update:",
-          vcData.country,
-        );
-      }, 0);
+        console.log("🐛 DEBUG - vcData.country after 100ms:", vcData.country);
+      }, 100);
     }
 
     // Clear error when user starts typing
