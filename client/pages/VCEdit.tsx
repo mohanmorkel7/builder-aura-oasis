@@ -667,7 +667,10 @@ export default function VCEdit() {
           return vcData.start_date || null;
         })(),
         targeted_end_date: (() => {
-          console.log("🐛 DEBUG - Saving targeted_end_date:", vcData.targeted_end_date);
+          console.log(
+            "🐛 DEBUG - Saving targeted_end_date:",
+            vcData.targeted_end_date,
+          );
           return vcData.targeted_end_date || null;
         })(),
         spoc: vcData.spoc,
