@@ -1046,56 +1046,53 @@ export default function VCEdit() {
                     }
                   />
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <Label htmlFor="city">City</Label>
-                    <Input
-                      id="city"
-                      placeholder="City"
-                      value={vcData.city}
-                      onChange={(e) =>
-                        handleInputChange("city", e.target.value)
+
+                <div>
+                  <Label htmlFor="city">City</Label>
+                  <Input
+                    id="city"
+                    placeholder="City"
+                    value={vcData.city}
+                    onChange={(e) => handleInputChange("city", e.target.value)}
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="state">State/Province</Label>
+                  <Input
+                    id="state"
+                    placeholder="State or Province"
+                    value={vcData.state}
+                    onChange={(e) => handleInputChange("state", e.target.value)}
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="country">Country *</Label>
+                  <Select
+                    value={
+                      vcData.country && vcData.country.trim()
+                        ? vcData.country
+                        : undefined
+                    }
+                    onValueChange={(value) => {
+                      handleInputChange("country", value);
+                      if (value !== "Other") {
+                        handleInputChange("custom_country", "");
                       }
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="state">State/Province</Label>
-                    <Input
-                      id="state"
-                      placeholder="State or Province"
-                      value={vcData.state}
-                      onChange={(e) =>
-                        handleInputChange("state", e.target.value)
-                      }
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="country">Country *</Label>
-                    <Select
-                      value={
-                        vcData.country && vcData.country.trim()
-                          ? vcData.country
-                          : undefined
-                      }
-                      onValueChange={(value) => {
-                        handleInputChange("country", value);
-                        if (value !== "Other") {
-                          handleInputChange("custom_country", "");
-                        }
-                      }}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select country" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {COUNTRIES.map((country) => (
-                          <SelectItem key={country} value={country}>
-                            {country}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select country" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {COUNTRIES.map((country) => (
+                        <SelectItem key={country} value={country}>
+                          {country}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 {vcData.country === "Other" && (
                   <div>
