@@ -146,6 +146,27 @@ export async function initializeDatabase() {
       console.log("Database schema already exists");
     }
 
+    // Always try to apply VC schema options migration (even if tables exist)
+    try {
+      const vcOptionsMigrationPath = path.join(
+        __dirname,
+        "update-vc-schema-options.sql",
+      );
+      if (fs.existsSync(vcOptionsMigrationPath)) {
+        const vcOptionsMigration = fs.readFileSync(
+          vcOptionsMigrationPath,
+          "utf8",
+        );
+        await client.query(vcOptionsMigration);
+        console.log("VC schema options migration applied successfully");
+      }
+    } catch (vcOptionsMigrationError) {
+      console.log(
+        "VC schema options migration already applied or error:",
+        vcOptionsMigrationError.message,
+      );
+    }
+
     // await client.query(schema);
     console.log("Database initialized successfully");
     client.release();
