@@ -1065,46 +1065,9 @@ export default function CreateVC() {
       });
 
       // Determine the final country value to save
-      const countryValue = (() => {
-        // First try using the state values
-        if (vcData.country === "Other" && vcData.custom_country?.trim()) {
-          return vcData.custom_country.trim();
-        }
-        if (vcData.country && vcData.country !== "Other") {
-          return vcData.country;
-        }
-
-        // Fallback: if state is empty but DOM has values, use DOM values
-        const domCustomCountry = document
-          .querySelector("#custom_country")
-          ?.value?.trim();
-        const domCountryText = document
-          .querySelector('label[for="country"]')
-          ?.nextElementSibling?.querySelector("span")
-          ?.textContent?.trim();
-
-        if (domCountryText === "Other" && domCustomCountry) {
-          console.log(
-            "🐛 DEBUG - Using DOM fallback for country:",
-            domCustomCountry,
-          );
-          return domCustomCountry;
-        }
-        if (
-          domCountryText &&
-          domCountryText !== "Other" &&
-          COUNTRIES.includes(domCountryText)
-        ) {
-          console.log(
-            "🐛 DEBUG - Using DOM fallback for predefined country:",
-            domCountryText,
-          );
-          return domCountryText;
-        }
-
-        // Final fallback
-        return "";
-      })();
+      const countryValue = vcData.country === "Other" && vcData.custom_country?.trim()
+        ? vcData.custom_country.trim()
+        : vcData.country || null;
 
       console.log("🐛 DEBUG - Partial Save Country:", {
         dropdown: vcData.country,
