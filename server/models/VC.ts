@@ -143,6 +143,7 @@ export interface UpdateVCData {
   state?: string;
   country?: string;
   website?: string;
+  company_size?: string;
   potential_lead_investor?: boolean;
   minimum_size?: number;
   maximum_size?: number;
