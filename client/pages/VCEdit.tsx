@@ -436,8 +436,6 @@ export default function VCEdit() {
         status: vcDataFromAPI.status || "in-progress",
         investor_category: vcDataFromAPI.investor_category || "",
         investor_name: vcDataFromAPI.investor_name || "",
-        company_size: vcDataFromAPI.company_size || "",
-        industry: vcDataFromAPI.industry || "",
         phone: vcDataFromAPI.phone || "",
         address: vcDataFromAPI.address || "",
         city: vcDataFromAPI.city || "",
@@ -1170,7 +1168,7 @@ export default function VCEdit() {
                     </Label>
                     <Input
                       id="minimum_arr_requirement"
-                      placeholder={`e.g., ${getCurrencySymbol(selectedCurrency) === "$" ? "5M" : getCurrencySymbol(selectedCurrency) === "د.��" ? "18M" : "5Cr"}`}
+                      placeholder={`e.g., ${getCurrencySymbol(selectedCurrency) === "$" ? "5M" : getCurrencySymbol(selectedCurrency) === "د.إ" ? "18M" : "5Cr"}`}
                       value={vcData.minimum_arr_requirement}
                       onChange={(e) =>
                         handleInputChange(
