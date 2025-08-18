@@ -121,7 +121,6 @@ export async function initializeDatabase() {
           vcMigrationError.message,
         );
       }
-
     } else {
       console.log("Database schema already exists");
     }
