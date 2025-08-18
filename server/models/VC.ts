@@ -331,11 +331,34 @@ export class VCRepository {
   }
 
   static async update(id: number, vcData: UpdateVCData): Promise<VC | null> {
+    // Preprocess date fields to prevent timezone conversion
+    const processedVcData = { ...vcData };
+
+    if (processedVcData.start_date) {
+      processedVcData.start_date = processedVcData.start_date.includes('T')
+        ? processedVcData.start_date.split('T')[0]
+        : processedVcData.start_date;
+      console.log("🐛 DEBUG - Update start_date processing:", {
+        original: vcData.start_date,
+        processed: processedVcData.start_date
+      });
+    }
+
+    if (processedVcData.targeted_end_date) {
+      processedVcData.targeted_end_date = processedVcData.targeted_end_date.includes('T')
+        ? processedVcData.targeted_end_date.split('T')[0]
+        : processedVcData.targeted_end_date;
+      console.log("🐛 DEBUG - Update targeted_end_date processing:", {
+        original: vcData.targeted_end_date,
+        processed: processedVcData.targeted_end_date
+      });
+    }
+
     const fields = [];
     const values = [];
     let paramCount = 1;
 
-    Object.entries(vcData).forEach(([key, value]) => {
+    Object.entries(processedVcData).forEach(([key, value]) => {
       if (value !== undefined) {
         fields.push(`${key} = $${paramCount}`);
         values.push(value);
