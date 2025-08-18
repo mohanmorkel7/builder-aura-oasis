@@ -119,6 +119,22 @@ export default function VCDetails() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
+  // Get primary contact from contacts array
+  const getPrimaryContact = (vcData: any) => {
+    if (!vcData?.contacts) return null;
+
+    try {
+      const contacts = typeof vcData.contacts === 'string'
+        ? JSON.parse(vcData.contacts)
+        : vcData.contacts;
+
+      return Array.isArray(contacts) && contacts.length > 0 ? contacts[0] : null;
+    } catch (error) {
+      console.error('Error parsing contacts:', error);
+      return null;
+    }
+  };
+
   // Currency formatting function
   const formatCurrency = (
     amount: string | number,
