@@ -121,16 +121,20 @@ export default function VCDetails() {
 
   // Get primary contact from contacts array
   const getPrimaryContact = (vcData: any) => {
-    if (!vcData?.contacts) return null;
+    if (!vcData?.contacts) {
+      console.log('No contacts data available:', vcData?.contacts);
+      return null;
+    }
 
     try {
       const contacts = typeof vcData.contacts === 'string'
         ? JSON.parse(vcData.contacts)
         : vcData.contacts;
 
+      console.log('Parsed contacts:', contacts);
       return Array.isArray(contacts) && contacts.length > 0 ? contacts[0] : null;
     } catch (error) {
-      console.error('Error parsing contacts:', error);
+      console.error('Error parsing contacts:', error, 'Raw contacts:', vcData.contacts);
       return null;
     }
   };
