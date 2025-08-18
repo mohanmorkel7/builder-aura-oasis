@@ -175,14 +175,27 @@ export default function VCDetails() {
     amount: number | string,
     currency: string = "INR",
   ) => {
-    if (!amount || amount === 0) return "N/A";
+    console.log("🐛 DEBUG - formatLargeAmount called with:", { amount, currency, type: typeof amount });
+
+    // Handle null, undefined, empty string
+    if (!amount && amount !== 0) {
+      console.log("🐛 DEBUG - returning N/A for falsy value");
+      return "N/A";
+    }
 
     const amountNum = typeof amount === "string" ? parseFloat(amount) : amount;
-    if (isNaN(amountNum) || amountNum === 0) return "N/A";
+    console.log("🐛 DEBUG - parsed amount:", amountNum);
+
+    if (isNaN(amountNum) || amountNum <= 0) {
+      console.log("🐛 DEBUG - returning N/A for zero/invalid value");
+      return "N/A";
+    }
 
     const symbol = currency === "USD" ? "$" : currency === "AED" ? "د.إ" : "₹";
     const formatted = (amountNum / 1000000).toFixed(1);
-    return `${symbol}${formatted}M`;
+    const result = `${symbol}${formatted}M`;
+    console.log("🐛 DEBUG - formatted result:", result);
+    return result;
   };
   const vcId = parseInt(id || "0");
 
