@@ -523,8 +523,21 @@ export default function VCEdit() {
         targeted_end_date: (() => {
           try {
             if (!vcDataFromAPI.targeted_end_date) return "";
-            // Extract date part directly to avoid timezone issues
-            const dateStr = vcDataFromAPI.targeted_end_date.split("T")[0];
+
+            // Handle different date formats more robustly
+            let dateStr = vcDataFromAPI.targeted_end_date;
+
+            // If it's already a YYYY-MM-DD string, use it directly
+            if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+              console.log("🐛 DEBUG - targeted_end_date already in correct format:", dateStr);
+              return dateStr;
+            }
+
+            // If it contains T (ISO format), extract date part
+            if (dateStr.includes("T")) {
+              dateStr = dateStr.split("T")[0];
+            }
+
             console.log("🐛 DEBUG - targeted_end_date conversion:", {
               original: vcDataFromAPI.targeted_end_date,
               extracted: dateStr,
