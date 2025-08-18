@@ -191,11 +191,34 @@ export class VCRepository {
 
   static async findById(id: number): Promise<VC | null> {
     const query = `
-      SELECT * FROM vcs 
+      SELECT
+        id, vc_id, lead_source, lead_source_value, lead_created_by, status,
+        round_title, round_description, round_stage, round_size, valuation,
+        investor_category, investor_name, contact_person, email, phone,
+        address, city, state, country, website, company_size, industry,
+        potential_lead_investor, minimum_size, maximum_size, minimum_arr_requirement,
+        priority_level,
+        start_date::text as start_date,
+        targeted_end_date::text as targeted_end_date,
+        spoc, billing_currency, template_id, contacts, created_by, assigned_to,
+        notes, created_at, updated_at, is_partial
+      FROM vcs
       WHERE id = $1
     `;
     const result = await pool.query(query, [id]);
-    return result.rows[0] || null;
+    const vc = result.rows[0] || null;
+
+    if (vc) {
+      console.log("🐛 DEBUG - Server findById date fields:", {
+        id: vc.id,
+        start_date: vc.start_date,
+        targeted_end_date: vc.targeted_end_date,
+        start_date_type: typeof vc.start_date,
+        targeted_end_date_type: typeof vc.targeted_end_date
+      });
+    }
+
+    return vc;
   }
 
   static async findByInvestorCategory(category: string): Promise<VC[]> {
