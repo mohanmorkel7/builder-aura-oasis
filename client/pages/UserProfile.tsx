@@ -127,7 +127,7 @@ export default function UserProfile() {
         newPassword: "",
         confirmPassword: "",
       });
-      
+
       // Close dialog after 2 seconds
       setTimeout(() => {
         setChangePasswordOpen(false);
@@ -136,7 +136,7 @@ export default function UserProfile() {
     } catch (error: any) {
       console.error("Failed to change password:", error);
       setPasswordError(
-        error.message || "Failed to change password. Please try again."
+        error.message || "Failed to change password. Please try again.",
       );
     } finally {
       setIsChangingPassword(false);
@@ -171,14 +171,19 @@ export default function UserProfile() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{user.name}</h1>
-          <p className="text-gray-600 mt-1">Manage your profile and account settings</p>
+          <p className="text-gray-600 mt-1">
+            Manage your profile and account settings
+          </p>
         </div>
         <div className="flex items-center space-x-2">
           <Badge variant="outline" className="text-xs">
             <Shield className="w-3 h-3 mr-1" />
             {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
           </Badge>
-          <Badge variant="outline" className="text-xs text-green-700 border-green-200">
+          <Badge
+            variant="outline"
+            className="text-xs text-green-700 border-green-200"
+          >
             <CheckCircle className="w-3 h-3 mr-1" />
             Active
           </Badge>
@@ -211,7 +216,11 @@ export default function UserProfile() {
                     {user.name}
                   </h3>
                   <div className="flex items-center space-x-4 mt-2">
-                    <Badge className={roleColors[user.role as keyof typeof roleColors]}>
+                    <Badge
+                      className={
+                        roleColors[user.role as keyof typeof roleColors]
+                      }
+                    >
                       {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
                     </Badge>
                     <Badge className="bg-green-100 text-green-700">
@@ -241,21 +250,27 @@ export default function UserProfile() {
                   <div className="flex items-center space-x-2">
                     <Shield className="w-4 h-4 text-gray-400" />
                     <span className="font-medium text-gray-600">Role:</span>
-                    <span className="text-gray-900 capitalize">{user.role}</span>
+                    <span className="text-gray-900 capitalize">
+                      {user.role}
+                    </span>
                   </div>
                 </div>
 
                 <div className="space-y-4">
                   <div className="flex items-center space-x-2">
                     <Calendar className="w-4 h-4 text-gray-400" />
-                    <span className="font-medium text-gray-600">Member Since:</span>
+                    <span className="font-medium text-gray-600">
+                      Member Since:
+                    </span>
                     <span className="text-gray-900">
                       {new Date().toLocaleDateString()}
                     </span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Clock className="w-4 h-4 text-gray-400" />
-                    <span className="font-medium text-gray-600">Last Login:</span>
+                    <span className="font-medium text-gray-600">
+                      Last Login:
+                    </span>
                     <span className="text-gray-900">
                       {new Date().toLocaleString()}
                     </span>
@@ -309,7 +324,9 @@ export default function UserProfile() {
                       Updated account information
                     </p>
                     <p className="text-xs text-gray-500 mt-1">
-                      {new Date(Date.now() - 1000 * 60 * 60 * 2).toLocaleString()}
+                      {new Date(
+                        Date.now() - 1000 * 60 * 60 * 2,
+                      ).toLocaleString()}
                     </p>
                   </div>
                 </div>
@@ -329,7 +346,10 @@ export default function UserProfile() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <Dialog open={changePasswordOpen} onOpenChange={setChangePasswordOpen}>
+              <Dialog
+                open={changePasswordOpen}
+                onOpenChange={setChangePasswordOpen}
+              >
                 <DialogTrigger asChild>
                   <Button variant="outline" className="w-full justify-start">
                     <Lock className="w-4 h-4 mr-2" />
@@ -356,7 +376,7 @@ export default function UserProfile() {
                         <AlertDescription>{passwordSuccess}</AlertDescription>
                       </Alert>
                     )}
-                    
+
                     <div className="space-y-2">
                       <Label htmlFor="currentPassword">Current Password</Label>
                       <div className="relative">
@@ -365,7 +385,10 @@ export default function UserProfile() {
                           type={showPasswords.current ? "text" : "password"}
                           value={passwordData.currentPassword}
                           onChange={(e) =>
-                            handlePasswordChange("currentPassword", e.target.value)
+                            handlePasswordChange(
+                              "currentPassword",
+                              e.target.value,
+                            )
                           }
                           placeholder="Enter current password"
                         />
@@ -414,14 +437,19 @@ export default function UserProfile() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                      <Label htmlFor="confirmPassword">
+                        Confirm New Password
+                      </Label>
                       <div className="relative">
                         <Input
                           id="confirmPassword"
                           type={showPasswords.confirm ? "text" : "password"}
                           value={passwordData.confirmPassword}
                           onChange={(e) =>
-                            handlePasswordChange("confirmPassword", e.target.value)
+                            handlePasswordChange(
+                              "confirmPassword",
+                              e.target.value,
+                            )
                           }
                           placeholder="Confirm new password"
                         />
@@ -442,7 +470,10 @@ export default function UserProfile() {
                     </div>
                   </div>
                   <DialogFooter>
-                    <Button variant="outline" onClick={handleClosePasswordDialog}>
+                    <Button
+                      variant="outline"
+                      onClick={handleClosePasswordDialog}
+                    >
                       Cancel
                     </Button>
                     <Button
