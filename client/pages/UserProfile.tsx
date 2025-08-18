@@ -106,13 +106,13 @@ export default function UserProfile() {
     setPasswordError("");
 
     try {
-      await apiClient.request("/users/change-password", {
+      await apiClient.request(`/users/${user.id}/change-password`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          currentPassword: passwordData.currentPassword,
+          oldPassword: passwordData.currentPassword,
           newPassword: passwordData.newPassword,
         }),
       });
