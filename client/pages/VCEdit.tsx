@@ -445,6 +445,7 @@ export default function VCEdit() {
         // Handle country initialization correctly
         country: (() => {
           const savedCountry = vcDataFromAPI.country || "";
+          console.log('🐛 DEBUG - VCEdit country loading:', { savedCountry, COUNTRIES });
           if (!savedCountry) return "";
           if (COUNTRIES.includes(savedCountry)) return savedCountry;
           return "Other";
