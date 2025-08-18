@@ -225,7 +225,7 @@ export class VCRepository {
         start_date: vc.start_date,
         targeted_end_date: vc.targeted_end_date,
         start_date_type: typeof vc.start_date,
-        targeted_end_date_type: typeof vc.targeted_end_date
+        targeted_end_date_type: typeof vc.targeted_end_date,
       });
     }
 
