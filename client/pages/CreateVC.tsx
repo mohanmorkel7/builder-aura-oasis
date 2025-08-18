@@ -1533,6 +1533,10 @@ export default function CreateVC() {
                         "🐛 DEBUG - Country dropdown changed to:",
                         value,
                       );
+                      console.log(
+                        "🐛 DEBUG - Current vcData.country before change:",
+                        vcData.country,
+                      );
                       handleInputChange("country", value);
                       if (value !== "Other") {
                         console.log(
