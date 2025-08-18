@@ -167,92 +167,108 @@ export default function UserProfile() {
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">My Profile</h1>
-          <p className="text-gray-600">Manage your account settings and preferences</p>
+          <h1 className="text-2xl font-bold text-gray-900">{user.name}</h1>
+          <p className="text-gray-600 mt-1">My Profile & Settings</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Profile Information */}
-        <div className="lg:col-span-2">
+        {/* Left Column - User Information */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* User Profile */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <User className="w-5 h-5" />
-                <span>Profile Information</span>
-              </CardTitle>
+              <CardTitle>User Profile</CardTitle>
               <CardDescription>
-                Your basic account information and role details
+                Basic user information and contact details
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex items-center space-x-4">
-                <Avatar className="w-16 h-16">
-                  <AvatarFallback className="bg-primary text-white text-lg">
+            <CardContent>
+              <div className="flex items-start space-x-6 mb-6">
+                <Avatar className="w-20 h-20">
+                  <AvatarFallback className="text-xl bg-primary text-white">
                     {user.name
                       .split(" ")
                       .map((n) => n[0])
                       .join("")}
                   </AvatarFallback>
                 </Avatar>
-                <div>
+                <div className="flex-1">
                   <h3 className="text-xl font-semibold text-gray-900">
                     {user.name}
                   </h3>
-                  <p className="text-gray-600">{user.email}</p>
+                  <div className="flex items-center space-x-4 mt-2">
+                    <Badge className={roleColors[user.role as keyof typeof roleColors]}>
+                      {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                    </Badge>
+                    <Badge className="bg-green-100 text-green-700">
+                      Active
+                    </Badge>
+                  </div>
                 </div>
               </div>
 
-              <Separator />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-2">
+                    <Mail className="w-4 h-4 text-gray-400" />
+                    <span className="font-medium text-gray-600">Email:</span>
+                    <a
+                      href={`mailto:${user.email}`}
+                      className="text-blue-600 hover:underline"
+                    >
+                      {user.email}
+                    </a>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <User className="w-4 h-4 text-gray-400" />
+                    <span className="font-medium text-gray-600">User ID:</span>
+                    <span className="text-gray-900">#{user.id}</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Shield className="w-4 h-4 text-gray-400" />
+                    <span className="font-medium text-gray-600">Role:</span>
+                    <span className="text-gray-900 capitalize">{user.role}</span>
+                  </div>
+                </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-500">
-                    Full Name
-                  </Label>
-                  <p className="text-gray-900">{user.name}</p>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-500">
-                    Email Address
-                  </Label>
-                  <p className="text-gray-900 flex items-center space-x-2">
-                    <Mail className="w-4 h-4" />
-                    <span>{user.email}</span>
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-500">
-                    Role
-                  </Label>
-                  <Badge className={roleColors[user.role as keyof typeof roleColors]}>
-                    <Shield className="w-3 h-3 mr-1" />
-                    {user.role}
-                  </Badge>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-500">
-                    User ID
-                  </Label>
-                  <p className="text-gray-900">#{user.id}</p>
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-2">
+                    <Calendar className="w-4 h-4 text-gray-400" />
+                    <span className="font-medium text-gray-600">Member Since:</span>
+                    <span className="text-gray-900">
+                      {new Date().toLocaleDateString()}
+                    </span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Clock className="w-4 h-4 text-gray-400" />
+                    <span className="font-medium text-gray-600">Last Login:</span>
+                    <span className="text-gray-900">
+                      {new Date().toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Lock className="w-4 h-4 text-gray-400" />
+                    <span className="font-medium text-gray-600">2FA:</span>
+                    <span className="text-gray-900">Disabled</span>
+                  </div>
                 </div>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Security Settings */}
-        <div>
+        {/* Right Column - Security Settings */}
+        <div className="space-y-6">
+          {/* Account Security */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Lock className="w-5 h-5" />
-                <span>Security</span>
-              </CardTitle>
+              <CardTitle>Account Security</CardTitle>
               <CardDescription>
-                Manage your account security settings
+                Manage your password and security settings
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
