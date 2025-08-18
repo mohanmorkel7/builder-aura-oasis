@@ -259,6 +259,53 @@ export default function UserProfile() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Recent Activity */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent Activity</CardTitle>
+              <CardDescription>
+                Latest actions and system interactions
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-start space-x-4">
+                  <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-gray-900">
+                      Logged in to system
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {new Date().toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-4">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-gray-900">
+                      Accessed profile settings
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {new Date(Date.now() - 1000 * 60 * 30).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-4">
+                  <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-gray-900">
+                      Updated account information
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {new Date(Date.now() - 1000 * 60 * 60 * 2).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Right Column - Security Settings */}
