@@ -438,7 +438,10 @@ export default function VCEdit() {
         investor_category: vcDataFromAPI.investor_category || "",
         investor_name: vcDataFromAPI.investor_name || "",
         company_size: (() => {
-          console.log('🐛 DEBUG - VCEdit company_size loading:', vcDataFromAPI.company_size);
+          console.log(
+            "🐛 DEBUG - VCEdit company_size loading:",
+            vcDataFromAPI.company_size,
+          );
           return vcDataFromAPI.company_size || "";
         })(),
         phone: vcDataFromAPI.phone || "",
@@ -448,7 +451,10 @@ export default function VCEdit() {
         // Handle country initialization correctly
         country: (() => {
           const savedCountry = vcDataFromAPI.country || "";
-          console.log('🐛 DEBUG - VCEdit country loading:', { savedCountry, COUNTRIES });
+          console.log("🐛 DEBUG - VCEdit country loading:", {
+            savedCountry,
+            COUNTRIES,
+          });
           if (!savedCountry) return "";
           if (COUNTRIES.includes(savedCountry)) return savedCountry;
           return "Other";

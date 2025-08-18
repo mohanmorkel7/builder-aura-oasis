@@ -122,19 +122,27 @@ export default function VCDetails() {
   // Get primary contact from contacts array
   const getPrimaryContact = (vcData: any) => {
     if (!vcData?.contacts) {
-      console.log('No contacts data available:', vcData?.contacts);
+      console.log("No contacts data available:", vcData?.contacts);
       return null;
     }
 
     try {
-      const contacts = typeof vcData.contacts === 'string'
-        ? JSON.parse(vcData.contacts)
-        : vcData.contacts;
+      const contacts =
+        typeof vcData.contacts === "string"
+          ? JSON.parse(vcData.contacts)
+          : vcData.contacts;
 
-      console.log('Parsed contacts:', contacts);
-      return Array.isArray(contacts) && contacts.length > 0 ? contacts[0] : null;
+      console.log("Parsed contacts:", contacts);
+      return Array.isArray(contacts) && contacts.length > 0
+        ? contacts[0]
+        : null;
     } catch (error) {
-      console.error('Error parsing contacts:', error, 'Raw contacts:', vcData.contacts);
+      console.error(
+        "Error parsing contacts:",
+        error,
+        "Raw contacts:",
+        vcData.contacts,
+      );
       return null;
     }
   };
@@ -163,10 +171,13 @@ export default function VCDetails() {
   };
 
   // Format large numbers with currency
-  const formatLargeAmount = (amount: number | string, currency: string = "INR") => {
+  const formatLargeAmount = (
+    amount: number | string,
+    currency: string = "INR",
+  ) => {
     if (!amount || amount === 0) return "N/A";
 
-    const amountNum = typeof amount === 'string' ? parseFloat(amount) : amount;
+    const amountNum = typeof amount === "string" ? parseFloat(amount) : amount;
     if (isNaN(amountNum) || amountNum === 0) return "N/A";
 
     const symbol = currency === "USD" ? "$" : currency === "AED" ? "د.إ" : "₹";
@@ -630,7 +641,8 @@ export default function VCDetails() {
                         Contact Person:
                       </span>
                       <span className="text-gray-900">
-                        {getPrimaryContact(vcData)?.contact_name || "Not provided"}
+                        {getPrimaryContact(vcData)?.contact_name ||
+                          "Not provided"}
                       </span>
                     </div>
                     <div className="flex items-center space-x-2">
