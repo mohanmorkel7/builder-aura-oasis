@@ -906,17 +906,27 @@ export default function CreateVC() {
       console.log("Current selectedTemplate:", selectedTemplate);
     }
 
-    const newData = {
-      ...vcData,
-      [field]: value,
-    };
+    // Use functional state update to ensure we have the latest state
+    setVcData((prevData) => {
+      const newData = {
+        ...prevData,
+        [field]: value,
+      };
 
-    // Clear lead_source_value when lead_source changes
-    if (field === "lead_source") {
-      newData.lead_source_value = "";
-    }
+      // Clear lead_source_value when lead_source changes
+      if (field === "lead_source") {
+        newData.lead_source_value = "";
+      }
 
-    setVcData(newData);
+      // Debug country specific updates
+      if (field === "country") {
+        console.log("🐛 DEBUG - Functional update - setting country to:", value);
+        console.log("🐛 DEBUG - Previous data country:", prevData.country);
+        console.log("🐛 DEBUG - New data country:", newData.country);
+      }
+
+      return newData;
+    });
 
     // Additional debugging for country field
     if (field === "country") {
