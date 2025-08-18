@@ -274,17 +274,21 @@ export class VCRepository {
 
     // Handle date fields to prevent timezone conversion
     const startDateValue = vcData.start_date
-      ? (vcData.start_date.includes('T') ? vcData.start_date.split('T')[0] : vcData.start_date)
+      ? vcData.start_date.includes("T")
+        ? vcData.start_date.split("T")[0]
+        : vcData.start_date
       : null;
     const targetedEndDateValue = vcData.targeted_end_date
-      ? (vcData.targeted_end_date.includes('T') ? vcData.targeted_end_date.split('T')[0] : vcData.targeted_end_date)
+      ? vcData.targeted_end_date.includes("T")
+        ? vcData.targeted_end_date.split("T")[0]
+        : vcData.targeted_end_date
       : null;
 
     console.log("🐛 DEBUG - Server date processing:", {
       original_start_date: vcData.start_date,
       processed_start_date: startDateValue,
       original_targeted_end_date: vcData.targeted_end_date,
-      processed_targeted_end_date: targetedEndDateValue
+      processed_targeted_end_date: targetedEndDateValue,
     });
 
     const values = [
@@ -335,22 +339,23 @@ export class VCRepository {
     const processedVcData = { ...vcData };
 
     if (processedVcData.start_date) {
-      processedVcData.start_date = processedVcData.start_date.includes('T')
-        ? processedVcData.start_date.split('T')[0]
+      processedVcData.start_date = processedVcData.start_date.includes("T")
+        ? processedVcData.start_date.split("T")[0]
         : processedVcData.start_date;
       console.log("🐛 DEBUG - Update start_date processing:", {
         original: vcData.start_date,
-        processed: processedVcData.start_date
+        processed: processedVcData.start_date,
       });
     }
 
     if (processedVcData.targeted_end_date) {
-      processedVcData.targeted_end_date = processedVcData.targeted_end_date.includes('T')
-        ? processedVcData.targeted_end_date.split('T')[0]
-        : processedVcData.targeted_end_date;
+      processedVcData.targeted_end_date =
+        processedVcData.targeted_end_date.includes("T")
+          ? processedVcData.targeted_end_date.split("T")[0]
+          : processedVcData.targeted_end_date;
       console.log("🐛 DEBUG - Update targeted_end_date processing:", {
         original: vcData.targeted_end_date,
-        processed: processedVcData.targeted_end_date
+        processed: processedVcData.targeted_end_date,
       });
     }
 
