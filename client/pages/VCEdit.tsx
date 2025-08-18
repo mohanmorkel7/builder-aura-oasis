@@ -129,6 +129,7 @@ export default function VCEdit() {
     // Investor and Contact Info
     investor_category: "",
     investor_name: "",
+    company_size: "",
     phone: "",
     address: "",
     city: "",
