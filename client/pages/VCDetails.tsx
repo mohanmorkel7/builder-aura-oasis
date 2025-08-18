@@ -1053,14 +1053,14 @@ export default function VCDetails() {
                 </Button>
               )}
 
-              {vcData.phone ? (
+              {getPrimaryContact(vcData)?.phone ? (
                 <Button
                   className="w-full justify-start"
                   variant="outline"
-                  onClick={() => window.open(`tel:${vcData.phone}`, "_self")}
+                  onClick={() => window.open(`tel:${getPrimaryContact(vcData)?.phone}`, "_self")}
                 >
                   <Phone className="w-4 h-4 mr-2" />
-                  Call {vcData.contact_person}
+                  Call {getPrimaryContact(vcData)?.contact_name}
                 </Button>
               ) : (
                 <Button
