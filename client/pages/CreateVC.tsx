@@ -763,7 +763,7 @@ export default function CreateVC() {
     };
 
     fetchDraftData();
-  }, [currentDraftId, resumeData, activeTab]);
+  }, [currentDraftId, resumeData]); // Removed activeTab to prevent refetch on tab changes
 
   // Debug country initialization when resuming from draft
   useEffect(() => {
