@@ -163,7 +163,18 @@ export interface UpdateVCData {
 export class VCRepository {
   static async findAll(): Promise<VC[]> {
     const query = `
-      SELECT * FROM vcs
+      SELECT
+        id, vc_id, lead_source, lead_source_value, lead_created_by, status,
+        round_title, round_description, round_stage, round_size, valuation,
+        investor_category, investor_name, contact_person, email, phone,
+        address, city, state, country, website, company_size, industry,
+        potential_lead_investor, minimum_size, maximum_size, minimum_arr_requirement,
+        priority_level,
+        start_date::text as start_date,
+        targeted_end_date::text as targeted_end_date,
+        spoc, billing_currency, template_id, contacts, created_by, assigned_to,
+        notes, created_at, updated_at, is_partial
+      FROM vcs
       WHERE is_partial = false OR is_partial IS NULL
       ORDER BY created_at DESC
     `;
