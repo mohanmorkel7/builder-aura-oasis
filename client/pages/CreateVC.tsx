@@ -900,6 +900,15 @@ export default function CreateVC() {
 
     setVcData(newData);
 
+    // Additional debugging for country field
+    if (field === "country") {
+      console.log("🐛 DEBUG - setVcData called with country:", newData.country);
+      // Check state after React's next render
+      setTimeout(() => {
+        console.log("🐛 DEBUG - vcData.country after state update:", vcData.country);
+      }, 0);
+    }
+
     // Clear error when user starts typing
     if (errors[field]) {
       setErrors((prev) => {
@@ -1052,7 +1061,7 @@ export default function CreateVC() {
         vcData.country,
       );
       console.log(
-        "🐛 DEBUG - handlePartialSave called, current vcData.custom_country:",
+        "��� DEBUG - handlePartialSave called, current vcData.custom_country:",
         vcData.custom_country,
       );
 
