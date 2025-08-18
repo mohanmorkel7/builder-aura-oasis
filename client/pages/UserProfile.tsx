@@ -407,6 +407,36 @@ export default function UserProfile() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Account Statistics */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Account Activity</CardTitle>
+              <CardDescription>
+                Your account usage and activity metrics
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-gray-600">
+                  Total Logins
+                </span>
+                <span className="text-lg font-bold text-gray-900">-</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-gray-600">
+                  Actions This Month
+                </span>
+                <span className="text-lg font-bold text-gray-900">-</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-gray-600">
+                  Account Age
+                </span>
+                <span className="text-lg font-bold text-gray-900">-</span>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
