@@ -257,15 +257,15 @@ export class VCRepository {
         vc_id, lead_source, lead_source_value, lead_created_by, status,
         round_title, round_description, round_stage, round_size, valuation,
         investor_category, investor_name, contact_person, email, phone,
-        address, city, state, country, website,
+        address, city, state, country, website, company_size,
         potential_lead_investor, minimum_size, maximum_size, minimum_arr_requirement,
         priority_level, start_date, targeted_end_date, spoc,
         billing_currency, template_id, contacts, created_by, assigned_to, notes, is_partial
       )
       VALUES (
         $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
-        $11, $12, $13, $14, $15, $16, $17, $18, $19, $20,
-        $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35
+        $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21,
+        $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36
       )
       RETURNING *
     `;
@@ -293,6 +293,7 @@ export class VCRepository {
       vcData.state || null,
       countryValue,
       vcData.website || null,
+      vcData.company_size || null,
       vcData.potential_lead_investor || false,
       vcData.minimum_size || null,
       vcData.maximum_size || null,
