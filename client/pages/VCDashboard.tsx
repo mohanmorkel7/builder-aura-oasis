@@ -139,7 +139,9 @@ export default function VCDashboard() {
       queryClient.invalidateQueries({ queryKey: ["vcs"] });
       queryClient.invalidateQueries({ queryKey: ["my-vc-partial-saves"] });
       queryClient.invalidateQueries({ queryKey: ["vc-stats"] });
-      console.log("VC partial save deleted successfully and queries invalidated");
+      console.log(
+        "VC partial save deleted successfully and queries invalidated",
+      );
     },
   });
 
