@@ -129,8 +129,6 @@ export default function VCEdit() {
     // Investor and Contact Info
     investor_category: "",
     investor_name: "",
-    company_size: "",
-    industry: "",
     phone: "",
     address: "",
     city: "",
@@ -1172,7 +1170,7 @@ export default function VCEdit() {
                     </Label>
                     <Input
                       id="minimum_arr_requirement"
-                      placeholder={`e.g., ${getCurrencySymbol(selectedCurrency) === "$" ? "5M" : getCurrencySymbol(selectedCurrency) === "د.إ" ? "18M" : "5Cr"}`}
+                      placeholder={`e.g., ${getCurrencySymbol(selectedCurrency) === "$" ? "5M" : getCurrencySymbol(selectedCurrency) === "د.��" ? "18M" : "5Cr"}`}
                       value={vcData.minimum_arr_requirement}
                       onChange={(e) =>
                         handleInputChange(
