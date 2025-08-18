@@ -159,11 +159,14 @@ export default function VCDetails() {
   };
 
   // Format large numbers with currency
-  const formatLargeAmount = (amount: number, currency: string = "INR") => {
-    if (!amount) return "N/A";
+  const formatLargeAmount = (amount: number | string, currency: string = "INR") => {
+    if (!amount || amount === 0) return "N/A";
+
+    const amountNum = typeof amount === 'string' ? parseFloat(amount) : amount;
+    if (isNaN(amountNum) || amountNum === 0) return "N/A";
 
     const symbol = currency === "USD" ? "$" : currency === "AED" ? "د.إ" : "₹";
-    const formatted = (amount / 1000000).toFixed(1);
+    const formatted = (amountNum / 1000000).toFixed(1);
     return `${symbol}${formatted}M`;
   };
   const vcId = parseInt(id || "0");
