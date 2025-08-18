@@ -492,8 +492,21 @@ export default function VCEdit() {
         start_date: (() => {
           try {
             if (!vcDataFromAPI.start_date) return "";
-            // Extract date part directly to avoid timezone issues
-            const dateStr = vcDataFromAPI.start_date.split("T")[0];
+
+            // Handle different date formats more robustly
+            let dateStr = vcDataFromAPI.start_date;
+
+            // If it's already a YYYY-MM-DD string, use it directly
+            if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+              console.log("🐛 DEBUG - start_date already in correct format:", dateStr);
+              return dateStr;
+            }
+
+            // If it contains T (ISO format), extract date part
+            if (dateStr.includes("T")) {
+              dateStr = dateStr.split("T")[0];
+            }
+
             console.log("🐛 DEBUG - start_date conversion:", {
               original: vcDataFromAPI.start_date,
               extracted: dateStr,
