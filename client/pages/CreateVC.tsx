@@ -920,7 +920,10 @@ export default function CreateVC() {
 
       // Debug country specific updates
       if (field === "country") {
-        console.log("🐛 DEBUG - Functional update - setting country to:", value);
+        console.log(
+          "🐛 DEBUG - Functional update - setting country to:",
+          value,
+        );
         console.log("🐛 DEBUG - Previous data country:", prevData.country);
         console.log("🐛 DEBUG - New data country:", newData.country);
       }
