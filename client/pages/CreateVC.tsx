@@ -616,7 +616,10 @@ export default function CreateVC() {
             country: (() => {
               // If user has already selected a country, preserve it
               if (prevData.country && prevData.country.trim()) {
-                console.log("🐛 DEBUG - Preserving current country:", prevData.country);
+                console.log(
+                  "🐛 DEBUG - Preserving current country:",
+                  prevData.country,
+                );
                 return prevData.country;
               }
 
@@ -629,7 +632,10 @@ export default function CreateVC() {
             custom_country: (() => {
               // If user has already set custom country, preserve it
               if (prevData.custom_country && prevData.custom_country.trim()) {
-                console.log("🐛 DEBUG - Preserving current custom_country:", prevData.custom_country);
+                console.log(
+                  "🐛 DEBUG - Preserving current custom_country:",
+                  prevData.custom_country,
+                );
                 return prevData.custom_country;
               }
 
