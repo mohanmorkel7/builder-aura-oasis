@@ -612,8 +612,14 @@ export default function CreateVC() {
             address: response.address || prevData.address,
             city: response.city || prevData.city,
             state: response.state || prevData.state,
-            // Handle country field properly
+            // Handle country field properly - preserve current value if exists
             country: (() => {
+              // If user has already selected a country, preserve it
+              if (prevData.country && prevData.country.trim()) {
+                console.log("🐛 DEBUG - Preserving current country:", prevData.country);
+                return prevData.country;
+              }
+
               const savedCountry = response.country || "";
               console.log("🐛 DEBUG - Fetched country from API:", savedCountry);
               if (!savedCountry) return "";
@@ -621,6 +627,12 @@ export default function CreateVC() {
               return "Other";
             })(),
             custom_country: (() => {
+              // If user has already set custom country, preserve it
+              if (prevData.custom_country && prevData.custom_country.trim()) {
+                console.log("🐛 DEBUG - Preserving current custom_country:", prevData.custom_country);
+                return prevData.custom_country;
+              }
+
               const savedCountry = response.country || "";
               if (!savedCountry || COUNTRIES.includes(savedCountry)) return "";
               return savedCountry;
