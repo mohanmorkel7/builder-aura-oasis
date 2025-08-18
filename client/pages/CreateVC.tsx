@@ -1027,6 +1027,7 @@ export default function CreateVC() {
         "vcData.custom_country": vcData.custom_country,
         "submitData.country": submitData.country,
       });
+      console.log("🚀 DEBUG - Full vcData at submit:", vcData);
       const result = await createVCMutation.mutateAsync(submitData);
 
       // If we were working with a draft, delete the draft
