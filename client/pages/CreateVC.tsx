@@ -607,7 +607,6 @@ export default function CreateVC() {
                 ? ""
                 : response.investor_name || prevData.investor_name,
             company_size: response.company_size || prevData.company_size,
-            industry: response.industry || prevData.industry,
             phone: response.phone || prevData.phone,
             address: response.address || prevData.address,
             city: response.city || prevData.city,
