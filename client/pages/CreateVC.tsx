@@ -153,13 +153,14 @@ export default function CreateVC() {
   }, [resumeData, draftIdFromUrl]);
 
   // State for VC data
-  const [vcData, setVcData] = useState(
-    resumeData
+  const [vcData, setVcData] = useState(() => {
+    // Use function initialization to prevent re-runs
+    return resumeData
       ? {
           // Initialize with resume data
           lead_source: resumeData.lead_source || "",
           lead_source_value: resumeData.lead_source_value || "",
-          lead_created_by: resumeData.lead_created_by || user?.email || "",
+          lead_created_by: resumeData.lead_created_by || "",
           status: resumeData.status || "in-progress",
           investor_category: resumeData.investor_category || "",
           investor_name:
@@ -255,7 +256,7 @@ export default function CreateVC() {
           // Default Lead Info
           lead_source: "" as const,
           lead_source_value: "",
-          lead_created_by: user?.email || "",
+          lead_created_by: "",
           status: "in-progress" as const,
 
           // Investor and Contact Info
@@ -311,8 +312,8 @@ export default function CreateVC() {
           probability: "0",
           notes: "",
           documents: [] as any[],
-        },
-  );
+        };
+  });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
