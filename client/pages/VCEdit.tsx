@@ -662,8 +662,14 @@ export default function VCEdit() {
           ? parseInt(vcData.minimum_arr_requirement)
           : null,
         priority_level: vcData.priority_level,
-        start_date: vcData.start_date || null,
-        targeted_end_date: vcData.targeted_end_date || null,
+        start_date: (() => {
+          console.log("🐛 DEBUG - Saving start_date:", vcData.start_date);
+          return vcData.start_date || null;
+        })(),
+        targeted_end_date: (() => {
+          console.log("🐛 DEBUG - Saving targeted_end_date:", vcData.targeted_end_date);
+          return vcData.targeted_end_date || null;
+        })(),
         spoc: vcData.spoc,
         template_id: vcData.template_id || null,
         billing_currency: vcData.billing_currency,
