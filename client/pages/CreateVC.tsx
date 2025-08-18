@@ -1017,6 +1017,7 @@ export default function CreateVC() {
           return "";
         })(),
         website: vcData.website,
+        company_size: vcData.company_size,
         potential_lead_investor: vcData.potential_lead_investor,
         minimum_size: vcData.minimum_size
           ? parseInt(vcData.minimum_size)
