@@ -985,9 +985,10 @@ export default function CreateVC() {
         address: vcData.address,
         city: vcData.city,
         state: vcData.state,
-        country: vcData.country === "Other" && vcData.custom_country?.trim()
-          ? vcData.custom_country.trim()
-          : vcData.country || null,
+        country:
+          vcData.country === "Other" && vcData.custom_country?.trim()
+            ? vcData.custom_country.trim()
+            : vcData.country || null,
         website: vcData.website,
         company_size: vcData.company_size,
         potential_lead_investor: vcData.potential_lead_investor,
@@ -1065,9 +1066,10 @@ export default function CreateVC() {
       });
 
       // Determine the final country value to save
-      const countryValue = vcData.country === "Other" && vcData.custom_country?.trim()
-        ? vcData.custom_country.trim()
-        : vcData.country || null;
+      const countryValue =
+        vcData.country === "Other" && vcData.custom_country?.trim()
+          ? vcData.custom_country.trim()
+          : vcData.country || null;
 
       console.log("🐛 DEBUG - Partial Save Country:", {
         dropdown: vcData.country,
