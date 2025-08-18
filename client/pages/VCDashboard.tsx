@@ -135,9 +135,11 @@ export default function VCDashboard() {
     mutationFn: (vcId: number) =>
       apiClient.request(`/vc/${vcId}`, { method: "DELETE" }),
     onSuccess: () => {
+      // Invalidate all VC queries with any filters
       queryClient.invalidateQueries({ queryKey: ["vcs"] });
       queryClient.invalidateQueries({ queryKey: ["my-vc-partial-saves"] });
       queryClient.invalidateQueries({ queryKey: ["vc-stats"] });
+      console.log("VC partial save deleted successfully and queries invalidated");
     },
   });
 
