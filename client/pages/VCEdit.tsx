@@ -491,9 +491,14 @@ export default function VCEdit() {
         priority_level: vcDataFromAPI.priority_level || "medium",
         start_date: (() => {
           try {
-            return vcDataFromAPI.start_date
-              ? new Date(vcDataFromAPI.start_date).toISOString().split("T")[0]
-              : "";
+            if (!vcDataFromAPI.start_date) return "";
+            // Extract date part directly to avoid timezone issues
+            const dateStr = vcDataFromAPI.start_date.split("T")[0];
+            console.log("🐛 DEBUG - start_date conversion:", {
+              original: vcDataFromAPI.start_date,
+              extracted: dateStr
+            });
+            return dateStr;
           } catch (e) {
             console.warn(
               "Failed to parse start_date:",
@@ -504,11 +509,14 @@ export default function VCEdit() {
         })(),
         targeted_end_date: (() => {
           try {
-            return vcDataFromAPI.targeted_end_date
-              ? new Date(vcDataFromAPI.targeted_end_date)
-                  .toISOString()
-                  .split("T")[0]
-              : "";
+            if (!vcDataFromAPI.targeted_end_date) return "";
+            // Extract date part directly to avoid timezone issues
+            const dateStr = vcDataFromAPI.targeted_end_date.split("T")[0];
+            console.log("🐛 DEBUG - targeted_end_date conversion:", {
+              original: vcDataFromAPI.targeted_end_date,
+              extracted: dateStr
+            });
+            return dateStr;
           } catch (e) {
             console.warn(
               "Failed to parse targeted_end_date:",
