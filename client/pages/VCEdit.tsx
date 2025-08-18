@@ -498,7 +498,10 @@ export default function VCEdit() {
 
             // If it's already a YYYY-MM-DD string, use it directly
             if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
-              console.log("🐛 DEBUG - start_date already in correct format:", dateStr);
+              console.log(
+                "🐛 DEBUG - start_date already in correct format:",
+                dateStr,
+              );
               return dateStr;
             }
 
@@ -529,7 +532,10 @@ export default function VCEdit() {
 
             // If it's already a YYYY-MM-DD string, use it directly
             if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
-              console.log("🐛 DEBUG - targeted_end_date already in correct format:", dateStr);
+              console.log(
+                "🐛 DEBUG - targeted_end_date already in correct format:",
+                dateStr,
+              );
               return dateStr;
             }
 
