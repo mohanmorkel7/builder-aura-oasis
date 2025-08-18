@@ -905,7 +905,10 @@ export default function CreateVC() {
       console.log("🐛 DEBUG - setVcData called with country:", newData.country);
       // Check state after React's next render
       setTimeout(() => {
-        console.log("🐛 DEBUG - vcData.country after state update:", vcData.country);
+        console.log(
+          "🐛 DEBUG - vcData.country after state update:",
+          vcData.country,
+        );
       }, 0);
     }
 
