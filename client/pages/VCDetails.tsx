@@ -175,7 +175,11 @@ export default function VCDetails() {
     amount: number | string,
     currency: string = "INR",
   ) => {
-    console.log("🐛 DEBUG - formatLargeAmount called with:", { amount, currency, type: typeof amount });
+    console.log("🐛 DEBUG - formatLargeAmount called with:", {
+      amount,
+      currency,
+      type: typeof amount,
+    });
 
     // Handle null, undefined, empty string
     if (!amount && amount !== 0) {
