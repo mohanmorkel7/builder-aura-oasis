@@ -103,6 +103,7 @@ import FinOpsDashboard from "@/pages/FinOpsDashboard";
 import FinOpsAutomation from "@/pages/FinOpsAutomation";
 import UserProfile from "@/pages/UserProfile";
 import DepartmentManager from "@/pages/DepartmentManager";
+import DepartmentUploadTestPage from "@/pages/DepartmentUploadTestPage";
 import NotFound from "@/pages/NotFound";
 import { OfflineIndicator } from "@/components/OfflineIndicator";
 
