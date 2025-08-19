@@ -488,13 +488,16 @@ export default function UserEdit() {
             <CardContent className="space-y-6">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="role">User Role</Label>
+                  <Label htmlFor="role">
+                    User Role
+                    <span className="text-xs text-blue-600 ml-2">(Auto-assigned)</span>
+                  </Label>
                   <Select
                     value={user.role}
                     onValueChange={(value) => updateField("role", value)}
                     disabled={true}
                   >
-                    <SelectTrigger className="bg-gray-50">
+                    <SelectTrigger className="bg-blue-50 border-blue-200">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
