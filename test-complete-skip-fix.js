@@ -3,42 +3,42 @@
  */
 
 const testData = {
-  "departments": {
-    "test_skip": {
-      "name": "Test Skip Department",
-      "permissions": ["test"],
-      "users": []
-    }
+  departments: {
+    test_skip: {
+      name: "Test Skip Department",
+      permissions: ["test"],
+      users: [],
+    },
   },
-  "users": [
+  users: [
     {
-      "email": "Maanas.m@mylapay.com", // This should exist in database
-      "displayName": "Maanas M - UPDATED NAME", // This should NOT update the database
-      "givenName": "Maanas",
-      "surname": "M",
-      "jobTitle": "UPDATED TITLE - SHOULD NOT APPEAR IN DB", 
-      "department": "test_skip", // This should NOT update the database
-      "ssoId": "test-skip-sso-1"
+      email: "Maanas.m@mylapay.com", // This should exist in database
+      displayName: "Maanas M - UPDATED NAME", // This should NOT update the database
+      givenName: "Maanas",
+      surname: "M",
+      jobTitle: "UPDATED TITLE - SHOULD NOT APPEAR IN DB",
+      department: "test_skip", // This should NOT update the database
+      ssoId: "test-skip-sso-1",
     },
     {
-      "email": "Prakash.R@mylapay.com", // This should exist in database  
-      "displayName": "Prakash R - UPDATED NAME", // This should NOT update the database
-      "givenName": "Prakash",
-      "surname": "R", 
-      "jobTitle": "UPDATED TITLE - SHOULD NOT APPEAR IN DB",
-      "department": "test_skip", // This should NOT update the database
-      "ssoId": "test-skip-sso-2"
+      email: "Prakash.R@mylapay.com", // This should exist in database
+      displayName: "Prakash R - UPDATED NAME", // This should NOT update the database
+      givenName: "Prakash",
+      surname: "R",
+      jobTitle: "UPDATED TITLE - SHOULD NOT APPEAR IN DB",
+      department: "test_skip", // This should NOT update the database
+      ssoId: "test-skip-sso-2",
     },
     {
-      "email": "new-test-user@mylapay.com", // This should be new
-      "displayName": "New Test User",
-      "givenName": "New",
-      "surname": "User",
-      "jobTitle": "New User Job Title",
-      "department": "test_skip",
-      "ssoId": "test-skip-sso-3"
-    }
-  ]
+      email: "new-test-user@mylapay.com", // This should be new
+      displayName: "New Test User",
+      givenName: "New",
+      surname: "User",
+      jobTitle: "New User Job Title",
+      department: "test_skip",
+      ssoId: "test-skip-sso-3",
+    },
+  ],
 };
 
 console.log(`

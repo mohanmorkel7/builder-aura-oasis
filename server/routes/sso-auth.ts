@@ -269,7 +269,9 @@ router.post(
       );
 
       // Reload the data with option to skip existing users
-      await DepartmentService.loadUserDepartmentsFromJSON({ skipExistingUsers: true });
+      await DepartmentService.loadUserDepartmentsFromJSON({
+        skipExistingUsers: true,
+      });
 
       const totalSkipped = skippedUsers.length + alreadyInJsonUsers.length;
 
@@ -283,9 +285,7 @@ router.post(
       );
       console.log(`   • Total skipped: ${totalSkipped}`);
       console.log(`   • Final user count in JSON: ${finalUsers.length}`);
-      console.log(
-        `   • Database sync will also skip existing users: YES`,
-      );
+      console.log(`   • Database sync will also skip existing users: YES`);
 
       res.json({
         success: true,

@@ -263,7 +263,9 @@ export class DepartmentService {
   }
 
   // Load user departments from JSON (for initial setup)
-  static async loadUserDepartmentsFromJSON(options: { skipExistingUsers?: boolean } = {}): Promise<void> {
+  static async loadUserDepartmentsFromJSON(
+    options: { skipExistingUsers?: boolean } = {},
+  ): Promise<void> {
     try {
       console.log("Loading user departments from JSON...");
 
@@ -280,7 +282,9 @@ export class DepartmentService {
             );
 
             if (existingUser.rows.length > 0) {
-              console.log(`⏭️  Skipping database update for existing user: ${user.email}`);
+              console.log(
+                `⏭️  Skipping database update for existing user: ${user.email}`,
+              );
               skippedCount++;
               continue;
             }
@@ -301,7 +305,9 @@ export class DepartmentService {
       }
 
       if (options.skipExistingUsers) {
-        console.log(`Loaded ${processedCount} new users from JSON, skipped ${skippedCount} existing users`);
+        console.log(
+          `Loaded ${processedCount} new users from JSON, skipped ${skippedCount} existing users`,
+        );
       } else {
         console.log(`Loaded ${userDepartments.users.length} users from JSON`);
       }
