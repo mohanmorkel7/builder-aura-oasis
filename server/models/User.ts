@@ -168,14 +168,14 @@ export class UserRepository {
     let paramIndex = 1;
 
     // Date fields that should be converted from empty string to null
-    const dateFields = ['start_date'];
+    const dateFields = ["start_date"];
 
     for (const [key, value] of Object.entries(userData)) {
       if (value !== undefined) {
         setClause.push(`${key} = $${paramIndex}`);
 
         // Convert empty strings to null for date fields
-        if (dateFields.includes(key) && value === '') {
+        if (dateFields.includes(key) && value === "") {
           values.push(null);
         } else {
           values.push(value);
