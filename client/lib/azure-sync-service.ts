@@ -5,6 +5,33 @@ import { msalConfig, syncRequest, graphConfig } from "./msal-config";
 let msalInstance: PublicClientApplication | null = null;
 let msalInitialized = false;
 
+// Utility to detect if popups are blocked
+const isPopupBlocked = (): boolean => {
+  try {
+    const popup = window.open('', '_blank', 'width=1,height=1');
+    if (!popup || popup.closed || typeof popup.closed === 'undefined') {
+      return true;
+    }
+    popup.close();
+    return false;
+  } catch (e) {
+    return true;
+  }
+};
+
+// Utility to show popup blocker warning
+const showPopupBlockerWarning = () => {
+  const message = `Popup windows are blocked in your browser. This is required for Azure AD authentication.
+
+Please:
+1. Allow popups for this site in your browser settings
+2. Or try using redirect-based authentication (less secure but works with popup blockers)
+
+Would you like to try redirect-based authentication instead?`;
+
+  return confirm(message);
+};
+
 export const initializeMsal = async (): Promise<PublicClientApplication> => {
   if (!msalInstance) {
     msalInstance = new PublicClientApplication(msalConfig);
