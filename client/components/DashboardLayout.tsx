@@ -295,9 +295,13 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     return <Navigate to="/login" replace />;
   }
 
-  const allowedNavItems = navigationItems.filter((item) =>
-    item.roles.includes(user.role),
-  );
+  const allowedNavItems = navigationItems.filter((item) => {
+    // Check permissions first, fall back to roles for backward compatibility
+    if (item.permissions) {
+      return hasAnyPermission(item.permissions);
+    }
+    return item.roles.includes(user.role);
+  });
 
   const [notifications, setNotifications] = React.useState<Notification[]>([]);
   const [notificationsEnabled, setNotificationsEnabled] = React.useState(true);
