@@ -127,13 +127,42 @@ export default function AzureUserRoleAssignment() {
       setError(null);
 
       const response = await fetch("/api/azure-sync/unknown-users");
-      const result = await response.json();
 
-      if (response.ok) {
-        setUnknownUsers(result.users);
+      // Check if response is ok before trying to read JSON
+      if (!response.ok) {
+        // Try to read error text, but handle if body is already read
+        let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+        try {
+          const errorText = await response.text();
+          if (errorText) {
+            try {
+              const errorJson = JSON.parse(errorText);
+              errorMessage = errorJson.message || errorJson.error || errorMessage;
+            } catch {
+              errorMessage = errorText;
+            }
+          }
+        } catch (readError) {
+          console.warn("Could not read error response:", readError);
+        }
+        throw new Error(errorMessage);
+      }
+
+      // Read JSON response
+      let result;
+      try {
+        result = await response.json();
+      } catch (jsonError) {
+        console.error("Invalid JSON response:", jsonError);
+        throw new Error("Invalid response from server");
+      }
+
+      if (result.success !== false) {
+        const users = result.users || [];
+        setUnknownUsers(users);
         // Initialize role assignments
         setRoleAssignments(
-          result.users.map((user: UnknownUser) => ({
+          users.map((user: UnknownUser) => ({
             userId: user.id,
             role: "", // Default to empty, user must select
           })),
@@ -143,9 +172,15 @@ export default function AzureUserRoleAssignment() {
       }
     } catch (error) {
       console.error("Error fetching unknown users:", error);
-      setError(
-        error instanceof Error ? error.message : "Failed to fetch users",
-      );
+
+      // Handle specific error types
+      if (error instanceof TypeError && error.message.includes("body stream already read")) {
+        setError("Server communication error. Please refresh the page and try again.");
+      } else if (error.message.includes("ECONNREFUSED") || error.message.includes("connect")) {
+        setError("Database is not available. Please ensure the database is running.");
+      } else {
+        setError(error instanceof Error ? error.message : "Failed to fetch users");
+      }
     } finally {
       setLoading(false);
     }
