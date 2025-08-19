@@ -529,8 +529,9 @@ export default function UserEdit() {
                       <SelectItem value="switch_team">Switch Team</SelectItem>
                     </SelectContent>
                   </Select>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <p className="text-sm text-blue-600 mt-1">
                     Role is automatically assigned based on department selection
+                    {roleAutoUpdated && " • Just updated!"}
                   </p>
                 </div>
                 <div>
