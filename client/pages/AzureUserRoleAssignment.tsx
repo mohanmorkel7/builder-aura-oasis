@@ -550,10 +550,10 @@ export default function AzureUserRoleAssignment() {
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Users className="w-5 h-5" />
-            <span>Unknown Users ({filteredUsers.length})</span>
+            <span>Azure AD Users ({filteredUsers.length})</span>
           </CardTitle>
           <CardDescription>
-            These users were imported from Azure AD and need role assignment
+            Azure AD users needing role or department assignment
           </CardDescription>
         </CardHeader>
         <CardContent>
