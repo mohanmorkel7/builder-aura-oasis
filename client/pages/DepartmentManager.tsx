@@ -93,11 +93,13 @@ export default function DepartmentManager() {
       );
 
       if (response.success) {
+        const data = response.data;
         setUploadStatus({
           type: "success",
-          message: `Successfully uploaded ${parsedData.users.length} users across ${Object.keys(parsedData.departments).length} departments.`,
+          message: response.message || `Successfully processed ${parsedData.users.length} users. Added ${data?.newUserCount || 0} new users, skipped ${data?.skippedUserCount || 0} existing users.`,
         });
-        setCurrentData(parsedData);
+        // Reload current data to show updated state
+        await loadCurrentData();
       } else {
         throw new Error(response.error || "Upload failed");
       }
