@@ -36,11 +36,13 @@ interface NavigationItem {
   name: string;
   href?: string;
   icon: React.ComponentType<{ className?: string }>;
-  roles: UserRole[];
+  roles: UserRole[]; // Keep for backward compatibility
+  permissions?: Permission[]; // New permission-based access
   submenu?: {
     name: string;
     href: string;
     roles: UserRole[];
+    permissions?: Permission[];
   }[];
 }
 
