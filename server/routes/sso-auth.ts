@@ -284,7 +284,7 @@ router.post(
       console.log(`   • Total skipped: ${totalSkipped}`);
       console.log(`   • Final user count in JSON: ${finalUsers.length}`);
       console.log(
-        `   • Database users were completely ignored: ${skippedUsers.length > 0 ? "YES" : "NO"}`,
+        `   • Database sync will also skip existing users: YES`,
       );
 
       res.json({
