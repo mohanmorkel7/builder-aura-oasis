@@ -387,4 +387,37 @@ router.post("/admin/fix-user-roles", async (req: Request, res: Response) => {
   }
 });
 
+// Debug endpoint to check existing users in database (for testing department upload)
+router.get("/admin/check-existing-users", async (req: Request, res: Response) => {
+  try {
+    // Check if database is available
+    try {
+      await pool.query("SELECT 1");
+    } catch (dbError) {
+      return res.status(503).json({
+        success: false,
+        error: "Database not available",
+        message: "Cannot check users - database connection failed",
+      });
+    }
+
+    // Get all users from database
+    const result = await pool.query("SELECT id, first_name, last_name, email, role, department, sso_provider, created_at FROM users ORDER BY created_at DESC");
+
+    res.json({
+      success: true,
+      users: result.rows,
+      count: result.rows.length,
+      message: `Found ${result.rows.length} users in database`,
+    });
+  } catch (error) {
+    console.error("Error checking existing users:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to check existing users",
+      message: error.message,
+    });
+  }
+});
+
 export default router;
