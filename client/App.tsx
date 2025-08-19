@@ -341,6 +341,17 @@ function AppRoutes() {
       />
 
       <Route
+        path="/admin/azure-domain-fix"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <DashboardLayout>
+              <AzureDomainFixPage />
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
         path="/admin/users/add"
         element={
           <ProtectedRoute allowedRoles={["admin"]}>
