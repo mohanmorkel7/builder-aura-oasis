@@ -458,6 +458,13 @@ export default function UserEdit() {
                       <SelectItem value="admin">Administrator</SelectItem>
                       <SelectItem value="sales">Sales Team</SelectItem>
                       <SelectItem value="product">Product Team</SelectItem>
+                      <SelectItem value="development">Development Team</SelectItem>
+                      <SelectItem value="db">Database Administrator</SelectItem>
+                      <SelectItem value="finops">FinOps Team</SelectItem>
+                      <SelectItem value="finance">Finance Team</SelectItem>
+                      <SelectItem value="hr_management">HR Management</SelectItem>
+                      <SelectItem value="infra">Infrastructure Team</SelectItem>
+                      <SelectItem value="switch_team">Switch Team</SelectItem>
                     </SelectContent>
                   </Select>
                   <p className="text-sm text-gray-600 mt-1">
