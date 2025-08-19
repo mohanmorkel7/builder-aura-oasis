@@ -126,6 +126,14 @@ export class DepartmentService {
         return null;
       }
 
+      // Validate required fields and log any issues
+      if (!userMapping.givenName && !userMapping.displayName) {
+        console.warn(`User ${ssoUser.mail} missing givenName and displayName`);
+      }
+      if (!userMapping.surname && !userMapping.displayName) {
+        console.warn(`User ${ssoUser.mail} missing surname and displayName for fallback`);
+      }
+
       // Check if user exists
       const existingUser = await pool.query(
         "SELECT id FROM users WHERE email = $1",
