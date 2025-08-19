@@ -204,6 +204,13 @@ export default function AzureUserRoleAssignment() {
 
       // Check if response is ok before trying to read JSON
       if (!response.ok) {
+        // Handle specific HTTP status codes
+        if (response.status === 503) {
+          // Service unavailable - likely database connection issue
+          setError("Database is not available. Please ensure the database is running and try again.");
+          return;
+        }
+
         // Try to read error text, but handle if body is already read
         let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
         try {
