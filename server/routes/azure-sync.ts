@@ -380,4 +380,80 @@ router.post("/assign-roles", async (req: Request, res: Response) => {
   }
 });
 
+// Assign departments to users
+router.post("/assign-departments", async (req: Request, res: Response) => {
+  try {
+    // Check if database is available
+    try {
+      await pool.query("SELECT 1");
+    } catch (dbError) {
+      console.warn(
+        "Database not available for department assignment:",
+        dbError.message,
+      );
+      return res.status(503).json({
+        success: false,
+        error: "Database not available",
+        message: "Cannot assign departments - database connection failed",
+      });
+    }
+
+    const { userDepartments } = req.body; // Array of { userId, department }
+
+    if (!Array.isArray(userDepartments)) {
+      return res.status(400).json({
+        success: false,
+        error: "userDepartments must be an array",
+      });
+    }
+
+    const validDepartments = [
+      "admin",
+      "administration",
+      "sales",
+      "product",
+      "development",
+      "finops",
+      "finance",
+      "hr",
+      "infrastructure",
+      "support",
+      "marketing",
+    ];
+
+    const updatedUsers = [];
+
+    for (const { userId, department } of userDepartments) {
+      if (!validDepartments.includes(department)) {
+        continue; // Skip invalid departments
+      }
+
+      const updateQuery = `
+        UPDATE users
+        SET department = $1, updated_at = CURRENT_TIMESTAMP
+        WHERE id = $2 AND sso_provider = 'microsoft'
+        RETURNING id, first_name, last_name, email, department, role
+      `;
+
+      const result = await pool.query(updateQuery, [department, userId]);
+      if (result.rows.length > 0) {
+        updatedUsers.push(result.rows[0]);
+      }
+    }
+
+    res.json({
+      success: true,
+      message: `Updated departments for ${updatedUsers.length} users`,
+      updatedUsers,
+    });
+  } catch (error) {
+    console.error("Error assigning departments:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to assign departments",
+      message: error.message,
+    });
+  }
+});
+
 export default router;
