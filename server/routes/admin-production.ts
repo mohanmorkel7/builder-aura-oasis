@@ -102,6 +102,7 @@ router.post("/users", async (req: Request, res: Response) => {
       "hr_management",
       "infra",
       "switch_team",
+      "unknown",
     ];
     if (!validRoles.includes(userData.role)) {
       return res.status(400).json({
@@ -162,6 +163,7 @@ router.put("/users/:id", async (req: Request, res: Response) => {
       "hr_management",
       "infra",
       "switch_team",
+      "unknown",
     ];
     if (userData.role && !validRoles.includes(userData.role)) {
       return res.status(400).json({
