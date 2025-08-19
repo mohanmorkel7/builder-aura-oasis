@@ -353,6 +353,17 @@ function AppRoutes() {
       />
 
       <Route
+        path="/admin/azure-import-demo"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <DashboardLayout>
+              <AzureImportDemoPage />
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
         path="/admin/users/add"
         element={
           <ProtectedRoute allowedRoles={["admin"]}>
