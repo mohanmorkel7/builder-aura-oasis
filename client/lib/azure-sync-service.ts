@@ -3,19 +3,43 @@ import { msalConfig, syncRequest, graphConfig } from "./msal-config";
 
 // Initialize MSAL instance
 let msalInstance: PublicClientApplication | null = null;
+let msalInitialized = false;
 
-export const initializeMsal = () => {
+export const initializeMsal = async (): Promise<PublicClientApplication> => {
   if (!msalInstance) {
     msalInstance = new PublicClientApplication(msalConfig);
   }
+
+  if (!msalInitialized) {
+    await msalInstance.initialize();
+    msalInitialized = true;
+  }
+
   return msalInstance;
 };
 
 export class AzureSyncService {
-  private msal: PublicClientApplication;
+  private msal: PublicClientApplication | null = null;
+  private initPromise: Promise<void> | null = null;
 
   constructor() {
-    this.msal = initializeMsal();
+    // Don't initialize in constructor, do it lazily
+  }
+
+  private async ensureInitialized(): Promise<void> {
+    if (!this.initPromise) {
+      this.initPromise = this.initializeMsal();
+    }
+    await this.initPromise;
+  }
+
+  private async initializeMsal(): Promise<void> {
+    try {
+      this.msal = await initializeMsal();
+    } catch (error) {
+      console.error("Failed to initialize MSAL:", error);
+      throw new Error(`MSAL initialization failed: ${error.message}`);
+    }
   }
 
   /**
