@@ -305,6 +305,17 @@ function AppRoutes() {
       />
 
       <Route
+        path="/admin/auth-debug"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <DashboardLayout>
+              <AuthDebugPage />
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
         path="/admin/users/add"
         element={
           <ProtectedRoute allowedRoles={["admin"]}>
