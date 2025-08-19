@@ -310,65 +310,75 @@ export default function AzureUserRoleAssignment() {
       setError(null);
       setSuccess(null);
 
-      // Filter out assignments without roles
-      const validAssignments = roleAssignments.filter(
-        (assignment) => assignment.role && assignment.role !== "",
+      // Filter out assignments without roles (only for users with unknown role)
+      const validRoleAssignments = roleAssignments.filter(
+        (assignment) => {
+          const user = unknownUsers.find(u => u.id === assignment.userId);
+          return user?.role === "unknown" && assignment.role && assignment.role !== "";
+        }
       );
 
-      if (validAssignments.length === 0) {
-        setError("Please assign at least one role before saving");
+      // Filter out assignments without departments (for users with null department)
+      const validDepartmentAssignments = departmentAssignments.filter(
+        (assignment) => {
+          const user = unknownUsers.find(u => u.id === assignment.userId);
+          return !user?.department && assignment.department && assignment.department !== "";
+        }
+      );
+
+      if (validRoleAssignments.length === 0 && validDepartmentAssignments.length === 0) {
+        setError("Please assign at least one role or department before saving");
         return;
       }
 
-      const response = await fetch("/api/azure-sync/assign-roles", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ userRoles: validAssignments }),
-      });
+      let roleResult = null;
+      let departmentResult = null;
 
-      // Check if response is ok before trying to read JSON
-      if (!response.ok) {
-        let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
-        try {
-          const errorText = await response.text();
-          if (errorText) {
-            try {
-              const errorJson = JSON.parse(errorText);
-              errorMessage =
-                errorJson.message || errorJson.error || errorMessage;
-            } catch {
-              errorMessage = errorText;
-            }
-          }
-        } catch (readError) {
-          console.warn("Could not read error response:", readError);
+      // Assign roles if any
+      if (validRoleAssignments.length > 0) {
+        const roleResponse = await fetch("/api/azure-sync/assign-roles", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userRoles: validRoleAssignments }),
+        });
+
+        if (!roleResponse.ok) {
+          throw new Error(`Role assignment failed: ${roleResponse.statusText}`);
         }
-        throw new Error(errorMessage);
+        roleResult = await roleResponse.json();
       }
 
-      let result;
-      try {
-        result = await response.json();
-      } catch (jsonError) {
-        console.error("Invalid JSON response:", jsonError);
-        throw new Error("Invalid response from server");
+      // Assign departments if any
+      if (validDepartmentAssignments.length > 0) {
+        const departmentResponse = await fetch("/api/azure-sync/assign-departments", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userDepartments: validDepartmentAssignments }),
+        });
+
+        if (!departmentResponse.ok) {
+          throw new Error(`Department assignment failed: ${departmentResponse.statusText}`);
+        }
+        departmentResult = await departmentResponse.json();
       }
 
-      if (result.success !== false) {
-        setSuccess(
-          `Successfully assigned roles to ${result.updatedUsers?.length || 0} users`,
-        );
-        // Refresh the list
-        await fetchUnknownUsers();
-      } else {
-        throw new Error(result.message || "Failed to assign roles");
-      }
+      const roleCount = roleResult?.updatedUsers?.length || 0;
+      const departmentCount = departmentResult?.updatedUsers?.length || 0;
+
+      setSuccess(
+        `Successfully updated ${roleCount} user roles and ${departmentCount} user departments`,
+      );
+
+      // Refresh the list
+      await fetchUnknownUsers();
     } catch (error) {
-      console.error("Error assigning roles:", error);
+      console.error("Error assigning roles/departments:", error);
       setError(
-        error instanceof Error ? error.message : "Failed to assign roles",
+        error instanceof Error ? error.message : "Failed to assign roles/departments",
       );
     } finally {
       setSaving(false);
