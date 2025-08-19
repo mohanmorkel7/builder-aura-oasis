@@ -7,7 +7,12 @@
     },
     "finance": {
       "name": "Finance",
-      "permissions": ["finops", "reports", "billing"],
+      "permissions": ["finance", "reports", "billing"],
+      "users": []
+    },
+    "finops": {
+      "name": "Financial Operations",
+      "permissions": ["finops", "reports", "cost_optimization"],
       "users": []
     },
     "database": {
