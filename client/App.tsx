@@ -317,6 +317,17 @@ function AppRoutes() {
       />
 
       <Route
+        path="/admin/sso-troubleshoot"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <DashboardLayout>
+              <SSOTroubleshootPage />
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
         path="/admin/users/add"
         element={
           <ProtectedRoute allowedRoles={["admin"]}>
