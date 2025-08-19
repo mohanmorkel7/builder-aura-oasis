@@ -173,6 +173,7 @@ router.post(
           existingUsersResult.rows.map((row) => row.email.toLowerCase()),
         );
         console.log(`Found ${existingEmails.size} existing users in database`);
+        console.log('Existing emails:', Array.from(existingEmails).slice(0, 10)); // Show first 10 for debugging
       } catch (dbError) {
         console.warn(
           "Database not available, skipping duplicate check:",
