@@ -237,7 +237,7 @@ export default function DepartmentManager() {
               <span>Upload Department Data</span>
             </CardTitle>
             <CardDescription>
-              Upload a JSON file containing user department assignments
+              Upload a JSON file containing user department assignments. Users without a "department" field will be marked as "unknown" for manual role assignment.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
