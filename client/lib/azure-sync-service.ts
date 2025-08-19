@@ -301,9 +301,9 @@ export class AzureSyncService {
   /**
    * Test Graph API connection
    */
-  async testGraphConnection(): Promise<any> {
+  async testGraphConnection(useRedirect: boolean = false): Promise<any> {
     try {
-      const accessToken = await this.getAccessToken();
+      const accessToken = await this.getAccessToken(useRedirect);
 
       const response = await fetch(graphConfig.graphUsersEndpoint + "?$top=1", {
         headers: {
