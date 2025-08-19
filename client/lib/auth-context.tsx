@@ -357,6 +357,8 @@ export const AuthProvider = React.memo(function AuthProvider({
           const profile: MicrosoftProfile = await graphResponse.json();
 
           // Use our SSO endpoint to get user data with proper department mapping
+          console.log('🔍 Using department mapping for SSO login:', profile.mail || profile.userPrincipalName);
+
           const ssoResponse = await fetch('/api/sso/login', {
             method: 'POST',
             headers: {
@@ -378,6 +380,8 @@ export const AuthProvider = React.memo(function AuthProvider({
           if (ssoResponse.ok) {
             const ssoResult = await ssoResponse.json();
             if (ssoResult.success) {
+              console.log('✅ SSO department mapping successful:', ssoResult.user);
+
               // Use data from our department mapping
               const userData: User = {
                 id: ssoResult.user.id.toString(),
@@ -391,6 +395,7 @@ export const AuthProvider = React.memo(function AuthProvider({
                 ssoId: ssoResult.user.ssoId,
               };
 
+              console.log('🎯 Setting user data with role:', userData.role);
               setUser(userData);
               localStorage.setItem("banani_user", JSON.stringify(userData));
               localStorage.setItem(
@@ -399,7 +404,11 @@ export const AuthProvider = React.memo(function AuthProvider({
               );
               setIsLoading(false);
               return true;
+            } else {
+              console.warn('⚠️ SSO department mapping failed:', ssoResult.error);
             }
+          } else {
+            console.warn('⚠️ SSO endpoint failed with status:', ssoResponse.status);
           }
 
           // Fallback to Azure AD groups if SSO endpoint fails
