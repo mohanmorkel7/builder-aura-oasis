@@ -19,6 +19,19 @@ export interface UserDepartmentInfo {
 }
 
 export class DepartmentService {
+  // Map departments to appropriate user roles
+  private static getDepartmentRole(department: string): string {
+    const departmentRoleMap: { [key: string]: string } = {
+      hr: "hr_management",
+      finance: "finops",
+      database: "db",
+      frontend: "development",
+      backend: "development",
+      infra: "infra",
+    };
+
+    return departmentRoleMap[department] || "development";
+  }
   // Get user's department and permissions by email
   static async getUserDepartmentByEmail(
     email: string,
