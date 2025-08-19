@@ -263,11 +263,32 @@ export class DepartmentService {
   }
 
   // Load user departments from JSON (for initial setup)
-  static async loadUserDepartmentsFromJSON(): Promise<void> {
+  static async loadUserDepartmentsFromJSON(options: { skipExistingUsers?: boolean } = {}): Promise<void> {
     try {
       console.log("Loading user departments from JSON...");
 
+      let processedCount = 0;
+      let skippedCount = 0;
+
       for (const user of userDepartments.users) {
+        // If skipExistingUsers is true, check if user exists in database first
+        if (options.skipExistingUsers) {
+          try {
+            const existingUser = await pool.query(
+              "SELECT id FROM users WHERE email = $1",
+              [user.email],
+            );
+
+            if (existingUser.rows.length > 0) {
+              console.log(`⏭️  Skipping database update for existing user: ${user.email}`);
+              skippedCount++;
+              continue;
+            }
+          } catch (error) {
+            console.warn(`Error checking if user exists: ${user.email}`, error);
+          }
+        }
+
         await this.createOrUpdateSSOUser({
           mail: user.email,
           displayName: user.displayName,
@@ -276,9 +297,14 @@ export class DepartmentService {
           jobTitle: user.jobTitle,
           id: user.ssoId,
         });
+        processedCount++;
       }
 
-      console.log(`Loaded ${userDepartments.users.length} users from JSON`);
+      if (options.skipExistingUsers) {
+        console.log(`Loaded ${processedCount} new users from JSON, skipped ${skippedCount} existing users`);
+      } else {
+        console.log(`Loaded ${userDepartments.users.length} users from JSON`);
+      }
     } catch (error) {
       console.error("Error loading users from JSON:", error);
     }
