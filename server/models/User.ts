@@ -39,7 +39,7 @@ export interface UpdateUserData {
   email?: string;
   phone?: string;
   password_hash?: string;
-  role?: "admin" | "sales" | "product";
+  role?: "admin" | "sales" | "product" | "development" | "db" | "finops" | "finance" | "hr_management" | "infra" | "switch_team";
   department?: string;
   manager_id?: number;
   status?: "active" | "inactive" | "pending";
