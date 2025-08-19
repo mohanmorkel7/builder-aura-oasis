@@ -7,7 +7,17 @@ export interface User {
   last_name: string;
   email: string;
   phone?: string;
-  role: "admin" | "sales" | "product" | "development" | "db" | "finops" | "finance" | "hr_management" | "infra" | "switch_team";
+  role:
+    | "admin"
+    | "sales"
+    | "product"
+    | "development"
+    | "db"
+    | "finops"
+    | "finance"
+    | "hr_management"
+    | "infra"
+    | "switch_team";
   department?: string;
   manager_id?: number;
   status: "active" | "inactive" | "pending";
@@ -25,7 +35,17 @@ export interface CreateUserData {
   email: string;
   phone?: string;
   password: string;
-  role: "admin" | "sales" | "product" | "development" | "db" | "finops" | "finance" | "hr_management" | "infra" | "switch_team";
+  role:
+    | "admin"
+    | "sales"
+    | "product"
+    | "development"
+    | "db"
+    | "finops"
+    | "finance"
+    | "hr_management"
+    | "infra"
+    | "switch_team";
   department?: string;
   manager_id?: number;
   start_date?: string;
@@ -39,7 +59,17 @@ export interface UpdateUserData {
   email?: string;
   phone?: string;
   password_hash?: string;
-  role?: "admin" | "sales" | "product" | "development" | "db" | "finops" | "finance" | "hr_management" | "infra" | "switch_team";
+  role?:
+    | "admin"
+    | "sales"
+    | "product"
+    | "development"
+    | "db"
+    | "finops"
+    | "finance"
+    | "hr_management"
+    | "infra"
+    | "switch_team";
   department?: string;
   manager_id?: number;
   status?: "active" | "inactive" | "pending";

@@ -77,7 +77,9 @@ export default function UserEdit() {
   React.useEffect(() => {
     if (originalUser) {
       const department = originalUser.department || "";
-      const role = department ? getDepartmentRole(department) : (originalUser.role || "sales");
+      const role = department
+        ? getDepartmentRole(department)
+        : originalUser.role || "sales";
 
       setUser({
         first_name: originalUser.first_name || "",
@@ -450,7 +452,11 @@ export default function UserEdit() {
                     </SelectContent>
                   </Select>
                   <p className="text-sm text-gray-600 mt-1">
-                    User's organizational department (automatically sets role: {user.department ? getDepartmentRole(user.department) : 'Select department'})
+                    User's organizational department (automatically sets role:{" "}
+                    {user.department
+                      ? getDepartmentRole(user.department)
+                      : "Select department"}
+                    )
                   </p>
                 </div>
                 <div>
@@ -497,7 +503,9 @@ export default function UserEdit() {
                 <div>
                   <Label htmlFor="role">
                     User Role
-                    <span className="text-xs text-blue-600 ml-2">(Auto-assigned)</span>
+                    <span className="text-xs text-blue-600 ml-2">
+                      (Auto-assigned)
+                    </span>
                     {roleAutoUpdated && (
                       <span className="text-xs text-green-600 ml-2 animate-pulse">
                         ✓ Updated
@@ -558,7 +566,8 @@ export default function UserEdit() {
               <Alert>
                 <Info className="h-4 w-4" />
                 <AlertDescription>
-                  <strong>Department-Based Role:</strong> User roles are automatically assigned based on their department.
+                  <strong>Department-Based Role:</strong> User roles are
+                  automatically assigned based on their department.
                   {user.role === "admin" &&
                     " Admin users have full system access."}
                   {user.role === "sales" &&
@@ -579,10 +588,10 @@ export default function UserEdit() {
                     " Infrastructure users can manage servers, deployments, and system infrastructure."}
                   {user.role === "switch_team" &&
                     " Switch team members have specialized access for team transitions."}
-                  {user.department && ` Current mapping: ${user.department.charAt(0).toUpperCase() + user.department.slice(1)} → ${user.role}`}
+                  {user.department &&
+                    ` Current mapping: ${user.department.charAt(0).toUpperCase() + user.department.slice(1)} → ${user.role}`}
                 </AlertDescription>
               </Alert>
-
             </CardContent>
           </Card>
         </TabsContent>

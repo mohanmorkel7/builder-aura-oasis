@@ -92,17 +92,23 @@ router.post("/users", async (req: Request, res: Response) => {
 
     // Validate role
     const validRoles = [
-      "admin", "sales", "product", "development", "db",
-      "finops", "finance", "hr_management", "infra", "switch_team"
+      "admin",
+      "sales",
+      "product",
+      "development",
+      "db",
+      "finops",
+      "finance",
+      "hr_management",
+      "infra",
+      "switch_team",
     ];
     if (!validRoles.includes(userData.role)) {
-      return res
-        .status(400)
-        .json({
-          error: "Invalid role",
-          validRoles: validRoles,
-          receivedRole: userData.role
-        });
+      return res.status(400).json({
+        error: "Invalid role",
+        validRoles: validRoles,
+        receivedRole: userData.role,
+      });
     }
 
     // Check if email already exists
@@ -146,14 +152,22 @@ router.put("/users/:id", async (req: Request, res: Response) => {
 
     // Validate role if provided
     const validRoles = [
-      "admin", "sales", "product", "development", "db",
-      "finops", "finance", "hr_management", "infra", "switch_team"
+      "admin",
+      "sales",
+      "product",
+      "development",
+      "db",
+      "finops",
+      "finance",
+      "hr_management",
+      "infra",
+      "switch_team",
     ];
     if (userData.role && !validRoles.includes(userData.role)) {
       return res.status(400).json({
         error: "Invalid role",
         validRoles: validRoles,
-        receivedRole: userData.role
+        receivedRole: userData.role,
       });
     }
 
