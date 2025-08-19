@@ -203,22 +203,27 @@ export default function AzureUserRoleAssignment() {
 
       let response;
       try {
+        // Create an abort controller for timeout handling
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
         response = await fetch("/api/azure-sync/unknown-users", {
           method: 'GET',
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
           },
-          // Add timeout to prevent hanging requests
-          signal: AbortSignal.timeout(10000), // 10 second timeout
+          signal: controller.signal,
         });
+
+        clearTimeout(timeoutId);
       } catch (fetchError) {
         console.error("Network fetch error:", fetchError);
 
         if (fetchError.name === 'AbortError') {
-          throw new Error("Request timeout - server may be unresponsive");
+          throw new Error("Request timeout - server may be unresponsive. Check if the server is running.");
         } else if (fetchError.name === 'TypeError' && fetchError.message.includes('Failed to fetch')) {
-          throw new Error("Network connection failed - server may be down or unreachable");
+          throw new Error("Network connection failed. The server may be down or unreachable. Check your connection.");
         } else {
           throw new Error(`Network error: ${fetchError.message}`);
         }
