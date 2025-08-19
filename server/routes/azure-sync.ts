@@ -264,7 +264,7 @@ router.get("/download/:filename", async (req: Request, res: Response) => {
   }
 });
 
-// Get users with unknown role
+// Get users with unknown role or missing department
 router.get("/unknown-users", async (req: Request, res: Response) => {
   try {
     // Check if database is available
@@ -283,9 +283,9 @@ router.get("/unknown-users", async (req: Request, res: Response) => {
     }
 
     const query = `
-      SELECT id, first_name, last_name, email, department, azure_object_id, created_at
+      SELECT id, first_name, last_name, email, department, azure_object_id, created_at, role, job_title
       FROM users
-      WHERE role = 'unknown' AND sso_provider = 'microsoft'
+      WHERE sso_provider = 'microsoft' AND (role = 'unknown' OR department IS NULL)
       ORDER BY created_at DESC
     `;
 
