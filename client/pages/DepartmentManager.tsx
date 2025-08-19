@@ -52,7 +52,9 @@ export default function DepartmentManager() {
   const [currentData, setCurrentData] = useState<DepartmentData | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -73,17 +75,22 @@ export default function DepartmentManager() {
 
       // Validate JSON structure
       if (!parsedData.departments || !parsedData.users) {
-        throw new Error("Invalid JSON structure. Must contain 'departments' and 'users' properties.");
+        throw new Error(
+          "Invalid JSON structure. Must contain 'departments' and 'users' properties.",
+        );
       }
 
       // Upload to server
-      const response = await apiClient.request("/auth/admin/upload-departments", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await apiClient.request(
+        "/auth/admin/upload-departments",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(parsedData),
         },
-        body: JSON.stringify(parsedData),
-      });
+      );
 
       if (response.success) {
         setUploadStatus({
@@ -170,7 +177,9 @@ export default function DepartmentManager() {
 
   const loadCurrentData = async () => {
     try {
-      const response = await apiClient.request("/auth/admin/current-departments");
+      const response = await apiClient.request(
+        "/auth/admin/current-departments",
+      );
       if (response.success) {
         setCurrentData(response.data);
       }
@@ -219,7 +228,11 @@ export default function DepartmentManager() {
             </div>
 
             {uploadStatus.type && (
-              <Alert variant={uploadStatus.type === "error" ? "destructive" : "default"}>
+              <Alert
+                variant={
+                  uploadStatus.type === "error" ? "destructive" : "default"
+                }
+              >
                 {uploadStatus.type === "success" ? (
                   <CheckCircle className="h-4 w-4" />
                 ) : (
@@ -247,9 +260,12 @@ export default function DepartmentManager() {
                   <code>departments</code>: Object with department codes as keys
                 </li>
                 <li>
-                  <code>users</code>: Array of user objects with email, name, department, etc.
+                  <code>users</code>: Array of user objects with email, name,
+                  department, etc.
                 </li>
-                <li>Each user must have: email, displayName, department, ssoId</li>
+                <li>
+                  Each user must have: email, displayName, department, ssoId
+                </li>
               </ul>
             </div>
           </CardContent>
@@ -262,7 +278,9 @@ export default function DepartmentManager() {
               <FileText className="w-5 h-5" />
               <span>Current Department Data</span>
             </CardTitle>
-            <CardDescription>Preview of currently loaded department assignments</CardDescription>
+            <CardDescription>
+              Preview of currently loaded department assignments
+            </CardDescription>
           </CardHeader>
           <CardContent>
             {currentData ? (
@@ -270,14 +288,19 @@ export default function DepartmentManager() {
                 <div>
                   <h4 className="font-medium flex items-center space-x-2 mb-2">
                     <Building className="w-4 h-4" />
-                    <span>Departments ({Object.keys(currentData.departments).length})</span>
+                    <span>
+                      Departments ({Object.keys(currentData.departments).length}
+                      )
+                    </span>
                   </h4>
                   <div className="flex flex-wrap gap-2">
-                    {Object.entries(currentData.departments).map(([code, dept]) => (
-                      <Badge key={code} variant="outline">
-                        {dept.name} ({dept.permissions.length} permissions)
-                      </Badge>
-                    ))}
+                    {Object.entries(currentData.departments).map(
+                      ([code, dept]) => (
+                        <Badge key={code} variant="outline">
+                          {dept.name} ({dept.permissions.length} permissions)
+                        </Badge>
+                      ),
+                    )}
                   </div>
                 </div>
 
