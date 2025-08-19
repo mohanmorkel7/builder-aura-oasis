@@ -239,6 +239,14 @@ export function createServer() {
     console.error("Error loading Database status router:", error);
   }
 
+  // SSO Authentication router
+  try {
+    app.use("/api/auth", ssoAuthRouter);
+    console.log("SSO Auth router loaded successfully");
+  } catch (error) {
+    console.error("Error loading SSO Auth router:", error);
+  }
+
   // Add a simple notifications route that redirects to workflow notifications
   try {
     app.get("/api/notifications", (req, res) => {
