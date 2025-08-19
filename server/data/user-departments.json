@@ -37,7 +37,18 @@
     },
     "admin": {
       "name": "Administration",
-      "permissions": ["admin", "users", "reports", "settings", "database", "finops", "finance", "product", "leads", "vc"],
+      "permissions": [
+        "admin",
+        "users",
+        "reports",
+        "settings",
+        "database",
+        "finops",
+        "finance",
+        "product",
+        "leads",
+        "vc"
+      ],
       "users": []
     }
   },
