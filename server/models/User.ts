@@ -25,7 +25,7 @@ export interface CreateUserData {
   email: string;
   phone?: string;
   password: string;
-  role: "admin" | "sales" | "product";
+  role: "admin" | "sales" | "product" | "development" | "db" | "finops" | "finance" | "hr_management" | "infra" | "switch_team";
   department?: string;
   manager_id?: number;
   start_date?: string;
