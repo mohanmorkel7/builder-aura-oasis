@@ -207,7 +207,7 @@ export default function AzureUserRoleAssignment() {
         // Handle specific HTTP status codes
         if (response.status === 503) {
           // Service unavailable - likely database connection issue
-          setError("Database is not available. Please ensure the database is running and try again.");
+          setError("Database connection failed. Please start PostgreSQL database or check your database configuration.");
           return;
         }
 
