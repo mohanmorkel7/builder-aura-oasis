@@ -64,7 +64,7 @@ export default function UserManagement() {
   const allUsers = localUsers || [];
 
   // Test Azure connection on component mount
-  React.useEffect(() => {
+  useEffect(() => {
     const testConnection = async () => {
       try {
         // Check if returning from authentication
