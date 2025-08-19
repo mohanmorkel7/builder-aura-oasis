@@ -560,9 +560,40 @@ export default function UserEdit() {
                     " Infrastructure users can manage servers, deployments, and system infrastructure."}
                   {user.role === "switch_team" &&
                     " Switch team members have specialized access for team transitions."}
-                  {user.department && ` Current department: ${user.department.charAt(0).toUpperCase() + user.department.slice(1)} → Role: ${user.role}`}
+                  {user.department && ` Current mapping: ${user.department.charAt(0).toUpperCase() + user.department.slice(1)} → ${user.role}`}
                 </AlertDescription>
               </Alert>
+
+              <Card className="mt-4">
+                <CardHeader>
+                  <CardTitle className="text-sm">Department-Role Mapping</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="flex justify-between">
+                      <span>Human Resources →</span> <span className="font-mono">hr_management</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Finance →</span> <span className="font-mono">finance</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Financial Operations →</span> <span className="font-mono">finops</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Database →</span> <span className="font-mono">db</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Frontend Development →</span> <span className="font-mono">development</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Backend Development →</span> <span className="font-mono">development</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Infrastructure →</span> <span className="font-mono">infra</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </CardContent>
           </Card>
         </TabsContent>
