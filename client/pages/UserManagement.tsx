@@ -96,14 +96,7 @@ export default function UserManagement() {
 
   const handleSyncAzure = async () => {
     try {
-      // Get access token (in real implementation, this would use MSAL)
-      const accessToken = prompt("Please enter your Azure AD access token:");
-      if (!accessToken) {
-        alert("Access token is required for Azure AD sync");
-        return;
-      }
-
-      console.log("Starting Azure AD sync...");
+      console.log("Starting Azure AD sync with MSAL...");
 
       // Show loading state
       const syncButton = document.querySelector(
@@ -111,23 +104,28 @@ export default function UserManagement() {
       ) as HTMLButtonElement;
       if (syncButton) {
         syncButton.disabled = true;
+        syncButton.textContent = "Authenticating...";
+      }
+
+      // Check permissions first
+      const hasPermissions = await azureSyncService.checkPermissions();
+      if (!hasPermissions) {
+        throw new Error("Insufficient permissions. Please ensure your account has User.Read.All and Directory.Read.All permissions.");
+      }
+
+      // Update button text
+      if (syncButton) {
         syncButton.textContent = "Syncing...";
       }
 
-      const response = await fetch("/api/azure-sync/sync", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ accessToken }),
-      });
+      // Perform sync using MSAL service
+      const result = await azureSyncService.syncUsersFromAzure();
 
-      const result = await response.json();
+      if (result.success) {
+        const message = `Azure AD sync completed successfully!\n\nStats:\n- Total users: ${result.stats.total}\n- New users: ${result.stats.inserted}\n- Updated users: ${result.stats.updated}\n- Skipped users: ${result.stats.skipped}\n\nJSON file saved: ${result.jsonFile}`;
 
-      if (response.ok) {
-        alert(
-          `Azure AD sync completed successfully!\n\nStats:\n- Total users: ${result.stats.total}\n- New users: ${result.stats.inserted}\n- Updated users: ${result.stats.updated}\n- Skipped users: ${result.stats.skipped}\n\nJSON file saved: ${result.jsonFile}`,
-        );
+        // Show success message
+        alert(message);
 
         // Refresh user data
         window.location.reload();
@@ -136,7 +134,19 @@ export default function UserManagement() {
       }
     } catch (error) {
       console.error("Azure AD sync error:", error);
-      alert(`Azure AD sync failed: ${error.message}`);
+
+      let errorMessage = "Azure AD sync failed";
+      if (error.message.includes("consent")) {
+        errorMessage = "Admin consent required. Please ask your Azure AD administrator to grant consent for User.Read.All and Directory.Read.All permissions.";
+      } else if (error.message.includes("403") || error.message.includes("Forbidden")) {
+        errorMessage = "Access denied. You don't have sufficient permissions to read Azure AD users.";
+      } else if (error.message.includes("Authentication")) {
+        errorMessage = `Authentication failed: ${error.message}`;
+      } else {
+        errorMessage = `Sync failed: ${error.message}`;
+      }
+
+      alert(errorMessage);
     } finally {
       // Reset button state
       const syncButton = document.querySelector(
