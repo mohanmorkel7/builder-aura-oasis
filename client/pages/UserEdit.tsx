@@ -531,17 +531,39 @@ export default function UserEdit() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="flex items-center justify-between p-4 border rounded-lg">
-                <div>
-                  <h4 className="font-medium">Two-Factor Authentication</h4>
-                  <p className="text-sm text-gray-600">
-                    Add an extra layer of security to this account
-                  </p>
+              <div className="p-4 border rounded-lg space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-medium">Two-Factor Authentication</h4>
+                    <p className="text-sm text-gray-600">
+                      Add an extra layer of security to this account
+                    </p>
+                  </div>
+                  <Switch
+                    checked={user.two_factor_enabled}
+                    onCheckedChange={toggleTwoFactor}
+                  />
                 </div>
-                <Switch
-                  checked={user.two_factor_enabled}
-                  onCheckedChange={toggleTwoFactor}
-                />
+
+                {user.two_factor_enabled && (
+                  <Alert>
+                    <Shield className="h-4 w-4" />
+                    <AlertDescription>
+                      <strong>Two-Factor Authentication Enabled:</strong> This user will need to provide
+                      a second verification factor (SMS, app, or email) when logging in.
+                    </AlertDescription>
+                  </Alert>
+                )}
+
+                {!user.two_factor_enabled && (
+                  <Alert variant="default">
+                    <Info className="h-4 w-4" />
+                    <AlertDescription>
+                      <strong>Enable Two-Factor Authentication:</strong> Recommended for improved account security,
+                      especially for users with administrative privileges.
+                    </AlertDescription>
+                  </Alert>
+                )}
               </div>
 
               <div className="p-4 border rounded-lg space-y-4">
