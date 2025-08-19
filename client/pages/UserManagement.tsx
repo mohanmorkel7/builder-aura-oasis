@@ -92,9 +92,52 @@ export default function UserManagement() {
   };
 
   const handleSyncAzure = async () => {
-    // In real implementation, this would sync with Azure AD
-    console.log("Syncing with Azure AD...");
-    // Show toast notification, refresh data, etc.
+    try {
+      // Get access token (in real implementation, this would use MSAL)
+      const accessToken = prompt("Please enter your Azure AD access token:");
+      if (!accessToken) {
+        alert("Access token is required for Azure AD sync");
+        return;
+      }
+
+      console.log("Starting Azure AD sync...");
+
+      // Show loading state
+      const syncButton = document.querySelector('[data-sync-azure]') as HTMLButtonElement;
+      if (syncButton) {
+        syncButton.disabled = true;
+        syncButton.textContent = "Syncing...";
+      }
+
+      const response = await fetch("/api/azure-sync/sync", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ accessToken }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert(`Azure AD sync completed successfully!\n\nStats:\n- Total users: ${result.stats.total}\n- New users: ${result.stats.inserted}\n- Updated users: ${result.stats.updated}\n- Skipped users: ${result.stats.skipped}\n\nJSON file saved: ${result.jsonFile}`);
+
+        // Refresh user data
+        window.location.reload();
+      } else {
+        throw new Error(result.message || "Azure AD sync failed");
+      }
+    } catch (error) {
+      console.error("Azure AD sync error:", error);
+      alert(`Azure AD sync failed: ${error.message}`);
+    } finally {
+      // Reset button state
+      const syncButton = document.querySelector('[data-sync-azure]') as HTMLButtonElement;
+      if (syncButton) {
+        syncButton.disabled = false;
+        syncButton.textContent = "Sync Azure AD";
+      }
+    }
   };
 
   const handleExportUsers = () => {
