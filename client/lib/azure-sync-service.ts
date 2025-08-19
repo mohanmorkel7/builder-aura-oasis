@@ -207,7 +207,18 @@ export class AzureSyncService {
    * Sign out
    */
   async signOut(): Promise<void> {
-    await this.msal.logoutPopup();
+    try {
+      await this.ensureInitialized();
+
+      if (!this.msal) {
+        throw new Error("MSAL instance not initialized");
+      }
+
+      await this.msal.logoutPopup();
+    } catch (error) {
+      console.error("Failed to sign out:", error);
+      throw new Error(`Sign out failed: ${error.message}`);
+    }
   }
 }
 
