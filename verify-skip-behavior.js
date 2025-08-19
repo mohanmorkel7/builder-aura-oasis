@@ -3,33 +3,33 @@
  */
 
 const testData = {
-  "departments": {
-    "test_department": {
-      "name": "Test Department",
-      "permissions": ["test"],
-      "users": []
-    }
+  departments: {
+    test_department: {
+      name: "Test Department",
+      permissions: ["test"],
+      users: [],
+    },
   },
-  "users": [
+  users: [
     {
-      "email": "Maanas.m@mylapay.com", // This should exist in database and be skipped
-      "displayName": "Maanas M Test",
-      "givenName": "Maanas",
-      "surname": "M",
-      "jobTitle": "Updated Title - THIS SHOULD NOT BE PROCESSED",
-      "department": "test_department",
-      "ssoId": "test-sso-id-1"
+      email: "Maanas.m@mylapay.com", // This should exist in database and be skipped
+      displayName: "Maanas M Test",
+      givenName: "Maanas",
+      surname: "M",
+      jobTitle: "Updated Title - THIS SHOULD NOT BE PROCESSED",
+      department: "test_department",
+      ssoId: "test-sso-id-1",
     },
     {
-      "email": "test-new-user@mylapay.com", // This should be new and processed
-      "displayName": "New Test User",
-      "givenName": "New",
-      "surname": "User",
-      "jobTitle": "New User Title",
-      "department": "test_department", 
-      "ssoId": "test-sso-id-2"
-    }
-  ]
+      email: "test-new-user@mylapay.com", // This should be new and processed
+      displayName: "New Test User",
+      givenName: "New",
+      surname: "User",
+      jobTitle: "New User Title",
+      department: "test_department",
+      ssoId: "test-sso-id-2",
+    },
+  ],
 };
 
 console.log(`

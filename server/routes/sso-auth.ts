@@ -278,10 +278,14 @@ router.post(
       console.log(`   • Users passed database check: ${newUsers.length}`);
       console.log(`   • New users added to JSON: ${usersToAdd.length}`);
       console.log(`   • Skipped (found in database): ${skippedUsers.length}`);
-      console.log(`   • Skipped (already in JSON): ${alreadyInJsonUsers.length}`);
+      console.log(
+        `   • Skipped (already in JSON): ${alreadyInJsonUsers.length}`,
+      );
       console.log(`   • Total skipped: ${totalSkipped}`);
       console.log(`   • Final user count in JSON: ${finalUsers.length}`);
-      console.log(`   • Database users were completely ignored: ${skippedUsers.length > 0 ? 'YES' : 'NO'}`);
+      console.log(
+        `   • Database users were completely ignored: ${skippedUsers.length > 0 ? "YES" : "NO"}`,
+      );
 
       res.json({
         success: true,
