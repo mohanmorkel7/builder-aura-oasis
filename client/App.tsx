@@ -62,6 +62,7 @@ import TemplateCreator from "@/pages/TemplateCreator";
 import UserManagement from "@/pages/UserManagement";
 import UserDetails from "@/pages/UserDetails";
 import AddUser from "@/pages/AddUser";
+import AzureUserRoleAssignment from "@/pages/AzureUserRoleAssignment";
 import AddClient from "@/pages/AddClient";
 import ClientDetails from "@/pages/ClientDetails";
 import NewDeployment from "@/pages/NewDeployment";
