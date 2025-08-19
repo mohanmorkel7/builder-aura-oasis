@@ -94,6 +94,7 @@ import AdminTemplates from "@/pages/AdminTemplates";
 import FinOpsDashboard from "@/pages/FinOpsDashboard";
 import FinOpsAutomation from "@/pages/FinOpsAutomation";
 import UserProfile from "@/pages/UserProfile";
+import DepartmentManager from "@/pages/DepartmentManager";
 import NotFound from "@/pages/NotFound";
 import { OfflineIndicator } from "@/components/OfflineIndicator";
 
