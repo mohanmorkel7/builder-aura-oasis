@@ -222,7 +222,7 @@ export default function UserManagement() {
           <p className="text-gray-600 mt-1">Manage users and roles</p>
         </div>
         <div className="flex items-center space-x-3">
-          <Button variant="outline" onClick={handleSyncAzure}>
+          <Button variant="outline" onClick={handleSyncAzure} data-sync-azure>
             <Cloud className="w-4 h-4 mr-2" />
             Sync Azure AD
           </Button>
