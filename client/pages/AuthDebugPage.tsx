@@ -1,9 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { Button } from '../components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Badge } from '../components/ui/badge';
-import { User, RefreshCw, Trash2, LogOut } from 'lucide-react';
-import { useAuth } from '../lib/auth-context';
+import React, { useState, useEffect } from "react";
+import { Button } from "../components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import { User, RefreshCw, Trash2, LogOut } from "lucide-react";
+import { useAuth } from "../lib/auth-context";
 
 export default function AuthDebugPage() {
   const [authData, setAuthData] = useState<any>(null);
@@ -13,7 +18,7 @@ export default function AuthDebugPage() {
 
   const addLog = (message: string) => {
     const timestamp = new Date().toLocaleTimeString();
-    setLogs(prev => [...prev, `[${timestamp}] ${message}`]);
+    setLogs((prev) => [...prev, `[${timestamp}] ${message}`]);
     console.log(message);
   };
 
@@ -24,23 +29,24 @@ export default function AuthDebugPage() {
   const loadAuthData = () => {
     try {
       // Get localStorage auth data
-      const storedUser = localStorage.getItem('banani_user');
-      const msalAccount = localStorage.getItem('msal_account');
-      
+      const storedUser = localStorage.getItem("banani_user");
+      const msalAccount = localStorage.getItem("msal_account");
+
       if (storedUser) {
         setAuthData(JSON.parse(storedUser));
-        addLog(`📱 Found localStorage auth data for: ${JSON.parse(storedUser).email}`);
+        addLog(
+          `📱 Found localStorage auth data for: ${JSON.parse(storedUser).email}`,
+        );
       } else {
-        addLog('📱 No localStorage auth data found');
+        addLog("📱 No localStorage auth data found");
       }
 
       if (msalAccount) {
         setMsalData(JSON.parse(msalAccount));
         addLog(`🔑 Found MSAL account data`);
       } else {
-        addLog('🔑 No MSAL account data found');
+        addLog("🔑 No MSAL account data found");
       }
-
     } catch (error) {
       addLog(`❌ Error loading auth data: ${error.message}`);
     }
@@ -48,11 +54,11 @@ export default function AuthDebugPage() {
 
   const clearAuthData = () => {
     try {
-      localStorage.removeItem('banani_user');
-      localStorage.removeItem('msal_account');
+      localStorage.removeItem("banani_user");
+      localStorage.removeItem("msal_account");
       setAuthData(null);
       setMsalData(null);
-      addLog('🗑️ Cleared all auth data from localStorage');
+      addLog("🗑️ Cleared all auth data from localStorage");
     } catch (error) {
       addLog(`❌ Error clearing auth data: ${error.message}`);
     }
@@ -60,8 +66,8 @@ export default function AuthDebugPage() {
 
   const testSSOEndpoint = async () => {
     try {
-      addLog('🧪 Testing SSO endpoint with Mohan\'s data...');
-      
+      addLog("🧪 Testing SSO endpoint with Mohan's data...");
+
       const ssoUser = {
         id: "a416d1c8-bc01-4acd-8cad-3210a78d01a9",
         mail: "mohan.m@mylapay.com",
@@ -69,19 +75,19 @@ export default function AuthDebugPage() {
         givenName: "Mohan Raj",
         surname: "Ravichandran",
         jobTitle: "Director Technology",
-        userPrincipalName: "mohan.m@mylapay.com"
+        userPrincipalName: "mohan.m@mylapay.com",
       };
 
-      const response = await fetch('/api/sso/login', {
-        method: 'POST',
+      const response = await fetch("/api/sso/login", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ ssoUser }),
       });
 
       const result = await response.json();
-      
+
       if (result.success) {
         addLog(`✅ SSO endpoint test successful!`);
         addLog(`   User: ${result.user.name}`);
@@ -99,7 +105,7 @@ export default function AuthDebugPage() {
   const forceLogout = () => {
     logout();
     clearAuthData();
-    addLog('🚪 Forced logout and cleared all data');
+    addLog("🚪 Forced logout and cleared all data");
     setTimeout(() => {
       window.location.reload();
     }, 1000);
@@ -108,7 +114,9 @@ export default function AuthDebugPage() {
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">
       <div className="text-center">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Authentication Debug</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          Authentication Debug
+        </h1>
         <p className="text-gray-600">
           Debug and manage authentication state and cached data
         </p>
@@ -125,16 +133,36 @@ export default function AuthDebugPage() {
         <CardContent>
           {user ? (
             <div className="space-y-2">
-              <Badge variant="default" className="bg-green-100 text-green-800">Authenticated</Badge>
+              <Badge variant="default" className="bg-green-100 text-green-800">
+                Authenticated
+              </Badge>
               <div className="p-3 bg-gray-50 rounded-lg text-sm">
-                <p><strong>ID:</strong> {user.id}</p>
-                <p><strong>Name:</strong> {user.name}</p>
-                <p><strong>Email:</strong> {user.email}</p>
-                <p><strong>Role:</strong> <Badge variant="outline">{user.role}</Badge></p>
-                <p><strong>Department:</strong> {user.department || 'N/A'}</p>
-                <p><strong>Job Title:</strong> {user.jobTitle || 'N/A'}</p>
-                <p><strong>Azure Object ID:</strong> {user.azureObjectId || 'N/A'}</p>
-                <p><strong>SSO ID:</strong> {user.ssoId || 'N/A'}</p>
+                <p>
+                  <strong>ID:</strong> {user.id}
+                </p>
+                <p>
+                  <strong>Name:</strong> {user.name}
+                </p>
+                <p>
+                  <strong>Email:</strong> {user.email}
+                </p>
+                <p>
+                  <strong>Role:</strong>{" "}
+                  <Badge variant="outline">{user.role}</Badge>
+                </p>
+                <p>
+                  <strong>Department:</strong> {user.department || "N/A"}
+                </p>
+                <p>
+                  <strong>Job Title:</strong> {user.jobTitle || "N/A"}
+                </p>
+                <p>
+                  <strong>Azure Object ID:</strong>{" "}
+                  {user.azureObjectId || "N/A"}
+                </p>
+                <p>
+                  <strong>SSO ID:</strong> {user.ssoId || "N/A"}
+                </p>
               </div>
             </div>
           ) : (
@@ -192,16 +220,16 @@ export default function AuthDebugPage() {
               <RefreshCw className="w-4 h-4 mr-2" />
               Refresh Data
             </Button>
-            
+
             <Button onClick={clearAuthData} variant="outline" size="sm">
               <Trash2 className="w-4 h-4 mr-2" />
               Clear localStorage
             </Button>
-            
+
             <Button onClick={testSSOEndpoint} variant="outline" size="sm">
               🧪 Test SSO Endpoint
             </Button>
-            
+
             <Button onClick={forceLogout} variant="destructive" size="sm">
               <LogOut className="w-4 h-4 mr-2" />
               Force Logout
@@ -215,11 +243,7 @@ export default function AuthDebugPage() {
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <span>Debug Logs</span>
-            <Button 
-              onClick={() => setLogs([])}
-              variant="outline" 
-              size="sm"
-            >
+            <Button onClick={() => setLogs([])} variant="outline" size="sm">
               Clear
             </Button>
           </CardTitle>
