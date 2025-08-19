@@ -362,13 +362,9 @@ export const AuthProvider = React.memo(function AuthProvider({
             profile.mail || profile.userPrincipalName,
           );
 
-          // Use fetch with proper base URL handling
-          const baseUrl = window.location.origin;
-          const ssoUrl = `${baseUrl}/api/sso/login`;
+          console.log("📡 Making SSO request using apiClient");
 
-          console.log("📡 Making SSO request to:", ssoUrl);
-
-          const ssoResponse = await fetch(ssoUrl, {
+          const ssoResult = await apiClient.request<any>("/sso/login", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
