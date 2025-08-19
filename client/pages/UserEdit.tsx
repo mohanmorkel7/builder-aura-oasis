@@ -392,17 +392,26 @@ export default function UserEdit() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="department">Department</Label>
-                  <div className="relative">
-                    <Building className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input
-                      id="department"
-                      value={user.department}
-                      onChange={(e) =>
-                        updateField("department", e.target.value)
-                      }
-                      className="pl-10"
-                    />
-                  </div>
+                  <Select
+                    value={user.department}
+                    onValueChange={(value) => updateField("department", value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select department..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="hr">Human Resources</SelectItem>
+                      <SelectItem value="finance">Finance</SelectItem>
+                      <SelectItem value="finops">Financial Operations</SelectItem>
+                      <SelectItem value="database">Database</SelectItem>
+                      <SelectItem value="frontend">Frontend Development</SelectItem>
+                      <SelectItem value="backend">Backend Development</SelectItem>
+                      <SelectItem value="infra">Infrastructure</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-sm text-gray-600 mt-1">
+                    User's organizational department
+                  </p>
                 </div>
                 <div>
                   <Label htmlFor="start_date">Start Date</Label>
