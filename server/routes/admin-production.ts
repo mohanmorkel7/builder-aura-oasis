@@ -94,7 +94,11 @@ router.post("/users", async (req: Request, res: Response) => {
     if (!["admin", "sales", "product"].includes(userData.role)) {
       return res
         .status(400)
-        .json({ error: "Invalid role. Must be admin, sales, or product" });
+        .json({
+          error: "Invalid role",
+          validRoles: ["admin", "sales", "product", "development", "db", "finops", "finance", "hr_management", "infra", "switch_team"],
+          receivedRole: role
+        });
     }
 
     // Check if email already exists
