@@ -1,19 +1,19 @@
-const { Pool } = require('pg');
+const { Pool } = require("pg");
 
 const pool = new Pool({
-  user: 'postgres',
-  host: 'localhost', 
-  database: 'banani_crm',
-  password: 'banani@123',
+  user: "postgres",
+  host: "localhost",
+  database: "banani_crm",
+  password: "banani@123",
   port: 5432,
 });
 
 async function updateUserRoles() {
   const client = await pool.connect();
-  
+
   try {
-    console.log('🔄 Updating user roles based on departments...');
-    
+    console.log("🔄 Updating user roles based on departments...");
+
     const updateResult = await client.query(`
       UPDATE users 
       SET 
@@ -31,9 +31,11 @@ async function updateUserRoles() {
           sso_provider = 'microsoft' 
           AND department IS NOT NULL
     `);
-    
-    console.log(`✅ Updated ${updateResult.rowCount} users with department-based roles`);
-    
+
+    console.log(
+      `✅ Updated ${updateResult.rowCount} users with department-based roles`,
+    );
+
     // Verify the results
     const verifyResult = await client.query(`
       SELECT 
@@ -48,12 +50,11 @@ async function updateUserRoles() {
       WHERE sso_provider = 'microsoft'
       ORDER BY department, first_name
     `);
-    
-    console.log('\n📊 Updated user roles:');
+
+    console.log("\n📊 Updated user roles:");
     console.table(verifyResult.rows);
-    
   } catch (error) {
-    console.error('❌ Error updating user roles:', error);
+    console.error("❌ Error updating user roles:", error);
   } finally {
     client.release();
     await pool.end();

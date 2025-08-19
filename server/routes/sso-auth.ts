@@ -255,7 +255,7 @@ router.post("/admin/fix-user-roles", async (req: Request, res: Response) => {
   try {
     const { pool } = require("../database/connection");
 
-    console.log('🔄 Updating user roles based on departments...');
+    console.log("🔄 Updating user roles based on departments...");
 
     const updateResult = await pool.query(`
       UPDATE users
@@ -275,7 +275,9 @@ router.post("/admin/fix-user-roles", async (req: Request, res: Response) => {
           AND department IS NOT NULL
     `);
 
-    console.log(`✅ Updated ${updateResult.rowCount} users with department-based roles`);
+    console.log(
+      `✅ Updated ${updateResult.rowCount} users with department-based roles`,
+    );
 
     // Verify the results
     const verifyResult = await pool.query(`
@@ -295,14 +297,13 @@ router.post("/admin/fix-user-roles", async (req: Request, res: Response) => {
     res.json({
       success: true,
       message: `Successfully updated ${updateResult.rowCount} user roles based on departments`,
-      updatedUsers: verifyResult.rows
+      updatedUsers: verifyResult.rows,
     });
-
   } catch (error) {
     console.error("Error updating user roles:", error);
     res.status(500).json({
       success: false,
-      error: "Failed to update user roles"
+      error: "Failed to update user roles",
     });
   }
 });
