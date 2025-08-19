@@ -386,12 +386,12 @@ export class AzureSyncService {
    * Check if redirect authentication was successful
    */
   getRedirectStatus(): { success: boolean; error?: string } {
-    const success = sessionStorage.getItem('msal_redirect_success') === 'true';
-    const error = sessionStorage.getItem('msal_redirect_error');
+    const success = sessionStorage.getItem("msal_redirect_success") === "true";
+    const error = sessionStorage.getItem("msal_redirect_error");
 
     // Clear status after reading
-    sessionStorage.removeItem('msal_redirect_success');
-    sessionStorage.removeItem('msal_redirect_error');
+    sessionStorage.removeItem("msal_redirect_success");
+    sessionStorage.removeItem("msal_redirect_error");
 
     return { success, error: error || undefined };
   }
@@ -406,8 +406,8 @@ export class AzureSyncService {
   /**
    * Get authentication method recommendation
    */
-  getRecommendedAuthMethod(): 'popup' | 'redirect' {
-    return this.arePopupsAvailable() ? 'popup' : 'redirect';
+  getRecommendedAuthMethod(): "popup" | "redirect" {
+    return this.arePopupsAvailable() ? "popup" : "redirect";
   }
 }
 

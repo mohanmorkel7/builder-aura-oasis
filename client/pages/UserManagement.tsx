@@ -48,7 +48,10 @@ import {
   CheckCircle,
   AlertTriangle,
 } from "lucide-react";
-import { azureSyncService, initializeAzureSyncService } from "@/lib/azure-sync-service";
+import {
+  azureSyncService,
+  initializeAzureSyncService,
+} from "@/lib/azure-sync-service";
 
 export default function UserManagement() {
   const navigate = useNavigate();
@@ -76,7 +79,10 @@ export default function UserManagement() {
           return;
         }
         if (redirectStatus.error) {
-          console.error("Redirect authentication failed:", redirectStatus.error);
+          console.error(
+            "Redirect authentication failed:",
+            redirectStatus.error,
+          );
           setAzureConnectionStatus("disconnected");
           return;
         }
@@ -99,10 +105,12 @@ export default function UserManagement() {
 
       // Recommend authentication method based on popup availability
       const recommendedMethod = service.getRecommendedAuthMethod();
-      const useRedirect = recommendedMethod === 'redirect';
+      const useRedirect = recommendedMethod === "redirect";
 
       if (useRedirect) {
-        alert("Popup windows are blocked. Using redirect-based authentication. The page will reload after authentication.");
+        alert(
+          "Popup windows are blocked. Using redirect-based authentication. The page will reload after authentication.",
+        );
       }
 
       await service.testGraphConnection(useRedirect);
@@ -121,7 +129,8 @@ export default function UserManagement() {
 
       let errorMessage = `Azure AD connection test failed: ${error.message}`;
       if (error.message.includes("popup")) {
-        errorMessage += "\n\nSuggestion: Try enabling popups for this site or use redirect-based authentication.";
+        errorMessage +=
+          "\n\nSuggestion: Try enabling popups for this site or use redirect-based authentication.";
       }
 
       alert(errorMessage);
@@ -180,10 +189,12 @@ export default function UserManagement() {
 
       // Recommend authentication method based on popup availability
       const recommendedMethod = service.getRecommendedAuthMethod();
-      const useRedirect = recommendedMethod === 'redirect';
+      const useRedirect = recommendedMethod === "redirect";
 
       if (useRedirect) {
-        const proceed = confirm("Popup windows are blocked. Azure sync will use redirect-based authentication. The page will reload during the process. Continue?");
+        const proceed = confirm(
+          "Popup windows are blocked. Azure sync will use redirect-based authentication. The page will reload during the process. Continue?",
+        );
         if (!proceed) {
           return;
         }
