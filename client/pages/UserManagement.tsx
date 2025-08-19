@@ -226,6 +226,14 @@ export default function UserManagement() {
             <Cloud className="w-4 h-4 mr-2" />
             Sync Azure AD
           </Button>
+          <Button
+            variant="outline"
+            onClick={() => navigate("/admin/users/azure-role-assignment")}
+            className="text-orange-600 border-orange-200 hover:bg-orange-50"
+          >
+            <Settings className="w-4 h-4 mr-2" />
+            Assign Roles
+          </Button>
           <Button variant="outline" onClick={handleExportUsers}>
             <Download className="w-4 h-4 mr-2" />
             Export
