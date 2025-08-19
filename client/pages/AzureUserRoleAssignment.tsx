@@ -126,6 +126,7 @@ export default function AzureUserRoleAssignment() {
       setLoading(true);
       setError(null);
 
+      console.log("[Azure Role Assignment] Fetching unknown users...");
       const response = await fetch("/api/azure-sync/unknown-users");
 
       // Check if response is ok before trying to read JSON
@@ -158,8 +159,11 @@ export default function AzureUserRoleAssignment() {
         throw new Error("Invalid response from server");
       }
 
+      console.log("[Azure Role Assignment] API Response:", result);
+
       if (result.success !== false) {
         const users = result.users || [];
+        console.log("[Azure Role Assignment] Found users:", users);
         setUnknownUsers(users);
         // Initialize role assignments
         setRoleAssignments(
