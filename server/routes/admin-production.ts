@@ -137,11 +137,16 @@ router.put("/users/:id", async (req: Request, res: Response) => {
     const userData: UpdateUserData = req.body;
 
     // Validate role if provided
-    if (
-      userData.role &&
-      !["admin", "sales", "product"].includes(userData.role)
-    ) {
-      return res.status(400).json({ error: "Invalid role" });
+    const validRoles = [
+      "admin", "sales", "product", "development", "db",
+      "finops", "finance", "hr_management", "infra", "switch_team"
+    ];
+    if (userData.role && !validRoles.includes(userData.role)) {
+      return res.status(400).json({
+        error: "Invalid role",
+        validRoles: validRoles,
+        receivedRole: userData.role
+      });
     }
 
     // Check if user exists
