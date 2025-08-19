@@ -285,7 +285,7 @@ router.post(
 
       res.json({
         success: true,
-        message: `Successfully processed ${users.length} users. Added ${usersToAdd.length} new users, skipped ${totalSkipped} existing users.`,
+        message: `Processed ${users.length} users. Added ${usersToAdd.length} new users to JSON. Completely skipped ${skippedUsers.length} users that exist in database (no updates made to existing users).`,
         data: {
           newUserCount: usersToAdd.length,
           skippedUserCount: totalSkipped,
@@ -293,6 +293,8 @@ router.post(
           skippedInJson: alreadyInJsonUsers.length,
           departmentCount: Object.keys(mergedDepartments).length,
           totalUsersInJson: finalUsers.length,
+          usersPassedDatabaseCheck: newUsers.length,
+          completelySkippedFromDatabase: skippedUsers.length,
         },
       });
     } catch (error) {
