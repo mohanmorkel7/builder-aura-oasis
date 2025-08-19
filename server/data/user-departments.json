@@ -50,6 +50,22 @@
         "vc"
       ],
       "users": []
+    },
+    "administration": {
+      "name": "Administration",
+      "permissions": [
+        "admin",
+        "users",
+        "reports",
+        "settings",
+        "database",
+        "finops",
+        "finance",
+        "product",
+        "leads",
+        "vc"
+      ],
+      "users": []
     }
   },
   "users": [
