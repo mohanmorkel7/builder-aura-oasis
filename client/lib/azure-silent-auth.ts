@@ -22,7 +22,7 @@ export class AzureSilentAuthService {
     if (!this.msal) {
       this.msal = new PublicClientApplication(msalConfig);
       await this.msal.initialize();
-      
+
       // Handle any pending redirect response silently
       await this.msal.handleRedirectPromise();
     }
@@ -56,7 +56,7 @@ export class AzureSilentAuthService {
 
       // Get accounts (similar to Python's app.get_accounts())
       const accounts = this.msal.getAllAccounts();
-      
+
       if (accounts.length > 0) {
         // Try silent token acquisition (similar to Python's acquire_token_silent)
         try {
@@ -66,13 +66,15 @@ export class AzureSilentAuthService {
           };
 
           const result = await this.msal.acquireTokenSilent(silentRequest);
-          
+
           if (result && result.accessToken) {
             this.cacheToken(result.accessToken);
             return result.accessToken;
           }
         } catch (silentError) {
-          console.log("Silent token acquisition failed, redirecting to login...");
+          console.log(
+            "Silent token acquisition failed, redirecting to login...",
+          );
           // Fall through to redirect authentication
         }
       }
@@ -80,25 +82,24 @@ export class AzureSilentAuthService {
       // No accounts or silent acquisition failed - redirect to login
       // This is similar to Python's device flow but uses browser redirect
       console.log("🔐 Redirecting to Azure AD for authentication...");
-      
+
       // Save current location to return to after authentication
       sessionStorage.setItem("azure_auth_return_url", window.location.href);
       sessionStorage.setItem("azure_auth_in_progress", "true");
-      
+
       // Redirect to Azure AD (no popup, no alert)
       await this.msal.loginRedirect(syncRequest);
-      
+
       // This will redirect the page, so we won't reach here
       throw new Error("Redirecting to Azure AD for authentication");
-
     } catch (error) {
       console.error("Failed to get access token:", error);
-      
+
       // If we're in the middle of authentication flow, don't throw
       if (sessionStorage.getItem("azure_auth_in_progress") === "true") {
         throw new Error("Authentication in progress");
       }
-      
+
       throw error;
     }
   }
@@ -122,14 +123,14 @@ export class AzureSilentAuthService {
 
       // Handle the redirect response
       const response = await this.msal.handleRedirectPromise();
-      
+
       if (response && response.accessToken) {
         // Clear authentication flags
         sessionStorage.removeItem("azure_auth_in_progress");
-        
+
         // Cache the token
         this.cacheToken(response.accessToken);
-        
+
         // Return to original URL if available
         const returnUrl = sessionStorage.getItem("azure_auth_return_url");
         if (returnUrl && returnUrl !== window.location.href) {
@@ -137,7 +138,7 @@ export class AzureSilentAuthService {
           window.location.href = returnUrl;
           return response.accessToken;
         }
-        
+
         return response.accessToken;
       } else if (response) {
         // Authentication succeeded but need to get token
@@ -148,7 +149,7 @@ export class AzureSilentAuthService {
               ...syncRequest,
               account: accounts[0],
             });
-            
+
             if (tokenResult && tokenResult.accessToken) {
               sessionStorage.removeItem("azure_auth_in_progress");
               this.cacheToken(tokenResult.accessToken);
@@ -163,7 +164,6 @@ export class AzureSilentAuthService {
       // Clear authentication flags on failure
       sessionStorage.removeItem("azure_auth_in_progress");
       return null;
-
     } catch (error) {
       console.error("Error handling auth return:", error);
       sessionStorage.removeItem("azure_auth_in_progress");
@@ -176,14 +176,14 @@ export class AzureSilentAuthService {
    */
   private cacheToken(token: string): void {
     this.tokenCache = token;
-    
+
     // Store in localStorage with timestamp
     const tokenData = {
       token,
       timestamp: Date.now(),
       expiresIn: 3600000, // 1 hour in milliseconds
     };
-    
+
     localStorage.setItem("azure_access_token", token);
     localStorage.setItem("azure_token_data", JSON.stringify(tokenData));
   }
@@ -201,9 +201,9 @@ export class AzureSilentAuthService {
       const tokenData = JSON.parse(tokenDataStr);
       const now = Date.now();
       const tokenAge = now - tokenData.timestamp;
-      
+
       // Consider token valid if less than 50 minutes old (with 10min buffer)
-      return tokenAge < (tokenData.expiresIn - 600000);
+      return tokenAge < tokenData.expiresIn - 600000;
     } catch {
       return false;
     }
@@ -288,7 +288,8 @@ export class AzureSilentAuthService {
           if (errorText) {
             try {
               const errorJson = JSON.parse(errorText);
-              errorMessage = errorJson.message || errorJson.error || errorMessage;
+              errorMessage =
+                errorJson.message || errorJson.error || errorMessage;
             } catch {
               errorMessage = errorText;
             }
@@ -314,12 +315,15 @@ export class AzureSilentAuthService {
     try {
       const accessToken = await this.getAccessToken();
 
-      const response = await fetch("https://graph.microsoft.com/v1.0/users?$top=1", {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
+      const response = await fetch(
+        "https://graph.microsoft.com/v1.0/users?$top=1",
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
         },
-      });
+      );
 
       if (!response.ok) {
         throw new Error(
