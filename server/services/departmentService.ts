@@ -29,6 +29,7 @@ export class DepartmentService {
       frontend: "development",
       backend: "development",
       infra: "infra",
+      admin: "admin", // Admin department gets 'admin' role
     };
 
     return departmentRoleMap[department] || "development";
