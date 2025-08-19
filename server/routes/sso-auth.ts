@@ -171,6 +171,21 @@ router.post(
             error: `Invalid user data. Each user must have: email, displayName, department, ssoId. Missing for: ${user.email || "unknown"}`,
           });
         }
+
+        // Validate name fields to prevent database constraint violations
+        if (!user.givenName && !user.displayName) {
+          return res.status(400).json({
+            success: false,
+            error: `Invalid user data. User ${user.email} must have either givenName or displayName for first name.`,
+          });
+        }
+
+        if (!user.surname && !user.displayName) {
+          return res.status(400).json({
+            success: false,
+            error: `Invalid user data. User ${user.email} must have either surname or displayName for last name extraction.`,
+          });
+        }
       }
 
       // Update the JSON file
