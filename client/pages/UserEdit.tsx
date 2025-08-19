@@ -99,6 +99,7 @@ export default function UserEdit() {
   // Map departments to appropriate user roles
   const getDepartmentRole = (department: string): string => {
     const departmentRoleMap: { [key: string]: string } = {
+      administration: "admin",
       hr: "hr_management",
       finance: "finance",
       finops: "finops",
