@@ -169,8 +169,9 @@ export class DepartmentService {
             department = $3,
             sso_id = $4,
             job_title = $5,
+            role = $6,
             updated_at = NOW()
-          WHERE id = $6
+          WHERE id = $7
         `,
           [
             userMapping.givenName || userMapping.displayName || "Unknown",
@@ -180,6 +181,7 @@ export class DepartmentService {
             userMapping.department,
             userMapping.ssoId,
             userMapping.jobTitle || "Employee",
+            this.getDepartmentRole(userMapping.department), // Role based on department
             userId,
           ],
         );
