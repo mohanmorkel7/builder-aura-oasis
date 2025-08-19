@@ -485,7 +485,7 @@ export default function AzureUserRoleAssignment() {
                   {unknownUsers.length}
                 </p>
                 <p className="text-sm font-medium text-muted-foreground">
-                  Users Need Role Assignment
+                  Azure AD Users Need Assignment
                 </p>
               </div>
             </div>
