@@ -417,25 +417,37 @@ export default function AzureUserRoleAssignment() {
 
       // Assign departments if any
       if (validDepartmentAssignments.length > 0) {
-        const departmentResponse = await fetch(
-          "/api/azure-sync/assign-departments",
-          {
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
+          const departmentResponse = await fetch("/api/azure-sync/assign-departments", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
+              "Accept": "application/json",
             },
             body: JSON.stringify({
               userDepartments: validDepartmentAssignments,
             }),
-          },
-        );
+            signal: controller.signal,
+          });
 
-        if (!departmentResponse.ok) {
-          throw new Error(
-            `Department assignment failed: ${departmentResponse.statusText}`,
-          );
+          clearTimeout(timeoutId);
+
+          if (!departmentResponse.ok) {
+            if (departmentResponse.status === 503) {
+              throw new Error("Database connection failed during department assignment");
+            }
+            throw new Error(`Department assignment failed: ${departmentResponse.statusText}`);
+          }
+          departmentResult = await departmentResponse.json();
+        } catch (fetchError) {
+          if (fetchError.name === 'AbortError') {
+            throw new Error("Department assignment timeout - operation took too long");
+          }
+          throw fetchError; // Re-throw other errors
         }
-        departmentResult = await departmentResponse.json();
       }
 
       const roleCount = roleResult?.updatedUsers?.length || 0;
