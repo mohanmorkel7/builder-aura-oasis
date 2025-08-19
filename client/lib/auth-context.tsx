@@ -31,9 +31,12 @@ export interface User {
   email: string;
   role: UserRole;
   department?: string;
+  permissions?: string[];
+  jobTitle?: string;
   avatar?: string;
   azureObjectId?: string;
   employeeId?: string;
+  ssoId?: string;
 }
 
 // Stable export to prevent HMR issues
