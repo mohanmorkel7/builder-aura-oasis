@@ -48,10 +48,7 @@ import {
   CheckCircle,
   AlertTriangle,
 } from "lucide-react";
-import {
-  azureSyncService,
-  initializeAzureSyncService,
-} from "@/lib/azure-sync-service";
+import { azureSilentAuth } from "@/lib/azure-silent-auth";
 
 export default function UserManagement() {
   const navigate = useNavigate();
