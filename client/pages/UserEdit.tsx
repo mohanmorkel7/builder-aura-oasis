@@ -90,11 +90,35 @@ export default function UserEdit() {
     }
   }, [originalUser]);
 
+  // Map departments to appropriate user roles
+  const getDepartmentRole = (department: string): string => {
+    const departmentRoleMap: { [key: string]: string } = {
+      hr: "hr_management",
+      finance: "finance",
+      finops: "finops",
+      database: "db",
+      frontend: "development",
+      backend: "development",
+      infra: "infra",
+    };
+
+    return departmentRoleMap[department] || "development";
+  };
+
   const updateField = (field: string, value: any) => {
-    setUser((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    setUser((prev) => {
+      const updatedUser = {
+        ...prev,
+        [field]: value,
+      };
+
+      // Auto-update role when department changes
+      if (field === "department" && value) {
+        updatedUser.role = getDepartmentRole(value);
+      }
+
+      return updatedUser;
+    });
     setHasChanges(true);
   };
 
