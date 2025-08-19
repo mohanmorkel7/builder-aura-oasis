@@ -177,7 +177,19 @@ export default function UserManagement() {
 
       // Initialize service and check permissions first
       const service = await initializeAzureSyncService();
-      const hasPermissions = await service.checkPermissions();
+
+      // Recommend authentication method based on popup availability
+      const recommendedMethod = service.getRecommendedAuthMethod();
+      const useRedirect = recommendedMethod === 'redirect';
+
+      if (useRedirect) {
+        const proceed = confirm("Popup windows are blocked. Azure sync will use redirect-based authentication. The page will reload during the process. Continue?");
+        if (!proceed) {
+          return;
+        }
+      }
+
+      const hasPermissions = await service.checkPermissions(useRedirect);
       if (!hasPermissions) {
         throw new Error(
           "Insufficient permissions. Please ensure your account has User.Read.All and Directory.Read.All permissions.",
@@ -190,7 +202,7 @@ export default function UserManagement() {
       }
 
       // Perform sync using MSAL service
-      const result = await service.syncUsersFromAzure();
+      const result = await service.syncUsersFromAzure(useRedirect);
 
       if (result.success) {
         const message = `Azure AD sync completed successfully!\n\nStats:\n- Total users: ${result.stats.total}\n- New users: ${result.stats.inserted}\n- Updated users: ${result.stats.updated}\n- Skipped users: ${result.stats.skipped}\n\nJSON file saved: ${result.jsonFile}`;
