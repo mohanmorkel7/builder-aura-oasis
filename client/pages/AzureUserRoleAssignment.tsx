@@ -465,7 +465,7 @@ export default function AzureUserRoleAssignment() {
             ) : (
               <>
                 <Save className="w-4 h-4 mr-2" />
-                Assign Roles ({getAssignedCount()})
+                Save Assignments ({getAssignedCount()})
               </>
             )}
           </Button>
