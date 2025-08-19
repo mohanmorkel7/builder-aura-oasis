@@ -158,6 +158,26 @@ router.post(
         });
       }
 
+      // Check if database is available to validate existing users
+      let dbAvailable = false;
+      let existingEmails = new Set<string>();
+
+      try {
+        await pool.query("SELECT 1");
+        dbAvailable = true;
+
+        // Get all existing emails from database
+        const existingUsersResult = await pool.query("SELECT email FROM users");
+        existingEmails = new Set(existingUsersResult.rows.map(row => row.email.toLowerCase()));
+        console.log(`Found ${existingEmails.size} existing users in database`);
+      } catch (dbError) {
+        console.warn("Database not available, skipping duplicate check:", dbError.message);
+      }
+
+      // Filter users - skip those that already exist in database
+      const newUsers = [];
+      const skippedUsers = [];
+
       // Validate users have required fields (department is optional for unknown users)
       for (const user of users) {
         if (!user.email || !user.displayName || !user.ssoId) {
@@ -181,27 +201,62 @@ router.post(
             error: `Invalid user data. User ${user.email} must have either surname or displayName for last name extraction.`,
           });
         }
+
+        // Check if user already exists in database (skip if exists)
+        if (dbAvailable && existingEmails.has(user.email.toLowerCase())) {
+          skippedUsers.push(user);
+          console.log(`Skipping existing user: ${user.email}`);
+        } else {
+          newUsers.push(user);
+        }
       }
 
-      // Update the JSON file
+      // Load existing JSON data and merge
       const filePath = path.join(__dirname, "../data/user-departments.json");
+      let existingData = { departments: {}, users: [] };
 
+      if (fs.existsSync(filePath)) {
+        try {
+          const fileContent = fs.readFileSync(filePath, "utf8");
+          existingData = JSON.parse(fileContent);
+        } catch (parseError) {
+          console.warn("Could not parse existing JSON file, starting fresh:", parseError.message);
+        }
+      }
+
+      // Merge departments (new ones override existing)
+      const mergedDepartments = { ...existingData.departments, ...departments };
+
+      // For users - only add new users, skip existing ones by email
+      const existingUserEmails = new Set(existingData.users.map(u => u.email.toLowerCase()));
+      const usersToAdd = newUsers.filter(user => !existingUserEmails.has(user.email.toLowerCase()));
+      const alreadyInJsonUsers = newUsers.filter(user => existingUserEmails.has(user.email.toLowerCase()));
+
+      const finalUsers = [...existingData.users, ...usersToAdd];
+
+      // Update the JSON file
       fs.writeFileSync(
         filePath,
-        JSON.stringify({ departments, users }, null, 2),
+        JSON.stringify({ departments: mergedDepartments, users: finalUsers }, null, 2),
       );
 
       // Reload the data
       await DepartmentService.loadUserDepartmentsFromJSON();
 
-      console.log(`📁 Department data updated with ${users.length} users`);
+      const totalSkipped = skippedUsers.length + alreadyInJsonUsers.length;
+
+      console.log(`📁 Department data updated: ${usersToAdd.length} new users added, ${totalSkipped} users skipped (already exist)`);
 
       res.json({
         success: true,
-        message: `Successfully uploaded ${users.length} SSO users across ${Object.keys(departments).length} departments. Users will authenticate via Microsoft SSO.`,
+        message: `Successfully processed ${users.length} users. Added ${usersToAdd.length} new users, skipped ${totalSkipped} existing users.`,
         data: {
-          userCount: users.length,
-          departmentCount: Object.keys(departments).length,
+          newUserCount: usersToAdd.length,
+          skippedUserCount: totalSkipped,
+          skippedInDatabase: skippedUsers.length,
+          skippedInJson: alreadyInJsonUsers.length,
+          departmentCount: Object.keys(mergedDepartments).length,
+          totalUsersInJson: finalUsers.length,
         },
       });
     } catch (error) {
