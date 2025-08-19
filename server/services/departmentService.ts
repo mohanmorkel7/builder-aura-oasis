@@ -203,7 +203,7 @@ export class DepartmentService {
             userMapping.department,
             userMapping.ssoId,
             userMapping.jobTitle || "Employee",
-            "admin", // Default role, will be overridden by department permissions
+            this.getDepartmentRole(userMapping.department), // Role based on department
             "active",
           ],
         );
