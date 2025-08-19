@@ -268,8 +268,8 @@ router.post(
         ),
       );
 
-      // Reload the data
-      await DepartmentService.loadUserDepartmentsFromJSON();
+      // Reload the data with option to skip existing users
+      await DepartmentService.loadUserDepartmentsFromJSON({ skipExistingUsers: true });
 
       const totalSkipped = skippedUsers.length + alreadyInJsonUsers.length;
 
