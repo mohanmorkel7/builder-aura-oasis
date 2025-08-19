@@ -559,7 +559,19 @@ export default function AzureUserRoleAssignment() {
       {error && (
         <Alert variant="destructive">
           <AlertTriangle className="h-4 w-4" />
-          <AlertDescription>{error}</AlertDescription>
+          <AlertDescription>
+            {error}
+            {error.includes("Database") && (
+              <div className="mt-2 text-sm">
+                <strong>Possible solutions:</strong>
+                <ul className="list-disc list-inside mt-1">
+                  <li>Start PostgreSQL database service</li>
+                  <li>Check database connection settings</li>
+                  <li>Verify database is running on port 5432</li>
+                </ul>
+              </div>
+            )}
+          </AlertDescription>
         </Alert>
       )}
 
