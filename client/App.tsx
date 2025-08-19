@@ -329,6 +329,17 @@ function AppRoutes() {
       />
 
       <Route
+        path="/admin/azure-config"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <DashboardLayout>
+              <AzureConfigPage />
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
         path="/admin/users/add"
         element={
           <ProtectedRoute allowedRoles={["admin"]}>
