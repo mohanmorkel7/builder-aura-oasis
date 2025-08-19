@@ -436,10 +436,10 @@ export default function AzureUserRoleAssignment() {
           </Button>
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
-              Azure User Role Assignment
+              Azure User Role & Department Assignment
             </h1>
             <p className="text-gray-600 mt-1">
-              Assign roles to users imported from Azure AD
+              Assign roles and departments to users imported from Azure AD
             </p>
           </div>
         </div>
