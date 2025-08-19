@@ -63,9 +63,32 @@ export class AzureSyncService {
   private async initializeMsal(): Promise<void> {
     try {
       this.msal = await initializeMsal();
+
+      // Handle redirect response if present
+      await this.handleRedirectResponse();
     } catch (error) {
       console.error("Failed to initialize MSAL:", error);
       throw new Error(`MSAL initialization failed: ${error.message}`);
+    }
+  }
+
+  /**
+   * Handle redirect response after authentication redirect
+   */
+  private async handleRedirectResponse(): Promise<void> {
+    if (!this.msal) return;
+
+    try {
+      const response = await this.msal.handleRedirectPromise();
+      if (response) {
+        console.log("Redirect authentication successful:", response.account?.name);
+        // Store success state in sessionStorage for UI feedback
+        sessionStorage.setItem('msal_redirect_success', 'true');
+      }
+    } catch (error) {
+      console.error("Error handling redirect response:", error);
+      // Store error state for UI feedback
+      sessionStorage.setItem('msal_redirect_error', error.message);
     }
   }
 
