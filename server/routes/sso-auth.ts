@@ -266,9 +266,13 @@ router.post(
 
       const totalSkipped = skippedUsers.length + alreadyInJsonUsers.length;
 
-      console.log(
-        `📁 Department data updated: ${usersToAdd.length} new users added, ${totalSkipped} users skipped (already exist)`,
-      );
+      console.log(`📁 Department upload summary:`);
+      console.log(`   • Users in upload: ${users.length}`);
+      console.log(`   • New users added: ${usersToAdd.length}`);
+      console.log(`   • Skipped (in database): ${skippedUsers.length}`);
+      console.log(`   • Skipped (in JSON): ${alreadyInJsonUsers.length}`);
+      console.log(`   • Total skipped: ${totalSkipped}`);
+      console.log(`   • Final user count in JSON: ${finalUsers.length}`);
 
       res.json({
         success: true,
