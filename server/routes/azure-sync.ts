@@ -275,6 +275,10 @@ router.get("/unknown-users", async (req: Request, res: Response) => {
         "Database not available for unknown users query:",
         dbError.message,
       );
+
+      // Ensure response headers are set correctly
+      res.setHeader('Content-Type', 'application/json');
+
       return res.status(503).json({
         success: false,
         error: "Database not available",
