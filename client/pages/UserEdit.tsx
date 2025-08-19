@@ -71,6 +71,7 @@ export default function UserEdit() {
     null,
   );
   const [changePasswordLoading, setChangePasswordLoading] = useState(false);
+  const [roleAutoUpdated, setRoleAutoUpdated] = useState(false);
 
   // Update state when user data is loaded
   React.useEffect(() => {
