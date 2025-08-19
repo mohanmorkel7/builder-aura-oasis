@@ -162,8 +162,6 @@ router.post("/admin/upload-departments", async (req: Request, res: Response) => 
     }
 
     // Update the JSON file
-    const fs = require('fs');
-    const path = require('path');
     const filePath = path.join(__dirname, '../data/user-departments.json');
 
     fs.writeFileSync(filePath, JSON.stringify({ departments, users }, null, 2));
