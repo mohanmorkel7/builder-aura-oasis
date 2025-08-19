@@ -91,13 +91,17 @@ router.post("/users", async (req: Request, res: Response) => {
     }
 
     // Validate role
-    if (!["admin", "sales", "product"].includes(userData.role)) {
+    const validRoles = [
+      "admin", "sales", "product", "development", "db",
+      "finops", "finance", "hr_management", "infra", "switch_team"
+    ];
+    if (!validRoles.includes(userData.role)) {
       return res
         .status(400)
         .json({
           error: "Invalid role",
-          validRoles: ["admin", "sales", "product", "development", "db", "finops", "finance", "hr_management", "infra", "switch_team"],
-          receivedRole: role
+          validRoles: validRoles,
+          receivedRole: userData.role
         });
     }
 
