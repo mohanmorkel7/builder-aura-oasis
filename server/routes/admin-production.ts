@@ -171,7 +171,10 @@ router.put("/users/:id", async (req: Request, res: Response) => {
     ];
 
     console.log("Valid roles:", validRoles);
-    console.log("Role validation - includes check:", validRoles.includes(userData.role));
+    console.log(
+      "Role validation - includes check:",
+      validRoles.includes(userData.role),
+    );
 
     if (userData.role && !validRoles.includes(userData.role)) {
       console.log("ROLE VALIDATION FAILED!");
