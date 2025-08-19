@@ -402,10 +402,16 @@ export default function UserEdit() {
                     <SelectContent>
                       <SelectItem value="hr">Human Resources</SelectItem>
                       <SelectItem value="finance">Finance</SelectItem>
-                      <SelectItem value="finops">Financial Operations</SelectItem>
+                      <SelectItem value="finops">
+                        Financial Operations
+                      </SelectItem>
                       <SelectItem value="database">Database</SelectItem>
-                      <SelectItem value="frontend">Frontend Development</SelectItem>
-                      <SelectItem value="backend">Backend Development</SelectItem>
+                      <SelectItem value="frontend">
+                        Frontend Development
+                      </SelectItem>
+                      <SelectItem value="backend">
+                        Backend Development
+                      </SelectItem>
                       <SelectItem value="infra">Infrastructure</SelectItem>
                     </SelectContent>
                   </Select>
@@ -467,11 +473,15 @@ export default function UserEdit() {
                       <SelectItem value="admin">Administrator</SelectItem>
                       <SelectItem value="sales">Sales Team</SelectItem>
                       <SelectItem value="product">Product Team</SelectItem>
-                      <SelectItem value="development">Development Team</SelectItem>
+                      <SelectItem value="development">
+                        Development Team
+                      </SelectItem>
                       <SelectItem value="db">Database Administrator</SelectItem>
                       <SelectItem value="finops">FinOps Team</SelectItem>
                       <SelectItem value="finance">Finance Team</SelectItem>
-                      <SelectItem value="hr_management">HR Management</SelectItem>
+                      <SelectItem value="hr_management">
+                        HR Management
+                      </SelectItem>
                       <SelectItem value="infra">Infrastructure Team</SelectItem>
                       <SelectItem value="switch_team">Switch Team</SelectItem>
                     </SelectContent>
@@ -506,16 +516,26 @@ export default function UserEdit() {
                 <AlertDescription>
                   <strong>Role Changes:</strong> Changing a user's role will
                   immediately affect their access permissions.
-                  {user.role === "admin" && " Admin users have full system access."}
-                  {user.role === "sales" && " Sales users can manage clients and follow-ups."}
-                  {user.role === "product" && " Product users can manage deployments and releases."}
-                  {user.role === "development" && " Development users can access development features and code management."}
-                  {user.role === "db" && " Database administrators can manage database operations and access."}
-                  {user.role === "finops" && " FinOps users can manage financial operations and cost optimization."}
-                  {user.role === "finance" && " Finance users can handle accounting, billing, and financial reporting."}
-                  {user.role === "hr_management" && " HR Management users can manage employee records and HR processes."}
-                  {user.role === "infra" && " Infrastructure users can manage servers, deployments, and system infrastructure."}
-                  {user.role === "switch_team" && " Switch team members have specialized access for team transitions."}
+                  {user.role === "admin" &&
+                    " Admin users have full system access."}
+                  {user.role === "sales" &&
+                    " Sales users can manage clients and follow-ups."}
+                  {user.role === "product" &&
+                    " Product users can manage deployments and releases."}
+                  {user.role === "development" &&
+                    " Development users can access development features and code management."}
+                  {user.role === "db" &&
+                    " Database administrators can manage database operations and access."}
+                  {user.role === "finops" &&
+                    " FinOps users can manage financial operations and cost optimization."}
+                  {user.role === "finance" &&
+                    " Finance users can handle accounting, billing, and financial reporting."}
+                  {user.role === "hr_management" &&
+                    " HR Management users can manage employee records and HR processes."}
+                  {user.role === "infra" &&
+                    " Infrastructure users can manage servers, deployments, and system infrastructure."}
+                  {user.role === "switch_team" &&
+                    " Switch team members have specialized access for team transitions."}
                 </AlertDescription>
               </Alert>
             </CardContent>
@@ -549,8 +569,9 @@ export default function UserEdit() {
                   <Alert>
                     <Shield className="h-4 w-4" />
                     <AlertDescription>
-                      <strong>Two-Factor Authentication Enabled:</strong> This user will need to provide
-                      a second verification factor (SMS, app, or email) when logging in.
+                      <strong>Two-Factor Authentication Enabled:</strong> This
+                      user will need to provide a second verification factor
+                      (SMS, app, or email) when logging in.
                     </AlertDescription>
                   </Alert>
                 )}
@@ -559,8 +580,9 @@ export default function UserEdit() {
                   <Alert variant="default">
                     <Info className="h-4 w-4" />
                     <AlertDescription>
-                      <strong>Enable Two-Factor Authentication:</strong> Recommended for improved account security,
-                      especially for users with administrative privileges.
+                      <strong>Enable Two-Factor Authentication:</strong>{" "}
+                      Recommended for improved account security, especially for
+                      users with administrative privileges.
                     </AlertDescription>
                   </Alert>
                 )}
@@ -572,8 +594,12 @@ export default function UserEdit() {
                   <Alert>
                     <Info className="h-4 w-4" />
                     <AlertDescription>
-                      <strong>SSO User:</strong> This user authenticates via {originalUser.sso_provider === 'microsoft' ? 'Microsoft SSO' : originalUser.sso_provider.toUpperCase()}.
-                      Password changes should be managed through the SSO provider's system.
+                      <strong>SSO User:</strong> This user authenticates via{" "}
+                      {originalUser.sso_provider === "microsoft"
+                        ? "Microsoft SSO"
+                        : originalUser.sso_provider.toUpperCase()}
+                      . Password changes should be managed through the SSO
+                      provider's system.
                     </AlertDescription>
                   </Alert>
                 ) : (
@@ -648,7 +674,9 @@ export default function UserEdit() {
 
                 <Button
                   onClick={changePassword}
-                  disabled={changePasswordLoading || !!originalUser?.sso_provider}
+                  disabled={
+                    changePasswordLoading || !!originalUser?.sso_provider
+                  }
                   className="w-full"
                 >
                   {changePasswordLoading ? "Changing..." : "Change Password"}
