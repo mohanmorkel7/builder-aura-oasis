@@ -148,6 +148,16 @@ export default function DepartmentManager() {
           permissions: ["admin", "settings", "database"],
           users: [],
         },
+        admin: {
+          name: "Administration",
+          permissions: ["admin", "users", "reports", "settings", "database", "finops", "finance", "product", "leads", "vc"],
+          users: [],
+        },
+        administration: {
+          name: "Administration",
+          permissions: ["admin", "users", "reports", "settings", "database", "finops", "finance", "product", "leads", "vc"],
+          users: [],
+        },
       },
       users: [
         {
