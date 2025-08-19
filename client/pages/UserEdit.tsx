@@ -75,14 +75,17 @@ export default function UserEdit() {
   // Update state when user data is loaded
   React.useEffect(() => {
     if (originalUser) {
+      const department = originalUser.department || "";
+      const role = department ? getDepartmentRole(department) : (originalUser.role || "sales");
+
       setUser({
         first_name: originalUser.first_name || "",
         last_name: originalUser.last_name || "",
         email: originalUser.email || "",
         phone: originalUser.phone || "",
-        role: originalUser.role || "sales",
+        role: role,
         status: originalUser.status || "active",
-        department: originalUser.department || "",
+        department: department,
         start_date: originalUser.start_date || "",
         notes: originalUser.notes || "",
         two_factor_enabled: originalUser.two_factor_enabled || false,
