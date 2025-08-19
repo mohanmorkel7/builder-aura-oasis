@@ -419,6 +419,7 @@ router.post("/assign-departments", async (req: Request, res: Response) => {
       "infrastructure",
       "support",
       "marketing",
+      "switch_team",
     ];
 
     const updatedUsers = [];
