@@ -390,8 +390,23 @@ export default function AzureUserRoleAssignment() {
     return assignment?.role || "";
   };
 
+  const getDepartmentForUser = (userId: number) => {
+    const assignment = departmentAssignments.find((a) => a.userId === userId);
+    return assignment?.department || "";
+  };
+
   const getAssignedCount = () => {
-    return roleAssignments.filter((a) => a.role && a.role !== "").length;
+    const roleCount = roleAssignments.filter((a) => {
+      const user = unknownUsers.find(u => u.id === a.userId);
+      return user?.role === "unknown" && a.role && a.role !== "";
+    }).length;
+
+    const departmentCount = departmentAssignments.filter((a) => {
+      const user = unknownUsers.find(u => u.id === a.userId);
+      return !user?.department && a.department && a.department !== "";
+    }).length;
+
+    return roleCount + departmentCount;
   };
 
   const formatDate = (dateString: string) => {
