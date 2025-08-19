@@ -71,7 +71,8 @@ export interface UpdateUserData {
     | "finance"
     | "hr_management"
     | "infra"
-    | "switch_team";
+    | "switch_team"
+    | "unknown";
   department?: string;
   manager_id?: number;
   status?: "active" | "inactive" | "pending";
