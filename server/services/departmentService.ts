@@ -163,18 +163,18 @@ export class DepartmentService {
         const insertResult = await pool.query(
           `
           INSERT INTO users (
-            first_name, last_name, email, department, sso_id, 
+            first_name, last_name, email, department, sso_id,
             job_title, role, status, created_at, updated_at
           ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW())
           RETURNING id
         `,
           [
-            userMapping.givenName,
-            userMapping.surname,
+            userMapping.givenName || userMapping.displayName || "Unknown",
+            userMapping.surname || userMapping.displayName?.split(' ').slice(1).join(' ') || "User",
             ssoUser.mail,
             userMapping.department,
             userMapping.ssoId,
-            userMapping.jobTitle,
+            userMapping.jobTitle || "Employee",
             "admin", // Default role, will be overridden by department permissions
             "active",
           ],
