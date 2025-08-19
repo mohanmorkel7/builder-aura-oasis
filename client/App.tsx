@@ -68,6 +68,7 @@ import DepartmentTestPage from "@/pages/DepartmentTestPage";
 import AuthDebugPage from "@/pages/AuthDebugPage";
 import SSOTroubleshootPage from "@/pages/SSOTroubleshootPage";
 import AzureConfigPage from "@/pages/AzureConfigPage";
+import AzureDomainFixPage from "@/pages/AzureDomainFixPage";
 import AddClient from "@/pages/AddClient";
 import ClientDetails from "@/pages/ClientDetails";
 import NewDeployment from "@/pages/NewDeployment";
