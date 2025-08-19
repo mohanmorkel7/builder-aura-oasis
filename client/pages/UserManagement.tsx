@@ -45,7 +45,10 @@ import {
   Edit,
   Trash2,
   Cloud,
+  CheckCircle,
+  AlertTriangle,
 } from "lucide-react";
+import { azureSyncService } from "@/lib/azure-sync-service";
 
 export default function UserManagement() {
   const navigate = useNavigate();
