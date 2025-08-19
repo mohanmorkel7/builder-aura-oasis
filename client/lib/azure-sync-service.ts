@@ -26,7 +26,7 @@ export class AzureSyncService {
     // Don't initialize in constructor, do it lazily
   }
 
-  private async ensureInitialized(): Promise<void> {
+  async ensureInitialized(): Promise<void> {
     if (!this.initPromise) {
       this.initPromise = this.initializeMsal();
     }
