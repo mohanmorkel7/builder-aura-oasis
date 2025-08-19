@@ -200,7 +200,29 @@ export default function AzureUserRoleAssignment() {
       setError(null);
 
       console.log("[Azure Role Assignment] Fetching unknown users...");
-      const response = await fetch("/api/azure-sync/unknown-users");
+
+      let response;
+      try {
+        response = await fetch("/api/azure-sync/unknown-users", {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          // Add timeout to prevent hanging requests
+          signal: AbortSignal.timeout(10000), // 10 second timeout
+        });
+      } catch (fetchError) {
+        console.error("Network fetch error:", fetchError);
+
+        if (fetchError.name === 'AbortError') {
+          throw new Error("Request timeout - server may be unresponsive");
+        } else if (fetchError.name === 'TypeError' && fetchError.message.includes('Failed to fetch')) {
+          throw new Error("Network connection failed - server may be down or unreachable");
+        } else {
+          throw new Error(`Network error: ${fetchError.message}`);
+        }
+      }
 
       // Check if response is ok before trying to read JSON
       if (!response.ok) {
