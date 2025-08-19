@@ -59,6 +59,15 @@
       "jobTitle": "Associate Director Technology",
       "department": "backend",
       "ssoId": "00403bc6-6a6d-46c3-a203-d12ff8c9d1ac"
+    },
+    {
+      "email": "mohan.m@mylapay.com",
+      "displayName": "Mohan Raj Ravichandran",
+      "givenName": "Mohan Raj",
+      "surname": "Ravichandran",
+      "jobTitle": "Director Technology",
+      "department": "admin",
+      "ssoId": "a416d1c8-bc01-4acd-8cad-3210a78d01a9"
     }
   ]
 }
