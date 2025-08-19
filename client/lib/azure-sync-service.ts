@@ -329,9 +329,9 @@ export class AzureSyncService {
   /**
    * Check if user has required permissions
    */
-  async checkPermissions(): Promise<boolean> {
+  async checkPermissions(useRedirect: boolean = false): Promise<boolean> {
     try {
-      await this.testGraphConnection();
+      await this.testGraphConnection(useRedirect);
       return true;
     } catch (error) {
       if (
