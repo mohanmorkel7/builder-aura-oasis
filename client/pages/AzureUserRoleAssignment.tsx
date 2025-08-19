@@ -237,7 +237,14 @@ export default function AzureUserRoleAssignment() {
         setRoleAssignments(
           users.map((user: UnknownUser) => ({
             userId: user.id,
-            role: "", // Default to empty, user must select
+            role: user.role === "unknown" ? "" : user.role, // Keep existing role if not unknown
+          })),
+        );
+        // Initialize department assignments
+        setDepartmentAssignments(
+          users.map((user: UnknownUser) => ({
+            userId: user.id,
+            department: user.department || "", // Keep existing department if set
           })),
         );
       } else {
