@@ -262,7 +262,8 @@ export default function DepartmentManager() {
             </CardTitle>
             <CardDescription>
               Upload a JSON file containing user department assignments. Users
-              without a "department" field will be marked as "unknown" for
+              already existing in the database (by email) will be skipped and not updated.
+              Users without a "department" field will be marked as "unknown" for
               manual role assignment.
             </CardDescription>
           </CardHeader>
