@@ -212,9 +212,10 @@ router.post(
         // Check if user already exists in database (skip if exists)
         if (dbAvailable && existingEmails.has(user.email.toLowerCase())) {
           skippedUsers.push(user);
-          console.log(`Skipping existing user: ${user.email}`);
+          console.log(`⏭️  Skipping existing user: ${user.email} (found in database)`);
         } else {
           newUsers.push(user);
+          console.log(`✅ Adding new user: ${user.email}`);
         }
       }
 
