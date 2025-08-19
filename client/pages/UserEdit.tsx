@@ -575,6 +575,7 @@ export default function UserEdit() {
                       }
                       placeholder="Enter current password"
                       className="mt-1"
+                      disabled={!!originalUser?.sso_provider}
                     />
                   </div>
 
@@ -592,6 +593,7 @@ export default function UserEdit() {
                       }
                       placeholder="Enter new password"
                       className="mt-1"
+                      disabled={!!originalUser?.sso_provider}
                     />
                   </div>
 
@@ -611,6 +613,7 @@ export default function UserEdit() {
                       }
                       placeholder="Confirm new password"
                       className="mt-1"
+                      disabled={!!originalUser?.sso_provider}
                     />
                   </div>
                 </div>
