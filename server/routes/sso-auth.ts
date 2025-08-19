@@ -137,4 +137,82 @@ router.get(
   },
 );
 
+// Upload new department data via JSON
+router.post("/admin/upload-departments", async (req: Request, res: Response) => {
+  try {
+    const { departments, users } = req.body;
+
+    if (!departments || !users) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid JSON structure. Must contain 'departments' and 'users' properties."
+      });
+    }
+
+    // Validate users have required fields
+    for (const user of users) {
+      if (!user.email || !user.displayName || !user.department || !user.ssoId) {
+        return res.status(400).json({
+          success: false,
+          error: `Invalid user data. Each user must have: email, displayName, department, ssoId. Missing for: ${user.email || 'unknown'}`
+        });
+      }
+    }
+
+    // Update the JSON file
+    const fs = require('fs');
+    const path = require('path');
+    const filePath = path.join(__dirname, '../data/user-departments.json');
+
+    fs.writeFileSync(filePath, JSON.stringify({ departments, users }, null, 2));
+
+    // Reload the data
+    await DepartmentService.loadUserDepartmentsFromJSON();
+
+    console.log(`📁 Department data updated with ${users.length} users`);
+
+    res.json({
+      success: true,
+      message: `Successfully uploaded ${users.length} users across ${Object.keys(departments).length} departments`,
+      data: { userCount: users.length, departmentCount: Object.keys(departments).length }
+    });
+  } catch (error) {
+    console.error("Error uploading departments:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to upload department data"
+    });
+  }
+});
+
+// Get current department data
+router.get("/admin/current-departments", async (req: Request, res: Response) => {
+  try {
+    const fs = require('fs');
+    const path = require('path');
+    const filePath = path.join(__dirname, '../data/user-departments.json');
+
+    if (fs.existsSync(filePath)) {
+      const fileContent = fs.readFileSync(filePath, 'utf8');
+      const data = JSON.parse(fileContent);
+
+      res.json({
+        success: true,
+        data
+      });
+    } else {
+      res.json({
+        success: true,
+        data: null
+      });
+    }
+  } catch (error) {
+    console.error("Error getting current departments:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to get current department data"
+    });
+  }
+});
+
 export default router;
