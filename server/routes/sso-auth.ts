@@ -289,7 +289,7 @@ router.post(
 
       res.json({
         success: true,
-        message: `Processed ${users.length} users. Added ${usersToAdd.length} new users to JSON. Completely skipped ${skippedUsers.length} users that exist in database (no updates made to existing users).`,
+        message: `Processed ${users.length} users. Added ${usersToAdd.length} new users to JSON. Completely skipped ${skippedUsers.length} users that exist in database (no JSON or database updates made to existing users).`,
         data: {
           newUserCount: usersToAdd.length,
           skippedUserCount: totalSkipped,
