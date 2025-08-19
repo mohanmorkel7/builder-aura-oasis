@@ -626,7 +626,7 @@ export default function UserEdit() {
 
                 <Button
                   onClick={changePassword}
-                  disabled={changePasswordLoading}
+                  disabled={changePasswordLoading || !!originalUser?.sso_provider}
                   className="w-full"
                 >
                   {changePasswordLoading ? "Changing..." : "Change Password"}
