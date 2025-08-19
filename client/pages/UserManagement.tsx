@@ -268,6 +268,37 @@ export default function UserManagement() {
           <p className="text-gray-600 mt-1">Manage users and roles</p>
         </div>
         <div className="flex items-center space-x-3">
+          {/* Azure Connection Status */}
+          <div className="flex items-center space-x-2 px-3 py-1 rounded-full bg-gray-50 text-sm">
+            {azureConnectionStatus === "connected" && (
+              <>
+                <CheckCircle className="w-4 h-4 text-green-500" />
+                <span className="text-green-700">Azure Connected</span>
+              </>
+            )}
+            {azureConnectionStatus === "disconnected" && (
+              <>
+                <AlertTriangle className="w-4 h-4 text-red-500" />
+                <span className="text-red-700">Azure Disconnected</span>
+              </>
+            )}
+            {azureConnectionStatus === "unknown" && (
+              <>
+                <Cloud className="w-4 h-4 text-gray-500" />
+                <span className="text-gray-700">Checking Azure...</span>
+              </>
+            )}
+          </div>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleTestAzureConnection}
+            className="text-blue-600 border-blue-200 hover:bg-blue-50"
+          >
+            Test Connection
+          </Button>
+
           <Button variant="outline" onClick={handleSyncAzure} data-sync-azure>
             <Cloud className="w-4 h-4 mr-2" />
             Sync Azure AD
