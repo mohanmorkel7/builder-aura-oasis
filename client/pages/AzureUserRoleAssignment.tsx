@@ -69,6 +69,9 @@ export default function AzureUserRoleAssignment() {
   const [roleAssignments, setRoleAssignments] = useState<UserRoleAssignment[]>(
     [],
   );
+  const [departmentAssignments, setDepartmentAssignments] = useState<UserDepartmentAssignment[]>(
+    [],
+  );
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
