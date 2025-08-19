@@ -355,7 +355,53 @@ export const AuthProvider = React.memo(function AuthProvider({
 
           const profile: MicrosoftProfile = await graphResponse.json();
 
-          // Get user's Azure AD groups to determine role
+          // Use our SSO endpoint to get user data with proper department mapping
+          const ssoResponse = await fetch('/api/sso/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              ssoUser: {
+                id: profile.id,
+                mail: profile.mail || profile.userPrincipalName,
+                displayName: profile.displayName,
+                givenName: profile.givenName,
+                surname: profile.surname,
+                jobTitle: profile.jobTitle,
+                userPrincipalName: profile.userPrincipalName
+              }
+            }),
+          });
+
+          if (ssoResponse.ok) {
+            const ssoResult = await ssoResponse.json();
+            if (ssoResult.success) {
+              // Use data from our department mapping
+              const userData: User = {
+                id: ssoResult.user.id.toString(),
+                name: ssoResult.user.name,
+                email: ssoResult.user.email,
+                role: ssoResult.user.role === "admin" ? "admin" : ssoResult.user.role, // Ensure admin role is preserved
+                department: ssoResult.user.department,
+                permissions: ssoResult.user.permissions,
+                jobTitle: ssoResult.user.jobTitle,
+                azureObjectId: ssoResult.user.azureObjectId,
+                ssoId: ssoResult.user.ssoId,
+              };
+
+              setUser(userData);
+              localStorage.setItem("banani_user", JSON.stringify(userData));
+              localStorage.setItem(
+                "msal_account",
+                JSON.stringify(loginResponse.account),
+              );
+              setIsLoading(false);
+              return true;
+            }
+          }
+
+          // Fallback to Azure AD groups if SSO endpoint fails
           const groupsResponse = await fetch(
             `${graphConfig.graphMeEndpoint}/memberOf`,
             {
@@ -368,7 +414,7 @@ export const AuthProvider = React.memo(function AuthProvider({
           const groups = await groupsResponse.json();
           const userRole = extractRoleFromGroups(groups.value || []);
 
-          // Create user data from Microsoft profile
+          // Create user data from Microsoft profile (fallback)
           const userData: User = {
             id: profile.id,
             name: profile.displayName,
