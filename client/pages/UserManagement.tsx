@@ -48,10 +48,7 @@ import {
   CheckCircle,
   AlertTriangle,
 } from "lucide-react";
-import {
-  azureSyncService,
-  initializeAzureSyncService,
-} from "@/lib/azure-sync-service";
+import { azureSyncService, initializeAzureSyncService } from "@/lib/azure-sync-service";
 
 export default function UserManagement() {
   const navigate = useNavigate();
@@ -71,6 +68,20 @@ export default function UserManagement() {
     const testConnection = async () => {
       try {
         const service = await initializeAzureSyncService();
+
+        // Check for redirect authentication result
+        const redirectStatus = service.getRedirectStatus();
+        if (redirectStatus.success) {
+          setAzureConnectionStatus("connected");
+          return;
+        }
+        if (redirectStatus.error) {
+          console.error("Redirect authentication failed:", redirectStatus.error);
+          setAzureConnectionStatus("disconnected");
+          return;
+        }
+
+        // Test connection (silently)
         await service.checkPermissions();
         setAzureConnectionStatus("connected");
       } catch (error) {
@@ -85,12 +96,35 @@ export default function UserManagement() {
     try {
       setAzureConnectionStatus("unknown");
       const service = await initializeAzureSyncService();
-      await service.testGraphConnection();
+
+      // Recommend authentication method based on popup availability
+      const recommendedMethod = service.getRecommendedAuthMethod();
+      const useRedirect = recommendedMethod === 'redirect';
+
+      if (useRedirect) {
+        alert("Popup windows are blocked. Using redirect-based authentication. The page will reload after authentication.");
+      }
+
+      await service.testGraphConnection(useRedirect);
       setAzureConnectionStatus("connected");
-      alert("Azure AD connection test successful!");
+
+      if (!useRedirect) {
+        alert("Azure AD connection test successful!");
+      }
     } catch (error) {
       setAzureConnectionStatus("disconnected");
-      alert(`Azure AD connection test failed: ${error.message}`);
+
+      if (error.message.includes("Redirect authentication initiated")) {
+        // This is expected for redirect flow
+        return;
+      }
+
+      let errorMessage = `Azure AD connection test failed: ${error.message}`;
+      if (error.message.includes("popup")) {
+        errorMessage += "\n\nSuggestion: Try enabling popups for this site or use redirect-based authentication.";
+      }
+
+      alert(errorMessage);
     }
   };
 
