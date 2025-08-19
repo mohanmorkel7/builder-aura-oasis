@@ -65,6 +65,7 @@ import AddUser from "@/pages/AddUser";
 import AzureUserRoleAssignment from "@/pages/AzureUserRoleAssignment";
 import AzureTestPage from "@/pages/AzureTestPage";
 import DepartmentTestPage from "@/pages/DepartmentTestPage";
+import AuthDebugPage from "@/pages/AuthDebugPage";
 import AddClient from "@/pages/AddClient";
 import ClientDetails from "@/pages/ClientDetails";
 import NewDeployment from "@/pages/NewDeployment";
