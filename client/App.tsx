@@ -838,6 +838,17 @@ function AppRoutes() {
         }
       />
 
+      <Route
+        path="/admin/department-upload-test"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <DashboardLayout>
+              <DepartmentUploadTestPage />
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+
       {/* Root redirect */}
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
