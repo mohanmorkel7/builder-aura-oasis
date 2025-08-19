@@ -67,26 +67,20 @@ export default function UserManagement() {
   React.useEffect(() => {
     const testConnection = async () => {
       try {
-        const service = await initializeAzureSyncService();
-
-        // Check for redirect authentication result
-        const redirectStatus = service.getRedirectStatus();
-        if (redirectStatus.success) {
+        // Check if returning from authentication
+        const token = await azureSilentAuth.handleAuthReturn();
+        if (token) {
           setAzureConnectionStatus("connected");
           return;
         }
-        if (redirectStatus.error) {
-          console.error(
-            "Redirect authentication failed:",
-            redirectStatus.error,
-          );
-          setAzureConnectionStatus("disconnected");
-          return;
-        }
 
-        // Test connection (silently)
-        await service.checkPermissions();
-        setAzureConnectionStatus("connected");
+        // Check if already authenticated
+        const isAuth = await azureSilentAuth.isAuthenticated();
+        if (isAuth) {
+          setAzureConnectionStatus("connected");
+        } else {
+          setAzureConnectionStatus("disconnected");
+        }
       } catch (error) {
         console.log("Azure connection test failed:", error);
         setAzureConnectionStatus("disconnected");
@@ -98,39 +92,22 @@ export default function UserManagement() {
   const handleTestAzureConnection = async () => {
     try {
       setAzureConnectionStatus("unknown");
-      const service = await initializeAzureSyncService();
 
-      // Recommend authentication method based on popup availability
-      const recommendedMethod = service.getRecommendedAuthMethod();
-      const useRedirect = recommendedMethod === "redirect";
+      console.log("🔍 Testing Azure AD connection...");
 
-      if (useRedirect) {
-        alert(
-          "Popup windows are blocked. Using redirect-based authentication. The page will reload after authentication.",
-        );
-      }
-
-      await service.testGraphConnection(useRedirect);
+      await azureSilentAuth.testGraphConnection();
       setAzureConnectionStatus("connected");
 
-      if (!useRedirect) {
-        alert("Azure AD connection test successful!");
-      }
+      console.log("✅ Azure AD connection test successful!");
     } catch (error) {
       setAzureConnectionStatus("disconnected");
 
-      if (error.message.includes("Redirect authentication initiated")) {
-        // This is expected for redirect flow
+      if (error.message.includes("Redirecting to Azure AD")) {
+        console.log("🔐 Redirecting to Azure AD for authentication...");
         return;
       }
 
-      let errorMessage = `Azure AD connection test failed: ${error.message}`;
-      if (error.message.includes("popup")) {
-        errorMessage +=
-          "\n\nSuggestion: Try enabling popups for this site or use redirect-based authentication.";
-      }
-
-      alert(errorMessage);
+      console.error("❌ Azure AD connection test failed:", error.message);
     }
   };
 
@@ -170,7 +147,7 @@ export default function UserManagement() {
 
   const handleSyncAzure = async () => {
     try {
-      console.log("Starting Azure AD sync with MSAL...");
+      console.log("🚀 Starting Azure AD sync...");
 
       // Show loading state
       const syncButton = document.querySelector(
@@ -178,39 +155,11 @@ export default function UserManagement() {
       ) as HTMLButtonElement;
       if (syncButton) {
         syncButton.disabled = true;
-        syncButton.textContent = "Authenticating...";
-      }
-
-      // Initialize service and check permissions first
-      const service = await initializeAzureSyncService();
-
-      // Recommend authentication method based on popup availability
-      const recommendedMethod = service.getRecommendedAuthMethod();
-      const useRedirect = recommendedMethod === "redirect";
-
-      if (useRedirect) {
-        const proceed = confirm(
-          "Popup windows are blocked. Azure sync will use redirect-based authentication. The page will reload during the process. Continue?",
-        );
-        if (!proceed) {
-          return;
-        }
-      }
-
-      const hasPermissions = await service.checkPermissions(useRedirect);
-      if (!hasPermissions) {
-        throw new Error(
-          "Insufficient permissions. Please ensure your account has User.Read.All and Directory.Read.All permissions.",
-        );
-      }
-
-      // Update button text
-      if (syncButton) {
         syncButton.textContent = "Syncing...";
       }
 
-      // Perform sync using MSAL service
-      const result = await service.syncUsersFromAzure(useRedirect);
+      // Perform sync using silent authentication service
+      const result = await azureSilentAuth.syncUsersFromAzure();
 
       if (result.success) {
         const message = `Azure AD sync completed successfully!\n\nStats:\n- Total users: ${result.stats.total}\n- New users: ${result.stats.inserted}\n- Updated users: ${result.stats.updated}\n- Skipped users: ${result.stats.skipped}\n\nJSON file saved: ${result.jsonFile}`;
