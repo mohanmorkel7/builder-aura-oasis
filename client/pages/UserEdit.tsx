@@ -546,9 +546,19 @@ export default function UserEdit() {
 
               <div className="p-4 border rounded-lg space-y-4">
                 <h4 className="font-medium">Change Password</h4>
-                <p className="text-sm text-gray-600">
-                  Change the user's password by providing the current password
-                </p>
+                {originalUser?.sso_provider ? (
+                  <Alert>
+                    <Info className="h-4 w-4" />
+                    <AlertDescription>
+                      <strong>SSO User:</strong> This user authenticates via {originalUser.sso_provider === 'microsoft' ? 'Microsoft SSO' : originalUser.sso_provider.toUpperCase()}.
+                      Password changes should be managed through the SSO provider's system.
+                    </AlertDescription>
+                  </Alert>
+                ) : (
+                  <p className="text-sm text-gray-600">
+                    Change the user's password by providing the current password
+                  </p>
+                )}
 
                 <div className="space-y-3">
                   <div>
