@@ -139,6 +139,9 @@ export default function UserEdit() {
     setSaveError(null);
 
     try {
+      console.log("Saving user with data:", JSON.stringify(user, null, 2));
+      console.log("User role being sent:", user.role);
+
       await updateUserMutation.mutateAsync({
         id: userId,
         userData: user,
@@ -147,6 +150,7 @@ export default function UserEdit() {
       navigate(`/admin/users/${id}`);
     } catch (error) {
       console.error("Failed to save user:", error);
+      console.error("Error details:", error instanceof Error ? error.message : error);
       setSaveError(
         error instanceof Error
           ? error.message
