@@ -440,7 +440,7 @@ export default function UserEdit() {
                     </SelectContent>
                   </Select>
                   <p className="text-sm text-gray-600 mt-1">
-                    User's organizational department
+                    User's organizational department (automatically sets role: {user.department ? getDepartmentRole(user.department) : 'Select department'})
                   </p>
                 </div>
                 <div>
