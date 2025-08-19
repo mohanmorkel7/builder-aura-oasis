@@ -94,11 +94,21 @@ export default function DepartmentManager() {
 
       if (response.success) {
         const data = response.data;
+        let detailedMessage = response.message || "Upload completed.";
+
+        if (data) {
+          detailedMessage += `\n\nDetailed Results:`;
+          detailedMessage += `\n• Total users in upload: ${parsedData.users.length}`;
+          detailedMessage += `\n• New users added: ${data.newUserCount || 0}`;
+          detailedMessage += `\n• Users skipped (already in database): ${data.skippedInDatabase || 0}`;
+          detailedMessage += `\n• Users skipped (already in JSON): ${data.skippedInJson || 0}`;
+          detailedMessage += `\n• Total users now in system: ${data.totalUsersInJson || 0}`;
+          detailedMessage += `\n• Departments processed: ${data.departmentCount || 0}`;
+        }
+
         setUploadStatus({
           type: "success",
-          message:
-            response.message ||
-            `Successfully processed ${parsedData.users.length} users. Added ${data?.newUserCount || 0} new users, skipped ${data?.skippedUserCount || 0} existing users.`,
+          message: detailedMessage,
         });
         // Reload current data to show updated state
         await loadCurrentData();
