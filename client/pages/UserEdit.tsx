@@ -497,12 +497,16 @@ export default function UserEdit() {
                 <AlertDescription>
                   <strong>Role Changes:</strong> Changing a user's role will
                   immediately affect their access permissions.
-                  {user.role === "admin" &&
-                    " Admin users have full system access."}
-                  {user.role === "sales" &&
-                    " Sales users can manage clients and follow-ups."}
-                  {user.role === "product" &&
-                    " Product users can manage deployments and releases."}
+                  {user.role === "admin" && " Admin users have full system access."}
+                  {user.role === "sales" && " Sales users can manage clients and follow-ups."}
+                  {user.role === "product" && " Product users can manage deployments and releases."}
+                  {user.role === "development" && " Development users can access development features and code management."}
+                  {user.role === "db" && " Database administrators can manage database operations and access."}
+                  {user.role === "finops" && " FinOps users can manage financial operations and cost optimization."}
+                  {user.role === "finance" && " Finance users can handle accounting, billing, and financial reporting."}
+                  {user.role === "hr_management" && " HR Management users can manage employee records and HR processes."}
+                  {user.role === "infra" && " Infrastructure users can manage servers, deployments, and system infrastructure."}
+                  {user.role === "switch_team" && " Switch team members have specialized access for team transitions."}
                 </AlertDescription>
               </Alert>
             </CardContent>
