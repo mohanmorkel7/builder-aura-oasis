@@ -203,7 +203,7 @@ router.post(
 
       res.json({
         success: true,
-        message: `Successfully uploaded ${users.length} users across ${Object.keys(departments).length} departments`,
+        message: `Successfully uploaded ${users.length} SSO users across ${Object.keys(departments).length} departments. Users will authenticate via Microsoft SSO.`,
         data: {
           userCount: users.length,
           departmentCount: Object.keys(departments).length,
