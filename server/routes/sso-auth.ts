@@ -188,8 +188,6 @@ router.post("/admin/upload-departments", async (req: Request, res: Response) => 
 // Get current department data
 router.get("/admin/current-departments", async (req: Request, res: Response) => {
   try {
-    const fs = require('fs');
-    const path = require('path');
     const filePath = path.join(__dirname, '../data/user-departments.json');
 
     if (fs.existsSync(filePath)) {
