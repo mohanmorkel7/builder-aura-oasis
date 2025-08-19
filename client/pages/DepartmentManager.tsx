@@ -150,12 +150,34 @@ export default function DepartmentManager() {
         },
         admin: {
           name: "Administration",
-          permissions: ["admin", "users", "reports", "settings", "database", "finops", "finance", "product", "leads", "vc"],
+          permissions: [
+            "admin",
+            "users",
+            "reports",
+            "settings",
+            "database",
+            "finops",
+            "finance",
+            "product",
+            "leads",
+            "vc",
+          ],
           users: [],
         },
         administration: {
           name: "Administration",
-          permissions: ["admin", "users", "reports", "settings", "database", "finops", "finance", "product", "leads", "vc"],
+          permissions: [
+            "admin",
+            "users",
+            "reports",
+            "settings",
+            "database",
+            "finops",
+            "finance",
+            "product",
+            "leads",
+            "vc",
+          ],
           users: [],
         },
       },
@@ -167,7 +189,7 @@ export default function DepartmentManager() {
           surname: "Ravichandran",
           jobTitle: "Director Technology",
           department: "admin",
-          ssoId: "a416d1c8-bc01-4acd-8cad-3210a78d01a9"
+          ssoId: "a416d1c8-bc01-4acd-8cad-3210a78d01a9",
         },
         {
           email: "john.doe@mylapay.com",
@@ -176,16 +198,16 @@ export default function DepartmentManager() {
           surname: "Doe",
           jobTitle: "Software Engineer",
           department: "backend",
-          ssoId: "microsoft-sso-id-here"
+          ssoId: "microsoft-sso-id-here",
         },
         {
           email: "jane.smith@mylapay.com",
           displayName: "Jane Smith",
           givenName: "Jane",
           surname: "Smith",
-          jobTitle: "Project Manager"
+          jobTitle: "Project Manager",
           // Note: No department field - will become "unknown" user
-        }
+        },
       ],
     };
 
@@ -237,7 +259,9 @@ export default function DepartmentManager() {
               <span>Upload Department Data</span>
             </CardTitle>
             <CardDescription>
-              Upload a JSON file containing user department assignments. Users without a "department" field will be marked as "unknown" for manual role assignment.
+              Upload a JSON file containing user department assignments. Users
+              without a "department" field will be marked as "unknown" for
+              manual role assignment.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
