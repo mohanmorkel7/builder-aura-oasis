@@ -542,7 +542,15 @@ export default function AzureUserRoleAssignment() {
             <br />
             Role assignments: {roleAssignments.length}
             <br />
+            Department assignments: {departmentAssignments.length}
+            <br />
             Last fetch: {new Date().toLocaleTimeString()}
+            {error && error.includes("Database") && (
+              <>
+                <br /><strong>Note:</strong> Database connection error detected.
+                <br />Check if PostgreSQL is running on port 5432.
+              </>
+            )}
           </AlertDescription>
         </Alert>
       )}
