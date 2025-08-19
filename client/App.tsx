@@ -729,6 +729,18 @@ function AppRoutes() {
         }
       />
 
+      {/* Department Manager - Admin only */}
+      <Route
+        path="/admin/departments"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <DashboardLayout>
+              <DepartmentManager />
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+
       {/* Root redirect */}
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
