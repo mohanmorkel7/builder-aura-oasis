@@ -271,11 +271,14 @@ router.get("/unknown-users", async (req: Request, res: Response) => {
     try {
       await pool.query("SELECT 1");
     } catch (dbError) {
-      console.warn("Database not available for unknown users query:", dbError.message);
+      console.warn(
+        "Database not available for unknown users query:",
+        dbError.message,
+      );
       return res.json({
         success: true,
         users: [],
-        message: "Database not available - no unknown users to display"
+        message: "Database not available - no unknown users to display",
       });
     }
 
@@ -309,11 +312,14 @@ router.post("/assign-roles", async (req: Request, res: Response) => {
     try {
       await pool.query("SELECT 1");
     } catch (dbError) {
-      console.warn("Database not available for role assignment:", dbError.message);
+      console.warn(
+        "Database not available for role assignment:",
+        dbError.message,
+      );
       return res.status(503).json({
         success: false,
         error: "Database not available",
-        message: "Cannot assign roles - database connection failed"
+        message: "Cannot assign roles - database connection failed",
       });
     }
 
@@ -322,7 +328,7 @@ router.post("/assign-roles", async (req: Request, res: Response) => {
     if (!Array.isArray(userRoles)) {
       return res.status(400).json({
         success: false,
-        error: "userRoles must be an array"
+        error: "userRoles must be an array",
       });
     }
 

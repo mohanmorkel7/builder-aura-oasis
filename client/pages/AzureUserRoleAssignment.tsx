@@ -137,7 +137,8 @@ export default function AzureUserRoleAssignment() {
           if (errorText) {
             try {
               const errorJson = JSON.parse(errorText);
-              errorMessage = errorJson.message || errorJson.error || errorMessage;
+              errorMessage =
+                errorJson.message || errorJson.error || errorMessage;
             } catch {
               errorMessage = errorText;
             }
@@ -174,12 +175,24 @@ export default function AzureUserRoleAssignment() {
       console.error("Error fetching unknown users:", error);
 
       // Handle specific error types
-      if (error instanceof TypeError && error.message.includes("body stream already read")) {
-        setError("Server communication error. Please refresh the page and try again.");
-      } else if (error.message.includes("ECONNREFUSED") || error.message.includes("connect")) {
-        setError("Database is not available. Please ensure the database is running.");
+      if (
+        error instanceof TypeError &&
+        error.message.includes("body stream already read")
+      ) {
+        setError(
+          "Server communication error. Please refresh the page and try again.",
+        );
+      } else if (
+        error.message.includes("ECONNREFUSED") ||
+        error.message.includes("connect")
+      ) {
+        setError(
+          "Database is not available. Please ensure the database is running.",
+        );
       } else {
-        setError(error instanceof Error ? error.message : "Failed to fetch users");
+        setError(
+          error instanceof Error ? error.message : "Failed to fetch users",
+        );
       }
     } finally {
       setLoading(false);
@@ -236,7 +249,8 @@ export default function AzureUserRoleAssignment() {
           if (errorText) {
             try {
               const errorJson = JSON.parse(errorText);
-              errorMessage = errorJson.message || errorJson.error || errorMessage;
+              errorMessage =
+                errorJson.message || errorJson.error || errorMessage;
             } catch {
               errorMessage = errorText;
             }

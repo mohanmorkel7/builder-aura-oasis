@@ -47,8 +47,11 @@ export class AzureSyncService {
         });
         return tokenResponse.accessToken;
       } catch (silentError) {
-        console.warn("Silent token acquisition failed, trying popup:", silentError);
-        
+        console.warn(
+          "Silent token acquisition failed, trying popup:",
+          silentError,
+        );
+
         // If silent acquisition fails, try interactive popup
         const tokenResponse = await this.msal.acquireTokenPopup({
           ...syncRequest,
@@ -84,7 +87,8 @@ export class AzureSyncService {
           if (errorText) {
             try {
               const errorJson = JSON.parse(errorText);
-              errorMessage = errorJson.message || errorJson.error || errorMessage;
+              errorMessage =
+                errorJson.message || errorJson.error || errorMessage;
             } catch {
               errorMessage = errorText;
             }
@@ -112,13 +116,15 @@ export class AzureSyncService {
 
       const response = await fetch(graphConfig.graphUsersEndpoint + "?$top=1", {
         headers: {
-          'Authorization': `Bearer ${accessToken}`,
-          'Content-Type': 'application/json'
-        }
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
       });
 
       if (!response.ok) {
-        throw new Error(`Graph API test failed: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `Graph API test failed: ${response.status} ${response.statusText}`,
+        );
       }
 
       const result = await response.json();
@@ -137,7 +143,10 @@ export class AzureSyncService {
       await this.testGraphConnection();
       return true;
     } catch (error) {
-      if (error.message.includes("403") || error.message.includes("Forbidden")) {
+      if (
+        error.message.includes("403") ||
+        error.message.includes("Forbidden")
+      ) {
         console.error("Insufficient permissions for Azure sync");
         return false;
       }

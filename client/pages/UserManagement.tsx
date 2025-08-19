@@ -56,7 +56,9 @@ export default function UserManagement() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRole, setSelectedRole] = useState<string>("all");
   const [selectedDepartment, setSelectedDepartment] = useState<string>("all");
-  const [azureConnectionStatus, setAzureConnectionStatus] = useState<"unknown" | "connected" | "disconnected">("unknown");
+  const [azureConnectionStatus, setAzureConnectionStatus] = useState<
+    "unknown" | "connected" | "disconnected"
+  >("unknown");
 
   // Use only database users
   const allUsers = localUsers || [];
@@ -137,7 +139,9 @@ export default function UserManagement() {
       // Check permissions first
       const hasPermissions = await azureSyncService.checkPermissions();
       if (!hasPermissions) {
-        throw new Error("Insufficient permissions. Please ensure your account has User.Read.All and Directory.Read.All permissions.");
+        throw new Error(
+          "Insufficient permissions. Please ensure your account has User.Read.All and Directory.Read.All permissions.",
+        );
       }
 
       // Update button text
@@ -164,9 +168,14 @@ export default function UserManagement() {
 
       let errorMessage = "Azure AD sync failed";
       if (error.message.includes("consent")) {
-        errorMessage = "Admin consent required. Please ask your Azure AD administrator to grant consent for User.Read.All and Directory.Read.All permissions.";
-      } else if (error.message.includes("403") || error.message.includes("Forbidden")) {
-        errorMessage = "Access denied. You don't have sufficient permissions to read Azure AD users.";
+        errorMessage =
+          "Admin consent required. Please ask your Azure AD administrator to grant consent for User.Read.All and Directory.Read.All permissions.";
+      } else if (
+        error.message.includes("403") ||
+        error.message.includes("Forbidden")
+      ) {
+        errorMessage =
+          "Access denied. You don't have sufficient permissions to read Azure AD users.";
       } else if (error.message.includes("Authentication")) {
         errorMessage = `Authentication failed: ${error.message}`;
       } else {
