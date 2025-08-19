@@ -228,11 +228,36 @@ export default function AzureUserRoleAssignment() {
         body: JSON.stringify({ userRoles: validAssignments }),
       });
 
-      const result = await response.json();
+      // Check if response is ok before trying to read JSON
+      if (!response.ok) {
+        let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+        try {
+          const errorText = await response.text();
+          if (errorText) {
+            try {
+              const errorJson = JSON.parse(errorText);
+              errorMessage = errorJson.message || errorJson.error || errorMessage;
+            } catch {
+              errorMessage = errorText;
+            }
+          }
+        } catch (readError) {
+          console.warn("Could not read error response:", readError);
+        }
+        throw new Error(errorMessage);
+      }
 
-      if (response.ok) {
+      let result;
+      try {
+        result = await response.json();
+      } catch (jsonError) {
+        console.error("Invalid JSON response:", jsonError);
+        throw new Error("Invalid response from server");
+      }
+
+      if (result.success !== false) {
         setSuccess(
-          `Successfully assigned roles to ${result.updatedUsers.length} users`,
+          `Successfully assigned roles to ${result.updatedUsers?.length || 0} users`,
         );
         // Refresh the list
         await fetchUnknownUsers();
