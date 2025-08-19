@@ -146,6 +146,21 @@ export async function initializeDatabase() {
       );
     }
 
+    // Always try to apply Azure fields migration (even if tables exist)
+    try {
+      const azureMigrationPath = path.join(__dirname, "add-azure-fields.sql");
+      if (fs.existsSync(azureMigrationPath)) {
+        const azureMigration = fs.readFileSync(azureMigrationPath, "utf8");
+        await client.query(azureMigration);
+        console.log("Azure fields migration applied successfully");
+      }
+    } catch (azureMigrationError) {
+      console.log(
+        "Azure fields migration already applied or error:",
+        azureMigrationError.message,
+      );
+    }
+
     // await client.query(schema);
     console.log("Database initialized successfully");
     client.release();
