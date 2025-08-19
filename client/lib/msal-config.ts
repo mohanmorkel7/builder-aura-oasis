@@ -21,7 +21,19 @@ export const loginRequest: PopupRequest = {
   scopes: ["User.Read", "openid", "profile", "email"],
 };
 
+// Add scopes for Azure AD sync functionality
+export const syncRequest: PopupRequest = {
+  scopes: [
+    "User.Read.All",
+    "Directory.Read.All",
+    "openid",
+    "profile",
+    "email"
+  ],
+};
+
 // Add the endpoints here for Microsoft Graph API services you'd like to use.
 export const graphConfig = {
   graphMeEndpoint: "https://graph.microsoft.com/v1.0/me",
+  graphUsersEndpoint: "https://graph.microsoft.com/v1.0/users",
 };
