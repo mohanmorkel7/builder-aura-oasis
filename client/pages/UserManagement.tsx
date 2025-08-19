@@ -454,7 +454,8 @@ export default function UserManagement() {
                     {users.map((user) => (
                       <div
                         key={user.id}
-                        className="border rounded-lg p-4 hover:shadow-md transition-shadow"
+                        className="border rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer hover:bg-gray-50"
+                        onClick={() => handleViewUser(user.id)}
                       >
                         <div className="flex items-center space-x-3">
                           <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
