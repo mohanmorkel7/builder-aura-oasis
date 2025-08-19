@@ -337,6 +337,17 @@ export default function AzureUserRoleAssignment() {
         </div>
         <div className="flex items-center space-x-3">
           <Button
+            variant="outline"
+            onClick={fetchUnknownUsers}
+            disabled={loading}
+          >
+            {loading ? (
+              <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+            ) : (
+              "Refresh"
+            )}
+          </Button>
+          <Button
             onClick={assignRoles}
             disabled={saving || getAssignedCount() === 0}
             className="min-w-32"
