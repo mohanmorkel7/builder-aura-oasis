@@ -212,16 +212,18 @@ router.post(
           });
         }
 
-        // Check if user already exists in database (skip if exists)
+        // Check if user already exists in database - if so, skip completely
         if (dbAvailable && existingEmails.has(user.email.toLowerCase())) {
           skippedUsers.push(user);
           console.log(
-            `⏭️  Skipping existing user: ${user.email} (found in database)`,
+            `⏭️  Completely skipping existing user: ${user.email} (found in database - no processing)`,
           );
-        } else {
-          newUsers.push(user);
-          console.log(`✅ Adding new user: ${user.email}`);
+          continue; // Skip all further processing for this user
         }
+
+        // Only process users that don't exist in database
+        newUsers.push(user);
+        console.log(`✅ Adding new user: ${user.email} (not in database)`);
       }
 
       // Load existing JSON data and merge
