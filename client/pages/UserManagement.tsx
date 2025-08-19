@@ -67,7 +67,8 @@ export default function UserManagement() {
   React.useEffect(() => {
     const testConnection = async () => {
       try {
-        await azureSyncService.checkPermissions();
+        const service = await initializeAzureSyncService();
+        await service.checkPermissions();
         setAzureConnectionStatus("connected");
       } catch (error) {
         console.log("Azure connection test failed:", error);
@@ -80,7 +81,8 @@ export default function UserManagement() {
   const handleTestAzureConnection = async () => {
     try {
       setAzureConnectionStatus("unknown");
-      await azureSyncService.testGraphConnection();
+      const service = await initializeAzureSyncService();
+      await service.testGraphConnection();
       setAzureConnectionStatus("connected");
       alert("Azure AD connection test successful!");
     } catch (error) {
