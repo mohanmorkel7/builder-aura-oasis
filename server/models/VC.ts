@@ -605,15 +605,15 @@ export class VCStepRepository {
     const client = await pool.connect();
 
     try {
-      await client.query('BEGIN');
+      await client.query("BEGIN");
 
       // First, set all order_index values to negative to avoid conflicts
-      const stepIds = stepOrders.map(step => step.id);
+      const stepIds = stepOrders.map((step) => step.id);
       await client.query(
         `UPDATE vc_steps
          SET order_index = -order_index - 1000, updated_at = NOW()
          WHERE id = ANY($1) AND vc_id = $2`,
-        [stepIds, vcId]
+        [stepIds, vcId],
       );
 
       // Then update each step with its final order_index
@@ -622,15 +622,17 @@ export class VCStepRepository {
           `UPDATE vc_steps
            SET order_index = $1, updated_at = NOW()
            WHERE id = $2 AND vc_id = $3`,
-          [order_index, id, vcId]
+          [order_index, id, vcId],
         );
       }
 
-      await client.query('COMMIT');
-      console.log(`✅ Successfully reordered ${stepOrders.length} steps for VC ${vcId}`);
+      await client.query("COMMIT");
+      console.log(
+        `✅ Successfully reordered ${stepOrders.length} steps for VC ${vcId}`,
+      );
     } catch (error) {
-      await client.query('ROLLBACK');
-      console.error('❌ Error during step reordering:', error);
+      await client.query("ROLLBACK");
+      console.error("❌ Error during step reordering:", error);
       throw error;
     } finally {
       client.release();
