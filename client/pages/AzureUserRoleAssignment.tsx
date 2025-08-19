@@ -384,18 +384,35 @@ export default function AzureUserRoleAssignment() {
 
       // Assign roles if any
       if (validRoleAssignments.length > 0) {
-        const roleResponse = await fetch("/api/azure-sync/assign-roles", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ userRoles: validRoleAssignments }),
-        });
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
 
-        if (!roleResponse.ok) {
-          throw new Error(`Role assignment failed: ${roleResponse.statusText}`);
+          const roleResponse = await fetch("/api/azure-sync/assign-roles", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Accept": "application/json",
+            },
+            body: JSON.stringify({ userRoles: validRoleAssignments }),
+            signal: controller.signal,
+          });
+
+          clearTimeout(timeoutId);
+
+          if (!roleResponse.ok) {
+            if (roleResponse.status === 503) {
+              throw new Error("Database connection failed during role assignment");
+            }
+            throw new Error(`Role assignment failed: ${roleResponse.statusText}`);
+          }
+          roleResult = await roleResponse.json();
+        } catch (fetchError) {
+          if (fetchError.name === 'AbortError') {
+            throw new Error("Role assignment timeout - operation took too long");
+          }
+          throw fetchError; // Re-throw other errors
         }
-        roleResult = await roleResponse.json();
       }
 
       // Assign departments if any
