@@ -72,7 +72,7 @@ export class AzureSyncService {
   /**
    * Get access token for Microsoft Graph API
    */
-  async getAccessToken(): Promise<string> {
+  async getAccessToken(useRedirect: boolean = false): Promise<string> {
     try {
       await this.ensureInitialized();
 
@@ -88,8 +88,7 @@ export class AzureSyncService {
         account = accounts[0];
       } else {
         // No accounts found, need to login
-        const loginResponse = await this.msal.loginPopup(syncRequest);
-        account = loginResponse.account;
+        account = await this.performLogin(useRedirect);
       }
 
       if (!account) {
@@ -105,20 +104,110 @@ export class AzureSyncService {
         return tokenResponse.accessToken;
       } catch (silentError) {
         console.warn(
-          "Silent token acquisition failed, trying popup:",
+          "Silent token acquisition failed, trying interactive auth:",
           silentError,
         );
 
-        // If silent acquisition fails, try interactive popup
+        // If silent acquisition fails, try interactive authentication
+        return await this.performInteractiveAuth(account, useRedirect);
+      }
+    } catch (error) {
+      console.error("Failed to get access token:", error);
+
+      // Handle specific MSAL errors
+      if (error instanceof BrowserAuthError) {
+        if (error.errorCode === 'popup_window_error') {
+          throw new Error("Popup windows are blocked. Please enable popups for this site or use redirect-based authentication.");
+        }
+        if (error.errorCode === 'user_cancelled') {
+          throw new Error("Authentication was cancelled by user.");
+        }
+      }
+
+      throw new Error(`Authentication failed: ${error.message}`);
+    }
+  }
+
+  /**
+   * Perform login with popup/redirect fallback
+   */
+  private async performLogin(useRedirect: boolean): Promise<AccountInfo> {
+    if (!this.msal) {
+      throw new Error("MSAL instance not initialized");
+    }
+
+    if (useRedirect) {
+      // For redirect, we need to handle the response on page load
+      await this.msal.loginRedirect(syncRequest);
+      // This will redirect the page, so we won't reach here
+      throw new Error("Redirect authentication initiated");
+    } else {
+      try {
+        // Check if popups are blocked before attempting
+        if (isPopupBlocked()) {
+          const useRedirectFallback = showPopupBlockerWarning();
+          if (useRedirectFallback) {
+            return await this.performLogin(true);
+          } else {
+            throw new Error("Popup authentication cannot be used - popups are blocked.");
+          }
+        }
+
+        const loginResponse = await this.msal.loginPopup(syncRequest);
+        return loginResponse.account;
+      } catch (error) {
+        if (error instanceof BrowserAuthError && error.errorCode === 'popup_window_error') {
+          const useRedirectFallback = showPopupBlockerWarning();
+          if (useRedirectFallback) {
+            return await this.performLogin(true);
+          }
+        }
+        throw error;
+      }
+    }
+  }
+
+  /**
+   * Perform interactive authentication with popup/redirect fallback
+   */
+  private async performInteractiveAuth(account: AccountInfo, useRedirect: boolean): Promise<string> {
+    if (!this.msal) {
+      throw new Error("MSAL instance not initialized");
+    }
+
+    if (useRedirect) {
+      await this.msal.acquireTokenRedirect({
+        ...syncRequest,
+        account: account,
+      });
+      // This will redirect the page, so we won't reach here
+      throw new Error("Redirect authentication initiated");
+    } else {
+      try {
+        // Check if popups are blocked before attempting
+        if (isPopupBlocked()) {
+          const useRedirectFallback = showPopupBlockerWarning();
+          if (useRedirectFallback) {
+            return await this.performInteractiveAuth(account, true);
+          } else {
+            throw new Error("Interactive authentication cannot be used - popups are blocked.");
+          }
+        }
+
         const tokenResponse = await this.msal.acquireTokenPopup({
           ...syncRequest,
           account: account,
         });
         return tokenResponse.accessToken;
+      } catch (error) {
+        if (error instanceof BrowserAuthError && error.errorCode === 'popup_window_error') {
+          const useRedirectFallback = showPopupBlockerWarning();
+          if (useRedirectFallback) {
+            return await this.performInteractiveAuth(account, true);
+          }
+        }
+        throw error;
       }
-    } catch (error) {
-      console.error("Failed to get access token:", error);
-      throw new Error(`Authentication failed: ${error.message}`);
     }
   }
 
