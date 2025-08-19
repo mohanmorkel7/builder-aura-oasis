@@ -162,10 +162,9 @@ export default function UserManagement() {
       const result = await azureSilentAuth.syncUsersFromAzure();
 
       if (result.success) {
-        const message = `Azure AD sync completed successfully!\n\nStats:\n- Total users: ${result.stats.total}\n- New users: ${result.stats.inserted}\n- Updated users: ${result.stats.updated}\n- Skipped users: ${result.stats.skipped}\n\nJSON file saved: ${result.jsonFile}`;
+        const message = `✅ Azure AD sync completed successfully!\n\nStats:\n- Total users: ${result.stats.total}\n- New users: ${result.stats.inserted}\n- Updated users: ${result.stats.updated}\n- Skipped users: ${result.stats.skipped}\n\nJSON file saved: ${result.jsonFile}`;
 
-        // Show success message
-        alert(message);
+        console.log(message);
 
         // Refresh user data
         window.location.reload();
@@ -173,10 +172,11 @@ export default function UserManagement() {
         throw new Error(result.message || "Azure AD sync failed");
       }
     } catch (error) {
-      console.error("Azure AD sync error:", error);
+      console.error("❌ Azure AD sync error:", error);
 
       // Don't show error for redirect flow initiation
-      if (error.message.includes("Redirect authentication initiated")) {
+      if (error.message.includes("Redirecting to Azure AD")) {
+        console.log("🔄 Redirecting to Azure AD for authentication...");
         return;
       }
 
