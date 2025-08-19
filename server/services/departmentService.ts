@@ -175,9 +175,9 @@ export class DepartmentService {
         const insertResult = await pool.query(
           `
           INSERT INTO users (
-            first_name, last_name, email, department, sso_id,
+            first_name, last_name, email, password_hash, department, sso_id,
             job_title, role, status, created_at, updated_at
-          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW())
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), NOW())
           RETURNING id
         `,
           [
@@ -186,6 +186,7 @@ export class DepartmentService {
               userMapping.displayName?.split(" ").slice(1).join(" ") ||
               "User",
             ssoUser.mail,
+            "SSO_AUTH_NO_PASSWORD", // Placeholder for SSO users who don't use password auth
             userMapping.department,
             userMapping.ssoId,
             userMapping.jobTitle || "Employee",
