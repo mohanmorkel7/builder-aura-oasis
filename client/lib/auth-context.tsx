@@ -362,9 +362,9 @@ export const AuthProvider = React.memo(function AuthProvider({
             profile.mail || profile.userPrincipalName,
           );
 
-          console.log("📡 Making SSO request using apiClient");
+          console.log("📡 Making SSO request to /api/sso/login");
 
-          const ssoResult = await apiClient.request<any>("/sso/login", {
+          const ssoResponse = await fetch("/api/sso/login", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
