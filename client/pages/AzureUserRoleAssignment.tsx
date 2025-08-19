@@ -49,11 +49,18 @@ interface UnknownUser {
   department?: string;
   azure_object_id?: string;
   created_at: string;
+  role?: string;
+  job_title?: string;
 }
 
 interface UserRoleAssignment {
   userId: number;
   role: string;
+}
+
+interface UserDepartmentAssignment {
+  userId: number;
+  department: string;
 }
 
 export default function AzureUserRoleAssignment() {
