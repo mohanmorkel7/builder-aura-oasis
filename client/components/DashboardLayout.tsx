@@ -498,7 +498,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   {isExpanded && (
                     <div className="ml-6 mt-2 space-y-1">
                       {item.submenu
-                        .filter((subItem) => subItem.roles.includes(user.role))
+                        .filter((subItem) => {
+                          if (subItem.permissions) {
+                            return hasAnyPermission(subItem.permissions);
+                          }
+                          return subItem.roles.includes(user.role);
+                        })
                         .map((subItem) => {
                           const isSubActive =
                             location.pathname === subItem.href;
