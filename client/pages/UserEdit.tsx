@@ -539,8 +539,7 @@ export default function UserEdit() {
               <Alert>
                 <Info className="h-4 w-4" />
                 <AlertDescription>
-                  <strong>Role Changes:</strong> Changing a user's role will
-                  immediately affect their access permissions.
+                  <strong>Department-Based Role:</strong> User roles are automatically assigned based on their department.
                   {user.role === "admin" &&
                     " Admin users have full system access."}
                   {user.role === "sales" &&
@@ -561,6 +560,7 @@ export default function UserEdit() {
                     " Infrastructure users can manage servers, deployments, and system infrastructure."}
                   {user.role === "switch_team" &&
                     " Switch team members have specialized access for team transitions."}
+                  {user.department && ` Current department: ${user.department.charAt(0).toUpperCase() + user.department.slice(1)}`}
                 </AlertDescription>
               </Alert>
             </CardContent>
