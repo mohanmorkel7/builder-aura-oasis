@@ -119,6 +119,12 @@ export default function UserEdit() {
       // Auto-update role when department changes
       if (field === "department" && value) {
         updatedUser.role = getDepartmentRole(value);
+        setRoleAutoUpdated(true);
+
+        // Clear the indicator after 3 seconds
+        setTimeout(() => {
+          setRoleAutoUpdated(false);
+        }, 3000);
       }
 
       return updatedUser;
