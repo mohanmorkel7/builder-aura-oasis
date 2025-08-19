@@ -218,6 +218,11 @@ export default function UserManagement() {
     } catch (error) {
       console.error("Azure AD sync error:", error);
 
+      // Don't show error for redirect flow initiation
+      if (error.message.includes("Redirect authentication initiated")) {
+        return;
+      }
+
       let errorMessage = "Azure AD sync failed";
       if (error.message.includes("consent")) {
         errorMessage =
@@ -228,6 +233,8 @@ export default function UserManagement() {
       ) {
         errorMessage =
           "Access denied. You don't have sufficient permissions to read Azure AD users.";
+      } else if (error.message.includes("popup")) {
+        errorMessage = `${error.message}\n\nSuggestion: Enable popups for this site or try refresh and use redirect-based authentication.`;
       } else if (error.message.includes("Authentication")) {
         errorMessage = `Authentication failed: ${error.message}`;
       } else {
