@@ -248,6 +248,14 @@ export function createServer() {
     console.error("Error loading SSO Auth router:", error);
   }
 
+  // Azure sync router
+  try {
+    app.use("/api/azure-sync", azureSyncRouter);
+    console.log("Azure sync router loaded successfully");
+  } catch (error) {
+    console.error("Error loading Azure sync router:", error);
+  }
+
   // Add a simple notifications route that redirects to workflow notifications
   try {
     app.get("/api/notifications", (req, res) => {
