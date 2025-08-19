@@ -250,4 +250,61 @@ router.get(
   },
 );
 
+// Fix existing user roles based on departments (one-time migration)
+router.post("/admin/fix-user-roles", async (req: Request, res: Response) => {
+  try {
+    const { pool } = require("../database/connection");
+
+    console.log('🔄 Updating user roles based on departments...');
+
+    const updateResult = await pool.query(`
+      UPDATE users
+      SET
+          role = CASE
+              WHEN department = 'hr' THEN 'hr_management'
+              WHEN department = 'finance' THEN 'finops'
+              WHEN department = 'database' THEN 'db'
+              WHEN department = 'frontend' THEN 'development'
+              WHEN department = 'backend' THEN 'development'
+              WHEN department = 'infra' THEN 'infra'
+              ELSE 'development' -- Default fallback
+          END,
+          updated_at = NOW()
+      WHERE
+          sso_provider = 'microsoft'
+          AND department IS NOT NULL
+    `);
+
+    console.log(`✅ Updated ${updateResult.rowCount} users with department-based roles`);
+
+    // Verify the results
+    const verifyResult = await pool.query(`
+      SELECT
+          id,
+          first_name,
+          last_name,
+          email,
+          department,
+          role,
+          job_title
+      FROM users
+      WHERE sso_provider = 'microsoft'
+      ORDER BY department, first_name
+    `);
+
+    res.json({
+      success: true,
+      message: `Successfully updated ${updateResult.rowCount} user roles based on departments`,
+      updatedUsers: verifyResult.rows
+    });
+
+  } catch (error) {
+    console.error("Error updating user roles:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to update user roles"
+    });
+  }
+});
+
 export default router;
