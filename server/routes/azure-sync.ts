@@ -277,12 +277,13 @@ router.get("/unknown-users", async (req: Request, res: Response) => {
       );
 
       // Ensure response headers are set correctly
-      res.setHeader('Content-Type', 'application/json');
+      res.setHeader("Content-Type", "application/json");
 
       return res.status(503).json({
         success: false,
         error: "Database not available",
-        message: "Cannot fetch unknown users - database connection failed. Please ensure PostgreSQL is running.",
+        message:
+          "Cannot fetch unknown users - database connection failed. Please ensure PostgreSQL is running.",
       });
     }
 

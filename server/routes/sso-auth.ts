@@ -169,10 +169,15 @@ router.post(
 
         // Get all existing emails from database
         const existingUsersResult = await pool.query("SELECT email FROM users");
-        existingEmails = new Set(existingUsersResult.rows.map(row => row.email.toLowerCase()));
+        existingEmails = new Set(
+          existingUsersResult.rows.map((row) => row.email.toLowerCase()),
+        );
         console.log(`Found ${existingEmails.size} existing users in database`);
       } catch (dbError) {
-        console.warn("Database not available, skipping duplicate check:", dbError.message);
+        console.warn(
+          "Database not available, skipping duplicate check:",
+          dbError.message,
+        );
       }
 
       // Filter users - skip those that already exist in database
@@ -221,7 +226,10 @@ router.post(
           const fileContent = fs.readFileSync(filePath, "utf8");
           existingData = JSON.parse(fileContent);
         } catch (parseError) {
-          console.warn("Could not parse existing JSON file, starting fresh:", parseError.message);
+          console.warn(
+            "Could not parse existing JSON file, starting fresh:",
+            parseError.message,
+          );
         }
       }
 
@@ -229,16 +237,26 @@ router.post(
       const mergedDepartments = { ...existingData.departments, ...departments };
 
       // For users - only add new users, skip existing ones by email
-      const existingUserEmails = new Set(existingData.users.map(u => u.email.toLowerCase()));
-      const usersToAdd = newUsers.filter(user => !existingUserEmails.has(user.email.toLowerCase()));
-      const alreadyInJsonUsers = newUsers.filter(user => existingUserEmails.has(user.email.toLowerCase()));
+      const existingUserEmails = new Set(
+        existingData.users.map((u) => u.email.toLowerCase()),
+      );
+      const usersToAdd = newUsers.filter(
+        (user) => !existingUserEmails.has(user.email.toLowerCase()),
+      );
+      const alreadyInJsonUsers = newUsers.filter((user) =>
+        existingUserEmails.has(user.email.toLowerCase()),
+      );
 
       const finalUsers = [...existingData.users, ...usersToAdd];
 
       // Update the JSON file
       fs.writeFileSync(
         filePath,
-        JSON.stringify({ departments: mergedDepartments, users: finalUsers }, null, 2),
+        JSON.stringify(
+          { departments: mergedDepartments, users: finalUsers },
+          null,
+          2,
+        ),
       );
 
       // Reload the data
@@ -246,7 +264,9 @@ router.post(
 
       const totalSkipped = skippedUsers.length + alreadyInJsonUsers.length;
 
-      console.log(`📁 Department data updated: ${usersToAdd.length} new users added, ${totalSkipped} users skipped (already exist)`);
+      console.log(
+        `📁 Department data updated: ${usersToAdd.length} new users added, ${totalSkipped} users skipped (already exist)`,
+      );
 
       res.json({
         success: true,

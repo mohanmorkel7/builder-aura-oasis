@@ -208,10 +208,10 @@ export default function AzureUserRoleAssignment() {
         const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
         response = await fetch("/api/azure-sync/unknown-users", {
-          method: 'GET',
+          method: "GET",
           headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
+            Accept: "application/json",
+            "Content-Type": "application/json",
           },
           signal: controller.signal,
         });
@@ -220,10 +220,17 @@ export default function AzureUserRoleAssignment() {
       } catch (fetchError) {
         console.error("Network fetch error:", fetchError);
 
-        if (fetchError.name === 'AbortError') {
-          throw new Error("Request timeout - server may be unresponsive. Check if the server is running.");
-        } else if (fetchError.name === 'TypeError' && fetchError.message.includes('Failed to fetch')) {
-          throw new Error("Network connection failed. The server may be down or unreachable. Check your connection.");
+        if (fetchError.name === "AbortError") {
+          throw new Error(
+            "Request timeout - server may be unresponsive. Check if the server is running.",
+          );
+        } else if (
+          fetchError.name === "TypeError" &&
+          fetchError.message.includes("Failed to fetch")
+        ) {
+          throw new Error(
+            "Network connection failed. The server may be down or unreachable. Check your connection.",
+          );
         } else {
           throw new Error(`Network error: ${fetchError.message}`);
         }
@@ -234,7 +241,9 @@ export default function AzureUserRoleAssignment() {
         // Handle specific HTTP status codes
         if (response.status === 503) {
           // Service unavailable - likely database connection issue
-          setError("Database connection failed. Please start PostgreSQL database or check your database configuration.");
+          setError(
+            "Database connection failed. Please start PostgreSQL database or check your database configuration.",
+          );
           return;
         }
 
@@ -392,7 +401,7 @@ export default function AzureUserRoleAssignment() {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "Accept": "application/json",
+              Accept: "application/json",
             },
             body: JSON.stringify({ userRoles: validRoleAssignments }),
             signal: controller.signal,
@@ -402,14 +411,20 @@ export default function AzureUserRoleAssignment() {
 
           if (!roleResponse.ok) {
             if (roleResponse.status === 503) {
-              throw new Error("Database connection failed during role assignment");
+              throw new Error(
+                "Database connection failed during role assignment",
+              );
             }
-            throw new Error(`Role assignment failed: ${roleResponse.statusText}`);
+            throw new Error(
+              `Role assignment failed: ${roleResponse.statusText}`,
+            );
           }
           roleResult = await roleResponse.json();
         } catch (fetchError) {
-          if (fetchError.name === 'AbortError') {
-            throw new Error("Role assignment timeout - operation took too long");
+          if (fetchError.name === "AbortError") {
+            throw new Error(
+              "Role assignment timeout - operation took too long",
+            );
           }
           throw fetchError; // Re-throw other errors
         }
@@ -421,30 +436,39 @@ export default function AzureUserRoleAssignment() {
           const controller = new AbortController();
           const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
 
-          const departmentResponse = await fetch("/api/azure-sync/assign-departments", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Accept": "application/json",
+          const departmentResponse = await fetch(
+            "/api/azure-sync/assign-departments",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+              },
+              body: JSON.stringify({
+                userDepartments: validDepartmentAssignments,
+              }),
+              signal: controller.signal,
             },
-            body: JSON.stringify({
-              userDepartments: validDepartmentAssignments,
-            }),
-            signal: controller.signal,
-          });
+          );
 
           clearTimeout(timeoutId);
 
           if (!departmentResponse.ok) {
             if (departmentResponse.status === 503) {
-              throw new Error("Database connection failed during department assignment");
+              throw new Error(
+                "Database connection failed during department assignment",
+              );
             }
-            throw new Error(`Department assignment failed: ${departmentResponse.statusText}`);
+            throw new Error(
+              `Department assignment failed: ${departmentResponse.statusText}`,
+            );
           }
           departmentResult = await departmentResponse.json();
         } catch (fetchError) {
-          if (fetchError.name === 'AbortError') {
-            throw new Error("Department assignment timeout - operation took too long");
+          if (fetchError.name === "AbortError") {
+            throw new Error(
+              "Department assignment timeout - operation took too long",
+            );
           }
           throw fetchError; // Re-throw other errors
         }
@@ -603,8 +627,10 @@ export default function AzureUserRoleAssignment() {
             Last fetch: {new Date().toLocaleTimeString()}
             {error && error.includes("Database") && (
               <>
-                <br /><strong>Note:</strong> Database connection error detected.
-                <br />Check if PostgreSQL is running on port 5432.
+                <br />
+                <strong>Note:</strong> Database connection error detected.
+                <br />
+                Check if PostgreSQL is running on port 5432.
               </>
             )}
           </AlertDescription>

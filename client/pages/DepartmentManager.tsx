@@ -96,7 +96,9 @@ export default function DepartmentManager() {
         const data = response.data;
         setUploadStatus({
           type: "success",
-          message: response.message || `Successfully processed ${parsedData.users.length} users. Added ${data?.newUserCount || 0} new users, skipped ${data?.skippedUserCount || 0} existing users.`,
+          message:
+            response.message ||
+            `Successfully processed ${parsedData.users.length} users. Added ${data?.newUserCount || 0} new users, skipped ${data?.skippedUserCount || 0} existing users.`,
         });
         // Reload current data to show updated state
         await loadCurrentData();
@@ -262,9 +264,9 @@ export default function DepartmentManager() {
             </CardTitle>
             <CardDescription>
               Upload a JSON file containing user department assignments. Users
-              already existing in the database (by email) will be skipped and not updated.
-              Users without a "department" field will be marked as "unknown" for
-              manual role assignment.
+              already existing in the database (by email) will be skipped and
+              not updated. Users without a "department" field will be marked as
+              "unknown" for manual role assignment.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
