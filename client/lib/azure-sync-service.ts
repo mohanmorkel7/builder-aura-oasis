@@ -1,4 +1,8 @@
-import { PublicClientApplication, AccountInfo, BrowserAuthError } from "@azure/msal-browser";
+import {
+  PublicClientApplication,
+  AccountInfo,
+  BrowserAuthError,
+} from "@azure/msal-browser";
 import { msalConfig, syncRequest, graphConfig } from "./msal-config";
 
 // Initialize MSAL instance
@@ -8,8 +12,8 @@ let msalInitialized = false;
 // Utility to detect if popups are blocked
 const isPopupBlocked = (): boolean => {
   try {
-    const popup = window.open('', '_blank', 'width=1,height=1');
-    if (!popup || popup.closed || typeof popup.closed === 'undefined') {
+    const popup = window.open("", "_blank", "width=1,height=1");
+    if (!popup || popup.closed || typeof popup.closed === "undefined") {
       return true;
     }
     popup.close();
@@ -81,14 +85,17 @@ export class AzureSyncService {
     try {
       const response = await this.msal.handleRedirectPromise();
       if (response) {
-        console.log("Redirect authentication successful:", response.account?.name);
+        console.log(
+          "Redirect authentication successful:",
+          response.account?.name,
+        );
         // Store success state in sessionStorage for UI feedback
-        sessionStorage.setItem('msal_redirect_success', 'true');
+        sessionStorage.setItem("msal_redirect_success", "true");
       }
     } catch (error) {
       console.error("Error handling redirect response:", error);
       // Store error state for UI feedback
-      sessionStorage.setItem('msal_redirect_error', error.message);
+      sessionStorage.setItem("msal_redirect_error", error.message);
     }
   }
 
@@ -139,10 +146,12 @@ export class AzureSyncService {
 
       // Handle specific MSAL errors
       if (error instanceof BrowserAuthError) {
-        if (error.errorCode === 'popup_window_error') {
-          throw new Error("Popup windows are blocked. Please enable popups for this site or use redirect-based authentication.");
+        if (error.errorCode === "popup_window_error") {
+          throw new Error(
+            "Popup windows are blocked. Please enable popups for this site or use redirect-based authentication.",
+          );
         }
-        if (error.errorCode === 'user_cancelled') {
+        if (error.errorCode === "user_cancelled") {
           throw new Error("Authentication was cancelled by user.");
         }
       }
@@ -172,14 +181,19 @@ export class AzureSyncService {
           if (useRedirectFallback) {
             return await this.performLogin(true);
           } else {
-            throw new Error("Popup authentication cannot be used - popups are blocked.");
+            throw new Error(
+              "Popup authentication cannot be used - popups are blocked.",
+            );
           }
         }
 
         const loginResponse = await this.msal.loginPopup(syncRequest);
         return loginResponse.account;
       } catch (error) {
-        if (error instanceof BrowserAuthError && error.errorCode === 'popup_window_error') {
+        if (
+          error instanceof BrowserAuthError &&
+          error.errorCode === "popup_window_error"
+        ) {
           const useRedirectFallback = showPopupBlockerWarning();
           if (useRedirectFallback) {
             return await this.performLogin(true);
@@ -193,7 +207,10 @@ export class AzureSyncService {
   /**
    * Perform interactive authentication with popup/redirect fallback
    */
-  private async performInteractiveAuth(account: AccountInfo, useRedirect: boolean): Promise<string> {
+  private async performInteractiveAuth(
+    account: AccountInfo,
+    useRedirect: boolean,
+  ): Promise<string> {
     if (!this.msal) {
       throw new Error("MSAL instance not initialized");
     }
@@ -213,7 +230,9 @@ export class AzureSyncService {
           if (useRedirectFallback) {
             return await this.performInteractiveAuth(account, true);
           } else {
-            throw new Error("Interactive authentication cannot be used - popups are blocked.");
+            throw new Error(
+              "Interactive authentication cannot be used - popups are blocked.",
+            );
           }
         }
 
@@ -223,7 +242,10 @@ export class AzureSyncService {
         });
         return tokenResponse.accessToken;
       } catch (error) {
-        if (error instanceof BrowserAuthError && error.errorCode === 'popup_window_error') {
+        if (
+          error instanceof BrowserAuthError &&
+          error.errorCode === "popup_window_error"
+        ) {
           const useRedirectFallback = showPopupBlockerWarning();
           if (useRedirectFallback) {
             return await this.performInteractiveAuth(account, true);
@@ -365,7 +387,8 @@ export class AzureSyncService {
 export const azureSyncService = new AzureSyncService();
 
 // Helper function to ensure service is initialized
-export const initializeAzureSyncService = async (): Promise<AzureSyncService> => {
-  await azureSyncService.ensureInitialized();
-  return azureSyncService;
-};
+export const initializeAzureSyncService =
+  async (): Promise<AzureSyncService> => {
+    await azureSyncService.ensureInitialized();
+    return azureSyncService;
+  };
