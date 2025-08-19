@@ -55,7 +55,9 @@ SELECT 'Azure migration completed successfully!' as status;
 `;
 
 console.log("🔧 Azure Migration SQL:");
-console.log("Copy and paste this SQL into your database to fix the azure_object_id error:");
+console.log(
+  "Copy and paste this SQL into your database to fix the azure_object_id error:",
+);
 console.log("=" * 80);
 console.log(azureMigrationSQL);
 console.log("=" * 80);
@@ -70,6 +72,10 @@ console.log("");
 console.log("🎯 After running this migration:");
 console.log("- Azure AD sync will work without column errors");
 console.log("- Users without departments will become 'unknown' users");
-console.log("- 'Assign Roles' page will show unknown users for bulk assignment");
+console.log(
+  "- 'Assign Roles' page will show unknown users for bulk assignment",
+);
 console.log("");
-console.log("💡 To apply: Run this SQL in your database management tool or psql");
+console.log(
+  "💡 To apply: Run this SQL in your database management tool or psql",
+);
