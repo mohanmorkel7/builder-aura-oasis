@@ -269,6 +269,17 @@ function AppRoutes() {
       />
 
       <Route
+        path="/admin/users/azure-role-assignment"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <DashboardLayout>
+              <AzureUserRoleAssignment />
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
         path="/admin/users/add"
         element={
           <ProtectedRoute allowedRoles={["admin"]}>
