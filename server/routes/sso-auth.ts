@@ -158,17 +158,16 @@ router.post(
         });
       }
 
-      // Validate users have required fields
+      // Validate users have required fields (department is optional for unknown users)
       for (const user of users) {
         if (
           !user.email ||
           !user.displayName ||
-          !user.department ||
           !user.ssoId
         ) {
           return res.status(400).json({
             success: false,
-            error: `Invalid user data. Each user must have: email, displayName, department, ssoId. Missing for: ${user.email || "unknown"}`,
+            error: `Invalid user data. Each user must have: email, displayName, ssoId. Missing for: ${user.email || "unknown"}`,
           });
         }
 
