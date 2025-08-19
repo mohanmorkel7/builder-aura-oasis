@@ -262,7 +262,8 @@ router.post("/admin/fix-user-roles", async (req: Request, res: Response) => {
       SET
           role = CASE
               WHEN department = 'hr' THEN 'hr_management'
-              WHEN department = 'finance' THEN 'finops'
+              WHEN department = 'finance' THEN 'finance'
+              WHEN department = 'finops' THEN 'finops'
               WHEN department = 'database' THEN 'db'
               WHEN department = 'frontend' THEN 'development'
               WHEN department = 'backend' THEN 'development'
