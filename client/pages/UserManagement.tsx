@@ -56,6 +56,7 @@ export default function UserManagement() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRole, setSelectedRole] = useState<string>("all");
   const [selectedDepartment, setSelectedDepartment] = useState<string>("all");
+  const [azureConnectionStatus, setAzureConnectionStatus] = useState<"unknown" | "connected" | "disconnected">("unknown");
 
   // Use only database users
   const allUsers = localUsers || [];
