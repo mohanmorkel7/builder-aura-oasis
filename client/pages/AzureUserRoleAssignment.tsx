@@ -493,7 +493,7 @@ export default function AzureUserRoleAssignment() {
               <p className="text-lg font-semibold text-green-600">
                 {getAssignedCount()} / {filteredUsers.length}
               </p>
-              <p className="text-sm text-gray-500">Roles Assigned</p>
+              <p className="text-sm text-gray-500">Assignments Made</p>
             </div>
           </div>
         </CardContent>
