@@ -150,6 +150,12 @@ router.put("/users/:id", async (req: Request, res: Response) => {
 
     const userData: UpdateUserData = req.body;
 
+    console.log("=== USER UPDATE DEBUG ===");
+    console.log("User ID:", id);
+    console.log("Received userData:", JSON.stringify(userData, null, 2));
+    console.log("Received role:", userData.role);
+    console.log("Received role type:", typeof userData.role);
+
     // Validate role if provided
     const validRoles = [
       "admin",
@@ -163,7 +169,14 @@ router.put("/users/:id", async (req: Request, res: Response) => {
       "infra",
       "switch_team",
     ];
+
+    console.log("Valid roles:", validRoles);
+    console.log("Role validation - includes check:", validRoles.includes(userData.role));
+
     if (userData.role && !validRoles.includes(userData.role)) {
+      console.log("ROLE VALIDATION FAILED!");
+      console.log("Received role:", userData.role);
+      console.log("Valid roles:", validRoles);
       return res.status(400).json({
         error: "Invalid role",
         validRoles: validRoles,
