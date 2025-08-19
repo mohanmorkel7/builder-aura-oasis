@@ -357,12 +357,15 @@ export const AuthProvider = React.memo(function AuthProvider({
           const profile: MicrosoftProfile = await graphResponse.json();
 
           // Use our SSO endpoint to get user data with proper department mapping
-          console.log('🔍 Using department mapping for SSO login:', profile.mail || profile.userPrincipalName);
+          console.log(
+            "🔍 Using department mapping for SSO login:",
+            profile.mail || profile.userPrincipalName,
+          );
 
-          const ssoResponse = await fetch('/api/sso/login', {
-            method: 'POST',
+          const ssoResponse = await fetch("/api/sso/login", {
+            method: "POST",
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
             body: JSON.stringify({
               ssoUser: {
@@ -372,22 +375,28 @@ export const AuthProvider = React.memo(function AuthProvider({
                 givenName: profile.givenName,
                 surname: profile.surname,
                 jobTitle: profile.jobTitle,
-                userPrincipalName: profile.userPrincipalName
-              }
+                userPrincipalName: profile.userPrincipalName,
+              },
             }),
           });
 
           if (ssoResponse.ok) {
             const ssoResult = await ssoResponse.json();
             if (ssoResult.success) {
-              console.log('✅ SSO department mapping successful:', ssoResult.user);
+              console.log(
+                "✅ SSO department mapping successful:",
+                ssoResult.user,
+              );
 
               // Use data from our department mapping
               const userData: User = {
                 id: ssoResult.user.id.toString(),
                 name: ssoResult.user.name,
                 email: ssoResult.user.email,
-                role: ssoResult.user.role === "admin" ? "admin" : ssoResult.user.role, // Ensure admin role is preserved
+                role:
+                  ssoResult.user.role === "admin"
+                    ? "admin"
+                    : ssoResult.user.role, // Ensure admin role is preserved
                 department: ssoResult.user.department,
                 permissions: ssoResult.user.permissions,
                 jobTitle: ssoResult.user.jobTitle,
@@ -395,7 +404,7 @@ export const AuthProvider = React.memo(function AuthProvider({
                 ssoId: ssoResult.user.ssoId,
               };
 
-              console.log('🎯 Setting user data with role:', userData.role);
+              console.log("🎯 Setting user data with role:", userData.role);
               setUser(userData);
               localStorage.setItem("banani_user", JSON.stringify(userData));
               localStorage.setItem(
@@ -405,14 +414,20 @@ export const AuthProvider = React.memo(function AuthProvider({
               setIsLoading(false);
               return true;
             } else {
-              console.warn('⚠️ SSO department mapping failed:', ssoResult.error);
+              console.warn(
+                "⚠️ SSO department mapping failed:",
+                ssoResult.error,
+              );
             }
           } else {
-            console.warn('⚠️ SSO endpoint failed with status:', ssoResponse.status);
+            console.warn(
+              "⚠️ SSO endpoint failed with status:",
+              ssoResponse.status,
+            );
           }
 
           // Fallback to Azure AD groups if SSO endpoint fails
-          console.log('⚠️ Falling back to Azure AD groups method');
+          console.log("⚠️ Falling back to Azure AD groups method");
 
           const groupsResponse = await fetch(
             `${graphConfig.graphMeEndpoint}/memberOf`,
@@ -426,7 +441,7 @@ export const AuthProvider = React.memo(function AuthProvider({
           const groups = await groupsResponse.json();
           const userRole = extractRoleFromGroups(groups.value || []);
 
-          console.log('🔄 Azure AD groups fallback assigned role:', userRole);
+          console.log("🔄 Azure AD groups fallback assigned role:", userRole);
 
           // Create user data from Microsoft profile (fallback)
           const userData: User = {
