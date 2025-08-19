@@ -296,6 +296,14 @@ export default function AzureUserRoleAssignment() {
     );
   };
 
+  const updateDepartment = (userId: number, department: string) => {
+    setDepartmentAssignments((prev) =>
+      prev.map((assignment) =>
+        assignment.userId === userId ? { ...assignment, department } : assignment,
+      ),
+    );
+  };
+
   const assignRoles = async () => {
     try {
       setSaving(true);
