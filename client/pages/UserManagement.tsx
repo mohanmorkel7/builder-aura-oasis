@@ -61,6 +61,32 @@ export default function UserManagement() {
   // Use only database users
   const allUsers = localUsers || [];
 
+  // Test Azure connection on component mount
+  React.useEffect(() => {
+    const testConnection = async () => {
+      try {
+        await azureSyncService.checkPermissions();
+        setAzureConnectionStatus("connected");
+      } catch (error) {
+        console.log("Azure connection test failed:", error);
+        setAzureConnectionStatus("disconnected");
+      }
+    };
+    testConnection();
+  }, []);
+
+  const handleTestAzureConnection = async () => {
+    try {
+      setAzureConnectionStatus("unknown");
+      await azureSyncService.testGraphConnection();
+      setAzureConnectionStatus("connected");
+      alert("Azure AD connection test successful!");
+    } catch (error) {
+      setAzureConnectionStatus("disconnected");
+      alert(`Azure AD connection test failed: ${error.message}`);
+    }
+  };
+
   // Filter users based on search and filters
   const filteredUsers = allUsers.filter((user) => {
     const matchesSearch =
