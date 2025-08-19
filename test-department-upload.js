@@ -4,110 +4,118 @@
  */
 
 const testData = {
-  "departments": {
-    "admin": {
-      "name": "Administration",
-      "permissions": ["admin", "users", "reports", "settings"],
-      "users": []
+  departments: {
+    admin: {
+      name: "Administration",
+      permissions: ["admin", "users", "reports", "settings"],
+      users: [],
     },
-    "development": {
-      "name": "Development Team", 
-      "permissions": ["product", "development"],
-      "users": []
-    }
+    development: {
+      name: "Development Team",
+      permissions: ["product", "development"],
+      users: [],
+    },
   },
-  "users": [
+  users: [
     {
-      "email": "test1@mylapay.com",
-      "displayName": "Test User 1",
-      "givenName": "Test",
-      "surname": "User1",
-      "jobTitle": "Developer",
-      "department": "development",
-      "ssoId": "test-sso-1"
+      email: "test1@mylapay.com",
+      displayName: "Test User 1",
+      givenName: "Test",
+      surname: "User1",
+      jobTitle: "Developer",
+      department: "development",
+      ssoId: "test-sso-1",
     },
     {
-      "email": "test2@mylapay.com", 
-      "displayName": "Test User 2",
-      "givenName": "Test",
-      "surname": "User2",
-      "jobTitle": "Admin",
-      "department": "admin",
-      "ssoId": "test-sso-2"
+      email: "test2@mylapay.com",
+      displayName: "Test User 2",
+      givenName: "Test",
+      surname: "User2",
+      jobTitle: "Admin",
+      department: "admin",
+      ssoId: "test-sso-2",
     },
     {
-      "email": "Maanas.m@mylapay.com", // This email exists in database
-      "displayName": "Maanas M",
-      "givenName": "Maanas",
-      "surname": "M",
-      "jobTitle": "Senior Associate Technology",
-      "department": "development",
-      "ssoId": "a8400ea8-5e8a-41ef-aa9a-5621f3822876"
+      email: "Maanas.m@mylapay.com", // This email exists in database
+      displayName: "Maanas M",
+      givenName: "Maanas",
+      surname: "M",
+      jobTitle: "Senior Associate Technology",
+      department: "development",
+      ssoId: "a8400ea8-5e8a-41ef-aa9a-5621f3822876",
     },
     {
-      "email": "Prakash.R@mylapay.com", // This email exists in database
-      "displayName": "Prakash R",
-      "givenName": "Prakash", 
-      "surname": "R",
-      "jobTitle": "Associate Technology",
-      "department": "development",
-      "ssoId": "304a7b09-f024-45c4-83f3-ca898a356bef"
-    }
-  ]
+      email: "Prakash.R@mylapay.com", // This email exists in database
+      displayName: "Prakash R",
+      givenName: "Prakash",
+      surname: "R",
+      jobTitle: "Associate Technology",
+      department: "development",
+      ssoId: "304a7b09-f024-45c4-83f3-ca898a356bef",
+    },
+  ],
 };
 
 async function testDepartmentUpload() {
   try {
-    console.log('Testing department upload with existing users...');
+    console.log("Testing department upload with existing users...");
     console.log(`Total users in test data: ${testData.users.length}`);
-    
+
     // The emails that should exist in database (from previous context)
     const expectedExistingEmails = [
-      'Maanas.m@mylapay.com',
-      'Prakash.R@mylapay.com'
+      "Maanas.m@mylapay.com",
+      "Prakash.R@mylapay.com",
     ];
-    
-    console.log('Expected existing emails (should be skipped):');
-    expectedExistingEmails.forEach(email => console.log(`  - ${email}`));
-    
-    const response = await fetch('/api/auth/admin/upload-departments', {
-      method: 'POST',
+
+    console.log("Expected existing emails (should be skipped):");
+    expectedExistingEmails.forEach((email) => console.log(`  - ${email}`));
+
+    const response = await fetch("/api/auth/admin/upload-departments", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(testData)
+      body: JSON.stringify(testData),
     });
-    
+
     const result = await response.json();
-    
+
     if (result.success) {
-      console.log('\n✅ Upload successful!');
-      console.log('Response message:', result.message);
-      
+      console.log("\n✅ Upload successful!");
+      console.log("Response message:", result.message);
+
       if (result.data) {
-        console.log('\nDetailed results:');
+        console.log("\nDetailed results:");
         console.log(`- New users added: ${result.data.newUserCount}`);
-        console.log(`- Users skipped (in database): ${result.data.skippedInDatabase}`);
+        console.log(
+          `- Users skipped (in database): ${result.data.skippedInDatabase}`,
+        );
         console.log(`- Users skipped (in JSON): ${result.data.skippedInJson}`);
-        console.log(`- Total users in JSON now: ${result.data.totalUsersInJson}`);
+        console.log(
+          `- Total users in JSON now: ${result.data.totalUsersInJson}`,
+        );
         console.log(`- Departments processed: ${result.data.departmentCount}`);
-        
+
         // Verify that existing users were properly skipped
         const expectedSkipped = expectedExistingEmails.length;
         const actualSkipped = result.data.skippedInDatabase;
-        
+
         if (actualSkipped >= expectedSkipped) {
-          console.log('\n✅ Database checking working correctly - existing users were skipped');
+          console.log(
+            "\n✅ Database checking working correctly - existing users were skipped",
+          );
         } else {
-          console.log('\n❌ Database checking may not be working - fewer users skipped than expected');
+          console.log(
+            "\n❌ Database checking may not be working - fewer users skipped than expected",
+          );
         }
       }
     } else {
-      console.log('\n❌ Upload failed:', result.error);
-      console.log('Message:', result.message);
+      console.log("\n❌ Upload failed:", result.error);
+      console.log("Message:", result.message);
     }
   } catch (error) {
-    console.error('Test failed:', error.message);
+    console.error("Test failed:", error.message);
   }
 }
 

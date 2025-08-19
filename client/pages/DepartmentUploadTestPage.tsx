@@ -1,9 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Database, Upload, Users, CheckCircle, XCircle } from "lucide-react";
 
 interface User {
@@ -18,56 +31,56 @@ interface User {
 }
 
 const testData = {
-  "departments": {
-    "admin": {
-      "name": "Administration",
-      "permissions": ["admin", "users", "reports", "settings"],
-      "users": []
+  departments: {
+    admin: {
+      name: "Administration",
+      permissions: ["admin", "users", "reports", "settings"],
+      users: [],
     },
-    "development": {
-      "name": "Development Team", 
-      "permissions": ["product", "development"],
-      "users": []
-    }
+    development: {
+      name: "Development Team",
+      permissions: ["product", "development"],
+      users: [],
+    },
   },
-  "users": [
+  users: [
     {
-      "email": "test1@mylapay.com",
-      "displayName": "Test User 1",
-      "givenName": "Test",
-      "surname": "User1",
-      "jobTitle": "Developer",
-      "department": "development",
-      "ssoId": "test-sso-1"
+      email: "test1@mylapay.com",
+      displayName: "Test User 1",
+      givenName: "Test",
+      surname: "User1",
+      jobTitle: "Developer",
+      department: "development",
+      ssoId: "test-sso-1",
     },
     {
-      "email": "test2@mylapay.com", 
-      "displayName": "Test User 2",
-      "givenName": "Test",
-      "surname": "User2",
-      "jobTitle": "Admin",
-      "department": "admin",
-      "ssoId": "test-sso-2"
+      email: "test2@mylapay.com",
+      displayName: "Test User 2",
+      givenName: "Test",
+      surname: "User2",
+      jobTitle: "Admin",
+      department: "admin",
+      ssoId: "test-sso-2",
     },
     {
-      "email": "Maanas.m@mylapay.com", // This email exists in database
-      "displayName": "Maanas M",
-      "givenName": "Maanas",
-      "surname": "M",
-      "jobTitle": "Senior Associate Technology",
-      "department": "development",
-      "ssoId": "a8400ea8-5e8a-41ef-aa9a-5621f3822876"
+      email: "Maanas.m@mylapay.com", // This email exists in database
+      displayName: "Maanas M",
+      givenName: "Maanas",
+      surname: "M",
+      jobTitle: "Senior Associate Technology",
+      department: "development",
+      ssoId: "a8400ea8-5e8a-41ef-aa9a-5621f3822876",
     },
     {
-      "email": "Prakash.R@mylapay.com", // This email exists in database
-      "displayName": "Prakash R",
-      "givenName": "Prakash", 
-      "surname": "R",
-      "jobTitle": "Associate Technology",
-      "department": "development",
-      "ssoId": "304a7b09-f024-45c4-83f3-ca898a356bef"
-    }
-  ]
+      email: "Prakash.R@mylapay.com", // This email exists in database
+      displayName: "Prakash R",
+      givenName: "Prakash",
+      surname: "R",
+      jobTitle: "Associate Technology",
+      department: "development",
+      ssoId: "304a7b09-f024-45c4-83f3-ca898a356bef",
+    },
+  ],
 };
 
 export default function DepartmentUploadTestPage() {
@@ -80,10 +93,10 @@ export default function DepartmentUploadTestPage() {
     try {
       setLoading(true);
       setError(null);
-      
+
       const response = await fetch("/api/auth/admin/check-existing-users");
       const result = await response.json();
-      
+
       if (result.success) {
         setExistingUsers(result.users);
       } else {
@@ -101,18 +114,18 @@ export default function DepartmentUploadTestPage() {
       setLoading(true);
       setError(null);
       setTestResult(null);
-      
+
       const response = await fetch("/api/auth/admin/upload-departments", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(testData)
+        body: JSON.stringify(testData),
       });
-      
+
       const result = await response.json();
       setTestResult(result);
-      
+
       // Reload existing users to see changes
       await loadExistingUsers();
     } catch (err) {
@@ -127,16 +140,21 @@ export default function DepartmentUploadTestPage() {
   }, []);
 
   const getTestUserStatus = (email: string) => {
-    const existsInDb = existingUsers.some(user => user.email.toLowerCase() === email.toLowerCase());
+    const existsInDb = existingUsers.some(
+      (user) => user.email.toLowerCase() === email.toLowerCase(),
+    );
     return existsInDb;
   };
 
   return (
     <div className="p-6 space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Department Upload Database Check Test</h1>
+        <h1 className="text-3xl font-bold text-gray-900">
+          Department Upload Database Check Test
+        </h1>
         <p className="text-gray-600 mt-1">
-          Test that department upload correctly checks database and skips existing users
+          Test that department upload correctly checks database and skips
+          existing users
         </p>
       </div>
 
@@ -148,12 +166,15 @@ export default function DepartmentUploadTestPage() {
             <span>Current Database Users ({existingUsers.length})</span>
           </CardTitle>
           <CardDescription>
-            Users currently in the database - upload should skip these if email matches
+            Users currently in the database - upload should skip these if email
+            matches
           </CardDescription>
         </CardHeader>
         <CardContent>
           {loading && !testResult ? (
-            <div className="text-center py-4">Loading users from database...</div>
+            <div className="text-center py-4">
+              Loading users from database...
+            </div>
           ) : existingUsers.length > 0 ? (
             <div className="max-h-60 overflow-y-auto">
               <Table>
@@ -169,9 +190,15 @@ export default function DepartmentUploadTestPage() {
                 <TableBody>
                   {existingUsers.map((user) => (
                     <TableRow key={user.id}>
-                      <TableCell>{user.first_name} {user.last_name}</TableCell>
-                      <TableCell className="font-mono text-sm">{user.email}</TableCell>
-                      <TableCell><Badge variant="secondary">{user.role}</Badge></TableCell>
+                      <TableCell>
+                        {user.first_name} {user.last_name}
+                      </TableCell>
+                      <TableCell className="font-mono text-sm">
+                        {user.email}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="secondary">{user.role}</Badge>
+                      </TableCell>
                       <TableCell>{user.department || "N/A"}</TableCell>
                       <TableCell>{user.sso_provider || "Local"}</TableCell>
                     </TableRow>
@@ -195,7 +222,8 @@ export default function DepartmentUploadTestPage() {
             <span>Test Upload Data ({testData.users.length} users)</span>
           </CardTitle>
           <CardDescription>
-            Data that will be uploaded - emails matching database should be skipped
+            Data that will be uploaded - emails matching database should be
+            skipped
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -213,17 +241,25 @@ export default function DepartmentUploadTestPage() {
                 const existsInDb = getTestUserStatus(user.email);
                 return (
                   <TableRow key={index}>
-                    <TableCell className="font-mono text-sm">{user.email}</TableCell>
+                    <TableCell className="font-mono text-sm">
+                      {user.email}
+                    </TableCell>
                     <TableCell>{user.displayName}</TableCell>
                     <TableCell>{user.department}</TableCell>
                     <TableCell>
                       {existsInDb ? (
-                        <Badge variant="destructive" className="flex items-center space-x-1">
+                        <Badge
+                          variant="destructive"
+                          className="flex items-center space-x-1"
+                        >
                           <XCircle className="w-3 h-3" />
                           <span>Should Skip</span>
                         </Badge>
                       ) : (
-                        <Badge variant="default" className="flex items-center space-x-1">
+                        <Badge
+                          variant="default"
+                          className="flex items-center space-x-1"
+                        >
                           <CheckCircle className="w-3 h-3" />
                           <span>Should Add</span>
                         </Badge>
@@ -253,7 +289,9 @@ export default function DepartmentUploadTestPage() {
               className="flex items-center space-x-2"
             >
               <Upload className="w-4 h-4" />
-              <span>{loading ? "Testing..." : "Run Department Upload Test"}</span>
+              <span>
+                {loading ? "Testing..." : "Run Department Upload Test"}
+              </span>
             </Button>
             <Button
               variant="outline"
@@ -273,21 +311,44 @@ export default function DepartmentUploadTestPage() {
           )}
 
           {testResult && (
-            <Alert className={testResult.success ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50"}>
+            <Alert
+              className={
+                testResult.success
+                  ? "border-green-200 bg-green-50"
+                  : "border-red-200 bg-red-50"
+              }
+            >
               <AlertDescription>
                 <div className="space-y-2">
                   <div className="font-semibold">
-                    {testResult.success ? "✅ Test Completed" : "❌ Test Failed"}
+                    {testResult.success
+                      ? "✅ Test Completed"
+                      : "❌ Test Failed"}
                   </div>
-                  <div className="text-sm whitespace-pre-line">{testResult.message}</div>
+                  <div className="text-sm whitespace-pre-line">
+                    {testResult.message}
+                  </div>
                   {testResult.data && (
                     <div className="text-sm space-y-1">
-                      <div><strong>Results:</strong></div>
+                      <div>
+                        <strong>Results:</strong>
+                      </div>
                       <div>• Users in upload: {testData.users.length}</div>
-                      <div>• New users added: {testResult.data.newUserCount}</div>
-                      <div>• Users skipped (in database): {testResult.data.skippedInDatabase}</div>
-                      <div>• Users skipped (in JSON): {testResult.data.skippedInJson}</div>
-                      <div>• Total users in system: {testResult.data.totalUsersInJson}</div>
+                      <div>
+                        • New users added: {testResult.data.newUserCount}
+                      </div>
+                      <div>
+                        • Users skipped (in database):{" "}
+                        {testResult.data.skippedInDatabase}
+                      </div>
+                      <div>
+                        • Users skipped (in JSON):{" "}
+                        {testResult.data.skippedInJson}
+                      </div>
+                      <div>
+                        • Total users in system:{" "}
+                        {testResult.data.totalUsersInJson}
+                      </div>
                     </div>
                   )}
                 </div>
