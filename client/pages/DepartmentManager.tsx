@@ -151,14 +151,31 @@ export default function DepartmentManager() {
       },
       users: [
         {
-          email: "user@mylapay.com",
-          displayName: "User Name",
-          givenName: "User",
-          surname: "Name",
-          jobTitle: "Job Title",
-          department: "backend",
-          ssoId: "microsoft-sso-id-here",
+          email: "mohan.m@mylapay.com",
+          displayName: "Mohan Raj Ravichandran",
+          givenName: "Mohan Raj",
+          surname: "Ravichandran",
+          jobTitle: "Director Technology",
+          department: "admin",
+          ssoId: "a416d1c8-bc01-4acd-8cad-3210a78d01a9"
         },
+        {
+          email: "john.doe@mylapay.com",
+          displayName: "John Doe",
+          givenName: "John",
+          surname: "Doe",
+          jobTitle: "Software Engineer",
+          department: "backend",
+          ssoId: "microsoft-sso-id-here"
+        },
+        {
+          email: "jane.smith@mylapay.com",
+          displayName: "Jane Smith",
+          givenName: "Jane",
+          surname: "Smith",
+          jobTitle: "Project Manager"
+          // Note: No department field - will become "unknown" user
+        }
       ],
     };
 
