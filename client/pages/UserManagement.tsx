@@ -138,8 +138,9 @@ export default function UserManagement() {
         syncButton.textContent = "Authenticating...";
       }
 
-      // Check permissions first
-      const hasPermissions = await azureSyncService.checkPermissions();
+      // Initialize service and check permissions first
+      const service = await initializeAzureSyncService();
+      const hasPermissions = await service.checkPermissions();
       if (!hasPermissions) {
         throw new Error(
           "Insufficient permissions. Please ensure your account has User.Read.All and Directory.Read.All permissions.",
@@ -152,7 +153,7 @@ export default function UserManagement() {
       }
 
       // Perform sync using MSAL service
-      const result = await azureSyncService.syncUsersFromAzure();
+      const result = await service.syncUsersFromAzure();
 
       if (result.success) {
         const message = `Azure AD sync completed successfully!\n\nStats:\n- Total users: ${result.stats.total}\n- New users: ${result.stats.inserted}\n- Updated users: ${result.stats.updated}\n- Skipped users: ${result.stats.skipped}\n\nJSON file saved: ${result.jsonFile}`;
