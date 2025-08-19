@@ -560,7 +560,7 @@ export default function UserEdit() {
                     " Infrastructure users can manage servers, deployments, and system infrastructure."}
                   {user.role === "switch_team" &&
                     " Switch team members have specialized access for team transitions."}
-                  {user.department && ` Current department: ${user.department.charAt(0).toUpperCase() + user.department.slice(1)}`}
+                  {user.department && ` Current department: ${user.department.charAt(0).toUpperCase() + user.department.slice(1)} → Role: ${user.role}`}
                 </AlertDescription>
               </Alert>
             </CardContent>
