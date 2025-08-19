@@ -47,6 +47,12 @@ export class AzureSyncService {
    */
   async getAccessToken(): Promise<string> {
     try {
+      await this.ensureInitialized();
+
+      if (!this.msal) {
+        throw new Error("MSAL instance not initialized");
+      }
+
       // Check if user is already signed in
       const accounts = this.msal.getAllAccounts();
       let account: AccountInfo | null = null;
