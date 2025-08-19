@@ -1,5 +1,6 @@
 import { Router, Request, Response } from "express";
 import { DepartmentService } from "../services/departmentService";
+import { pool } from "../database/connection";
 import * as fs from "fs";
 import * as path from "path";
 import { fileURLToPath } from "url";
