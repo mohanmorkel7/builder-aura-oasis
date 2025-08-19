@@ -489,8 +489,9 @@ export default function UserEdit() {
                   <Select
                     value={user.role}
                     onValueChange={(value) => updateField("role", value)}
+                    disabled={true}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="bg-gray-50">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -511,7 +512,7 @@ export default function UserEdit() {
                     </SelectContent>
                   </Select>
                   <p className="text-sm text-gray-600 mt-1">
-                    Determines what features and data the user can access
+                    Role is automatically assigned based on department selection
                   </p>
                 </div>
                 <div>
