@@ -1,4 +1,4 @@
-import { PublicClientApplication, AccountInfo } from "@azure/msal-browser";
+import { PublicClientApplication, AccountInfo, BrowserAuthError } from "@azure/msal-browser";
 import { msalConfig, syncRequest, graphConfig } from "./msal-config";
 
 // Initialize MSAL instance
