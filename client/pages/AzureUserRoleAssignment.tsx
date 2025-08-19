@@ -581,9 +581,17 @@ export default function AzureUserRoleAssignment() {
               <TableBody>
                 {filteredUsers.map((user) => {
                   const assignedRole = getRoleForUser(user.id);
+                  const assignedDepartment = getDepartmentForUser(user.id);
                   const roleInfo = validRoles.find(
                     (r) => r.value === assignedRole,
                   );
+                  const departmentInfo = validDepartments.find(
+                    (d) => d.value === assignedDepartment,
+                  );
+
+                  const needsRole = user.role === "unknown";
+                  const needsDepartment = !user.department;
+                  const isReady = (!needsRole || assignedRole) && (!needsDepartment || assignedDepartment);
 
                   return (
                     <TableRow key={user.id}>
@@ -607,45 +615,68 @@ export default function AzureUserRoleAssignment() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center text-sm text-gray-600">
-                          <Building className="w-3 h-3 mr-1" />
-                          {user.department || "N/A"}
+                        <div className="flex items-center text-sm">
+                          <Shield className="w-3 h-3 mr-1" />
+                          <Badge variant={user.role === "unknown" ? "destructive" : "secondary"}>
+                            {user.role || "N/A"}
+                          </Badge>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center text-sm text-gray-600">
-                          <Calendar className="w-3 h-3 mr-1" />
-                          {formatDate(user.created_at)}
+                        {needsDepartment ? (
+                          <Select
+                            value={assignedDepartment}
+                            onValueChange={(department) => updateDepartment(user.id, department)}
+                          >
+                            <SelectTrigger className="w-48">
+                              <SelectValue placeholder="Select department..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {validDepartments.map((dept) => (
+                                <SelectItem key={dept.value} value={dept.value}>
+                                  {dept.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        ) : (
+                          <div className="flex items-center text-sm text-gray-600">
+                            <Building className="w-3 h-3 mr-1" />
+                            {user.department}
+                          </div>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {needsRole ? (
+                          <Select
+                            value={assignedRole}
+                            onValueChange={(role) => updateRole(user.id, role)}
+                          >
+                            <SelectTrigger className="w-48">
+                              <SelectValue placeholder="Select role..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {validRoles.map((role) => (
+                                <SelectItem key={role.value} value={role.value}>
+                                  {role.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        ) : (
+                          <div className="text-sm text-gray-500">
+                            Role assigned
+                          </div>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <div className="text-sm text-gray-600">
+                          {user.job_title || "N/A"}
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center text-xs text-gray-500">
-                          <Cloud className="w-3 h-3 mr-1" />
-                          {user.azure_object_id
-                            ? user.azure_object_id.substring(0, 8) + "..."
-                            : "N/A"}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Select
-                          value={assignedRole}
-                          onValueChange={(role) => updateRole(user.id, role)}
-                        >
-                          <SelectTrigger className="w-48">
-                            <SelectValue placeholder="Select role..." />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {validRoles.map((role) => (
-                              <SelectItem key={role.value} value={role.value}>
-                                {role.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </TableCell>
-                      <TableCell>
-                        {assignedRole ? (
-                          <Badge className={roleInfo?.color}>
+                        {isReady ? (
+                          <Badge className="bg-green-100 text-green-800">
                             <Check className="w-3 h-3 mr-1" />
                             Ready
                           </Badge>
@@ -655,7 +686,8 @@ export default function AzureUserRoleAssignment() {
                             className="text-orange-600 border-orange-200"
                           >
                             <X className="w-3 h-3 mr-1" />
-                            Pending
+                            {needsRole && needsDepartment ? "Need Role & Dept" :
+                             needsRole ? "Need Role" : "Need Department"}
                           </Badge>
                         )}
                       </TableCell>
