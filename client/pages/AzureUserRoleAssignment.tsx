@@ -571,10 +571,10 @@ export default function AzureUserRoleAssignment() {
               <TableHeader>
                 <TableRow>
                   <TableHead>User</TableHead>
-                  <TableHead>Department</TableHead>
-                  <TableHead>Imported Date</TableHead>
-                  <TableHead>Azure ID</TableHead>
+                  <TableHead>Current Role</TableHead>
+                  <TableHead>Assign Department</TableHead>
                   <TableHead>Assign Role</TableHead>
+                  <TableHead>Job Title</TableHead>
                   <TableHead>Status</TableHead>
                 </TableRow>
               </TableHeader>
