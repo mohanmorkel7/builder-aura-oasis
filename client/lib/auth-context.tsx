@@ -412,6 +412,8 @@ export const AuthProvider = React.memo(function AuthProvider({
           }
 
           // Fallback to Azure AD groups if SSO endpoint fails
+          console.log('⚠️ Falling back to Azure AD groups method');
+
           const groupsResponse = await fetch(
             `${graphConfig.graphMeEndpoint}/memberOf`,
             {
@@ -423,6 +425,8 @@ export const AuthProvider = React.memo(function AuthProvider({
 
           const groups = await groupsResponse.json();
           const userRole = extractRoleFromGroups(groups.value || []);
+
+          console.log('🔄 Azure AD groups fallback assigned role:', userRole);
 
           // Create user data from Microsoft profile (fallback)
           const userData: User = {
