@@ -129,8 +129,9 @@ const extractRoleFromGroups = (groups: any[]): UserRole => {
     }
   }
 
-  // Default role if no matching group found
-  return "product";
+  // Default role if no matching group found - changed from "product" to "development"
+  // as it's more appropriate for users not in specific groups
+  return "development";
 };
 
 interface AuthContextType {
