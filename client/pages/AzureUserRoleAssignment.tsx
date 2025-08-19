@@ -183,6 +183,11 @@ export default function AzureUserRoleAssignment() {
       label: "Marketing",
       color: "bg-cyan-100 text-cyan-800",
     },
+    {
+      value: "switch_team",
+      label: "Switch Team",
+      color: "bg-teal-100 text-teal-800",
+    },
   ];
 
   useEffect(() => {
