@@ -289,7 +289,8 @@ router.post("/admin/fix-user-roles", async (req: Request, res: Response) => {
           email,
           department,
           role,
-          job_title
+          job_title,
+          sso_provider
       FROM users
       WHERE sso_provider = 'microsoft'
       ORDER BY department, first_name
