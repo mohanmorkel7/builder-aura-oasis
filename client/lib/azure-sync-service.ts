@@ -224,3 +224,9 @@ export class AzureSyncService {
 
 // Export singleton instance
 export const azureSyncService = new AzureSyncService();
+
+// Helper function to ensure service is initialized
+export const initializeAzureSyncService = async (): Promise<AzureSyncService> => {
+  await azureSyncService.ensureInitialized();
+  return azureSyncService;
+};
