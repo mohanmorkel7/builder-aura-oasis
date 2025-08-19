@@ -187,9 +187,20 @@ export class AzureSyncService {
   /**
    * Get current user info
    */
-  getCurrentUser(): AccountInfo | null {
-    const accounts = this.msal.getAllAccounts();
-    return accounts.length > 0 ? accounts[0] : null;
+  async getCurrentUser(): Promise<AccountInfo | null> {
+    try {
+      await this.ensureInitialized();
+
+      if (!this.msal) {
+        return null;
+      }
+
+      const accounts = this.msal.getAllAccounts();
+      return accounts.length > 0 ? accounts[0] : null;
+    } catch (error) {
+      console.error("Failed to get current user:", error);
+      return null;
+    }
   }
 
   /**
