@@ -69,9 +69,9 @@ export default function AzureUserRoleAssignment() {
   const [roleAssignments, setRoleAssignments] = useState<UserRoleAssignment[]>(
     [],
   );
-  const [departmentAssignments, setDepartmentAssignments] = useState<UserDepartmentAssignment[]>(
-    [],
-  );
+  const [departmentAssignments, setDepartmentAssignments] = useState<
+    UserDepartmentAssignment[]
+  >([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -141,7 +141,7 @@ export default function AzureUserRoleAssignment() {
     {
       value: "sales",
       label: "Sales",
-      color: "bg-blue-100 text-blue-800"
+      color: "bg-blue-100 text-blue-800",
     },
     {
       value: "product",
@@ -299,7 +299,9 @@ export default function AzureUserRoleAssignment() {
   const updateDepartment = (userId: number, department: string) => {
     setDepartmentAssignments((prev) =>
       prev.map((assignment) =>
-        assignment.userId === userId ? { ...assignment, department } : assignment,
+        assignment.userId === userId
+          ? { ...assignment, department }
+          : assignment,
       ),
     );
   };
@@ -311,22 +313,29 @@ export default function AzureUserRoleAssignment() {
       setSuccess(null);
 
       // Filter out assignments without roles (only for users with unknown role)
-      const validRoleAssignments = roleAssignments.filter(
-        (assignment) => {
-          const user = unknownUsers.find(u => u.id === assignment.userId);
-          return user?.role === "unknown" && assignment.role && assignment.role !== "";
-        }
-      );
+      const validRoleAssignments = roleAssignments.filter((assignment) => {
+        const user = unknownUsers.find((u) => u.id === assignment.userId);
+        return (
+          user?.role === "unknown" && assignment.role && assignment.role !== ""
+        );
+      });
 
       // Filter out assignments without departments (for users with null department)
       const validDepartmentAssignments = departmentAssignments.filter(
         (assignment) => {
-          const user = unknownUsers.find(u => u.id === assignment.userId);
-          return !user?.department && assignment.department && assignment.department !== "";
-        }
+          const user = unknownUsers.find((u) => u.id === assignment.userId);
+          return (
+            !user?.department &&
+            assignment.department &&
+            assignment.department !== ""
+          );
+        },
       );
 
-      if (validRoleAssignments.length === 0 && validDepartmentAssignments.length === 0) {
+      if (
+        validRoleAssignments.length === 0 &&
+        validDepartmentAssignments.length === 0
+      ) {
         setError("Please assign at least one role or department before saving");
         return;
       }
@@ -352,16 +361,23 @@ export default function AzureUserRoleAssignment() {
 
       // Assign departments if any
       if (validDepartmentAssignments.length > 0) {
-        const departmentResponse = await fetch("/api/azure-sync/assign-departments", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
+        const departmentResponse = await fetch(
+          "/api/azure-sync/assign-departments",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              userDepartments: validDepartmentAssignments,
+            }),
           },
-          body: JSON.stringify({ userDepartments: validDepartmentAssignments }),
-        });
+        );
 
         if (!departmentResponse.ok) {
-          throw new Error(`Department assignment failed: ${departmentResponse.statusText}`);
+          throw new Error(
+            `Department assignment failed: ${departmentResponse.statusText}`,
+          );
         }
         departmentResult = await departmentResponse.json();
       }
@@ -378,7 +394,9 @@ export default function AzureUserRoleAssignment() {
     } catch (error) {
       console.error("Error assigning roles/departments:", error);
       setError(
-        error instanceof Error ? error.message : "Failed to assign roles/departments",
+        error instanceof Error
+          ? error.message
+          : "Failed to assign roles/departments",
       );
     } finally {
       setSaving(false);
@@ -397,12 +415,12 @@ export default function AzureUserRoleAssignment() {
 
   const getAssignedCount = () => {
     const roleCount = roleAssignments.filter((a) => {
-      const user = unknownUsers.find(u => u.id === a.userId);
+      const user = unknownUsers.find((u) => u.id === a.userId);
       return user?.role === "unknown" && a.role && a.role !== "";
     }).length;
 
     const departmentCount = departmentAssignments.filter((a) => {
-      const user = unknownUsers.find(u => u.id === a.userId);
+      const user = unknownUsers.find((u) => u.id === a.userId);
       return !user?.department && a.department && a.department !== "";
     }).length;
 
@@ -500,15 +518,19 @@ export default function AzureUserRoleAssignment() {
       </Card>
 
       {/* Debug Info */}
-      {process.env.NODE_ENV === 'development' && (
+      {process.env.NODE_ENV === "development" && (
         <Alert className="border-blue-200 bg-blue-50">
           <Shield className="h-4 w-4 text-blue-600" />
           <AlertDescription className="text-blue-800">
             <strong>Debug Info:</strong>
-            <br />API returned {unknownUsers.length} users
-            <br />Filtered users: {filteredUsers.length}
-            <br />Role assignments: {roleAssignments.length}
-            <br />Last fetch: {new Date().toLocaleTimeString()}
+            <br />
+            API returned {unknownUsers.length} users
+            <br />
+            Filtered users: {filteredUsers.length}
+            <br />
+            Role assignments: {roleAssignments.length}
+            <br />
+            Last fetch: {new Date().toLocaleTimeString()}
           </AlertDescription>
         </Alert>
       )}
@@ -591,7 +613,9 @@ export default function AzureUserRoleAssignment() {
 
                   const needsRole = user.role === "unknown";
                   const needsDepartment = !user.department;
-                  const isReady = (!needsRole || assignedRole) && (!needsDepartment || assignedDepartment);
+                  const isReady =
+                    (!needsRole || assignedRole) &&
+                    (!needsDepartment || assignedDepartment);
 
                   return (
                     <TableRow key={user.id}>
@@ -617,7 +641,13 @@ export default function AzureUserRoleAssignment() {
                       <TableCell>
                         <div className="flex items-center text-sm">
                           <Shield className="w-3 h-3 mr-1" />
-                          <Badge variant={user.role === "unknown" ? "destructive" : "secondary"}>
+                          <Badge
+                            variant={
+                              user.role === "unknown"
+                                ? "destructive"
+                                : "secondary"
+                            }
+                          >
                             {user.role || "N/A"}
                           </Badge>
                         </div>
@@ -626,7 +656,9 @@ export default function AzureUserRoleAssignment() {
                         {needsDepartment ? (
                           <Select
                             value={assignedDepartment}
-                            onValueChange={(department) => updateDepartment(user.id, department)}
+                            onValueChange={(department) =>
+                              updateDepartment(user.id, department)
+                            }
                           >
                             <SelectTrigger className="w-48">
                               <SelectValue placeholder="Select department..." />
@@ -686,8 +718,11 @@ export default function AzureUserRoleAssignment() {
                             className="text-orange-600 border-orange-200"
                           >
                             <X className="w-3 h-3 mr-1" />
-                            {needsRole && needsDepartment ? "Need Role & Dept" :
-                             needsRole ? "Need Role" : "Need Department"}
+                            {needsRole && needsDepartment
+                              ? "Need Role & Dept"
+                              : needsRole
+                                ? "Need Role"
+                                : "Need Department"}
                           </Badge>
                         )}
                       </TableCell>
