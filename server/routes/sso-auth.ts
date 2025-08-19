@@ -1,5 +1,7 @@
 import { Router, Request, Response } from "express";
 import { DepartmentService } from "../services/departmentService";
+import * as fs from "fs";
+import * as path from "path";
 
 const router = Router();
 
