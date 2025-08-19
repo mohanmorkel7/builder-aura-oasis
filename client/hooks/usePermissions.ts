@@ -1,3 +1,4 @@
+import React from "react";
 import { useAuth } from "@/lib/auth-context";
 
 export type Permission = 
@@ -74,33 +75,6 @@ export function usePermissions() {
     canAccessProduct: hasPermission("product"),
     canAccessLeads: hasPermission("leads"),
     canAccessVC: hasPermission("vc"),
-  };
-}
-
-// Higher-order component for permission-based rendering
-export function withPermission<T extends object>(
-  Component: React.ComponentType<T>,
-  requiredPermission: Permission
-) {
-  return function PermissionGatedComponent(props: T) {
-    const { hasPermission } = usePermissions();
-    
-    if (!hasPermission(requiredPermission)) {
-      return (
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-center">
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">
-              Access Denied
-            </h2>
-            <p className="text-gray-600">
-              You don't have permission to access this page.
-            </p>
-          </div>
-        </div>
-      );
-    }
-    
-    return <Component {...props} />;
   };
 }
 
