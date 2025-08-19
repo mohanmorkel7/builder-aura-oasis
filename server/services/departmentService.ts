@@ -139,8 +139,8 @@ export class DepartmentService {
         userId = existingUser.rows[0].id;
         await pool.query(
           `
-          UPDATE users 
-          SET 
+          UPDATE users
+          SET
             first_name = $1,
             last_name = $2,
             department = $3,
@@ -150,11 +150,11 @@ export class DepartmentService {
           WHERE id = $6
         `,
           [
-            userMapping.givenName,
-            userMapping.surname,
+            userMapping.givenName || userMapping.displayName || "Unknown",
+            userMapping.surname || userMapping.displayName?.split(' ').slice(1).join(' ') || "User",
             userMapping.department,
             userMapping.ssoId,
-            userMapping.jobTitle,
+            userMapping.jobTitle || "Employee",
             userId,
           ],
         );
