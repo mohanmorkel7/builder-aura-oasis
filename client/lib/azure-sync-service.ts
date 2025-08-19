@@ -259,9 +259,9 @@ export class AzureSyncService {
   /**
    * Sync users from Azure AD
    */
-  async syncUsersFromAzure(): Promise<any> {
+  async syncUsersFromAzure(useRedirect: boolean = false): Promise<any> {
     try {
-      const accessToken = await this.getAccessToken();
+      const accessToken = await this.getAccessToken(useRedirect);
 
       const response = await fetch("/api/azure-sync/sync", {
         method: "POST",
