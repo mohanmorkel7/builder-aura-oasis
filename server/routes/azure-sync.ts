@@ -305,10 +305,25 @@ router.get("/unknown-users", async (req: Request, res: Response) => {
 // Assign role to users
 router.post("/assign-roles", async (req: Request, res: Response) => {
   try {
+    // Check if database is available
+    try {
+      await pool.query("SELECT 1");
+    } catch (dbError) {
+      console.warn("Database not available for role assignment:", dbError.message);
+      return res.status(503).json({
+        success: false,
+        error: "Database not available",
+        message: "Cannot assign roles - database connection failed"
+      });
+    }
+
     const { userRoles } = req.body; // Array of { userId, role }
 
     if (!Array.isArray(userRoles)) {
-      return res.status(400).json({ error: "userRoles must be an array" });
+      return res.status(400).json({
+        success: false,
+        error: "userRoles must be an array"
+      });
     }
 
     const validRoles = [
@@ -332,7 +347,7 @@ router.post("/assign-roles", async (req: Request, res: Response) => {
       }
 
       const updateQuery = `
-        UPDATE users 
+        UPDATE users
         SET role = $1, updated_at = CURRENT_TIMESTAMP
         WHERE id = $2 AND role = 'unknown'
         RETURNING id, first_name, last_name, email, role
@@ -352,6 +367,7 @@ router.post("/assign-roles", async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error assigning roles:", error);
     res.status(500).json({
+      success: false,
       error: "Failed to assign roles",
       message: error.message,
     });
