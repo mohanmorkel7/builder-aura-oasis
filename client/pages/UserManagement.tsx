@@ -180,25 +180,23 @@ export default function UserManagement() {
         return;
       }
 
-      let errorMessage = "Azure AD sync failed";
+      let errorMessage = "❌ Azure AD sync failed";
       if (error.message.includes("consent")) {
         errorMessage =
-          "Admin consent required. Please ask your Azure AD administrator to grant consent for User.Read.All and Directory.Read.All permissions.";
+          "🔒 Admin consent required. Please ask your Azure AD administrator to grant consent for User.Read.All and Directory.Read.All permissions.";
       } else if (
         error.message.includes("403") ||
         error.message.includes("Forbidden")
       ) {
         errorMessage =
-          "Access denied. You don't have sufficient permissions to read Azure AD users.";
-      } else if (error.message.includes("popup")) {
-        errorMessage = `${error.message}\n\nSuggestion: Enable popups for this site or try refresh and use redirect-based authentication.`;
-      } else if (error.message.includes("Authentication")) {
-        errorMessage = `Authentication failed: ${error.message}`;
+          "🚫 Access denied. You don't have sufficient permissions to read Azure AD users.";
+      } else if (error.message.includes("Authentication in progress")) {
+        errorMessage = "🔄 Authentication in progress. Please wait...";
       } else {
-        errorMessage = `Sync failed: ${error.message}`;
+        errorMessage = `❌ Sync failed: ${error.message}`;
       }
 
-      alert(errorMessage);
+      console.error(errorMessage);
     } finally {
       // Reset button state
       const syncButton = document.querySelector(
