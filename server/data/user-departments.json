@@ -21,7 +21,7 @@
       "users": []
     },
     "backend": {
-      "name": "Backend Development", 
+      "name": "Backend Development",
       "permissions": ["admin", "product", "database", "leads", "vc"],
       "users": []
     },
