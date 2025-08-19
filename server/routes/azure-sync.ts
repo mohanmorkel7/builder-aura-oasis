@@ -267,9 +267,21 @@ router.get("/download/:filename", async (req: Request, res: Response) => {
 // Get users with unknown role
 router.get("/unknown-users", async (req: Request, res: Response) => {
   try {
+    // Check if database is available
+    try {
+      await pool.query("SELECT 1");
+    } catch (dbError) {
+      console.warn("Database not available for unknown users query:", dbError.message);
+      return res.json({
+        success: true,
+        users: [],
+        message: "Database not available - no unknown users to display"
+      });
+    }
+
     const query = `
       SELECT id, first_name, last_name, email, department, azure_object_id, created_at
-      FROM users 
+      FROM users
       WHERE role = 'unknown' AND sso_provider = 'microsoft'
       ORDER BY created_at DESC
     `;
@@ -283,6 +295,7 @@ router.get("/unknown-users", async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error getting unknown users:", error);
     res.status(500).json({
+      success: false,
       error: "Failed to get unknown users",
       message: error.message,
     });
