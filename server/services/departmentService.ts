@@ -23,7 +23,8 @@ export class DepartmentService {
   private static getDepartmentRole(department: string): string {
     const departmentRoleMap: { [key: string]: string } = {
       hr: "hr_management",
-      finance: "finops",
+      finance: "finance",  // Finance department gets 'finance' role
+      finops: "finops",    // FinOps department gets 'finops' role
       database: "db",
       frontend: "development",
       backend: "development",
