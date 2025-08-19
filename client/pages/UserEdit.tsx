@@ -498,6 +498,11 @@ export default function UserEdit() {
                   <Label htmlFor="role">
                     User Role
                     <span className="text-xs text-blue-600 ml-2">(Auto-assigned)</span>
+                    {roleAutoUpdated && (
+                      <span className="text-xs text-green-600 ml-2 animate-pulse">
+                        ✓ Updated
+                      </span>
+                    )}
                   </Label>
                   <Select
                     value={user.role}
