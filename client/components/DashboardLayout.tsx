@@ -30,7 +30,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { apiClient } from "@/lib/api";
-import { usePermissions, Permission } from "@/hooks/usePermissions";
+import { usePermissions, Permission } from "@/hooks/usePermissions.tsx";
 
 interface NavigationItem {
   name: string;
