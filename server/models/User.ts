@@ -46,7 +46,8 @@ export interface CreateUserData {
     | "finance"
     | "hr_management"
     | "infra"
-    | "switch_team";
+    | "switch_team"
+    | "unknown";
   department?: string;
   manager_id?: number;
   start_date?: string;
