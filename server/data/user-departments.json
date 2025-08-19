@@ -1,0 +1,54 @@
+{
+  "departments": {
+    "hr": {
+      "name": "Human Resources",
+      "permissions": ["users", "reports", "settings"],
+      "users": []
+    },
+    "finance": {
+      "name": "Finance",
+      "permissions": ["finops", "reports", "billing"],
+      "users": []
+    },
+    "database": {
+      "name": "Database",
+      "permissions": ["admin", "database", "settings"],
+      "users": []
+    },
+    "frontend": {
+      "name": "Frontend Development",
+      "permissions": ["product", "leads", "vc"],
+      "users": []
+    },
+    "backend": {
+      "name": "Backend Development", 
+      "permissions": ["admin", "product", "database", "leads", "vc"],
+      "users": []
+    },
+    "infra": {
+      "name": "Infrastructure",
+      "permissions": ["admin", "settings", "database"],
+      "users": []
+    }
+  },
+  "users": [
+    {
+      "email": "Abinandan@mylapay.com",
+      "displayName": "Abinandan N",
+      "givenName": "Abinandan",
+      "surname": "Natraj",
+      "jobTitle": "Tech Lead",
+      "department": "backend",
+      "ssoId": "98d7b0c3-241c-4184-951e-77d971a0df61"
+    },
+    {
+      "email": "Abinaya.M@mylapay.com",
+      "displayName": "Abinaya M",
+      "givenName": "Abinaya",
+      "surname": "M",
+      "jobTitle": "Associate Director Technology",
+      "department": "backend",
+      "ssoId": "00403bc6-6a6d-46c3-a203-d12ff8c9d1ac"
+    }
+  ]
+}
