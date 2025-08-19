@@ -103,7 +103,9 @@ export default function UserManagement() {
       console.log("Starting Azure AD sync...");
 
       // Show loading state
-      const syncButton = document.querySelector('[data-sync-azure]') as HTMLButtonElement;
+      const syncButton = document.querySelector(
+        "[data-sync-azure]",
+      ) as HTMLButtonElement;
       if (syncButton) {
         syncButton.disabled = true;
         syncButton.textContent = "Syncing...";
@@ -120,7 +122,9 @@ export default function UserManagement() {
       const result = await response.json();
 
       if (response.ok) {
-        alert(`Azure AD sync completed successfully!\n\nStats:\n- Total users: ${result.stats.total}\n- New users: ${result.stats.inserted}\n- Updated users: ${result.stats.updated}\n- Skipped users: ${result.stats.skipped}\n\nJSON file saved: ${result.jsonFile}`);
+        alert(
+          `Azure AD sync completed successfully!\n\nStats:\n- Total users: ${result.stats.total}\n- New users: ${result.stats.inserted}\n- Updated users: ${result.stats.updated}\n- Skipped users: ${result.stats.skipped}\n\nJSON file saved: ${result.jsonFile}`,
+        );
 
         // Refresh user data
         window.location.reload();
@@ -132,7 +136,9 @@ export default function UserManagement() {
       alert(`Azure AD sync failed: ${error.message}`);
     } finally {
       // Reset button state
-      const syncButton = document.querySelector('[data-sync-azure]') as HTMLButtonElement;
+      const syncButton = document.querySelector(
+        "[data-sync-azure]",
+      ) as HTMLButtonElement;
       if (syncButton) {
         syncButton.disabled = false;
         syncButton.textContent = "Sync Azure AD";

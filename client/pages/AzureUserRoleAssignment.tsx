@@ -59,7 +59,9 @@ interface UserRoleAssignment {
 export default function AzureUserRoleAssignment() {
   const navigate = useNavigate();
   const [unknownUsers, setUnknownUsers] = useState<UnknownUser[]>([]);
-  const [roleAssignments, setRoleAssignments] = useState<UserRoleAssignment[]>([]);
+  const [roleAssignments, setRoleAssignments] = useState<UserRoleAssignment[]>(
+    [],
+  );
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -67,16 +69,52 @@ export default function AzureUserRoleAssignment() {
   const [success, setSuccess] = useState<string | null>(null);
 
   const validRoles = [
-    { value: "admin", label: "Administrator", color: "bg-red-100 text-red-800" },
+    {
+      value: "admin",
+      label: "Administrator",
+      color: "bg-red-100 text-red-800",
+    },
     { value: "sales", label: "Sales Team", color: "bg-blue-100 text-blue-800" },
-    { value: "product", label: "Product Team", color: "bg-green-100 text-green-800" },
-    { value: "development", label: "Development Team", color: "bg-purple-100 text-purple-800" },
-    { value: "db", label: "Database Administrator", color: "bg-orange-100 text-orange-800" },
-    { value: "finops", label: "FinOps Team", color: "bg-yellow-100 text-yellow-800" },
-    { value: "finance", label: "Finance Team", color: "bg-indigo-100 text-indigo-800" },
-    { value: "hr_management", label: "HR Management", color: "bg-pink-100 text-pink-800" },
-    { value: "infra", label: "Infrastructure Team", color: "bg-gray-100 text-gray-800" },
-    { value: "switch_team", label: "Switch Team", color: "bg-teal-100 text-teal-800" },
+    {
+      value: "product",
+      label: "Product Team",
+      color: "bg-green-100 text-green-800",
+    },
+    {
+      value: "development",
+      label: "Development Team",
+      color: "bg-purple-100 text-purple-800",
+    },
+    {
+      value: "db",
+      label: "Database Administrator",
+      color: "bg-orange-100 text-orange-800",
+    },
+    {
+      value: "finops",
+      label: "FinOps Team",
+      color: "bg-yellow-100 text-yellow-800",
+    },
+    {
+      value: "finance",
+      label: "Finance Team",
+      color: "bg-indigo-100 text-indigo-800",
+    },
+    {
+      value: "hr_management",
+      label: "HR Management",
+      color: "bg-pink-100 text-pink-800",
+    },
+    {
+      value: "infra",
+      label: "Infrastructure Team",
+      color: "bg-gray-100 text-gray-800",
+    },
+    {
+      value: "switch_team",
+      label: "Switch Team",
+      color: "bg-teal-100 text-teal-800",
+    },
   ];
 
   useEffect(() => {
@@ -87,7 +125,7 @@ export default function AzureUserRoleAssignment() {
     try {
       setLoading(true);
       setError(null);
-      
+
       const response = await fetch("/api/azure-sync/unknown-users");
       const result = await response.json();
 
@@ -98,14 +136,16 @@ export default function AzureUserRoleAssignment() {
           result.users.map((user: UnknownUser) => ({
             userId: user.id,
             role: "", // Default to empty, user must select
-          }))
+          })),
         );
       } else {
         throw new Error(result.message || "Failed to fetch unknown users");
       }
     } catch (error) {
       console.error("Error fetching unknown users:", error);
-      setError(error instanceof Error ? error.message : "Failed to fetch users");
+      setError(
+        error instanceof Error ? error.message : "Failed to fetch users",
+      );
     } finally {
       setLoading(false);
     }
@@ -124,8 +164,8 @@ export default function AzureUserRoleAssignment() {
   const updateRole = (userId: number, role: string) => {
     setRoleAssignments((prev) =>
       prev.map((assignment) =>
-        assignment.userId === userId ? { ...assignment, role } : assignment
-      )
+        assignment.userId === userId ? { ...assignment, role } : assignment,
+      ),
     );
   };
 
@@ -137,7 +177,7 @@ export default function AzureUserRoleAssignment() {
 
       // Filter out assignments without roles
       const validAssignments = roleAssignments.filter(
-        (assignment) => assignment.role && assignment.role !== ""
+        (assignment) => assignment.role && assignment.role !== "",
       );
 
       if (validAssignments.length === 0) {
@@ -156,7 +196,9 @@ export default function AzureUserRoleAssignment() {
       const result = await response.json();
 
       if (response.ok) {
-        setSuccess(`Successfully assigned roles to ${result.updatedUsers.length} users`);
+        setSuccess(
+          `Successfully assigned roles to ${result.updatedUsers.length} users`,
+        );
         // Refresh the list
         await fetchUnknownUsers();
       } else {
@@ -164,7 +206,9 @@ export default function AzureUserRoleAssignment() {
       }
     } catch (error) {
       console.error("Error assigning roles:", error);
-      setError(error instanceof Error ? error.message : "Failed to assign roles");
+      setError(
+        error instanceof Error ? error.message : "Failed to assign roles",
+      );
     } finally {
       setSaving(false);
     }
@@ -200,15 +244,14 @@ export default function AzureUserRoleAssignment() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div className="flex items-center space-x-4">
-          <Button
-            variant="ghost"
-            onClick={() => navigate("/admin/users")}
-          >
+          <Button variant="ghost" onClick={() => navigate("/admin/users")}>
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to User Management
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Azure User Role Assignment</h1>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Azure User Role Assignment
+            </h1>
             <p className="text-gray-600 mt-1">
               Assign roles to users imported from Azure AD
             </p>
@@ -270,7 +313,9 @@ export default function AzureUserRoleAssignment() {
       {success && (
         <Alert className="border-green-200 bg-green-50">
           <Check className="h-4 w-4 text-green-600" />
-          <AlertDescription className="text-green-800">{success}</AlertDescription>
+          <AlertDescription className="text-green-800">
+            {success}
+          </AlertDescription>
         </Alert>
       )}
 
@@ -325,7 +370,9 @@ export default function AzureUserRoleAssignment() {
               <TableBody>
                 {filteredUsers.map((user) => {
                   const assignedRole = getRoleForUser(user.id);
-                  const roleInfo = validRoles.find((r) => r.value === assignedRole);
+                  const roleInfo = validRoles.find(
+                    (r) => r.value === assignedRole,
+                  );
 
                   return (
                     <TableRow key={user.id}>
@@ -333,7 +380,8 @@ export default function AzureUserRoleAssignment() {
                         <div className="flex items-center space-x-3">
                           <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
                             <span className="text-sm font-medium text-blue-600">
-                              {user.first_name?.[0]}{user.last_name?.[0]}
+                              {user.first_name?.[0]}
+                              {user.last_name?.[0]}
                             </span>
                           </div>
                           <div>
@@ -362,10 +410,9 @@ export default function AzureUserRoleAssignment() {
                       <TableCell>
                         <div className="flex items-center text-xs text-gray-500">
                           <Cloud className="w-3 h-3 mr-1" />
-                          {user.azure_object_id ? 
-                            user.azure_object_id.substring(0, 8) + "..." : 
-                            "N/A"
-                          }
+                          {user.azure_object_id
+                            ? user.azure_object_id.substring(0, 8) + "..."
+                            : "N/A"}
                         </div>
                       </TableCell>
                       <TableCell>
@@ -392,7 +439,10 @@ export default function AzureUserRoleAssignment() {
                             Ready
                           </Badge>
                         ) : (
-                          <Badge variant="outline" className="text-orange-600 border-orange-200">
+                          <Badge
+                            variant="outline"
+                            className="text-orange-600 border-orange-200"
+                          >
                             <X className="w-3 h-3 mr-1" />
                             Pending
                           </Badge>

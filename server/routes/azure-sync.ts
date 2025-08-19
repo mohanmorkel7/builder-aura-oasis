@@ -30,13 +30,13 @@ interface AzureResponse {
 router.post("/sync", async (req: Request, res: Response) => {
   try {
     console.log("Starting Azure AD sync...");
-    
+
     // Check if we have an access token
     const { accessToken } = req.body;
     if (!accessToken) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: "Access token required",
-        message: "Please provide a valid Azure AD access token" 
+        message: "Please provide a valid Azure AD access token",
       });
     }
 
@@ -44,9 +44,9 @@ router.post("/sync", async (req: Request, res: Response) => {
     const graphUrl = "https://graph.microsoft.com/v1.0/users?$top=500";
     const graphResponse = await fetch(graphUrl, {
       headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json'
-      }
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
     });
 
     if (!graphResponse.ok) {
@@ -55,7 +55,7 @@ router.post("/sync", async (req: Request, res: Response) => {
       return res.status(graphResponse.status).json({
         error: "Microsoft Graph API error",
         message: errorText,
-        status: graphResponse.status
+        status: graphResponse.status,
       });
     }
 
@@ -65,10 +65,15 @@ router.post("/sync", async (req: Request, res: Response) => {
     console.log(`Fetched ${azureUsers.length} users from Azure AD`);
 
     // Save raw JSON response
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
     const jsonFileName = `azure-users-${timestamp}.json`;
-    const jsonFilePath = path.join(process.cwd(), 'server', 'data', jsonFileName);
-    
+    const jsonFilePath = path.join(
+      process.cwd(),
+      "server",
+      "data",
+      jsonFileName,
+    );
+
     // Ensure data directory exists
     await fs.mkdir(path.dirname(jsonFilePath), { recursive: true });
     await fs.writeFile(jsonFilePath, JSON.stringify(azureData, null, 2));
@@ -89,15 +94,17 @@ router.post("/sync", async (req: Request, res: Response) => {
         `;
         const existingResult = await pool.query(existingUserQuery, [
           azureUser.mail || azureUser.userPrincipalName,
-          azureUser.id
+          azureUser.id,
         ]);
 
-        const firstName = azureUser.givenName || 
-                         azureUser.displayName?.split(' ')[0] || 
-                         'Unknown';
-        const lastName = azureUser.surname || 
-                        azureUser.displayName?.split(' ').slice(1).join(' ') || 
-                        'User';
+        const firstName =
+          azureUser.givenName ||
+          azureUser.displayName?.split(" ")[0] ||
+          "Unknown";
+        const lastName =
+          azureUser.surname ||
+          azureUser.displayName?.split(" ").slice(1).join(" ") ||
+          "User";
         const email = azureUser.mail || azureUser.userPrincipalName;
 
         if (existingResult.rows.length > 0) {
@@ -116,7 +123,7 @@ router.post("/sync", async (req: Request, res: Response) => {
             WHERE id = $7
             RETURNING id, first_name, last_name, email, role
           `;
-          
+
           const updateResult = await pool.query(updateQuery, [
             azureUser.id,
             firstName,
@@ -124,7 +131,7 @@ router.post("/sync", async (req: Request, res: Response) => {
             email,
             azureUser.mobilePhone || azureUser.businessPhones?.[0] || null,
             azureUser.department || null,
-            existingResult.rows[0].id
+            existingResult.rows[0].id,
           ]);
 
           updatedUsers.push(updateResult.rows[0]);
@@ -146,29 +153,34 @@ router.post("/sync", async (req: Request, res: Response) => {
             lastName,
             email,
             azureUser.mobilePhone || azureUser.businessPhones?.[0] || null,
-            'SSO_AUTH_NO_PASSWORD', // Placeholder for SSO users
-            'unknown', // Default role for manual assignment
+            "SSO_AUTH_NO_PASSWORD", // Placeholder for SSO users
+            "unknown", // Default role for manual assignment
             azureUser.department || null,
-            azureUser.accountEnabled ? 'active' : 'inactive',
+            azureUser.accountEnabled ? "active" : "inactive",
             azureUser.id,
-            'microsoft',
+            "microsoft",
             false,
-            `Imported from Azure AD on ${new Date().toISOString()}`
+            `Imported from Azure AD on ${new Date().toISOString()}`,
           ]);
 
           insertedUsers.push(insertResult.rows[0]);
           console.log(`Inserted new user: ${email}`);
         }
       } catch (userError) {
-        console.error(`Error processing user ${azureUser.mail || azureUser.userPrincipalName}:`, userError);
+        console.error(
+          `Error processing user ${azureUser.mail || azureUser.userPrincipalName}:`,
+          userError,
+        );
         skippedUsers.push({
           email: azureUser.mail || azureUser.userPrincipalName,
-          error: userError.message
+          error: userError.message,
         });
       }
     }
 
-    console.log(`Sync complete: ${insertedUsers.length} inserted, ${updatedUsers.length} updated, ${skippedUsers.length} skipped`);
+    console.log(
+      `Sync complete: ${insertedUsers.length} inserted, ${updatedUsers.length} updated, ${skippedUsers.length} skipped`,
+    );
 
     res.json({
       success: true,
@@ -177,21 +189,20 @@ router.post("/sync", async (req: Request, res: Response) => {
         total: azureUsers.length,
         inserted: insertedUsers.length,
         updated: updatedUsers.length,
-        skipped: skippedUsers.length
+        skipped: skippedUsers.length,
       },
       data: {
         insertedUsers,
         updatedUsers,
-        skippedUsers
+        skippedUsers,
       },
-      jsonFile: jsonFileName
+      jsonFile: jsonFileName,
     });
-
   } catch (error) {
     console.error("Azure AD sync error:", error);
     res.status(500).json({
       error: "Azure AD sync failed",
-      message: error.message
+      message: error.message,
     });
   }
 });
@@ -199,29 +210,31 @@ router.post("/sync", async (req: Request, res: Response) => {
 // Get sync history
 router.get("/history", async (req: Request, res: Response) => {
   try {
-    const dataDir = path.join(process.cwd(), 'server', 'data');
+    const dataDir = path.join(process.cwd(), "server", "data");
     const files = await fs.readdir(dataDir);
     const azureFiles = files
-      .filter(file => file.startsWith('azure-users-') && file.endsWith('.json'))
-      .map(file => {
-        const timestamp = file.replace('azure-users-', '').replace('.json', '');
+      .filter(
+        (file) => file.startsWith("azure-users-") && file.endsWith(".json"),
+      )
+      .map((file) => {
+        const timestamp = file.replace("azure-users-", "").replace(".json", "");
         return {
           filename: file,
           timestamp: timestamp,
-          path: `/api/azure-sync/download/${file}`
+          path: `/api/azure-sync/download/${file}`,
         };
       })
       .sort((a, b) => b.timestamp.localeCompare(a.timestamp));
 
     res.json({
       success: true,
-      files: azureFiles
+      files: azureFiles,
     });
   } catch (error) {
     console.error("Error getting sync history:", error);
     res.status(500).json({
       error: "Failed to get sync history",
-      message: error.message
+      message: error.message,
     });
   }
 });
@@ -230,23 +243,23 @@ router.get("/history", async (req: Request, res: Response) => {
 router.get("/download/:filename", async (req: Request, res: Response) => {
   try {
     const { filename } = req.params;
-    
+
     // Validate filename to prevent path traversal
     if (!filename.match(/^azure-users-[\d\-T]+\.json$/)) {
       return res.status(400).json({ error: "Invalid filename" });
     }
 
-    const filePath = path.join(process.cwd(), 'server', 'data', filename);
-    const fileContent = await fs.readFile(filePath, 'utf-8');
-    
-    res.setHeader('Content-Type', 'application/json');
-    res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+    const filePath = path.join(process.cwd(), "server", "data", filename);
+    const fileContent = await fs.readFile(filePath, "utf-8");
+
+    res.setHeader("Content-Type", "application/json");
+    res.setHeader("Content-Disposition", `attachment; filename=${filename}`);
     res.send(fileContent);
   } catch (error) {
     console.error("Error downloading file:", error);
     res.status(404).json({
       error: "File not found",
-      message: error.message
+      message: error.message,
     });
   }
 });
@@ -260,18 +273,18 @@ router.get("/unknown-users", async (req: Request, res: Response) => {
       WHERE role = 'unknown' AND sso_provider = 'microsoft'
       ORDER BY created_at DESC
     `;
-    
+
     const result = await pool.query(query);
-    
+
     res.json({
       success: true,
-      users: result.rows
+      users: result.rows,
     });
   } catch (error) {
     console.error("Error getting unknown users:", error);
     res.status(500).json({
       error: "Failed to get unknown users",
-      message: error.message
+      message: error.message,
     });
   }
 });
@@ -280,18 +293,26 @@ router.get("/unknown-users", async (req: Request, res: Response) => {
 router.post("/assign-roles", async (req: Request, res: Response) => {
   try {
     const { userRoles } = req.body; // Array of { userId, role }
-    
+
     if (!Array.isArray(userRoles)) {
       return res.status(400).json({ error: "userRoles must be an array" });
     }
 
     const validRoles = [
-      "admin", "sales", "product", "development", "db", 
-      "finops", "finance", "hr_management", "infra", "switch_team"
+      "admin",
+      "sales",
+      "product",
+      "development",
+      "db",
+      "finops",
+      "finance",
+      "hr_management",
+      "infra",
+      "switch_team",
     ];
 
     const updatedUsers = [];
-    
+
     for (const { userId, role } of userRoles) {
       if (!validRoles.includes(role)) {
         continue; // Skip invalid roles
@@ -303,7 +324,7 @@ router.post("/assign-roles", async (req: Request, res: Response) => {
         WHERE id = $2 AND role = 'unknown'
         RETURNING id, first_name, last_name, email, role
       `;
-      
+
       const result = await pool.query(updateQuery, [role, userId]);
       if (result.rows.length > 0) {
         updatedUsers.push(result.rows[0]);
@@ -313,13 +334,13 @@ router.post("/assign-roles", async (req: Request, res: Response) => {
     res.json({
       success: true,
       message: `Updated ${updatedUsers.length} users`,
-      updatedUsers
+      updatedUsers,
     });
   } catch (error) {
     console.error("Error assigning roles:", error);
     res.status(500).json({
       error: "Failed to assign roles",
-      message: error.message
+      message: error.message,
     });
   }
 });
