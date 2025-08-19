@@ -381,6 +381,34 @@ export class AzureSyncService {
       throw new Error(`Sign out failed: ${error.message}`);
     }
   }
+
+  /**
+   * Check if redirect authentication was successful
+   */
+  getRedirectStatus(): { success: boolean; error?: string } {
+    const success = sessionStorage.getItem('msal_redirect_success') === 'true';
+    const error = sessionStorage.getItem('msal_redirect_error');
+
+    // Clear status after reading
+    sessionStorage.removeItem('msal_redirect_success');
+    sessionStorage.removeItem('msal_redirect_error');
+
+    return { success, error: error || undefined };
+  }
+
+  /**
+   * Check if popups are available
+   */
+  arePopupsAvailable(): boolean {
+    return !isPopupBlocked();
+  }
+
+  /**
+   * Get authentication method recommendation
+   */
+  getRecommendedAuthMethod(): 'popup' | 'redirect' {
+    return this.arePopupsAvailable() ? 'popup' : 'redirect';
+  }
 }
 
 // Export singleton instance
