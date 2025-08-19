@@ -275,10 +275,10 @@ router.get("/unknown-users", async (req: Request, res: Response) => {
         "Database not available for unknown users query:",
         dbError.message,
       );
-      return res.json({
-        success: true,
-        users: [],
-        message: "Database not available - no unknown users to display",
+      return res.status(503).json({
+        success: false,
+        error: "Database not available",
+        message: "Cannot fetch unknown users - database connection failed. Please ensure PostgreSQL is running.",
       });
     }
 
