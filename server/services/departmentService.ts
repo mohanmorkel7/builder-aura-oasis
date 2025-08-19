@@ -131,7 +131,9 @@ export class DepartmentService {
         console.warn(`User ${ssoUser.mail} missing givenName and displayName`);
       }
       if (!userMapping.surname && !userMapping.displayName) {
-        console.warn(`User ${ssoUser.mail} missing surname and displayName for fallback`);
+        console.warn(
+          `User ${ssoUser.mail} missing surname and displayName for fallback`,
+        );
       }
 
       // Check if user exists
@@ -159,7 +161,9 @@ export class DepartmentService {
         `,
           [
             userMapping.givenName || userMapping.displayName || "Unknown",
-            userMapping.surname || userMapping.displayName?.split(' ').slice(1).join(' ') || "User",
+            userMapping.surname ||
+              userMapping.displayName?.split(" ").slice(1).join(" ") ||
+              "User",
             userMapping.department,
             userMapping.ssoId,
             userMapping.jobTitle || "Employee",
@@ -178,7 +182,9 @@ export class DepartmentService {
         `,
           [
             userMapping.givenName || userMapping.displayName || "Unknown",
-            userMapping.surname || userMapping.displayName?.split(' ').slice(1).join(' ') || "User",
+            userMapping.surname ||
+              userMapping.displayName?.split(" ").slice(1).join(" ") ||
+              "User",
             ssoUser.mail,
             userMapping.department,
             userMapping.ssoId,
