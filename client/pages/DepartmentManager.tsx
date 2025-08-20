@@ -370,21 +370,113 @@ export default function DepartmentManager() {
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <FileText className="w-5 h-5" />
-              <span>Current Department Data</span>
+              <span>
+                {viewMode === "database" ? "Database Users" : "JSON Department Data"}
+              </span>
             </CardTitle>
             <CardDescription>
-              Preview of currently loaded department assignments
+              {viewMode === "database"
+                ? "All users currently in the database, including those with unknown roles"
+                : "Preview of currently loaded department assignments from JSON file"
+              }
             </CardDescription>
+            <div className="flex space-x-2 mt-2">
+              <Button
+                variant={viewMode === "database" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setViewMode("database")}
+              >
+                Database View
+              </Button>
+              <Button
+                variant={viewMode === "json" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setViewMode("json")}
+              >
+                JSON View
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
-            {currentData ? (
+            {viewMode === "database" && databaseUsers ? (
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="font-medium">Total Users:</span> {databaseUsers.totalUsers}
+                  </div>
+                  <div>
+                    <span className="font-medium">Departments:</span> {Object.keys(databaseUsers.departments).length}
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="font-medium flex items-center space-x-2 mb-2">
+                    <Users className="w-4 h-4" />
+                    <span>Users by Role</span>
+                  </h4>
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {Object.entries(databaseUsers.usersByRole).map(([role, count]) => (
+                      <Badge key={role} variant={role === "unknown" ? "destructive" : "outline"}>
+                        {role}: {count}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="font-medium mb-2">Recent Users</h4>
+                  <div className="max-h-48 overflow-y-auto space-y-1">
+                    {databaseUsers.users.map((user, index) => (
+                      <div
+                        key={index}
+                        className="text-sm flex items-center justify-between p-2 bg-gray-50 rounded"
+                      >
+                        <div className="flex-1">
+                          <div className="font-medium">{user.displayName}</div>
+                          <div className="text-gray-500 text-xs">{user.email}</div>
+                          {user.jobTitle && (
+                            <div className="text-gray-400 text-xs">{user.jobTitle}</div>
+                          )}
+                        </div>
+                        <div className="flex flex-col items-end space-y-1">
+                          <Badge
+                            variant={user.role === "unknown" ? "destructive" : "secondary"}
+                            className="text-xs"
+                          >
+                            {user.role}
+                          </Badge>
+                          {user.department && user.department !== "unknown" && (
+                            <Badge variant="outline" className="text-xs">
+                              {user.department}
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {databaseUsers.usersByRole.unknown > 0 && (
+                  <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg">
+                    <div className="flex items-center space-x-2 text-orange-800">
+                      <AlertCircle className="w-4 h-4" />
+                      <span className="font-medium">
+                        {databaseUsers.usersByRole.unknown} users need role assignment
+                      </span>
+                    </div>
+                    <p className="text-orange-700 text-sm mt-1">
+                      These users were imported without department information and need manual role assignment.
+                    </p>
+                  </div>
+                )}
+              </div>
+            ) : viewMode === "json" && currentData ? (
               <div className="space-y-4">
                 <div>
                   <h4 className="font-medium flex items-center space-x-2 mb-2">
                     <Building className="w-4 h-4" />
                     <span>
-                      Departments ({Object.keys(currentData.departments).length}
-                      )
+                      Departments ({Object.keys(currentData.departments).length})
                     </span>
                   </h4>
                   <div className="flex flex-wrap gap-2">
@@ -419,7 +511,12 @@ export default function DepartmentManager() {
             ) : (
               <div className="text-center text-gray-500 py-4">
                 <FileText className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                <p>No department data loaded</p>
+                <p>
+                  {viewMode === "database"
+                    ? "No users found in database"
+                    : "No department data loaded"
+                  }
+                </p>
               </div>
             )}
           </CardContent>
