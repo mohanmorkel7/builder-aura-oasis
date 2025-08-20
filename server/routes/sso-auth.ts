@@ -654,4 +654,89 @@ router.get(
   },
 );
 
+// Debug endpoint to test upload with specific users
+router.post(
+  "/admin/debug-upload",
+  async (req: Request, res: Response) => {
+    try {
+      console.log("🧪 Debug upload endpoint called");
+
+      const testData = {
+        departments: {
+          backend: {
+            name: "Backend Development",
+            permissions: ["admin", "product", "database", "leads", "vc"],
+            users: []
+          }
+        },
+        users: [
+          {
+            email: "Abinandan@mylapay.com",
+            displayName: "Abinandan N",
+            givenName: "Abinandan",
+            surname: "Natraj",
+            jobTitle: "Tech Lead",
+            department: "backend",
+            ssoId: "98d7b0c3-241c-4184-951e-77d971a0df61"
+          },
+          {
+            email: "Abinaya.M@mylapay.com",
+            displayName: "Abinaya M",
+            givenName: "Abinaya",
+            surname: "M",
+            jobTitle: "Associate Director Technology",
+            department: "backend",
+            ssoId: "00403bc6-6a6d-46c3-a203-d12ff8c9d1ac"
+          }
+        ]
+      };
+
+      console.log("Test data:", JSON.stringify(testData, null, 2));
+
+      // Check database availability
+      let dbAvailable = false;
+      try {
+        await pool.query("SELECT 1");
+        dbAvailable = true;
+        console.log("✅ Database is available");
+      } catch (dbError) {
+        console.warn("⚠️  Database not available:", dbError.message);
+      }
+
+      // Check if users already exist
+      let existingEmails = new Set<string>();
+      if (dbAvailable) {
+        const existingUsersResult = await pool.query("SELECT email FROM users");
+        existingEmails = new Set(
+          existingUsersResult.rows.map((row) => row.email.toLowerCase()),
+        );
+        console.log(`Found ${existingEmails.size} existing users in database`);
+
+        for (const user of testData.users) {
+          const exists = existingEmails.has(user.email.toLowerCase());
+          console.log(`${user.email} exists in DB: ${exists}`);
+        }
+      }
+
+      res.json({
+        success: true,
+        debug: {
+          databaseAvailable: dbAvailable,
+          existingUsersCount: existingEmails.size,
+          testUsersChecked: testData.users.map(u => ({
+            email: u.email,
+            existsInDB: existingEmails.has(u.email.toLowerCase())
+          }))
+        }
+      });
+    } catch (error) {
+      console.error("Debug endpoint error:", error);
+      res.status(500).json({
+        success: false,
+        error: error.message
+      });
+    }
+  }
+);
+
 export default router;
