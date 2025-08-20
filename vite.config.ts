@@ -16,6 +16,9 @@ export default defineConfig(({ mode }) => ({
       allow: ["./client", "./shared"],
       deny: [".env", ".env.*", "*.{crt,pem}", "**/.git/**", "server/**"],
     },
+    watch: {
+      ignored: ["**/server/data/**", "**/node_modules/**", "**/.git/**"]
+    },
   },
   build: {
     outDir: "dist/spa",
