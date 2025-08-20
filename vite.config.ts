@@ -17,7 +17,7 @@ export default defineConfig(({ mode }) => ({
       deny: [".env", ".env.*", "*.{crt,pem}", "**/.git/**", "server/**"],
     },
     watch: {
-      ignored: ["**/server/data/**", "**/node_modules/**", "**/.git/**"]
+      ignored: ["**/server/data/**", "**/node_modules/**", "**/.git/**"],
     },
   },
   build: {
