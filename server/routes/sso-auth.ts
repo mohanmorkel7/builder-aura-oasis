@@ -171,16 +171,22 @@ router.post(
       );
 
       // First, immediately filter out any entries without email addresses to prevent validation errors
-      console.log(`🔄 Pre-filtering users to remove entries without email addresses...`);
+      console.log(
+        `🔄 Pre-filtering users to remove entries without email addresses...`,
+      );
       const originalUserCount = users.length;
       const usersWithEmail = users.filter((user: any, index: number) => {
         if (!user.email) {
-          console.log(`⏭️ Pre-filtering: Removing entry ${index + 1} (no email): ${user.displayName || "unknown"}`);
+          console.log(
+            `⏭️ Pre-filtering: Removing entry ${index + 1} (no email): ${user.displayName || "unknown"}`,
+          );
           return false;
         }
         return true;
       });
-      console.log(`✅ Pre-filtering complete: ${originalUserCount} �� ${usersWithEmail.length} users (removed ${originalUserCount - usersWithEmail.length} entries without email)`);
+      console.log(
+        `✅ Pre-filtering complete: ${originalUserCount} �� ${usersWithEmail.length} users (removed ${originalUserCount - usersWithEmail.length} entries without email)`,
+      );
 
       // Replace the users array with the filtered version
       req.body.users = usersWithEmail;
