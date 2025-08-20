@@ -328,11 +328,11 @@ function DepartmentManagerCore() {
     };
 
     // Add beforeunload handler
-    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener("beforeunload", handleBeforeUnload);
 
     // Cleanup
     return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, [isUploading]);
 
@@ -407,9 +407,15 @@ function DepartmentManagerCore() {
                     departments: {
                       backend: {
                         name: "Backend Development",
-                        permissions: ["admin", "product", "database", "leads", "vc"],
-                        users: []
-                      }
+                        permissions: [
+                          "admin",
+                          "product",
+                          "database",
+                          "leads",
+                          "vc",
+                        ],
+                        users: [],
+                      },
                     },
                     users: [
                       {
@@ -419,9 +425,9 @@ function DepartmentManagerCore() {
                         surname: "User",
                         jobTitle: "Developer",
                         department: "backend",
-                        ssoId: "test-123"
-                      }
-                    ]
+                        ssoId: "test-123",
+                      },
+                    ],
                   };
 
                   try {
