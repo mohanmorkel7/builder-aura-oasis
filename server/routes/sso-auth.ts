@@ -355,6 +355,42 @@ router.get(
   "/admin/database-users",
   async (req: Request, res: Response) => {
     try {
+      // Check if database is available first
+      let dbAvailable = false;
+      try {
+        await pool.query("SELECT 1");
+        dbAvailable = true;
+      } catch (dbError) {
+        console.warn("Database not available:", dbError.message);
+      }
+
+      if (!dbAvailable) {
+        // Return empty state when database is not available
+        let departments = {};
+        try {
+          const filePath = path.join(__dirname, "../data/user-departments.json");
+          if (fs.existsSync(filePath)) {
+            const fileContent = fs.readFileSync(filePath, "utf8");
+            const data = JSON.parse(fileContent);
+            departments = data.departments || {};
+          }
+        } catch (error) {
+          console.warn("Could not load departments from JSON:", error.message);
+        }
+
+        return res.json({
+          success: true,
+          data: {
+            users: [],
+            departments,
+            totalUsers: 0,
+            usersByRole: {},
+            databaseStatus: "unavailable",
+            message: "Database is currently unavailable. Start PostgreSQL to view users."
+          }
+        });
+      }
+
       // Get all users from database
       const usersResult = await pool.query(`
         SELECT
@@ -410,7 +446,8 @@ router.get(
           usersByRole: users.reduce((acc, user) => {
             acc[user.role] = (acc[user.role] || 0) + 1;
             return acc;
-          }, {} as Record<string, number>)
+          }, {} as Record<string, number>),
+          databaseStatus: "available"
         }
       });
     } catch (error) {
