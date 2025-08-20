@@ -515,6 +515,7 @@ export default function UserManagement() {
         <TabsList>
           <TabsTrigger value="list">All Users</TabsTrigger>
           <TabsTrigger value="roles">By Role Groups</TabsTrigger>
+          <TabsTrigger value="inactive">Inactive Users</TabsTrigger>
         </TabsList>
 
         {/* All Users List */}
