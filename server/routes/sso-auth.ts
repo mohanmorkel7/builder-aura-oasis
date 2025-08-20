@@ -380,12 +380,14 @@ router.post(
 
       res.json({
         success: true,
-        message: `Processed ${users.length} users. Added ${usersToAdd.length} new users to JSON. Completely skipped ${skippedUsers.length} users that exist in database (no JSON or database updates made to existing users).`,
+        message: `Processed ${users.length} valid users (${skippedEntries.length} entries skipped - likely meeting rooms/resources). Added ${usersToAdd.length} new users to JSON. Completely skipped ${skippedUsers.length} users that exist in database.`,
         data: {
           newUserCount: usersToAdd.length,
           skippedUserCount: totalSkipped,
           skippedInDatabase: skippedUsers.length,
           skippedInJson: alreadyInJsonUsers.length,
+          skippedEntriesNoEmail: skippedEntries.length,
+          skippedEntriesDetails: skippedEntries,
           departmentCount: Object.keys(mergedDepartments).length,
           totalUsersInJson: finalUsers.length,
           usersPassedDatabaseCheck: newUsers.length,
