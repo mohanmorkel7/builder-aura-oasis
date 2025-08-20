@@ -321,7 +321,7 @@ export class DepartmentService {
                 console.log(
                   `🔄 Updating existing user with department: ${user.email} (${user.department})`,
                 );
-                await this.createOrUpdateSSOUser({
+                const updateResult = await this.createOrUpdateSSOUser({
                   mail: user.email,
                   displayName: user.displayName,
                   givenName: user.givenName,
@@ -329,6 +329,7 @@ export class DepartmentService {
                   jobTitle: user.jobTitle,
                   id: user.ssoId,
                 });
+                console.log(`   ✅ Update result: ${updateResult ? 'success' : 'failed'}`);
                 updatedCount++;
               } else {
                 console.log(
@@ -339,7 +340,8 @@ export class DepartmentService {
               }
             } else {
               // New user
-              await this.createOrUpdateSSOUser({
+              console.log(`➕ Creating new user: ${user.email} (${user.department})`);
+              const createResult = await this.createOrUpdateSSOUser({
                 mail: user.email,
                 displayName: user.displayName,
                 givenName: user.givenName,
@@ -347,6 +349,7 @@ export class DepartmentService {
                 jobTitle: user.jobTitle,
                 id: user.ssoId,
               });
+              console.log(`   ✅ Create result: ${createResult ? 'success' : 'failed'}`);
               processedCount++;
             }
           } catch (error) {
