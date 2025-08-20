@@ -142,15 +142,25 @@ export class DepartmentService {
     ssoUser: any,
   ): Promise<UserDepartmentInfo | null> {
     try {
+      console.log(`🔧 createOrUpdateSSOUser called for: ${ssoUser.mail}`);
+
       // Find user in our department mapping
       const userMapping = userDepartments.users.find(
         (u) => u.email === ssoUser.mail,
       );
 
       if (!userMapping) {
-        console.warn(`User ${ssoUser.mail} not found in department mapping`);
+        console.warn(`❌ User ${ssoUser.mail} not found in department mapping`);
+        console.log(`Available users in mapping: ${userDepartments.users.map(u => u.email).join(', ')}`);
         return null;
       }
+
+      console.log(`✅ Found user mapping for ${ssoUser.mail}:`, {
+        department: userMapping.department,
+        role: this.getDepartmentRole(userMapping.department),
+        hasGivenName: !!userMapping.givenName,
+        hasSurname: !!userMapping.surname
+      });
 
       // Validate required fields and log any issues
       if (!userMapping.givenName && !userMapping.displayName) {
