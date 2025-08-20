@@ -65,21 +65,27 @@ export default function UserManagement() {
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
+    // Check if we've already processed auto-inactivation today to prevent duplicates
+    const today = new Date().toDateString();
+    const lastProcessed = localStorage.getItem('auto-inactivation-last-processed');
+
     const usersToInactivate: number[] = [];
     const processedUsers = users.map((user) => {
       if (user.last_login && user.status === "active") {
         const lastLoginDate = new Date(user.last_login);
         if (lastLoginDate < oneWeekAgo) {
-          // Mark user for inactivation
-          usersToInactivate.push(user.id);
+          // Only mark for API update if we haven't processed today
+          if (lastProcessed !== today) {
+            usersToInactivate.push(user.id);
+          }
           return { ...user, status: "inactive" };
         }
       }
       return user;
     });
 
-    // If there are users to inactivate, call the API
-    if (usersToInactivate.length > 0) {
+    // If there are users to inactivate and we haven't processed today, call the API
+    if (usersToInactivate.length > 0 && lastProcessed !== today) {
       try {
         console.log(`Auto-inactivating ${usersToInactivate.length} users:`, usersToInactivate);
         const response = await fetch("/api/users/bulk-inactive", {
@@ -93,6 +99,8 @@ export default function UserManagement() {
         if (response.ok) {
           const result = await response.json();
           console.log(`Successfully auto-inactivated ${result.updatedCount} users`);
+          // Mark that we've processed auto-inactivation today
+          localStorage.setItem('auto-inactivation-last-processed', today);
         } else {
           console.error("Failed to auto-inactivate users:", await response.text());
         }
