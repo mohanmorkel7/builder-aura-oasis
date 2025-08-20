@@ -72,11 +72,19 @@ export default function DepartmentManager() {
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
+    console.log("🔄 File upload started");
+
     // Prevent any default form submission behavior
     event.preventDefault();
+    event.stopPropagation();
 
     const file = event.target.files?.[0];
-    if (!file) return;
+    if (!file) {
+      console.log("❌ No file selected");
+      return;
+    }
+
+    console.log("📁 File selected:", file.name, file.type, file.size);
 
     if (file.type !== "application/json") {
       setUploadStatus({
