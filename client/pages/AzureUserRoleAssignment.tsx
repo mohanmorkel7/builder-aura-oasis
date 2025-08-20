@@ -654,34 +654,6 @@ export default function AzureUserRoleAssignment() {
         </CardContent>
       </Card>
 
-      {/* Debug Info */}
-      {process.env.NODE_ENV === "development" && (
-        <Alert className="border-blue-200 bg-blue-50">
-          <Shield className="h-4 w-4 text-blue-600" />
-          <AlertDescription className="text-blue-800">
-            <strong>Debug Info:</strong>
-            <br />
-            API returned {unknownUsers.length} users
-            <br />
-            Filtered users: {filteredUsers.length}
-            <br />
-            Role assignments: {roleAssignments.length}
-            <br />
-            Department assignments: {departmentAssignments.length}
-            <br />
-            Last fetch: {new Date().toLocaleTimeString()}
-            {error && error.includes("Database") && (
-              <>
-                <br />
-                <strong>Note:</strong> Database connection error detected.
-                <br />
-                Check if PostgreSQL is running on port 5432.
-              </>
-            )}
-          </AlertDescription>
-        </Alert>
-      )}
-
       {/* Alerts */}
       {error && (
         <Alert variant="destructive">
