@@ -190,7 +190,19 @@ router.post(
 
       // Validate users have required fields (department is optional for unknown users)
       for (const user of users) {
+        console.log(`🔍 Validating user:`, {
+          email: user.email,
+          displayName: user.displayName,
+          ssoId: user.ssoId,
+          hasEmail: !!user.email,
+          hasDisplayName: !!user.displayName,
+          hasSsoId: !!user.ssoId,
+          allKeys: Object.keys(user)
+        });
+
         if (!user.email || !user.displayName || !user.ssoId) {
+          console.log(`❌ Validation failed for user:`, user);
+          console.log(`Missing fields: email=${!user.email}, displayName=${!user.displayName}, ssoId=${!user.ssoId}`);
           return res.status(400).json({
             success: false,
             error: `Invalid user data. Each user must have: email, displayName, ssoId. Missing for: ${user.email || "unknown"}`,
