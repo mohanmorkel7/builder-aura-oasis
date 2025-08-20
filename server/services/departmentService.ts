@@ -37,7 +37,7 @@ export class DepartmentService {
       finops: "finops", // FinOps department gets 'finops' role
       database: "db",
       frontend: "development",
-      backend: "backend", // Backend department gets 'backend' role
+      backend: "development", // Backend department gets 'development' role (backend not allowed in constraint)
       infra: "infra",
       admin: "admin", // Admin department gets 'admin' role
       administration: "admin", // Administration department also gets 'admin' role
