@@ -219,7 +219,7 @@ router.post(
           );
           return res.status(400).json({
             success: false,
-            error: `Invalid user data at position ${i + 1}. Each user must have: email, displayName, ssoId. User: ${user.email || user.displayName || "unknown"} is missing: ${!user.email ? 'email ' : ''}${!user.displayName ? 'displayName ' : ''}${!user.ssoId ? 'ssoId' : ''}`,
+            error: `Invalid user data at position ${i + 1}. Each user must have: email, displayName, ssoId. User: ${user.email || user.displayName || "unknown"} is missing: ${!user.email ? "email " : ""}${!user.displayName ? "displayName " : ""}${!user.ssoId ? "ssoId" : ""}`,
           });
         }
 
