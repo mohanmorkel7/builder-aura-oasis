@@ -72,6 +72,9 @@ export default function DepartmentManager() {
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
+    // Prevent any default form submission behavior
+    event.preventDefault();
+
     const file = event.target.files?.[0];
     if (!file) return;
 
