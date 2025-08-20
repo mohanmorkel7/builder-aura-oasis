@@ -1,7 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Database, RefreshCw } from "lucide-react";
 
@@ -46,12 +59,15 @@ export default function UserRoleDebugPage() {
   }, []);
 
   // Group users by role for analysis
-  const roleGroups = users.reduce((acc, user) => {
-    const role = user.role || "null/undefined";
-    if (!acc[role]) acc[role] = [];
-    acc[role].push(user);
-    return acc;
-  }, {} as Record<string, User[]>);
+  const roleGroups = users.reduce(
+    (acc, user) => {
+      const role = user.role || "null/undefined";
+      if (!acc[role]) acc[role] = [];
+      acc[role].push(user);
+      return acc;
+    },
+    {} as Record<string, User[]>,
+  );
 
   return (
     <div className="p-6 space-y-6">
@@ -63,7 +79,9 @@ export default function UserRoleDebugPage() {
           </p>
         </div>
         <Button onClick={loadUsers} disabled={loading}>
-          <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+          <RefreshCw
+            className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`}
+          />
           Refresh Data
         </Button>
       </div>
@@ -88,9 +106,15 @@ export default function UserRoleDebugPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {Object.entries(roleGroups).map(([role, userList]) => (
               <div key={role} className="text-center p-4 border rounded-lg">
-                <div className="text-2xl font-bold text-blue-600">{userList.length}</div>
+                <div className="text-2xl font-bold text-blue-600">
+                  {userList.length}
+                </div>
                 <div className="text-sm text-gray-600">
-                  <Badge variant={role === "null/undefined" ? "destructive" : "secondary"}>
+                  <Badge
+                    variant={
+                      role === "null/undefined" ? "destructive" : "secondary"
+                    }
+                  >
                     {role}
                   </Badge>
                 </div>
@@ -126,10 +150,16 @@ export default function UserRoleDebugPage() {
                     <TableCell>
                       {user.first_name} {user.last_name}
                     </TableCell>
-                    <TableCell className="font-mono text-sm">{user.email}</TableCell>
+                    <TableCell className="font-mono text-sm">
+                      {user.email}
+                    </TableCell>
                     <TableCell>
-                      <Badge 
-                        variant={!user.role || user.role === "null" ? "destructive" : "secondary"}
+                      <Badge
+                        variant={
+                          !user.role || user.role === "null"
+                            ? "destructive"
+                            : "secondary"
+                        }
                       >
                         {user.role || "NULL"}
                       </Badge>
@@ -149,7 +179,11 @@ export default function UserRoleDebugPage() {
         <Card key={role}>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <Badge variant={role === "null/undefined" ? "destructive" : "secondary"}>
+              <Badge
+                variant={
+                  role === "null/undefined" ? "destructive" : "secondary"
+                }
+              >
                 {role}
               </Badge>
               <span>({userList.length} users)</span>
@@ -159,9 +193,13 @@ export default function UserRoleDebugPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
               {userList.map((user) => (
                 <div key={user.id} className="text-sm p-2 border rounded">
-                  <div className="font-medium">{user.first_name} {user.last_name}</div>
+                  <div className="font-medium">
+                    {user.first_name} {user.last_name}
+                  </div>
                   <div className="text-gray-500">{user.email}</div>
-                  <div className="text-xs text-gray-400">Dept: {user.department || "None"}</div>
+                  <div className="text-xs text-gray-400">
+                    Dept: {user.department || "None"}
+                  </div>
                 </div>
               ))}
             </div>

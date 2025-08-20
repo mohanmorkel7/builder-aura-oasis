@@ -153,17 +153,23 @@ export default function UserManagement() {
   );
 
   // Debug logging to see what roles are actually in the data
-  console.log("Debug: All user roles found:", filteredUsers.map(user => ({
-    email: user.email,
-    role: user.role,
-    role_type: typeof user.role
-  })));
+  console.log(
+    "Debug: All user roles found:",
+    filteredUsers.map((user) => ({
+      email: user.email,
+      role: user.role,
+      role_type: typeof user.role,
+    })),
+  );
 
-  console.log("Debug: Users grouped by role:", Object.entries(usersByRole).map(([role, users]) => ({
-    role,
-    count: users.length,
-    users: users.map(u => ({ email: u.email, role: u.role }))
-  })));
+  console.log(
+    "Debug: Users grouped by role:",
+    Object.entries(usersByRole).map(([role, users]) => ({
+      role,
+      count: users.length,
+      users: users.map((u) => ({ email: u.email, role: u.role })),
+    })),
+  );
 
   const handleAddUser = () => {
     navigate("/admin/users/add");
