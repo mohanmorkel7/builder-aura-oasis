@@ -134,13 +134,14 @@ export default function UserManagement() {
   const usersByRole = Object.keys(roleGroups).reduce(
     (acc, role) => {
       if (role === "unknown") {
-        // Map users with null, undefined, empty, or "N/A" roles to unknown
+        // Map users with null, undefined, empty, "N/A", or explicit "unknown" roles to unknown
         acc[role as UserRole] = allUsers.filter(
           (user) =>
             !user.role ||
             user.role === "" ||
             user.role === "N/A" ||
-            user.role === "null",
+            user.role === "null" ||
+            user.role === "unknown",
         );
       } else {
         acc[role as UserRole] = allUsers.filter((user) => user.role === role);
