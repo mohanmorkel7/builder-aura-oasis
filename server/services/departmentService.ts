@@ -197,6 +197,7 @@ export class DepartmentService {
             userMapping.jobTitle || "Employee",
             this.getDepartmentRole(userMapping.department), // Role based on department
             userId,
+            "microsoft", // sso_provider
           ],
         );
       } else {
