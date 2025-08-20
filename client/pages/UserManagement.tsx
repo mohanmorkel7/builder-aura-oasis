@@ -153,7 +153,6 @@ export default function UserManagement() {
     {} as Record<UserRole, typeof allUsers>,
   );
 
-
   const handleAddUser = () => {
     navigate("/admin/users/add");
   };
