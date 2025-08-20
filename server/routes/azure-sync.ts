@@ -418,6 +418,7 @@ router.post("/assign-departments", async (req: Request, res: Response) => {
       "sales",
       "product",
       "development",
+      "database",
       "finops",
       "finance",
       "hr",
