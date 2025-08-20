@@ -199,10 +199,13 @@ router.post(
       const newUsers = [];
       const skippedUsers = [];
 
-      // Validate users have required fields (department is optional for unknown users)
+      // Filter and validate users - skip those without email (likely resources/rooms)
+      const validUsers = [];
+      const skippedEntries = [];
+
       for (let i = 0; i < users.length; i++) {
         const user = users[i];
-        console.log(`🔍 Validating user ${i + 1}/${users.length}:`, {
+        console.log(`🔍 Processing user ${i + 1}/${users.length}:`, {
           email: user.email,
           displayName: user.displayName,
           ssoId: user.ssoId,
@@ -212,17 +215,40 @@ router.post(
           allKeys: Object.keys(user),
         });
 
-        if (!user.email || !user.displayName || !user.ssoId) {
+        // Skip entries without email (likely meeting rooms, resources, etc.)
+        if (!user.email) {
+          console.log(`⏭️ Skipping entry ${i + 1} (no email): ${user.displayName || "unknown"}`);
+          skippedEntries.push({
+            position: i + 1,
+            displayName: user.displayName || "unknown",
+            reason: "missing email"
+          });
+          continue;
+        }
+
+        // Validate required fields for actual users
+        if (!user.displayName || !user.ssoId) {
           console.log(`❌ Validation failed for user ${i + 1}:`, user);
           console.log(
-            `Missing fields: email=${!user.email}, displayName=${!user.displayName}, ssoId=${!user.ssoId}`,
+            `Missing fields: displayName=${!user.displayName}, ssoId=${!user.ssoId}`,
           );
           return res.status(400).json({
             success: false,
-            error: `Invalid user data at position ${i + 1}. Each user must have: email, displayName, ssoId. User: ${user.email || user.displayName || "unknown"} is missing: ${!user.email ? "email " : ""}${!user.displayName ? "displayName " : ""}${!user.ssoId ? "ssoId" : ""}`,
+            error: `Invalid user data at position ${i + 1}. User ${user.email} is missing: ${!user.displayName ? "displayName " : ""}${!user.ssoId ? "ssoId" : ""}`,
           });
         }
 
+        validUsers.push(user);
+      }
+
+      console.log(`✅ Processed ${users.length} entries: ${validUsers.length} valid users, ${skippedEntries.length} skipped entries`);
+      console.log(`📋 Skipped entries:`, skippedEntries);
+
+      // Update users array to only include valid users
+      users = validUsers;
+
+      // Now validate remaining users for name fields
+      for (const user of users) {
         // Validate name fields to prevent database constraint violations
         if (!user.givenName && !user.displayName) {
           return res.status(400).json({
