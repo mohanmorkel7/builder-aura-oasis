@@ -438,7 +438,9 @@ export default function UserEdit() {
                       <SelectValue placeholder="Select department..." />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="administration">Administration</SelectItem>
+                      <SelectItem value="administration">
+                        Administration
+                      </SelectItem>
                       <SelectItem value="hr">Human Resources</SelectItem>
                       <SelectItem value="finance">Finance</SelectItem>
                       <SelectItem value="finops">
