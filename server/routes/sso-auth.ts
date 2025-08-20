@@ -244,8 +244,8 @@ router.post(
       console.log(`✅ Processed ${users.length} entries: ${validUsers.length} valid users, ${skippedEntries.length} skipped entries`);
       console.log(`📋 Skipped entries:`, skippedEntries);
 
-      // Update users array to only include valid users
-      users = validUsers;
+      // Use validUsers for further processing instead of reassigning const users
+      const processedUsers = validUsers;
 
       // Now validate remaining users for name fields
       for (const user of users) {
