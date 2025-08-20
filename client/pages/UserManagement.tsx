@@ -53,25 +53,31 @@ import {
 import { azureSilentAuth } from "@/lib/azure-silent-auth";
 
 // Pagination component
-const Pagination = ({ currentPage, totalPages, totalItems, itemsPerPage, onPageChange }) => {
+const Pagination = ({
+  currentPage,
+  totalPages,
+  totalItems,
+  itemsPerPage,
+  onPageChange,
+}) => {
   const startItem = (currentPage - 1) * itemsPerPage + 1;
   const endItem = Math.min(currentPage * itemsPerPage, totalItems);
-  
+
   const getPageNumbers = () => {
     const pages = [];
     const maxVisiblePages = 5;
     let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
     let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-    
+
     // Adjust start page if we're near the end
     if (endPage - startPage + 1 < maxVisiblePages) {
       startPage = Math.max(1, endPage - maxVisiblePages + 1);
     }
-    
+
     for (let i = startPage; i <= endPage; i++) {
       pages.push(i);
     }
-    
+
     return pages;
   };
 
@@ -82,7 +88,7 @@ const Pagination = ({ currentPage, totalPages, totalItems, itemsPerPage, onPageC
         <span className="font-medium">{endItem}</span> of{" "}
         <span className="font-medium">{totalItems}</span> results
       </div>
-      
+
       <div className="flex items-center space-x-2">
         <Button
           variant="outline"
@@ -93,7 +99,7 @@ const Pagination = ({ currentPage, totalPages, totalItems, itemsPerPage, onPageC
           <ChevronLeft className="w-4 h-4" />
           Previous
         </Button>
-        
+
         {getPageNumbers().map((pageNum) => (
           <Button
             key={pageNum}
@@ -105,7 +111,7 @@ const Pagination = ({ currentPage, totalPages, totalItems, itemsPerPage, onPageC
             {pageNum}
           </Button>
         ))}
-        
+
         <Button
           variant="outline"
           size="sm"
@@ -156,42 +162,30 @@ const UserRow = React.memo(({ user, onView, onEdit, onDelete, onSettings }) => {
             <span className="text-sm font-medium text-blue-600">
               {user.first_name && user.last_name
                 ? `${user.first_name[0]}${user.last_name[0]}`
-                : user.first_name?.[0] ||
-                  user.last_name?.[0] ||
-                  "N/A"}
+                : user.first_name?.[0] || user.last_name?.[0] || "N/A"}
             </span>
           </div>
           <div>
             <div className="font-medium">
               {(user.first_name && user.last_name
                 ? `${user.first_name} ${user.last_name}`
-                : user.first_name ||
-                  user.last_name ||
-                  "Unknown") || "N/A"}
+                : user.first_name || user.last_name || "Unknown") || "N/A"}
             </div>
-            <div className="text-sm text-gray-500">
-              {user.email || "N/A"}
-            </div>
+            <div className="text-sm text-gray-500">{user.email || "N/A"}</div>
           </div>
         </div>
       </TableCell>
       <TableCell>
-        <Badge
-          className={roleGroups[user.role as UserRole]?.color}
-        >
+        <Badge className={roleGroups[user.role as UserRole]?.color}>
           {roleGroups[user.role as UserRole]?.label}
         </Badge>
       </TableCell>
       <TableCell>{user.department || "N/A"}</TableCell>
       <TableCell>
-        {user.last_login
-          ? formatLastLogin(user.last_login)
-          : "N/A"}
+        {user.last_login ? formatLastLogin(user.last_login) : "N/A"}
       </TableCell>
       <TableCell>
-        <Badge className={getUserStatusColor(user.status)}>
-          {user.status}
-        </Badge>
+        <Badge className={getUserStatusColor(user.status)}>{user.status}</Badge>
       </TableCell>
       <TableCell>
         <span className="text-sm text-gray-500">Local</span>
@@ -222,9 +216,7 @@ const UserRow = React.memo(({ user, onView, onEdit, onDelete, onSettings }) => {
                 user.id,
                 (user.first_name && user.last_name
                   ? `${user.first_name} ${user.last_name}`
-                  : user.first_name ||
-                    user.last_name ||
-                    "Unknown") || "N/A",
+                  : user.first_name || user.last_name || "Unknown") || "N/A",
               )
             }
             title="Delete User"
@@ -543,15 +535,21 @@ export default function UserManagement() {
     a.click();
   };
 
-  const handleViewUser = useCallback((userId: string) => {
-    // Navigate to user details page
-    navigate(`/admin/users/${userId}`);
-  }, [navigate]);
+  const handleViewUser = useCallback(
+    (userId: string) => {
+      // Navigate to user details page
+      navigate(`/admin/users/${userId}`);
+    },
+    [navigate],
+  );
 
-  const handleEditUser = useCallback((userId: string) => {
-    // Navigate to user edit page
-    navigate(`/admin/users/${userId}/edit`);
-  }, [navigate]);
+  const handleEditUser = useCallback(
+    (userId: string) => {
+      // Navigate to user edit page
+      navigate(`/admin/users/${userId}/edit`);
+    },
+    [navigate],
+  );
 
   const handleDeleteUser = useCallback((userId: string, userName: string) => {
     // Show confirmation dialog
@@ -567,10 +565,13 @@ export default function UserManagement() {
     }
   }, []);
 
-  const handleUserSettings = useCallback((userId: string) => {
-    // Navigate to user settings/permissions page
-    navigate(`/admin/users/${userId}/settings`);
-  }, [navigate]);
+  const handleUserSettings = useCallback(
+    (userId: string) => {
+      // Navigate to user settings/permissions page
+      navigate(`/admin/users/${userId}/settings`);
+    },
+    [navigate],
+  );
 
   const handlePageChange = useCallback((page: number) => {
     setCurrentPage(page);
@@ -749,8 +750,11 @@ export default function UserManagement() {
                   )}
                 </SelectContent>
               </Select>
-              
-              <Select value={itemsPerPage.toString()} onValueChange={(value) => setItemsPerPage(Number(value))}>
+
+              <Select
+                value={itemsPerPage.toString()}
+                onValueChange={(value) => setItemsPerPage(Number(value))}
+              >
                 <SelectTrigger className="w-32">
                   <SelectValue />
                 </SelectTrigger>
@@ -809,7 +813,7 @@ export default function UserManagement() {
                   ))}
                 </TableBody>
               </Table>
-              
+
               {filteredUsers.length > itemsPerPage && (
                 <Pagination
                   currentPage={currentPage}
@@ -965,9 +969,7 @@ export default function UserManagement() {
                           {user.department || "N/A"}
                         </TableCell>
                         <TableCell className="text-gray-600">
-                          {user.last_login
-                            ? user.last_login
-                            : "Never"}
+                          {user.last_login ? user.last_login : "Never"}
                         </TableCell>
                         <TableCell>
                           <span className="text-sm text-red-600">
