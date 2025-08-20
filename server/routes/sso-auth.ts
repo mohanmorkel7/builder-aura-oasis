@@ -166,7 +166,9 @@ router.post(
         });
       }
 
-      console.log(`✅ Found ${departments.length} departments and ${users.length} users`);
+      console.log(
+        `✅ Found ${departments.length} departments and ${users.length} users`,
+      );
 
       // Check if database is available to validate existing users
       let dbAvailable = false;
@@ -206,12 +208,14 @@ router.post(
           hasEmail: !!user.email,
           hasDisplayName: !!user.displayName,
           hasSsoId: !!user.ssoId,
-          allKeys: Object.keys(user)
+          allKeys: Object.keys(user),
         });
 
         if (!user.email || !user.displayName || !user.ssoId) {
           console.log(`❌ Validation failed for user:`, user);
-          console.log(`Missing fields: email=${!user.email}, displayName=${!user.displayName}, ssoId=${!user.ssoId}`);
+          console.log(
+            `Missing fields: email=${!user.email}, displayName=${!user.displayName}, ssoId=${!user.ssoId}`,
+          );
           return res.status(400).json({
             success: false,
             error: `Invalid user data. Each user must have: email, displayName, ssoId. Missing for: ${user.email || "unknown"}`,
@@ -302,12 +306,15 @@ router.post(
       console.log(`Database available: ${dbAvailable}`);
       console.log(`Users passed database check: ${newUsers.length}`);
       if (newUsers.length > 0) {
-        console.log("Users to process details:", newUsers.map(u => ({
-          email: u.email,
-          department: u.department || 'no-dept',
-          hasDisplayName: !!u.displayName,
-          hasSsoId: !!u.ssoId
-        })));
+        console.log(
+          "Users to process details:",
+          newUsers.map((u) => ({
+            email: u.email,
+            department: u.department || "no-dept",
+            hasDisplayName: !!u.displayName,
+            hasSsoId: !!u.ssoId,
+          })),
+        );
       }
 
       let databaseSyncStatus = "pending";
@@ -359,8 +366,8 @@ router.post(
           databaseSync: {
             status: databaseSyncStatus,
             message: databaseSyncMessage,
-            databaseAvailable: dbAvailable
-          }
+            databaseAvailable: dbAvailable,
+          },
         },
       });
     } catch (error) {
@@ -690,88 +697,85 @@ router.get(
 );
 
 // Debug endpoint to test upload with specific users
-router.post(
-  "/admin/debug-upload",
-  async (req: Request, res: Response) => {
-    try {
-      console.log("🧪 Debug upload endpoint called");
+router.post("/admin/debug-upload", async (req: Request, res: Response) => {
+  try {
+    console.log("🧪 Debug upload endpoint called");
 
-      const testData = {
-        departments: {
-          backend: {
-            name: "Backend Development",
-            permissions: ["admin", "product", "database", "leads", "vc"],
-            users: []
-          }
+    const testData = {
+      departments: {
+        backend: {
+          name: "Backend Development",
+          permissions: ["admin", "product", "database", "leads", "vc"],
+          users: [],
         },
-        users: [
-          {
-            email: "Abinandan@mylapay.com",
-            displayName: "Abinandan N",
-            givenName: "Abinandan",
-            surname: "Natraj",
-            jobTitle: "Tech Lead",
-            department: "backend",
-            ssoId: "98d7b0c3-241c-4184-951e-77d971a0df61"
-          },
-          {
-            email: "Abinaya.M@mylapay.com",
-            displayName: "Abinaya M",
-            givenName: "Abinaya",
-            surname: "M",
-            jobTitle: "Associate Director Technology",
-            department: "backend",
-            ssoId: "00403bc6-6a6d-46c3-a203-d12ff8c9d1ac"
-          }
-        ]
-      };
+      },
+      users: [
+        {
+          email: "Abinandan@mylapay.com",
+          displayName: "Abinandan N",
+          givenName: "Abinandan",
+          surname: "Natraj",
+          jobTitle: "Tech Lead",
+          department: "backend",
+          ssoId: "98d7b0c3-241c-4184-951e-77d971a0df61",
+        },
+        {
+          email: "Abinaya.M@mylapay.com",
+          displayName: "Abinaya M",
+          givenName: "Abinaya",
+          surname: "M",
+          jobTitle: "Associate Director Technology",
+          department: "backend",
+          ssoId: "00403bc6-6a6d-46c3-a203-d12ff8c9d1ac",
+        },
+      ],
+    };
 
-      console.log("Test data:", JSON.stringify(testData, null, 2));
+    console.log("Test data:", JSON.stringify(testData, null, 2));
 
-      // Check database availability
-      let dbAvailable = false;
-      try {
-        await pool.query("SELECT 1");
-        dbAvailable = true;
-        console.log("✅ Database is available");
-      } catch (dbError) {
-        console.warn("⚠️  Database not available:", dbError.message);
-      }
-
-      // Check if users already exist
-      let existingEmails = new Set<string>();
-      if (dbAvailable) {
-        const existingUsersResult = await pool.query("SELECT email FROM users");
-        existingEmails = new Set(
-          existingUsersResult.rows.map((row) => row.email.toLowerCase()),
-        );
-        console.log(`Found ${existingEmails.size} existing users in database`);
-
-        for (const user of testData.users) {
-          const exists = existingEmails.has(user.email.toLowerCase());
-          console.log(`${user.email} exists in DB: ${exists}`);
-        }
-      }
-
-      res.json({
-        success: true,
-        debug: {
-          databaseAvailable: dbAvailable,
-          existingUsersCount: existingEmails.size,
-          testUsersChecked: testData.users.map(u => ({
-            email: u.email,
-            existsInDB: existingEmails.has(u.email.toLowerCase())
-          }))
-        }
-      });
-    } catch (error) {
-      console.error("Debug endpoint error:", error);
-      res.status(500).json({
-        success: false,
-        error: error.message
-      });
+    // Check database availability
+    let dbAvailable = false;
+    try {
+      await pool.query("SELECT 1");
+      dbAvailable = true;
+      console.log("✅ Database is available");
+    } catch (dbError) {
+      console.warn("⚠️  Database not available:", dbError.message);
     }
+
+    // Check if users already exist
+    let existingEmails = new Set<string>();
+    if (dbAvailable) {
+      const existingUsersResult = await pool.query("SELECT email FROM users");
+      existingEmails = new Set(
+        existingUsersResult.rows.map((row) => row.email.toLowerCase()),
+      );
+      console.log(`Found ${existingEmails.size} existing users in database`);
+
+      for (const user of testData.users) {
+        const exists = existingEmails.has(user.email.toLowerCase());
+        console.log(`${user.email} exists in DB: ${exists}`);
+      }
+    }
+
+    res.json({
+      success: true,
+      debug: {
+        databaseAvailable: dbAvailable,
+        existingUsersCount: existingEmails.size,
+        testUsersChecked: testData.users.map((u) => ({
+          email: u.email,
+          existsInDB: existingEmails.has(u.email.toLowerCase()),
+        })),
+      },
+    });
+  } catch (error) {
+    console.error("Debug endpoint error:", error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
   }
-);
+});
 
 export default router;
