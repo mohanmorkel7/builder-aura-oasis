@@ -398,6 +398,55 @@ function DepartmentManagerCore() {
                 <Download className="w-4 h-4" />
                 <span>Download Template</span>
               </Button>
+
+              <Button
+                variant="outline"
+                onClick={async () => {
+                  console.log("🧪 Testing direct upload without file input");
+                  const testData = {
+                    departments: {
+                      backend: {
+                        name: "Backend Development",
+                        permissions: ["admin", "product", "database", "leads", "vc"],
+                        users: []
+                      }
+                    },
+                    users: [
+                      {
+                        email: "test@example.com",
+                        displayName: "Test User",
+                        givenName: "Test",
+                        surname: "User",
+                        jobTitle: "Developer",
+                        department: "backend",
+                        ssoId: "test-123"
+                      }
+                    ]
+                  };
+
+                  try {
+                    console.log("📡 Sending test data");
+                    const response = await apiClient.request(
+                      "/auth/admin/upload-departments",
+                      {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(testData),
+                      },
+                    );
+                    console.log("✅ Test upload response:", response);
+                    alert("Test completed - check console for details");
+                  } catch (error) {
+                    console.error("❌ Test upload failed:", error);
+                    alert("Test failed - check console for details");
+                  }
+                }}
+                className="flex items-center space-x-2"
+              >
+                <span>🧪 Test Upload</span>
+              </Button>
             </div>
 
             <div className="text-sm text-gray-600">
