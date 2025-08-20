@@ -381,11 +381,15 @@ export default function AzureUserRoleAssignment() {
     const autoRole = getDepartmentRole(department);
     if (autoRole !== "unknown") {
       setRoleAssignments((prev) => {
-        const existingAssignment = prev.find((assignment) => assignment.userId === userId);
+        const existingAssignment = prev.find(
+          (assignment) => assignment.userId === userId,
+        );
         if (existingAssignment) {
           // Update existing role assignment
           return prev.map((assignment) =>
-            assignment.userId === userId ? { ...assignment, role: autoRole } : assignment,
+            assignment.userId === userId
+              ? { ...assignment, role: autoRole }
+              : assignment,
           );
         } else {
           // Add new role assignment
@@ -711,8 +715,15 @@ export default function AzureUserRoleAssignment() {
       <Alert className="border-blue-200 bg-blue-50">
         <Shield className="h-4 w-4 text-blue-600" />
         <AlertDescription className="text-blue-800">
-          <strong>Smart Assignment:</strong> When you select a department, the appropriate role will be automatically assigned.
-          Look for the <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200 mx-1">Auto</Badge> badge to see auto-assigned roles.
+          <strong>Smart Assignment:</strong> When you select a department, the
+          appropriate role will be automatically assigned. Look for the{" "}
+          <Badge
+            variant="outline"
+            className="text-xs bg-green-50 text-green-700 border-green-200 mx-1"
+          >
+            Auto
+          </Badge>{" "}
+          badge to see auto-assigned roles.
         </AlertDescription>
       </Alert>
 
@@ -847,14 +858,19 @@ export default function AzureUserRoleAssignment() {
                           <div className="flex items-center space-x-2">
                             <Select
                               value={assignedRole}
-                              onValueChange={(role) => updateRole(user.id, role)}
+                              onValueChange={(role) =>
+                                updateRole(user.id, role)
+                              }
                             >
                               <SelectTrigger className="w-48">
                                 <SelectValue placeholder="Select role..." />
                               </SelectTrigger>
                               <SelectContent>
                                 {validRoles.map((role) => (
-                                  <SelectItem key={role.value} value={role.value}>
+                                  <SelectItem
+                                    key={role.value}
+                                    value={role.value}
+                                  >
                                     {role.label}
                                   </SelectItem>
                                 ))}
