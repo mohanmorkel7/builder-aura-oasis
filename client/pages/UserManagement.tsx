@@ -65,12 +65,12 @@ export default function UserManagement() {
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
-    return users.map(user => {
-      if (user.last_login && user.status === 'active') {
+    return users.map((user) => {
+      if (user.last_login && user.status === "active") {
         const lastLoginDate = new Date(user.last_login);
         if (lastLoginDate < oneWeekAgo) {
           // Auto-inactivate user
-          return { ...user, status: 'inactive' };
+          return { ...user, status: "inactive" };
         }
       }
       return user;
@@ -162,7 +162,7 @@ export default function UserManagement() {
       user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       false;
 
-    return user.status === 'inactive' && matchesSearch;
+    return user.status === "inactive" && matchesSearch;
   });
 
   // Group users by role (use allUsers for role view, not filteredUsers)
@@ -711,15 +711,20 @@ export default function UserManagement() {
                 <span>Inactive Users ({inactiveUsers.length})</span>
               </CardTitle>
               <CardDescription>
-                Users who have been inactive for more than a week or manually set to inactive status
+                Users who have been inactive for more than a week or manually
+                set to inactive status
               </CardDescription>
             </CardHeader>
             <CardContent>
               {inactiveUsers.length === 0 ? (
                 <div className="text-center py-12">
                   <AlertTriangle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-500 text-lg">No inactive users found</p>
-                  <p className="text-gray-400 text-sm">All users are currently active</p>
+                  <p className="text-gray-500 text-lg">
+                    No inactive users found
+                  </p>
+                  <p className="text-gray-400 text-sm">
+                    All users are currently active
+                  </p>
                 </div>
               ) : (
                 <Table>
@@ -768,7 +773,9 @@ export default function UserManagement() {
                             {roleGroups[user.role as UserRole]?.label}
                           </Badge>
                         </TableCell>
-                        <TableCell className="text-gray-600">{user.department || "N/A"}</TableCell>
+                        <TableCell className="text-gray-600">
+                          {user.department || "N/A"}
+                        </TableCell>
                         <TableCell className="text-gray-600">
                           {user.last_login
                             ? formatLastLogin(user.last_login)
@@ -778,8 +785,7 @@ export default function UserManagement() {
                           <span className="text-sm text-red-600">
                             {user.last_login
                               ? `${Math.ceil((new Date().getTime() - new Date(user.last_login).getTime()) / (1000 * 60 * 60 * 24))} days ago`
-                              : "Unknown"
-                            }
+                              : "Unknown"}
                           </span>
                         </TableCell>
                         <TableCell>
