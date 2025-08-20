@@ -335,6 +335,11 @@ router.post(
           totalUsersInJson: finalUsers.length,
           usersPassedDatabaseCheck: newUsers.length,
           completelySkippedFromDatabase: skippedUsers.length,
+          databaseSync: {
+            status: databaseSyncStatus,
+            message: databaseSyncMessage,
+            databaseAvailable: dbAvailable
+          }
         },
       });
     } catch (error) {
