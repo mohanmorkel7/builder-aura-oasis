@@ -312,15 +312,12 @@ export default function UserManagement() {
                 <span className="text-green-700">Azure AD Ready</span>
               </>
             )}
-<<<<<<< HEAD
             {azureConnectionStatus === "disconnected" && (
               <>
                 <AlertTriangle className="w-4 h-4 text-amber-500" />
                 <span className="text-amber-700">Azure AD Setup Needed</span>
               </>
             )}
-=======
->>>>>>> refs/remotes/origin/main
             {azureConnectionStatus === "unknown" && (
               <>
                 <Cloud className="w-4 h-4 text-blue-500" />
