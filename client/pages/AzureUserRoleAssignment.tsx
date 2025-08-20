@@ -249,17 +249,6 @@ const UserAssignmentRow = React.memo(
           </div>
         </TableCell>
         <TableCell>
-          <div className="flex items-center text-sm">
-            <Shield className="w-3 h-3 mr-1" />
-            <Badge
-              variant={user.role === "unknown" ? "destructive" : "secondary"}
-              className={isInactive ? "opacity-75" : ""}
-            >
-              {user.role || "N/A"}
-            </Badge>
-          </div>
-        </TableCell>
-        <TableCell>
           {needsDepartment ? (
             <Select
               value={assignedDepartment}
@@ -268,7 +257,7 @@ const UserAssignmentRow = React.memo(
               }
               disabled={isInactive}
             >
-              <SelectTrigger className="w-48">
+              <SelectTrigger className="w-52">
                 <SelectValue placeholder="Select department..." />
               </SelectTrigger>
               <SelectContent>
@@ -294,8 +283,8 @@ const UserAssignmentRow = React.memo(
                 onValueChange={(role) => onRoleUpdate(user.id, role)}
                 disabled={isInactive}
               >
-                <SelectTrigger className="w-48">
-                  <SelectValue placeholder="Select role..." />
+                <SelectTrigger className="w-52">
+                <SelectValue placeholder="Select role..." />
                 </SelectTrigger>
                 <SelectContent>
                   {validRoles.map((role) => (
@@ -320,7 +309,9 @@ const UserAssignmentRow = React.memo(
           )}
         </TableCell>
         <TableCell>
-          <div className="text-sm text-gray-600">{user.job_title || "N/A"}</div>
+          <div className="text-sm text-gray-600 truncate max-w-32" title={user.job_title || "N/A"}>
+            {user.job_title || "N/A"}
+          </div>
         </TableCell>
         <TableCell>
           <div className="flex items-center space-x-2">
@@ -331,7 +322,7 @@ const UserAssignmentRow = React.memo(
               value={assignedStatus}
               onValueChange={(status) => onStatusUpdate(user.id, status)}
             >
-              <SelectTrigger className="w-24">
+              <SelectTrigger className="w-32">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -358,7 +349,7 @@ const UserAssignmentRow = React.memo(
           </div>
         </TableCell>
         <TableCell>
-          <div className="text-sm text-gray-600">
+          <div className="text-sm text-gray-600 truncate max-w-32" title={user.last_login ? formatDate(user.last_login) : "Never"}>
             {user.last_login ? formatDate(user.last_login) : "Never"}
           </div>
         </TableCell>
@@ -1351,14 +1342,13 @@ export default function AzureUserRoleAssignment() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>User</TableHead>
-                    <TableHead>Current Role</TableHead>
-                    <TableHead>Assign Department</TableHead>
-                    <TableHead>Assign Role</TableHead>
-                    <TableHead>Job Title</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Last Login</TableHead>
-                    <TableHead>Assignment Status</TableHead>
+                    <TableHead className="w-80">User</TableHead>
+                    <TableHead className="w-56">Department</TableHead>
+                    <TableHead className="w-56">Role</TableHead>
+                    <TableHead className="w-32">Job Title</TableHead>
+                    <TableHead className="w-40">Status</TableHead>
+                    <TableHead className="w-32">Last Login</TableHead>
+                    <TableHead className="w-36">Ready</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
