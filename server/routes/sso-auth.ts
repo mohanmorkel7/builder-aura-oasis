@@ -351,48 +351,47 @@ router.get(
 );
 
 // Get all users from database for department manager
-router.get(
-  "/admin/database-users",
-  async (req: Request, res: Response) => {
+router.get("/admin/database-users", async (req: Request, res: Response) => {
+  try {
+    // Check if database is available first
+    let dbAvailable = false;
     try {
-      // Check if database is available first
-      let dbAvailable = false;
+      await pool.query("SELECT 1");
+      dbAvailable = true;
+    } catch (dbError) {
+      console.warn("Database not available:", dbError.message);
+    }
+
+    if (!dbAvailable) {
+      // Return empty state when database is not available
+      let departments = {};
       try {
-        await pool.query("SELECT 1");
-        dbAvailable = true;
-      } catch (dbError) {
-        console.warn("Database not available:", dbError.message);
-      }
-
-      if (!dbAvailable) {
-        // Return empty state when database is not available
-        let departments = {};
-        try {
-          const filePath = path.join(__dirname, "../data/user-departments.json");
-          if (fs.existsSync(filePath)) {
-            const fileContent = fs.readFileSync(filePath, "utf8");
-            const data = JSON.parse(fileContent);
-            departments = data.departments || {};
-          }
-        } catch (error) {
-          console.warn("Could not load departments from JSON:", error.message);
+        const filePath = path.join(__dirname, "../data/user-departments.json");
+        if (fs.existsSync(filePath)) {
+          const fileContent = fs.readFileSync(filePath, "utf8");
+          const data = JSON.parse(fileContent);
+          departments = data.departments || {};
         }
-
-        return res.json({
-          success: true,
-          data: {
-            users: [],
-            departments,
-            totalUsers: 0,
-            usersByRole: {},
-            databaseStatus: "unavailable",
-            message: "Database is currently unavailable. Start PostgreSQL to view users."
-          }
-        });
+      } catch (error) {
+        console.warn("Could not load departments from JSON:", error.message);
       }
 
-      // Get all users from database
-      const usersResult = await pool.query(`
+      return res.json({
+        success: true,
+        data: {
+          users: [],
+          departments,
+          totalUsers: 0,
+          usersByRole: {},
+          databaseStatus: "unavailable",
+          message:
+            "Database is currently unavailable. Start PostgreSQL to view users.",
+        },
+      });
+    }
+
+    // Get all users from database
+    const usersResult = await pool.query(`
         SELECT
           first_name,
           last_name,
@@ -410,55 +409,57 @@ router.get(
         ORDER BY created_at DESC
       `);
 
-      const users = usersResult.rows.map(row => ({
-        displayName: `${row.first_name} ${row.last_name}`.trim(),
-        givenName: row.first_name,
-        surname: row.last_name,
-        email: row.email,
-        role: row.role,
-        department: row.department || 'unknown',
-        jobTitle: row.job_title,
-        ssoId: row.azure_object_id,
-        authType: row.auth_type,
-        status: row.status,
-        createdAt: row.created_at
-      }));
+    const users = usersResult.rows.map((row) => ({
+      displayName: `${row.first_name} ${row.last_name}`.trim(),
+      givenName: row.first_name,
+      surname: row.last_name,
+      email: row.email,
+      role: row.role,
+      department: row.department || "unknown",
+      jobTitle: row.job_title,
+      ssoId: row.azure_object_id,
+      authType: row.auth_type,
+      status: row.status,
+      createdAt: row.created_at,
+    }));
 
-      // Get department structure from JSON file
-      let departments = {};
-      try {
-        const filePath = path.join(__dirname, "../data/user-departments.json");
-        if (fs.existsSync(filePath)) {
-          const fileContent = fs.readFileSync(filePath, "utf8");
-          const data = JSON.parse(fileContent);
-          departments = data.departments || {};
-        }
-      } catch (error) {
-        console.warn("Could not load departments from JSON:", error.message);
+    // Get department structure from JSON file
+    let departments = {};
+    try {
+      const filePath = path.join(__dirname, "../data/user-departments.json");
+      if (fs.existsSync(filePath)) {
+        const fileContent = fs.readFileSync(filePath, "utf8");
+        const data = JSON.parse(fileContent);
+        departments = data.departments || {};
       }
+    } catch (error) {
+      console.warn("Could not load departments from JSON:", error.message);
+    }
 
-      res.json({
-        success: true,
-        data: {
-          users,
-          departments,
-          totalUsers: users.length,
-          usersByRole: users.reduce((acc, user) => {
+    res.json({
+      success: true,
+      data: {
+        users,
+        departments,
+        totalUsers: users.length,
+        usersByRole: users.reduce(
+          (acc, user) => {
             acc[user.role] = (acc[user.role] || 0) + 1;
             return acc;
-          }, {} as Record<string, number>),
-          databaseStatus: "available"
-        }
-      });
-    } catch (error) {
-      console.error("Error getting database users:", error);
-      res.status(500).json({
-        success: false,
-        error: "Failed to get users from database"
-      });
-    }
-  },
-);
+          },
+          {} as Record<string, number>,
+        ),
+        databaseStatus: "available",
+      },
+    });
+  } catch (error) {
+    console.error("Error getting database users:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to get users from database",
+    });
+  }
+});
 
 // Fix existing user roles based on departments (one-time migration)
 router.post("/admin/fix-user-roles", async (req: Request, res: Response) => {
