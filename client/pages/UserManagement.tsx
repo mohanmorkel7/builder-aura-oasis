@@ -329,12 +329,6 @@ export default function UserManagement() {
                 <span className="text-green-700">Azure Connected</span>
               </>
             )}
-            {azureConnectionStatus === "disconnected" && (
-              <>
-                <AlertTriangle className="w-4 h-4 text-red-500" />
-                <span className="text-red-700">Azure Disconnected</span>
-              </>
-            )}
             {azureConnectionStatus === "unknown" && (
               <>
                 <Cloud className="w-4 h-4 text-gray-500" />
