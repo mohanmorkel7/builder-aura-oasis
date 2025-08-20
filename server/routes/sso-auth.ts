@@ -277,9 +277,28 @@ router.post(
       );
 
       // Reload the data with option to skip existing users
-      await DepartmentService.loadUserDepartmentsFromJSON({
-        skipExistingUsers: true,
-      });
+      console.log("🔄 Starting database sync process...");
+      console.log(`Database available: ${dbAvailable}`);
+      console.log(`Users passed database check: ${newUsers.length}`);
+      if (newUsers.length > 0) {
+        console.log("Users to process details:", newUsers.map(u => ({
+          email: u.email,
+          department: u.department || 'no-dept',
+          hasDisplayName: !!u.displayName,
+          hasSsoId: !!u.ssoId
+        })));
+      }
+
+      try {
+        await DepartmentService.loadUserDepartmentsFromJSON({
+          skipExistingUsers: true,
+        });
+        console.log("✅ Database sync completed successfully");
+      } catch (syncError) {
+        console.error("❌ Database sync failed:", syncError.message);
+        console.error("Sync error details:", syncError);
+        // Continue without failing the whole upload
+      }
 
       const totalSkipped = skippedUsers.length + alreadyInJsonUsers.length;
 
