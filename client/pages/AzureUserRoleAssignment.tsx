@@ -66,25 +66,31 @@ interface UserDepartmentAssignment {
 }
 
 // Pagination component
-const Pagination = ({ currentPage, totalPages, totalItems, itemsPerPage, onPageChange }) => {
+const Pagination = ({
+  currentPage,
+  totalPages,
+  totalItems,
+  itemsPerPage,
+  onPageChange,
+}) => {
   const startItem = (currentPage - 1) * itemsPerPage + 1;
   const endItem = Math.min(currentPage * itemsPerPage, totalItems);
-  
+
   const getPageNumbers = () => {
     const pages = [];
     const maxVisiblePages = 5;
     let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
     let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-    
+
     // Adjust start page if we're near the end
     if (endPage - startPage + 1 < maxVisiblePages) {
       startPage = Math.max(1, endPage - maxVisiblePages + 1);
     }
-    
+
     for (let i = startPage; i <= endPage; i++) {
       pages.push(i);
     }
-    
+
     return pages;
   };
 
@@ -95,7 +101,7 @@ const Pagination = ({ currentPage, totalPages, totalItems, itemsPerPage, onPageC
         <span className="font-medium">{endItem}</span> of{" "}
         <span className="font-medium">{totalItems}</span> results
       </div>
-      
+
       <div className="flex items-center space-x-2">
         <Button
           variant="outline"
@@ -106,7 +112,7 @@ const Pagination = ({ currentPage, totalPages, totalItems, itemsPerPage, onPageC
           <ChevronLeft className="w-4 h-4" />
           Previous
         </Button>
-        
+
         {getPageNumbers().map((pageNum) => (
           <Button
             key={pageNum}
@@ -118,7 +124,7 @@ const Pagination = ({ currentPage, totalPages, totalItems, itemsPerPage, onPageC
             {pageNum}
           </Button>
         ))}
-        
+
         <Button
           variant="outline"
           size="sm"
@@ -134,170 +140,168 @@ const Pagination = ({ currentPage, totalPages, totalItems, itemsPerPage, onPageC
 };
 
 // User assignment row component for better performance
-const UserAssignmentRow = React.memo(({ 
-  user, 
-  roleAssignments, 
-  departmentAssignments, 
-  validRoles,
-  validDepartments,
-  onRoleUpdate,
-  onDepartmentUpdate,
-  getDepartmentRole 
-}) => {
-  const assignedRole = roleAssignments.find((a) => a.userId === user.id)?.role || "";
-  const assignedDepartment = departmentAssignments.find((a) => a.userId === user.id)?.department || "";
-  
-  const roleInfo = validRoles.find((r) => r.value === assignedRole);
-  const departmentInfo = validDepartments.find((d) => d.value === assignedDepartment);
+const UserAssignmentRow = React.memo(
+  ({
+    user,
+    roleAssignments,
+    departmentAssignments,
+    validRoles,
+    validDepartments,
+    onRoleUpdate,
+    onDepartmentUpdate,
+    getDepartmentRole,
+  }) => {
+    const assignedRole =
+      roleAssignments.find((a) => a.userId === user.id)?.role || "";
+    const assignedDepartment =
+      departmentAssignments.find((a) => a.userId === user.id)?.department || "";
 
-  const needsRole = user.role === "unknown";
-  const needsDepartment = !user.department;
-  const isReady = (!needsRole || assignedRole) && (!needsDepartment || assignedDepartment);
+    const roleInfo = validRoles.find((r) => r.value === assignedRole);
+    const departmentInfo = validDepartments.find(
+      (d) => d.value === assignedDepartment,
+    );
 
-  const formatDate = (dateString: string) => {
-    try {
-      return new Date(dateString).toLocaleDateString();
-    } catch {
-      return dateString;
-    }
-  };
+    const needsRole = user.role === "unknown";
+    const needsDepartment = !user.department;
+    const isReady =
+      (!needsRole || assignedRole) && (!needsDepartment || assignedDepartment);
 
-  return (
-    <TableRow>
-      <TableCell>
-        <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-            <span className="text-sm font-medium text-blue-600">
-              {user.first_name?.[0]}
-              {user.last_name?.[0]}
-            </span>
-          </div>
-          <div>
-            <div className="font-medium">
-              {user.first_name} {user.last_name}
+    const formatDate = (dateString: string) => {
+      try {
+        return new Date(dateString).toLocaleDateString();
+      } catch {
+        return dateString;
+      }
+    };
+
+    return (
+      <TableRow>
+        <TableCell>
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+              <span className="text-sm font-medium text-blue-600">
+                {user.first_name?.[0]}
+                {user.last_name?.[0]}
+              </span>
             </div>
-            <div className="text-sm text-gray-500 flex items-center">
-              <Mail className="w-3 h-3 mr-1" />
-              {user.email}
+            <div>
+              <div className="font-medium">
+                {user.first_name} {user.last_name}
+              </div>
+              <div className="text-sm text-gray-500 flex items-center">
+                <Mail className="w-3 h-3 mr-1" />
+                {user.email}
+              </div>
             </div>
           </div>
-        </div>
-      </TableCell>
-      <TableCell>
-        <div className="flex items-center text-sm">
-          <Shield className="w-3 h-3 mr-1" />
-          <Badge
-            variant={
-              user.role === "unknown"
-                ? "destructive"
-                : "secondary"
-            }
-          >
-            {user.role || "N/A"}
-          </Badge>
-        </div>
-      </TableCell>
-      <TableCell>
-        {needsDepartment ? (
-          <Select
-            value={assignedDepartment}
-            onValueChange={(department) =>
-              onDepartmentUpdate(user.id, department)
-            }
-          >
-            <SelectTrigger className="w-48">
-              <SelectValue placeholder="Select department..." />
-            </SelectTrigger>
-            <SelectContent>
-              {validDepartments.map((dept) => (
-                <SelectItem key={dept.value} value={dept.value}>
-                  {dept.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        ) : (
-          <div className="flex items-center text-sm text-gray-600">
-            <Building className="w-3 h-3 mr-1" />
-            {user.department}
+        </TableCell>
+        <TableCell>
+          <div className="flex items-center text-sm">
+            <Shield className="w-3 h-3 mr-1" />
+            <Badge
+              variant={user.role === "unknown" ? "destructive" : "secondary"}
+            >
+              {user.role || "N/A"}
+            </Badge>
           </div>
-        )}
-      </TableCell>
-      <TableCell>
-        {needsRole ? (
-          <div className="flex items-center space-x-2">
+        </TableCell>
+        <TableCell>
+          {needsDepartment ? (
             <Select
-              value={assignedRole}
-              onValueChange={(role) =>
-                onRoleUpdate(user.id, role)
+              value={assignedDepartment}
+              onValueChange={(department) =>
+                onDepartmentUpdate(user.id, department)
               }
             >
               <SelectTrigger className="w-48">
-                <SelectValue placeholder="Select role..." />
+                <SelectValue placeholder="Select department..." />
               </SelectTrigger>
               <SelectContent>
-                {validRoles.map((role) => (
-                  <SelectItem
-                    key={role.value}
-                    value={role.value}
-                  >
-                    {role.label}
+                {validDepartments.map((dept) => (
+                  <SelectItem key={dept.value} value={dept.value}>
+                    {dept.label}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-            {assignedRole && assignedDepartment && (
-              <Badge
-                variant="outline"
-                className="text-xs bg-green-50 text-green-700 border-green-200"
-                title="Role automatically assigned based on department"
+          ) : (
+            <div className="flex items-center text-sm text-gray-600">
+              <Building className="w-3 h-3 mr-1" />
+              {user.department}
+            </div>
+          )}
+        </TableCell>
+        <TableCell>
+          {needsRole ? (
+            <div className="flex items-center space-x-2">
+              <Select
+                value={assignedRole}
+                onValueChange={(role) => onRoleUpdate(user.id, role)}
               >
-                Auto
-              </Badge>
-            )}
-          </div>
-        ) : (
-          <div className="text-sm text-gray-500">
-            Role assigned
-          </div>
-        )}
-      </TableCell>
-      <TableCell>
-        <div className="text-sm text-gray-600">
-          {user.job_title || "N/A"}
-        </div>
-      </TableCell>
-      <TableCell>
-        {isReady ? (
-          <Badge className="bg-green-100 text-green-800">
-            <Check className="w-3 h-3 mr-1" />
-            Ready
-          </Badge>
-        ) : (
-          <Badge
-            variant="outline"
-            className="text-orange-600 border-orange-200"
-          >
-            <X className="w-3 h-3 mr-1" />
-            {needsRole && needsDepartment
-              ? "Need Role & Dept"
-              : needsRole
-                ? "Need Role"
-                : "Need Department"}
-          </Badge>
-        )}
-      </TableCell>
-    </TableRow>
-  );
-});
+                <SelectTrigger className="w-48">
+                  <SelectValue placeholder="Select role..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {validRoles.map((role) => (
+                    <SelectItem key={role.value} value={role.value}>
+                      {role.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {assignedRole && assignedDepartment && (
+                <Badge
+                  variant="outline"
+                  className="text-xs bg-green-50 text-green-700 border-green-200"
+                  title="Role automatically assigned based on department"
+                >
+                  Auto
+                </Badge>
+              )}
+            </div>
+          ) : (
+            <div className="text-sm text-gray-500">Role assigned</div>
+          )}
+        </TableCell>
+        <TableCell>
+          <div className="text-sm text-gray-600">{user.job_title || "N/A"}</div>
+        </TableCell>
+        <TableCell>
+          {isReady ? (
+            <Badge className="bg-green-100 text-green-800">
+              <Check className="w-3 h-3 mr-1" />
+              Ready
+            </Badge>
+          ) : (
+            <Badge
+              variant="outline"
+              className="text-orange-600 border-orange-200"
+            >
+              <X className="w-3 h-3 mr-1" />
+              {needsRole && needsDepartment
+                ? "Need Role & Dept"
+                : needsRole
+                  ? "Need Role"
+                  : "Need Department"}
+            </Badge>
+          )}
+        </TableCell>
+      </TableRow>
+    );
+  },
+);
 
 UserAssignmentRow.displayName = "UserAssignmentRow";
 
 export default function AzureUserRoleAssignment() {
   const navigate = useNavigate();
   const [unknownUsers, setUnknownUsers] = useState<UnknownUser[]>([]);
-  const [roleAssignments, setRoleAssignments] = useState<UserRoleAssignment[]>([]);
-  const [departmentAssignments, setDepartmentAssignments] = useState<UserDepartmentAssignment[]>([]);
+  const [roleAssignments, setRoleAssignments] = useState<UserRoleAssignment[]>(
+    [],
+  );
+  const [departmentAssignments, setDepartmentAssignments] = useState<
+    UserDepartmentAssignment[]
+  >([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(20);
@@ -617,37 +621,40 @@ export default function AzureUserRoleAssignment() {
     );
   }, []);
 
-  const updateDepartment = useCallback((userId: number, department: string) => {
-    // Update department assignment
-    setDepartmentAssignments((prev) =>
-      prev.map((assignment) =>
-        assignment.userId === userId
-          ? { ...assignment, department }
-          : assignment,
-      ),
-    );
+  const updateDepartment = useCallback(
+    (userId: number, department: string) => {
+      // Update department assignment
+      setDepartmentAssignments((prev) =>
+        prev.map((assignment) =>
+          assignment.userId === userId
+            ? { ...assignment, department }
+            : assignment,
+        ),
+      );
 
-    // Automatically assign role based on department
-    const autoRole = getDepartmentRole(department);
-    if (autoRole !== "unknown") {
-      setRoleAssignments((prev) => {
-        const existingAssignment = prev.find(
-          (assignment) => assignment.userId === userId,
-        );
-        if (existingAssignment) {
-          // Update existing role assignment
-          return prev.map((assignment) =>
-            assignment.userId === userId
-              ? { ...assignment, role: autoRole }
-              : assignment,
+      // Automatically assign role based on department
+      const autoRole = getDepartmentRole(department);
+      if (autoRole !== "unknown") {
+        setRoleAssignments((prev) => {
+          const existingAssignment = prev.find(
+            (assignment) => assignment.userId === userId,
           );
-        } else {
-          // Add new role assignment
-          return [...prev, { userId, role: autoRole }];
-        }
-      });
-    }
-  }, [getDepartmentRole]);
+          if (existingAssignment) {
+            // Update existing role assignment
+            return prev.map((assignment) =>
+              assignment.userId === userId
+                ? { ...assignment, role: autoRole }
+                : assignment,
+            );
+          } else {
+            // Add new role assignment
+            return [...prev, { userId, role: autoRole }];
+          }
+        });
+      }
+    },
+    [getDepartmentRole],
+  );
 
   const assignRoles = async () => {
     try {
@@ -951,7 +958,10 @@ export default function AzureUserRoleAssignment() {
               </div>
             </div>
             <div className="flex gap-4">
-              <Select value={itemsPerPage.toString()} onValueChange={(value) => setItemsPerPage(Number(value))}>
+              <Select
+                value={itemsPerPage.toString()}
+                onValueChange={(value) => setItemsPerPage(Number(value))}
+              >
                 <SelectTrigger className="w-32">
                   <SelectValue />
                 </SelectTrigger>
@@ -1017,7 +1027,7 @@ export default function AzureUserRoleAssignment() {
                   ))}
                 </TableBody>
               </Table>
-              
+
               {filteredUsers.length > itemsPerPage && (
                 <Pagination
                   currentPage={currentPage}
