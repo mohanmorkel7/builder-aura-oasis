@@ -200,8 +200,9 @@ router.post(
       const skippedUsers = [];
 
       // Validate users have required fields (department is optional for unknown users)
-      for (const user of users) {
-        console.log(`🔍 Validating user:`, {
+      for (let i = 0; i < users.length; i++) {
+        const user = users[i];
+        console.log(`🔍 Validating user ${i + 1}/${users.length}:`, {
           email: user.email,
           displayName: user.displayName,
           ssoId: user.ssoId,
@@ -212,13 +213,13 @@ router.post(
         });
 
         if (!user.email || !user.displayName || !user.ssoId) {
-          console.log(`❌ Validation failed for user:`, user);
+          console.log(`❌ Validation failed for user ${i + 1}:`, user);
           console.log(
             `Missing fields: email=${!user.email}, displayName=${!user.displayName}, ssoId=${!user.ssoId}`,
           );
           return res.status(400).json({
             success: false,
-            error: `Invalid user data. Each user must have: email, displayName, ssoId. Missing for: ${user.email || "unknown"}`,
+            error: `Invalid user data at position ${i + 1}. Each user must have: email, displayName, ssoId. User: ${user.email || user.displayName || "unknown"} is missing: ${!user.email ? 'email ' : ''}${!user.displayName ? 'displayName ' : ''}${!user.ssoId ? 'ssoId' : ''}`,
           });
         }
 
@@ -341,7 +342,7 @@ router.post(
 
       console.log(`📁 Department upload summary:`);
       console.log(`   • Users in upload: ${users.length}`);
-      console.log(`   • Users passed database check: ${newUsers.length}`);
+      console.log(`   �� Users passed database check: ${newUsers.length}`);
       console.log(`   • New users added to JSON: ${usersToAdd.length}`);
       console.log(`   • Skipped (found in database): ${skippedUsers.length}`);
       console.log(
