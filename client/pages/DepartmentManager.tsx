@@ -440,37 +440,49 @@ export default function DepartmentManager() {
                 <div>
                   <h4 className="font-medium mb-2">Recent Users</h4>
                   <div className="max-h-48 overflow-y-auto space-y-1">
-                    {databaseUsers.users.map((user, index) => (
-                      <div
-                        key={index}
-                        className="text-sm flex items-center justify-between p-2 bg-gray-50 rounded"
-                      >
-                        <div className="flex-1">
-                          <div className="font-medium">{user.displayName}</div>
-                          <div className="text-gray-500 text-xs">{user.email}</div>
-                          {user.jobTitle && (
-                            <div className="text-gray-400 text-xs">{user.jobTitle}</div>
-                          )}
-                        </div>
-                        <div className="flex flex-col items-end space-y-1">
-                          <Badge
-                            variant={user.role === "unknown" ? "destructive" : "secondary"}
-                            className="text-xs"
-                          >
-                            {user.role}
-                          </Badge>
-                          {user.department && user.department !== "unknown" && (
-                            <Badge variant="outline" className="text-xs">
-                              {user.department}
+                    {databaseUsers.users.length > 0 ? (
+                      databaseUsers.users.map((user, index) => (
+                        <div
+                          key={index}
+                          className="text-sm flex items-center justify-between p-2 bg-gray-50 rounded"
+                        >
+                          <div className="flex-1">
+                            <div className="font-medium">{user.displayName}</div>
+                            <div className="text-gray-500 text-xs">{user.email}</div>
+                            {user.jobTitle && (
+                              <div className="text-gray-400 text-xs">{user.jobTitle}</div>
+                            )}
+                          </div>
+                          <div className="flex flex-col items-end space-y-1">
+                            <Badge
+                              variant={user.role === "unknown" ? "destructive" : "secondary"}
+                              className="text-xs"
+                            >
+                              {user.role}
                             </Badge>
-                          )}
+                            {user.department && user.department !== "unknown" && (
+                              <Badge variant="outline" className="text-xs">
+                                {user.department}
+                              </Badge>
+                            )}
+                          </div>
                         </div>
+                      ))
+                    ) : (
+                      <div className="text-center text-gray-500 py-8">
+                        <Users className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                        <p>
+                          {databaseUsers.databaseStatus === "unavailable"
+                            ? "Database unavailable - cannot load users"
+                            : "No users found in database"
+                          }
+                        </p>
                       </div>
-                    ))}
+                    )}
                   </div>
                 </div>
 
-                {databaseUsers.usersByRole.unknown > 0 && (
+                {databaseUsers.usersByRole.unknown && databaseUsers.usersByRole.unknown > 0 && (
                   <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg">
                     <div className="flex items-center space-x-2 text-orange-800">
                       <AlertCircle className="w-4 h-4" />
