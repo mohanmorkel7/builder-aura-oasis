@@ -451,6 +451,7 @@ export default function UserEdit() {
                         Backend Development
                       </SelectItem>
                       <SelectItem value="infra">Infrastructure</SelectItem>
+                      <SelectItem value="switch_team">Switch Team</SelectItem>
                     </SelectContent>
                   </Select>
                   <p className="text-sm text-gray-600 mt-1">
