@@ -165,16 +165,19 @@ export default function DepartmentManager() {
         throw new Error(response?.error || "Upload failed");
       }
     } catch (error: any) {
-      console.error("Upload error:", error);
+      console.error("❌ Upload error occurred:", error);
+      console.error("Error stack:", error.stack);
       setUploadStatus({
         type: "error",
         message: error.message || "Failed to upload department data.",
       });
     } finally {
+      console.log("🏁 Upload process finished");
       setIsUploading(false);
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
+      console.log("✅ Cleanup completed - no navigation should occur");
     }
   };
 
