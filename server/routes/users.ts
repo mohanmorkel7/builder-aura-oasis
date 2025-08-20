@@ -456,7 +456,9 @@ router.post("/bulk-inactive", async (req: Request, res: Response) => {
     const { userIds } = req.body;
 
     if (!Array.isArray(userIds) || userIds.length === 0) {
-      return res.status(400).json({ error: "userIds must be a non-empty array" });
+      return res
+        .status(400)
+        .json({ error: "userIds must be a non-empty array" });
     }
 
     // Validate all IDs are numbers
@@ -470,23 +472,29 @@ router.post("/bulk-inactive", async (req: Request, res: Response) => {
       // Update all users to inactive status
       const updatedUsers = [];
       for (const userId of userIds) {
-        const user = await UserRepository.update(userId, { status: "inactive" });
+        const user = await UserRepository.update(userId, {
+          status: "inactive",
+        });
         if (user) {
           updatedUsers.push(user);
         }
       }
 
-      console.log(`Auto-inactivated ${updatedUsers.length} users: ${userIds.join(', ')}`);
+      console.log(
+        `Auto-inactivated ${updatedUsers.length} users: ${userIds.join(", ")}`,
+      );
       res.json({
         success: true,
         updatedCount: updatedUsers.length,
-        updatedUsers
+        updatedUsers,
       });
     } else {
       // Use mock data fallback - update status in mock data
       const updatedUsers = [];
       for (const userId of userIds) {
-        const user = await MockDataService.updateUser(userId, { status: "inactive" });
+        const user = await MockDataService.updateUser(userId, {
+          status: "inactive",
+        });
         if (user) {
           updatedUsers.push(user);
         }
@@ -495,7 +503,7 @@ router.post("/bulk-inactive", async (req: Request, res: Response) => {
       res.json({
         success: true,
         updatedCount: updatedUsers.length,
-        updatedUsers
+        updatedUsers,
       });
     }
   } catch (error) {

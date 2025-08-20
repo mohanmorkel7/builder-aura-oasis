@@ -67,7 +67,9 @@ export default function UserManagement() {
 
     // Check if we've already processed auto-inactivation today to prevent duplicates
     const today = new Date().toDateString();
-    const lastProcessed = localStorage.getItem('auto-inactivation-last-processed');
+    const lastProcessed = localStorage.getItem(
+      "auto-inactivation-last-processed",
+    );
 
     const usersToInactivate: number[] = [];
     const processedUsers = users.map((user) => {
@@ -87,7 +89,10 @@ export default function UserManagement() {
     // If there are users to inactivate and we haven't processed today, call the API
     if (usersToInactivate.length > 0 && lastProcessed !== today) {
       try {
-        console.log(`Auto-inactivating ${usersToInactivate.length} users:`, usersToInactivate);
+        console.log(
+          `Auto-inactivating ${usersToInactivate.length} users:`,
+          usersToInactivate,
+        );
         const response = await fetch("/api/users/bulk-inactive", {
           method: "POST",
           headers: {
@@ -98,11 +103,16 @@ export default function UserManagement() {
 
         if (response.ok) {
           const result = await response.json();
-          console.log(`Successfully auto-inactivated ${result.updatedCount} users`);
+          console.log(
+            `Successfully auto-inactivated ${result.updatedCount} users`,
+          );
           // Mark that we've processed auto-inactivation today
-          localStorage.setItem('auto-inactivation-last-processed', today);
+          localStorage.setItem("auto-inactivation-last-processed", today);
         } else {
-          console.error("Failed to auto-inactivate users:", await response.text());
+          console.error(
+            "Failed to auto-inactivate users:",
+            await response.text(),
+          );
         }
       } catch (error) {
         console.error("Error auto-inactivating users:", error);
