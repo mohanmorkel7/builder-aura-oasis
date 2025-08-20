@@ -130,12 +130,12 @@ export default function UserManagement() {
     return matchesSearch && matchesRole && matchesDepartment;
   });
 
-  // Group users by role
+  // Group users by role (use allUsers for role view, not filteredUsers)
   const usersByRole = Object.keys(roleGroups).reduce(
     (acc, role) => {
       if (role === "unknown") {
         // Map users with null, undefined, empty, or "N/A" roles to unknown
-        acc[role as UserRole] = filteredUsers.filter(
+        acc[role as UserRole] = allUsers.filter(
           (user) =>
             !user.role ||
             user.role === "" ||
@@ -143,13 +143,13 @@ export default function UserManagement() {
             user.role === "null",
         );
       } else {
-        acc[role as UserRole] = filteredUsers.filter(
+        acc[role as UserRole] = allUsers.filter(
           (user) => user.role === role,
         );
       }
       return acc;
     },
-    {} as Record<UserRole, typeof filteredUsers>,
+    {} as Record<UserRole, typeof allUsers>,
   );
 
   // Debug logging to see what roles are actually in the data
