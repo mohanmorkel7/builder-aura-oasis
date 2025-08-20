@@ -23,7 +23,9 @@ export type UserRole =
   | "finance"
   | "hr_management"
   | "infra"
-  | "switch_team";
+  | "switch_team"
+  | "backend"
+  | "unknown";
 
 export interface User {
   id: string;
