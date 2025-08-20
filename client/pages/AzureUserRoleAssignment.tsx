@@ -368,6 +368,7 @@ export default function AzureUserRoleAssignment() {
   };
 
   const updateDepartment = (userId: number, department: string) => {
+    // Update department assignment
     setDepartmentAssignments((prev) =>
       prev.map((assignment) =>
         assignment.userId === userId
@@ -375,6 +376,23 @@ export default function AzureUserRoleAssignment() {
           : assignment,
       ),
     );
+
+    // Automatically assign role based on department
+    const autoRole = getDepartmentRole(department);
+    if (autoRole !== "unknown") {
+      setRoleAssignments((prev) => {
+        const existingAssignment = prev.find((assignment) => assignment.userId === userId);
+        if (existingAssignment) {
+          // Update existing role assignment
+          return prev.map((assignment) =>
+            assignment.userId === userId ? { ...assignment, role: autoRole } : assignment,
+          );
+        } else {
+          // Add new role assignment
+          return [...prev, { userId, role: autoRole }];
+        }
+      });
+    }
   };
 
   const assignRoles = async () => {
