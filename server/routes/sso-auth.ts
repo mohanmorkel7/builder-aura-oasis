@@ -149,15 +149,24 @@ router.post(
   "/admin/upload-departments",
   async (req: Request, res: Response) => {
     try {
+      console.log(`📤 Received JSON upload request`);
+      console.log(`📄 Request body keys:`, Object.keys(req.body));
+      console.log(`📋 Full request body:`, JSON.stringify(req.body, null, 2));
+
       const { departments, users } = req.body;
 
       if (!departments || !users) {
+        console.log(`❌ Missing departments or users in request body`);
+        console.log(`Has departments:`, !!departments);
+        console.log(`Has users:`, !!users);
         return res.status(400).json({
           success: false,
           error:
             "Invalid JSON structure. Must contain 'departments' and 'users' properties.",
         });
       }
+
+      console.log(`✅ Found ${departments.length} departments and ${users.length} users`);
 
       // Check if database is available to validate existing users
       let dbAvailable = false;
