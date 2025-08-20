@@ -125,6 +125,7 @@ export default function DepartmentManager() {
         });
         // Reload current data to show updated state
         await loadCurrentData();
+        await loadDatabaseUsers();
       } else {
         throw new Error(response.error || "Upload failed");
       }
