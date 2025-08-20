@@ -128,7 +128,9 @@ export default function DepartmentManager() {
       );
       console.log("📨 Server response received:", response?.success);
 
-      if (response.success) {
+      console.log("🔍 Processing response");
+      if (response && response.success) {
+        console.log("✅ Upload successful");
         const data = response.data;
         let detailedMessage = response.message || "Upload completed.";
 
@@ -142,20 +144,25 @@ export default function DepartmentManager() {
           detailedMessage += `\n• Departments processed: ${data.departmentCount || 0}`;
         }
 
+        console.log("💾 Setting upload status");
         setUploadStatus({
           type: "success",
           message: detailedMessage,
         });
+
         // Reload current data to show updated state
+        console.log("🔄 Reloading data");
         try {
           await loadCurrentData();
           await loadDatabaseUsers();
+          console.log("✅ Data reload completed");
         } catch (reloadError) {
-          console.warn("Failed to reload data after upload:", reloadError);
+          console.warn("⚠️ Failed to reload data after upload:", reloadError);
           // Don't fail the upload process if reload fails
         }
       } else {
-        throw new Error(response.error || "Upload failed");
+        console.log("❌ Upload failed, response:", response);
+        throw new Error(response?.error || "Upload failed");
       }
     } catch (error: any) {
       console.error("Upload error:", error);
