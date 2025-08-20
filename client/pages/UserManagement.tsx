@@ -320,6 +320,21 @@ export default function UserManagement() {
         <div>
           <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
           <p className="text-gray-600 mt-1">Manage users and roles</p>
+          {/* Debug Button */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              console.log("=== DEBUG USER DATA ===");
+              console.log("All users:", allUsers);
+              console.log("Filtered users:", filteredUsers);
+              console.log("Users by role:", usersByRole);
+              alert(`Found ${allUsers.length} total users. Check console for details.`);
+            }}
+            className="mt-2 text-xs"
+          >
+            Debug User Data
+          </Button>
         </div>
         <div className="flex items-center space-x-3">
           {/* Azure Connection Status */}
