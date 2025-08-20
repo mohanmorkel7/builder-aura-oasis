@@ -221,7 +221,7 @@ router.post(
 
       for (let i = 0; i < filteredUsers.length; i++) {
         const user = filteredUsers[i];
-        console.log(`🔍 Processing user ${i + 1}/${users.length}:`, {
+        console.log(`🔍 Processing user ${i + 1}/${filteredUsers.length}:`, {
           email: user.email,
           displayName: user.displayName,
           ssoId: user.ssoId,
