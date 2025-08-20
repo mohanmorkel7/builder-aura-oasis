@@ -328,19 +328,19 @@ export default function UserManagement() {
             {azureConnectionStatus === "connected" && (
               <>
                 <CheckCircle className="w-4 h-4 text-green-500" />
-                <span className="text-green-700">Azure Connected</span>
+                <span className="text-green-700">Azure AD Ready</span>
               </>
             )}
             {azureConnectionStatus === "disconnected" && (
               <>
-                <AlertTriangle className="w-4 h-4 text-red-500" />
-                <span className="text-red-700">Azure Disconnected</span>
+                <AlertTriangle className="w-4 h-4 text-amber-500" />
+                <span className="text-amber-700">Azure AD Setup Needed</span>
               </>
             )}
             {azureConnectionStatus === "unknown" && (
               <>
-                <Cloud className="w-4 h-4 text-gray-500" />
-                <span className="text-gray-700">Checking Azure...</span>
+                <Cloud className="w-4 h-4 text-blue-500" />
+                <span className="text-blue-700">Azure AD Available</span>
               </>
             )}
           </div>
