@@ -323,6 +323,7 @@ export default function DepartmentManager() {
                 onChange={handleFileUpload}
                 disabled={isUploading}
                 className="mt-1"
+                key={`file-input-${Date.now()}`}
               />
             </div>
             {uploadStatus.type && (
