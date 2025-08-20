@@ -303,6 +303,8 @@ export class DepartmentService {
       let updatedCount = 0;
 
       for (const user of userDepartments.users) {
+        console.log(`🔍 Processing user: ${user.email} (department: ${user.department || 'none'})`);
+
         // If skipExistingUsers is true, check if user exists in database first
         if (options.skipExistingUsers) {
           try {
@@ -310,6 +312,8 @@ export class DepartmentService {
               "SELECT id FROM users WHERE email = $1",
               [user.email],
             );
+
+            console.log(`   📋 User ${user.email} exists in DB: ${existingUser.rows.length > 0}`);
 
             if (existingUser.rows.length > 0) {
               // If user has department info, update them, otherwise skip
