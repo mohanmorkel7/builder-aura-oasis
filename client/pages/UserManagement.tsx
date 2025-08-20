@@ -316,19 +316,6 @@ export default function UserManagement() {
 
           <Button
             variant="outline"
-            size="sm"
-            onClick={handleTestAzureConnection}
-            className="text-blue-600 border-blue-200 hover:bg-blue-50"
-          >
-            Test Connection
-          </Button>
-
-          <Button variant="outline" onClick={handleSyncAzure} data-sync-azure>
-            <Cloud className="w-4 h-4 mr-2" />
-            Sync Azure AD
-          </Button>
-          <Button
-            variant="outline"
             onClick={() => navigate("/admin/users/azure-role-assignment")}
             className="text-orange-600 border-orange-200 hover:bg-orange-50"
           >
