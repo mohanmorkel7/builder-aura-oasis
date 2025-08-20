@@ -534,7 +534,7 @@ router.get("/admin/database-users", async (req: Request, res: Response) => {
         users,
         departments,
         totalUsers: users.length,
-        usersByRole: users.reduce(
+        usersByRole: processedUsers.reduce(
           (acc, user) => {
             acc[user.role] = (acc[user.role] || 0) + 1;
             return acc;
