@@ -701,6 +701,116 @@ export default function UserManagement() {
             ))}
           </div>
         </TabsContent>
+
+        {/* Inactive Users Tab */}
+        <TabsContent value="inactive">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <AlertTriangle className="w-5 h-5 text-red-600" />
+                <span>Inactive Users ({inactiveUsers.length})</span>
+              </CardTitle>
+              <CardDescription>
+                Users who have been inactive for more than a week or manually set to inactive status
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {inactiveUsers.length === 0 ? (
+                <div className="text-center py-12">
+                  <AlertTriangle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-500 text-lg">No inactive users found</p>
+                  <p className="text-gray-400 text-sm">All users are currently active</p>
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>User</TableHead>
+                      <TableHead>Role</TableHead>
+                      <TableHead>Department</TableHead>
+                      <TableHead>Last Login</TableHead>
+                      <TableHead>Inactive Since</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {inactiveUsers.map((user) => (
+                      <TableRow key={user.id} className="opacity-75">
+                        <TableCell>
+                          <div className="flex items-center space-x-3">
+                            <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+                              <span className="text-sm font-medium text-gray-600">
+                                {user.first_name && user.last_name
+                                  ? `${user.first_name[0]}${user.last_name[0]}`
+                                  : user.first_name?.[0] ||
+                                    user.last_name?.[0] ||
+                                    "N/A"}
+                              </span>
+                            </div>
+                            <div>
+                              <div className="font-medium text-gray-700">
+                                {(user.first_name && user.last_name
+                                  ? `${user.first_name} ${user.last_name}`
+                                  : user.first_name ||
+                                    user.last_name ||
+                                    "Unknown") || "N/A"}
+                              </div>
+                              <div className="text-sm text-gray-500">
+                                {user.email || "N/A"}
+                              </div>
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            className={`${roleGroups[user.role as UserRole]?.color} opacity-75`}
+                          >
+                            {roleGroups[user.role as UserRole]?.label}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-gray-600">{user.department || "N/A"}</TableCell>
+                        <TableCell className="text-gray-600">
+                          {user.last_login
+                            ? formatLastLogin(user.last_login)
+                            : "Never"}
+                        </TableCell>
+                        <TableCell>
+                          <span className="text-sm text-red-600">
+                            {user.last_login
+                              ? `${Math.ceil((new Date().getTime() - new Date(user.last_login).getTime()) / (1000 * 60 * 60 * 24))} days ago`
+                              : "Unknown"
+                            }
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center space-x-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleViewUser(user.id)}
+                              title="View User"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleEditUser(user.id)}
+                              title="Reactivate User"
+                              className="text-green-600 border-green-200 hover:bg-green-50"
+                            >
+                              <RefreshCw className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
     </div>
   );
