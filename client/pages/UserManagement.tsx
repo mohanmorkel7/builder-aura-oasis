@@ -149,6 +149,22 @@ export default function UserManagement() {
     return matchesSearch && matchesRole && matchesDepartment;
   });
 
+  // Filter inactive users (users with status 'inactive' or auto-inactivated)
+  const inactiveUsers = allUsers.filter((user) => {
+    const matchesSearch =
+      (user.first_name && user.last_name
+        ? `${user.first_name} ${user.last_name}`
+        : user.first_name || user.last_name || "Unknown"
+      )
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      false ||
+      user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      false;
+
+    return user.status === 'inactive' && matchesSearch;
+  });
+
   // Group users by role (use allUsers for role view, not filteredUsers)
   const usersByRole = Object.keys(roleGroups).reduce(
     (acc, role) => {
