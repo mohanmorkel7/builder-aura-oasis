@@ -126,7 +126,7 @@ export default function DepartmentManager() {
           body: JSON.stringify(parsedData),
         },
       );
-      console.log("📨 Server response received:", response?.success);
+      console.log("�� Server response received:", response?.success);
 
       console.log("🔍 Processing response");
       if (response && response.success) {
@@ -317,7 +317,24 @@ export default function DepartmentManager() {
   React.useEffect(() => {
     loadCurrentData();
     loadDatabaseUsers();
-  }, []);
+
+    // Prevent accidental navigation during upload
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isUploading) {
+        e.preventDefault();
+        e.returnValue = "Upload in progress. Are you sure you want to leave?";
+        return "Upload in progress. Are you sure you want to leave?";
+      }
+    };
+
+    // Add beforeunload handler
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [isUploading]);
 
   return (
     <div className="space-y-6">
