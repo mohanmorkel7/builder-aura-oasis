@@ -143,9 +143,7 @@ export default function UserManagement() {
             user.role === "null",
         );
       } else {
-        acc[role as UserRole] = allUsers.filter(
-          (user) => user.role === role,
-        );
+        acc[role as UserRole] = allUsers.filter((user) => user.role === role);
       }
       return acc;
     },
@@ -329,7 +327,9 @@ export default function UserManagement() {
               console.log("All users:", allUsers);
               console.log("Filtered users:", filteredUsers);
               console.log("Users by role:", usersByRole);
-              alert(`Found ${allUsers.length} total users. Check console for details.`);
+              alert(
+                `Found ${allUsers.length} total users. Check console for details.`,
+              );
             }}
             className="mt-2 text-xs"
           >
