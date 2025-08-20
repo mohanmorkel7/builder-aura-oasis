@@ -707,6 +707,15 @@ export default function AzureUserRoleAssignment() {
         </Alert>
       )}
 
+      {/* Auto-assignment Info */}
+      <Alert className="border-blue-200 bg-blue-50">
+        <Shield className="h-4 w-4 text-blue-600" />
+        <AlertDescription className="text-blue-800">
+          <strong>Smart Assignment:</strong> When you select a department, the appropriate role will be automatically assigned.
+          Look for the <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200 mx-1">Auto</Badge> badge to see auto-assigned roles.
+        </AlertDescription>
+      </Alert>
+
       {/* Search */}
       <Card>
         <CardContent className="p-6">
