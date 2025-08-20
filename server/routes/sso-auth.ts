@@ -400,12 +400,12 @@ router.get("/admin/database-users", async (req: Request, res: Response) => {
           department,
           job_title,
           azure_object_id,
-          provider,
-          auth_type,
+          sso_provider,
+          password_hash,
           status,
           created_at
         FROM users
-        WHERE provider = 'microsoft'
+        WHERE sso_provider = 'microsoft' OR password_hash = 'SSO_AUTH_NO_PASSWORD'
         ORDER BY created_at DESC
       `);
 
