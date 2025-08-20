@@ -60,8 +60,25 @@ export default function UserManagement() {
     "unknown" | "connected" | "disconnected"
   >("unknown");
 
-  // Use only database users
-  const allUsers = localUsers || [];
+  // Auto-inactivate users who haven't logged in for more than a week
+  const processUsersForInactivity = (users: any[]) => {
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+    return users.map(user => {
+      if (user.last_login && user.status === 'active') {
+        const lastLoginDate = new Date(user.last_login);
+        if (lastLoginDate < oneWeekAgo) {
+          // Auto-inactivate user
+          return { ...user, status: 'inactive' };
+        }
+      }
+      return user;
+    });
+  };
+
+  // Use only database users with auto-inactivation applied
+  const allUsers = localUsers ? processUsersForInactivity(localUsers) : [];
 
   // Test Azure connection on component mount
   useEffect(() => {
