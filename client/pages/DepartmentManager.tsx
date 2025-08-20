@@ -313,26 +313,18 @@ export default function DepartmentManager() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                return false;
-              }}
-            >
-              <div>
-                <Label htmlFor="jsonFile">JSON File</Label>
-                <Input
-                  ref={fileInputRef}
-                  id="jsonFile"
-                  type="file"
-                  accept=".json"
-                  onChange={handleFileUpload}
-                  disabled={isUploading}
-                  className="mt-1"
-                />
-              </div>
-            </form>
-
+            <div>
+              <Label htmlFor="jsonFile">JSON File</Label>
+              <Input
+                ref={fileInputRef}
+                id="jsonFile"
+                type="file"
+                accept=".json"
+                onChange={handleFileUpload}
+                disabled={isUploading}
+                className="mt-1"
+              />
+            </div>
             {uploadStatus.type && (
               <Alert
                 variant={
