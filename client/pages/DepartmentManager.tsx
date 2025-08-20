@@ -131,8 +131,13 @@ export default function DepartmentManager() {
           message: detailedMessage,
         });
         // Reload current data to show updated state
-        await loadCurrentData();
-        await loadDatabaseUsers();
+        try {
+          await loadCurrentData();
+          await loadDatabaseUsers();
+        } catch (reloadError) {
+          console.warn("Failed to reload data after upload:", reloadError);
+          // Don't fail the upload process if reload fails
+        }
       } else {
         throw new Error(response.error || "Upload failed");
       }
