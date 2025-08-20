@@ -217,11 +217,13 @@ router.post(
 
         // Skip entries without email (likely meeting rooms, resources, etc.)
         if (!user.email) {
-          console.log(`⏭️ Skipping entry ${i + 1} (no email): ${user.displayName || "unknown"}`);
+          console.log(
+            `⏭️ Skipping entry ${i + 1} (no email): ${user.displayName || "unknown"}`,
+          );
           skippedEntries.push({
             position: i + 1,
             displayName: user.displayName || "unknown",
-            reason: "missing email"
+            reason: "missing email",
           });
           continue;
         }
@@ -241,7 +243,9 @@ router.post(
         validUsers.push(user);
       }
 
-      console.log(`✅ Processed ${users.length} entries: ${validUsers.length} valid users, ${skippedEntries.length} skipped entries`);
+      console.log(
+        `✅ Processed ${users.length} entries: ${validUsers.length} valid users, ${skippedEntries.length} skipped entries`,
+      );
       console.log(`📋 Skipped entries:`, skippedEntries);
 
       // Use validUsers for further processing instead of reassigning const users
