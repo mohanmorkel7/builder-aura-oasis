@@ -154,6 +154,11 @@ export default function AzureUserRoleAssignment() {
       color: "bg-purple-100 text-purple-800",
     },
     {
+      value: "database",
+      label: "Database",
+      color: "bg-orange-100 text-orange-800",
+    },
+    {
       value: "finops",
       label: "FinOps",
       color: "bg-yellow-100 text-yellow-800",
