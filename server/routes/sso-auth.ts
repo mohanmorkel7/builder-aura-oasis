@@ -406,13 +406,13 @@ router.post("/admin/fix-user-roles", async (req: Request, res: Response) => {
 router.post("/admin/fix-user-roles", async (req: Request, res: Response) => {
   try {
     const roleUpdates = [
-      { email: 'Gopikrishnan.P@mylapay.com', newRole: 'unknown' },
-      { email: 'sarumathi.m@mylapay.com', newRole: 'finops' },
-      { email: 'Maanas.m@mylapay.com', newRole: 'switch_team' },
-      { email: 'Abirami@mylapay.com', newRole: 'backend' },
-      { email: 'abinaya.s@mylapay.com', newRole: 'backend' },
-      { email: 'Abinaya.M@mylapay.com', newRole: 'backend' },
-      { email: 'Abinandan@mylapay.com', newRole: 'backend' },
+      { email: "Gopikrishnan.P@mylapay.com", newRole: "unknown" },
+      { email: "sarumathi.m@mylapay.com", newRole: "finops" },
+      { email: "Maanas.m@mylapay.com", newRole: "switch_team" },
+      { email: "Abirami@mylapay.com", newRole: "backend" },
+      { email: "abinaya.s@mylapay.com", newRole: "backend" },
+      { email: "Abinaya.M@mylapay.com", newRole: "backend" },
+      { email: "Abinandan@mylapay.com", newRole: "backend" },
     ];
 
     let successCount = 0;
@@ -426,7 +426,7 @@ router.post("/admin/fix-user-roles", async (req: Request, res: Response) => {
            SET role = $1, updated_at = NOW()
            WHERE email = $2
            RETURNING id, first_name, last_name, email, role`,
-          [update.newRole, update.email]
+          [update.newRole, update.email],
         );
 
         if (result.rows.length > 0) {
@@ -435,14 +435,14 @@ router.post("/admin/fix-user-roles", async (req: Request, res: Response) => {
             success: true,
             email: user.email,
             name: `${user.first_name} ${user.last_name}`,
-            newRole: user.role
+            newRole: user.role,
           });
           successCount++;
         } else {
           results.push({
             success: false,
             email: update.email,
-            error: 'User not found'
+            error: "User not found",
           });
           failCount++;
         }
@@ -450,7 +450,7 @@ router.post("/admin/fix-user-roles", async (req: Request, res: Response) => {
         results.push({
           success: false,
           email: update.email,
-          error: error.message
+          error: error.message,
         });
         failCount++;
       }
@@ -463,8 +463,8 @@ router.post("/admin/fix-user-roles", async (req: Request, res: Response) => {
       summary: {
         successCount,
         failCount,
-        totalUpdates: roleUpdates.length
-      }
+        totalUpdates: roleUpdates.length,
+      },
     });
   } catch (error) {
     console.error("Error fixing user roles:", error);
