@@ -151,7 +151,9 @@ export class DepartmentService {
 
       if (!userMapping) {
         console.warn(`❌ User ${ssoUser.mail} not found in department mapping`);
-        console.log(`Available users in mapping: ${userDepartments.users.map(u => u.email).join(', ')}`);
+        console.log(
+          `Available users in mapping: ${userDepartments.users.map((u) => u.email).join(", ")}`,
+        );
         return null;
       }
 
@@ -159,7 +161,7 @@ export class DepartmentService {
         department: userMapping.department,
         role: this.getDepartmentRole(userMapping.department),
         hasGivenName: !!userMapping.givenName,
-        hasSurname: !!userMapping.surname
+        hasSurname: !!userMapping.surname,
       });
 
       // Validate required fields and log any issues
@@ -291,7 +293,9 @@ export class DepartmentService {
   ): Promise<void> {
     try {
       console.log("Loading user departments from JSON...");
-      console.log(`Total users in JSON to process: ${userDepartments.users.length}`);
+      console.log(
+        `Total users in JSON to process: ${userDepartments.users.length}`,
+      );
       console.log(`Skip existing users: ${options.skipExistingUsers}`);
 
       // Check database availability first
@@ -301,9 +305,14 @@ export class DepartmentService {
         dbAvailable = true;
         console.log("✅ Database is available for user processing");
       } catch (dbError) {
-        console.warn("⚠️  Database not available during user processing:", dbError.message);
+        console.warn(
+          "⚠️  Database not available during user processing:",
+          dbError.message,
+        );
         if (options.skipExistingUsers) {
-          console.log("Cannot process users - database required for duplicate checking");
+          console.log(
+            "Cannot process users - database required for duplicate checking",
+          );
           return;
         }
       }
@@ -313,7 +322,9 @@ export class DepartmentService {
       let updatedCount = 0;
 
       for (const user of userDepartments.users) {
-        console.log(`🔍 Processing user: ${user.email} (department: ${user.department || 'none'})`);
+        console.log(
+          `🔍 Processing user: ${user.email} (department: ${user.department || "none"})`,
+        );
 
         // If skipExistingUsers is true, check if user exists in database first
         if (options.skipExistingUsers) {
@@ -323,7 +334,9 @@ export class DepartmentService {
               [user.email],
             );
 
-            console.log(`   📋 User ${user.email} exists in DB: ${existingUser.rows.length > 0}`);
+            console.log(
+              `   📋 User ${user.email} exists in DB: ${existingUser.rows.length > 0}`,
+            );
 
             if (existingUser.rows.length > 0) {
               // If user has department info, update them, otherwise skip
@@ -339,7 +352,9 @@ export class DepartmentService {
                   jobTitle: user.jobTitle,
                   id: user.ssoId,
                 });
-                console.log(`   ✅ Update result: ${updateResult ? 'success' : 'failed'}`);
+                console.log(
+                  `   ✅ Update result: ${updateResult ? "success" : "failed"}`,
+                );
                 updatedCount++;
               } else {
                 console.log(
@@ -350,7 +365,9 @@ export class DepartmentService {
               }
             } else {
               // New user
-              console.log(`➕ Creating new user: ${user.email} (${user.department})`);
+              console.log(
+                `➕ Creating new user: ${user.email} (${user.department})`,
+              );
               const createResult = await this.createOrUpdateSSOUser({
                 mail: user.email,
                 displayName: user.displayName,
@@ -359,7 +376,9 @@ export class DepartmentService {
                 jobTitle: user.jobTitle,
                 id: user.ssoId,
               });
-              console.log(`   ✅ Create result: ${createResult ? 'success' : 'failed'}`);
+              console.log(
+                `   ✅ Create result: ${createResult ? "success" : "failed"}`,
+              );
               processedCount++;
             }
           } catch (error) {
