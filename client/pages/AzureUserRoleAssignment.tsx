@@ -190,6 +190,29 @@ export default function AzureUserRoleAssignment() {
     },
   ];
 
+  // Department to role mapping function
+  const getDepartmentRole = (department: string): string => {
+    const departmentRoleMap: { [key: string]: string } = {
+      admin: "admin",
+      administration: "admin",
+      sales: "sales",
+      product: "product",
+      development: "development",
+      finops: "finops",
+      finance: "finance",
+      hr: "hr_management",
+      infrastructure: "infra",
+      support: "development", // Map support to development
+      marketing: "sales", // Map marketing to sales
+      switch_team: "switch_team",
+      backend: "development", // Map backend to development
+      frontend: "development", // Map frontend to development
+      database: "db", // Map database to db
+    };
+
+    return departmentRoleMap[department] || "unknown";
+  };
+
   useEffect(() => {
     fetchUnknownUsers();
   }, []);
