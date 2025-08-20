@@ -151,239 +151,256 @@ const Pagination = ({
 };
 
 // User assignment row component for better performance
-const UserAssignmentRow = React.memo(({
-  user,
-  roleAssignments,
-  departmentAssignments,
-  statusAssignments,
-  validRoles,
-  validDepartments,
-  onRoleUpdate,
-  onDepartmentUpdate,
-  onStatusUpdate,
-  getDepartmentRole,
-  isSelected,
-  onSelectionChange,
-}) => {
-  const assignedRole =
-    roleAssignments.find((a) => a.userId === user.id)?.role || "";
-  const assignedDepartment =
-    departmentAssignments.find((a) => a.userId === user.id)?.department || "";
-  const assignedStatus =
-    statusAssignments.find((a) => a.userId === user.id)?.status || user.status || "active";
+const UserAssignmentRow = React.memo(
+  ({
+    user,
+    roleAssignments,
+    departmentAssignments,
+    statusAssignments,
+    validRoles,
+    validDepartments,
+    onRoleUpdate,
+    onDepartmentUpdate,
+    onStatusUpdate,
+    getDepartmentRole,
+    isSelected,
+    onSelectionChange,
+  }) => {
+    const assignedRole =
+      roleAssignments.find((a) => a.userId === user.id)?.role || "";
+    const assignedDepartment =
+      departmentAssignments.find((a) => a.userId === user.id)?.department || "";
+    const assignedStatus =
+      statusAssignments.find((a) => a.userId === user.id)?.status ||
+      user.status ||
+      "active";
 
-  const roleInfo = validRoles.find((r) => r.value === assignedRole);
-  const departmentInfo = validDepartments.find(
-    (d) => d.value === assignedDepartment,
-  );
+    const roleInfo = validRoles.find((r) => r.value === assignedRole);
+    const departmentInfo = validDepartments.find(
+      (d) => d.value === assignedDepartment,
+    );
 
-  const needsRole = user.role === "unknown";
-  const needsDepartment = !user.department;
-  const isReady =
-    (!needsRole || assignedRole) && (!needsDepartment || assignedDepartment);
+    const needsRole = user.role === "unknown";
+    const needsDepartment = !user.department;
+    const isReady =
+      (!needsRole || assignedRole) && (!needsDepartment || assignedDepartment);
 
-  const formatDate = (dateString: string) => {
-    try {
-      return new Date(dateString).toLocaleDateString();
-    } catch {
-      return dateString;
-    }
-  };
+    const formatDate = (dateString: string) => {
+      try {
+        return new Date(dateString).toLocaleDateString();
+      } catch {
+        return dateString;
+      }
+    };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "active":
-        return "bg-green-100 text-green-800";
-      case "inactive":
-        return "bg-gray-100 text-gray-800";
-      case "suspended":
-        return "bg-red-100 text-red-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
+    const getStatusColor = (status: string) => {
+      switch (status) {
+        case "active":
+          return "bg-green-100 text-green-800";
+        case "inactive":
+          return "bg-gray-100 text-gray-800";
+        case "suspended":
+          return "bg-red-100 text-red-800";
+        default:
+          return "bg-gray-100 text-gray-800";
+      }
+    };
 
-  const isInactive = assignedStatus === "inactive";
+    const isInactive = assignedStatus === "inactive";
 
-  return (
-    <TableRow className={isInactive ? "opacity-75 bg-gray-50" : ""}>
-      <TableCell>
-        <div className="flex items-center space-x-3">
-          <Checkbox
-            checked={isSelected}
-            onCheckedChange={onSelectionChange}
-            aria-label={`Select ${user.first_name} ${user.last_name}`}
-          />
-          <div className={`w-8 h-8 rounded-full ${isInactive ? 'bg-gray-100' : 'bg-blue-100'} flex items-center justify-center`}>
-            <span className={`text-sm font-medium ${isInactive ? 'text-gray-600' : 'text-blue-600'}`}>
-              {user.first_name?.[0]}
-              {user.last_name?.[0]}
-            </span>
-          </div>
-          <div>
-            <div className={`font-medium ${isInactive ? 'text-gray-700' : ''}`}>
-              {user.first_name} {user.last_name}
-              {isInactive && (
-                <Badge variant="outline" className="ml-2 text-xs text-gray-600 border-gray-300">
-                  Inactive
-                </Badge>
-              )}
+    return (
+      <TableRow className={isInactive ? "opacity-75 bg-gray-50" : ""}>
+        <TableCell>
+          <div className="flex items-center space-x-3">
+            <Checkbox
+              checked={isSelected}
+              onCheckedChange={onSelectionChange}
+              aria-label={`Select ${user.first_name} ${user.last_name}`}
+            />
+            <div
+              className={`w-8 h-8 rounded-full ${isInactive ? "bg-gray-100" : "bg-blue-100"} flex items-center justify-center`}
+            >
+              <span
+                className={`text-sm font-medium ${isInactive ? "text-gray-600" : "text-blue-600"}`}
+              >
+                {user.first_name?.[0]}
+                {user.last_name?.[0]}
+              </span>
             </div>
-            <div className="text-sm text-gray-500 flex items-center">
-              <Mail className="w-3 h-3 mr-1" />
-              {user.email}
+            <div>
+              <div
+                className={`font-medium ${isInactive ? "text-gray-700" : ""}`}
+              >
+                {user.first_name} {user.last_name}
+                {isInactive && (
+                  <Badge
+                    variant="outline"
+                    className="ml-2 text-xs text-gray-600 border-gray-300"
+                  >
+                    Inactive
+                  </Badge>
+                )}
+              </div>
+              <div className="text-sm text-gray-500 flex items-center">
+                <Mail className="w-3 h-3 mr-1" />
+                {user.email}
+              </div>
             </div>
           </div>
-        </div>
-      </TableCell>
-      <TableCell>
-        <div className="flex items-center text-sm">
-          <Shield className="w-3 h-3 mr-1" />
-          <Badge
-            variant={user.role === "unknown" ? "destructive" : "secondary"}
-            className={isInactive ? "opacity-75" : ""}
-          >
-            {user.role || "N/A"}
-          </Badge>
-        </div>
-      </TableCell>
-      <TableCell>
-        {needsDepartment ? (
-          <Select
-            value={assignedDepartment}
-            onValueChange={(department) =>
-              onDepartmentUpdate(user.id, department)
-            }
-            disabled={isInactive}
-          >
-            <SelectTrigger className="w-48">
-              <SelectValue placeholder="Select department..." />
-            </SelectTrigger>
-            <SelectContent>
-              {validDepartments.map((dept) => (
-                <SelectItem key={dept.value} value={dept.value}>
-                  {dept.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        ) : (
-          <div className="flex items-center text-sm text-gray-600">
-            <Building className="w-3 h-3 mr-1" />
-            {user.department}
+        </TableCell>
+        <TableCell>
+          <div className="flex items-center text-sm">
+            <Shield className="w-3 h-3 mr-1" />
+            <Badge
+              variant={user.role === "unknown" ? "destructive" : "secondary"}
+              className={isInactive ? "opacity-75" : ""}
+            >
+              {user.role || "N/A"}
+            </Badge>
           </div>
-        )}
-      </TableCell>
-      <TableCell>
-        {needsRole ? (
-          <div className="flex items-center space-x-2">
+        </TableCell>
+        <TableCell>
+          {needsDepartment ? (
             <Select
-              value={assignedRole}
-              onValueChange={(role) => onRoleUpdate(user.id, role)}
+              value={assignedDepartment}
+              onValueChange={(department) =>
+                onDepartmentUpdate(user.id, department)
+              }
               disabled={isInactive}
             >
               <SelectTrigger className="w-48">
-                <SelectValue placeholder="Select role..." />
+                <SelectValue placeholder="Select department..." />
               </SelectTrigger>
               <SelectContent>
-                {validRoles.map((role) => (
-                  <SelectItem key={role.value} value={role.value}>
-                    {role.label}
+                {validDepartments.map((dept) => (
+                  <SelectItem key={dept.value} value={dept.value}>
+                    {dept.label}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-            {assignedRole && assignedDepartment && (
-              <Badge
-                variant="outline"
-                className="text-xs bg-green-50 text-green-700 border-green-200"
-                title="Role automatically assigned based on department"
+          ) : (
+            <div className="flex items-center text-sm text-gray-600">
+              <Building className="w-3 h-3 mr-1" />
+              {user.department}
+            </div>
+          )}
+        </TableCell>
+        <TableCell>
+          {needsRole ? (
+            <div className="flex items-center space-x-2">
+              <Select
+                value={assignedRole}
+                onValueChange={(role) => onRoleUpdate(user.id, role)}
+                disabled={isInactive}
               >
-                Auto
-              </Badge>
-            )}
+                <SelectTrigger className="w-48">
+                  <SelectValue placeholder="Select role..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {validRoles.map((role) => (
+                    <SelectItem key={role.value} value={role.value}>
+                      {role.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {assignedRole && assignedDepartment && (
+                <Badge
+                  variant="outline"
+                  className="text-xs bg-green-50 text-green-700 border-green-200"
+                  title="Role automatically assigned based on department"
+                >
+                  Auto
+                </Badge>
+              )}
+            </div>
+          ) : (
+            <div className="text-sm text-gray-500">Role assigned</div>
+          )}
+        </TableCell>
+        <TableCell>
+          <div className="text-sm text-gray-600">{user.job_title || "N/A"}</div>
+        </TableCell>
+        <TableCell>
+          <div className="flex items-center space-x-2">
+            <Badge className={getStatusColor(assignedStatus)}>
+              {assignedStatus}
+            </Badge>
+            <Select
+              value={assignedStatus}
+              onValueChange={(status) => onStatusUpdate(user.id, status)}
+            >
+              <SelectTrigger className="w-24">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="active">
+                  <div className="flex items-center">
+                    <Power className="w-3 h-3 mr-1 text-green-600" />
+                    Active
+                  </div>
+                </SelectItem>
+                <SelectItem value="inactive">
+                  <div className="flex items-center">
+                    <PowerOff className="w-3 h-3 mr-1 text-gray-600" />
+                    Inactive
+                  </div>
+                </SelectItem>
+                <SelectItem value="suspended">
+                  <div className="flex items-center">
+                    <UserX className="w-3 h-3 mr-1 text-red-600" />
+                    Suspended
+                  </div>
+                </SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-        ) : (
-          <div className="text-sm text-gray-500">Role assigned</div>
-        )}
-      </TableCell>
-      <TableCell>
-        <div className="text-sm text-gray-600">
-          {user.job_title || "N/A"}
-        </div>
-      </TableCell>
-      <TableCell>
-        <div className="flex items-center space-x-2">
-          <Badge className={getStatusColor(assignedStatus)}>
-            {assignedStatus}
-          </Badge>
-          <Select
-            value={assignedStatus}
-            onValueChange={(status) => onStatusUpdate(user.id, status)}
-          >
-            <SelectTrigger className="w-24">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="active">
-                <div className="flex items-center">
-                  <Power className="w-3 h-3 mr-1 text-green-600" />
-                  Active
-                </div>
-              </SelectItem>
-              <SelectItem value="inactive">
-                <div className="flex items-center">
-                  <PowerOff className="w-3 h-3 mr-1 text-gray-600" />
-                  Inactive
-                </div>
-              </SelectItem>
-              <SelectItem value="suspended">
-                <div className="flex items-center">
-                  <UserX className="w-3 h-3 mr-1 text-red-600" />
-                  Suspended
-                </div>
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </TableCell>
-      <TableCell>
-        <div className="text-sm text-gray-600">
-          {user.last_login ? formatDate(user.last_login) : "Never"}
-        </div>
-      </TableCell>
-      <TableCell>
-        {isReady ? (
-          <Badge className="bg-green-100 text-green-800">
-            <Check className="w-3 h-3 mr-1" />
-            Ready
-          </Badge>
-        ) : (
-          <Badge
-            variant="outline"
-            className="text-orange-600 border-orange-200"
-          >
-            <X className="w-3 h-3 mr-1" />
-            {needsRole && needsDepartment
-              ? "Need Role & Dept"
-              : needsRole
-                ? "Need Role"
-                : "Need Department"}
-          </Badge>
-        )}
-      </TableCell>
-    </TableRow>
-  );
-});
+        </TableCell>
+        <TableCell>
+          <div className="text-sm text-gray-600">
+            {user.last_login ? formatDate(user.last_login) : "Never"}
+          </div>
+        </TableCell>
+        <TableCell>
+          {isReady ? (
+            <Badge className="bg-green-100 text-green-800">
+              <Check className="w-3 h-3 mr-1" />
+              Ready
+            </Badge>
+          ) : (
+            <Badge
+              variant="outline"
+              className="text-orange-600 border-orange-200"
+            >
+              <X className="w-3 h-3 mr-1" />
+              {needsRole && needsDepartment
+                ? "Need Role & Dept"
+                : needsRole
+                  ? "Need Role"
+                  : "Need Department"}
+            </Badge>
+          )}
+        </TableCell>
+      </TableRow>
+    );
+  },
+);
 
 UserAssignmentRow.displayName = "UserAssignmentRow";
 
 export default function AzureUserRoleAssignment() {
   const navigate = useNavigate();
   const [unknownUsers, setUnknownUsers] = useState<UnknownUser[]>([]);
-  const [roleAssignments, setRoleAssignments] = useState<UserRoleAssignment[]>([]);
-  const [departmentAssignments, setDepartmentAssignments] = useState<UserDepartmentAssignment[]>([]);
-  const [statusAssignments, setStatusAssignments] = useState<UserStatusAssignment[]>([]);
+  const [roleAssignments, setRoleAssignments] = useState<UserRoleAssignment[]>(
+    [],
+  );
+  const [departmentAssignments, setDepartmentAssignments] = useState<
+    UserDepartmentAssignment[]
+  >([]);
+  const [statusAssignments, setStatusAssignments] = useState<
+    UserStatusAssignment[]
+  >([]);
   const [selectedUsers, setSelectedUsers] = useState<Set<number>>(new Set());
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -548,8 +565,12 @@ export default function AzureUserRoleAssignment() {
         user.email?.toLowerCase().includes(searchLower) ||
         user.department?.toLowerCase().includes(searchLower);
 
-      const userStatus = statusAssignments.find((a) => a.userId === user.id)?.status || user.status || "active";
-      const matchesStatus = statusFilter === "all" || userStatus === statusFilter;
+      const userStatus =
+        statusAssignments.find((a) => a.userId === user.id)?.status ||
+        user.status ||
+        "active";
+      const matchesStatus =
+        statusFilter === "all" || userStatus === statusFilter;
 
       return matchesSearch && matchesStatus;
     });
@@ -716,37 +737,40 @@ export default function AzureUserRoleAssignment() {
     );
   }, []);
 
-  const updateDepartment = useCallback((userId: number, department: string) => {
-    // Update department assignment
-    setDepartmentAssignments((prev) =>
-      prev.map((assignment) =>
-        assignment.userId === userId
-          ? { ...assignment, department }
-          : assignment,
-      ),
-    );
+  const updateDepartment = useCallback(
+    (userId: number, department: string) => {
+      // Update department assignment
+      setDepartmentAssignments((prev) =>
+        prev.map((assignment) =>
+          assignment.userId === userId
+            ? { ...assignment, department }
+            : assignment,
+        ),
+      );
 
-    // Automatically assign role based on department
-    const autoRole = getDepartmentRole(department);
-    if (autoRole !== "unknown") {
-      setRoleAssignments((prev) => {
-        const existingAssignment = prev.find(
-          (assignment) => assignment.userId === userId,
-        );
-        if (existingAssignment) {
-          // Update existing role assignment
-          return prev.map((assignment) =>
-            assignment.userId === userId
-              ? { ...assignment, role: autoRole }
-              : assignment,
+      // Automatically assign role based on department
+      const autoRole = getDepartmentRole(department);
+      if (autoRole !== "unknown") {
+        setRoleAssignments((prev) => {
+          const existingAssignment = prev.find(
+            (assignment) => assignment.userId === userId,
           );
-        } else {
-          // Add new role assignment
-          return [...prev, { userId, role: autoRole }];
-        }
-      });
-    }
-  }, [getDepartmentRole]);
+          if (existingAssignment) {
+            // Update existing role assignment
+            return prev.map((assignment) =>
+              assignment.userId === userId
+                ? { ...assignment, role: autoRole }
+                : assignment,
+            );
+          } else {
+            // Add new role assignment
+            return [...prev, { userId, role: autoRole }];
+          }
+        });
+      }
+    },
+    [getDepartmentRole],
+  );
 
   const updateStatus = useCallback((userId: number, status: string) => {
     setStatusAssignments((prev) =>
@@ -756,33 +780,42 @@ export default function AzureUserRoleAssignment() {
     );
   }, []);
 
-  const handleBulkStatusUpdate = useCallback((status: string) => {
-    const selectedUserIds = Array.from(selectedUsers);
-    selectedUserIds.forEach(userId => {
-      updateStatus(userId, status);
-    });
-    setSelectedUsers(new Set()); // Clear selection after bulk update
-  }, [selectedUsers, updateStatus]);
+  const handleBulkStatusUpdate = useCallback(
+    (status: string) => {
+      const selectedUserIds = Array.from(selectedUsers);
+      selectedUserIds.forEach((userId) => {
+        updateStatus(userId, status);
+      });
+      setSelectedUsers(new Set()); // Clear selection after bulk update
+    },
+    [selectedUsers, updateStatus],
+  );
 
-  const handleSelectAll = useCallback((checked: boolean) => {
-    if (checked) {
-      setSelectedUsers(new Set(paginatedUsers.map(user => user.id)));
-    } else {
-      setSelectedUsers(new Set());
-    }
-  }, [paginatedUsers]);
-
-  const handleUserSelection = useCallback((userId: number, checked: boolean) => {
-    setSelectedUsers(prev => {
-      const newSet = new Set(prev);
+  const handleSelectAll = useCallback(
+    (checked: boolean) => {
       if (checked) {
-        newSet.add(userId);
+        setSelectedUsers(new Set(paginatedUsers.map((user) => user.id)));
       } else {
-        newSet.delete(userId);
+        setSelectedUsers(new Set());
       }
-      return newSet;
-    });
-  }, []);
+    },
+    [paginatedUsers],
+  );
+
+  const handleUserSelection = useCallback(
+    (userId: number, checked: boolean) => {
+      setSelectedUsers((prev) => {
+        const newSet = new Set(prev);
+        if (checked) {
+          newSet.add(userId);
+        } else {
+          newSet.delete(userId);
+        }
+        return newSet;
+      });
+    },
+    [],
+  );
 
   const assignRoles = async () => {
     try {
@@ -925,7 +958,7 @@ export default function AzureUserRoleAssignment() {
               Accept: "application/json",
             },
             body: JSON.stringify({
-              userStatuses: validStatusAssignments.map(assignment => ({
+              userStatuses: validStatusAssignments.map((assignment) => ({
                 userId: assignment.userId,
                 status: assignment.status,
               })),
@@ -948,9 +981,7 @@ export default function AzureUserRoleAssignment() {
           statusResult = await statusResponse.json();
         } catch (fetchError) {
           if (fetchError.name === "AbortError") {
-            throw new Error(
-              "Status update timeout - operation took too long",
-            );
+            throw new Error("Status update timeout - operation took too long");
           }
           throw fetchError; // Re-throw other errors
         }
@@ -1002,7 +1033,7 @@ export default function AzureUserRoleAssignment() {
   }, []);
 
   const getInactiveUsersCount = useMemo(() => {
-    return statusAssignments.filter(a => a.status === "inactive").length;
+    return statusAssignments.filter((a) => a.status === "inactive").length;
   }, [statusAssignments]);
 
   if (loading) {
@@ -1027,7 +1058,8 @@ export default function AzureUserRoleAssignment() {
               Azure User Role & Department Assignment
             </h1>
             <p className="text-gray-600 mt-1">
-              Assign roles, departments, and manage user status for Azure AD users
+              Assign roles, departments, and manage user status for Azure AD
+              users
             </p>
           </div>
         </div>
@@ -1221,8 +1253,9 @@ export default function AzureUserRoleAssignment() {
       <Alert className="border-blue-200 bg-blue-50">
         <Shield className="h-4 w-4 text-blue-600" />
         <AlertDescription className="text-blue-800">
-          <strong>Smart Features:</strong> Department selection auto-assigns roles. 
-          Select multiple users and use bulk actions to manage status efficiently.{" "}
+          <strong>Smart Features:</strong> Department selection auto-assigns
+          roles. Select multiple users and use bulk actions to manage status
+          efficiently.{" "}
           <Badge
             variant="outline"
             className="text-xs bg-green-50 text-green-700 border-green-200 mx-1"
@@ -1260,7 +1293,10 @@ export default function AzureUserRoleAssignment() {
                   <SelectItem value="suspended">Suspended Users</SelectItem>
                 </SelectContent>
               </Select>
-              <Select value={itemsPerPage.toString()} onValueChange={(value) => setItemsPerPage(Number(value))}>
+              <Select
+                value={itemsPerPage.toString()}
+                onValueChange={(value) => setItemsPerPage(Number(value))}
+              >
                 <SelectTrigger className="w-32">
                   <SelectValue />
                 </SelectTrigger>
@@ -1286,7 +1322,10 @@ export default function AzureUserRoleAssignment() {
             </div>
             <div className="flex items-center space-x-2">
               <Checkbox
-                checked={selectedUsers.size === paginatedUsers.length && paginatedUsers.length > 0}
+                checked={
+                  selectedUsers.size === paginatedUsers.length &&
+                  paginatedUsers.length > 0
+                }
                 onCheckedChange={handleSelectAll}
                 aria-label="Select all users on current page"
               />
@@ -1337,7 +1376,9 @@ export default function AzureUserRoleAssignment() {
                       onStatusUpdate={updateStatus}
                       getDepartmentRole={getDepartmentRole}
                       isSelected={selectedUsers.has(user.id)}
-                      onSelectionChange={(checked) => handleUserSelection(user.id, checked)}
+                      onSelectionChange={(checked) =>
+                        handleUserSelection(user.id, checked)
+                      }
                     />
                   ))}
                 </TableBody>
