@@ -248,7 +248,7 @@ router.post(
       const processedUsers = validUsers;
 
       // Now validate remaining users for name fields
-      for (const user of users) {
+      for (const user of processedUsers) {
         // Validate name fields to prevent database constraint violations
         if (!user.givenName && !user.displayName) {
           return res.status(400).json({
