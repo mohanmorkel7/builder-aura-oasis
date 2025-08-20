@@ -94,12 +94,18 @@ export default function DepartmentManager() {
       return;
     }
 
+    console.log("🚀 Starting upload process");
     setIsUploading(true);
     setUploadStatus({ type: null, message: "" });
 
     try {
+      console.log("📖 Reading file content");
       const fileContent = await file.text();
+      console.log("✅ File content read, length:", fileContent.length);
+
+      console.log("🔧 Parsing JSON");
       const parsedData = JSON.parse(fileContent);
+      console.log("✅ JSON parsed, users count:", parsedData.users?.length);
 
       // Validate JSON structure
       if (!parsedData.departments || !parsedData.users) {
@@ -109,6 +115,7 @@ export default function DepartmentManager() {
       }
 
       // Upload to server
+      console.log("📡 Sending to server");
       const response = await apiClient.request(
         "/auth/admin/upload-departments",
         {
@@ -119,6 +126,7 @@ export default function DepartmentManager() {
           body: JSON.stringify(parsedData),
         },
       );
+      console.log("📨 Server response received:", response?.success);
 
       if (response.success) {
         const data = response.data;
