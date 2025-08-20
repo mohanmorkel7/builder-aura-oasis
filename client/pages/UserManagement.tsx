@@ -61,24 +61,60 @@ export default function UserManagement() {
   >("unknown");
 
   // Auto-inactivate users who haven't logged in for more than a week
-  const processUsersForInactivity = (users: any[]) => {
+  const processUsersForInactivity = async (users: any[]) => {
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
-    return users.map((user) => {
+    const usersToInactivate: number[] = [];
+    const processedUsers = users.map((user) => {
       if (user.last_login && user.status === "active") {
         const lastLoginDate = new Date(user.last_login);
         if (lastLoginDate < oneWeekAgo) {
-          // Auto-inactivate user
+          // Mark user for inactivation
+          usersToInactivate.push(user.id);
           return { ...user, status: "inactive" };
         }
       }
       return user;
     });
+
+    // If there are users to inactivate, call the API
+    if (usersToInactivate.length > 0) {
+      try {
+        console.log(`Auto-inactivating ${usersToInactivate.length} users:`, usersToInactivate);
+        const response = await fetch("/api/users/bulk-inactive", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userIds: usersToInactivate }),
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          console.log(`Successfully auto-inactivated ${result.updatedCount} users`);
+        } else {
+          console.error("Failed to auto-inactivate users:", await response.text());
+        }
+      } catch (error) {
+        console.error("Error auto-inactivating users:", error);
+      }
+    }
+
+    return processedUsers;
   };
 
-  // Use only database users with auto-inactivation applied
-  const allUsers = localUsers ? processUsersForInactivity(localUsers) : [];
+  // State for processed users
+  const [allUsers, setAllUsers] = useState<any[]>([]);
+
+  // Process users for inactivity when localUsers changes
+  useEffect(() => {
+    if (localUsers) {
+      processUsersForInactivity(localUsers).then(setAllUsers);
+    } else {
+      setAllUsers([]);
+    }
+  }, [localUsers]);
 
   // Test Azure connection on component mount
   useEffect(() => {
