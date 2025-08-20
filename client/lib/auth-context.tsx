@@ -93,6 +93,16 @@ const ROLE_GROUPS = {
     color: "bg-orange-100 text-orange-800",
     permissions: ["switch", "integration"],
   },
+  backend: {
+    label: "Backend Development",
+    color: "bg-purple-100 text-purple-700",
+    permissions: ["technical", "backend", "api"],
+  },
+  unknown: {
+    label: "Unknown/Unassigned",
+    color: "bg-gray-100 text-gray-600",
+    permissions: [],
+  },
 } as const;
 
 export const roleGroups = ROLE_GROUPS;
