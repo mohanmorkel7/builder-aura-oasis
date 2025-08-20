@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,6 +39,8 @@ import {
   Calendar,
   Cloud,
   AlertTriangle,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 
 interface UnknownUser {
@@ -63,16 +65,242 @@ interface UserDepartmentAssignment {
   department: string;
 }
 
+// Pagination component
+const Pagination = ({ currentPage, totalPages, totalItems, itemsPerPage, onPageChange }) => {
+  const startItem = (currentPage - 1) * itemsPerPage + 1;
+  const endItem = Math.min(currentPage * itemsPerPage, totalItems);
+  
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+    
+    // Adjust start page if we're near the end
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+    
+    return pages;
+  };
+
+  return (
+    <div className="flex items-center justify-between px-2 py-4">
+      <div className="text-sm text-gray-700">
+        Showing <span className="font-medium">{startItem}</span> to{" "}
+        <span className="font-medium">{endItem}</span> of{" "}
+        <span className="font-medium">{totalItems}</span> results
+      </div>
+      
+      <div className="flex items-center space-x-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => onPageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
+          <ChevronLeft className="w-4 h-4" />
+          Previous
+        </Button>
+        
+        {getPageNumbers().map((pageNum) => (
+          <Button
+            key={pageNum}
+            variant={currentPage === pageNum ? "default" : "outline"}
+            size="sm"
+            onClick={() => onPageChange(pageNum)}
+            className="w-8 h-8 p-0"
+          >
+            {pageNum}
+          </Button>
+        ))}
+        
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => onPageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+        >
+          Next
+          <ChevronRight className="w-4 h-4" />
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+// User assignment row component for better performance
+const UserAssignmentRow = React.memo(({ 
+  user, 
+  roleAssignments, 
+  departmentAssignments, 
+  validRoles,
+  validDepartments,
+  onRoleUpdate,
+  onDepartmentUpdate,
+  getDepartmentRole 
+}) => {
+  const assignedRole = roleAssignments.find((a) => a.userId === user.id)?.role || "";
+  const assignedDepartment = departmentAssignments.find((a) => a.userId === user.id)?.department || "";
+  
+  const roleInfo = validRoles.find((r) => r.value === assignedRole);
+  const departmentInfo = validDepartments.find((d) => d.value === assignedDepartment);
+
+  const needsRole = user.role === "unknown";
+  const needsDepartment = !user.department;
+  const isReady = (!needsRole || assignedRole) && (!needsDepartment || assignedDepartment);
+
+  const formatDate = (dateString: string) => {
+    try {
+      return new Date(dateString).toLocaleDateString();
+    } catch {
+      return dateString;
+    }
+  };
+
+  return (
+    <TableRow>
+      <TableCell>
+        <div className="flex items-center space-x-3">
+          <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+            <span className="text-sm font-medium text-blue-600">
+              {user.first_name?.[0]}
+              {user.last_name?.[0]}
+            </span>
+          </div>
+          <div>
+            <div className="font-medium">
+              {user.first_name} {user.last_name}
+            </div>
+            <div className="text-sm text-gray-500 flex items-center">
+              <Mail className="w-3 h-3 mr-1" />
+              {user.email}
+            </div>
+          </div>
+        </div>
+      </TableCell>
+      <TableCell>
+        <div className="flex items-center text-sm">
+          <Shield className="w-3 h-3 mr-1" />
+          <Badge
+            variant={
+              user.role === "unknown"
+                ? "destructive"
+                : "secondary"
+            }
+          >
+            {user.role || "N/A"}
+          </Badge>
+        </div>
+      </TableCell>
+      <TableCell>
+        {needsDepartment ? (
+          <Select
+            value={assignedDepartment}
+            onValueChange={(department) =>
+              onDepartmentUpdate(user.id, department)
+            }
+          >
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="Select department..." />
+            </SelectTrigger>
+            <SelectContent>
+              {validDepartments.map((dept) => (
+                <SelectItem key={dept.value} value={dept.value}>
+                  {dept.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        ) : (
+          <div className="flex items-center text-sm text-gray-600">
+            <Building className="w-3 h-3 mr-1" />
+            {user.department}
+          </div>
+        )}
+      </TableCell>
+      <TableCell>
+        {needsRole ? (
+          <div className="flex items-center space-x-2">
+            <Select
+              value={assignedRole}
+              onValueChange={(role) =>
+                onRoleUpdate(user.id, role)
+              }
+            >
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Select role..." />
+              </SelectTrigger>
+              <SelectContent>
+                {validRoles.map((role) => (
+                  <SelectItem
+                    key={role.value}
+                    value={role.value}
+                  >
+                    {role.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {assignedRole && assignedDepartment && (
+              <Badge
+                variant="outline"
+                className="text-xs bg-green-50 text-green-700 border-green-200"
+                title="Role automatically assigned based on department"
+              >
+                Auto
+              </Badge>
+            )}
+          </div>
+        ) : (
+          <div className="text-sm text-gray-500">
+            Role assigned
+          </div>
+        )}
+      </TableCell>
+      <TableCell>
+        <div className="text-sm text-gray-600">
+          {user.job_title || "N/A"}
+        </div>
+      </TableCell>
+      <TableCell>
+        {isReady ? (
+          <Badge className="bg-green-100 text-green-800">
+            <Check className="w-3 h-3 mr-1" />
+            Ready
+          </Badge>
+        ) : (
+          <Badge
+            variant="outline"
+            className="text-orange-600 border-orange-200"
+          >
+            <X className="w-3 h-3 mr-1" />
+            {needsRole && needsDepartment
+              ? "Need Role & Dept"
+              : needsRole
+                ? "Need Role"
+                : "Need Department"}
+          </Badge>
+        )}
+      </TableCell>
+    </TableRow>
+  );
+});
+
+UserAssignmentRow.displayName = "UserAssignmentRow";
+
 export default function AzureUserRoleAssignment() {
   const navigate = useNavigate();
   const [unknownUsers, setUnknownUsers] = useState<UnknownUser[]>([]);
-  const [roleAssignments, setRoleAssignments] = useState<UserRoleAssignment[]>(
-    [],
-  );
-  const [departmentAssignments, setDepartmentAssignments] = useState<
-    UserDepartmentAssignment[]
-  >([]);
+  const [roleAssignments, setRoleAssignments] = useState<UserRoleAssignment[]>([]);
+  const [departmentAssignments, setDepartmentAssignments] = useState<UserDepartmentAssignment[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(20);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -196,7 +424,7 @@ export default function AzureUserRoleAssignment() {
   ];
 
   // Department to role mapping function
-  const getDepartmentRole = (department: string): string => {
+  const getDepartmentRole = useCallback((department: string): string => {
     const departmentRoleMap: { [key: string]: string } = {
       admin: "admin",
       administration: "admin",
@@ -216,11 +444,38 @@ export default function AzureUserRoleAssignment() {
     };
 
     return departmentRoleMap[department] || "unknown";
-  };
+  }, []);
 
   useEffect(() => {
     fetchUnknownUsers();
   }, []);
+
+  // Memoized filtered users for better performance
+  const filteredUsers = useMemo(() => {
+    return unknownUsers.filter((user) => {
+      const searchLower = searchTerm.toLowerCase();
+      return (
+        user.first_name?.toLowerCase().includes(searchLower) ||
+        user.last_name?.toLowerCase().includes(searchLower) ||
+        user.email?.toLowerCase().includes(searchLower) ||
+        user.department?.toLowerCase().includes(searchLower)
+      );
+    });
+  }, [unknownUsers, searchTerm]);
+
+  // Memoized pagination
+  const paginatedUsers = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return filteredUsers.slice(startIndex, endIndex);
+  }, [filteredUsers, currentPage, itemsPerPage]);
+
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+
+  // Reset to first page when search changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
 
   const fetchUnknownUsers = async () => {
     try {
@@ -354,25 +609,15 @@ export default function AzureUserRoleAssignment() {
     }
   };
 
-  const filteredUsers = unknownUsers.filter((user) => {
-    const searchLower = searchTerm.toLowerCase();
-    return (
-      user.first_name?.toLowerCase().includes(searchLower) ||
-      user.last_name?.toLowerCase().includes(searchLower) ||
-      user.email?.toLowerCase().includes(searchLower) ||
-      user.department?.toLowerCase().includes(searchLower)
-    );
-  });
-
-  const updateRole = (userId: number, role: string) => {
+  const updateRole = useCallback((userId: number, role: string) => {
     setRoleAssignments((prev) =>
       prev.map((assignment) =>
         assignment.userId === userId ? { ...assignment, role } : assignment,
       ),
     );
-  };
+  }, []);
 
-  const updateDepartment = (userId: number, department: string) => {
+  const updateDepartment = useCallback((userId: number, department: string) => {
     // Update department assignment
     setDepartmentAssignments((prev) =>
       prev.map((assignment) =>
@@ -402,7 +647,7 @@ export default function AzureUserRoleAssignment() {
         }
       });
     }
-  };
+  }, [getDepartmentRole]);
 
   const assignRoles = async () => {
     try {
@@ -545,17 +790,7 @@ export default function AzureUserRoleAssignment() {
     }
   };
 
-  const getRoleForUser = (userId: number) => {
-    const assignment = roleAssignments.find((a) => a.userId === userId);
-    return assignment?.role || "";
-  };
-
-  const getDepartmentForUser = (userId: number) => {
-    const assignment = departmentAssignments.find((a) => a.userId === userId);
-    return assignment?.department || "";
-  };
-
-  const getAssignedCount = () => {
+  const getAssignedCount = useCallback(() => {
     const roleCount = roleAssignments.filter((a) => {
       const user = unknownUsers.find((u) => u.id === a.userId);
       return user?.role === "unknown" && a.role && a.role !== "";
@@ -567,15 +802,11 @@ export default function AzureUserRoleAssignment() {
     }).length;
 
     return roleCount + departmentCount;
-  };
+  }, [roleAssignments, departmentAssignments, unknownUsers]);
 
-  const formatDate = (dateString: string) => {
-    try {
-      return new Date(dateString).toLocaleDateString();
-    } catch {
-      return dateString;
-    }
-  };
+  const handlePageChange = useCallback((page: number) => {
+    setCurrentPage(page);
+  }, []);
 
   if (loading) {
     return (
@@ -704,17 +935,34 @@ export default function AzureUserRoleAssignment() {
         </AlertDescription>
       </Alert>
 
-      {/* Search */}
+      {/* Search and Pagination Controls */}
       <Card>
         <CardContent className="p-6">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <Input
-              placeholder="Search users by name, email, or department..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Input
+                  placeholder="Search users by name, email, or department..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <Select value={itemsPerPage.toString()} onValueChange={(value) => setItemsPerPage(Number(value))}>
+                <SelectTrigger className="w-32">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="10">10 per page</SelectItem>
+                  <SelectItem value="20">20 per page</SelectItem>
+                  <SelectItem value="50">50 per page</SelectItem>
+                  <SelectItem value="100">100 per page</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -741,164 +989,45 @@ export default function AzureUserRoleAssignment() {
               </p>
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>User</TableHead>
-                  <TableHead>Current Role</TableHead>
-                  <TableHead>Assign Department</TableHead>
-                  <TableHead>Assign Role</TableHead>
-                  <TableHead>Job Title</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredUsers.map((user) => {
-                  const assignedRole = getRoleForUser(user.id);
-                  const assignedDepartment = getDepartmentForUser(user.id);
-                  const roleInfo = validRoles.find(
-                    (r) => r.value === assignedRole,
-                  );
-                  const departmentInfo = validDepartments.find(
-                    (d) => d.value === assignedDepartment,
-                  );
-
-                  const needsRole = user.role === "unknown";
-                  const needsDepartment = !user.department;
-                  const isReady =
-                    (!needsRole || assignedRole) &&
-                    (!needsDepartment || assignedDepartment);
-
-                  return (
-                    <TableRow key={user.id}>
-                      <TableCell>
-                        <div className="flex items-center space-x-3">
-                          <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                            <span className="text-sm font-medium text-blue-600">
-                              {user.first_name?.[0]}
-                              {user.last_name?.[0]}
-                            </span>
-                          </div>
-                          <div>
-                            <div className="font-medium">
-                              {user.first_name} {user.last_name}
-                            </div>
-                            <div className="text-sm text-gray-500 flex items-center">
-                              <Mail className="w-3 h-3 mr-1" />
-                              {user.email}
-                            </div>
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center text-sm">
-                          <Shield className="w-3 h-3 mr-1" />
-                          <Badge
-                            variant={
-                              user.role === "unknown"
-                                ? "destructive"
-                                : "secondary"
-                            }
-                          >
-                            {user.role || "N/A"}
-                          </Badge>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        {needsDepartment ? (
-                          <Select
-                            value={assignedDepartment}
-                            onValueChange={(department) =>
-                              updateDepartment(user.id, department)
-                            }
-                          >
-                            <SelectTrigger className="w-48">
-                              <SelectValue placeholder="Select department..." />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {validDepartments.map((dept) => (
-                                <SelectItem key={dept.value} value={dept.value}>
-                                  {dept.label}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        ) : (
-                          <div className="flex items-center text-sm text-gray-600">
-                            <Building className="w-3 h-3 mr-1" />
-                            {user.department}
-                          </div>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {needsRole ? (
-                          <div className="flex items-center space-x-2">
-                            <Select
-                              value={assignedRole}
-                              onValueChange={(role) =>
-                                updateRole(user.id, role)
-                              }
-                            >
-                              <SelectTrigger className="w-48">
-                                <SelectValue placeholder="Select role..." />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {validRoles.map((role) => (
-                                  <SelectItem
-                                    key={role.value}
-                                    value={role.value}
-                                  >
-                                    {role.label}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            {assignedRole && assignedDepartment && (
-                              <Badge
-                                variant="outline"
-                                className="text-xs bg-green-50 text-green-700 border-green-200"
-                                title="Role automatically assigned based on department"
-                              >
-                                Auto
-                              </Badge>
-                            )}
-                          </div>
-                        ) : (
-                          <div className="text-sm text-gray-500">
-                            Role assigned
-                          </div>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <div className="text-sm text-gray-600">
-                          {user.job_title || "N/A"}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        {isReady ? (
-                          <Badge className="bg-green-100 text-green-800">
-                            <Check className="w-3 h-3 mr-1" />
-                            Ready
-                          </Badge>
-                        ) : (
-                          <Badge
-                            variant="outline"
-                            className="text-orange-600 border-orange-200"
-                          >
-                            <X className="w-3 h-3 mr-1" />
-                            {needsRole && needsDepartment
-                              ? "Need Role & Dept"
-                              : needsRole
-                                ? "Need Role"
-                                : "Need Department"}
-                          </Badge>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
+            <>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>User</TableHead>
+                    <TableHead>Current Role</TableHead>
+                    <TableHead>Assign Department</TableHead>
+                    <TableHead>Assign Role</TableHead>
+                    <TableHead>Job Title</TableHead>
+                    <TableHead>Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {paginatedUsers.map((user) => (
+                    <UserAssignmentRow
+                      key={user.id}
+                      user={user}
+                      roleAssignments={roleAssignments}
+                      departmentAssignments={departmentAssignments}
+                      validRoles={validRoles}
+                      validDepartments={validDepartments}
+                      onRoleUpdate={updateRole}
+                      onDepartmentUpdate={updateDepartment}
+                      getDepartmentRole={getDepartmentRole}
+                    />
+                  ))}
+                </TableBody>
+              </Table>
+              
+              {filteredUsers.length > itemsPerPage && (
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  totalItems={filteredUsers.length}
+                  itemsPerPage={itemsPerPage}
+                  onPageChange={handlePageChange}
+                />
+              )}
+            </>
           )}
         </CardContent>
       </Card>
