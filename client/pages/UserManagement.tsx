@@ -319,61 +319,6 @@ export default function UserManagement() {
         <div>
           <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
           <p className="text-gray-600 mt-1">Manage users and roles</p>
-          {/* Debug Button */}
-          <div className="flex space-x-2 mt-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                console.log("=== DEBUG USER DATA ===");
-                console.log("All users:", allUsers);
-                console.log("Filtered users:", filteredUsers);
-                console.log("Users by role:", usersByRole);
-                alert(
-                  `Found ${allUsers.length} total users. Check console for details.`,
-                );
-              }}
-              className="text-xs"
-            >
-              Debug User Data
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={async () => {
-                if (
-                  confirm(
-                    "Fix incorrect user roles in database? This will update roles for 7 users.",
-                  )
-                ) {
-                  try {
-                    const response = await fetch(
-                      "/api/auth/admin/fix-user-roles",
-                      {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                      },
-                    );
-                    const result = await response.json();
-
-                    if (result.success) {
-                      alert(
-                        `✅ ${result.message}\n\nRefresh the page to see updated role groups.`,
-                      );
-                      window.location.reload();
-                    } else {
-                      alert(`❌ Error: ${result.message || result.error}`);
-                    }
-                  } catch (error) {
-                    alert(`❌ Error: ${error.message}`);
-                  }
-                }
-              }}
-              className="text-xs bg-green-50 text-green-700 border-green-200 hover:bg-green-100"
-            >
-              Fix Roles
-            </Button>
-          </div>
         </div>
         <div className="flex items-center space-x-3">
           {/* Azure Connection Status */}
