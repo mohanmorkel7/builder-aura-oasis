@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUsers } from "@/hooks/useApi";
 import { roleGroups, UserRole } from "@/lib/auth-context";
@@ -47,8 +47,198 @@ import {
   Cloud,
   CheckCircle,
   AlertTriangle,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { azureSilentAuth } from "@/lib/azure-silent-auth";
+
+// Pagination component
+const Pagination = ({ currentPage, totalPages, totalItems, itemsPerPage, onPageChange }) => {
+  const startItem = (currentPage - 1) * itemsPerPage + 1;
+  const endItem = Math.min(currentPage * itemsPerPage, totalItems);
+  
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+    
+    // Adjust start page if we're near the end
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+    
+    return pages;
+  };
+
+  return (
+    <div className="flex items-center justify-between px-2 py-4">
+      <div className="text-sm text-gray-700">
+        Showing <span className="font-medium">{startItem}</span> to{" "}
+        <span className="font-medium">{endItem}</span> of{" "}
+        <span className="font-medium">{totalItems}</span> results
+      </div>
+      
+      <div className="flex items-center space-x-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => onPageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
+          <ChevronLeft className="w-4 h-4" />
+          Previous
+        </Button>
+        
+        {getPageNumbers().map((pageNum) => (
+          <Button
+            key={pageNum}
+            variant={currentPage === pageNum ? "default" : "outline"}
+            size="sm"
+            onClick={() => onPageChange(pageNum)}
+            className="w-8 h-8 p-0"
+          >
+            {pageNum}
+          </Button>
+        ))}
+        
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => onPageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+        >
+          Next
+          <ChevronRight className="w-4 h-4" />
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+// User row component for better performance
+const UserRow = React.memo(({ user, onView, onEdit, onDelete, onSettings }) => {
+  const formatLastLogin = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return (
+        date.toLocaleDateString() +
+        " " +
+        date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+      );
+    } catch {
+      return dateString;
+    }
+  };
+
+  const getUserStatusColor = (status: string) => {
+    switch (status) {
+      case "active":
+        return "bg-green-100 text-green-800";
+      case "inactive":
+        return "bg-gray-100 text-gray-800";
+      case "suspended":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  return (
+    <TableRow>
+      <TableCell>
+        <div className="flex items-center space-x-3">
+          <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+            <span className="text-sm font-medium text-blue-600">
+              {user.first_name && user.last_name
+                ? `${user.first_name[0]}${user.last_name[0]}`
+                : user.first_name?.[0] ||
+                  user.last_name?.[0] ||
+                  "N/A"}
+            </span>
+          </div>
+          <div>
+            <div className="font-medium">
+              {(user.first_name && user.last_name
+                ? `${user.first_name} ${user.last_name}`
+                : user.first_name ||
+                  user.last_name ||
+                  "Unknown") || "N/A"}
+            </div>
+            <div className="text-sm text-gray-500">
+              {user.email || "N/A"}
+            </div>
+          </div>
+        </div>
+      </TableCell>
+      <TableCell>
+        <Badge
+          className={roleGroups[user.role as UserRole]?.color}
+        >
+          {roleGroups[user.role as UserRole]?.label}
+        </Badge>
+      </TableCell>
+      <TableCell>{user.department || "N/A"}</TableCell>
+      <TableCell>
+        {user.last_login
+          ? formatLastLogin(user.last_login)
+          : "N/A"}
+      </TableCell>
+      <TableCell>
+        <Badge className={getUserStatusColor(user.status)}>
+          {user.status}
+        </Badge>
+      </TableCell>
+      <TableCell>
+        <span className="text-sm text-gray-500">Local</span>
+      </TableCell>
+      <TableCell>
+        <div className="flex items-center space-x-2">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => onView(user.id)}
+            title="View User"
+          >
+            <Eye className="w-4 h-4" />
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => onEdit(user.id)}
+            title="Edit User"
+          >
+            <Edit className="w-4 h-4" />
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() =>
+              onDelete(
+                user.id,
+                (user.first_name && user.last_name
+                  ? `${user.first_name} ${user.last_name}`
+                  : user.first_name ||
+                    user.last_name ||
+                    "Unknown") || "N/A",
+              )
+            }
+            title="Delete User"
+            className="hover:bg-red-50 hover:text-red-600"
+          >
+            <Trash2 className="w-4 h-4" />
+          </Button>
+        </div>
+      </TableCell>
+    </TableRow>
+  );
+});
+
+UserRow.displayName = "UserRow";
 
 export default function UserManagement() {
   const navigate = useNavigate();
@@ -56,12 +246,14 @@ export default function UserManagement() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRole, setSelectedRole] = useState<string>("all");
   const [selectedDepartment, setSelectedDepartment] = useState<string>("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(20);
   const [azureConnectionStatus, setAzureConnectionStatus] = useState<
     "unknown" | "connected" | "disconnected"
   >("unknown");
 
   // Auto-inactivate users who haven't logged in for more than a week
-  const processUsersForInactivity = async (users: any[]) => {
+  const processUsersForInactivity = useCallback(async (users: any[]) => {
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
@@ -120,19 +312,19 @@ export default function UserManagement() {
     }
 
     return processedUsers;
-  };
+  }, []);
 
   // State for processed users
   const [allUsers, setAllUsers] = useState<any[]>([]);
 
   // Process users for inactivity when localUsers changes
   useEffect(() => {
-    if (localUsers) {
+    if (localUsers?.length > 0) {
       processUsersForInactivity(localUsers).then(setAllUsers);
     } else {
       setAllUsers([]);
     }
-  }, [localUsers]);
+  }, [localUsers, processUsersForInactivity]);
 
   // Test Azure connection on component mount
   useEffect(() => {
@@ -162,6 +354,82 @@ export default function UserManagement() {
     testConnection();
   }, []);
 
+  // Memoized filtered users for better performance
+  const filteredUsers = useMemo(() => {
+    return allUsers.filter((user) => {
+      const matchesSearch =
+        (user.first_name && user.last_name
+          ? `${user.first_name} ${user.last_name}`
+          : user.first_name || user.last_name || "Unknown"
+        )
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        false ||
+        user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        false;
+      const matchesRole = selectedRole === "all" || user.role === selectedRole;
+      const matchesDepartment =
+        selectedDepartment === "all" || user.department === selectedDepartment;
+
+      return matchesSearch && matchesRole && matchesDepartment;
+    });
+  }, [allUsers, searchTerm, selectedRole, selectedDepartment]);
+
+  // Memoized inactive users
+  const inactiveUsers = useMemo(() => {
+    return allUsers.filter((user) => {
+      const matchesSearch =
+        (user.first_name && user.last_name
+          ? `${user.first_name} ${user.last_name}`
+          : user.first_name || user.last_name || "Unknown"
+        )
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        false ||
+        user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        false;
+
+      return user.status === "inactive" && matchesSearch;
+    });
+  }, [allUsers, searchTerm]);
+
+  // Memoized pagination
+  const paginatedUsers = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return filteredUsers.slice(startIndex, endIndex);
+  }, [filteredUsers, currentPage, itemsPerPage]);
+
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedRole, selectedDepartment]);
+
+  // Group users by role (use allUsers for role view, not filteredUsers)
+  const usersByRole = useMemo(() => {
+    return Object.keys(roleGroups).reduce(
+      (acc, role) => {
+        if (role === "unknown") {
+          // Map users with null, undefined, empty, "N/A", or explicit "unknown" roles to unknown
+          acc[role as UserRole] = allUsers.filter(
+            (user) =>
+              !user.role ||
+              user.role === "" ||
+              user.role === "N/A" ||
+              user.role === "null" ||
+              user.role === "unknown",
+          );
+        } else {
+          acc[role as UserRole] = allUsers.filter((user) => user.role === role);
+        }
+        return acc;
+      },
+      {} as Record<UserRole, typeof allUsers>,
+    );
+  }, [allUsers]);
+
   const handleTestAzureConnection = async () => {
     try {
       setAzureConnectionStatus("unknown");
@@ -183,62 +451,6 @@ export default function UserManagement() {
       console.error("❌ Azure AD connection test failed:", error.message);
     }
   };
-
-  // Filter users based on search and filters
-  const filteredUsers = allUsers.filter((user) => {
-    const matchesSearch =
-      (user.first_name && user.last_name
-        ? `${user.first_name} ${user.last_name}`
-        : user.first_name || user.last_name || "Unknown"
-      )
-        ?.toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      false ||
-      user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      false;
-    const matchesRole = selectedRole === "all" || user.role === selectedRole;
-    const matchesDepartment =
-      selectedDepartment === "all" || user.department === selectedDepartment;
-
-    return matchesSearch && matchesRole && matchesDepartment;
-  });
-
-  // Filter inactive users (users with status 'inactive' or auto-inactivated)
-  const inactiveUsers = allUsers.filter((user) => {
-    const matchesSearch =
-      (user.first_name && user.last_name
-        ? `${user.first_name} ${user.last_name}`
-        : user.first_name || user.last_name || "Unknown"
-      )
-        ?.toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      false ||
-      user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      false;
-
-    return user.status === "inactive" && matchesSearch;
-  });
-
-  // Group users by role (use allUsers for role view, not filteredUsers)
-  const usersByRole = Object.keys(roleGroups).reduce(
-    (acc, role) => {
-      if (role === "unknown") {
-        // Map users with null, undefined, empty, "N/A", or explicit "unknown" roles to unknown
-        acc[role as UserRole] = allUsers.filter(
-          (user) =>
-            !user.role ||
-            user.role === "" ||
-            user.role === "N/A" ||
-            user.role === "null" ||
-            user.role === "unknown",
-        );
-      } else {
-        acc[role as UserRole] = allUsers.filter((user) => user.role === role);
-      }
-      return acc;
-    },
-    {} as Record<UserRole, typeof allUsers>,
-  );
 
   const handleAddUser = () => {
     navigate("/admin/users/add");
@@ -331,17 +543,17 @@ export default function UserManagement() {
     a.click();
   };
 
-  const handleViewUser = (userId: string) => {
+  const handleViewUser = useCallback((userId: string) => {
     // Navigate to user details page
     navigate(`/admin/users/${userId}`);
-  };
+  }, [navigate]);
 
-  const handleEditUser = (userId: string) => {
+  const handleEditUser = useCallback((userId: string) => {
     // Navigate to user edit page
     navigate(`/admin/users/${userId}/edit`);
-  };
+  }, [navigate]);
 
-  const handleDeleteUser = (userId: string, userName: string) => {
+  const handleDeleteUser = useCallback((userId: string, userName: string) => {
     // Show confirmation dialog
     if (
       window.confirm(
@@ -353,38 +565,16 @@ export default function UserManagement() {
       // Show success toast
       alert(`User "${userName}" has been scheduled for deletion.`);
     }
-  };
+  }, []);
 
-  const handleUserSettings = (userId: string) => {
+  const handleUserSettings = useCallback((userId: string) => {
     // Navigate to user settings/permissions page
     navigate(`/admin/users/${userId}/settings`);
-  };
+  }, [navigate]);
 
-  const formatLastLogin = (dateString: string) => {
-    try {
-      const date = new Date(dateString);
-      return (
-        date.toLocaleDateString() +
-        " " +
-        date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-      );
-    } catch {
-      return dateString;
-    }
-  };
-
-  const getUserStatusColor = (status: string) => {
-    switch (status) {
-      case "active":
-        return "bg-green-100 text-green-800";
-      case "inactive":
-        return "bg-gray-100 text-gray-800";
-      case "suspended":
-        return "bg-red-100 text-red-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
+  const handlePageChange = useCallback((page: number) => {
+    setCurrentPage(page);
+  }, []);
 
   return (
     <div className="p-6 space-y-6">
@@ -559,6 +749,18 @@ export default function UserManagement() {
                   )}
                 </SelectContent>
               </Select>
+              
+              <Select value={itemsPerPage.toString()} onValueChange={(value) => setItemsPerPage(Number(value))}>
+                <SelectTrigger className="w-32">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="10">10 per page</SelectItem>
+                  <SelectItem value="20">20 per page</SelectItem>
+                  <SelectItem value="50">50 per page</SelectItem>
+                  <SelectItem value="100">100 per page</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </CardContent>
@@ -595,96 +797,28 @@ export default function UserManagement() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredUsers.map((user) => (
-                    <TableRow key={user.id}>
-                      <TableCell>
-                        <div className="flex items-center space-x-3">
-                          <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                            <span className="text-sm font-medium text-blue-600">
-                              {user.first_name && user.last_name
-                                ? `${user.first_name[0]}${user.last_name[0]}`
-                                : user.first_name?.[0] ||
-                                  user.last_name?.[0] ||
-                                  "N/A"}
-                            </span>
-                          </div>
-                          <div>
-                            <div className="font-medium">
-                              {(user.first_name && user.last_name
-                                ? `${user.first_name} ${user.last_name}`
-                                : user.first_name ||
-                                  user.last_name ||
-                                  "Unknown") || "N/A"}
-                            </div>
-                            <div className="text-sm text-gray-500">
-                              {user.email || "N/A"}
-                            </div>
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          className={roleGroups[user.role as UserRole]?.color}
-                        >
-                          {roleGroups[user.role as UserRole]?.label}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>{user.department || "N/A"}</TableCell>
-                      <TableCell>
-                        {user.last_login
-                          ? formatLastLogin(user.last_login)
-                          : "N/A"}
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={getUserStatusColor(user.status)}>
-                          {user.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <span className="text-sm text-gray-500">Local</span>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center space-x-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleViewUser(user.id)}
-                            title="View User"
-                          >
-                            <Eye className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleEditUser(user.id)}
-                            title="Edit User"
-                          >
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() =>
-                              handleDeleteUser(
-                                user.id,
-                                (user.first_name && user.last_name
-                                  ? `${user.first_name} ${user.last_name}`
-                                  : user.first_name ||
-                                    user.last_name ||
-                                    "Unknown") || "N/A",
-                              )
-                            }
-                            title="Delete User"
-                            className="hover:bg-red-50 hover:text-red-600"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
+                  {paginatedUsers.map((user) => (
+                    <UserRow
+                      key={user.id}
+                      user={user}
+                      onView={handleViewUser}
+                      onEdit={handleEditUser}
+                      onDelete={handleDeleteUser}
+                      onSettings={handleUserSettings}
+                    />
                   ))}
                 </TableBody>
               </Table>
+              
+              {filteredUsers.length > itemsPerPage && (
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  totalItems={filteredUsers.length}
+                  itemsPerPage={itemsPerPage}
+                  onPageChange={handlePageChange}
+                />
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -832,7 +966,7 @@ export default function UserManagement() {
                         </TableCell>
                         <TableCell className="text-gray-600">
                           {user.last_login
-                            ? formatLastLogin(user.last_login)
+                            ? user.last_login
                             : "Never"}
                         </TableCell>
                         <TableCell>
