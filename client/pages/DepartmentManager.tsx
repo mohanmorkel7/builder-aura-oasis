@@ -52,6 +52,8 @@ interface DatabaseUsersData {
   departments: Record<string, Department>;
   totalUsers: number;
   usersByRole: Record<string, number>;
+  databaseStatus?: "available" | "unavailable";
+  message?: string;
 }
 
 export default function DepartmentManager() {
