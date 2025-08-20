@@ -61,6 +61,8 @@ export default function DepartmentManager() {
     message: string;
   }>({ type: null, message: "" });
   const [currentData, setCurrentData] = useState<DepartmentData | null>(null);
+  const [databaseUsers, setDatabaseUsers] = useState<DatabaseUsersData | null>(null);
+  const [viewMode, setViewMode] = useState<"json" | "database">("database");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileUpload = async (
