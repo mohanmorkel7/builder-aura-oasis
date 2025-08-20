@@ -264,8 +264,22 @@ export default function DepartmentManager() {
     }
   };
 
+  const loadDatabaseUsers = async () => {
+    try {
+      const response = await apiClient.request(
+        "/auth/admin/database-users",
+      );
+      if (response.success) {
+        setDatabaseUsers(response.data);
+      }
+    } catch (error) {
+      console.error("Error loading database users:", error);
+    }
+  };
+
   React.useEffect(() => {
     loadCurrentData();
+    loadDatabaseUsers();
   }, []);
 
   return (
