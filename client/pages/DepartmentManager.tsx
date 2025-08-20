@@ -402,6 +402,18 @@ export default function DepartmentManager() {
           <CardContent>
             {viewMode === "database" && databaseUsers ? (
               <div className="space-y-4">
+                {databaseUsers.databaseStatus === "unavailable" && (
+                  <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <div className="flex items-center space-x-2 text-yellow-800">
+                      <AlertCircle className="w-4 h-4" />
+                      <span className="font-medium">Database Unavailable</span>
+                    </div>
+                    <p className="text-yellow-700 text-sm mt-1">
+                      {databaseUsers.message || "PostgreSQL is not running. Please start the database to view users."}
+                    </p>
+                  </div>
+                )}
+
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <span className="font-medium">Total Users:</span> {databaseUsers.totalUsers}
