@@ -289,14 +289,23 @@ router.post(
         })));
       }
 
+      let databaseSyncStatus = "pending";
+      let databaseSyncMessage = "";
+
       try {
         await DepartmentService.loadUserDepartmentsFromJSON({
           skipExistingUsers: true,
         });
         console.log("✅ Database sync completed successfully");
+        databaseSyncStatus = "completed";
+        databaseSyncMessage = "Users successfully synced to database";
       } catch (syncError) {
         console.error("❌ Database sync failed:", syncError.message);
         console.error("Sync error details:", syncError);
+        databaseSyncStatus = "failed";
+        databaseSyncMessage = dbAvailable
+          ? `Database sync failed: ${syncError.message}`
+          : "Database unavailable - users saved to JSON only. Start PostgreSQL and re-upload to sync to database.";
         // Continue without failing the whole upload
       }
 
