@@ -219,8 +219,8 @@ router.post(
       const validUsers = [];
       const skippedEntries = [];
 
-      for (let i = 0; i < users.length; i++) {
-        const user = users[i];
+      for (let i = 0; i < filteredUsers.length; i++) {
+        const user = filteredUsers[i];
         console.log(`🔍 Processing user ${i + 1}/${users.length}:`, {
           email: user.email,
           displayName: user.displayName,
