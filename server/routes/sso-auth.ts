@@ -180,7 +180,7 @@ router.post(
         }
         return true;
       });
-      console.log(`✅ Pre-filtering complete: ${originalUserCount} → ${usersWithEmail.length} users (removed ${originalUserCount - usersWithEmail.length} entries without email)`);
+      console.log(`✅ Pre-filtering complete: ${originalUserCount} �� ${usersWithEmail.length} users (removed ${originalUserCount - usersWithEmail.length} entries without email)`);
 
       // Replace the users array with the filtered version
       req.body.users = usersWithEmail;
@@ -260,7 +260,7 @@ router.post(
       }
 
       console.log(
-        `✅ Processed ${users.length} entries: ${validUsers.length} valid users, ${skippedEntries.length} skipped entries`,
+        `✅ Processed ${filteredUsers.length} entries: ${validUsers.length} valid users, ${skippedEntries.length} skipped entries`,
       );
       console.log(`📋 Skipped entries:`, skippedEntries);
 
