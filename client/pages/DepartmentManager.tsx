@@ -56,7 +56,7 @@ interface DatabaseUsersData {
   message?: string;
 }
 
-export default function DepartmentManager() {
+function DepartmentManagerCore() {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState<{
     type: "success" | "error" | null;
@@ -126,7 +126,7 @@ export default function DepartmentManager() {
           body: JSON.stringify(parsedData),
         },
       );
-      console.log("�� Server response received:", response?.success);
+      console.log("📨 Server response received:", response?.success);
 
       console.log("🔍 Processing response");
       if (response && response.success) {
