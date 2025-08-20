@@ -226,10 +226,13 @@ export default function UserManagement() {
     // Export users to CSV
     const csv = [
       "Name,Email,Role,Department,Last Login,Status",
-      ...filteredUsers.map(
-        (user) =>
-          `"${(user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : user.first_name || user.last_name || "Unknown") || "N/A"}","${user.email || "N/A"}","${user.role || "N/A"}","${user.department || "N/A"}","${user.last_login || "N/A"}","${user.status || "N/A"}"`,
-      ),
+      ...filteredUsers.map((user) => {
+        const fullName = user.first_name && user.last_name
+          ? `${user.first_name} ${user.last_name}`
+          : user.first_name || user.last_name || "Unknown";
+
+        return `"${fullName || "N/A"}","${user.email || "N/A"}","${user.role || "N/A"}","${user.department || "N/A"}","${user.last_login || "N/A"}","${user.status || "N/A"}"`;
+      }),
     ].join("\n");
 
     const blob = new Blob([csv], { type: "text/csv" });
