@@ -402,6 +402,80 @@ router.post("/admin/fix-user-roles", async (req: Request, res: Response) => {
   }
 });
 
+// Fix incorrect user roles endpoint
+router.post("/admin/fix-user-roles", async (req: Request, res: Response) => {
+  try {
+    const roleUpdates = [
+      { email: 'Gopikrishnan.P@mylapay.com', newRole: 'unknown' },
+      { email: 'sarumathi.m@mylapay.com', newRole: 'finops' },
+      { email: 'Maanas.m@mylapay.com', newRole: 'switch_team' },
+      { email: 'Abirami@mylapay.com', newRole: 'backend' },
+      { email: 'abinaya.s@mylapay.com', newRole: 'backend' },
+      { email: 'Abinaya.M@mylapay.com', newRole: 'backend' },
+      { email: 'Abinandan@mylapay.com', newRole: 'backend' },
+    ];
+
+    let successCount = 0;
+    let failCount = 0;
+    const results = [];
+
+    for (const update of roleUpdates) {
+      try {
+        const result = await pool.query(
+          `UPDATE users
+           SET role = $1, updated_at = NOW()
+           WHERE email = $2
+           RETURNING id, first_name, last_name, email, role`,
+          [update.newRole, update.email]
+        );
+
+        if (result.rows.length > 0) {
+          const user = result.rows[0];
+          results.push({
+            success: true,
+            email: user.email,
+            name: `${user.first_name} ${user.last_name}`,
+            newRole: user.role
+          });
+          successCount++;
+        } else {
+          results.push({
+            success: false,
+            email: update.email,
+            error: 'User not found'
+          });
+          failCount++;
+        }
+      } catch (error) {
+        results.push({
+          success: false,
+          email: update.email,
+          error: error.message
+        });
+        failCount++;
+      }
+    }
+
+    res.json({
+      success: true,
+      message: `Updated ${successCount} user roles successfully. ${failCount} failed.`,
+      results,
+      summary: {
+        successCount,
+        failCount,
+        totalUpdates: roleUpdates.length
+      }
+    });
+  } catch (error) {
+    console.error("Error fixing user roles:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to fix user roles",
+      message: error.message,
+    });
+  }
+});
+
 // Debug endpoint to check existing users in database (for testing department upload)
 router.get(
   "/admin/check-existing-users",
