@@ -278,6 +278,22 @@ export class DepartmentService {
   ): Promise<void> {
     try {
       console.log("Loading user departments from JSON...");
+      console.log(`Total users in JSON to process: ${userDepartments.users.length}`);
+      console.log(`Skip existing users: ${options.skipExistingUsers}`);
+
+      // Check database availability first
+      let dbAvailable = false;
+      try {
+        await pool.query("SELECT 1");
+        dbAvailable = true;
+        console.log("✅ Database is available for user processing");
+      } catch (dbError) {
+        console.warn("⚠️  Database not available during user processing:", dbError.message);
+        if (options.skipExistingUsers) {
+          console.log("Cannot process users - database required for duplicate checking");
+          return;
+        }
+      }
 
       let processedCount = 0;
       let skippedCount = 0;
