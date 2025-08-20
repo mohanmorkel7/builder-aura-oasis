@@ -437,6 +437,24 @@ export default function UserManagement() {
             </div>
           </CardContent>
         </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Inactive Users
+                </p>
+                <p className="text-2xl font-bold text-red-600">
+                  {allUsers.filter((u) => u.status === "inactive").length}
+                </p>
+              </div>
+              <div className="p-3 rounded-lg bg-red-100">
+                <AlertTriangle className="w-6 h-6 text-red-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Filters */}
