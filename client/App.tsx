@@ -104,6 +104,7 @@ import FinOpsAutomation from "@/pages/FinOpsAutomation";
 import UserProfile from "@/pages/UserProfile";
 import DepartmentManager from "@/pages/DepartmentManager";
 import DepartmentUploadTestPage from "@/pages/DepartmentUploadTestPage";
+import UserRoleDebugPage from "@/pages/UserRoleDebugPage";
 import NotFound from "@/pages/NotFound";
 import { OfflineIndicator } from "@/components/OfflineIndicator";
 
