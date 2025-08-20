@@ -36,11 +36,22 @@ interface UserData {
   jobTitle: string;
   department: string;
   ssoId: string;
+  role?: string;
+  authType?: string;
+  status?: string;
+  createdAt?: string;
 }
 
 interface DepartmentData {
   departments: Record<string, Department>;
   users: UserData[];
+}
+
+interface DatabaseUsersData {
+  users: UserData[];
+  departments: Record<string, Department>;
+  totalUsers: number;
+  usersByRole: Record<string, number>;
 }
 
 export default function DepartmentManager() {
