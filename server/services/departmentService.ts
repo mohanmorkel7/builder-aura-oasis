@@ -222,6 +222,7 @@ export class DepartmentService {
             userMapping.jobTitle || "Employee",
             this.getDepartmentRole(userMapping.department), // Role based on department
             "active",
+            "microsoft", // sso_provider
           ],
         );
         userId = insertResult.rows[0].id;
