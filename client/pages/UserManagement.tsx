@@ -79,10 +79,12 @@ export default function UserManagement() {
         if (isAuth) {
           setAzureConnectionStatus("connected");
         } else {
-          setAzureConnectionStatus("disconnected");
+          // Don't immediately show disconnected, just stay in unknown state
+          setAzureConnectionStatus("unknown");
         }
       } catch (error) {
         console.log("Azure connection test failed:", error);
+        // Only show disconnected if there's an actual error
         setAzureConnectionStatus("disconnected");
       }
     };
