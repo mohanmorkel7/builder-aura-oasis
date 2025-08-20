@@ -136,7 +136,11 @@ export default function UserManagement() {
       if (role === "unknown") {
         // Map users with null, undefined, empty, or "N/A" roles to unknown
         acc[role as UserRole] = filteredUsers.filter(
-          (user) => !user.role || user.role === "" || user.role === "N/A" || user.role === "null"
+          (user) =>
+            !user.role ||
+            user.role === "" ||
+            user.role === "N/A" ||
+            user.role === "null",
         );
       } else {
         acc[role as UserRole] = filteredUsers.filter(
