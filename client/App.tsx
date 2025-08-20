@@ -850,6 +850,17 @@ function AppRoutes() {
         }
       />
 
+      <Route
+        path="/admin/user-role-debug"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <DashboardLayout>
+              <UserRoleDebugPage />
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+
       {/* Root redirect */}
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
