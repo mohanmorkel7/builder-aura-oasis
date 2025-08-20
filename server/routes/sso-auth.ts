@@ -418,8 +418,9 @@ router.get("/admin/database-users", async (req: Request, res: Response) => {
       department: row.department || "unknown",
       jobTitle: row.job_title,
       ssoId: row.azure_object_id,
-      authType: row.password_hash === 'SSO_AUTH_NO_PASSWORD' ? 'SSO' : 'PASSWORD',
-      provider: row.sso_provider || 'local',
+      authType:
+        row.password_hash === "SSO_AUTH_NO_PASSWORD" ? "SSO" : "PASSWORD",
+      provider: row.sso_provider || "local",
       status: row.status,
       createdAt: row.created_at,
     }));
