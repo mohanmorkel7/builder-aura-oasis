@@ -21,19 +21,24 @@ export interface UserDepartmentInfo {
 export class DepartmentService {
   // Map departments to appropriate user roles
   private static getDepartmentRole(department: string): string {
+    // If no department provided, assign 'unknown' role for manual assignment
+    if (!department || department === null || department === undefined || department === "") {
+      return "unknown";
+    }
+
     const departmentRoleMap: { [key: string]: string } = {
       hr: "hr_management",
       finance: "finance", // Finance department gets 'finance' role
       finops: "finops", // FinOps department gets 'finops' role
       database: "db",
       frontend: "development",
-      backend: "development",
+      backend: "backend", // Backend department gets 'backend' role
       infra: "infra",
       admin: "admin", // Admin department gets 'admin' role
       administration: "admin", // Administration department also gets 'admin' role
     };
 
-    return departmentRoleMap[department] || "development";
+    return departmentRoleMap[department] || "unknown"; // Default to 'unknown' for unrecognized departments
   }
   // Get user's department and permissions by email
   static async getUserDepartmentByEmail(
