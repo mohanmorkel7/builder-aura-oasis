@@ -512,4 +512,75 @@ router.post("/bulk-inactive", async (req: Request, res: Response) => {
   }
 });
 
+// Bulk update user status (general purpose)
+router.post("/bulk-status-update", async (req: Request, res: Response) => {
+  try {
+    const { userStatuses } = req.body; // Array of { userId, status }
+
+    if (!Array.isArray(userStatuses) || userStatuses.length === 0) {
+      return res
+        .status(400)
+        .json({ error: "userStatuses must be a non-empty array" });
+    }
+
+    // Validate the input format
+    const validStatuses = ["active", "inactive", "suspended"];
+    for (const { userId, status } of userStatuses) {
+      if (!Number.isInteger(userId)) {
+        return res.status(400).json({ error: "All userIds must be integers" });
+      }
+      if (!validStatuses.includes(status)) {
+        return res.status(400).json({
+          error: `Invalid status '${status}'. Must be one of: ${validStatuses.join(", ")}`
+        });
+      }
+    }
+
+    if (await isDatabaseAvailable()) {
+      // Update user statuses in database
+      const updatedUsers = [];
+      for (const { userId, status } of userStatuses) {
+        const user = await UserRepository.update(userId, { status });
+        if (user) {
+          updatedUsers.push(user);
+        }
+      }
+
+      console.log(
+        `Bulk status update completed for ${updatedUsers.length} users:`,
+        userStatuses.map(u => `User ${u.userId} → ${u.status}`).join(", ")
+      );
+
+      res.json({
+        success: true,
+        updatedCount: updatedUsers.length,
+        updatedUsers,
+        message: `Updated status for ${updatedUsers.length} users`
+      });
+    } else {
+      // Use mock data fallback - update status in mock data
+      const updatedUsers = [];
+      for (const { userId, status } of userStatuses) {
+        const user = await MockDataService.updateUser(userId, { status });
+        if (user) {
+          updatedUsers.push(user);
+        }
+      }
+
+      res.json({
+        success: true,
+        updatedCount: updatedUsers.length,
+        updatedUsers,
+        message: `Updated status for ${updatedUsers.length} users (mock mode)`
+      });
+    }
+  } catch (error) {
+    console.error("Error bulk updating user statuses:", error);
+    res.status(500).json({
+      error: "Failed to update user statuses",
+      message: error.message
+    });
+  }
+});
+
 export default router;
