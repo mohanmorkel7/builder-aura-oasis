@@ -203,9 +203,11 @@ router.post(
         // Get all existing emails from database
         const existingUsersResult = await pool.query("SELECT email FROM users");
         existingEmails = new Set(
-          existingUsersResult.rows.map((row) =>
-            row.email && row.email !== null ? row.email.toLowerCase() : ''
-          ).filter(email => email !== '')
+          existingUsersResult.rows
+            .map((row) =>
+              row.email && row.email !== null ? row.email.toLowerCase() : "",
+            )
+            .filter((email) => email !== ""),
         );
         console.log(`Found ${existingEmails.size} existing users in database`);
         console.log(
@@ -293,7 +295,11 @@ router.post(
         }
 
         // Check if user already exists in database
-        if (dbAvailable && user.email && existingEmails.has(user.email.toLowerCase())) {
+        if (
+          dbAvailable &&
+          user.email &&
+          existingEmails.has(user.email.toLowerCase())
+        ) {
           // If user has department info, allow updating, otherwise skip
           if (user.department && user.department !== "") {
             newUsers.push(user);
@@ -335,15 +341,19 @@ router.post(
 
       // For users - only add new users, skip existing ones by email
       const existingUserEmails = new Set(
-        existingData.users.map((u) =>
-          u.email && u.email !== null ? u.email.toLowerCase() : ''
-        ).filter(email => email !== '')
+        existingData.users
+          .map((u) =>
+            u.email && u.email !== null ? u.email.toLowerCase() : "",
+          )
+          .filter((email) => email !== ""),
       );
       const usersToAdd = newUsers.filter(
-        (user) => user.email && !existingUserEmails.has(user.email.toLowerCase()),
+        (user) =>
+          user.email && !existingUserEmails.has(user.email.toLowerCase()),
       );
-      const alreadyInJsonUsers = newUsers.filter((user) =>
-        user.email && existingUserEmails.has(user.email.toLowerCase()),
+      const alreadyInJsonUsers = newUsers.filter(
+        (user) =>
+          user.email && existingUserEmails.has(user.email.toLowerCase()),
       );
 
       const finalUsers = [...existingData.users, ...usersToAdd];
