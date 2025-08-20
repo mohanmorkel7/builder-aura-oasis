@@ -281,6 +281,7 @@ export class DepartmentService {
 
       let processedCount = 0;
       let skippedCount = 0;
+      let updatedCount = 0;
 
       for (const user of userDepartments.users) {
         // If skipExistingUsers is true, check if user exists in database first
@@ -292,31 +293,59 @@ export class DepartmentService {
             );
 
             if (existingUser.rows.length > 0) {
-              console.log(
-                `⏭️  Skipping database update for existing user: ${user.email}`,
-              );
-              skippedCount++;
-              continue;
+              // If user has department info, update them, otherwise skip
+              if (user.department && user.department !== "") {
+                console.log(
+                  `🔄 Updating existing user with department: ${user.email} (${user.department})`,
+                );
+                await this.createOrUpdateSSOUser({
+                  mail: user.email,
+                  displayName: user.displayName,
+                  givenName: user.givenName,
+                  surname: user.surname,
+                  jobTitle: user.jobTitle,
+                  id: user.ssoId,
+                });
+                updatedCount++;
+              } else {
+                console.log(
+                  `⏭️  Skipping existing user with no department: ${user.email}`,
+                );
+                skippedCount++;
+                continue;
+              }
+            } else {
+              // New user
+              await this.createOrUpdateSSOUser({
+                mail: user.email,
+                displayName: user.displayName,
+                givenName: user.givenName,
+                surname: user.surname,
+                jobTitle: user.jobTitle,
+                id: user.ssoId,
+              });
+              processedCount++;
             }
           } catch (error) {
-            console.warn(`Error checking if user exists: ${user.email}`, error);
+            console.warn(`Error processing user: ${user.email}`, error);
           }
+        } else {
+          // Original behavior - process all users
+          await this.createOrUpdateSSOUser({
+            mail: user.email,
+            displayName: user.displayName,
+            givenName: user.givenName,
+            surname: user.surname,
+            jobTitle: user.jobTitle,
+            id: user.ssoId,
+          });
+          processedCount++;
         }
-
-        await this.createOrUpdateSSOUser({
-          mail: user.email,
-          displayName: user.displayName,
-          givenName: user.givenName,
-          surname: user.surname,
-          jobTitle: user.jobTitle,
-          id: user.ssoId,
-        });
-        processedCount++;
       }
 
       if (options.skipExistingUsers) {
         console.log(
-          `Loaded ${processedCount} new users from JSON, skipped ${skippedCount} existing users`,
+          `📊 Database sync summary: ${processedCount} new users, ${updatedCount} updated users, ${skippedCount} skipped users`,
         );
       } else {
         console.log(`Loaded ${userDepartments.users.length} users from JSON`);
