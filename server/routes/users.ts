@@ -531,7 +531,7 @@ router.post("/bulk-status-update", async (req: Request, res: Response) => {
       }
       if (!validStatuses.includes(status)) {
         return res.status(400).json({
-          error: `Invalid status '${status}'. Must be one of: ${validStatuses.join(", ")}`
+          error: `Invalid status '${status}'. Must be one of: ${validStatuses.join(", ")}`,
         });
       }
     }
@@ -548,14 +548,14 @@ router.post("/bulk-status-update", async (req: Request, res: Response) => {
 
       console.log(
         `Bulk status update completed for ${updatedUsers.length} users:`,
-        userStatuses.map(u => `User ${u.userId} → ${u.status}`).join(", ")
+        userStatuses.map((u) => `User ${u.userId} → ${u.status}`).join(", "),
       );
 
       res.json({
         success: true,
         updatedCount: updatedUsers.length,
         updatedUsers,
-        message: `Updated status for ${updatedUsers.length} users`
+        message: `Updated status for ${updatedUsers.length} users`,
       });
     } else {
       // Use mock data fallback - update status in mock data
@@ -571,14 +571,14 @@ router.post("/bulk-status-update", async (req: Request, res: Response) => {
         success: true,
         updatedCount: updatedUsers.length,
         updatedUsers,
-        message: `Updated status for ${updatedUsers.length} users (mock mode)`
+        message: `Updated status for ${updatedUsers.length} users (mock mode)`,
       });
     }
   } catch (error) {
     console.error("Error bulk updating user statuses:", error);
     res.status(500).json({
       error: "Failed to update user statuses",
-      message: error.message
+      message: error.message,
     });
   }
 });
