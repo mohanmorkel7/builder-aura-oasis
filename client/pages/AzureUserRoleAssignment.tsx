@@ -835,21 +835,32 @@ export default function AzureUserRoleAssignment() {
                       </TableCell>
                       <TableCell>
                         {needsRole ? (
-                          <Select
-                            value={assignedRole}
-                            onValueChange={(role) => updateRole(user.id, role)}
-                          >
-                            <SelectTrigger className="w-48">
-                              <SelectValue placeholder="Select role..." />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {validRoles.map((role) => (
-                                <SelectItem key={role.value} value={role.value}>
-                                  {role.label}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                          <div className="flex items-center space-x-2">
+                            <Select
+                              value={assignedRole}
+                              onValueChange={(role) => updateRole(user.id, role)}
+                            >
+                              <SelectTrigger className="w-48">
+                                <SelectValue placeholder="Select role..." />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {validRoles.map((role) => (
+                                  <SelectItem key={role.value} value={role.value}>
+                                    {role.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            {assignedRole && assignedDepartment && (
+                              <Badge
+                                variant="outline"
+                                className="text-xs bg-green-50 text-green-700 border-green-200"
+                                title="Role automatically assigned based on department"
+                              >
+                                Auto
+                              </Badge>
+                            )}
+                          </div>
                         ) : (
                           <div className="text-sm text-gray-500">
                             Role assigned
