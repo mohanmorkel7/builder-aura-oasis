@@ -180,9 +180,10 @@ export class DepartmentService {
             first_name = $1,
             last_name = $2,
             department = $3,
-            sso_id = $4,
+            azure_object_id = $4,
             job_title = $5,
             role = $6,
+            sso_provider = $8,
             updated_at = NOW()
           WHERE id = $7
         `,
