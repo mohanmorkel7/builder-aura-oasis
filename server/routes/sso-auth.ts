@@ -319,7 +319,7 @@ router.post(
   },
 );
 
-// Get current department data
+// Get current department data from JSON file
 router.get(
   "/admin/current-departments",
   async (req: Request, res: Response) => {
@@ -345,6 +345,79 @@ router.get(
       res.status(500).json({
         success: false,
         error: "Failed to get current department data",
+      });
+    }
+  },
+);
+
+// Get all users from database for department manager
+router.get(
+  "/admin/database-users",
+  async (req: Request, res: Response) => {
+    try {
+      // Get all users from database
+      const usersResult = await pool.query(`
+        SELECT
+          first_name,
+          last_name,
+          email,
+          role,
+          department,
+          job_title,
+          azure_object_id,
+          provider,
+          auth_type,
+          status,
+          created_at
+        FROM users
+        WHERE provider = 'microsoft'
+        ORDER BY created_at DESC
+      `);
+
+      const users = usersResult.rows.map(row => ({
+        displayName: `${row.first_name} ${row.last_name}`.trim(),
+        givenName: row.first_name,
+        surname: row.last_name,
+        email: row.email,
+        role: row.role,
+        department: row.department || 'unknown',
+        jobTitle: row.job_title,
+        ssoId: row.azure_object_id,
+        authType: row.auth_type,
+        status: row.status,
+        createdAt: row.created_at
+      }));
+
+      // Get department structure from JSON file
+      let departments = {};
+      try {
+        const filePath = path.join(__dirname, "../data/user-departments.json");
+        if (fs.existsSync(filePath)) {
+          const fileContent = fs.readFileSync(filePath, "utf8");
+          const data = JSON.parse(fileContent);
+          departments = data.departments || {};
+        }
+      } catch (error) {
+        console.warn("Could not load departments from JSON:", error.message);
+      }
+
+      res.json({
+        success: true,
+        data: {
+          users,
+          departments,
+          totalUsers: users.length,
+          usersByRole: users.reduce((acc, user) => {
+            acc[user.role] = (acc[user.role] || 0) + 1;
+            return acc;
+          }, {} as Record<string, number>)
+        }
+      });
+    } catch (error) {
+      console.error("Error getting database users:", error);
+      res.status(500).json({
+        success: false,
+        error: "Failed to get users from database"
       });
     }
   },
