@@ -318,7 +318,7 @@ export default function UserManagement() {
     }
   }, [localUsers, processUsersForInactivity]);
 
-  // Test Azure connection on component mount
+  // Test Azure connection on component mount and handle page refresh
   useEffect(() => {
     const testConnection = async () => {
       try {
@@ -343,6 +343,16 @@ export default function UserManagement() {
         setAzureConnectionStatus("disconnected");
       }
     };
+
+    // Check if we should refresh data after returning from role assignment
+    const shouldRefresh = sessionStorage.getItem("refreshUserManagement");
+    if (shouldRefresh) {
+      sessionStorage.removeItem("refreshUserManagement");
+      // Force a page reload to get fresh data
+      window.location.reload();
+      return;
+    }
+
     testConnection();
   }, []);
 
