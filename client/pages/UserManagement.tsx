@@ -358,6 +358,26 @@ export default function UserManagement() {
     testConnection();
   }, []);
 
+  // Listen for navigation back from role assignment page
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        const returnFlag = sessionStorage.getItem("returnToUserManagement");
+        if (returnFlag) {
+          sessionStorage.removeItem("returnToUserManagement");
+          // Refresh user data when returning from role assignment
+          queryClient.invalidateQueries({ queryKey: ["users"] });
+          refetchUsers();
+        }
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [queryClient, refetchUsers]);
+
   // Memoized filtered users for better performance
   const filteredUsers = useMemo(() => {
     return allUsers.filter((user) => {
@@ -477,7 +497,7 @@ export default function UserManagement() {
       const result = await azureSilentAuth.syncUsersFromAzure();
 
       if (result.success) {
-        const message = `�� Azure AD sync completed successfully!\n\nStats:\n- Total users: ${result.stats.total}\n- New users: ${result.stats.inserted}\n- Updated users: ${result.stats.updated}\n- Skipped users: ${result.stats.skipped}\n\nJSON file saved: ${result.jsonFile}`;
+        const message = `✅ Azure AD sync completed successfully!\n\nStats:\n- Total users: ${result.stats.total}\n- New users: ${result.stats.inserted}\n- Updated users: ${result.stats.updated}\n- Skipped users: ${result.stats.skipped}\n\nJSON file saved: ${result.jsonFile}`;
 
         console.log(message);
 
