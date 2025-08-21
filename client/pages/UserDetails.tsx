@@ -514,7 +514,9 @@ export default function UserDetails() {
                       {userData.azure_object_id && (
                         <div className="flex items-center space-x-2">
                           <Key className="w-4 h-4 text-blue-400" />
-                          <span className="font-medium text-gray-600">SSO ID:</span>
+                          <span className="font-medium text-gray-600">
+                            SSO ID:
+                          </span>
                           <span className="text-gray-900 text-xs font-mono bg-gray-100 px-2 py-1 rounded break-all min-w-0">
                             {userData.azure_object_id}
                           </span>
