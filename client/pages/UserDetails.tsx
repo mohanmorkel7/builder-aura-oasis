@@ -467,7 +467,7 @@ export default function UserDetails() {
 
                   {/* SSO Information */}
                   {(userData.azure_object_id || userData.sso_provider) && (
-                    <>
+                    <div className="space-y-8">
                       <div className="flex items-center space-x-2">
                         <Cloud className="w-4 h-4 text-blue-400" />
                         <span className="font-medium text-gray-600">
@@ -492,7 +492,7 @@ export default function UserDetails() {
                           </div>
                         </div>
                       )}
-                    </>
+                    </div>
                   )}
                 </div>
 
