@@ -288,7 +288,7 @@ router.get("/unknown-users", async (req: Request, res: Response) => {
     }
 
     const query = `
-      SELECT id, first_name, last_name, email, department, azure_object_id, created_at, role, job_title
+      SELECT id, first_name, last_name, email, department, azure_object_id, created_at, role, job_title, status, last_login
       FROM users
       WHERE sso_provider = 'microsoft' AND (role = 'unknown' OR department IS NULL)
       ORDER BY created_at DESC
