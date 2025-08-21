@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { apiClient } from "@/lib/api";
 import { Button } from "@/components/ui/button";
@@ -38,22 +38,72 @@ import {
   Building,
   Clock,
   Activity,
+  Cloud,
+  Key,
+  BarChart3,
+  TrendingUp,
 } from "lucide-react";
 
 const roleColors = {
   admin: "bg-red-100 text-red-700",
   sales: "bg-blue-100 text-blue-700",
   product: "bg-green-100 text-green-700",
+  development: "bg-purple-100 text-purple-700",
+  db: "bg-gray-100 text-gray-700",
+  finops: "bg-yellow-100 text-yellow-700",
+  finance: "bg-green-100 text-green-700",
+  hr_management: "bg-pink-100 text-pink-700",
+  infra: "bg-indigo-100 text-indigo-700",
+  switch_team: "bg-orange-100 text-orange-700",
+  backend: "bg-purple-100 text-purple-700",
+  unknown: "bg-gray-100 text-gray-700",
 };
 
 const statusColors = {
   active: "bg-green-100 text-green-700",
   inactive: "bg-gray-100 text-gray-700",
   pending: "bg-yellow-100 text-yellow-700",
+  suspended: "bg-red-100 text-red-700",
 };
+
+interface ActivityLog {
+  id: string;
+  action: string;
+  entity_type: string;
+  entity_name?: string;
+  timestamp: string;
+  user_name?: string;
+}
+
+interface ActivityStats {
+  totalActions: number;
+  actionsThisMonth: number;
+  lastLoginDate: string;
+  accountCreatedDate: string;
+  loginCount: number;
+}
+
+interface UserData {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  role: string;
+  department?: string;
+  status: string;
+  azure_object_id?: string;
+  sso_provider?: string;
+  job_title?: string;
+  last_login?: string;
+  created_at: string;
+}
 
 export default function UserProfile() {
   const { user } = useAuth();
+  const [userDetails, setUserDetails] = useState<UserData | null>(null);
+  const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
+  const [activityStats, setActivityStats] = useState<ActivityStats | null>(null);
+  const [loading, setLoading] = useState(true);
   const [changePasswordOpen, setChangePasswordOpen] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [passwordData, setPasswordData] = useState({
@@ -68,6 +118,70 @@ export default function UserProfile() {
     new: false,
     confirm: false,
   });
+
+  // Fetch user details and activity data
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!user?.id) return;
+      
+      try {
+        setLoading(true);
+        
+        // Fetch detailed user info from database
+        const userResponse = await apiClient.request(`/users/${user.id}`, {
+          method: "GET",
+        });
+        setUserDetails(userResponse);
+
+        // Fetch recent activity logs
+        const activityResponse = await apiClient.request("/activity-production", {
+          method: "GET",
+          params: new URLSearchParams({
+            limit: "10",
+            user_id: user.id.toString(),
+          }),
+        });
+        
+        if (activityResponse?.activity_logs) {
+          setActivityLogs(activityResponse.activity_logs);
+        }
+
+        // Fetch activity statistics
+        const statsResponse = await apiClient.request("/activity-production/stats/summary", {
+          method: "GET",
+          params: new URLSearchParams({
+            days: "30",
+            user_id: user.id.toString(),
+          }),
+        });
+        
+        if (statsResponse) {
+          setActivityStats({
+            totalActions: statsResponse.total_count || 0,
+            actionsThisMonth: statsResponse.recent_count || 0,
+            lastLoginDate: userResponse?.last_login || new Date().toISOString(),
+            accountCreatedDate: userResponse?.created_at || new Date().toISOString(),
+            loginCount: statsResponse.total_count || 0,
+          });
+        }
+
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        // Set fallback data if API fails
+        setActivityStats({
+          totalActions: 0,
+          actionsThisMonth: 0,
+          lastLoginDate: new Date().toISOString(),
+          accountCreatedDate: new Date().toISOString(),
+          loginCount: 0,
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, [user?.id]);
 
   const handlePasswordChange = (field: string, value: string) => {
     setPasswordData((prev) => ({ ...prev, [field]: value }));
@@ -155,6 +269,53 @@ export default function UserProfile() {
     setShowPasswords({ current: false, new: false, confirm: false });
   };
 
+  const formatDate = (dateString: string) => {
+    try {
+      return new Date(dateString).toLocaleDateString();
+    } catch {
+      return "N/A";
+    }
+  };
+
+  const formatDateTime = (dateString: string) => {
+    try {
+      return new Date(dateString).toLocaleString();
+    } catch {
+      return "N/A";
+    }
+  };
+
+  const getAccountAge = (createdAt: string) => {
+    try {
+      const created = new Date(createdAt);
+      const now = new Date();
+      const diffTime = Math.abs(now.getTime() - created.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return `${diffDays} days`;
+    } catch {
+      return "N/A";
+    }
+  };
+
+  const getActivityColor = (action: string) => {
+    switch (action.toLowerCase()) {
+      case 'login':
+      case 'logged in':
+        return 'bg-green-500';
+      case 'create':
+      case 'created':
+        return 'bg-blue-500';
+      case 'update':
+      case 'updated':
+        return 'bg-yellow-500';
+      case 'delete':
+      case 'deleted':
+        return 'bg-red-500';
+      default:
+        return 'bg-gray-400';
+    }
+  };
+
   if (!user) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -182,10 +343,10 @@ export default function UserProfile() {
           </Badge>
           <Badge
             variant="outline"
-            className="text-xs text-green-700 border-green-200"
+            className={`text-xs ${statusColors[userDetails?.status as keyof typeof statusColors] || 'bg-green-100 text-green-700'}`}
           >
             <CheckCircle className="w-3 h-3 mr-1" />
-            Active
+            {userDetails?.status || 'Active'}
           </Badge>
         </div>
       </div>
@@ -198,7 +359,7 @@ export default function UserProfile() {
             <CardHeader>
               <CardTitle>User Profile</CardTitle>
               <CardDescription>
-                Basic user information and contact details
+                Basic user information and authentication details
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -218,13 +379,13 @@ export default function UserProfile() {
                   <div className="flex items-center space-x-4 mt-2">
                     <Badge
                       className={
-                        roleColors[user.role as keyof typeof roleColors]
+                        roleColors[user.role as keyof typeof roleColors] || "bg-gray-100 text-gray-700"
                       }
                     >
                       {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
                     </Badge>
-                    <Badge className="bg-green-100 text-green-700">
-                      Active
+                    <Badge className={statusColors[userDetails?.status as keyof typeof statusColors] || "bg-green-100 text-green-700"}>
+                      {userDetails?.status || 'Active'}
                     </Badge>
                   </div>
                 </div>
@@ -254,6 +415,15 @@ export default function UserProfile() {
                       {user.role}
                     </span>
                   </div>
+                  {user.department && (
+                    <div className="flex items-center space-x-2">
+                      <Building className="w-4 h-4 text-gray-400" />
+                      <span className="font-medium text-gray-600">Department:</span>
+                      <span className="text-gray-900 capitalize">
+                        {user.department}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="space-y-4">
@@ -263,7 +433,7 @@ export default function UserProfile() {
                       Member Since:
                     </span>
                     <span className="text-gray-900">
-                      {new Date().toLocaleDateString()}
+                      {formatDate(userDetails?.created_at || new Date().toISOString())}
                     </span>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -272,14 +442,39 @@ export default function UserProfile() {
                       Last Login:
                     </span>
                     <span className="text-gray-900">
-                      {new Date().toLocaleString()}
+                      {formatDateTime(userDetails?.last_login || new Date().toISOString())}
                     </span>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <Lock className="w-4 h-4 text-gray-400" />
-                    <span className="font-medium text-gray-600">2FA:</span>
-                    <span className="text-gray-900">Disabled</span>
-                  </div>
+                  
+                  {/* SSO Information */}
+                  {(userDetails?.azure_object_id || user.ssoId || user.azureObjectId) && (
+                    <>
+                      <div className="flex items-center space-x-2">
+                        <Cloud className="w-4 h-4 text-blue-400" />
+                        <span className="font-medium text-gray-600">SSO Provider:</span>
+                        <span className="text-gray-900">
+                          {userDetails?.sso_provider === 'microsoft' ? 'Microsoft Azure AD' : 'Local'}
+                        </span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Key className="w-4 h-4 text-blue-400" />
+                        <span className="font-medium text-gray-600">SSO ID:</span>
+                        <span className="text-gray-900 text-sm font-mono">
+                          {userDetails?.azure_object_id || user.ssoId || user.azureObjectId}
+                        </span>
+                      </div>
+                    </>
+                  )}
+                  
+                  {userDetails?.job_title && (
+                    <div className="flex items-center space-x-2">
+                      <User className="w-4 h-4 text-gray-400" />
+                      <span className="font-medium text-gray-600">Job Title:</span>
+                      <span className="text-gray-900">
+                        {userDetails.job_title}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
             </CardContent>
@@ -290,47 +485,33 @@ export default function UserProfile() {
             <CardHeader>
               <CardTitle>Recent Activity</CardTitle>
               <CardDescription>
-                Latest actions and system interactions
+                Latest actions and system interactions from database
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-start space-x-4">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">
-                      Logged in to system
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {new Date().toLocaleString()}
-                    </p>
-                  </div>
+              {loading ? (
+                <div className="text-center py-4 text-gray-500">Loading activity...</div>
+              ) : activityLogs.length === 0 ? (
+                <div className="text-center py-4 text-gray-500">No recent activity found</div>
+              ) : (
+                <div className="space-y-4">
+                  {activityLogs.slice(0, 5).map((activity, index) => (
+                    <div key={activity.id || index} className="flex items-start space-x-4">
+                      <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${getActivityColor(activity.action)}`}></div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-gray-900">
+                          {activity.action} {activity.entity_type}
+                          {activity.entity_name && ` "${activity.entity_name}"`}
+                        </p>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {formatDateTime(activity.timestamp)}
+                          {activity.user_name && ` • by ${activity.user_name}`}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <div className="flex items-start space-x-4">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">
-                      Accessed profile settings
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {new Date(Date.now() - 1000 * 60 * 30).toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-4">
-                  <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">
-                      Updated account information
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {new Date(
-                        Date.now() - 1000 * 60 * 60 * 2,
-                      ).toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-              </div>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -496,44 +677,65 @@ export default function UserProfile() {
             </CardContent>
           </Card>
 
-          {/* Account Statistics */}
+          {/* Account Activity Statistics */}
           <Card>
             <CardHeader>
               <CardTitle>Account Activity</CardTitle>
               <CardDescription>
-                Your account usage and activity metrics
+                Your account usage and activity metrics from database
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div className="flex items-center space-x-2">
-                  <Activity className="w-4 h-4 text-blue-600" />
-                  <span className="text-sm font-medium text-gray-600">
-                    Total Logins
-                  </span>
-                </div>
-                <span className="text-lg font-bold text-gray-900">156</span>
-              </div>
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div className="flex items-center space-x-2">
-                  <Calendar className="w-4 h-4 text-green-600" />
-                  <span className="text-sm font-medium text-gray-600">
-                    Actions This Month
-                  </span>
-                </div>
-                <span className="text-lg font-bold text-gray-900">47</span>
-              </div>
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div className="flex items-center space-x-2">
-                  <Clock className="w-4 h-4 text-purple-600" />
-                  <span className="text-sm font-medium text-gray-600">
-                    Account Age
-                  </span>
-                </div>
-                <span className="text-lg font-bold text-gray-900">
-                  {Math.floor(Math.random() * 365 + 30)} days
-                </span>
-              </div>
+              {loading ? (
+                <div className="text-center py-4 text-gray-500">Loading stats...</div>
+              ) : (
+                <>
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div className="flex items-center space-x-2">
+                      <Activity className="w-4 h-4 text-blue-600" />
+                      <span className="text-sm font-medium text-gray-600">
+                        Total Actions
+                      </span>
+                    </div>
+                    <span className="text-lg font-bold text-gray-900">
+                      {activityStats?.totalActions || 0}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div className="flex items-center space-x-2">
+                      <TrendingUp className="w-4 h-4 text-green-600" />
+                      <span className="text-sm font-medium text-gray-600">
+                        Actions This Month
+                      </span>
+                    </div>
+                    <span className="text-lg font-bold text-gray-900">
+                      {activityStats?.actionsThisMonth || 0}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div className="flex items-center space-x-2">
+                      <BarChart3 className="w-4 h-4 text-purple-600" />
+                      <span className="text-sm font-medium text-gray-600">
+                        Login Count
+                      </span>
+                    </div>
+                    <span className="text-lg font-bold text-gray-900">
+                      {activityStats?.loginCount || 0}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div className="flex items-center space-x-2">
+                      <Clock className="w-4 h-4 text-indigo-600" />
+                      <span className="text-sm font-medium text-gray-600">
+                        Account Age
+                      </span>
+                    </div>
+                    <span className="text-lg font-bold text-gray-900">
+                      {getAccountAge(userDetails?.created_at || new Date().toISOString())}
+                    </span>
+                  </div>
+                </>
+              )}
             </CardContent>
           </Card>
         </div>
