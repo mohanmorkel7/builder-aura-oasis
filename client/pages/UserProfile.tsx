@@ -467,35 +467,6 @@ export default function UserProfile() {
                     </span>
                   </div>
 
-                  {/* SSO Information */}
-                  {(userDetails?.azure_object_id ||
-                    user.ssoId ||
-                    user.azureObjectId) && (
-                    <>
-                      <div className="flex items-center space-x-2">
-                        <Cloud className="w-4 h-4 text-blue-400" />
-                        <span className="font-medium text-gray-600">
-                          SSO Provider:
-                        </span>
-                        <span className="text-gray-900">
-                          {userDetails?.sso_provider === "microsoft"
-                            ? "Microsoft Azure AD"
-                            : "Local"}
-                        </span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Key className="w-4 h-4 text-blue-400" />
-                        <span className="font-medium text-gray-600">
-                          SSO ID:
-                        </span>
-                        <span className="text-gray-900 text-sm font-mono">
-                          {userDetails?.azure_object_id ||
-                            user.ssoId ||
-                            user.azureObjectId}
-                        </span>
-                      </div>
-                    </>
-                  )}
 
                   {userDetails?.job_title && (
                     <div className="flex items-center space-x-2">
