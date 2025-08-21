@@ -350,9 +350,9 @@ export default function UserManagement() {
     const shouldRefresh = sessionStorage.getItem("refreshUserManagement");
     if (shouldRefresh) {
       sessionStorage.removeItem("refreshUserManagement");
-      // Force a page reload to get fresh data
-      window.location.reload();
-      return;
+      // Invalidate and refetch user data instead of full page reload
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      refetchUsers();
     }
 
     testConnection();
