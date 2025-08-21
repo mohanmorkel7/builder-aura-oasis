@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useUser } from "@/hooks/useApi";
+import { apiClient } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -25,53 +26,50 @@ import {
   Activity,
   Clock,
   CheckCircle,
+  Cloud,
+  Key,
+  TrendingUp,
+  BarChart3,
+  Loader2,
 } from "lucide-react";
 
 const roleColors = {
   admin: "bg-red-100 text-red-700",
   sales: "bg-blue-100 text-blue-700",
   product: "bg-green-100 text-green-700",
+  development: "bg-purple-100 text-purple-700",
+  db: "bg-gray-100 text-gray-700",
+  finops: "bg-yellow-100 text-yellow-700",
+  finance: "bg-green-100 text-green-700",
+  hr_management: "bg-pink-100 text-pink-700",
+  infra: "bg-indigo-100 text-indigo-700",
+  switch_team: "bg-orange-100 text-orange-700",
+  backend: "bg-purple-100 text-purple-700",
+  unknown: "bg-gray-100 text-gray-700",
 };
 
 const statusColors = {
   active: "bg-green-100 text-green-700",
   inactive: "bg-gray-100 text-gray-700",
   pending: "bg-yellow-100 text-yellow-700",
+  suspended: "bg-red-100 text-red-700",
 };
 
-// Mock activity data
-const mockRecentActivity = [
-  {
-    id: 1,
-    action: "Logged in to system",
-    timestamp: "2024-01-15T10:30:00Z",
-    details: "Successful login from Chrome browser",
-  },
-  {
-    id: 2,
-    action: "Updated client information",
-    timestamp: "2024-01-15T09:45:00Z",
-    details: "Modified Acme Corp contact details",
-  },
-  {
-    id: 3,
-    action: "Created new template",
-    timestamp: "2024-01-14T16:20:00Z",
-    details: "Enterprise Onboarding Template v2.0",
-  },
-  {
-    id: 4,
-    action: "Completed deployment",
-    timestamp: "2024-01-14T14:15:00Z",
-    details: "Core App v2.1.0 to production",
-  },
-  {
-    id: 5,
-    action: "Added new user",
-    timestamp: "2024-01-13T11:30:00Z",
-    details: "Created account for Sarah Wilson",
-  },
-];
+interface ActivityLog {
+  id: string;
+  action: string;
+  entity_type: string;
+  entity_name?: string;
+  timestamp: string;
+  user_name?: string;
+  details?: string;
+}
+
+interface ActivityStats {
+  totalActions: number;
+  actionsThisMonth: number;
+  loginCount: number;
+}
 
 // Mock permissions data
 const mockPermissions = {
@@ -97,19 +95,128 @@ const mockPermissions = {
     "System Monitoring",
     "Development Tools",
   ],
+  development: [
+    "Technical Development",
+    "Code Repository Access",
+    "API Management",
+    "Testing Tools",
+  ],
+  db: [
+    "Database Administration",
+    "Data Management",
+    "Backup & Recovery",
+    "Query Optimization",
+  ],
+  finops: [
+    "Financial Operations",
+    "Cost Management",
+    "Budget Planning",
+    "Financial Reports",
+  ],
+  finance: [
+    "Financial Management",
+    "Accounting",
+    "Budget Control",
+    "Financial Analytics",
+  ],
+  hr_management: [
+    "Human Resources",
+    "Employee Management",
+    "Recruitment",
+    "Performance Reviews",
+  ],
+  infra: [
+    "Infrastructure Management",
+    "System Monitoring",
+    "Server Administration",
+    "Network Management",
+  ],
+  switch_team: [
+    "Switch Operations",
+    "Integration Management",
+    "System Integration",
+    "Technical Support",
+  ],
+  backend: [
+    "Backend Development",
+    "API Development",
+    "Server Management",
+    "Database Integration",
+  ],
+  unknown: [
+    "Limited Access",
+    "Pending Role Assignment",
+  ],
 };
 
 export default function UserDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-
+  
   // Handle both numeric IDs and string IDs (like azure-1)
   const userId = id && !isNaN(parseInt(id)) ? parseInt(id) : 0;
   const { data: user, isLoading, error } = useUser(userId);
   const [resetError, setResetError] = React.useState<string | null>(null);
+  const [activityLogs, setActivityLogs] = React.useState<ActivityLog[]>([]);
+  const [activityStats, setActivityStats] = React.useState<ActivityStats | null>(null);
+  const [dataLoading, setDataLoading] = React.useState(true);
 
   // If ID is not numeric, show appropriate error
   const isInvalidId = id && isNaN(parseInt(id));
+
+  // Fetch real activity data
+  React.useEffect(() => {
+    const fetchActivityData = async () => {
+      if (!userId || isInvalidId) return;
+      
+      try {
+        setDataLoading(true);
+        
+        // Fetch recent activity logs
+        const activityResponse = await apiClient.request("/activity-production", {
+          method: "GET",
+          params: new URLSearchParams({
+            limit: "10",
+            user_id: userId.toString(),
+          }),
+        });
+        
+        if (activityResponse?.activity_logs) {
+          setActivityLogs(activityResponse.activity_logs);
+        }
+
+        // Fetch activity statistics
+        const statsResponse = await apiClient.request("/activity-production/stats/summary", {
+          method: "GET",
+          params: new URLSearchParams({
+            days: "30",
+            user_id: userId.toString(),
+          }),
+        });
+        
+        if (statsResponse) {
+          setActivityStats({
+            totalActions: statsResponse.total_count || 0,
+            actionsThisMonth: statsResponse.recent_count || 0,
+            loginCount: statsResponse.login_count || statsResponse.total_count || 0,
+          });
+        }
+
+      } catch (error) {
+        console.error("Error fetching activity data:", error);
+        // Set fallback data if API fails
+        setActivityStats({
+          totalActions: 0,
+          actionsThisMonth: 0,
+          loginCount: 0,
+        });
+      } finally {
+        setDataLoading(false);
+      }
+    };
+
+    fetchActivityData();
+  }, [userId, isInvalidId]);
 
   const resetPassword = async () => {
     if (!id) return;
@@ -146,10 +253,52 @@ export default function UserDetails() {
     navigate(`/admin/users/${id}/edit`);
   };
 
+  const formatDateTime = (dateString: string) => {
+    try {
+      return new Date(dateString).toLocaleString();
+    } catch {
+      return "N/A";
+    }
+  };
+
+  const getAccountAge = (createdAt: string) => {
+    try {
+      const created = new Date(createdAt);
+      const now = new Date();
+      const diffTime = Math.abs(now.getTime() - created.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return `${diffDays} days`;
+    } catch {
+      return "N/A";
+    }
+  };
+
+  const getActivityColor = (action: string) => {
+    switch (action.toLowerCase()) {
+      case 'login':
+      case 'logged in':
+        return 'bg-green-500';
+      case 'create':
+      case 'created':
+        return 'bg-blue-500';
+      case 'update':
+      case 'updated':
+        return 'bg-yellow-500';
+      case 'delete':
+      case 'deleted':
+        return 'bg-red-500';
+      default:
+        return 'bg-gray-400';
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="p-6">
-        <div className="text-center">Loading user details...</div>
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" />
+          Loading user details...
+        </div>
       </div>
     );
   }
@@ -194,7 +343,7 @@ export default function UserDetails() {
   }
 
   const userData = user as any;
-  const userPermissions = mockPermissions[userData.role] || [];
+  const userPermissions = mockPermissions[userData.role] || mockPermissions.unknown;
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
@@ -233,15 +382,15 @@ export default function UserDetails() {
             <CardHeader>
               <CardTitle>User Profile</CardTitle>
               <CardDescription>
-                Basic user information and contact details
+                Basic user information and authentication details
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex items-start space-x-6 mb-6">
                 <Avatar className="w-20 h-20">
                   <AvatarFallback className="text-xl bg-primary text-white">
-                    {userData.first_name[0]}
-                    {userData.last_name[0]}
+                    {userData.first_name?.[0] || 'U'}
+                    {userData.last_name?.[0] || 'U'}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
@@ -249,13 +398,13 @@ export default function UserDetails() {
                     {userData.first_name} {userData.last_name}
                   </h3>
                   <div className="flex items-center space-x-4 mt-2">
-                    <Badge className={roleColors[userData.role]}>
+                    <Badge className={roleColors[userData.role] || roleColors.unknown}>
                       {userData.role.charAt(0).toUpperCase() +
                         userData.role.slice(1)}
                     </Badge>
-                    <Badge className={statusColors[userData.status]}>
-                      {userData.status.charAt(0).toUpperCase() +
-                        userData.status.slice(1)}
+                    <Badge className={statusColors[userData.status] || statusColors.active}>
+                      {userData.status?.charAt(0).toUpperCase() +
+                        userData.status?.slice(1) || 'Active'}
                     </Badge>
                   </div>
                 </div>
@@ -289,6 +438,17 @@ export default function UserDetails() {
                       {userData.department || "Not specified"}
                     </span>
                   </div>
+                  
+                  {/* Job Title */}
+                  {userData.job_title && (
+                    <div className="flex items-center space-x-2">
+                      <User className="w-4 h-4 text-gray-400" />
+                      <span className="font-medium text-gray-600">Job Title:</span>
+                      <span className="text-gray-900">
+                        {userData.job_title}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="space-y-4">
@@ -310,7 +470,7 @@ export default function UserDetails() {
                     </span>
                     <span className="text-gray-900">
                       {userData.last_login
-                        ? new Date(userData.last_login).toLocaleString()
+                        ? formatDateTime(userData.last_login)
                         : "Never"}
                     </span>
                   </div>
@@ -321,6 +481,28 @@ export default function UserDetails() {
                       {userData.two_factor_enabled ? "Enabled" : "Disabled"}
                     </span>
                   </div>
+                  
+                  {/* SSO Information */}
+                  {(userData.azure_object_id || userData.sso_provider) && (
+                    <>
+                      <div className="flex items-center space-x-2">
+                        <Cloud className="w-4 h-4 text-blue-400" />
+                        <span className="font-medium text-gray-600">SSO Provider:</span>
+                        <span className="text-gray-900">
+                          {userData.sso_provider === 'microsoft' ? 'Microsoft Azure AD' : userData.sso_provider || 'Local'}
+                        </span>
+                      </div>
+                      {userData.azure_object_id && (
+                        <div className="flex items-center space-x-2">
+                          <Key className="w-4 h-4 text-blue-400" />
+                          <span className="font-medium text-gray-600">SSO ID:</span>
+                          <span className="text-gray-900 text-xs font-mono bg-gray-100 px-2 py-1 rounded">
+                            {userData.azure_object_id}
+                          </span>
+                        </div>
+                      )}
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -343,31 +525,46 @@ export default function UserDetails() {
             <CardHeader>
               <CardTitle>Recent Activity</CardTitle>
               <CardDescription>
-                Latest user actions and system interactions
+                Latest user actions and system interactions from database
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {mockRecentActivity.map((activity) => (
-                  <div
-                    key={activity.id}
-                    className="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg"
-                  >
-                    <div className="w-2 h-2 bg-primary rounded-full mt-2"></div>
-                    <div className="flex-1">
-                      <p className="font-medium text-gray-900">
-                        {activity.action}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        {activity.details}
-                      </p>
-                      <p className="text-xs text-gray-400 mt-1">
-                        {new Date(activity.timestamp).toLocaleString()}
-                      </p>
+              {dataLoading ? (
+                <div className="text-center py-8">
+                  <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2" />
+                  <p className="text-gray-500">Loading activity data...</p>
+                </div>
+              ) : activityLogs.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  No recent activity found for this user
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {activityLogs.slice(0, 6).map((activity, index) => (
+                    <div
+                      key={activity.id || index}
+                      className="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg"
+                    >
+                      <div className={`w-2 h-2 rounded-full mt-2 ${getActivityColor(activity.action)}`}></div>
+                      <div className="flex-1">
+                        <p className="font-medium text-gray-900">
+                          {activity.action} {activity.entity_type}
+                          {activity.entity_name && ` "${activity.entity_name}"`}
+                        </p>
+                        {activity.details && (
+                          <p className="text-sm text-gray-600">
+                            {activity.details}
+                          </p>
+                        )}
+                        <p className="text-xs text-gray-400 mt-1">
+                          {formatDateTime(activity.timestamp)}
+                          {activity.user_name && ` • by ${activity.user_name}`}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -399,36 +596,63 @@ export default function UserDetails() {
             <CardHeader>
               <CardTitle>User Statistics</CardTitle>
               <CardDescription>
-                Activity and performance metrics
+                Real-time activity and performance metrics from database
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-600">
-                  Total Logins
-                </span>
-                <span className="text-lg font-bold text-gray-900">142</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-600">
-                  Actions This Month
-                </span>
-                <span className="text-lg font-bold text-gray-900">28</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-600">
-                  Account Age
-                </span>
-                <span className="text-lg font-bold text-gray-900">
-                  {userData.created_at
-                    ? Math.floor(
-                        (Date.now() - new Date(userData.created_at).getTime()) /
-                          (1000 * 60 * 60 * 24),
-                      )
-                    : 0}{" "}
-                  days
-                </span>
-              </div>
+              {dataLoading ? (
+                <div className="text-center py-4">
+                  <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2" />
+                  <p className="text-gray-500 text-sm">Loading statistics...</p>
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div className="flex items-center space-x-2">
+                      <Activity className="w-4 h-4 text-blue-600" />
+                      <span className="text-sm font-medium text-gray-600">
+                        Total Actions
+                      </span>
+                    </div>
+                    <span className="text-lg font-bold text-gray-900">
+                      {activityStats?.totalActions || 0}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div className="flex items-center space-x-2">
+                      <TrendingUp className="w-4 h-4 text-green-600" />
+                      <span className="text-sm font-medium text-gray-600">
+                        Actions This Month
+                      </span>
+                    </div>
+                    <span className="text-lg font-bold text-gray-900">
+                      {activityStats?.actionsThisMonth || 0}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div className="flex items-center space-x-2">
+                      <BarChart3 className="w-4 h-4 text-purple-600" />
+                      <span className="text-sm font-medium text-gray-600">
+                        Login Count
+                      </span>
+                    </div>
+                    <span className="text-lg font-bold text-gray-900">
+                      {activityStats?.loginCount || 0}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div className="flex items-center space-x-2">
+                      <Clock className="w-4 h-4 text-indigo-600" />
+                      <span className="text-sm font-medium text-gray-600">
+                        Account Age
+                      </span>
+                    </div>
+                    <span className="text-lg font-bold text-gray-900">
+                      {getAccountAge(userData.created_at)}
+                    </span>
+                  </div>
+                </>
+              )}
             </CardContent>
           </Card>
 
