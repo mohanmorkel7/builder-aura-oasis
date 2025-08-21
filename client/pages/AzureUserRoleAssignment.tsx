@@ -986,6 +986,9 @@ export default function AzureUserRoleAssignment() {
         `Successfully updated ${roleCount} user roles, ${departmentCount} user departments, and ${statusCount} user statuses`,
       );
 
+      // Set flag to refresh UserManagement page when returning
+      sessionStorage.setItem("refreshUserManagement", "true");
+
       // Refresh the list
       await fetchUnknownUsers();
     } catch (error) {
