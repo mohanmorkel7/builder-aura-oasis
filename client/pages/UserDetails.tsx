@@ -466,9 +466,9 @@ export default function UserDetails() {
                   )}
                 </div>
 
-                {/* SSO Information - Outside of space-y-4 div */}
+                {/* SSO Information - Outside of space-y-4 div with space-y-8 mt-6 */}
                 {(userData.azure_object_id || userData.sso_provider) && (
-                  <div className="space-y-8 mt-6">
+                  <div className="space-y-4 mt-8">
                     <div className="flex items-center space-x-2">
                       <Cloud className="w-4 h-4 text-blue-400" />
                       <span className="font-medium text-gray-600">
