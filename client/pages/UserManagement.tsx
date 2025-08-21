@@ -235,7 +235,8 @@ UserRow.displayName = "UserRow";
 
 export default function UserManagement() {
   const navigate = useNavigate();
-  const { data: localUsers = [] } = useUsers();
+  const queryClient = useQueryClient();
+  const { data: localUsers = [], refetch: refetchUsers } = useUsers();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRole, setSelectedRole] = useState<string>("all");
   const [selectedDepartment, setSelectedDepartment] = useState<string>("all");
