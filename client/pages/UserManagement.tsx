@@ -477,7 +477,7 @@ export default function UserManagement() {
       const result = await azureSilentAuth.syncUsersFromAzure();
 
       if (result.success) {
-        const message = `✅ Azure AD sync completed successfully!\n\nStats:\n- Total users: ${result.stats.total}\n- New users: ${result.stats.inserted}\n- Updated users: ${result.stats.updated}\n- Skipped users: ${result.stats.skipped}\n\nJSON file saved: ${result.jsonFile}`;
+        const message = `�� Azure AD sync completed successfully!\n\nStats:\n- Total users: ${result.stats.total}\n- New users: ${result.stats.inserted}\n- Updated users: ${result.stats.updated}\n- Skipped users: ${result.stats.skipped}\n\nJSON file saved: ${result.jsonFile}`;
 
         console.log(message);
 
@@ -628,11 +628,19 @@ export default function UserManagement() {
 
           <Button
             variant="outline"
-            onClick={() => navigate("/admin/users/azure-role-assignment")}
+            onClick={() => {
+              // Set a flag to refresh data when we return
+              sessionStorage.setItem("returnToUserManagement", "true");
+              navigate("/admin/users/azure-role-assignment");
+            }}
             className="text-orange-600 border-orange-200 hover:bg-orange-50"
           >
             <Settings className="w-4 h-4 mr-2" />
             Assign Roles
+          </Button>
+          <Button variant="outline" onClick={handleManualRefresh}>
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Refresh
           </Button>
           <Button variant="outline" onClick={handleExportUsers}>
             <Download className="w-4 h-4 mr-2" />
