@@ -143,22 +143,20 @@ const mockPermissions = {
     "Server Management",
     "Database Integration",
   ],
-  unknown: [
-    "Limited Access",
-    "Pending Role Assignment",
-  ],
+  unknown: ["Limited Access", "Pending Role Assignment"],
 };
 
 export default function UserDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  
+
   // Handle both numeric IDs and string IDs (like azure-1)
   const userId = id && !isNaN(parseInt(id)) ? parseInt(id) : 0;
   const { data: user, isLoading, error } = useUser(userId);
   const [resetError, setResetError] = React.useState<string | null>(null);
   const [activityLogs, setActivityLogs] = React.useState<ActivityLog[]>([]);
-  const [activityStats, setActivityStats] = React.useState<ActivityStats | null>(null);
+  const [activityStats, setActivityStats] =
+    React.useState<ActivityStats | null>(null);
   const [dataLoading, setDataLoading] = React.useState(true);
 
   // If ID is not numeric, show appropriate error
@@ -168,40 +166,46 @@ export default function UserDetails() {
   React.useEffect(() => {
     const fetchActivityData = async () => {
       if (!userId || isInvalidId) return;
-      
+
       try {
         setDataLoading(true);
-        
+
         // Fetch recent activity logs
-        const activityResponse = await apiClient.request("/activity-production", {
-          method: "GET",
-          params: new URLSearchParams({
-            limit: "10",
-            user_id: userId.toString(),
-          }),
-        });
-        
+        const activityResponse = await apiClient.request(
+          "/activity-production",
+          {
+            method: "GET",
+            params: new URLSearchParams({
+              limit: "10",
+              user_id: userId.toString(),
+            }),
+          },
+        );
+
         if (activityResponse?.activity_logs) {
           setActivityLogs(activityResponse.activity_logs);
         }
 
         // Fetch activity statistics
-        const statsResponse = await apiClient.request("/activity-production/stats/summary", {
-          method: "GET",
-          params: new URLSearchParams({
-            days: "30",
-            user_id: userId.toString(),
-          }),
-        });
-        
+        const statsResponse = await apiClient.request(
+          "/activity-production/stats/summary",
+          {
+            method: "GET",
+            params: new URLSearchParams({
+              days: "30",
+              user_id: userId.toString(),
+            }),
+          },
+        );
+
         if (statsResponse) {
           setActivityStats({
             totalActions: statsResponse.total_count || 0,
             actionsThisMonth: statsResponse.recent_count || 0,
-            loginCount: statsResponse.login_count || statsResponse.total_count || 0,
+            loginCount:
+              statsResponse.login_count || statsResponse.total_count || 0,
           });
         }
-
       } catch (error) {
         console.error("Error fetching activity data:", error);
         // Set fallback data if API fails
@@ -275,20 +279,20 @@ export default function UserDetails() {
 
   const getActivityColor = (action: string) => {
     switch (action.toLowerCase()) {
-      case 'login':
-      case 'logged in':
-        return 'bg-green-500';
-      case 'create':
-      case 'created':
-        return 'bg-blue-500';
-      case 'update':
-      case 'updated':
-        return 'bg-yellow-500';
-      case 'delete':
-      case 'deleted':
-        return 'bg-red-500';
+      case "login":
+      case "logged in":
+        return "bg-green-500";
+      case "create":
+      case "created":
+        return "bg-blue-500";
+      case "update":
+      case "updated":
+        return "bg-yellow-500";
+      case "delete":
+      case "deleted":
+        return "bg-red-500";
       default:
-        return 'bg-gray-400';
+        return "bg-gray-400";
     }
   };
 
@@ -343,7 +347,8 @@ export default function UserDetails() {
   }
 
   const userData = user as any;
-  const userPermissions = mockPermissions[userData.role] || mockPermissions.unknown;
+  const userPermissions =
+    mockPermissions[userData.role] || mockPermissions.unknown;
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
@@ -389,8 +394,8 @@ export default function UserDetails() {
               <div className="flex items-start space-x-6 mb-6">
                 <Avatar className="w-20 h-20">
                   <AvatarFallback className="text-xl bg-primary text-white">
-                    {userData.first_name?.[0] || 'U'}
-                    {userData.last_name?.[0] || 'U'}
+                    {userData.first_name?.[0] || "U"}
+                    {userData.last_name?.[0] || "U"}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
@@ -398,13 +403,21 @@ export default function UserDetails() {
                     {userData.first_name} {userData.last_name}
                   </h3>
                   <div className="flex items-center space-x-4 mt-2">
-                    <Badge className={roleColors[userData.role] || roleColors.unknown}>
+                    <Badge
+                      className={
+                        roleColors[userData.role] || roleColors.unknown
+                      }
+                    >
                       {userData.role.charAt(0).toUpperCase() +
                         userData.role.slice(1)}
                     </Badge>
-                    <Badge className={statusColors[userData.status] || statusColors.active}>
+                    <Badge
+                      className={
+                        statusColors[userData.status] || statusColors.active
+                      }
+                    >
                       {userData.status?.charAt(0).toUpperCase() +
-                        userData.status?.slice(1) || 'Active'}
+                        userData.status?.slice(1) || "Active"}
                     </Badge>
                   </div>
                 </div>
@@ -438,12 +451,14 @@ export default function UserDetails() {
                       {userData.department || "Not specified"}
                     </span>
                   </div>
-                  
+
                   {/* Job Title */}
                   {userData.job_title && (
                     <div className="flex items-center space-x-2">
                       <User className="w-4 h-4 text-gray-400" />
-                      <span className="font-medium text-gray-600">Job Title:</span>
+                      <span className="font-medium text-gray-600">
+                        Job Title:
+                      </span>
                       <span className="text-gray-900">
                         {userData.job_title}
                       </span>
@@ -481,21 +496,27 @@ export default function UserDetails() {
                       {userData.two_factor_enabled ? "Enabled" : "Disabled"}
                     </span>
                   </div>
-                  
+
                   {/* SSO Information */}
                   {(userData.azure_object_id || userData.sso_provider) && (
                     <>
                       <div className="flex items-center space-x-2">
                         <Cloud className="w-4 h-4 text-blue-400" />
-                        <span className="font-medium text-gray-600">SSO Provider:</span>
+                        <span className="font-medium text-gray-600">
+                          SSO Provider:
+                        </span>
                         <span className="text-gray-900">
-                          {userData.sso_provider === 'microsoft' ? 'Microsoft Azure AD' : userData.sso_provider || 'Local'}
+                          {userData.sso_provider === "microsoft"
+                            ? "Microsoft Azure AD"
+                            : userData.sso_provider || "Local"}
                         </span>
                       </div>
                       {userData.azure_object_id && (
                         <div className="flex items-center space-x-2">
                           <Key className="w-4 h-4 text-blue-400" />
-                          <span className="font-medium text-gray-600">SSO ID:</span>
+                          <span className="font-medium text-gray-600">
+                            SSO ID:
+                          </span>
                           <span className="text-gray-900 text-xs font-mono bg-gray-100 px-2 py-1 rounded">
                             {userData.azure_object_id}
                           </span>
@@ -545,7 +566,9 @@ export default function UserDetails() {
                       key={activity.id || index}
                       className="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg"
                     >
-                      <div className={`w-2 h-2 rounded-full mt-2 ${getActivityColor(activity.action)}`}></div>
+                      <div
+                        className={`w-2 h-2 rounded-full mt-2 ${getActivityColor(activity.action)}`}
+                      ></div>
                       <div className="flex-1">
                         <p className="font-medium text-gray-900">
                           {activity.action} {activity.entity_type}
