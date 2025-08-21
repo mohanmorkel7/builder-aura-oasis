@@ -515,7 +515,9 @@ export default function UserDetails() {
                         <div className="flex items-start space-x-2">
                           <Key className="w-4 h-4 text-blue-400 mt-0.5" />
                           <div className="flex-1 min-w-0">
-                            <span className="font-medium text-gray-600">SSO ID:</span>
+                            <span className="font-medium text-gray-600">
+                              SSO ID:
+                            </span>
                             <div className="mt-1">
                               <span className="text-gray-900 text-xs font-mono bg-gray-100 px-2 py-1 rounded block break-all whitespace-pre-wrap">
                                 {userData.azure_object_id}
