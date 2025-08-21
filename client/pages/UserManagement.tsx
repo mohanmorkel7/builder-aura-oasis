@@ -585,6 +585,12 @@ export default function UserManagement() {
     [navigate],
   );
 
+  const handleManualRefresh = useCallback(async () => {
+    // Invalidate all user-related queries and refetch
+    queryClient.invalidateQueries({ queryKey: ["users"] });
+    await refetchUsers();
+  }, [queryClient, refetchUsers]);
+
   const handlePageChange = useCallback((page: number) => {
     setCurrentPage(page);
   }, []);
