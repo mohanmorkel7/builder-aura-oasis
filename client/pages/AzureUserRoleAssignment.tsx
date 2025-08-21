@@ -284,7 +284,7 @@ const UserAssignmentRow = React.memo(
                 disabled={isInactive}
               >
                 <SelectTrigger className="w-52">
-                <SelectValue placeholder="Select role..." />
+                  <SelectValue placeholder="Select role..." />
                 </SelectTrigger>
                 <SelectContent>
                   {validRoles.map((role) => (
@@ -309,7 +309,10 @@ const UserAssignmentRow = React.memo(
           )}
         </TableCell>
         <TableCell>
-          <div className="text-sm text-gray-600 truncate max-w-32" title={user.job_title || "N/A"}>
+          <div
+            className="text-sm text-gray-600 truncate max-w-32"
+            title={user.job_title || "N/A"}
+          >
             {user.job_title || "N/A"}
           </div>
         </TableCell>
@@ -349,7 +352,10 @@ const UserAssignmentRow = React.memo(
           </div>
         </TableCell>
         <TableCell>
-          <div className="text-sm text-gray-600 truncate max-w-32" title={user.last_login ? formatDate(user.last_login) : "Never"}>
+          <div
+            className="text-sm text-gray-600 truncate max-w-32"
+            title={user.last_login ? formatDate(user.last_login) : "Never"}
+          >
             {user.last_login ? formatDate(user.last_login) : "Never"}
           </div>
         </TableCell>
