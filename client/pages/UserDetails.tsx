@@ -466,36 +466,6 @@ export default function UserDetails() {
                   )}
                 </div>
 
-                {/* SSO Information - Outside of space-y-4 div with space-y-8 mt-6 */}
-                {(userData.azure_object_id || userData.sso_provider) && (
-                  <div className="space-y-4 mt-8">
-                    <div className="flex items-center space-x-2">
-                      <Cloud className="w-4 h-4 text-blue-400" />
-                      <span className="font-medium text-gray-600">
-                        SSO Provider:
-                      </span>
-                      <span className="text-gray-900">
-                        {userData.sso_provider === "microsoft"
-                          ? "Microsoft Azure AD"
-                          : userData.sso_provider || "Local"}
-                      </span>
-                    </div>
-                    {userData.azure_object_id && (
-                      <div>
-                        <div className="flex items-center space-x-2 mb-1">
-                          <Key className="w-4 h-4 text-blue-400" />
-                          <span className="font-medium text-gray-600">
-                            SSO ID:
-                          </span>
-                        </div>
-                        <div className="text-gray-900 text-xs font-mono bg-gray-100 px-3 py-2 rounded break-all w-full">
-                          {userData.azure_object_id}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-
                 <div className="space-y-4">
                   <div className="flex items-center space-x-2">
                     <Calendar className="w-4 h-4 text-gray-400" />
