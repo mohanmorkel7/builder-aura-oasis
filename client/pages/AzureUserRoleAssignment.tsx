@@ -1043,7 +1043,14 @@ export default function AzureUserRoleAssignment() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div className="flex items-center space-x-4">
-          <Button variant="ghost" onClick={() => navigate("/admin/users")}>
+          <Button
+            variant="ghost"
+            onClick={() => {
+              // Set flag to refresh UserManagement data when we return
+              sessionStorage.setItem("refreshUserManagement", "true");
+              navigate("/admin/users");
+            }}
+          >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to User Management
           </Button>
