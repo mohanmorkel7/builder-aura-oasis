@@ -102,7 +102,9 @@ export default function UserProfile() {
   const { user } = useAuth();
   const [userDetails, setUserDetails] = useState<UserData | null>(null);
   const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
-  const [activityStats, setActivityStats] = useState<ActivityStats | null>(null);
+  const [activityStats, setActivityStats] = useState<ActivityStats | null>(
+    null,
+  );
   const [loading, setLoading] = useState(true);
   const [changePasswordOpen, setChangePasswordOpen] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
@@ -123,10 +125,10 @@ export default function UserProfile() {
   useEffect(() => {
     const fetchUserData = async () => {
       if (!user?.id) return;
-      
+
       try {
         setLoading(true);
-        
+
         // Fetch detailed user info from database
         const userResponse = await apiClient.request(`/users/${user.id}`, {
           method: "GET",
@@ -134,37 +136,43 @@ export default function UserProfile() {
         setUserDetails(userResponse);
 
         // Fetch recent activity logs
-        const activityResponse = await apiClient.request("/activity-production", {
-          method: "GET",
-          params: new URLSearchParams({
-            limit: "10",
-            user_id: user.id.toString(),
-          }),
-        });
-        
+        const activityResponse = await apiClient.request(
+          "/activity-production",
+          {
+            method: "GET",
+            params: new URLSearchParams({
+              limit: "10",
+              user_id: user.id.toString(),
+            }),
+          },
+        );
+
         if (activityResponse?.activity_logs) {
           setActivityLogs(activityResponse.activity_logs);
         }
 
         // Fetch activity statistics
-        const statsResponse = await apiClient.request("/activity-production/stats/summary", {
-          method: "GET",
-          params: new URLSearchParams({
-            days: "30",
-            user_id: user.id.toString(),
-          }),
-        });
-        
+        const statsResponse = await apiClient.request(
+          "/activity-production/stats/summary",
+          {
+            method: "GET",
+            params: new URLSearchParams({
+              days: "30",
+              user_id: user.id.toString(),
+            }),
+          },
+        );
+
         if (statsResponse) {
           setActivityStats({
             totalActions: statsResponse.total_count || 0,
             actionsThisMonth: statsResponse.recent_count || 0,
             lastLoginDate: userResponse?.last_login || new Date().toISOString(),
-            accountCreatedDate: userResponse?.created_at || new Date().toISOString(),
+            accountCreatedDate:
+              userResponse?.created_at || new Date().toISOString(),
             loginCount: statsResponse.total_count || 0,
           });
         }
-
       } catch (error) {
         console.error("Error fetching user data:", error);
         // Set fallback data if API fails
@@ -299,20 +307,20 @@ export default function UserProfile() {
 
   const getActivityColor = (action: string) => {
     switch (action.toLowerCase()) {
-      case 'login':
-      case 'logged in':
-        return 'bg-green-500';
-      case 'create':
-      case 'created':
-        return 'bg-blue-500';
-      case 'update':
-      case 'updated':
-        return 'bg-yellow-500';
-      case 'delete':
-      case 'deleted':
-        return 'bg-red-500';
+      case "login":
+      case "logged in":
+        return "bg-green-500";
+      case "create":
+      case "created":
+        return "bg-blue-500";
+      case "update":
+      case "updated":
+        return "bg-yellow-500";
+      case "delete":
+      case "deleted":
+        return "bg-red-500";
       default:
-        return 'bg-gray-400';
+        return "bg-gray-400";
     }
   };
 
@@ -343,10 +351,10 @@ export default function UserProfile() {
           </Badge>
           <Badge
             variant="outline"
-            className={`text-xs ${statusColors[userDetails?.status as keyof typeof statusColors] || 'bg-green-100 text-green-700'}`}
+            className={`text-xs ${statusColors[userDetails?.status as keyof typeof statusColors] || "bg-green-100 text-green-700"}`}
           >
             <CheckCircle className="w-3 h-3 mr-1" />
-            {userDetails?.status || 'Active'}
+            {userDetails?.status || "Active"}
           </Badge>
         </div>
       </div>
@@ -379,13 +387,20 @@ export default function UserProfile() {
                   <div className="flex items-center space-x-4 mt-2">
                     <Badge
                       className={
-                        roleColors[user.role as keyof typeof roleColors] || "bg-gray-100 text-gray-700"
+                        roleColors[user.role as keyof typeof roleColors] ||
+                        "bg-gray-100 text-gray-700"
                       }
                     >
                       {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
                     </Badge>
-                    <Badge className={statusColors[userDetails?.status as keyof typeof statusColors] || "bg-green-100 text-green-700"}>
-                      {userDetails?.status || 'Active'}
+                    <Badge
+                      className={
+                        statusColors[
+                          userDetails?.status as keyof typeof statusColors
+                        ] || "bg-green-100 text-green-700"
+                      }
+                    >
+                      {userDetails?.status || "Active"}
                     </Badge>
                   </div>
                 </div>
@@ -418,7 +433,9 @@ export default function UserProfile() {
                   {user.department && (
                     <div className="flex items-center space-x-2">
                       <Building className="w-4 h-4 text-gray-400" />
-                      <span className="font-medium text-gray-600">Department:</span>
+                      <span className="font-medium text-gray-600">
+                        Department:
+                      </span>
                       <span className="text-gray-900 capitalize">
                         {user.department}
                       </span>
@@ -433,7 +450,9 @@ export default function UserProfile() {
                       Member Since:
                     </span>
                     <span className="text-gray-900">
-                      {formatDate(userDetails?.created_at || new Date().toISOString())}
+                      {formatDate(
+                        userDetails?.created_at || new Date().toISOString(),
+                      )}
                     </span>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -442,34 +461,48 @@ export default function UserProfile() {
                       Last Login:
                     </span>
                     <span className="text-gray-900">
-                      {formatDateTime(userDetails?.last_login || new Date().toISOString())}
+                      {formatDateTime(
+                        userDetails?.last_login || new Date().toISOString(),
+                      )}
                     </span>
                   </div>
-                  
+
                   {/* SSO Information */}
-                  {(userDetails?.azure_object_id || user.ssoId || user.azureObjectId) && (
+                  {(userDetails?.azure_object_id ||
+                    user.ssoId ||
+                    user.azureObjectId) && (
                     <>
                       <div className="flex items-center space-x-2">
                         <Cloud className="w-4 h-4 text-blue-400" />
-                        <span className="font-medium text-gray-600">SSO Provider:</span>
+                        <span className="font-medium text-gray-600">
+                          SSO Provider:
+                        </span>
                         <span className="text-gray-900">
-                          {userDetails?.sso_provider === 'microsoft' ? 'Microsoft Azure AD' : 'Local'}
+                          {userDetails?.sso_provider === "microsoft"
+                            ? "Microsoft Azure AD"
+                            : "Local"}
                         </span>
                       </div>
                       <div className="flex items-center space-x-2">
                         <Key className="w-4 h-4 text-blue-400" />
-                        <span className="font-medium text-gray-600">SSO ID:</span>
+                        <span className="font-medium text-gray-600">
+                          SSO ID:
+                        </span>
                         <span className="text-gray-900 text-sm font-mono">
-                          {userDetails?.azure_object_id || user.ssoId || user.azureObjectId}
+                          {userDetails?.azure_object_id ||
+                            user.ssoId ||
+                            user.azureObjectId}
                         </span>
                       </div>
                     </>
                   )}
-                  
+
                   {userDetails?.job_title && (
                     <div className="flex items-center space-x-2">
                       <User className="w-4 h-4 text-gray-400" />
-                      <span className="font-medium text-gray-600">Job Title:</span>
+                      <span className="font-medium text-gray-600">
+                        Job Title:
+                      </span>
                       <span className="text-gray-900">
                         {userDetails.job_title}
                       </span>
@@ -490,14 +523,23 @@ export default function UserProfile() {
             </CardHeader>
             <CardContent>
               {loading ? (
-                <div className="text-center py-4 text-gray-500">Loading activity...</div>
+                <div className="text-center py-4 text-gray-500">
+                  Loading activity...
+                </div>
               ) : activityLogs.length === 0 ? (
-                <div className="text-center py-4 text-gray-500">No recent activity found</div>
+                <div className="text-center py-4 text-gray-500">
+                  No recent activity found
+                </div>
               ) : (
                 <div className="space-y-4">
                   {activityLogs.slice(0, 5).map((activity, index) => (
-                    <div key={activity.id || index} className="flex items-start space-x-4">
-                      <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${getActivityColor(activity.action)}`}></div>
+                    <div
+                      key={activity.id || index}
+                      className="flex items-start space-x-4"
+                    >
+                      <div
+                        className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${getActivityColor(activity.action)}`}
+                      ></div>
                       <div className="flex-1">
                         <p className="text-sm font-medium text-gray-900">
                           {activity.action} {activity.entity_type}
@@ -687,7 +729,9 @@ export default function UserProfile() {
             </CardHeader>
             <CardContent className="space-y-4">
               {loading ? (
-                <div className="text-center py-4 text-gray-500">Loading stats...</div>
+                <div className="text-center py-4 text-gray-500">
+                  Loading stats...
+                </div>
               ) : (
                 <>
                   <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
@@ -731,7 +775,9 @@ export default function UserProfile() {
                       </span>
                     </div>
                     <span className="text-lg font-bold text-gray-900">
-                      {getAccountAge(userDetails?.created_at || new Date().toISOString())}
+                      {getAccountAge(
+                        userDetails?.created_at || new Date().toISOString(),
+                      )}
                     </span>
                   </div>
                 </>
