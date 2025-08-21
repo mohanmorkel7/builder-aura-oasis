@@ -524,34 +524,6 @@ export default function UserDetails() {
                       {userData.two_factor_enabled ? "Enabled" : "Disabled"}
                     </span>
                   </div>
-
-                  {/* SSO Information */}
-                  {(userData.azure_object_id || userData.sso_provider) && (
-                    <>
-                      <div className="flex items-center space-x-2">
-                        <Cloud className="w-4 h-4 text-blue-400" />
-                        <span className="font-medium text-gray-600">
-                          SSO Provider:
-                        </span>
-                        <span className="text-gray-900">
-                          {userData.sso_provider === "microsoft"
-                            ? "Microsoft Azure AD"
-                            : userData.sso_provider || "Local"}
-                        </span>
-                      </div>
-                      {userData.azure_object_id && (
-                        <div className="flex items-center space-x-2">
-                          <Key className="w-4 h-4 text-blue-400" />
-                          <span className="font-medium text-gray-600">
-                            SSO ID:
-                          </span>
-                          <span className="text-gray-900 text-xs font-mono bg-gray-100 px-2 py-1 rounded break-all min-w-0">
-                            {userData.azure_object_id}
-                          </span>
-                        </div>
-                      )}
-                    </>
-                  )}
                 </div>
               </div>
 
