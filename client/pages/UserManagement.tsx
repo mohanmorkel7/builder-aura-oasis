@@ -492,14 +492,21 @@ export default function UserManagement() {
     });
   }, [allUsers, searchTerm]);
 
-  // Memoized pagination
-  const paginatedUsers = useMemo(() => {
+  // Memoized pagination with stable calculations
+  const paginationData = useMemo(() => {
+    if (!filteredUsers.length) {
+      return { paginatedUsers: [], totalPages: 0 };
+    }
+
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    return filteredUsers.slice(startIndex, endIndex);
+    const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
+    const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+
+    return { paginatedUsers, totalPages };
   }, [filteredUsers, currentPage, itemsPerPage]);
 
-  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+  const { paginatedUsers, totalPages } = paginationData;
 
   // Reset to first page when filters change
   useEffect(() => {
