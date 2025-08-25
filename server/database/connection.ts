@@ -161,6 +161,21 @@ export async function initializeDatabase() {
       );
     }
 
+    // Always try to apply FinOps clients table migration
+    try {
+      const finopsClientsMigrationPath = path.join(__dirname, "create-finops-clients-table.sql");
+      if (fs.existsSync(finopsClientsMigrationPath)) {
+        const finopsClientsMigration = fs.readFileSync(finopsClientsMigrationPath, "utf8");
+        await client.query(finopsClientsMigration);
+        console.log("FinOps clients table migration applied successfully");
+      }
+    } catch (finopsClientsMigrationError) {
+      console.log(
+        "FinOps clients table migration already applied or error:",
+        finopsClientsMigrationError.message,
+      );
+    }
+
     // await client.query(schema);
     console.log("Database initialized successfully");
     client.release();
