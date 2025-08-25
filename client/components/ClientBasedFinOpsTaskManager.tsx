@@ -1658,9 +1658,6 @@ export default function ClientBasedFinOpsTaskManager() {
                   </Button>
                 </div>
                 <div className="mt-2">
-                  <p className="text-sm text-blue-600">
-                    ✅ FinOps clients are now managed separately from sales leads.
-                  </p>
                   {!clientsLoading && clients.length === 0 && (
                     <div className="mt-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
                       <p className="text-sm text-amber-700 font-medium">
