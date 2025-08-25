@@ -282,6 +282,15 @@ export default function UserManagement() {
 
   // Auto-inactivate users who haven't logged in for more than a week
   const processUsersForInactivity = useCallback(async (users: any[]) => {
+    // Add throttling to prevent excessive processing
+    const lastProcessingTime = localStorage.getItem("auto-inactivation-last-time");
+    const now = Date.now();
+    if (lastProcessingTime && (now - parseInt(lastProcessingTime)) < 60000) {
+      // Don't process more than once per minute
+      return users;
+    }
+    localStorage.setItem("auto-inactivation-last-time", now.toString());
+
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
