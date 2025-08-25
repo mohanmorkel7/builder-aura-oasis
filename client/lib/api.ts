@@ -867,6 +867,35 @@ export class ApiClient {
     });
   }
 
+  // FinOps Clients Management methods
+  async getFinOpsClients() {
+    return this.request("/finops/clients");
+  }
+
+  async createFinOpsClient(clientData: any) {
+    return this.request("/finops/clients", {
+      method: "POST",
+      body: JSON.stringify(clientData),
+    });
+  }
+
+  async updateFinOpsClient(id: number, clientData: any) {
+    return this.request(`/finops/clients/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(clientData),
+    });
+  }
+
+  async deleteFinOpsClient(id: number) {
+    return this.request(`/finops/clients/${id}`, {
+      method: "DELETE",
+    });
+  }
+
+  async getFinOpsClient(id: number) {
+    return this.request(`/finops/clients/${id}`);
+  }
+
   // Lead steps methods
   async getLeadSteps(leadId: number) {
     return this.request(`/leads/${leadId}/steps`);
