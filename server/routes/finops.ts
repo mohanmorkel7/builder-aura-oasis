@@ -1204,6 +1204,229 @@ router.get("/activity-log", async (req: Request, res: Response) => {
   }
 });
 
+// ===== FINOPS CLIENTS MANAGEMENT ROUTES =====
+
+// Get all FinOps clients
+router.get("/clients", async (req: Request, res: Response) => {
+  try {
+    if (await isDatabaseAvailable()) {
+      const result = await pool.query(`
+        SELECT * FROM finops_clients
+        WHERE deleted_at IS NULL
+        ORDER BY company_name ASC
+      `);
+      res.json(result.rows);
+    } else {
+      // Return mock clients for development
+      const mockClients = [
+        {
+          id: 1,
+          company_name: "Acme Corporation",
+          contact_person: "John Smith",
+          email: "john@acme.com",
+          phone: "+1 (555) 123-4567",
+          address: "123 Business St, City, State 12345",
+          notes: "Primary FinOps client for daily clearing operations",
+          created_at: "2024-01-01T00:00:00Z",
+          created_by: 1,
+        },
+        {
+          id: 2,
+          company_name: "TechCorp Solutions",
+          contact_person: "Sarah Johnson",
+          email: "sarah@techcorp.com",
+          phone: "+1 (555) 987-6543",
+          address: "456 Tech Ave, City, State 67890",
+          notes: "Secondary client for weekly reconciliation tasks",
+          created_at: "2024-01-15T00:00:00Z",
+          created_by: 1,
+        },
+      ];
+      console.log("Database unavailable, using mock FinOps clients");
+      res.json(mockClients);
+    }
+  } catch (error) {
+    console.error("Error fetching FinOps clients:", error);
+    res.status(500).json({ error: "Failed to fetch FinOps clients" });
+  }
+});
+
+// Get single FinOps client
+router.get("/clients/:id", async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    if (await isDatabaseAvailable()) {
+      const result = await pool.query(`
+        SELECT * FROM finops_clients
+        WHERE id = $1 AND deleted_at IS NULL
+      `, [id]);
+
+      if (result.rows.length === 0) {
+        return res.status(404).json({ error: "FinOps client not found" });
+      }
+
+      res.json(result.rows[0]);
+    } else {
+      // Return mock client
+      res.json({
+        id: parseInt(id),
+        company_name: "Mock Client",
+        contact_person: "Mock Contact",
+        email: "mock@example.com",
+        phone: "+1 (555) 000-0000",
+        address: "Mock Address",
+        notes: "Mock client for development",
+        created_at: "2024-01-01T00:00:00Z",
+        created_by: 1,
+      });
+    }
+  } catch (error) {
+    console.error("Error fetching FinOps client:", error);
+    res.status(500).json({ error: "Failed to fetch FinOps client" });
+  }
+});
+
+// Create new FinOps client
+router.post("/clients", async (req: Request, res: Response) => {
+  try {
+    const {
+      company_name,
+      contact_person,
+      email,
+      phone,
+      address,
+      notes,
+      created_by,
+    } = req.body;
+
+    if (!company_name) {
+      return res.status(400).json({ error: "Company name is required" });
+    }
+
+    if (await isDatabaseAvailable()) {
+      const result = await pool.query(`
+        INSERT INTO finops_clients (
+          company_name, contact_person, email, phone, address, notes, created_by, created_at
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())
+        RETURNING *
+      `, [company_name, contact_person, email, phone, address, notes, created_by]);
+
+      res.status(201).json(result.rows[0]);
+    } else {
+      // Return mock response
+      const newClient = {
+        id: Date.now(),
+        company_name,
+        contact_person,
+        email,
+        phone,
+        address,
+        notes,
+        created_by,
+        created_at: new Date().toISOString(),
+      };
+      console.log("Database unavailable, returning mock FinOps client creation");
+      res.status(201).json(newClient);
+    }
+  } catch (error) {
+    console.error("Error creating FinOps client:", error);
+    res.status(500).json({ error: "Failed to create FinOps client" });
+  }
+});
+
+// Update FinOps client
+router.put("/clients/:id", async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const {
+      company_name,
+      contact_person,
+      email,
+      phone,
+      address,
+      notes,
+    } = req.body;
+
+    if (!company_name) {
+      return res.status(400).json({ error: "Company name is required" });
+    }
+
+    if (await isDatabaseAvailable()) {
+      const result = await pool.query(`
+        UPDATE finops_clients
+        SET company_name = $1, contact_person = $2, email = $3, phone = $4,
+            address = $5, notes = $6, updated_at = NOW()
+        WHERE id = $7 AND deleted_at IS NULL
+        RETURNING *
+      `, [company_name, contact_person, email, phone, address, notes, id]);
+
+      if (result.rows.length === 0) {
+        return res.status(404).json({ error: "FinOps client not found" });
+      }
+
+      res.json(result.rows[0]);
+    } else {
+      // Return mock response
+      const updatedClient = {
+        id: parseInt(id),
+        company_name,
+        contact_person,
+        email,
+        phone,
+        address,
+        notes,
+        updated_at: new Date().toISOString(),
+      };
+      console.log("Database unavailable, returning mock FinOps client update");
+      res.json(updatedClient);
+    }
+  } catch (error) {
+    console.error("Error updating FinOps client:", error);
+    res.status(500).json({ error: "Failed to update FinOps client" });
+  }
+});
+
+// Delete FinOps client (soft delete)
+router.delete("/clients/:id", async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    if (await isDatabaseAvailable()) {
+      // Check if client has any active tasks
+      const tasksCheck = await pool.query(`
+        SELECT COUNT(*) FROM finops_tasks
+        WHERE client_id = $1 AND is_active = true
+      `, [id]);
+
+      if (parseInt(tasksCheck.rows[0].count) > 0) {
+        return res.status(400).json({
+          error: "Cannot delete client with active tasks. Please deactivate all tasks first."
+        });
+      }
+
+      const result = await pool.query(`
+        UPDATE finops_clients
+        SET deleted_at = NOW()
+        WHERE id = $1 AND deleted_at IS NULL
+        RETURNING id
+      `, [id]);
+
+      if (result.rows.length === 0) {
+        return res.status(404).json({ error: "FinOps client not found" });
+      }
+
+      res.json({ message: "FinOps client deleted successfully" });
+    } else {
+      console.log("Database unavailable, returning mock FinOps client deletion");
+      res.json({ message: "FinOps client deleted successfully" });
+    }
+  } catch (error) {
+    console.error("Error deleting FinOps client:", error);
+    res.status(500).json({ error: "Failed to delete FinOps client" });
+  }
+});
+
 // Dashboard endpoint
 router.get("/dashboard", async (req: Request, res: Response) => {
   try {
