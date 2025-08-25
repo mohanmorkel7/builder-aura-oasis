@@ -443,73 +443,23 @@ export default function ClientBasedFinOpsTaskManager() {
     return () => clearInterval(timer);
   }, []);
 
-  // Fetch clients (from leads)
+  // Fetch FinOps clients (separate from sales leads)
   const {
     data: clients = [],
     isLoading: clientsLoading,
     error: clientsError,
   } = useQuery({
-    queryKey: ["clients"],
+    queryKey: ["finops-clients"],
     queryFn: async () => {
       try {
-        // Try to get from leads API first
-        const leads = await apiClient.getLeads();
-        console.log("Leads data:", leads);
-
-        if (!leads || leads.length === 0) {
-          console.log("No leads found, trying clients API");
-          return await apiClient.getClients();
-        }
-
-        const uniqueClients = leads.reduce((acc: any[], lead: any) => {
-          // Check multiple properties for client/company name
-          const clientName =
-            lead.company_name || lead.client_name || lead.company || lead.name;
-
-          if (clientName && !acc.find((c) => c.company_name === clientName)) {
-            acc.push({
-              id: lead.id,
-              company_name: clientName,
-              client_name: lead.client_name || clientName,
-              // Keep original lead data for reference
-              lead_data: lead,
-            });
-          }
-          return acc;
-        }, []);
-
-        console.log("Processed clients from leads:", uniqueClients);
-        return uniqueClients.length > 0
-          ? uniqueClients
-          : await apiClient.getClients();
+        // Use dedicated FinOps clients API
+        const finopsClients = await apiClient.getFinOpsClients();
+        console.log("FinOps clients data:", finopsClients);
+        return finopsClients;
       } catch (error) {
-        console.error("Error fetching from leads API:", error);
-        // Fallback to clients API
-        try {
-          const clientsData = await apiClient.getClients();
-          console.log("Fallback clients data:", clientsData);
-          return clientsData;
-        } catch (fallbackError) {
-          console.error("Both APIs failed:", fallbackError);
-          // Return mock data for development
-          return [
-            {
-              id: 1,
-              company_name: "Sample Client 1",
-              client_name: "Sample Client 1",
-            },
-            {
-              id: 2,
-              company_name: "Sample Client 2",
-              client_name: "Sample Client 2",
-            },
-            {
-              id: 3,
-              company_name: "Sample Client 3",
-              client_name: "Sample Client 3",
-            },
-          ];
-        }
+        console.error("Error fetching FinOps clients:", error);
+        // Return empty array if API fails
+        return [];
       }
     },
   });
