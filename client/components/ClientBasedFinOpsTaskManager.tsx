@@ -1612,66 +1612,82 @@ export default function ClientBasedFinOpsTaskManager() {
 
               <div>
                 <Label htmlFor="client_id">Client *</Label>
-                <Select
-                  value={taskForm.client_id}
-                  onValueChange={(value) =>
-                    setTaskForm((prev) => ({ ...prev, client_id: value }))
-                  }
-                  required
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select client" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {clientsLoading ? (
-                      <SelectItem value="loading" disabled>
-                        Loading clients...
-                      </SelectItem>
-                    ) : clients.length > 0 ? (
-                      clients.map((client: any) => (
-                        <SelectItem
-                          key={client.id}
-                          value={client.id.toString()}
-                        >
-                          {client.company_name ||
-                            client.client_name ||
-                            `Client ${client.id}`}
+                <div className="flex gap-2">
+                  <Select
+                    value={taskForm.client_id}
+                    onValueChange={(value) =>
+                      setTaskForm((prev) => ({ ...prev, client_id: value }))
+                    }
+                    required
+                  >
+                    <SelectTrigger className="flex-1">
+                      <SelectValue placeholder="Select client" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {clientsLoading ? (
+                        <SelectItem value="loading" disabled>
+                          Loading clients...
                         </SelectItem>
-                      ))
-                    ) : (
-                      <SelectItem value="no-clients" disabled>
-                        No clients available
-                      </SelectItem>
-                    )}
-                  </SelectContent>
-                </Select>
-                {!clientsLoading && clients.length === 0 && (
-                  <div className="mt-2">
-                    <p className="text-sm text-red-600">
-                      No clients found. Clients are automatically loaded from
-                      leads.
+                      ) : clients.length > 0 ? (
+                        clients.map((client: any) => (
+                          <SelectItem
+                            key={client.id}
+                            value={client.id.toString()}
+                          >
+                            {client.company_name ||
+                              client.client_name ||
+                              `Client ${client.id}`}
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <SelectItem value="no-clients" disabled>
+                          No clients available
+                        </SelectItem>
+                      )}
+                    </SelectContent>
+                  </Select>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsAddClientDialogOpen(true)}
+                    className="whitespace-nowrap"
+                  >
+                    <Plus className="w-4 h-4 mr-1" />
+                    Add Client
+                  </Button>
+                </div>
+                <div className="mt-2">
+                  <p className="text-sm text-blue-600">
+                    FinOps clients are managed separately from sales leads.
+                  </p>
+                  {!clientsLoading && clients.length === 0 && (
+                    <p className="text-sm text-amber-600 mt-1">
+                      No FinOps clients found. Click "Add Client" to create your first client.
                     </p>
-                    {clientsError && (
-                      <p className="text-xs text-gray-500 mt-1">
+                  )}
+                  {clientsError && (
+                    <div className="mt-2">
+                      <p className="text-xs text-red-600">
                         Error: {clientsError.message}
                       </p>
-                    )}
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="mt-2"
-                      onClick={() => {
-                        queryClient.invalidateQueries({
-                          queryKey: ["clients"],
-                        });
-                      }}
-                    >
-                      <RefreshCw className="w-3 h-3 mr-1" />
-                      Refresh Clients
-                    </Button>
-                  </div>
-                )}
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="mt-1"
+                        onClick={() => {
+                          queryClient.invalidateQueries({
+                            queryKey: ["finops-clients"],
+                          });
+                        }}
+                      >
+                        <RefreshCw className="w-3 h-3 mr-1" />
+                        Retry
+                      </Button>
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div>
