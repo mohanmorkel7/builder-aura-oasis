@@ -451,8 +451,10 @@ export default function UserManagement() {
     };
   }, [debouncedRefresh]);
 
-  // Memoized filtered users for better performance
+  // Memoized filtered users for better performance - with stable references
   const filteredUsers = useMemo(() => {
+    if (!allUsers.length) return [];
+
     return allUsers.filter((user) => {
       const matchesSearch =
         (user.first_name && user.last_name
