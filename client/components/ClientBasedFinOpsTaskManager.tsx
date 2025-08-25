@@ -1664,8 +1664,8 @@ export default function ClientBasedFinOpsTaskManager() {
                         🎯 No FinOps clients found
                       </p>
                       <p className="text-xs text-amber-600 mt-1">
-                        Create your first FinOps client by clicking "Add Client" above.
-                        These clients are separate from your sales leads.
+                        Create your first FinOps client by clicking "Add Client"
+                        above. These clients are separate from your sales leads.
                       </p>
                     </div>
                   )}
@@ -1728,8 +1728,9 @@ export default function ClientBasedFinOpsTaskManager() {
                   </SelectTrigger>
                   <SelectContent>
                     {users
-                      .filter((user: any, index: number, arr: any[]) =>
-                        arr.findIndex(u => u.id === user.id) === index
+                      .filter(
+                        (user: any, index: number, arr: any[]) =>
+                          arr.findIndex((u) => u.id === user.id) === index,
                       )
                       .map((user: any, index: number) => (
                         <SelectItem
@@ -1815,8 +1816,9 @@ export default function ClientBasedFinOpsTaskManager() {
                     </SelectTrigger>
                     <SelectContent>
                       {users
-                        .filter((user: any, index: number, arr: any[]) =>
-                          arr.findIndex(u => u.id === user.id) === index
+                        .filter(
+                          (user: any, index: number, arr: any[]) =>
+                            arr.findIndex((u) => u.id === user.id) === index,
                         )
                         .map((user: any, index: number) => (
                           <SelectItem
@@ -1831,7 +1833,11 @@ export default function ClientBasedFinOpsTaskManager() {
                 </div>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {taskForm.reporting_managers.map((manager, index) => (
-                    <Badge key={`manager-${manager}-${index}`} variant="secondary" className="gap-1">
+                    <Badge
+                      key={`manager-${manager}-${index}`}
+                      variant="secondary"
+                      className="gap-1"
+                    >
                       {manager}
                       <X
                         className="w-3 h-3 cursor-pointer"
@@ -1874,8 +1880,9 @@ export default function ClientBasedFinOpsTaskManager() {
                     </SelectTrigger>
                     <SelectContent>
                       {users
-                        .filter((user: any, index: number, arr: any[]) =>
-                          arr.findIndex(u => u.id === user.id) === index
+                        .filter(
+                          (user: any, index: number, arr: any[]) =>
+                            arr.findIndex((u) => u.id === user.id) === index,
                         )
                         .map((user: any, index: number) => (
                           <SelectItem
@@ -1890,7 +1897,11 @@ export default function ClientBasedFinOpsTaskManager() {
                 </div>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {taskForm.escalation_managers.map((manager, index) => (
-                    <Badge key={`escalation-${manager}-${index}`} variant="destructive" className="gap-1">
+                    <Badge
+                      key={`escalation-${manager}-${index}`}
+                      variant="destructive"
+                      className="gap-1"
+                    >
                       {manager}
                       <X
                         className="w-3 h-3 cursor-pointer"
@@ -1991,7 +2002,8 @@ export default function ClientBasedFinOpsTaskManager() {
           <DialogHeader>
             <DialogTitle>Add New FinOps Client</DialogTitle>
             <DialogDescription>
-              Create a new client for FinOps task management. This client will be separate from sales leads.
+              Create a new client for FinOps task management. This client will
+              be separate from sales leads.
             </DialogDescription>
           </DialogHeader>
 
