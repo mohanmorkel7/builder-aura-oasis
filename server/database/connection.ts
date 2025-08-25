@@ -129,7 +129,10 @@ export async function initializeDatabase() {
           "migration-add-activity-ip-columns.sql",
         );
         if (fs.existsSync(activityIpMigrationPath)) {
-          const activityIpMigration = fs.readFileSync(activityIpMigrationPath, "utf8");
+          const activityIpMigration = fs.readFileSync(
+            activityIpMigrationPath,
+            "utf8",
+          );
           await client.query(activityIpMigration);
           console.log("Activity log IP columns migration applied successfully");
         }
@@ -181,9 +184,15 @@ export async function initializeDatabase() {
 
     // Always try to apply FinOps clients table migration
     try {
-      const finopsClientsMigrationPath = path.join(__dirname, "create-finops-clients-table.sql");
+      const finopsClientsMigrationPath = path.join(
+        __dirname,
+        "create-finops-clients-table.sql",
+      );
       if (fs.existsSync(finopsClientsMigrationPath)) {
-        const finopsClientsMigration = fs.readFileSync(finopsClientsMigrationPath, "utf8");
+        const finopsClientsMigration = fs.readFileSync(
+          finopsClientsMigrationPath,
+          "utf8",
+        );
         await client.query(finopsClientsMigration);
         console.log("FinOps clients table migration applied successfully");
       }
