@@ -1963,6 +1963,138 @@ export default function ClientBasedFinOpsTaskManager() {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Add Client Dialog */}
+      <Dialog
+        open={isAddClientDialogOpen}
+        onOpenChange={setIsAddClientDialogOpen}
+      >
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Add New FinOps Client</DialogTitle>
+            <DialogDescription>
+              Create a new client for FinOps task management. This client will be separate from sales leads.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleCreateClient} className="space-y-4">
+            <div>
+              <Label htmlFor="company_name">Company Name *</Label>
+              <Input
+                id="company_name"
+                value={newClientForm.company_name}
+                onChange={(e) =>
+                  setNewClientForm((prev) => ({
+                    ...prev,
+                    company_name: e.target.value,
+                  }))
+                }
+                placeholder="e.g., Acme Corporation"
+                required
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="contact_person">Contact Person</Label>
+              <Input
+                id="contact_person"
+                value={newClientForm.contact_person}
+                onChange={(e) =>
+                  setNewClientForm((prev) => ({
+                    ...prev,
+                    contact_person: e.target.value,
+                  }))
+                }
+                placeholder="e.g., John Smith"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={newClientForm.email}
+                onChange={(e) =>
+                  setNewClientForm((prev) => ({
+                    ...prev,
+                    email: e.target.value,
+                  }))
+                }
+                placeholder="e.g., contact@acme.com"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="phone">Phone</Label>
+              <Input
+                id="phone"
+                value={newClientForm.phone}
+                onChange={(e) =>
+                  setNewClientForm((prev) => ({
+                    ...prev,
+                    phone: e.target.value,
+                  }))
+                }
+                placeholder="e.g., +1 (555) 123-4567"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="address">Address</Label>
+              <Textarea
+                id="address"
+                value={newClientForm.address}
+                onChange={(e) =>
+                  setNewClientForm((prev) => ({
+                    ...prev,
+                    address: e.target.value,
+                  }))
+                }
+                placeholder="Client address..."
+                rows={2}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="notes">Notes</Label>
+              <Textarea
+                id="notes"
+                value={newClientForm.notes}
+                onChange={(e) =>
+                  setNewClientForm((prev) => ({
+                    ...prev,
+                    notes: e.target.value,
+                  }))
+                }
+                placeholder="Additional notes about the client..."
+                rows={2}
+              />
+            </div>
+
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsAddClientDialogOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={createFinOpsClientMutation.isPending}
+              >
+                {createFinOpsClientMutation.isPending ? (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                ) : (
+                  <Plus className="w-4 h-4 mr-2" />
+                )}
+                Add Client
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
