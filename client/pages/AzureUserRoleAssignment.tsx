@@ -408,6 +408,25 @@ export default function AzureUserRoleAssignment() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
+  // Suppress ResizeObserver errors globally for this component
+  useEffect(() => {
+    const handleResizeObserverError = (e: ErrorEvent) => {
+      if (e.error?.message?.includes('ResizeObserver loop completed with undelivered notifications')) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        console.warn('ResizeObserver loop detected and suppressed in Azure User Role Assignment');
+        return true;
+      }
+      return false;
+    };
+
+    window.addEventListener('error', handleResizeObserverError);
+
+    return () => {
+      window.removeEventListener('error', handleResizeObserverError);
+    };
+  }, []);
+
   const validRoles = [
     {
       value: "admin",
