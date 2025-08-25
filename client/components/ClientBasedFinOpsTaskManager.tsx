@@ -1823,7 +1823,7 @@ export default function ClientBasedFinOpsTaskManager() {
                 </div>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {taskForm.reporting_managers.map((manager, index) => (
-                    <Badge key={index} variant="secondary" className="gap-1">
+                    <Badge key={`manager-${manager}-${index}`} variant="secondary" className="gap-1">
                       {manager}
                       <X
                         className="w-3 h-3 cursor-pointer"
@@ -1878,7 +1878,7 @@ export default function ClientBasedFinOpsTaskManager() {
                 </div>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {taskForm.escalation_managers.map((manager, index) => (
-                    <Badge key={index} variant="destructive" className="gap-1">
+                    <Badge key={`escalation-${manager}-${index}`} variant="destructive" className="gap-1">
                       {manager}
                       <X
                         className="w-3 h-3 cursor-pointer"
