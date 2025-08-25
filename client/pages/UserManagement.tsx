@@ -345,10 +345,16 @@ export default function UserManagement() {
   // State for processed users
   const [allUsers, setAllUsers] = useState<any[]>([]);
 
-  // Process users for inactivity when localUsers changes
+  // Process users for inactivity when localUsers changes - debounced to prevent rapid updates
   useEffect(() => {
     if (localUsers?.length > 0) {
-      processUsersForInactivity(localUsers).then(setAllUsers);
+      // Use requestAnimationFrame to prevent ResizeObserver loops
+      const processUsers = () => {
+        processUsersForInactivity(localUsers).then(setAllUsers);
+      };
+
+      const rafId = requestAnimationFrame(processUsers);
+      return () => cancelAnimationFrame(rafId);
     } else {
       setAllUsers([]);
     }
