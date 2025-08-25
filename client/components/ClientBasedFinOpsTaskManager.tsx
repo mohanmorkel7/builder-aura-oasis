@@ -745,6 +745,14 @@ export default function ClientBasedFinOpsTaskManager() {
     setIsCreateDialogOpen(true);
   };
 
+  const handleCreateClient = (e: React.FormEvent) => {
+    e.preventDefault();
+    createFinOpsClientMutation.mutate({
+      ...newClientForm,
+      created_by: user?.id || 1,
+    });
+  };
+
   // Filter tasks based on client, status, search, and date
   const filteredTasks = finopsTasks.filter((task: ClientBasedFinOpsTask) => {
     console.log("Processing task:", task.task_name, "for filtering");
