@@ -384,9 +384,8 @@ export default function UserManagement() {
     const shouldRefresh = sessionStorage.getItem("refreshUserManagement");
     if (shouldRefresh) {
       sessionStorage.removeItem("refreshUserManagement");
-      // Invalidate and refetch user data instead of full page reload
-      queryClient.invalidateQueries({ queryKey: ["users"] });
-      refetchUsers();
+      // Use debounced refresh to prevent ResizeObserver loops
+      debouncedRefresh();
     }
 
     testConnection();
