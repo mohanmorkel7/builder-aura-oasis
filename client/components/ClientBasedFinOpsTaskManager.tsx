@@ -1659,23 +1659,32 @@ export default function ClientBasedFinOpsTaskManager() {
                 </div>
                 <div className="mt-2">
                   <p className="text-sm text-blue-600">
-                    FinOps clients are managed separately from sales leads.
+                    ✅ FinOps clients are now managed separately from sales leads.
                   </p>
                   {!clientsLoading && clients.length === 0 && (
-                    <p className="text-sm text-amber-600 mt-1">
-                      No FinOps clients found. Click "Add Client" to create your first client.
-                    </p>
+                    <div className="mt-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                      <p className="text-sm text-amber-700 font-medium">
+                        🎯 No FinOps clients found
+                      </p>
+                      <p className="text-xs text-amber-600 mt-1">
+                        Create your first FinOps client by clicking "Add Client" above.
+                        These clients are separate from your sales leads.
+                      </p>
+                    </div>
                   )}
                   {clientsError && (
-                    <div className="mt-2">
-                      <p className="text-xs text-red-600">
-                        Error: {clientsError.message}
+                    <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+                      <p className="text-sm text-red-700 font-medium">
+                        ❌ Failed to load FinOps clients
+                      </p>
+                      <p className="text-xs text-red-600 mt-1">
+                        {clientsError.message}
                       </p>
                       <Button
                         type="button"
                         variant="outline"
                         size="sm"
-                        className="mt-1"
+                        className="mt-2"
                         onClick={() => {
                           queryClient.invalidateQueries({
                             queryKey: ["finops-clients"],
@@ -1683,7 +1692,7 @@ export default function ClientBasedFinOpsTaskManager() {
                         }}
                       >
                         <RefreshCw className="w-3 h-3 mr-1" />
-                        Retry
+                        Retry Loading
                       </Button>
                     </div>
                   )}
