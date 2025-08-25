@@ -1727,14 +1727,18 @@ export default function ClientBasedFinOpsTaskManager() {
                     <SelectValue placeholder="Select assignee" />
                   </SelectTrigger>
                   <SelectContent>
-                    {users.map((user: any) => (
-                      <SelectItem
-                        key={user.id}
-                        value={`${user.first_name} ${user.last_name}`}
-                      >
-                        {user.first_name} {user.last_name}
-                      </SelectItem>
-                    ))}
+                    {users
+                      .filter((user: any, index: number, arr: any[]) =>
+                        arr.findIndex(u => u.id === user.id) === index
+                      )
+                      .map((user: any, index: number) => (
+                        <SelectItem
+                          key={`assigned-${user.id}-${index}`}
+                          value={`${user.first_name} ${user.last_name}`}
+                        >
+                          {user.first_name} {user.last_name}
+                        </SelectItem>
+                      ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -1810,14 +1814,18 @@ export default function ClientBasedFinOpsTaskManager() {
                       <SelectValue placeholder="Select reporting manager" />
                     </SelectTrigger>
                     <SelectContent>
-                      {users.map((user: any) => (
-                        <SelectItem
-                          key={user.id}
-                          value={`${user.first_name} ${user.last_name}`}
-                        >
-                          {user.first_name} {user.last_name}
-                        </SelectItem>
-                      ))}
+                      {users
+                        .filter((user: any, index: number, arr: any[]) =>
+                          arr.findIndex(u => u.id === user.id) === index
+                        )
+                        .map((user: any, index: number) => (
+                          <SelectItem
+                            key={`reporting-${user.id}-${index}`}
+                            value={`${user.first_name} ${user.last_name}`}
+                          >
+                            {user.first_name} {user.last_name}
+                          </SelectItem>
+                        ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -1865,14 +1873,18 @@ export default function ClientBasedFinOpsTaskManager() {
                       <SelectValue placeholder="Select escalation manager" />
                     </SelectTrigger>
                     <SelectContent>
-                      {users.map((user: any) => (
-                        <SelectItem
-                          key={user.id}
-                          value={`${user.first_name} ${user.last_name}`}
-                        >
-                          {user.first_name} {user.last_name}
-                        </SelectItem>
-                      ))}
+                      {users
+                        .filter((user: any, index: number, arr: any[]) =>
+                          arr.findIndex(u => u.id === user.id) === index
+                        )
+                        .map((user: any, index: number) => (
+                          <SelectItem
+                            key={`escalation-${user.id}-${index}`}
+                            value={`${user.first_name} ${user.last_name}`}
+                          >
+                            {user.first_name} {user.last_name}
+                          </SelectItem>
+                        ))}
                     </SelectContent>
                   </Select>
                 </div>
