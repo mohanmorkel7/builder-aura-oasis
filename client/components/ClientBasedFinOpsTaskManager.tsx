@@ -393,6 +393,17 @@ export default function ClientBasedFinOpsTaskManager() {
     null,
   );
 
+  // Client creation states
+  const [isAddClientDialogOpen, setIsAddClientDialogOpen] = useState(false);
+  const [newClientForm, setNewClientForm] = useState({
+    company_name: "",
+    contact_person: "",
+    email: "",
+    phone: "",
+    address: "",
+    notes: "",
+  });
+
   // Filter states
   const [selectedClient, setSelectedClient] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
