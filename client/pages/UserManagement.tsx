@@ -392,6 +392,29 @@ export default function UserManagement() {
     testConnection();
   }, []);
 
+  // Debounced refresh function to prevent rapid re-renders
+  const debouncedRefresh = useCallback(() => {
+    if (isRefreshingRef.current) return;
+
+    if (refreshTimeoutRef.current) {
+      clearTimeout(refreshTimeoutRef.current);
+    }
+
+    refreshTimeoutRef.current = setTimeout(async () => {
+      if (isRefreshingRef.current) return;
+
+      isRefreshingRef.current = true;
+      try {
+        queryClient.invalidateQueries({ queryKey: ["users"] });
+        await refetchUsers();
+      } catch (error) {
+        console.warn('Refresh failed:', error);
+      } finally {
+        isRefreshingRef.current = false;
+      }
+    }, 300); // 300ms debounce
+  }, [queryClient, refetchUsers]);
+
   // Listen for navigation back from role assignment page
   useEffect(() => {
     const handleVisibilityChange = () => {
@@ -399,9 +422,8 @@ export default function UserManagement() {
         const returnFlag = sessionStorage.getItem("returnToUserManagement");
         if (returnFlag) {
           sessionStorage.removeItem("returnToUserManagement");
-          // Refresh user data when returning from role assignment
-          queryClient.invalidateQueries({ queryKey: ["users"] });
-          refetchUsers();
+          // Use debounced refresh to prevent ResizeObserver loops
+          debouncedRefresh();
         }
       }
     };
@@ -409,8 +431,11 @@ export default function UserManagement() {
     document.addEventListener("visibilitychange", handleVisibilityChange);
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
+      if (refreshTimeoutRef.current) {
+        clearTimeout(refreshTimeoutRef.current);
+      }
     };
-  }, [queryClient, refetchUsers]);
+  }, [debouncedRefresh]);
 
   // Memoized filtered users for better performance
   const filteredUsers = useMemo(() => {
