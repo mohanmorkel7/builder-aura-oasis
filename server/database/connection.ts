@@ -121,6 +121,24 @@ export async function initializeDatabase() {
           vcMigrationError.message,
         );
       }
+
+      // Run activity log ip_address columns migration
+      try {
+        const activityIpMigrationPath = path.join(
+          __dirname,
+          "migration-add-activity-ip-columns.sql",
+        );
+        if (fs.existsSync(activityIpMigrationPath)) {
+          const activityIpMigration = fs.readFileSync(activityIpMigrationPath, "utf8");
+          await client.query(activityIpMigration);
+          console.log("Activity log IP columns migration applied successfully");
+        }
+      } catch (activityIpMigrationError) {
+        console.log(
+          "Activity log IP columns migration already applied or error:",
+          activityIpMigrationError.message,
+        );
+      }
     } else {
       console.log("Database schema already exists");
     }
