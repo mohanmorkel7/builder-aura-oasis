@@ -68,6 +68,7 @@ async function setupDatabase() {
         "migration-add-partial-save-support.sql",
         "migration-add-template-id-to-leads.sql",
         "migration-follow-ups.sql",
+        "migration-add-activity-ip-columns.sql",
       ];
 
       for (const migrationFile of migrationFiles) {
