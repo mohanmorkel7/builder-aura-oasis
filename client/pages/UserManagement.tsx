@@ -663,11 +663,10 @@ export default function UserManagement() {
     [navigate],
   );
 
-  const handleManualRefresh = useCallback(async () => {
-    // Invalidate all user-related queries and refetch
-    queryClient.invalidateQueries({ queryKey: ["users"] });
-    await refetchUsers();
-  }, [queryClient, refetchUsers]);
+  const handleManualRefresh = useCallback(() => {
+    // Use debounced refresh to prevent ResizeObserver loops
+    debouncedRefresh();
+  }, [debouncedRefresh]);
 
   const handlePageChange = useCallback((page: number) => {
     setCurrentPage(page);
