@@ -530,6 +530,23 @@ export default function ClientBasedFinOpsTaskManager() {
     },
   });
 
+  // FinOps client mutations
+  const createFinOpsClientMutation = useMutation({
+    mutationFn: (clientData: any) => apiClient.createFinOpsClient(clientData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["finops-clients"] });
+      setIsAddClientDialogOpen(false);
+      setNewClientForm({
+        company_name: "",
+        contact_person: "",
+        email: "",
+        phone: "",
+        address: "",
+        notes: "",
+      });
+    },
+  });
+
   const resetForm = () => {
     setTaskForm({
       task_name: "",
