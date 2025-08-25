@@ -406,6 +406,17 @@ export default function UserManagement() {
     testConnection();
   }, []);
 
+  // Cleanup effect to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      if (refreshTimeoutRef.current) {
+        clearTimeout(refreshTimeoutRef.current);
+        refreshTimeoutRef.current = null;
+      }
+      isRefreshingRef.current = false;
+    };
+  }, []);
+
   // Debounced refresh function to prevent rapid re-renders
   const debouncedRefresh = useCallback(() => {
     if (isRefreshingRef.current) return;
