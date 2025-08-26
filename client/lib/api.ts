@@ -45,11 +45,21 @@ export class ApiClient {
   public isOffline(): boolean {
     return this.isOfflineMode;
   }
+  // Preserve original fetch to avoid FullStory interference
+  private preserveOriginalFetch() {
+    if (typeof window !== 'undefined' && !(window as any).__originalFetch) {
+      (window as any).__originalFetch = window.fetch.bind(window);
+      console.log("🔒 Original fetch preserved for FullStory protection");
+    }
+  }
+
   public async request<T>(
     endpoint: string,
     options: RequestInit = {},
     retryCount = 0,
   ): Promise<T> {
+    // Ensure original fetch is preserved
+    this.preserveOriginalFetch();
     // Offline mode check
     if (this.isOfflineMode && !this.shouldRetryConnection()) {
       console.warn(
