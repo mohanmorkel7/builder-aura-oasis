@@ -309,20 +309,45 @@ router.put("/:id/read", async (req: Request, res: Response) => {
     if (await isDatabaseAvailable()) {
       const id = req.params.id;
 
-      const query = `
-        UPDATE notifications 
-        SET read = true, read_at = NOW()
-        WHERE id = $1
-        RETURNING *
+      // Since notifications come from finops_activity_log, we'll create/update a read status table
+      // First, check if the activity log entry exists
+      const checkQuery = `
+        SELECT id FROM finops_activity_log WHERE id = $1
       `;
 
-      const result = await pool.query(query, [id]);
+      const checkResult = await pool.query(checkQuery, [id]);
 
-      if (result.rows.length === 0) {
+      if (checkResult.rows.length === 0) {
         return res.status(404).json({ error: "Notification not found" });
       }
 
-      res.json(result.rows[0]);
+      // Create read status table if it doesn't exist
+      const createTableQuery = `
+        CREATE TABLE IF NOT EXISTS finops_notification_read_status (
+          activity_log_id INTEGER PRIMARY KEY,
+          read_at TIMESTAMP DEFAULT NOW(),
+          FOREIGN KEY (activity_log_id) REFERENCES finops_activity_log(id) ON DELETE CASCADE
+        )
+      `;
+
+      await pool.query(createTableQuery);
+
+      // Insert or update read status
+      const upsertQuery = `
+        INSERT INTO finops_notification_read_status (activity_log_id, read_at)
+        VALUES ($1, NOW())
+        ON CONFLICT (activity_log_id)
+        DO UPDATE SET read_at = NOW()
+        RETURNING *
+      `;
+
+      const result = await pool.query(upsertQuery, [id]);
+
+      res.json({
+        id: id,
+        read: true,
+        read_at: result.rows[0].read_at
+      });
     } else {
       console.log("Database unavailable, returning mock read update");
       // Return mock success
