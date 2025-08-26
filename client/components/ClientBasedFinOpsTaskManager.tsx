@@ -151,6 +151,84 @@ interface ClientBasedFinOpsTask {
   status: "active" | "inactive" | "completed" | "overdue" | "delayed";
 }
 
+// Time Picker Component with AM/PM support
+interface TimePickerWithAmPmProps {
+  value: string; // 24-hour format (e.g., "14:30")
+  onChange: (value: string) => void;
+  placeholder?: string;
+  required?: boolean;
+}
+
+function TimePickerWithAmPm({ value, onChange, placeholder = "Select time", required = false }: TimePickerWithAmPmProps) {
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Convert current value to 12-hour format for display
+  const { time: currentTime12, period: currentPeriod } = convertTo12Hour(value);
+
+  // Generate time options for 12-hour format
+  const timeOptions = [];
+  for (let hour = 1; hour <= 12; hour++) {
+    for (let minute = 0; minute < 60; minute += 15) { // 15-minute intervals
+      const timeStr = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
+      timeOptions.push(timeStr);
+    }
+  }
+
+  // Filter time options based on search
+  const filteredTimes = timeOptions.filter(time =>
+    time.includes(searchTerm.toLowerCase())
+  );
+
+  const handleTimeSelect = (time12: string, period: string) => {
+    const time24 = convertTo24Hour(time12, period);
+    onChange(time24);
+  };
+
+  return (
+    <div className="relative">
+      <Select
+        value={value ? `${currentTime12} ${currentPeriod}` : ""}
+        onValueChange={(selected) => {
+          const [time12, period] = selected.split(" ");
+          handleTimeSelect(time12, period);
+        }}
+      >
+        <SelectTrigger>
+          <SelectValue placeholder={placeholder} />
+        </SelectTrigger>
+        <SelectContent className="max-h-60">
+          <div className="p-2 border-b">
+            <Input
+              placeholder="Search time (e.g., 9:00)"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="h-8"
+            />
+          </div>
+          <div className="max-h-48 overflow-y-auto">
+            {["AM", "PM"].map(period => (
+              <div key={period}>
+                <div className="px-3 py-1 text-xs font-medium text-gray-500 bg-gray-50">
+                  {period}
+                </div>
+                {filteredTimes.map(time => (
+                  <SelectItem
+                    key={`${time}-${period}`}
+                    value={`${time} ${period}`}
+                    className="pl-6"
+                  >
+                    {time} {period}
+                  </SelectItem>
+                ))}
+              </div>
+            ))}
+          </div>
+        </SelectContent>
+      </Select>
+    </div>
+  );
+}
+
 // Enhanced Sortable SubTask Component with inline status change
 interface SortableSubTaskItemProps {
   subtask: ClientBasedFinOpsSubTask;
