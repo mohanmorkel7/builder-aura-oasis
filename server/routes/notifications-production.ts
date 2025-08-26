@@ -1180,6 +1180,253 @@ router.get("/test/categorization", async (req: Request, res: Response) => {
   }
 });
 
+// Check database schema and current state
+router.get("/check-schema", async (req: Request, res: Response) => {
+  try {
+    if (await isDatabaseAvailable()) {
+      // Check subtasks table schema
+      const schemaQuery = `
+        SELECT column_name, data_type, is_nullable, column_default
+        FROM information_schema.columns
+        WHERE table_name = 'finops_subtasks'
+        ORDER BY ordinal_position
+      `;
+
+      const schemaResult = await pool.query(schemaQuery);
+
+      // Check sample subtasks data
+      const dataQuery = `
+        SELECT
+          fs.*,
+          ft.task_name,
+          ft.assigned_to,
+          EXTRACT(EPOCH FROM (NOW() - COALESCE(fs.started_at, ft.created_at)))/60 as minutes_since_start
+        FROM finops_subtasks fs
+        LEFT JOIN finops_tasks ft ON fs.task_id = ft.id
+        ORDER BY fs.id DESC
+        LIMIT 5
+      `;
+
+      const dataResult = await pool.query(dataQuery);
+
+      // Check if start_time column exists or if we need to add it
+      const hasStartTime = schemaResult.rows.some(row => row.column_name === 'start_time');
+
+      res.json({
+        message: "Database schema check completed",
+        schema: schemaResult.rows,
+        sample_data: dataResult.rows,
+        has_start_time_column: hasStartTime,
+        total_subtasks: dataResult.rows.length,
+        timestamp: new Date().toISOString(),
+      });
+    } else {
+      res.json({
+        message: "Database unavailable",
+        timestamp: new Date().toISOString(),
+      });
+    }
+  } catch (error) {
+    console.error("Schema check error:", error);
+    res.status(500).json({
+      error: "Schema check failed",
+      message: error.message,
+    });
+  }
+});
+
+// Add start_time column if missing and create automated SLA monitoring
+router.post("/setup-auto-sla", async (req: Request, res: Response) => {
+  try {
+    if (await isDatabaseAvailable()) {
+      console.log("Setting up automated SLA monitoring...");
+
+      // Add start_time column to subtasks if it doesn't exist
+      const addColumnQuery = `
+        ALTER TABLE finops_subtasks
+        ADD COLUMN IF NOT EXISTS start_time TIME;
+
+        ALTER TABLE finops_subtasks
+        ADD COLUMN IF NOT EXISTS auto_notify BOOLEAN DEFAULT true;
+
+        -- Add index for performance
+        CREATE INDEX IF NOT EXISTS idx_finops_subtasks_start_time ON finops_subtasks(start_time);
+        CREATE INDEX IF NOT EXISTS idx_finops_subtasks_auto_notify ON finops_subtasks(auto_notify);
+      `;
+
+      await pool.query(addColumnQuery);
+
+      // Create SLA monitoring function
+      const createMonitoringFunction = `
+        CREATE OR REPLACE FUNCTION check_subtask_sla_notifications()
+        RETURNS TABLE(
+          notification_type TEXT,
+          subtask_id INTEGER,
+          task_id INTEGER,
+          task_name TEXT,
+          subtask_name TEXT,
+          assigned_to TEXT,
+          time_diff_minutes INTEGER,
+          message TEXT
+        ) AS $$
+        DECLARE
+          current_time TIME := CURRENT_TIME;
+          current_date DATE := CURRENT_DATE;
+        BEGIN
+          -- Check for SLA warnings (15 minutes before start_time)
+          RETURN QUERY
+          SELECT
+            'sla_warning'::TEXT as notification_type,
+            fs.id as subtask_id,
+            fs.task_id,
+            ft.task_name,
+            fs.name as subtask_name,
+            COALESCE(fs.assigned_to, ft.assigned_to) as assigned_to,
+            EXTRACT(EPOCH FROM (fs.start_time - current_time))/60 as time_diff_minutes,
+            format('SLA Warning - %s min remaining • need to start',
+                   ROUND(EXTRACT(EPOCH FROM (fs.start_time - current_time))/60)) as message
+          FROM finops_subtasks fs
+          LEFT JOIN finops_tasks ft ON fs.task_id = ft.id
+          WHERE fs.start_time IS NOT NULL
+          AND fs.auto_notify = true
+          AND fs.status IN ('pending', 'in_progress')
+          AND ft.is_active = true
+          -- Check if start_time is within next 15 minutes
+          AND fs.start_time > current_time
+          AND fs.start_time <= current_time + INTERVAL '15 minutes'
+          -- Prevent duplicate notifications
+          AND NOT EXISTS (
+            SELECT 1 FROM finops_activity_log fal
+            WHERE fal.task_id = fs.task_id
+            AND fal.subtask_id = fs.id
+            AND fal.action = 'sla_alert'
+            AND fal.timestamp > current_date + current_time - INTERVAL '1 hour'
+          );
+
+          -- Check for overdue notifications (15+ minutes after start_time)
+          RETURN QUERY
+          SELECT
+            'sla_overdue'::TEXT as notification_type,
+            fs.id as subtask_id,
+            fs.task_id,
+            ft.task_name,
+            fs.name as subtask_name,
+            COALESCE(fs.assigned_to, ft.assigned_to) as assigned_to,
+            EXTRACT(EPOCH FROM (current_time - fs.start_time))/60 as time_diff_minutes,
+            format('Overdue by %s min • %s min ago',
+                   ROUND(EXTRACT(EPOCH FROM (current_time - fs.start_time))/60),
+                   ROUND(EXTRACT(EPOCH FROM (current_time - fs.start_time))/60)) as message
+          FROM finops_subtasks fs
+          LEFT JOIN finops_tasks ft ON fs.task_id = ft.id
+          WHERE fs.start_time IS NOT NULL
+          AND fs.auto_notify = true
+          AND fs.status IN ('pending', 'in_progress')
+          AND ft.is_active = true
+          -- Check if start_time was more than 15 minutes ago
+          AND fs.start_time < current_time - INTERVAL '15 minutes'
+          -- Prevent duplicate notifications
+          AND NOT EXISTS (
+            SELECT 1 FROM finops_activity_log fal
+            WHERE fal.task_id = fs.task_id
+            AND fal.subtask_id = fs.id
+            AND fal.action = 'overdue_notification_sent'
+            AND fal.timestamp > current_date + current_time - INTERVAL '1 hour'
+          );
+        END;
+        $$ LANGUAGE plpgsql;
+      `;
+
+      await pool.query(createMonitoringFunction);
+
+      res.json({
+        message: "Automated SLA monitoring setup completed successfully!",
+        features_added: [
+          "start_time column added to finops_subtasks",
+          "auto_notify flag added for enabling/disabling notifications",
+          "check_subtask_sla_notifications() function created",
+          "15-minute warning and overdue detection",
+          "Database-only notifications (no mock data)"
+        ],
+        timestamp: new Date().toISOString(),
+      });
+    } else {
+      res.json({
+        message: "Database unavailable - cannot setup SLA monitoring",
+        timestamp: new Date().toISOString(),
+      });
+    }
+  } catch (error) {
+    console.error("SLA setup error:", error);
+    res.status(500).json({
+      error: "Failed to setup automated SLA monitoring",
+      message: error.message,
+    });
+  }
+});
+
+// Auto-sync endpoint to check and create SLA notifications
+router.post("/auto-sync", async (req: Request, res: Response) => {
+  try {
+    if (await isDatabaseAvailable()) {
+      console.log("Running automated SLA sync...");
+
+      // Get notifications that need to be created
+      const checkQuery = `SELECT * FROM check_subtask_sla_notifications()`;
+      const checkResult = await pool.query(checkQuery);
+
+      const createdNotifications = [];
+
+      for (const notification of checkResult.rows) {
+        // Create activity log entry for this notification
+        const insertQuery = `
+          INSERT INTO finops_activity_log (action, task_id, subtask_id, user_name, details, timestamp)
+          VALUES ($1, $2, $3, $4, $5, NOW())
+          RETURNING *
+        `;
+
+        const action = notification.notification_type === 'sla_warning' ? 'sla_alert' : 'overdue_notification_sent';
+
+        const result = await pool.query(insertQuery, [
+          action,
+          notification.task_id,
+          notification.subtask_id,
+          'System',
+          notification.message
+        ]);
+
+        createdNotifications.push({
+          ...result.rows[0],
+          notification_type: notification.notification_type,
+          task_name: notification.task_name,
+          subtask_name: notification.subtask_name,
+          assigned_to: notification.assigned_to,
+          time_diff_minutes: notification.time_diff_minutes
+        });
+
+        console.log(`✅ Created ${notification.notification_type} for ${notification.task_name} - ${notification.subtask_name}`);
+      }
+
+      res.json({
+        message: "Automated SLA sync completed",
+        notifications_created: createdNotifications.length,
+        notifications: createdNotifications,
+        timestamp: new Date().toISOString(),
+      });
+    } else {
+      res.json({
+        message: "Database unavailable - cannot perform auto-sync",
+        timestamp: new Date().toISOString(),
+      });
+    }
+  } catch (error) {
+    console.error("Auto-sync error:", error);
+    res.status(500).json({
+      error: "Auto-sync failed",
+      message: error.message,
+    });
+  }
+});
+
 // Test endpoint to check query performance
 router.get("/test/performance", async (req: Request, res: Response) => {
   try {
