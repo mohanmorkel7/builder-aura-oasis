@@ -935,10 +935,9 @@ export default function ClientBasedFinOpsTaskManager() {
       escalation_managers: (task.escalation_managers || []).map((name) =>
         convertNameToValueFormat(name, users),
       ),
-      effective_from:
-        task.effective_from
-          ? new Date(task.effective_from).toISOString().split("T")[0]
-          : new Date().toISOString().split("T")[0],
+      effective_from: task.effective_from
+        ? new Date(task.effective_from).toISOString().split("T")[0]
+        : new Date().toISOString().split("T")[0],
       duration: task.duration || "daily",
       is_active: task.is_active ?? true,
       subtasks: (task.subtasks || []).map((subtask) => ({
