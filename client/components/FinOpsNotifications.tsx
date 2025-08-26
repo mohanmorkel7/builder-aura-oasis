@@ -606,7 +606,11 @@ export default function FinOpsNotifications() {
               </h3>
               <p className="text-gray-600">
                 {notifications.length === 0
-                  ? "No notifications yet. You'll receive updates about task progress and alerts here."
+                  ? isEmptyRealData
+                    ? "✅ Connected to real-time database. No notifications found yet. You'll receive updates about task progress and alerts here when they occur."
+                    : isUsingRealData
+                    ? "No notifications in the database yet. You'll receive updates about task progress and alerts here."
+                    : "Demo mode: No notifications to display. In a real environment, you would see FinOps task alerts and notifications here."
                   : "No notifications match your current filters."}
               </p>
             </CardContent>
