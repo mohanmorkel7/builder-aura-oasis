@@ -93,12 +93,14 @@ export class ApiClient {
            window.fetch.toString().includes('fullstory') ||
            window.fetch.toString().includes('fs.js'));
 
-        if (isFullStoryActive) {
-          console.warn("🚨 FullStory detected - using XMLHttpRequest fallback");
+        // Try to use preserved original fetch first
+        const originalFetch = (window as any).__originalFetch || window.fetch.bind(window);
+
+        if (isFullStoryActive && !(window as any).__originalFetch) {
+          console.warn("🚨 FullStory detected and no preserved fetch - using XMLHttpRequest fallback");
           response = await this.xmlHttpRequestFallback(url, config);
         } else {
-          // Store original fetch in case it gets overridden by third-party scripts
-          const originalFetch = window.fetch.bind(window);
+          console.log("🔒 Using", (window as any).__originalFetch ? "preserved" : "current", "fetch for request");
 
           // Add timeout to prevent hanging requests
           const timeoutMs = 8000; // 8 seconds
