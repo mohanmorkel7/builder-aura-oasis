@@ -522,7 +522,7 @@ router.get("/stats/summary", async (req: Request, res: Response) => {
         SELECT
           action,
           COUNT(*) as total_count
-        FROM activity_logs
+        FROM finops_activity_log
         WHERE timestamp >= NOW() - INTERVAL $1 || ' days'
         GROUP BY action
         ORDER BY total_count DESC
