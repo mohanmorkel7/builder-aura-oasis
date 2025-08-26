@@ -52,12 +52,15 @@ interface FinOpsNotification {
   subtask_name?: string;
   assigned_to: string;
   reporting_managers: string[];
+  escalation_managers?: string[];
   priority: "low" | "medium" | "high" | "critical";
   status: "unread" | "read" | "archived";
   created_at: string;
   action_required: boolean;
   delay_reason?: string;
   sla_remaining?: string;
+  overdue_minutes?: number;
+  members_list?: string[];
 }
 
 // Mock notifications data
