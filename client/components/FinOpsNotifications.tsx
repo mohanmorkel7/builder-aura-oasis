@@ -255,6 +255,7 @@ export default function FinOpsNotifications() {
       dbNotifications,
       hasError: !!error,
       isLoading,
+      dbStructure: dbNotifications ? Object.keys(dbNotifications) : null,
     });
 
     // If API call succeeded and we have a valid response structure
@@ -263,7 +264,13 @@ export default function FinOpsNotifications() {
       typeof dbNotifications === "object" &&
       "notifications" in dbNotifications
     ) {
-      console.log("✅ Using real data from API (may be empty)");
+      console.log("✅ Using real data from API", {
+        notificationsArray: dbNotifications.notifications,
+        arrayLength: dbNotifications.notifications?.length,
+        pagination: dbNotifications.pagination,
+        unreadCount: dbNotifications.unread_count,
+      });
+
       if (
         dbNotifications.notifications &&
         dbNotifications.notifications.length > 0
@@ -271,9 +278,11 @@ export default function FinOpsNotifications() {
         console.log(
           `📊 Transforming ${dbNotifications.notifications.length} real notifications`,
         );
-        return transformDbNotifications(dbNotifications.notifications);
+        const transformed = transformDbNotifications(dbNotifications.notifications);
+        console.log(`✅ Transformation complete: ${transformed.length} notifications processed`);
+        return transformed;
       } else {
-        console.log("📭 Real API returned empty notifications");
+        console.log("📭 Real API returned empty notifications array");
         return []; // Real database but empty
       }
     }
