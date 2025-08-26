@@ -378,7 +378,9 @@ export default function FinOpsActivityLog() {
                 No Activity Found
               </h3>
               <p className="text-gray-600">
-                No activities match your current filters.
+                {activityLogs.length === 0
+                  ? "No FinOps activities recorded yet. Activities will appear here when tasks are created, updated, or status changes occur."
+                  : "No activities match your current filters."}
               </p>
             </div>
           ) : (
