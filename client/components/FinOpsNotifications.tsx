@@ -370,7 +370,20 @@ export default function FinOpsNotifications() {
 
   const getRelativeTime = (dateString: string) => {
     const date = new Date(dateString);
-    if (isToday(date)) {
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+
+    // Real-time calculation like in task management
+    if (diffMinutes < 1) {
+      return "Just now";
+    } else if (diffMinutes < 60) {
+      return `${diffMinutes} min ago`;
+    } else if (diffMinutes < 1440) { // Less than 24 hours
+      const hours = Math.floor(diffMinutes / 60);
+      const mins = diffMinutes % 60;
+      return `${hours}h ${mins}m ago`;
+    } else if (isToday(date)) {
       return `Today, ${format(date, "h:mm a")}`;
     } else if (isYesterday(date)) {
       return `Yesterday, ${format(date, "h:mm a")}`;
