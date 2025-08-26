@@ -291,10 +291,19 @@ export default function FinOpsNotifications() {
     });
 
     // If API call succeeded and we have a valid response structure
-    if (dbNotifications && typeof dbNotifications === 'object' && 'notifications' in dbNotifications) {
+    if (
+      dbNotifications &&
+      typeof dbNotifications === "object" &&
+      "notifications" in dbNotifications
+    ) {
       console.log("✅ Using real data from API (may be empty)");
-      if (dbNotifications.notifications && dbNotifications.notifications.length > 0) {
-        console.log(`📊 Transforming ${dbNotifications.notifications.length} real notifications`);
+      if (
+        dbNotifications.notifications &&
+        dbNotifications.notifications.length > 0
+      ) {
+        console.log(
+          `📊 Transforming ${dbNotifications.notifications.length} real notifications`,
+        );
         return transformDbNotifications(dbNotifications.notifications);
       } else {
         console.log("📭 Real API returned empty notifications");
@@ -447,8 +456,14 @@ export default function FinOpsNotifications() {
   ).length;
 
   // Determine if we're showing real data or mock data
-  const isUsingRealData = dbNotifications && typeof dbNotifications === 'object' && 'notifications' in dbNotifications;
-  const isEmptyRealData = isUsingRealData && (!dbNotifications.notifications || dbNotifications.notifications.length === 0);
+  const isUsingRealData =
+    dbNotifications &&
+    typeof dbNotifications === "object" &&
+    "notifications" in dbNotifications;
+  const isEmptyRealData =
+    isUsingRealData &&
+    (!dbNotifications.notifications ||
+      dbNotifications.notifications.length === 0);
 
   return (
     <div className="space-y-6">
@@ -459,17 +474,24 @@ export default function FinOpsNotifications() {
             <Bell className="w-6 h-6" />
             FinOps Notifications
             {isUsingRealData ? (
-              <Badge variant="outline" className="ml-2 text-green-600 bg-green-50 border-green-200">
+              <Badge
+                variant="outline"
+                className="ml-2 text-green-600 bg-green-50 border-green-200"
+              >
                 Live Data
               </Badge>
             ) : (
-              <Badge variant="outline" className="ml-2 text-amber-600 bg-amber-50 border-amber-200">
+              <Badge
+                variant="outline"
+                className="ml-2 text-amber-600 bg-amber-50 border-amber-200"
+              >
                 Demo Data
               </Badge>
             )}
           </h2>
           <p className="text-gray-600 mt-1">
-            Stay updated with task progress, SLA alerts, and important notifications
+            Stay updated with task progress, SLA alerts, and important
+            notifications
             {isUsingRealData && " • Connected to real-time database"}
             {!isUsingRealData && " • Showing sample data for demonstration"}
           </p>
@@ -609,8 +631,8 @@ export default function FinOpsNotifications() {
                   ? isEmptyRealData
                     ? "✅ Connected to real-time database. No notifications found yet. You'll receive updates about task progress and alerts here when they occur."
                     : isUsingRealData
-                    ? "No notifications in the database yet. You'll receive updates about task progress and alerts here."
-                    : "Demo mode: No notifications to display. In a real environment, you would see FinOps task alerts and notifications here."
+                      ? "No notifications in the database yet. You'll receive updates about task progress and alerts here."
+                      : "Demo mode: No notifications to display. In a real environment, you would see FinOps task alerts and notifications here."
                   : "No notifications match your current filters."}
               </p>
             </CardContent>
