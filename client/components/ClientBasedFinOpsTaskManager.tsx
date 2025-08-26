@@ -1246,7 +1246,10 @@ export default function ClientBasedFinOpsTaskManager() {
                           arr.findIndex((c) => c.id === client.id) === index,
                       )
                       .map((client: any) => (
-                        <SelectItem key={`filter-client-${client.id}`} value={client.id.toString()}>
+                        <SelectItem
+                          key={`filter-client-${client.id}`}
+                          value={client.id.toString()}
+                        >
                           {client.company_name ||
                             client.client_name ||
                             `Client ${client.id}`}
@@ -1787,7 +1790,8 @@ export default function ClientBasedFinOpsTaskManager() {
                         clients
                           .filter(
                             (client: any, index: number, arr: any[]) =>
-                              arr.findIndex((c) => c.id === client.id) === index,
+                              arr.findIndex((c) => c.id === client.id) ===
+                              index,
                           )
                           .map((client: any) => (
                             <SelectItem
