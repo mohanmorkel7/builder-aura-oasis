@@ -9,8 +9,13 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
     hmr: {
-      timeout: 10000,
+      timeout: 15000, // Increased timeout to prevent premature disconnections
       overlay: false,
+      clientPort: 8080, // Explicit client port to avoid connection issues
+      skipFile: (file) => {
+        // Skip HMR for certain files that might cause race conditions
+        return file.includes('auth-context') && process.env.NODE_ENV === 'development';
+      },
     },
     fs: {
       allow: ["./client", "./shared"],
@@ -18,6 +23,9 @@ export default defineConfig(({ mode }) => ({
     },
     watch: {
       ignored: ["**/server/data/**", "**/node_modules/**", "**/.git/**"],
+      // Add debouncing to prevent rapid file change events
+      usePolling: false,
+      interval: 100,
     },
   },
   build: {
