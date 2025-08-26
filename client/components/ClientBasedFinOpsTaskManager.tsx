@@ -670,11 +670,38 @@ export default function ClientBasedFinOpsTaskManager() {
     subtasks: [] as ClientBasedFinOpsSubTask[],
   });
 
-  // Fetch FinOps tasks
-  const { data: finopsTasks = [], isLoading } = useQuery({
+  // Fetch FinOps tasks with enhanced error handling
+  const { data: finopsTasks = [], isLoading, error, refetch } = useQuery({
     queryKey: ["client-finops-tasks"],
-    queryFn: () => apiClient.getFinOpsTasks(),
+    queryFn: async () => {
+      try {
+        console.log("🔍 Fetching FinOps tasks...");
+        const result = await apiClient.getFinOpsTasks();
+        console.log("✅ FinOps tasks query successful:", Array.isArray(result) ? result.length : "unknown");
+        return Array.isArray(result) ? result : [];
+      } catch (error) {
+        console.error("❌ FinOps tasks query failed:", error);
+        // Return empty array to prevent UI crashes
+        return [];
+      }
+    },
     refetchInterval: 30000,
+    retry: (failureCount, error) => {
+      console.log(`🔄 FinOps tasks query retry ${failureCount}:`, error);
+      // Only retry network errors, not server errors
+      if (error instanceof Error && error.message.includes("Failed to fetch")) {
+        return failureCount < 2; // Max 2 retries for network errors
+      }
+      return false; // Don't retry server errors
+    },
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000),
+    staleTime: 30000, // Consider data stale after 30 seconds
+    onError: (error) => {
+      console.error("🚨 FinOps tasks query error:", error);
+    },
+    onSuccess: (data) => {
+      console.log("✅ FinOps tasks query success:", data?.length || 0, "tasks");
+    }
   });
 
   // Real-time updates for SLA warnings
