@@ -812,6 +812,12 @@ export default function ClientBasedFinOpsTaskManager() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Validate that at least one assignee is selected
+    if (taskForm.assigned_to.length === 0) {
+      alert("Please select at least one assignee for this task.");
+      return;
+    }
+
     const selectedClientData = clients.find(
       (c: any) => c.id.toString() === taskForm.client_id,
     );
