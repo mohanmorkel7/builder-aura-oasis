@@ -355,3 +355,6 @@ export function createServer() {
 
   return app;
 }
+
+// Export the createServer function for Vite integration
+export { createServer };
