@@ -576,4 +576,75 @@ router.get("/types/summary", async (req: Request, res: Response) => {
   }
 });
 
+// Test route to create sample notifications
+router.post("/test/create-sample", async (req: Request, res: Response) => {
+  try {
+    if (await isDatabaseAvailable()) {
+      console.log("Creating sample notifications...");
+
+      // Create sample activity log entries that would generate notifications
+      const sampleNotifications = [
+        {
+          action: 'status_changed',
+          task_id: 1,
+          subtask_id: 1,
+          user_name: 'PaySwiff User',
+          details: 'Task Check PaySwiff User is overdue by 6 hours and 11 minutes'
+        },
+        {
+          action: 'delay_reported',
+          task_id: 2,
+          subtask_id: null,
+          user_name: 'Test User',
+          details: 'Task has been delayed due to technical issues'
+        },
+        {
+          action: 'overdue_notification_sent',
+          task_id: 3,
+          subtask_id: 2,
+          user_name: 'System',
+          details: 'SLA overdue notification sent for task processing'
+        }
+      ];
+
+      const insertedNotifications = [];
+
+      for (const notif of sampleNotifications) {
+        const query = `
+          INSERT INTO finops_activity_log (action, task_id, subtask_id, user_name, details, timestamp)
+          VALUES ($1, $2, $3, $4, $5, NOW() - INTERVAL '6 hours 11 minutes')
+          RETURNING *
+        `;
+
+        const result = await pool.query(query, [
+          notif.action,
+          notif.task_id,
+          notif.subtask_id,
+          notif.user_name,
+          notif.details
+        ]);
+
+        insertedNotifications.push(result.rows[0]);
+      }
+
+      res.json({
+        message: "Sample notifications created successfully!",
+        notifications: insertedNotifications,
+        timestamp: new Date().toISOString(),
+      });
+    } else {
+      res.json({
+        message: "Database unavailable - would create sample notifications in production",
+        timestamp: new Date().toISOString(),
+      });
+    }
+  } catch (error) {
+    console.error("Error creating sample notifications:", error);
+    res.status(500).json({
+      error: "Failed to create sample notifications",
+      message: error.message,
+    });
+  }
+});
+
 export default router;
