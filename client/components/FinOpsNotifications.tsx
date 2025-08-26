@@ -428,11 +428,19 @@ export default function FinOpsNotifications() {
         throw error;
       }
     },
-    refetchInterval: 30000, // Refresh every 30 seconds
+    refetchInterval: 60000, // Refresh every 60 seconds (reduced from 30s)
+    staleTime: 30000, // Consider data stale after 30 seconds
     retry: (failureCount, error) => {
       console.log(`🔄 Retry attempt ${failureCount} for notifications`);
+
+      // Don't retry timeout errors immediately
+      if (error instanceof Error && error.message.includes("timeout")) {
+        return failureCount < 1; // Only 1 retry for timeouts
+      }
+
       return failureCount < 2;
     },
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
   });
 
   // Transform database notifications to match our interface or fallback to mock
