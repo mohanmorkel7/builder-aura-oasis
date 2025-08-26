@@ -3,6 +3,12 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider, useAuth } from "@/lib/auth-context";
 
+// Preserve original fetch before FullStory interference - CRITICAL for API reliability
+if (typeof window !== 'undefined' && !(window as any).__originalFetch) {
+  (window as any).__originalFetch = window.fetch.bind(window);
+  console.log("🔒 Original fetch preserved at application startup for FullStory protection");
+}
+
 // Error Boundary for Auth errors
 class AuthErrorBoundary extends React.Component<
   { children: React.ReactNode },
