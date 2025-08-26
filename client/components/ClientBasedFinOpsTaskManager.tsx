@@ -1892,8 +1892,8 @@ export default function ClientBasedFinOpsTaskManager() {
                     <SelectTrigger>
                       <SelectValue placeholder="Select assignees (multiple)" />
                     </SelectTrigger>
-                    <SelectContent className="max-h-72 w-full">
-                      <div className="p-2 border-b sticky top-0 bg-white z-10">
+                    <SelectContent className="max-h-80">
+                      <div className="p-2 border-b bg-white">
                         <Input
                           placeholder="Search users..."
                           value={assignedToSearch}
@@ -1901,40 +1901,35 @@ export default function ClientBasedFinOpsTaskManager() {
                           onChange={(e) => setAssignedToSearch(e.target.value)}
                         />
                       </div>
-                      <div
-                        className="max-h-60 overflow-y-auto overflow-x-hidden"
-                        style={{ scrollbarWidth: "thin" }}
-                      >
-                        {users
-                          .filter(
-                            (user: any, index: number, arr: any[]) =>
-                              arr.findIndex((u) => u.id === user.id) === index,
-                          )
-                          .filter(
-                            (user: any) =>
-                              !taskForm.assigned_to.includes(
-                                `${user.first_name} ${user.last_name}`,
-                              ),
-                          )
-                          .filter((user: any) => {
-                            const fullName =
-                              `${user.first_name} ${user.last_name}`.toLowerCase();
-                            return fullName.includes(
-                              assignedToSearch.toLowerCase(),
-                            );
-                          })
-                          .map((user: any, index: number) => {
-                            const fullName = `${user.first_name} ${user.last_name}`;
-                            return (
-                              <SelectItem
-                                key={`assigned-to-${user.id}`}
-                                value={fullName}
-                              >
-                                {fullName}
-                              </SelectItem>
-                            );
-                          })}
-                      </div>
+                      {users
+                        .filter(
+                          (user: any, index: number, arr: any[]) =>
+                            arr.findIndex((u) => u.id === user.id) === index,
+                        )
+                        .filter(
+                          (user: any) =>
+                            !taskForm.assigned_to.includes(
+                              `${user.first_name} ${user.last_name}`,
+                            ),
+                        )
+                        .filter((user: any) => {
+                          const fullName =
+                            `${user.first_name} ${user.last_name}`.toLowerCase();
+                          return fullName.includes(
+                            assignedToSearch.toLowerCase(),
+                          );
+                        })
+                        .map((user: any, index: number) => {
+                          const fullName = `${user.first_name} ${user.last_name}`;
+                          return (
+                            <SelectItem
+                              key={`assigned-to-${user.id}`}
+                              value={fullName}
+                            >
+                              {fullName}
+                            </SelectItem>
+                          );
+                        })}
                     </SelectContent>
                   </Select>
                 </div>
