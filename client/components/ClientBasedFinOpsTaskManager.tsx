@@ -314,7 +314,12 @@ function SortableSubTaskItem({
                       </p>
                     )}
                     <div className="flex items-center gap-3 mt-2 text-xs text-gray-500">
-                      <span>Start: {subtask.start_time}</span>
+                      <span>
+                        Start: {(() => {
+                          const { time, period } = convertTo12Hour(subtask.start_time);
+                          return time ? `${time} ${period}` : subtask.start_time;
+                        })()}
+                      </span>
                       {subtask.started_at && (
                         <span>
                           Started:{" "}
