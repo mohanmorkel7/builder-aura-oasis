@@ -88,10 +88,21 @@ export class ApiClient {
 
       try {
         // Detect FullStory interference
-        const isFullStoryActive = typeof window !== 'undefined' &&
-          (window.FS || document.querySelector('script[src*="fullstory"]') ||
-           window.fetch.toString().includes('fullstory') ||
-           window.fetch.toString().includes('fs.js'));
+        const hasFS = typeof window !== 'undefined' && !!(window as any).FS;
+        const hasFullStoryScript = typeof document !== 'undefined' && !!document.querySelector('script[src*="fullstory"]');
+        const fetchContainsFullStory = window.fetch.toString().includes('fullstory') || window.fetch.toString().includes('fs.js');
+        const hasPreservedFetch = !!(window as any).__originalFetch;
+
+        const isFullStoryActive = hasFS || hasFullStoryScript || fetchContainsFullStory;
+
+        console.log("🔍 FullStory detection:", {
+          hasFS,
+          hasFullStoryScript,
+          fetchContainsFullStory,
+          hasPreservedFetch,
+          isFullStoryActive,
+          fetchSource: window.fetch.toString().substring(0, 100) + "..."
+        });
 
         // Try to use preserved original fetch first
         const originalFetch = (window as any).__originalFetch || window.fetch.bind(window);
