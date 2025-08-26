@@ -646,9 +646,10 @@ router.post("/test/create-sample", async (req: Request, res: Response) => {
 
       for (const [index, notif] of sampleNotifications.entries()) {
         // Set different timestamps for different notifications
-        let timeInterval = '43 minutes';
-        if (index === 3) { // The new notification with Start: 04:00 PM
-          timeInterval = '1 hour 8 minutes'; // 1h 8m ago as per user's requirement
+        let timeInterval = "43 minutes";
+        if (index === 3) {
+          // The new notification with Start: 04:00 PM
+          timeInterval = "1 hour 8 minutes"; // 1h 8m ago as per user's requirement
         }
 
         const query = `
@@ -780,10 +781,11 @@ router.get("/debug/raw-data", async (req: Request, res: Response) => {
       const result = await pool.query(query);
 
       // Look for patterns like "Start:", "Pending", "Overdue by X min"
-      const overduePattern = result.rows.filter(row =>
-        row.details?.toLowerCase().includes('overdue') ||
-        row.details?.toLowerCase().includes('start:') ||
-        row.details?.toLowerCase().includes('pending')
+      const overduePattern = result.rows.filter(
+        (row) =>
+          row.details?.toLowerCase().includes("overdue") ||
+          row.details?.toLowerCase().includes("start:") ||
+          row.details?.toLowerCase().includes("pending"),
       );
 
       res.json({
@@ -792,12 +794,12 @@ router.get("/debug/raw-data", async (req: Request, res: Response) => {
         overdue_pattern_matches: overduePattern.length,
         matching_notifications: overduePattern,
         all_data: result.rows,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
     } else {
       res.json({
         message: "Database unavailable - showing mock data",
-        data: []
+        data: [],
       });
     }
   } catch (error) {
@@ -823,22 +825,24 @@ router.post("/test/create-user-format", async (req: Request, res: Response) => {
       `;
 
       const result = await pool.query(query, [
-        'task_status_changed',
+        "task_status_changed",
         4,
         4,
-        'System',
-        'Start: 04:00 PM Pending Overdue by 54 min'
+        "System",
+        "Start: 04:00 PM Pending Overdue by 54 min",
       ]);
 
       res.json({
         message: "User format notification created successfully!",
         notification: result.rows[0],
-        description: "This should show: Start: 04:00 PM Pending Overdue by 54 min • 1h 8m ago",
+        description:
+          "This should show: Start: 04:00 PM Pending Overdue by 54 min • 1h 8m ago",
         timestamp: new Date().toISOString(),
       });
     } else {
       res.json({
-        message: "Database unavailable - would create user format notification in production",
+        message:
+          "Database unavailable - would create user format notification in production",
         timestamp: new Date().toISOString(),
       });
     }

@@ -84,8 +84,9 @@ const transformDbNotifications = (
 
   return dbNotifications.map((dbNotif) => {
     // Extract overdue minutes from details if present
-    const overdueMatch = dbNotif.details?.match(/overdue by (\d+) min/i) ||
-                        dbNotif.details?.match(/overdue by (\d+) minutes?/i);
+    const overdueMatch =
+      dbNotif.details?.match(/overdue by (\d+) min/i) ||
+      dbNotif.details?.match(/overdue by (\d+) minutes?/i);
     const overdueMinutes = overdueMatch ? parseInt(overdueMatch[1]) : undefined;
 
     // Extract start time if present
@@ -97,7 +98,8 @@ const transformDbNotifications = (
     if (
       dbNotif.action === "overdue_notification_sent" ||
       dbNotif.details?.toLowerCase().includes("overdue") ||
-      dbNotif.action === "task_status_changed" && dbNotif.details?.toLowerCase().includes("overdue")
+      (dbNotif.action === "task_status_changed" &&
+        dbNotif.details?.toLowerCase().includes("overdue"))
     ) {
       notificationType = "sla_overdue";
     } else if (
@@ -174,12 +176,16 @@ const transformDbNotifications = (
       )
         ? "CLEARING - FILE TRANSFER AND VALIDATION"
         : startTime
-        ? `Task (Start: ${startTime})`
-        : dbNotif.action
-          ? `FinOps: ${dbNotif.action.replace(/_/g, " ")}`
-          : "FinOps Notification",
+          ? `Task (Start: ${startTime})`
+          : dbNotif.action
+            ? `FinOps: ${dbNotif.action.replace(/_/g, " ")}`
+            : "FinOps Notification",
       message: dbNotif.details || "",
-      task_name: dbNotif.task_name || (startTime ? `Task scheduled for ${startTime}` : "CLEARING - FILE TRANSFER AND VALIDATION"),
+      task_name:
+        dbNotif.task_name ||
+        (startTime
+          ? `Task scheduled for ${startTime}`
+          : "CLEARING - FILE TRANSFER AND VALIDATION"),
       client_name: dbNotif.client_name || "ABC Corporation",
       subtask_name: dbNotif.subtask_name,
       assigned_to: members.assigned_to,
