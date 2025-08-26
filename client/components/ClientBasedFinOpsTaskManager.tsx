@@ -1080,8 +1080,8 @@ export default function ClientBasedFinOpsTaskManager() {
       // Resolve client name with proper fallback logic
       let clientName = "Unknown Client";
 
-      if (task.client_name) {
-        // Use the client_name if available
+      if (task.client_name && task.client_name !== "" && task.client_name !== "undefined") {
+        // Use the client_name if available and valid
         clientName = task.client_name;
       } else if (task.client_id) {
         // Look up client by ID in the clients array
