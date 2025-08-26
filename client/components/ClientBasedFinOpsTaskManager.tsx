@@ -604,11 +604,8 @@ export default function ClientBasedFinOpsTaskManager() {
     queryKey: ["finops-clients"],
     queryFn: async () => {
       try {
-        console.log("🔄 Fetching FinOps clients...");
-        // Use dedicated FinOps clients API
+        // Use dedicated FinOps clients API (not leads)
         const finopsClients = await apiClient.getFinOpsClients();
-        console.log("✅ FinOps clients data received:", finopsClients);
-        console.log("📊 Number of clients:", finopsClients?.length || 0);
         return finopsClients;
       } catch (error) {
         console.error("❌ Error fetching FinOps clients:", error);
@@ -1869,19 +1866,12 @@ export default function ClientBasedFinOpsTaskManager() {
                         if (clientsLoading) {
                           return (
                             <SelectItem value="loading" disabled>
-                              Loading clients...
+                              Loading FinOps clients...
                             </SelectItem>
                           );
                         }
 
                         if (clients.length > 0) {
-                          console.log(
-                            "📋 Rendering clients list:",
-                            clients.map((c) => ({
-                              id: c.id,
-                              name: c.company_name || c.client_name,
-                            })),
-                          );
                           return clients.map((client: any) => (
                             <SelectItem
                               key={`create-client-${client.id}`}
@@ -1894,10 +1884,9 @@ export default function ClientBasedFinOpsTaskManager() {
                           ));
                         }
 
-                        console.log("⚠️ No clients available");
                         return (
                           <SelectItem value="no-clients" disabled>
-                            No clients available
+                            No FinOps clients available
                           </SelectItem>
                         );
                       })()}
