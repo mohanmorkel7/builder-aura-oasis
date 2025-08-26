@@ -99,16 +99,22 @@ router.get("/", async (req: Request, res: Response) => {
           ? `WHERE ${whereConditions.join(" AND ")}`
           : "";
 
-      // Create read status table if it doesn't exist
-      const createTableQuery = `
+      // Create read status and archived status tables if they don't exist
+      const createTablesQuery = `
         CREATE TABLE IF NOT EXISTS finops_notification_read_status (
           activity_log_id INTEGER PRIMARY KEY,
           read_at TIMESTAMP DEFAULT NOW(),
           FOREIGN KEY (activity_log_id) REFERENCES finops_activity_log(id) ON DELETE CASCADE
-        )
+        );
+
+        CREATE TABLE IF NOT EXISTS finops_notification_archived_status (
+          activity_log_id INTEGER PRIMARY KEY,
+          archived_at TIMESTAMP DEFAULT NOW(),
+          FOREIGN KEY (activity_log_id) REFERENCES finops_activity_log(id) ON DELETE CASCADE
+        );
       `;
 
-      await pool.query(createTableQuery);
+      await pool.query(createTablesQuery);
 
       const query = `
         SELECT
@@ -142,7 +148,9 @@ router.get("/", async (req: Request, res: Response) => {
         LEFT JOIN finops_tasks ft ON fal.task_id = ft.id
         LEFT JOIN finops_subtasks fs ON fal.subtask_id = fs.id
         LEFT JOIN finops_notification_read_status fnrs ON fal.id = fnrs.activity_log_id
+        LEFT JOIN finops_notification_archived_status fnas ON fal.id = fnas.activity_log_id
         WHERE fal.timestamp >= NOW() - INTERVAL '7 days'
+        AND fnas.activity_log_id IS NULL
         ORDER BY fal.timestamp DESC
         LIMIT $${paramIndex++} OFFSET $${paramIndex++}
       `;
