@@ -407,6 +407,16 @@ export default function FinOpsNotifications() {
       } catch (error) {
         console.error("❌ FinOps notifications API failed:", error);
 
+        // Check if it's timeout error
+        if (error instanceof Error && error.message.includes("timeout")) {
+          console.warn("⏱️ Request timeout - using empty notifications");
+          return {
+            notifications: [],
+            pagination: { total: 0, limit: 50, offset: 0, has_more: false },
+            unread_count: 0,
+          };
+        }
+
         // Check if it's FullStory interference
         if (
           error instanceof Error &&
