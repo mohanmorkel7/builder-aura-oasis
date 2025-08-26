@@ -187,6 +187,23 @@ export const AuthProvider = React.memo(function AuthProvider({
   const [user, setUser] = React.useState<User | null>(null);
   const [isLoading, setIsLoading] = React.useState(true);
 
+  // Development-safe state setters to prevent HMR race conditions
+  const safeSetUser = React.useCallback((userData: User | null) => {
+    try {
+      setUser(userData);
+    } catch (error) {
+      console.warn("Safe setUser failed:", error);
+    }
+  }, []);
+
+  const safeSetIsLoading = React.useCallback((loading: boolean) => {
+    try {
+      setIsLoading(loading);
+    } catch (error) {
+      console.warn("Safe setIsLoading failed:", error);
+    }
+  }, []);
+
   React.useEffect(() => {
     const loadStoredUser = () => {
       // Add error handling for localStorage access
