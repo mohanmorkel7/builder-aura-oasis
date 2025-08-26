@@ -1022,9 +1022,9 @@ export default function ClientBasedFinOpsTaskManager() {
       description: task.description || "",
       client_id: task.client_id?.toString() || "",
       assigned_to: Array.isArray(task.assigned_to)
-        ? task.assigned_to.map((name) => convertNameToValueFormat(name, users))
+        ? task.assigned_to.map((name) => convertNameToValueFormat(extractNameFromValue(name), users))
         : task.assigned_to
-          ? [convertNameToValueFormat(task.assigned_to, users)]
+          ? [convertNameToValueFormat(extractNameFromValue(task.assigned_to), users)]
           : [], // Handle both array and string
       reporting_managers: (task.reporting_managers || []).map((name) =>
         convertNameToValueFormat(name, users),
