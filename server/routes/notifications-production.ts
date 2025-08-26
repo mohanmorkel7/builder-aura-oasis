@@ -163,6 +163,8 @@ router.get("/", async (req: Request, res: Response) => {
             WHEN fal.action = 'completion_notification_sent' THEN 'low'
             WHEN fal.action = 'sla_alert' OR LOWER(fal.details) LIKE '%starting in%' OR LOWER(fal.details) LIKE '%sla warning%' THEN 'high'
             WHEN fal.action = 'escalation_required' THEN 'critical'
+            WHEN LOWER(fal.details) LIKE '%pending%' AND LOWER(fal.details) LIKE '%need to start%' THEN 'medium'
+            WHEN LOWER(fal.details) LIKE '%pending status%' THEN 'medium'
             ELSE 'medium'
           END as priority,
           COALESCE(fnrs.activity_log_id IS NOT NULL, false) as read,
@@ -1124,6 +1126,8 @@ router.get("/test/categorization", async (req: Request, res: Response) => {
             WHEN fal.action = 'completion_notification_sent' THEN 'low'
             WHEN fal.action = 'sla_alert' OR LOWER(fal.details) LIKE '%starting in%' OR LOWER(fal.details) LIKE '%sla warning%' THEN 'high'
             WHEN fal.action = 'escalation_required' THEN 'critical'
+            WHEN LOWER(fal.details) LIKE '%pending%' AND LOWER(fal.details) LIKE '%need to start%' THEN 'medium'
+            WHEN LOWER(fal.details) LIKE '%pending status%' THEN 'medium'
             ELSE 'medium'
           END as computed_priority
         FROM finops_activity_log fal
@@ -1230,6 +1234,8 @@ router.get("/test/user-query", async (req: Request, res: Response) => {
             WHEN fal.action = 'completion_notification_sent' THEN 'low'
             WHEN fal.action = 'sla_alert' OR LOWER(fal.details) LIKE '%starting in%' OR LOWER(fal.details) LIKE '%sla warning%' THEN 'high'
             WHEN fal.action = 'escalation_required' THEN 'critical'
+            WHEN LOWER(fal.details) LIKE '%pending%' AND LOWER(fal.details) LIKE '%need to start%' THEN 'medium'
+            WHEN LOWER(fal.details) LIKE '%pending status%' THEN 'medium'
             ELSE 'medium'
           END as priority,
           COALESCE(fnrs.activity_log_id IS NOT NULL, false) as read,
