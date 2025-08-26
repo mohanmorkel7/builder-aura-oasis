@@ -279,6 +279,12 @@ export default function FinOpsNotifications() {
   const [filterPriority, setFilterPriority] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [overdueReasonDialog, setOverdueReasonDialog] = useState<{
+    open: boolean;
+    notificationId: string;
+    taskName: string;
+  }>({ open: false, notificationId: "", taskName: "" });
+  const [overdueReason, setOverdueReason] = useState("");
 
   // Real-time timer for live time updates
   React.useEffect(() => {
