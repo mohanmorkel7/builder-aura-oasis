@@ -338,6 +338,7 @@ function SortableSubTaskItem({
                       <span>
                         Start:{" "}
                         {(() => {
+                          if (!subtask.start_time) return "Not set";
                           const { time, period } = convertTo12Hour(
                             subtask.start_time,
                           );
