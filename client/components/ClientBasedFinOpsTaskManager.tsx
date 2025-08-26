@@ -1686,27 +1686,42 @@ export default function ClientBasedFinOpsTaskManager() {
                           <span>
                             Assigned:{" "}
                             {(() => {
+                              console.log('🔍 Raw task.assigned_to:', JSON.stringify(task.assigned_to));
+
                               // Handle various formats of assigned_to
                               let assignedArray = [];
 
                               if (Array.isArray(task.assigned_to)) {
+                                console.log('✅ Already an array:', task.assigned_to);
                                 assignedArray = task.assigned_to;
                               } else if (task.assigned_to) {
-                                // Try to parse if it's a JSON string
-                                try {
-                                  const parsed = JSON.parse(task.assigned_to);
-                                  assignedArray = Array.isArray(parsed) ? parsed : [parsed];
-                                } catch (e) {
-                                  // If not JSON, treat as single string
-                                  assignedArray = [task.assigned_to];
+                                // First try to extract using our helper function
+                                const extracted = extractNameFromValue(task.assigned_to);
+                                console.log('🔄 After extractNameFromValue:', extracted);
+
+                                // Check if the result looks like multiple names separated by comma
+                                if (extracted.includes('","') || extracted.includes('", "') || extracted.includes(',')) {
+                                  // Split by various comma patterns
+                                  const splitNames = extracted
+                                    .split(/,\s*"?|",\s*"?|"\s*,\s*"?/)
+                                    .map(name => name.replace(/^"|"$/g, '').trim())
+                                    .filter(name => name.length > 0);
+                                  console.log('🔄 Split names:', splitNames);
+                                  assignedArray = splitNames;
+                                } else {
+                                  // Single name
+                                  assignedArray = [extracted];
                                 }
                               }
 
-                              return assignedArray.length > 0
+                              const result = assignedArray.length > 0
                                 ? assignedArray
-                                    .map(extractNameFromValue)
+                                    .map(name => extractNameFromValue(name))
                                     .join(", ")
                                 : "Unassigned";
+
+                              console.log('✅ Final result:', result);
+                              return result;
                             })()}
                           </span>
                         </div>
