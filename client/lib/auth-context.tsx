@@ -566,7 +566,7 @@ export const AuthProvider = React.memo(function AuthProvider({
       console.error("MSAL logout error:", error);
     }
 
-    setUser(null);
+    safeSetUser(null);
     localStorage.removeItem("banani_user");
   };
 
