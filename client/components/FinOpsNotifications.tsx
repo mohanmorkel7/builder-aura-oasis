@@ -447,7 +447,7 @@ export default function FinOpsNotifications() {
 
         // Check if it's timeout error
         if (error instanceof Error && error.message.includes("timeout")) {
-          console.warn("⏱��� Request timeout - using empty notifications");
+          console.warn("⏱️ Request timeout - using empty notifications");
           return {
             notifications: [],
             pagination: { total: 0, limit: 50, offset: 0, has_more: false },
@@ -537,7 +537,7 @@ export default function FinOpsNotifications() {
     // If we have an error or invalid response, fall back to mock data
     console.log("🎭 Falling back to mock notifications due to API failure");
     return mockNotifications;
-  }, [dbNotifications, error, isLoading]);
+  }, [dbNotifications, error, isLoading, currentTime]);
 
   // Filter notifications
   const filteredNotifications = notifications.filter((notification) => {
