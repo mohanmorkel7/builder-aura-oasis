@@ -910,7 +910,14 @@ export default function ClientBasedFinOpsTaskManager() {
 
     if (diffMinutes < 0) {
       const remaining = Math.abs(diffMinutes);
+      // Show "need to start" when within 15 minutes of start time
+      if (remaining <= 15) {
+        return "need to start";
+      }
       return `Starts in ${remaining} min`;
+    } else if (diffMinutes <= 15) {
+      // Show "need to start" for the first 15 minutes after start time
+      return "need to start";
     } else if (diffMinutes < 60) {
       return `${diffMinutes} min ago`;
     } else {
