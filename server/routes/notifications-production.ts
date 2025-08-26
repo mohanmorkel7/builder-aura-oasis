@@ -1191,6 +1191,77 @@ router.get("/test/performance", async (req: Request, res: Response) => {
   }
 });
 
+// Test user's exact SQL query
+router.get("/test/user-query", async (req: Request, res: Response) => {
+  try {
+    if (await isDatabaseAvailable()) {
+      const query = `
+        SELECT
+          fal.id,
+          fal.task_id,
+          fal.subtask_id,
+          fal.action,
+          fal.user_name,
+          fal.details,
+          fal.timestamp as created_at,
+          ft.task_name,
+          ft.client_name,
+          fs.name as subtask_name,
+          CASE
+            WHEN fal.action = 'delay_reported' THEN 'task_delayed'
+            WHEN fal.action = 'overdue_notification_sent' THEN 'sla_overdue'
+            WHEN fal.action = 'completion_notification_sent' THEN 'task_completed'
+            WHEN fal.action = 'sla_alert' THEN 'sla_warning'
+            WHEN fal.action = 'escalation_required' THEN 'escalation'
+            WHEN LOWER(fal.details) LIKE '%overdue%' THEN 'sla_overdue'
+            WHEN fal.action IN ('status_changed', 'task_status_changed') AND LOWER(fal.details) LIKE '%overdue%' THEN 'sla_overdue'
+            WHEN fal.action IN ('status_changed', 'task_status_changed') AND LOWER(fal.details) LIKE '%completed%' THEN 'task_completed'
+            WHEN LOWER(fal.details) LIKE '%starting in%' OR LOWER(fal.details) LIKE '%sla warning%' THEN 'sla_warning'
+            ELSE 'daily_reminder'
+          END as type,
+          CASE
+            WHEN fal.action = 'delay_reported' OR fal.action = 'overdue_notification_sent' OR LOWER(fal.details) LIKE '%overdue%' THEN 'critical'
+            WHEN fal.action = 'completion_notification_sent' THEN 'low'
+            WHEN fal.action = 'sla_alert' OR LOWER(fal.details) LIKE '%starting in%' OR LOWER(fal.details) LIKE '%sla warning%' THEN 'high'
+            WHEN fal.action = 'escalation_required' THEN 'critical'
+            ELSE 'medium'
+          END as priority,
+          COALESCE(fnrs.activity_log_id IS NOT NULL, false) as read,
+          1 as user_id
+        FROM finops_activity_log fal
+        LEFT JOIN finops_tasks ft ON fal.task_id = ft.id
+        LEFT JOIN finops_subtasks fs ON fal.subtask_id = fs.id
+        LEFT JOIN finops_notification_read_status fnrs ON fal.id = fnrs.activity_log_id
+        LEFT JOIN finops_notification_archived_status fnas ON fal.id = fnas.activity_log_id
+        WHERE fal.timestamp >= NOW() - INTERVAL '7 days'
+        AND fnas.activity_log_id IS NULL
+        ORDER BY fal.timestamp DESC
+        LIMIT 10
+      `;
+
+      const result = await pool.query(query);
+
+      res.json({
+        message: "User's exact SQL query results",
+        overdue_notifications: result.rows.filter(row => row.type === 'sla_overdue'),
+        all_notifications: result.rows,
+        timestamp: new Date().toISOString(),
+      });
+    } else {
+      res.json({
+        message: "Database unavailable",
+        timestamp: new Date().toISOString(),
+      });
+    }
+  } catch (error) {
+    console.error("User query test error:", error);
+    res.status(500).json({
+      error: "User query test failed",
+      message: error.message,
+    });
+  }
+});
+
 // Quick test to verify overdue notifications are categorized correctly
 router.get("/test/overdue-check", async (req: Request, res: Response) => {
   try {
