@@ -131,6 +131,36 @@ router.get("/", async (req: Request, res: Response) => {
           ? `WHERE ${whereConditions.join(" AND ")}`
           : "";
 
+      // First run auto-sync to check for new SLA notifications
+      try {
+        const autoSyncQuery = `SELECT * FROM check_subtask_sla_notifications()`;
+        const autoSyncResult = await pool.query(autoSyncQuery);
+
+        for (const notification of autoSyncResult.rows) {
+          const insertQuery = `
+            INSERT INTO finops_activity_log (action, task_id, subtask_id, user_name, details, timestamp)
+            VALUES ($1, $2, $3, $4, $5, NOW())
+            ON CONFLICT DO NOTHING
+          `;
+
+          const action = notification.notification_type === 'sla_warning' ? 'sla_alert' : 'overdue_notification_sent';
+
+          await pool.query(insertQuery, [
+            action,
+            notification.task_id,
+            notification.subtask_id,
+            'System',
+            notification.message
+          ]);
+        }
+
+        if (autoSyncResult.rows.length > 0) {
+          console.log(`🔄 Auto-sync created ${autoSyncResult.rows.length} notifications`);
+        }
+      } catch (autoSyncError) {
+        console.log("Auto-sync error (non-critical):", autoSyncError.message);
+      }
+
       // Query with proper deduplication that preserves important notifications like SLA alerts
       const query = `
         WITH ranked_notifications AS (
@@ -164,6 +194,8 @@ router.get("/", async (req: Request, res: Response) => {
           ft.task_name,
           ft.client_name,
           fs.name as subtask_name,
+          fs.start_time,
+          fs.auto_notify,
           CASE
             WHEN rn.action = 'delay_reported' THEN 'task_delayed'
             WHEN rn.action = 'overdue_notification_sent' THEN 'sla_overdue'
