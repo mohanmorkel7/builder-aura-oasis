@@ -99,10 +99,18 @@ const transformDbNotifications = (
     let overdueMinutes = overdueMatch ? parseInt(overdueMatch[1]) : undefined;
 
     // For existing overdue notifications, calculate current overdue time
-    if (overdueMinutes && currentTime && dbNotif.created_at && dbNotif.action === "overdue_notification_sent") {
+    if (
+      overdueMinutes &&
+      currentTime &&
+      dbNotif.created_at &&
+      dbNotif.action === "overdue_notification_sent"
+    ) {
       const notificationTime = new Date(dbNotif.created_at);
-      const timeSinceNotificationMs = currentTime.getTime() - notificationTime.getTime();
-      const minutesSinceNotification = Math.floor(timeSinceNotificationMs / 60000);
+      const timeSinceNotificationMs =
+        currentTime.getTime() - notificationTime.getTime();
+      const minutesSinceNotification = Math.floor(
+        timeSinceNotificationMs / 60000,
+      );
 
       // Current overdue minutes = original overdue + time passed since notification
       const currentOverdueMinutes = overdueMinutes + minutesSinceNotification;
@@ -111,13 +119,15 @@ const transformDbNotifications = (
       // Update details with current overdue time
       realTimeDetails = dbNotif.details.replace(
         /overdue by (\d+) min • (\d+) min ago/i,
-        `Overdue by ${currentOverdueMinutes} min • ${totalTimeAgo} min ago`
+        `Overdue by ${currentOverdueMinutes} min • ${totalTimeAgo} min ago`,
       );
       realTimeTitle = `SLA Overdue - ${currentOverdueMinutes} min overdue`;
 
       overdueMinutes = currentOverdueMinutes;
 
-      console.log(`🚨 Real-time overdue calculation: Originally ${overdueMatch[1]} min → Now ${currentOverdueMinutes} min overdue (${minutesSinceNotification} min since notification)`);
+      console.log(
+        `🚨 Real-time overdue calculation: Originally ${overdueMatch[1]} min → Now ${currentOverdueMinutes} min overdue (${minutesSinceNotification} min since notification)`,
+      );
     }
 
     // Extract start time if present
@@ -126,7 +136,11 @@ const transformDbNotifications = (
 
     // Calculate real-time remaining minutes for SLA warnings with improved precision
 
-    if (currentTime && dbNotif.details?.includes("SLA Warning - ") && dbNotif.details?.includes("min remaining")) {
+    if (
+      currentTime &&
+      dbNotif.details?.includes("SLA Warning - ") &&
+      dbNotif.details?.includes("min remaining")
+    ) {
       const originalMinMatch = dbNotif.details.match(/(\d+) min remaining/);
       if (originalMinMatch && dbNotif.created_at) {
         const originalMinutes = parseInt(originalMinMatch[1]);
@@ -138,8 +152,11 @@ const transformDbNotifications = (
         const secondsPassed = Math.floor((timeDiffMs % 60000) / 1000);
 
         // Calculate current remaining minutes with better rounding
-        const exactRemainingMinutes = originalMinutes - (timeDiffMs / 60000);
-        const currentRemainingMinutes = Math.max(0, Math.ceil(exactRemainingMinutes));
+        const exactRemainingMinutes = originalMinutes - timeDiffMs / 60000;
+        const currentRemainingMinutes = Math.max(
+          0,
+          Math.ceil(exactRemainingMinutes),
+        );
 
         // Check if SLA has expired
         if (exactRemainingMinutes <= 0) {
@@ -151,17 +168,21 @@ const transformDbNotifications = (
           realTimeTitle = `SLA Overdue - ${overdueMinutesFromSLA} min overdue`;
           realTimeSlaRemaining = `Overdue by ${overdueMinutesFromSLA} min`;
 
-          console.log(`🚨 SLA EXPIRED: ${originalMinutes} min → OVERDUE by ${overdueMinutesFromSLA} min (${minutesPassed}:${secondsPassed.toString().padStart(2, '0')} elapsed)`);
+          console.log(
+            `🚨 SLA EXPIRED: ${originalMinutes} min → OVERDUE by ${overdueMinutesFromSLA} min (${minutesPassed}:${secondsPassed.toString().padStart(2, "0")} elapsed)`,
+          );
         } else {
           // Still within SLA
           realTimeDetails = dbNotif.details.replace(
             /(\d+) min remaining/,
-            `${currentRemainingMinutes} min remaining`
+            `${currentRemainingMinutes} min remaining`,
           );
           realTimeTitle = realTimeDetails;
           realTimeSlaRemaining = `${currentRemainingMinutes} min remaining`;
 
-          console.log(`🕒 Real-time SLA calculation (precise): ${originalMinutes} min → ${currentRemainingMinutes} min (${minutesPassed}:${secondsPassed.toString().padStart(2, '0')} elapsed, exact: ${exactRemainingMinutes.toFixed(2)})`);
+          console.log(
+            `🕒 Real-time SLA calculation (precise): ${originalMinutes} min → ${currentRemainingMinutes} min (${minutesPassed}:${secondsPassed.toString().padStart(2, "0")} elapsed, exact: ${exactRemainingMinutes.toFixed(2)})`,
+          );
         }
       }
     }
@@ -284,23 +305,27 @@ const transformDbNotifications = (
     const transformed = {
       id: dbNotif.id.toString(),
       type: notificationType,
-      title: realTimeTitle && realTimeTitle !== dbNotif.details
-        ? realTimeTitle
-        : realTimeDetails?.includes("FinOps: sla warning")
-          ? realTimeDetails
-          : realTimeDetails?.includes("SLA Warning - ") && realTimeDetails?.includes("min remaining")
+      title:
+        realTimeTitle && realTimeTitle !== dbNotif.details
+          ? realTimeTitle
+          : realTimeDetails?.includes("FinOps: sla warning")
             ? realTimeDetails
-            : realTimeDetails?.includes("Overdue by")
-              ? realTimeTitle || `SLA Overdue - ${overdueMinutes} min overdue`
-              : realTimeDetails?.includes("Subtasks (0/1 completed)")
-                ? realTimeDetails.split("Start:")[0].trim()
-                : realTimeDetails?.includes("CLEARING - FILE TRANSFER AND VALIDATION")
-                  ? "CLEARING - FILE TRANSFER AND VALIDATION"
-                  : startTime
-                    ? `Task (Start: ${startTime})`
-                    : dbNotif.action
-                      ? `FinOps: ${dbNotif.action.replace(/_/g, " ")}`
-                      : "FinOps Notification",
+            : realTimeDetails?.includes("SLA Warning - ") &&
+                realTimeDetails?.includes("min remaining")
+              ? realTimeDetails
+              : realTimeDetails?.includes("Overdue by")
+                ? realTimeTitle || `SLA Overdue - ${overdueMinutes} min overdue`
+                : realTimeDetails?.includes("Subtasks (0/1 completed)")
+                  ? realTimeDetails.split("Start:")[0].trim()
+                  : realTimeDetails?.includes(
+                        "CLEARING - FILE TRANSFER AND VALIDATION",
+                      )
+                    ? "CLEARING - FILE TRANSFER AND VALIDATION"
+                    : startTime
+                      ? `Task (Start: ${startTime})`
+                      : dbNotif.action
+                        ? `FinOps: ${dbNotif.action.replace(/_/g, " ")}`
+                        : "FinOps Notification",
       message: realTimeDetails || "",
       task_name:
         dbNotif.task_name ||
@@ -322,22 +347,24 @@ const transformDbNotifications = (
       assigned_to: members.assigned_to,
       reporting_managers: members.reporting_managers,
       escalation_managers: members.escalation_managers,
-      priority: (overdueMinutes || isExpiredSLA) ? "critical" : dbNotif.priority || "medium",
+      priority:
+        overdueMinutes || isExpiredSLA
+          ? "critical"
+          : dbNotif.priority || "medium",
       status: dbNotif.read ? "read" : "unread",
       created_at: dbNotif.created_at,
       action_required:
         notificationType === "sla_overdue" ||
         notificationType === "escalation" ||
         isExpiredSLA ||
-        (notificationType === "sla_warning" && (
-          dbNotif.details?.includes("min remaining") ||
-          dbNotif.details?.includes("need to start")
-        )),
+        (notificationType === "sla_warning" &&
+          (dbNotif.details?.includes("min remaining") ||
+            dbNotif.details?.includes("need to start"))),
       delay_reason:
         dbNotif.action === "delay_reported" ? "Process delayed" : undefined,
-      sla_remaining: realTimeSlaRemaining || (overdueMinutes
-        ? `Overdue by ${overdueMinutes} min`
-        : undefined),
+      sla_remaining:
+        realTimeSlaRemaining ||
+        (overdueMinutes ? `Overdue by ${overdueMinutes} min` : undefined),
       overdue_minutes: overdueMinutes,
       members_list: members.members_list,
     };
@@ -504,7 +531,6 @@ export default function FinOpsNotifications() {
     };
   }, []);
 
-
   // Fetch notifications from database
   const {
     data: dbNotifications,
@@ -625,7 +651,7 @@ export default function FinOpsNotifications() {
 
   // Expose debug functions to window for console access (after all dependencies are available)
   React.useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       (window as any).finopsDebug = {
         forceTimeSync,
         getCurrentTime: () => currentTime,
