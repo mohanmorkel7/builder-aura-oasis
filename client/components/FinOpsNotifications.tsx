@@ -95,6 +95,28 @@ const transformDbNotifications = (
     const startTimeMatch = dbNotif.details?.match(/Start: (\d+:\d+ [AP]M)/i);
     const startTime = startTimeMatch ? startTimeMatch[1] : undefined;
 
+    // Calculate real-time remaining minutes for SLA warnings
+    let realTimeDetails = dbNotif.details;
+    let realTimeTitle = dbNotif.details;
+    if (currentTime && dbNotif.details?.includes("SLA Warning - ") && dbNotif.details?.includes("min remaining")) {
+      const originalMinMatch = dbNotif.details.match(/(\d+) min remaining/);
+      if (originalMinMatch && dbNotif.created_at) {
+        const originalMinutes = parseInt(originalMinMatch[1]);
+        const notificationTime = new Date(dbNotif.created_at);
+        const minutesPassed = Math.floor((currentTime.getTime() - notificationTime.getTime()) / 60000);
+        const currentRemainingMinutes = Math.max(0, originalMinutes - minutesPassed);
+
+        // Update the details and title with real-time calculation
+        realTimeDetails = dbNotif.details.replace(
+          /(\d+) min remaining/,
+          `${currentRemainingMinutes} min remaining`
+        );
+        realTimeTitle = realTimeDetails;
+
+        console.log(`🕒 Real-time SLA calculation: ${originalMinutes} min → ${currentRemainingMinutes} min (${minutesPassed} min passed)`);
+      }
+    }
+
     // Determine notification type based on action and details
     let notificationType = "daily_reminder";
     if (
