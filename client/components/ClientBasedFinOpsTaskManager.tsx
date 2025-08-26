@@ -757,7 +757,7 @@ export default function ClientBasedFinOpsTaskManager() {
       task_name: task.task_name || "",
       description: task.description || "",
       client_id: task.client_id?.toString() || "",
-      assigned_to: task.assigned_to || "",
+      assigned_to: Array.isArray(task.assigned_to) ? task.assigned_to : (task.assigned_to ? [task.assigned_to] : []), // Handle both array and string
       reporting_managers: task.reporting_managers || [],
       escalation_managers: task.escalation_managers || [],
       effective_from:
