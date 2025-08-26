@@ -904,8 +904,13 @@ export default function FinOpsNotifications() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => markAsRead(notification.id)}
+                          onClick={() => markAsRead(
+                            notification.id,
+                            notification.type === "sla_overdue",
+                            notification.task_name
+                          )}
                           className="h-8 px-2"
+                          title={notification.type === "sla_overdue" ? "Mark as read and provide reason" : "Mark as read"}
                         >
                           <CheckCircle className="w-3 h-3" />
                         </Button>
