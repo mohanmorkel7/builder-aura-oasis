@@ -469,6 +469,19 @@ export default function FinOpsNotifications() {
     };
   }, []);
 
+  // Expose debug functions to window for console access
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      (window as any).finopsDebug = {
+        forceTimeSync,
+        getCurrentTime: () => currentTime,
+        toggleDebugMode: () => setDebugMode(!debugMode),
+        getNotifications: () => notifications,
+        refetchNotifications: refetch,
+      };
+    }
+  }, [forceTimeSync, currentTime, debugMode, notifications, refetch]);
+
   // Fetch notifications from database
   const {
     data: dbNotifications,
