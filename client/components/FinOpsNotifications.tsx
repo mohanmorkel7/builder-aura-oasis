@@ -99,6 +99,9 @@ const transformDbNotifications = (
     let realTimeDetails = dbNotif.details;
     let realTimeTitle = dbNotif.details;
     let realTimeSlaRemaining = undefined;
+    let isExpiredSLA = false;
+    let overdueMinutesFromSLA = 0;
+
     if (currentTime && dbNotif.details?.includes("SLA Warning - ") && dbNotif.details?.includes("min remaining")) {
       const originalMinMatch = dbNotif.details.match(/(\d+) min remaining/);
       if (originalMinMatch && dbNotif.created_at) {
@@ -114,21 +117,28 @@ const transformDbNotifications = (
         const exactRemainingMinutes = originalMinutes - (timeDiffMs / 60000);
         const currentRemainingMinutes = Math.max(0, Math.ceil(exactRemainingMinutes));
 
-        // Update the details and title with real-time calculation
-        realTimeDetails = dbNotif.details.replace(
-          /(\d+) min remaining/,
-          `${currentRemainingMinutes} min remaining`
-        );
-        realTimeTitle = realTimeDetails;
+        // Check if SLA has expired
+        if (exactRemainingMinutes <= 0) {
+          isExpiredSLA = true;
+          overdueMinutesFromSLA = Math.floor(Math.abs(exactRemainingMinutes));
 
-        // Set real-time SLA remaining
-        if (currentRemainingMinutes <= 0) {
-          realTimeSlaRemaining = "SLA BREACHED";
+          // Convert to overdue notification
+          realTimeDetails = `Overdue by ${overdueMinutesFromSLA} min • ${Math.floor(timeDiffMs / 60000)} min ago`;
+          realTimeTitle = `SLA Overdue - ${overdueMinutesFromSLA} min overdue`;
+          realTimeSlaRemaining = `Overdue by ${overdueMinutesFromSLA} min`;
+
+          console.log(`🚨 SLA EXPIRED: ${originalMinutes} min → OVERDUE by ${overdueMinutesFromSLA} min (${minutesPassed}:${secondsPassed.toString().padStart(2, '0')} elapsed)`);
         } else {
+          // Still within SLA
+          realTimeDetails = dbNotif.details.replace(
+            /(\d+) min remaining/,
+            `${currentRemainingMinutes} min remaining`
+          );
+          realTimeTitle = realTimeDetails;
           realTimeSlaRemaining = `${currentRemainingMinutes} min remaining`;
-        }
 
-        console.log(`🕒 Real-time SLA calculation (precise): ${originalMinutes} min → ${currentRemainingMinutes} min (${minutesPassed}:${secondsPassed.toString().padStart(2, '0')} elapsed, exact: ${exactRemainingMinutes.toFixed(2)})`);
+          console.log(`🕒 Real-time SLA calculation (precise): ${originalMinutes} min → ${currentRemainingMinutes} min (${minutesPassed}:${secondsPassed.toString().padStart(2, '0')} elapsed, exact: ${exactRemainingMinutes.toFixed(2)})`);
+        }
       }
     }
 
