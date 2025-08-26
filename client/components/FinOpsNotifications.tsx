@@ -850,13 +850,13 @@ export default function FinOpsNotifications() {
     (n) => n.action_required && n.status !== "archived",
   ).length;
 
-  // Determine if we're showing real data or mock data
-  const isUsingRealData =
+  // Determine database connection status (database-only mode)
+  const isDatabaseConnected =
     dbNotifications &&
     typeof dbNotifications === "object" &&
     "notifications" in dbNotifications;
-  const isEmptyRealData =
-    isUsingRealData &&
+  const isDatabaseEmpty =
+    isDatabaseConnected &&
     (!dbNotifications.notifications ||
       dbNotifications.notifications.length === 0);
 
