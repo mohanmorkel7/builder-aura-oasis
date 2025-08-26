@@ -94,7 +94,10 @@ const extractNameFromValue = (value: string, depth: number = 0): string => {
     return value;
   }
 
-  console.log(`🔍 extractNameFromValue input (depth ${depth}):`, JSON.stringify(value));
+  console.log(
+    `🔍 extractNameFromValue input (depth ${depth}):`,
+    JSON.stringify(value),
+  );
 
   // Handle malformed JSON objects like {"John Doe"} - extract content between braces
   if (value.startsWith("{") && value.endsWith("}")) {
@@ -138,7 +141,9 @@ const extractNameFromValue = (value: string, depth: number = 0): string => {
     try {
       const parsed = JSON.parse(value);
       console.log("✅ Stringified JSON parsed:", parsed);
-      return typeof parsed === "string" ? extractNameFromValue(parsed, depth + 1) : value;
+      return typeof parsed === "string"
+        ? extractNameFromValue(parsed, depth + 1)
+        : value;
     } catch (e) {
       console.log("⚠️ Stringified JSON parsing failed");
     }
@@ -149,7 +154,9 @@ const extractNameFromValue = (value: string, depth: number = 0): string => {
     try {
       const parsed = JSON.parse(value);
       console.log("✅ Quoted string parsed:", parsed);
-      return typeof parsed === "string" ? extractNameFromValue(parsed, depth + 1) : value;
+      return typeof parsed === "string"
+        ? extractNameFromValue(parsed, depth + 1)
+        : value;
     } catch (e) {
       console.log("⚠️ Quoted string parsing failed");
     }
