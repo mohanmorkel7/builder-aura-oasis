@@ -164,6 +164,13 @@ const transformDbNotifications = (
           escalation_managers: ["Sarah Wilson"],
           members_list: ["Maria Garcia", "Robert Chen", "Sarah Wilson"],
         },
+        6: {
+          // RECONCILIATION - DAILY SETTLEMENT PROCESS (Enterprise Banking)
+          assigned_to: "Maria Garcia",
+          reporting_managers: ["Robert Chen"],
+          escalation_managers: ["Sarah Wilson"],
+          members_list: ["Maria Garcia", "Robert Chen", "Sarah Wilson"],
+        },
       };
       return (
         taskMembers[taskId] || {
