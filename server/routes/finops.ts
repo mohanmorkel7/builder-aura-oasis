@@ -306,6 +306,8 @@ router.post("/tasks", async (req: Request, res: Response) => {
     const {
       task_name,
       description,
+      client_id,
+      client_name,
       assigned_to,
       reporting_managers,
       escalation_managers,
@@ -316,24 +318,34 @@ router.post("/tasks", async (req: Request, res: Response) => {
       created_by,
     } = req.body;
 
+    console.log("📝 Creating FinOps task with data:", {
+      task_name,
+      client_id,
+      client_name,
+      assigned_to,
+      created_by
+    });
+
     if (await isDatabaseAvailable()) {
       const client = await pool.connect();
 
       try {
         await client.query("BEGIN");
 
-        // Insert main task
+        // Insert main task with client information
         const taskQuery = `
           INSERT INTO finops_tasks (
-            task_name, description, assigned_to, reporting_managers, 
+            task_name, description, client_id, client_name, assigned_to, reporting_managers,
             escalation_managers, effective_from, duration, is_active, created_by
-          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
           RETURNING id
         `;
 
         const taskResult = await client.query(taskQuery, [
           task_name,
           description,
+          client_id || null,
+          client_name || null,
           assigned_to,
           JSON.stringify(reporting_managers),
           JSON.stringify(escalation_managers),
@@ -342,6 +354,8 @@ router.post("/tasks", async (req: Request, res: Response) => {
           is_active,
           created_by,
         ]);
+
+        console.log("✅ Task inserted with ID:", taskResult.rows[0].id);
 
         const taskId = taskResult.rows[0].id;
 
