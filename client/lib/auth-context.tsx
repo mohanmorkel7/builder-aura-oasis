@@ -463,7 +463,7 @@ export const AuthProvider = React.memo(function AuthProvider({
                 "msal_account",
                 JSON.stringify(loginResponse.account),
               );
-              setIsLoading(false);
+              safeSetIsLoading(false);
               return true;
             } else {
               console.warn(
