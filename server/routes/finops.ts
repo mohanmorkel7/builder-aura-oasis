@@ -1596,6 +1596,138 @@ router.delete("/clients/:id", async (req: Request, res: Response) => {
   }
 });
 
+// Create new FinOps task
+router.post("/tasks", async (req: Request, res: Response) => {
+  try {
+    const {
+      task_name,
+      description,
+      client_id,
+      client_name,
+      assigned_to,
+      reporting_managers,
+      escalation_managers,
+      effective_from,
+      duration,
+      is_active,
+      subtasks,
+      created_by,
+    } = req.body;
+
+    if (!task_name || !assigned_to || !effective_from || !duration || !created_by) {
+      return res.status(400).json({
+        error: "Missing required fields: task_name, assigned_to, effective_from, duration, created_by"
+      });
+    }
+
+    if (await isDatabaseAvailable()) {
+      // Convert client_id to integer if it's a string
+      const clientIdInt = client_id ? parseInt(client_id.toString()) : null;
+
+      // Convert assigned_to array to JSON string if it's an array
+      const assignedToStr = Array.isArray(assigned_to) ? assigned_to[0] : assigned_to;
+
+      // Create the main task
+      const taskResult = await pool.query(
+        `
+        INSERT INTO finops_tasks (
+          task_name, description, client_id, client_name, assigned_to,
+          reporting_managers, escalation_managers, effective_from, duration,
+          is_active, created_by, created_at, updated_at
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW(), NOW())
+        RETURNING *
+      `,
+        [
+          task_name,
+          description,
+          clientIdInt,
+          client_name,
+          assignedToStr,
+          JSON.stringify(reporting_managers || []),
+          JSON.stringify(escalation_managers || []),
+          effective_from,
+          duration,
+          is_active !== false, // Default to true if not specified
+          created_by,
+        ]
+      );
+
+      const newTask = taskResult.rows[0];
+
+      // Create subtasks if provided
+      const createdSubtasks = [];
+      if (subtasks && Array.isArray(subtasks)) {
+        for (const subtask of subtasks) {
+          const subtaskResult = await pool.query(
+            `
+            INSERT INTO finops_subtasks (
+              task_id, name, description, sla_hours, sla_minutes,
+              start_time, order_position, status, assigned_to, created_at, updated_at
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), NOW())
+            RETURNING *
+          `,
+            [
+              newTask.id,
+              subtask.name,
+              subtask.description,
+              subtask.sla_hours || 1,
+              subtask.sla_minutes || 0,
+              subtask.start_time || "05:00:00",
+              subtask.order_position || 0,
+              subtask.status || "pending",
+              subtask.assigned_to || assignedToStr,
+            ]
+          );
+          createdSubtasks.push(subtaskResult.rows[0]);
+        }
+      }
+
+      // Log activity
+      await logActivity(
+        newTask.id,
+        null,
+        "created",
+        "User",
+        `Task "${task_name}" created successfully`
+      );
+
+      // Return the created task with subtasks
+      const response = {
+        ...newTask,
+        subtasks: createdSubtasks,
+      };
+
+      res.status(201).json(response);
+    } else {
+      // Return mock response when database is unavailable
+      const mockTask = {
+        id: Date.now(),
+        task_name,
+        description,
+        client_id: client_id ? parseInt(client_id.toString()) : null,
+        client_name,
+        assigned_to: Array.isArray(assigned_to) ? assigned_to[0] : assigned_to,
+        reporting_managers: reporting_managers || [],
+        escalation_managers: escalation_managers || [],
+        effective_from,
+        duration,
+        is_active: is_active !== false,
+        status: "active",
+        created_by,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        subtasks: subtasks || [],
+      };
+
+      console.log("Database unavailable, returning mock FinOps task creation");
+      res.status(201).json(mockTask);
+    }
+  } catch (error) {
+    console.error("Error creating FinOps task:", error);
+    res.status(500).json({ error: "Failed to create FinOps task" });
+  }
+});
+
 // Dashboard endpoint
 router.get("/dashboard", async (req: Request, res: Response) => {
   try {
