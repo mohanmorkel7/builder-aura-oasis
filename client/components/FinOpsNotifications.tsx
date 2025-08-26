@@ -1022,11 +1022,11 @@ export default function FinOpsNotifications() {
               </h3>
               <p className="text-gray-600">
                 {notifications.length === 0
-                  ? isEmptyRealData
-                    ? "✅ Connected to real-time database. No notifications found yet. You'll receive updates about task progress and alerts here when they occur."
-                    : isUsingRealData
-                      ? "No notifications in the database yet. You'll receive updates about task progress and alerts here."
-                      : "Demo mode: No notifications to display. In a real environment, you would see FinOps task alerts and notifications here."
+                  ? isDatabaseEmpty
+                    ? "✅ Database connected. No notifications yet. The system automatically monitors subtask start_time and creates SLA warnings 15 minutes before and overdue alerts 15 minutes after scheduled times."
+                    : isDatabaseConnected
+                      ? "Database connected but no notifications found. Check subtasks table for entries with start_time to enable automatic notifications."
+                      : "❌ Database unavailable. Please ensure database connection is working to see automated SLA notifications."
                   : "No notifications match your current filters."}
               </p>
             </CardContent>
