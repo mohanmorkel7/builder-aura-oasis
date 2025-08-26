@@ -300,6 +300,7 @@ const transformDbNotifications = (
       action_required:
         notificationType === "sla_overdue" ||
         notificationType === "escalation" ||
+        isExpiredSLA ||
         (notificationType === "sla_warning" && (
           dbNotif.details?.includes("min remaining") ||
           dbNotif.details?.includes("need to start")
