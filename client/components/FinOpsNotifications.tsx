@@ -638,7 +638,9 @@ export default function FinOpsNotifications() {
     }
 
     // Return empty array if database is unavailable (no mock fallback)
-    console.log("❌ Database unavailable - showing empty notifications (database-only mode)");
+    console.log(
+      "❌ Database unavailable - showing empty notifications (database-only mode)",
+    );
     return [];
   }, [dbNotifications, error, isLoading, currentTime]);
 

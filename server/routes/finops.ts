@@ -253,8 +253,14 @@ router.get("/tasks", async (req: Request, res: Response) => {
 
     // Add CORS headers for FullStory compatibility
     res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    res.setHeader(
+      "Access-Control-Allow-Methods",
+      "GET, POST, PUT, DELETE, OPTIONS",
+    );
+    res.setHeader(
+      "Access-Control-Allow-Headers",
+      "Content-Type, Authorization",
+    );
 
     if (await isDatabaseAvailable()) {
       console.log("✅ Database is available, fetching real data");
@@ -291,10 +297,12 @@ router.get("/tasks", async (req: Request, res: Response) => {
       const tasks = result.rows.map((row) => ({
         ...row,
         subtasks: Array.isArray(row.subtasks) ? row.subtasks : [],
-        client_name: row.client_name || "Unknown Client"
+        client_name: row.client_name || "Unknown Client",
       }));
 
-      console.log(`✅ Successfully fetched ${tasks.length} FinOps tasks from database`);
+      console.log(
+        `✅ Successfully fetched ${tasks.length} FinOps tasks from database`,
+      );
       res.json(tasks);
     } else {
       console.log("❌ Database unavailable, returning mock FinOps tasks");
@@ -1973,23 +1981,27 @@ router.get("/debug/status", async (req: Request, res: Response) => {
       timestamp: new Date().toISOString(),
       database: {
         available: databaseAvailable,
-        connection_string: process.env.DATABASE_URL ? "configured" : "not configured"
+        connection_string: process.env.DATABASE_URL
+          ? "configured"
+          : "not configured",
       },
       mock_data: {
         tasks_count: mockFinOpsTasks.length,
-        activity_log_count: mockActivityLog.length
+        activity_log_count: mockActivityLog.length,
       },
       endpoints: {
         "GET /tasks": "Fetch all FinOps tasks",
         "POST /tasks": "Create new FinOps task",
         "GET /activity-log": "Fetch activity log",
-        "GET /debug/status": "This debug endpoint"
-      }
+        "GET /debug/status": "This debug endpoint",
+      },
     };
 
     if (databaseAvailable) {
       try {
-        const tasksCount = await pool.query("SELECT COUNT(*) FROM finops_tasks WHERE deleted_at IS NULL");
+        const tasksCount = await pool.query(
+          "SELECT COUNT(*) FROM finops_tasks WHERE deleted_at IS NULL",
+        );
         debugInfo.database.tasks_in_db = parseInt(tasksCount.rows[0].count);
       } catch (dbError) {
         debugInfo.database.query_error = dbError.message;
@@ -2001,7 +2013,7 @@ router.get("/debug/status", async (req: Request, res: Response) => {
     res.status(500).json({
       error: "Debug endpoint failed",
       message: error.message,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   }
 });
@@ -2014,8 +2026,8 @@ router.get("/test", (req: Request, res: Response) => {
     endpoints: {
       tasks: "/api/finops/tasks",
       debug: "/api/finops/debug/status",
-      test: "/api/finops/test"
-    }
+      test: "/api/finops/test",
+    },
   });
 });
 

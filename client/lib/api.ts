@@ -47,7 +47,7 @@ export class ApiClient {
   }
   // Preserve original fetch to avoid FullStory interference
   private preserveOriginalFetch() {
-    if (typeof window !== 'undefined' && !(window as any).__originalFetch) {
+    if (typeof window !== "undefined" && !(window as any).__originalFetch) {
       (window as any).__originalFetch = window.fetch.bind(window);
       console.log("🔒 Original fetch preserved for FullStory protection");
     }
@@ -845,10 +845,16 @@ export class ApiClient {
       // Use request with retry for better reliability
       const result = await this.requestWithRetry("/finops/tasks", {}, 3);
 
-      console.log("✅ FinOps tasks fetched successfully:", Array.isArray(result) ? result.length : "unknown count");
+      console.log(
+        "✅ FinOps tasks fetched successfully:",
+        Array.isArray(result) ? result.length : "unknown count",
+      );
       return result || [];
     } catch (error) {
-      console.error("❌ Failed to fetch FinOps tasks after all retries:", error);
+      console.error(
+        "❌ Failed to fetch FinOps tasks after all retries:",
+        error,
+      );
 
       // Return empty array as graceful fallback to prevent UI crashes
       return [];

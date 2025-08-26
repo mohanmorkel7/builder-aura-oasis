@@ -671,13 +671,21 @@ export default function ClientBasedFinOpsTaskManager() {
   });
 
   // Fetch FinOps tasks with enhanced error handling
-  const { data: finopsTasks = [], isLoading, error, refetch } = useQuery({
+  const {
+    data: finopsTasks = [],
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
     queryKey: ["client-finops-tasks"],
     queryFn: async () => {
       try {
         console.log("🔍 Fetching FinOps tasks...");
         const result = await apiClient.getFinOpsTasks();
-        console.log("✅ FinOps tasks query successful:", Array.isArray(result) ? result.length : "unknown");
+        console.log(
+          "✅ FinOps tasks query successful:",
+          Array.isArray(result) ? result.length : "unknown",
+        );
         return Array.isArray(result) ? result : [];
       } catch (error) {
         console.error("❌ FinOps tasks query failed:", error);
@@ -701,7 +709,7 @@ export default function ClientBasedFinOpsTaskManager() {
     },
     onSuccess: (data) => {
       console.log("✅ FinOps tasks query success:", data?.length || 0, "tasks");
-    }
+    },
   });
 
   // Real-time updates for SLA warnings
