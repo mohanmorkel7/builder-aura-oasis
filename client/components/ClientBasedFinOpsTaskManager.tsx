@@ -1745,32 +1745,73 @@ export default function ClientBasedFinOpsTaskManager() {
               </div>
 
               <div>
-                <Label htmlFor="assigned_to">Assigned To *</Label>
-                <Select
-                  value={taskForm.assigned_to}
-                  onValueChange={(value) =>
-                    setTaskForm((prev) => ({ ...prev, assigned_to: value }))
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select assignee" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {users
-                      .filter(
-                        (user: any, index: number, arr: any[]) =>
-                          arr.findIndex((u) => u.id === user.id) === index,
-                      )
-                      .map((user: any, index: number) => (
-                        <SelectItem
-                          key={`assigned-${user.id}-${index}`}
-                          value={`${user.first_name} ${user.last_name}`}
-                        >
-                          {user.first_name} {user.last_name}
-                        </SelectItem>
-                      ))}
-                  </SelectContent>
-                </Select>
+                <Label>Assigned To *</Label>
+                <div className="flex gap-2 mt-1">
+                  <Select
+                    value=""
+                    onValueChange={(value) => {
+                      if (
+                        value &&
+                        !taskForm.assigned_to.includes(value)
+                      ) {
+                        setTaskForm((prev) => ({
+                          ...prev,
+                          assigned_to: [
+                            ...prev.assigned_to,
+                            value,
+                          ],
+                        }));
+                      }
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select assignees (multiple)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {users
+                        .filter(
+                          (user: any, index: number, arr: any[]) =>
+                            arr.findIndex((u) => u.id === user.id) === index,
+                        )
+                        .filter((user: any) => !taskForm.assigned_to.includes(`${user.first_name} ${user.last_name}`))
+                        .map((user: any, index: number) => (
+                          <SelectItem
+                            key={`assigned-${user.id}-${index}`}
+                            value={`${user.first_name} ${user.last_name}`}
+                          >
+                            {user.first_name} {user.last_name}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {taskForm.assigned_to.map((assignee, index) => (
+                    <Badge
+                      key={`assignee-${assignee}-${index}`}
+                      variant="default"
+                      className="gap-1"
+                    >
+                      {assignee}
+                      <X
+                        className="w-3 h-3 cursor-pointer"
+                        onClick={() =>
+                          setTaskForm((prev) => ({
+                            ...prev,
+                            assigned_to: prev.assigned_to.filter(
+                              (_, i) => i !== index,
+                            ),
+                          }))
+                        }
+                      />
+                    </Badge>
+                  ))}
+                  {taskForm.assigned_to.length === 0 && (
+                    <span className="text-sm text-gray-500">
+                      No assignees selected. Please select at least one.
+                    </span>
+                  )}
+                </div>
               </div>
 
               <div className="md:col-span-2">
