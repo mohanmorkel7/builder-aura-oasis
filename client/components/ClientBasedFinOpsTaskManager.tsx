@@ -659,7 +659,7 @@ export default function ClientBasedFinOpsTaskManager() {
       task_name: "",
       description: "",
       client_id: "",
-      assigned_to: "",
+      assigned_to: [], // Changed to empty array for multiple assignments
       reporting_managers: [],
       escalation_managers: [],
       effective_from: new Date().toISOString().split("T")[0],
