@@ -107,7 +107,8 @@ const transformDbNotifications = (
       dbNotif.action === "sla_alert" ||
       dbNotif.action === "sla_warning" ||
       dbNotif.details?.includes("starting in") ||
-      dbNotif.details?.includes("sla warning")
+      dbNotif.details?.includes("sla warning") ||
+      dbNotif.details?.includes("min remaining")
     ) {
       notificationType = "sla_warning";
     } else if (dbNotif.action === "escalation_required") {
