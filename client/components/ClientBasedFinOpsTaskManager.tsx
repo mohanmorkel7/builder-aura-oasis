@@ -936,7 +936,9 @@ export default function ClientBasedFinOpsTaskManager() {
         convertNameToValueFormat(name, users),
       ),
       effective_from:
-        task.effective_from || new Date().toISOString().split("T")[0],
+        task.effective_from
+          ? new Date(task.effective_from).toISOString().split("T")[0]
+          : new Date().toISOString().split("T")[0],
       duration: task.duration || "daily",
       is_active: task.is_active ?? true,
       subtasks: (task.subtasks || []).map((subtask) => ({
