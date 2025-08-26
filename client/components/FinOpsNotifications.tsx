@@ -574,6 +574,26 @@ export default function FinOpsNotifications() {
     return mockNotifications;
   }, [dbNotifications, error, isLoading, currentTime]);
 
+  // Manual sync function for debugging time gaps (defined after refetch is available)
+  const forceTimeSync = React.useCallback(() => {
+    console.log("🔧 Force time synchronization triggered");
+    setCurrentTime(new Date());
+    refetch(); // Refresh notifications from API
+  }, [refetch]);
+
+  // Expose debug functions to window for console access (after all dependencies are available)
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      (window as any).finopsDebug = {
+        forceTimeSync,
+        getCurrentTime: () => currentTime,
+        toggleDebugMode: () => setDebugMode(!debugMode),
+        getNotifications: () => notifications,
+        refetchNotifications: refetch,
+      };
+    }
+  }, [forceTimeSync, currentTime, debugMode, notifications, refetch]);
+
   // Filter notifications
   const filteredNotifications = notifications.filter((notification) => {
     if (filterType !== "all" && notification.type !== filterType) return false;
