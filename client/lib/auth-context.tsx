@@ -527,7 +527,7 @@ export const AuthProvider = React.memo(function AuthProvider({
         error.message?.includes("User cancelled")
       ) {
         console.log("User cancelled SSO login");
-        setIsLoading(false);
+        safeSetIsLoading(false);
         return false;
       }
 
