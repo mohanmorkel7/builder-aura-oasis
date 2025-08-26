@@ -397,7 +397,17 @@ export default function FinOpsNotifications() {
     return true;
   });
 
-  const markAsRead = async (notificationId: string) => {
+  const markAsRead = async (notificationId: string, isOverdue = false, taskName = "") => {
+    if (isOverdue) {
+      // Open dialog for overdue reason
+      setOverdueReasonDialog({
+        open: true,
+        notificationId,
+        taskName
+      });
+      return;
+    }
+
     try {
       await apiClient.request(
         `/notifications-production/${notificationId}/read`,
@@ -408,6 +418,39 @@ export default function FinOpsNotifications() {
       refetch(); // Refresh the data
     } catch (error) {
       console.error("Failed to mark notification as read:", error);
+    }
+  };
+
+  const submitOverdueReason = async () => {
+    try {
+      // First, store the overdue reason
+      await apiClient.request('/notifications-production/overdue-reason', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          notification_id: overdueReasonDialog.notificationId,
+          task_name: overdueReasonDialog.taskName,
+          overdue_reason: overdueReason,
+          created_at: new Date().toISOString(),
+        }),
+      });
+
+      // Then mark as read
+      await apiClient.request(
+        `/notifications-production/${overdueReasonDialog.notificationId}/read`,
+        {
+          method: "PUT",
+        },
+      );
+
+      // Close dialog and refresh
+      setOverdueReasonDialog({ open: false, notificationId: "", taskName: "" });
+      setOverdueReason("");
+      refetch();
+    } catch (error) {
+      console.error("Failed to submit overdue reason:", error);
     }
   };
 
