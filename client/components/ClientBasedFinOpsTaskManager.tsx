@@ -1685,15 +1685,29 @@ export default function ClientBasedFinOpsTaskManager() {
                           <User className="w-4 h-4" />
                           <span>
                             Assigned:{" "}
-                            {Array.isArray(task.assigned_to)
-                              ? task.assigned_to.length > 0
-                                ? task.assigned_to
+                            {(() => {
+                              // Handle various formats of assigned_to
+                              let assignedArray = [];
+
+                              if (Array.isArray(task.assigned_to)) {
+                                assignedArray = task.assigned_to;
+                              } else if (task.assigned_to) {
+                                // Try to parse if it's a JSON string
+                                try {
+                                  const parsed = JSON.parse(task.assigned_to);
+                                  assignedArray = Array.isArray(parsed) ? parsed : [parsed];
+                                } catch (e) {
+                                  // If not JSON, treat as single string
+                                  assignedArray = [task.assigned_to];
+                                }
+                              }
+
+                              return assignedArray.length > 0
+                                ? assignedArray
                                     .map(extractNameFromValue)
                                     .join(", ")
-                                : "Unassigned"
-                              : extractNameFromValue(
-                                  task.assigned_to || "Unassigned",
-                                )}
+                                : "Unassigned";
+                            })()}
                           </span>
                         </div>
                         <div className="flex items-center gap-1">
