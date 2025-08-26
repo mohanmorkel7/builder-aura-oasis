@@ -162,6 +162,13 @@ const extractNameFromValue = (value: string, depth: number = 0): string => {
     }
   }
 
+  // Handle escaped quotes like \"Sanjay Kumar\"
+  if (value.startsWith('\\"') && value.endsWith('\\"')) {
+    const unescaped = value.slice(2, -2); // Remove \" and \"
+    console.log("✅ Escaped quotes removed:", unescaped);
+    return extractNameFromValue(unescaped, depth + 1);
+  }
+
   // Handle "Name (email)" format
   const match = value.match(/^(.+)\s\([^)]+\)$/);
   if (match) {
