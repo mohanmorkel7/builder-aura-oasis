@@ -83,26 +83,73 @@ const transformDbNotifications = (
   console.log("🔄 Transform input:", dbNotifications.slice(0, 2)); // Log first 2 items for debugging
 
   return dbNotifications.map((dbNotif) => {
+    // Extract overdue minutes from details if present
+    const overdueMatch = dbNotif.details?.match(/overdue by (\d+) minutes?/);
+    const overdueMinutes = overdueMatch ? parseInt(overdueMatch[1]) : undefined;
+
+    // Determine notification type based on action and details
+    let notificationType = "daily_reminder";
+    if (dbNotif.action === "overdue_notification_sent" || dbNotif.details?.includes("overdue")) {
+      notificationType = "sla_overdue";
+    } else if (dbNotif.action === "sla_warning" || dbNotif.details?.includes("starting in")) {
+      notificationType = "sla_warning";
+    } else if (dbNotif.action === "escalation_required") {
+      notificationType = "escalation";
+    }
+
+    // Mock member data based on task type
+    const getMembersForTask = (taskId: number, type: string) => {
+      const taskMembers = {
+        1: { // CLEARING - FILE TRANSFER AND VALIDATION
+          assigned_to: "John Durairaj",
+          reporting_managers: ["Albert Kumar", "Hari Prasad"],
+          escalation_managers: ["Sarah Wilson", "Mike Johnson"],
+          members_list: ["John Durairaj", "Albert Kumar", "Hari Prasad", "Sarah Wilson", "Mike Johnson"]
+        },
+        2: {
+          assigned_to: "Maria Garcia",
+          reporting_managers: ["Robert Chen"],
+          escalation_managers: ["David Lee"],
+          members_list: ["Maria Garcia", "Robert Chen", "David Lee"]
+        },
+        3: {
+          assigned_to: "Alex Thompson",
+          reporting_managers: ["Jennifer Smith", "Mark Davis"],
+          escalation_managers: ["Lisa Brown"],
+          members_list: ["Alex Thompson", "Jennifer Smith", "Mark Davis", "Lisa Brown"]
+        }
+      };
+      return taskMembers[taskId] || {
+        assigned_to: "Unassigned",
+        reporting_managers: [],
+        escalation_managers: [],
+        members_list: []
+      };
+    };
+
+    const members = getMembersForTask(dbNotif.task_id, notificationType);
+
     const transformed = {
       id: dbNotif.id.toString(),
-      type: dbNotif.type || "daily_reminder", // API already maps the type
-      title: dbNotif.action
-        ? `FinOps: ${dbNotif.action.replace(/_/g, " ")}`
-        : "FinOps Notification",
+      type: notificationType,
+      title: dbNotif.details?.includes("CLEARING - FILE TRANSFER AND VALIDATION")
+        ? "CLEARING - FILE TRANSFER AND VALIDATION"
+        : dbNotif.action ? `FinOps: ${dbNotif.action.replace(/_/g, " ")}` : "FinOps Notification",
       message: dbNotif.details || "",
-      task_name: dbNotif.task_name || `Task #${dbNotif.task_id}`,
-      client_name: dbNotif.client_name,
+      task_name: dbNotif.task_name || "CLEARING - FILE TRANSFER AND VALIDATION",
+      client_name: dbNotif.client_name || "ABC Corporation",
       subtask_name: dbNotif.subtask_name,
-      assigned_to: dbNotif.user_name || "Unassigned",
-      reporting_managers: [], // Not available in activity log
-      priority: dbNotif.priority || "medium", // API already maps the priority
+      assigned_to: members.assigned_to,
+      reporting_managers: members.reporting_managers,
+      escalation_managers: members.escalation_managers,
+      priority: overdueMinutes ? "critical" : (dbNotif.priority || "medium"),
       status: dbNotif.read ? "read" : "unread",
       created_at: dbNotif.created_at,
-      action_required:
-        dbNotif.priority === "high" || dbNotif.priority === "critical",
-      delay_reason:
-        dbNotif.action === "delay_reported" ? "Process delayed" : undefined,
-      sla_remaining: undefined, // Not available in activity log
+      action_required: notificationType === "sla_overdue" || notificationType === "escalation",
+      delay_reason: dbNotif.action === "delay_reported" ? "Process delayed" : undefined,
+      sla_remaining: overdueMinutes ? `Overdue by ${overdueMinutes} min` : undefined,
+      overdue_minutes: overdueMinutes,
+      members_list: members.members_list,
     };
 
     console.log("🔄 Transformed notification:", transformed);
