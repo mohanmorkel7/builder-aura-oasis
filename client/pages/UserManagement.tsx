@@ -250,35 +250,7 @@ export default function UserManagement() {
   const refreshTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isRefreshingRef = useRef(false);
 
-  // Suppress ResizeObserver errors globally
-  useEffect(() => {
-    const handleResizeObserverError = (e: ErrorEvent) => {
-      if (e.error?.message?.includes('ResizeObserver loop completed with undelivered notifications')) {
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        console.warn('ResizeObserver loop detected and suppressed');
-        return true;
-      }
-      return false;
-    };
-
-    window.addEventListener('error', handleResizeObserverError);
-
-    // Also handle unhandled promise rejections that might contain ResizeObserver errors
-    const handleUnhandledRejection = (e: PromiseRejectionEvent) => {
-      if (e.reason?.message?.includes('ResizeObserver loop completed with undelivered notifications')) {
-        e.preventDefault();
-        console.warn('ResizeObserver loop in promise detected and suppressed');
-      }
-    };
-
-    window.addEventListener('unhandledrejection', handleUnhandledRejection);
-
-    return () => {
-      window.removeEventListener('error', handleResizeObserverError);
-      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
-    };
-  }, []);
+  // ResizeObserver errors are now handled globally in main.tsx
 
   // Auto-inactivate users who haven't logged in for more than a week
   const processUsersForInactivity = useCallback(async (users: any[]) => {
@@ -565,7 +537,7 @@ export default function UserManagement() {
         return;
       }
 
-      console.error("❌ Azure AD connection test failed:", error.message);
+      console.error("�� Azure AD connection test failed:", error.message);
     }
   };
 

@@ -2,6 +2,10 @@ import * as React from "react";
 import * as ReactDOM from "react-dom/client";
 import App from "./App";
 import "./global.css";
+import { initializeResizeObserverErrorHandler } from "./utils/resizeObserverHandler";
+
+// Initialize global ResizeObserver error handling
+initializeResizeObserverErrorHandler();
 
 // Ensure Error objects never display as [object Object]
 // Check if we've already applied our custom toString
