@@ -84,8 +84,31 @@ import {
   isAfter,
 } from "date-fns";
 
-// Helper function to extract name from "Name (email)" format
+// Helper function to extract name from "Name (email)" format or JSON stringified format
 const extractNameFromValue = (value: string): string => {
+  if (!value) return value;
+
+  // Handle JSON stringified values like "{\"Sanjay Kumar\"}"
+  if (value.startsWith('"{') && value.endsWith('}"')) {
+    try {
+      const parsed = JSON.parse(value);
+      return typeof parsed === 'string' ? parsed : value;
+    } catch (e) {
+      // If parsing fails, continue with other checks
+    }
+  }
+
+  // Handle regular JSON strings like "Sanjay Kumar" (quoted strings)
+  if (value.startsWith('"') && value.endsWith('"')) {
+    try {
+      const parsed = JSON.parse(value);
+      return typeof parsed === 'string' ? parsed : value;
+    } catch (e) {
+      // If parsing fails, continue with other checks
+    }
+  }
+
+  // Handle "Name (email)" format
   const match = value.match(/^(.+)\s\([^)]+\)$/);
   return match ? match[1] : value;
 };
