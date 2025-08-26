@@ -604,16 +604,21 @@ export default function ClientBasedFinOpsTaskManager() {
     queryKey: ["finops-clients"],
     queryFn: async () => {
       try {
+        console.log("🔄 Fetching FinOps clients...");
         // Use dedicated FinOps clients API
         const finopsClients = await apiClient.getFinOpsClients();
-        console.log("FinOps clients data:", finopsClients);
+        console.log("✅ FinOps clients data received:", finopsClients);
+        console.log("📊 Number of clients:", finopsClients?.length || 0);
         return finopsClients;
       } catch (error) {
-        console.error("Error fetching FinOps clients:", error);
+        console.error("❌ Error fetching FinOps clients:", error);
         // Return empty array if API fails
         return [];
       }
     },
+    retry: 2,
+    retryDelay: 1000,
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
   // Deduplicate clients at the component level to prevent dropdown duplicates
