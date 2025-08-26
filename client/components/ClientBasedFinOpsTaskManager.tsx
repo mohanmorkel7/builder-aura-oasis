@@ -1882,8 +1882,8 @@ export default function ClientBasedFinOpsTaskManager() {
                     <SelectTrigger>
                       <SelectValue placeholder="Select assignees (multiple)" />
                     </SelectTrigger>
-                    <SelectContent className="max-h-60">
-                      <div className="p-2 border-b">
+                    <SelectContent className="max-h-72 w-full">
+                      <div className="p-2 border-b sticky top-0 bg-white z-10">
                         <Input
                           placeholder="Search users..."
                           value={assignedToSearch}
@@ -1891,7 +1891,7 @@ export default function ClientBasedFinOpsTaskManager() {
                           onChange={(e) => setAssignedToSearch(e.target.value)}
                         />
                       </div>
-                      <div className="max-h-48 overflow-y-auto">
+                      <div className="max-h-60 overflow-y-auto overflow-x-hidden" style={{scrollbarWidth: 'thin'}}>
                         {users
                           .filter(
                             (user: any, index: number, arr: any[]) =>
@@ -2024,8 +2024,8 @@ export default function ClientBasedFinOpsTaskManager() {
                     <SelectTrigger>
                       <SelectValue placeholder="Select reporting manager" />
                     </SelectTrigger>
-                    <SelectContent className="max-h-60">
-                      <div className="p-2 border-b">
+                    <SelectContent className="max-h-72 w-full">
+                      <div className="p-2 border-b sticky top-0 bg-white z-10">
                         <Input
                           placeholder="Search reporting managers..."
                           value={reportingManagerSearch}
@@ -2035,7 +2035,7 @@ export default function ClientBasedFinOpsTaskManager() {
                           }
                         />
                       </div>
-                      <div className="max-h-48 overflow-y-auto">
+                      <div className="max-h-60 overflow-y-auto overflow-x-hidden" style={{scrollbarWidth: 'thin'}}>
                         {users
                           .filter(
                             (user: any, index: number, arr: any[]) =>
@@ -2116,8 +2116,8 @@ export default function ClientBasedFinOpsTaskManager() {
                     <SelectTrigger>
                       <SelectValue placeholder="Select escalation manager" />
                     </SelectTrigger>
-                    <SelectContent className="max-h-60">
-                      <div className="p-2 border-b">
+                    <SelectContent className="max-h-72 w-full">
+                      <div className="p-2 border-b sticky top-0 bg-white z-10">
                         <Input
                           placeholder="Search escalation managers..."
                           value={escalationManagerSearch}
@@ -2127,7 +2127,7 @@ export default function ClientBasedFinOpsTaskManager() {
                           }
                         />
                       </div>
-                      <div className="max-h-48 overflow-y-auto">
+                      <div className="max-h-60 overflow-y-auto overflow-x-hidden" style={{scrollbarWidth: 'thin'}}>
                         {users
                           .filter(
                             (user: any, index: number, arr: any[]) =>
