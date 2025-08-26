@@ -1847,26 +1847,44 @@ export default function ClientBasedFinOpsTaskManager() {
                       <SelectValue placeholder="Select client" />
                     </SelectTrigger>
                     <SelectContent>
-                      {clientsLoading ? (
-                        <SelectItem value="loading" disabled>
-                          Loading clients...
-                        </SelectItem>
-                      ) : clients.length > 0 ? (
-                        clients.map((client: any) => (
-                          <SelectItem
-                            key={`create-client-${client.id}`}
-                            value={client.id.toString()}
-                          >
-                            {client.company_name ||
-                              client.client_name ||
-                              `Client ${client.id}`}
+                      {(() => {
+                        console.log("🎯 Rendering client dropdown:", {
+                          isLoading: clientsLoading,
+                          clientsCount: clients.length,
+                          rawClientsCount: rawClients.length,
+                          hasError: !!clientsError,
+                          error: clientsError?.message,
+                        });
+
+                        if (clientsLoading) {
+                          return (
+                            <SelectItem value="loading" disabled>
+                              Loading clients...
+                            </SelectItem>
+                          );
+                        }
+
+                        if (clients.length > 0) {
+                          console.log("📋 Rendering clients list:", clients.map(c => ({ id: c.id, name: c.company_name || c.client_name })));
+                          return clients.map((client: any) => (
+                            <SelectItem
+                              key={`create-client-${client.id}`}
+                              value={client.id.toString()}
+                            >
+                              {client.company_name ||
+                                client.client_name ||
+                                `Client ${client.id}`}
+                            </SelectItem>
+                          ));
+                        }
+
+                        console.log("⚠️ No clients available");
+                        return (
+                          <SelectItem value="no-clients" disabled>
+                            No clients available
                           </SelectItem>
-                        ))
-                      ) : (
-                        <SelectItem value="no-clients" disabled>
-                          No clients available
-                        </SelectItem>
-                      )}
+                        );
+                      })()}
                     </SelectContent>
                   </Select>
                   <Button
