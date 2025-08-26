@@ -131,69 +131,73 @@ router.get("/", async (req: Request, res: Response) => {
           ? `WHERE ${whereConditions.join(" AND ")}`
           : "";
 
-      // Query with better deduplication that preserves important notifications
+      // Query with proper deduplication that preserves important notifications like SLA alerts
       const query = `
+        WITH ranked_notifications AS (
+          SELECT
+            fal.id,
+            fal.task_id,
+            fal.subtask_id,
+            fal.action,
+            fal.user_name,
+            fal.details,
+            fal.timestamp,
+            ROW_NUMBER() OVER (
+              PARTITION BY
+                CASE
+                  WHEN fal.action = 'sla_alert' THEN CONCAT('sla_alert_', fal.id)
+                  ELSE CONCAT(fal.action, '_', fal.task_id, '_', fal.subtask_id, '_', LEFT(fal.details, 50))
+                END
+              ORDER BY fal.timestamp DESC
+            ) as rn
+          FROM finops_activity_log fal
+          WHERE fal.timestamp >= NOW() - INTERVAL '7 days'
+        )
         SELECT
-          fal.id,
-          fal.task_id,
-          fal.subtask_id,
-          fal.action,
-          fal.user_name,
-          fal.details,
-          fal.timestamp as created_at,
+          rn.id,
+          rn.task_id,
+          rn.subtask_id,
+          rn.action,
+          rn.user_name,
+          rn.details,
+          rn.timestamp as created_at,
           ft.task_name,
           ft.client_name,
           fs.name as subtask_name,
           CASE
-            WHEN fal.action = 'delay_reported' THEN 'task_delayed'
-            WHEN fal.action = 'overdue_notification_sent' THEN 'sla_overdue'
-            WHEN fal.action = 'completion_notification_sent' THEN 'task_completed'
-            WHEN fal.action = 'sla_alert' THEN 'sla_warning'
-            WHEN fal.action = 'escalation_required' THEN 'escalation'
-            WHEN LOWER(fal.details) LIKE '%overdue%' THEN 'sla_overdue'
-            WHEN fal.action IN ('status_changed', 'task_status_changed') AND LOWER(fal.details) LIKE '%overdue%' THEN 'sla_overdue'
-            WHEN fal.action IN ('status_changed', 'task_status_changed') AND LOWER(fal.details) LIKE '%completed%' THEN 'task_completed'
-            WHEN LOWER(fal.details) LIKE '%starting in%' OR LOWER(fal.details) LIKE '%sla warning%' THEN 'sla_warning'
-            WHEN LOWER(fal.details) LIKE '%min remaining%' THEN 'sla_warning'
-            WHEN LOWER(fal.details) LIKE '%pending%' AND LOWER(fal.details) LIKE '%need to start%' THEN 'task_pending'
-            WHEN LOWER(fal.details) LIKE '%pending status%' THEN 'task_pending'
+            WHEN rn.action = 'delay_reported' THEN 'task_delayed'
+            WHEN rn.action = 'overdue_notification_sent' THEN 'sla_overdue'
+            WHEN rn.action = 'completion_notification_sent' THEN 'task_completed'
+            WHEN rn.action = 'sla_alert' THEN 'sla_warning'
+            WHEN rn.action = 'escalation_required' THEN 'escalation'
+            WHEN LOWER(rn.details) LIKE '%overdue%' THEN 'sla_overdue'
+            WHEN rn.action IN ('status_changed', 'task_status_changed') AND LOWER(rn.details) LIKE '%overdue%' THEN 'sla_overdue'
+            WHEN rn.action IN ('status_changed', 'task_status_changed') AND LOWER(rn.details) LIKE '%completed%' THEN 'task_completed'
+            WHEN LOWER(rn.details) LIKE '%starting in%' OR LOWER(rn.details) LIKE '%sla warning%' THEN 'sla_warning'
+            WHEN LOWER(rn.details) LIKE '%min remaining%' THEN 'sla_warning'
+            WHEN LOWER(rn.details) LIKE '%pending%' AND LOWER(rn.details) LIKE '%need to start%' THEN 'task_pending'
+            WHEN LOWER(rn.details) LIKE '%pending status%' THEN 'task_pending'
             ELSE 'daily_reminder'
           END as type,
           CASE
-            WHEN fal.action = 'delay_reported' OR fal.action = 'overdue_notification_sent' OR LOWER(fal.details) LIKE '%overdue%' THEN 'critical'
-            WHEN fal.action = 'completion_notification_sent' THEN 'low'
-            WHEN fal.action = 'sla_alert' OR LOWER(fal.details) LIKE '%starting in%' OR LOWER(fal.details) LIKE '%sla warning%' OR LOWER(fal.details) LIKE '%min remaining%' THEN 'high'
-            WHEN fal.action = 'escalation_required' THEN 'critical'
-            WHEN LOWER(fal.details) LIKE '%pending%' AND LOWER(fal.details) LIKE '%need to start%' THEN 'medium'
-            WHEN LOWER(fal.details) LIKE '%pending status%' THEN 'medium'
+            WHEN rn.action = 'delay_reported' OR rn.action = 'overdue_notification_sent' OR LOWER(rn.details) LIKE '%overdue%' THEN 'critical'
+            WHEN rn.action = 'completion_notification_sent' THEN 'low'
+            WHEN rn.action = 'sla_alert' OR LOWER(rn.details) LIKE '%starting in%' OR LOWER(rn.details) LIKE '%sla warning%' OR LOWER(rn.details) LIKE '%min remaining%' THEN 'high'
+            WHEN rn.action = 'escalation_required' THEN 'critical'
+            WHEN LOWER(rn.details) LIKE '%pending%' AND LOWER(rn.details) LIKE '%need to start%' THEN 'medium'
+            WHEN LOWER(rn.details) LIKE '%pending status%' THEN 'medium'
             ELSE 'medium'
           END as priority,
           COALESCE(fnrs.activity_log_id IS NOT NULL, false) as read,
-          1 as user_id,
-          ROW_NUMBER() OVER (
-            PARTITION BY
-              CASE WHEN fal.action = 'sla_alert' THEN fal.id ELSE fal.action END,
-              fal.task_id,
-              fal.subtask_id,
-              CASE WHEN fal.action = 'sla_alert' THEN fal.id ELSE fal.details END
-            ORDER BY fal.timestamp DESC
-          ) as rn
-        FROM finops_activity_log fal
-        LEFT JOIN finops_tasks ft ON fal.task_id = ft.id
-        LEFT JOIN finops_subtasks fs ON fal.subtask_id = fs.id
-        LEFT JOIN finops_notification_read_status fnrs ON fal.id = fnrs.activity_log_id
-        LEFT JOIN finops_notification_archived_status fnas ON fal.id = fnas.activity_log_id
-        WHERE fal.timestamp >= NOW() - INTERVAL '7 days'
+          1 as user_id
+        FROM ranked_notifications rn
+        LEFT JOIN finops_tasks ft ON rn.task_id = ft.id
+        LEFT JOIN finops_subtasks fs ON rn.subtask_id = fs.id
+        LEFT JOIN finops_notification_read_status fnrs ON rn.id = fnrs.activity_log_id
+        LEFT JOIN finops_notification_archived_status fnas ON rn.id = fnas.activity_log_id
+        WHERE rn.rn = 1
         AND fnas.activity_log_id IS NULL
-        AND ROW_NUMBER() OVER (
-          PARTITION BY
-            CASE WHEN fal.action = 'sla_alert' THEN fal.id ELSE fal.action END,
-            fal.task_id,
-            fal.subtask_id,
-            CASE WHEN fal.action = 'sla_alert' THEN fal.id ELSE fal.details END
-          ORDER BY fal.timestamp DESC
-        ) = 1
-        ORDER BY fal.timestamp DESC
+        ORDER BY rn.timestamp DESC
         LIMIT $${paramIndex++} OFFSET $${paramIndex++}
       `;
 
