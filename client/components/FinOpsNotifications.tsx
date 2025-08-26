@@ -142,9 +142,12 @@ const transformDbNotifications = (
       }
     }
 
-    // Determine notification type based on action and details
+    // Determine notification type based on action and details (with real-time SLA expiry check)
     let notificationType = "daily_reminder";
-    if (
+    if (isExpiredSLA) {
+      // SLA warning has expired, convert to overdue
+      notificationType = "sla_overdue";
+    } else if (
       dbNotif.action === "overdue_notification_sent" ||
       dbNotif.details?.toLowerCase().includes("overdue") ||
       (dbNotif.action === "task_status_changed" &&
