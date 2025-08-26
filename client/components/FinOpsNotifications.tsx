@@ -885,10 +885,9 @@ export default function FinOpsNotifications() {
             )}
           </h2>
           <p className="text-gray-600 mt-1">
-            Stay updated with task progress, SLA alerts, and important
-            notifications
-            {isUsingRealData && " • Connected to real-time database"}
-            {!isUsingRealData && " • Showing sample data for demonstration"}
+            Automated SLA monitoring with 15-minute warnings and overdue alerts
+            {isDatabaseConnected && " • Real-time database monitoring active"}
+            {!isDatabaseConnected && " • Database connection required"}
           </p>
         </div>
         <div className="flex gap-2">
