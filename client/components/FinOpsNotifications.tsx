@@ -239,6 +239,21 @@ export default function FinOpsNotifications() {
         return result;
       } catch (error) {
         console.error("❌ FinOps notifications API failed:", error);
+
+        // Check if it's FullStory interference
+        if (error instanceof Error &&
+            (error.message.includes("Failed to fetch") ||
+             error.stack?.includes("fullstory") ||
+             error.stack?.includes("fs.js"))) {
+          console.warn("🚨 FullStory interference detected in notifications query");
+          // Return empty structure to prevent component crash
+          return {
+            notifications: [],
+            pagination: { total: 0, limit: 50, offset: 0, has_more: false },
+            unread_count: 0
+          };
+        }
+
         throw error;
       }
     },
