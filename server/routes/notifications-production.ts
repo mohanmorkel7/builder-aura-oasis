@@ -640,10 +640,16 @@ router.post("/test/create-sample", async (req: Request, res: Response) => {
 
       const insertedNotifications = [];
 
-      for (const notif of sampleNotifications) {
+      for (const [index, notif] of sampleNotifications.entries()) {
+        // Set different timestamps for different notifications
+        let timeInterval = '43 minutes';
+        if (index === 3) { // The new notification with Start: 04:00 PM
+          timeInterval = '1 hour 8 minutes'; // 1h 8m ago as per user's requirement
+        }
+
         const query = `
           INSERT INTO finops_activity_log (action, task_id, subtask_id, user_name, details, timestamp)
-          VALUES ($1, $2, $3, $4, $5, NOW() - INTERVAL '43 minutes')
+          VALUES ($1, $2, $3, $4, $5, NOW() - INTERVAL '${timeInterval}')
           RETURNING *
         `;
 
