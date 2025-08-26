@@ -612,7 +612,7 @@ router.post("/test/create-sample", async (req: Request, res: Response) => {
       for (const notif of sampleNotifications) {
         const query = `
           INSERT INTO finops_activity_log (action, task_id, subtask_id, user_name, details, timestamp)
-          VALUES ($1, $2, $3, $4, $5, NOW() - INTERVAL '6 hours 11 minutes')
+          VALUES ($1, $2, $3, $4, $5, NOW() - INTERVAL '43 minutes')
           RETURNING *
         `;
 
