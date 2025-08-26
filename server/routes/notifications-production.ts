@@ -607,6 +607,22 @@ router.post("/test/create-sample", async (req: Request, res: Response) => {
         },
       ];
 
+      // First, ensure we have task records with member information
+      const taskQuery = `
+        INSERT INTO finops_tasks (id, task_name, client_name, priority, status, created_at)
+        VALUES
+          (1, 'CLEARING - FILE TRANSFER AND VALIDATION', 'ABC Corporation', 'critical', 'in_progress', NOW() - INTERVAL '2 hours'),
+          (2, 'DATA RECONCILIATION PROCESS', 'XYZ Industries', 'high', 'pending', NOW() - INTERVAL '1 hour'),
+          (3, 'SYSTEM MAINTENANCE TASK', 'LMN Enterprises', 'medium', 'overdue', NOW() - INTERVAL '3 hours')
+        ON CONFLICT (id) DO UPDATE SET
+          task_name = EXCLUDED.task_name,
+          client_name = EXCLUDED.client_name,
+          priority = EXCLUDED.priority,
+          status = EXCLUDED.status
+      `;
+
+      await pool.query(taskQuery);
+
       const insertedNotifications = [];
 
       for (const notif of sampleNotifications) {
