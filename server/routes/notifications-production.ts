@@ -141,14 +141,14 @@ router.get("/", async (req: Request, res: Response) => {
       // Get total count for pagination
       const countQuery = `
         SELECT COUNT(*) as total
-        FROM notifications n
-        ${whereClause}
+        FROM finops_activity_log fal
+        WHERE fal.timestamp >= NOW() - INTERVAL '7 days'
       `;
 
-      const countResult = await pool.query(countQuery, params.slice(0, -2));
+      const countResult = await pool.query(countQuery);
       const total = parseInt(countResult.rows[0].total);
 
-      // Get unread count
+      // Get unread count (all FinOps notifications are considered unread)
       const unreadQuery = `
         SELECT COUNT(*) as unread_count
         FROM notifications
