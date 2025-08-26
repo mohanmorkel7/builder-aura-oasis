@@ -608,11 +608,18 @@ export function useAuth() {
 
 // Handle HMR properly to prevent connection issues
 if (import.meta.hot) {
-  // Mark HMR updates
+  // Use safer HMR acceptance that doesn't immediately trigger actions
   import.meta.hot.accept(() => {
-    if (import.meta.hot?.data) {
-      import.meta.hot.data.isHMRUpdate = true;
-    }
+    // Defer HMR data updates to avoid WebSocket race conditions
+    setTimeout(() => {
+      try {
+        if (import.meta.hot?.data) {
+          import.meta.hot.data.isHMRUpdate = true;
+        }
+      } catch (error) {
+        console.warn("HMR data update failed (safe to ignore):", error);
+      }
+    }, 100);
   });
 
   // Add additional safety for HMR
@@ -621,4 +628,9 @@ if (import.meta.hot) {
       "Auth context: HMR reload detected, using minimal initialization",
     );
   }
+
+  // Handle module disposal safely
+  import.meta.hot.dispose(() => {
+    console.log("Auth context: Module disposing for HMR");
+  });
 }
