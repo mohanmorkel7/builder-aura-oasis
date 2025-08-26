@@ -1964,4 +1964,59 @@ router.get("/invoices", async (req: Request, res: Response) => {
   }
 });
 
+// Debug endpoint for troubleshooting FinOps API issues
+router.get("/debug/status", async (req: Request, res: Response) => {
+  try {
+    const databaseAvailable = await isDatabaseAvailable();
+
+    const debugInfo = {
+      timestamp: new Date().toISOString(),
+      database: {
+        available: databaseAvailable,
+        connection_string: process.env.DATABASE_URL ? "configured" : "not configured"
+      },
+      mock_data: {
+        tasks_count: mockFinOpsTasks.length,
+        activity_log_count: mockActivityLog.length
+      },
+      endpoints: {
+        "GET /tasks": "Fetch all FinOps tasks",
+        "POST /tasks": "Create new FinOps task",
+        "GET /activity-log": "Fetch activity log",
+        "GET /debug/status": "This debug endpoint"
+      }
+    };
+
+    if (databaseAvailable) {
+      try {
+        const tasksCount = await pool.query("SELECT COUNT(*) FROM finops_tasks WHERE deleted_at IS NULL");
+        debugInfo.database.tasks_in_db = parseInt(tasksCount.rows[0].count);
+      } catch (dbError) {
+        debugInfo.database.query_error = dbError.message;
+      }
+    }
+
+    res.json(debugInfo);
+  } catch (error) {
+    res.status(500).json({
+      error: "Debug endpoint failed",
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Test endpoint to verify API is responding
+router.get("/test", (req: Request, res: Response) => {
+  res.json({
+    message: "FinOps API is working",
+    timestamp: new Date().toISOString(),
+    endpoints: {
+      tasks: "/api/finops/tasks",
+      debug: "/api/finops/debug/status",
+      test: "/api/finops/test"
+    }
+  });
+});
+
 export default router;
