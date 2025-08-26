@@ -1714,6 +1714,172 @@ router.post(
   },
 );
 
+// Create test subtasks with start_time for demo
+router.post("/test/create-timed-subtasks", async (req: Request, res: Response) => {
+  try {
+    if (await isDatabaseAvailable()) {
+      console.log("Creating test subtasks with start_time for SLA monitoring...");
+
+      // First ensure we have the schema setup
+      await pool.query(`
+        ALTER TABLE finops_subtasks
+        ADD COLUMN IF NOT EXISTS start_time TIME;
+
+        ALTER TABLE finops_subtasks
+        ADD COLUMN IF NOT EXISTS auto_notify BOOLEAN DEFAULT true;
+      `);
+
+      // Create test subtasks with different start times
+      const currentTime = new Date();
+      const testSubtasks = [
+        {
+          task_id: 1,
+          name: 'Test SLA Warning Task',
+          start_time: new Date(currentTime.getTime() + 10 * 60000).toTimeString().slice(0, 8), // 10 min from now
+          description: 'This should trigger SLA warning in 10 minutes'
+        },
+        {
+          task_id: 1,
+          name: 'Test Overdue Task',
+          start_time: new Date(currentTime.getTime() - 20 * 60000).toTimeString().slice(0, 8), // 20 min ago
+          description: 'This should trigger overdue notification'
+        },
+        {
+          task_id: 1,
+          name: 'Test Current Time Task',
+          start_time: currentTime.toTimeString().slice(0, 8), // Now
+          description: 'This should be starting now'
+        }
+      ];
+
+      const createdSubtasks = [];
+
+      for (const subtask of testSubtasks) {
+        const insertQuery = `
+          INSERT INTO finops_subtasks (task_id, name, description, start_time, auto_notify, status, sla_hours, sla_minutes)
+          VALUES ($1, $2, $3, $4, $5, 'pending', 1, 0)
+          RETURNING *
+        `;
+
+        const result = await pool.query(insertQuery, [
+          subtask.task_id,
+          subtask.name,
+          subtask.description,
+          subtask.start_time,
+          true
+        ]);
+
+        createdSubtasks.push(result.rows[0]);
+      }
+
+      res.json({
+        message: "Test subtasks with start_time created successfully!",
+        subtasks: createdSubtasks,
+        current_time: currentTime.toTimeString().slice(0, 8),
+        next_steps: [
+          "Call POST /auto-sync to check for SLA notifications",
+          "Call GET / to see the notifications in the list",
+          "Notifications are now database-only (no mock data)"
+        ],
+        timestamp: new Date().toISOString(),
+      });
+    } else {
+      res.json({
+        message: "Database unavailable",
+        timestamp: new Date().toISOString(),
+      });
+    }
+  } catch (error) {
+    console.error("Error creating timed subtasks:", error);
+    res.status(500).json({
+      error: "Failed to create timed subtasks",
+      message: error.message,
+    });
+  }
+});
+
+// Enable periodic sync (every 5 minutes)
+let syncInterval: NodeJS.Timeout | null = null;
+
+router.post("/enable-auto-sync", async (req: Request, res: Response) => {
+  try {
+    const { interval_minutes = 5 } = req.body;
+
+    // Clear existing interval if running
+    if (syncInterval) {
+      clearInterval(syncInterval);
+    }
+
+    // Start new interval
+    syncInterval = setInterval(async () => {
+      try {
+        console.log("🔄 Running automated SLA sync...");
+
+        if (await isDatabaseAvailable()) {
+          const checkQuery = `SELECT * FROM check_subtask_sla_notifications()`;
+          const checkResult = await pool.query(checkQuery);
+
+          for (const notification of checkResult.rows) {
+            const insertQuery = `
+              INSERT INTO finops_activity_log (action, task_id, subtask_id, user_name, details, timestamp)
+              VALUES ($1, $2, $3, $4, $5, NOW())
+            `;
+
+            const action = notification.notification_type === 'sla_warning' ? 'sla_alert' : 'overdue_notification_sent';
+
+            await pool.query(insertQuery, [
+              action,
+              notification.task_id,
+              notification.subtask_id,
+              'System',
+              notification.message
+            ]);
+
+            console.log(`✅ Auto-created ${notification.notification_type} for ${notification.task_name}`);
+          }
+        }
+      } catch (error) {
+        console.error("❌ Auto-sync error:", error);
+      }
+    }, interval_minutes * 60 * 1000);
+
+    res.json({
+      message: "Automated SLA sync enabled",
+      interval_minutes,
+      status: "running",
+      next_sync: new Date(Date.now() + interval_minutes * 60 * 1000).toISOString(),
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error("Enable auto-sync error:", error);
+    res.status(500).json({
+      error: "Failed to enable auto-sync",
+      message: error.message,
+    });
+  }
+});
+
+router.post("/disable-auto-sync", async (req: Request, res: Response) => {
+  try {
+    if (syncInterval) {
+      clearInterval(syncInterval);
+      syncInterval = null;
+    }
+
+    res.json({
+      message: "Automated SLA sync disabled",
+      status: "stopped",
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error("Disable auto-sync error:", error);
+    res.status(500).json({
+      error: "Failed to disable auto-sync",
+      message: error.message,
+    });
+  }
+});
+
 // Check what's actually in the activity log for Check task (ID 16)
 router.get("/test/check-task-activity", async (req: Request, res: Response) => {
   try {
