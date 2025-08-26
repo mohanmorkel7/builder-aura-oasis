@@ -84,8 +84,13 @@ const transformDbNotifications = (
 
   return dbNotifications.map((dbNotif) => {
     // Extract overdue minutes from details if present
-    const overdueMatch = dbNotif.details?.match(/overdue by (\d+) minutes?/);
+    const overdueMatch = dbNotif.details?.match(/overdue by (\d+) min/i) ||
+                        dbNotif.details?.match(/overdue by (\d+) minutes?/i);
     const overdueMinutes = overdueMatch ? parseInt(overdueMatch[1]) : undefined;
+
+    // Extract start time if present
+    const startTimeMatch = dbNotif.details?.match(/Start: (\d+:\d+ [AP]M)/i);
+    const startTime = startTimeMatch ? startTimeMatch[1] : undefined;
 
     // Determine notification type based on action and details
     let notificationType = "daily_reminder";
