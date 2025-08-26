@@ -1240,13 +1240,18 @@ export default function ClientBasedFinOpsTaskManager() {
                 <SelectContent>
                   <SelectItem value="all">All Clients</SelectItem>
                   {clients.length > 0 ? (
-                    clients.map((client: any) => (
-                      <SelectItem key={client.id} value={client.id.toString()}>
-                        {client.company_name ||
-                          client.client_name ||
-                          `Client ${client.id}`}
-                      </SelectItem>
-                    ))
+                    clients
+                      .filter(
+                        (client: any, index: number, arr: any[]) =>
+                          arr.findIndex((c) => c.id === client.id) === index,
+                      )
+                      .map((client: any) => (
+                        <SelectItem key={`filter-client-${client.id}`} value={client.id.toString()}>
+                          {client.company_name ||
+                            client.client_name ||
+                            `Client ${client.id}`}
+                        </SelectItem>
+                      ))
                   ) : (
                     <SelectItem value="no-clients" disabled>
                       No clients available
