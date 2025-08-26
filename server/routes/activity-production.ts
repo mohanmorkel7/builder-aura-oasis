@@ -407,10 +407,9 @@ router.post("/", async (req: Request, res: Response) => {
       }
 
       const query = `
-        INSERT INTO activity_logs (
-          action, entity_type, entity_id, entity_name, user_id, client_id,
-          details, changes, status, previous_status, delay_reason, timestamp
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW())
+        INSERT INTO finops_activity_log (
+          action, task_id, subtask_id, user_name, details, timestamp
+        ) VALUES ($1, $2, $3, $4, $5, NOW())
         RETURNING *
       `;
 
