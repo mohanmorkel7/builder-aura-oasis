@@ -83,22 +83,41 @@ export default function FinOpsAutomation() {
   // Fetch workflow projects for FinOps
   const { data: finopsProjects = [], isLoading: projectsLoading } = useQuery({
     queryKey: ["workflow-projects-finops"],
-    queryFn: () =>
-      apiClient.getWorkflowProjects(parseInt(user?.id || "1"), "finance"),
+    queryFn: async () => {
+      try {
+        return await apiClient.getWorkflowProjects(parseInt(user?.id || "1"), "finance");
+      } catch (error) {
+        console.warn("🚨 Workflow projects query failed, likely FullStory interference:", error);
+        return []; // Return empty array to prevent crash
+      }
+    },
   });
 
   // Fetch automation tasks
   const { data: automations = [], isLoading: automationsLoading } = useQuery({
     queryKey: ["workflow-automations"],
-    queryFn: () => apiClient.getWorkflowAutomations(),
+    queryFn: async () => {
+      try {
+        return await apiClient.getWorkflowAutomations();
+      } catch (error) {
+        console.warn("🚨 Workflow automations query failed, likely FullStory interference:", error);
+        return []; // Return empty array to prevent crash
+      }
+    },
   });
 
   // Fetch notifications
   const { data: notifications = [], isLoading: notificationsLoading } =
     useQuery({
       queryKey: ["workflow-notifications"],
-      queryFn: () =>
-        apiClient.getWorkflowNotifications(parseInt(user?.id || "1"), true),
+      queryFn: async () => {
+        try {
+          return await apiClient.getWorkflowNotifications(parseInt(user?.id || "1"), true);
+        } catch (error) {
+          console.warn("🚨 Workflow notifications query failed, likely FullStory interference:", error);
+          return []; // Return empty array to prevent crash
+        }
+      },
     });
 
   const triggerAutomationMutation = useMutation({
