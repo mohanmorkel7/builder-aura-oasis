@@ -85,11 +85,33 @@ const transformDbNotifications = (
   console.log("🔄 Transform input:", dbNotifications.slice(0, 2)); // Log first 2 items for debugging
 
   return dbNotifications.map((dbNotif) => {
-    // Extract overdue minutes from details if present
+    // Extract overdue minutes from details if present and calculate real-time overdue
     const overdueMatch =
       dbNotif.details?.match(/overdue by (\d+) min/i) ||
       dbNotif.details?.match(/overdue by (\d+) minutes?/i);
-    const overdueMinutes = overdueMatch ? parseInt(overdueMatch[1]) : undefined;
+    let overdueMinutes = overdueMatch ? parseInt(overdueMatch[1]) : undefined;
+
+    // For existing overdue notifications, calculate current overdue time
+    if (overdueMinutes && currentTime && dbNotif.created_at && dbNotif.action === "overdue_notification_sent") {
+      const notificationTime = new Date(dbNotif.created_at);
+      const timeSinceNotificationMs = currentTime.getTime() - notificationTime.getTime();
+      const minutesSinceNotification = Math.floor(timeSinceNotificationMs / 60000);
+
+      // Current overdue minutes = original overdue + time passed since notification
+      const currentOverdueMinutes = overdueMinutes + minutesSinceNotification;
+      const totalTimeAgo = Math.floor(timeSinceNotificationMs / 60000) + 2; // Add base overdue time
+
+      // Update details with current overdue time
+      realTimeDetails = dbNotif.details.replace(
+        /overdue by (\d+) min • (\d+) min ago/i,
+        `Overdue by ${currentOverdueMinutes} min • ${totalTimeAgo} min ago`
+      );
+      realTimeTitle = `SLA Overdue - ${currentOverdueMinutes} min overdue`;
+
+      overdueMinutes = currentOverdueMinutes;
+
+      console.log(`🚨 Real-time overdue calculation: Originally ${overdueMatch[1]} min → Now ${currentOverdueMinutes} min overdue (${minutesSinceNotification} min since notification)`);
+    }
 
     // Extract start time if present
     const startTimeMatch = dbNotif.details?.match(/Start: (\d+:\d+ [AP]M)/i);
