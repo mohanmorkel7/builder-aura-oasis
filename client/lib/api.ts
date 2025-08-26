@@ -827,9 +827,22 @@ export class ApiClient {
     );
   }
 
-  // FinOps Task Management methods
+  // FinOps Task Management methods with enhanced error handling
   async getFinOpsTasks() {
-    return this.request("/finops/tasks");
+    try {
+      console.log("🔍 Fetching FinOps tasks...");
+
+      // Use request with retry for better reliability
+      const result = await this.requestWithRetry("/finops/tasks", {}, 3);
+
+      console.log("✅ FinOps tasks fetched successfully:", Array.isArray(result) ? result.length : "unknown count");
+      return result || [];
+    } catch (error) {
+      console.error("❌ Failed to fetch FinOps tasks after all retries:", error);
+
+      // Return empty array as graceful fallback to prevent UI crashes
+      return [];
+    }
   }
 
   async createFinOpsTask(taskData: any) {
