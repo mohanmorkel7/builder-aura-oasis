@@ -258,24 +258,54 @@ export default function FinOpsNotifications() {
 
   // Fetch notifications from database
   const {
-    data: dbNotifications = [],
+    data: dbNotifications,
     isLoading,
     refetch,
+    error,
   } = useQuery({
     queryKey: ["finops-notifications"],
-    queryFn: () => apiClient.request("/notifications-production"),
+    queryFn: async () => {
+      try {
+        console.log("🔍 Fetching FinOps notifications from API...");
+        const result = await apiClient.request("/notifications-production");
+        console.log("✅ FinOps notifications API response:", result);
+        return result;
+      } catch (error) {
+        console.error("❌ FinOps notifications API failed:", error);
+        throw error;
+      }
+    },
     refetchInterval: 30000, // Refresh every 30 seconds
+    retry: (failureCount, error) => {
+      console.log(`🔄 Retry attempt ${failureCount} for notifications`);
+      return failureCount < 2;
+    },
   });
 
   // Transform database notifications to match our interface or fallback to mock
-  const notifications =
-    dbNotifications &&
-    dbNotifications.notifications &&
-    dbNotifications.notifications.length > 0
-      ? transformDbNotifications(dbNotifications.notifications)
-      : dbNotifications && dbNotifications.notifications
-        ? [] // Real database but empty
-        : mockNotifications; // Fallback to mock only if API failed
+  const notifications = React.useMemo(() => {
+    console.log("🔍 Processing notifications data:", {
+      dbNotifications,
+      hasError: !!error,
+      isLoading,
+    });
+
+    // If API call succeeded and we have a valid response structure
+    if (dbNotifications && typeof dbNotifications === 'object' && 'notifications' in dbNotifications) {
+      console.log("✅ Using real data from API (may be empty)");
+      if (dbNotifications.notifications && dbNotifications.notifications.length > 0) {
+        console.log(`📊 Transforming ${dbNotifications.notifications.length} real notifications`);
+        return transformDbNotifications(dbNotifications.notifications);
+      } else {
+        console.log("📭 Real API returned empty notifications");
+        return []; // Real database but empty
+      }
+    }
+
+    // If we have an error or invalid response, fall back to mock data
+    console.log("🎭 Falling back to mock notifications due to API failure");
+    return mockNotifications;
+  }, [dbNotifications, error, isLoading]);
 
   // Filter notifications
   const filteredNotifications = notifications.filter((notification) => {
