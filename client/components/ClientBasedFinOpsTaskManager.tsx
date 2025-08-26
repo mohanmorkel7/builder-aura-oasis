@@ -375,12 +375,12 @@ function SortableSubTaskItem({
 
                 <div>
                   <Label>Daily Start Time *</Label>
-                  <Input
-                    type="time"
+                  <TimePickerWithAmPm
                     value={subtask.start_time || ""}
-                    onChange={(e) =>
-                      onUpdate(index, "start_time", e.target.value)
+                    onChange={(value) =>
+                      onUpdate(index, "start_time", value)
                     }
+                    placeholder="Select start time"
                     required
                   />
                 </div>
