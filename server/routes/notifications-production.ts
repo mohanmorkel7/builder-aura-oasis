@@ -1930,4 +1930,112 @@ router.put("/test/update-sla-warning-time", async (req: Request, res: Response) 
   }
 });
 
+// Sync SLA warning notification with real-time remaining minutes
+router.post("/sync-sla-warning-time", async (req: Request, res: Response) => {
+  try {
+    if (await isDatabaseAvailable()) {
+      const { task_id, subtask_id, remaining_minutes, action = "sla_alert" } = req.body;
+
+      if (!task_id || !remaining_minutes) {
+        return res.status(400).json({
+          error: "task_id and remaining_minutes are required",
+          example: {
+            task_id: 16,
+            subtask_id: 29,
+            remaining_minutes: 8,
+            action: "sla_alert"
+          }
+        });
+      }
+
+      console.log(`Syncing SLA warning for task ${task_id} to ${remaining_minutes} min remaining...`);
+
+      // Only create/update if time has changed significantly (more than 1 minute difference)
+      const checkCurrentQuery = `
+        SELECT id, details FROM finops_activity_log
+        WHERE task_id = $1
+        AND LOWER(details) LIKE '%sla warning%'
+        AND LOWER(details) LIKE '%min remaining%'
+        AND id NOT IN (
+          SELECT activity_log_id FROM finops_notification_archived_status
+        )
+        ORDER BY timestamp DESC
+        LIMIT 1
+      `;
+
+      const currentResult = await pool.query(checkCurrentQuery, [task_id]);
+
+      let shouldUpdate = true;
+      if (currentResult.rows.length > 0) {
+        const currentDetails = currentResult.rows[0].details;
+        const currentMinMatch = currentDetails.match(/(\d+) min remaining/);
+        if (currentMinMatch) {
+          const currentMin = parseInt(currentMinMatch[1]);
+          // Only update if difference is more than 1 minute
+          if (Math.abs(currentMin - remaining_minutes) <= 1) {
+            shouldUpdate = false;
+          }
+        }
+      }
+
+      if (!shouldUpdate) {
+        return res.json({
+          message: `SLA warning time already current (${remaining_minutes} min remaining)`,
+          no_update_needed: true,
+          timestamp: new Date().toISOString(),
+        });
+      }
+
+      // Archive old SLA warning notifications for this task
+      const archiveQuery = `
+        INSERT INTO finops_notification_archived_status (activity_log_id, archived_at)
+        SELECT id, NOW() FROM finops_activity_log
+        WHERE task_id = $1
+        AND LOWER(details) LIKE '%sla warning%'
+        AND LOWER(details) LIKE '%min remaining%'
+        AND id NOT IN (
+          SELECT activity_log_id FROM finops_notification_archived_status
+        )
+        ON CONFLICT (activity_log_id) DO NOTHING
+      `;
+
+      const archiveResult = await pool.query(archiveQuery, [task_id]);
+
+      // Create new notification with current time
+      const insertQuery = `
+        INSERT INTO finops_activity_log (action, task_id, subtask_id, user_name, details, timestamp)
+        VALUES ($1, $2, $3, $4, $5, NOW())
+        RETURNING *
+      `;
+
+      const result = await pool.query(insertQuery, [
+        action,
+        task_id,
+        subtask_id || null,
+        "System",
+        `SLA Warning - ${remaining_minutes} min remaining • need to start`,
+      ]);
+
+      res.json({
+        message: `SLA warning synchronized to ${remaining_minutes} min remaining`,
+        notification: result.rows[0],
+        archived_count: archiveResult.rowCount || 0,
+        updated_from_previous: currentResult.rows.length > 0,
+        timestamp: new Date().toISOString(),
+      });
+    } else {
+      res.json({
+        message: "Database unavailable",
+        timestamp: new Date().toISOString(),
+      });
+    }
+  } catch (error) {
+    console.error("Error syncing SLA warning time:", error);
+    res.status(500).json({
+      error: "Failed to sync SLA warning time",
+      message: error.message,
+    });
+  }
+});
+
 export default router;
