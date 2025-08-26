@@ -533,6 +533,11 @@ export default function ClientBasedFinOpsTaskManager() {
     string | null
   >(null);
 
+  // Search states for dropdowns
+  const [assignedToSearch, setAssignedToSearch] = useState("");
+  const [reportingManagerSearch, setReportingManagerSearch] = useState("");
+  const [escalationManagerSearch, setEscalationManagerSearch] = useState("");
+
   // Real-time timer state
   const [currentTime, setCurrentTime] = useState(new Date());
 
@@ -672,6 +677,10 @@ export default function ClientBasedFinOpsTaskManager() {
       is_active: true,
       subtasks: [],
     });
+    // Reset search states
+    setAssignedToSearch("");
+    setReportingManagerSearch("");
+    setEscalationManagerSearch("");
   };
 
   const addSubTask = () => {
@@ -1867,15 +1876,9 @@ export default function ClientBasedFinOpsTaskManager() {
                       <div className="p-2 border-b">
                         <Input
                           placeholder="Search users..."
+                          value={assignedToSearch}
                           className="h-8"
-                          onChange={(e) => {
-                            // Search functionality will filter the visible options
-                            const searchTerm = e.target.value.toLowerCase();
-                            const filteredUsers = users.filter((user: any) =>
-                              `${user.first_name} ${user.last_name}`.toLowerCase().includes(searchTerm)
-                            );
-                            // Note: This is just for demonstration, actual filtering would need state management
-                          }}
+                          onChange={(e) => setAssignedToSearch(e.target.value)}
                         />
                       </div>
                       <div className="max-h-48 overflow-y-auto">
@@ -1885,6 +1888,10 @@ export default function ClientBasedFinOpsTaskManager() {
                               arr.findIndex((u) => u.id === user.id) === index,
                           )
                           .filter((user: any) => !taskForm.assigned_to.includes(`${user.first_name} ${user.last_name}`))
+                          .filter((user: any) => {
+                            const fullName = `${user.first_name} ${user.last_name}`.toLowerCase();
+                            return fullName.includes(assignedToSearch.toLowerCase());
+                          })
                           .map((user: any, index: number) => (
                             <SelectItem
                               key={`assigned-${user.id}-${index}`}
@@ -1996,20 +2003,35 @@ export default function ClientBasedFinOpsTaskManager() {
                     <SelectTrigger>
                       <SelectValue placeholder="Select reporting manager" />
                     </SelectTrigger>
-                    <SelectContent>
-                      {users
-                        .filter(
-                          (user: any, index: number, arr: any[]) =>
-                            arr.findIndex((u) => u.id === user.id) === index,
-                        )
-                        .map((user: any, index: number) => (
-                          <SelectItem
-                            key={`reporting-${user.id}-${index}`}
-                            value={`${user.first_name} ${user.last_name}`}
-                          >
-                            {user.first_name} {user.last_name}
-                          </SelectItem>
-                        ))}
+                    <SelectContent className="max-h-60">
+                      <div className="p-2 border-b">
+                        <Input
+                          placeholder="Search reporting managers..."
+                          value={reportingManagerSearch}
+                          className="h-8"
+                          onChange={(e) => setReportingManagerSearch(e.target.value)}
+                        />
+                      </div>
+                      <div className="max-h-48 overflow-y-auto">
+                        {users
+                          .filter(
+                            (user: any, index: number, arr: any[]) =>
+                              arr.findIndex((u) => u.id === user.id) === index,
+                          )
+                          .filter((user: any) => !taskForm.reporting_managers.includes(`${user.first_name} ${user.last_name}`))
+                          .filter((user: any) => {
+                            const fullName = `${user.first_name} ${user.last_name}`.toLowerCase();
+                            return fullName.includes(reportingManagerSearch.toLowerCase());
+                          })
+                          .map((user: any, index: number) => (
+                            <SelectItem
+                              key={`reporting-${user.id}-${index}`}
+                              value={`${user.first_name} ${user.last_name}`}
+                            >
+                              {user.first_name} {user.last_name}
+                            </SelectItem>
+                          ))}
+                      </div>
                     </SelectContent>
                   </Select>
                 </div>
@@ -2060,20 +2082,35 @@ export default function ClientBasedFinOpsTaskManager() {
                     <SelectTrigger>
                       <SelectValue placeholder="Select escalation manager" />
                     </SelectTrigger>
-                    <SelectContent>
-                      {users
-                        .filter(
-                          (user: any, index: number, arr: any[]) =>
-                            arr.findIndex((u) => u.id === user.id) === index,
-                        )
-                        .map((user: any, index: number) => (
-                          <SelectItem
-                            key={`escalation-${user.id}-${index}`}
-                            value={`${user.first_name} ${user.last_name}`}
-                          >
-                            {user.first_name} {user.last_name}
-                          </SelectItem>
-                        ))}
+                    <SelectContent className="max-h-60">
+                      <div className="p-2 border-b">
+                        <Input
+                          placeholder="Search escalation managers..."
+                          value={escalationManagerSearch}
+                          className="h-8"
+                          onChange={(e) => setEscalationManagerSearch(e.target.value)}
+                        />
+                      </div>
+                      <div className="max-h-48 overflow-y-auto">
+                        {users
+                          .filter(
+                            (user: any, index: number, arr: any[]) =>
+                              arr.findIndex((u) => u.id === user.id) === index,
+                          )
+                          .filter((user: any) => !taskForm.escalation_managers.includes(`${user.first_name} ${user.last_name}`))
+                          .filter((user: any) => {
+                            const fullName = `${user.first_name} ${user.last_name}`.toLowerCase();
+                            return fullName.includes(escalationManagerSearch.toLowerCase());
+                          })
+                          .map((user: any, index: number) => (
+                            <SelectItem
+                              key={`escalation-${user.id}-${index}`}
+                              value={`${user.first_name} ${user.last_name}`}
+                            >
+                              {user.first_name} {user.last_name}
+                            </SelectItem>
+                          ))}
+                      </div>
                     </SelectContent>
                   </Select>
                 </div>
