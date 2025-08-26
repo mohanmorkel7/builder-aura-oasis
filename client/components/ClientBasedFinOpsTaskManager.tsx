@@ -92,11 +92,11 @@ const extractNameFromValue = (value: string): string => {
 
 // Helper function to convert name to "Name (email)" format
 const convertNameToValueFormat = (name: string, users: any[]): string => {
-  if (name.includes('(') && name.includes(')')) {
+  if (name.includes("(") && name.includes(")")) {
     return name; // Already in new format
   }
-  const user = users.find(u => `${u.first_name} ${u.last_name}` === name);
-  return user ? `${name} (${user.email || 'no-email'})` : `${name} (no-email)`;
+  const user = users.find((u) => `${u.first_name} ${u.last_name}` === name);
+  return user ? `${name} (${user.email || "no-email"})` : `${name} (no-email)`;
 };
 
 // Time conversion utilities for AM/PM format
@@ -864,7 +864,8 @@ export default function ClientBasedFinOpsTaskManager() {
       ...taskForm,
       assigned_to: taskForm.assigned_to.map(extractNameFromValue),
       reporting_managers: taskForm.reporting_managers.map(extractNameFromValue),
-      escalation_managers: taskForm.escalation_managers.map(extractNameFromValue),
+      escalation_managers:
+        taskForm.escalation_managers.map(extractNameFromValue),
       client_name: selectedClientData?.company_name || "",
       created_by: user?.id || 1,
     };
@@ -883,12 +884,16 @@ export default function ClientBasedFinOpsTaskManager() {
       description: task.description || "",
       client_id: task.client_id?.toString() || "",
       assigned_to: Array.isArray(task.assigned_to)
-        ? task.assigned_to.map(name => convertNameToValueFormat(name, users))
+        ? task.assigned_to.map((name) => convertNameToValueFormat(name, users))
         : task.assigned_to
           ? [convertNameToValueFormat(task.assigned_to, users)]
           : [], // Handle both array and string
-      reporting_managers: (task.reporting_managers || []).map(name => convertNameToValueFormat(name, users)),
-      escalation_managers: (task.escalation_managers || []).map(name => convertNameToValueFormat(name, users)),
+      reporting_managers: (task.reporting_managers || []).map((name) =>
+        convertNameToValueFormat(name, users),
+      ),
+      escalation_managers: (task.escalation_managers || []).map((name) =>
+        convertNameToValueFormat(name, users),
+      ),
       effective_from:
         task.effective_from || new Date().toISOString().split("T")[0],
       duration: task.duration || "daily",
@@ -1529,9 +1534,13 @@ export default function ClientBasedFinOpsTaskManager() {
                             Assigned:{" "}
                             {Array.isArray(task.assigned_to)
                               ? task.assigned_to.length > 0
-                                ? task.assigned_to.map(extractNameFromValue).join(", ")
+                                ? task.assigned_to
+                                    .map(extractNameFromValue)
+                                    .join(", ")
                                 : "Unassigned"
-                              : extractNameFromValue(task.assigned_to || "Unassigned")}
+                              : extractNameFromValue(
+                                  task.assigned_to || "Unassigned",
+                                )}
                           </span>
                         </div>
                         <div className="flex items-center gap-1">
@@ -1928,28 +1937,32 @@ export default function ClientBasedFinOpsTaskManager() {
                           (user: any, index: number, arr: any[]) =>
                             arr.findIndex((u) => u.id === user.id) === index,
                         )
-                        .filter(
-                          (user: any) => {
-                            const userValue = `${user.first_name} ${user.last_name} (${user.email || 'no-email'})`;
-                            return !taskForm.assigned_to.includes(userValue);
-                          },
-                        )
+                        .filter((user: any) => {
+                          const userValue = `${user.first_name} ${user.last_name} (${user.email || "no-email"})`;
+                          return !taskForm.assigned_to.includes(userValue);
+                        })
                         .filter((user: any) => {
                           const fullName =
                             `${user.first_name} ${user.last_name}`.toLowerCase();
-                          const email = (user.email || '').toLowerCase();
+                          const email = (user.email || "").toLowerCase();
                           const searchTerm = assignedToSearch.toLowerCase();
-                          return fullName.includes(searchTerm) || email.includes(searchTerm);
+                          return (
+                            fullName.includes(searchTerm) ||
+                            email.includes(searchTerm)
+                          );
                         })
                         .map((user: any, index: number) => {
                           const fullName = `${user.first_name} ${user.last_name}`;
-                          const userValue = `${fullName} (${user.email || 'no-email'})`;
+                          const userValue = `${fullName} (${user.email || "no-email"})`;
                           return (
                             <SelectItem
                               key={`assigned-to-${user.id}`}
                               value={userValue}
                             >
-                              {fullName} <span className="text-xs text-gray-500">({user.email || 'no-email'})</span>
+                              {fullName}{" "}
+                              <span className="text-xs text-gray-500">
+                                ({user.email || "no-email"})
+                              </span>
                             </SelectItem>
                           );
                         })}
@@ -2071,28 +2084,35 @@ export default function ClientBasedFinOpsTaskManager() {
                           (user: any, index: number, arr: any[]) =>
                             arr.findIndex((u) => u.id === user.id) === index,
                         )
-                        .filter(
-                          (user: any) => {
-                            const userValue = `${user.first_name} ${user.last_name} (${user.email || 'no-email'})`;
-                            return !taskForm.reporting_managers.includes(userValue);
-                          },
-                        )
+                        .filter((user: any) => {
+                          const userValue = `${user.first_name} ${user.last_name} (${user.email || "no-email"})`;
+                          return !taskForm.reporting_managers.includes(
+                            userValue,
+                          );
+                        })
                         .filter((user: any) => {
                           const fullName =
                             `${user.first_name} ${user.last_name}`.toLowerCase();
-                          const email = (user.email || '').toLowerCase();
-                          const searchTerm = reportingManagerSearch.toLowerCase();
-                          return fullName.includes(searchTerm) || email.includes(searchTerm);
+                          const email = (user.email || "").toLowerCase();
+                          const searchTerm =
+                            reportingManagerSearch.toLowerCase();
+                          return (
+                            fullName.includes(searchTerm) ||
+                            email.includes(searchTerm)
+                          );
                         })
                         .map((user: any, index: number) => {
                           const fullName = `${user.first_name} ${user.last_name}`;
-                          const userValue = `${fullName} (${user.email || 'no-email'})`;
+                          const userValue = `${fullName} (${user.email || "no-email"})`;
                           return (
                             <SelectItem
                               key={`reporting-manager-${user.id}`}
                               value={userValue}
                             >
-                              {fullName} <span className="text-xs text-gray-500">({user.email || 'no-email'})</span>
+                              {fullName}{" "}
+                              <span className="text-xs text-gray-500">
+                                ({user.email || "no-email"})
+                              </span>
                             </SelectItem>
                           );
                         })}
@@ -2162,28 +2182,35 @@ export default function ClientBasedFinOpsTaskManager() {
                           (user: any, index: number, arr: any[]) =>
                             arr.findIndex((u) => u.id === user.id) === index,
                         )
-                        .filter(
-                          (user: any) => {
-                            const userValue = `${user.first_name} ${user.last_name} (${user.email || 'no-email'})`;
-                            return !taskForm.escalation_managers.includes(userValue);
-                          },
-                        )
+                        .filter((user: any) => {
+                          const userValue = `${user.first_name} ${user.last_name} (${user.email || "no-email"})`;
+                          return !taskForm.escalation_managers.includes(
+                            userValue,
+                          );
+                        })
                         .filter((user: any) => {
                           const fullName =
                             `${user.first_name} ${user.last_name}`.toLowerCase();
-                          const email = (user.email || '').toLowerCase();
-                          const searchTerm = escalationManagerSearch.toLowerCase();
-                          return fullName.includes(searchTerm) || email.includes(searchTerm);
+                          const email = (user.email || "").toLowerCase();
+                          const searchTerm =
+                            escalationManagerSearch.toLowerCase();
+                          return (
+                            fullName.includes(searchTerm) ||
+                            email.includes(searchTerm)
+                          );
                         })
                         .map((user: any, index: number) => {
                           const fullName = `${user.first_name} ${user.last_name}`;
-                          const userValue = `${fullName} (${user.email || 'no-email'})`;
+                          const userValue = `${fullName} (${user.email || "no-email"})`;
                           return (
                             <SelectItem
                               key={`escalation-manager-${user.id}`}
                               value={userValue}
                             >
-                              {fullName} <span className="text-xs text-gray-500">({user.email || 'no-email'})</span>
+                              {fullName}{" "}
+                              <span className="text-xs text-gray-500">
+                                ({user.email || "no-email"})
+                              </span>
                             </SelectItem>
                           );
                         })}
