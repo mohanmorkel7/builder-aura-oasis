@@ -467,7 +467,7 @@ export const AuthProvider = React.memo(function AuthProvider({
               return true;
             } else {
               console.warn(
-                "⚠️ SSO department mapping failed:",
+                "��️ SSO department mapping failed:",
                 ssoResult.error,
               );
             }
@@ -511,13 +511,13 @@ export const AuthProvider = React.memo(function AuthProvider({
             "msal_account",
             JSON.stringify(loginResponse.account),
           );
-          setIsLoading(false);
+          safeSetIsLoading(false);
           return true;
         }
       } else if (provider === "google") {
         // Google SSO - placeholder for future implementation
         console.log("Google SSO not implemented yet");
-        setIsLoading(false);
+        safeSetIsLoading(false);
         return false;
       }
     } catch (error: any) {
