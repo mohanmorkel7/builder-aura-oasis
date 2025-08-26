@@ -289,7 +289,14 @@ router.get("/tasks", async (req: Request, res: Response) => {
     }
   } catch (error) {
     console.error("Error fetching FinOps tasks:", error);
-    res.json(mockFinOpsTasks);
+
+    // If it's a database schema issue, fall back to mock data
+    if (error.code === '42P01' || error.code === '42703') {
+      console.log("Database schema issue detected, falling back to mock data");
+      res.json(mockFinOpsTasks);
+    } else {
+      res.status(500).json({ error: "Failed to fetch FinOps tasks" });
+    }
   }
 });
 
