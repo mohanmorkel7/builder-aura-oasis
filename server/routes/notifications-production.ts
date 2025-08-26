@@ -2038,4 +2038,73 @@ router.post("/sync-sla-warning-time", async (req: Request, res: Response) => {
   }
 });
 
+// Auto-sync notification time to match actual current remaining time
+router.post("/auto-sync-current-time", async (req: Request, res: Response) => {
+  try {
+    if (await isDatabaseAvailable()) {
+      const { task_id, actual_remaining_minutes } = req.body;
+
+      if (!task_id || actual_remaining_minutes === undefined) {
+        return res.status(400).json({
+          error: "task_id and actual_remaining_minutes are required",
+          example: {
+            task_id: 16,
+            actual_remaining_minutes: 6
+          }
+        });
+      }
+
+      console.log(`Auto-syncing SLA warning for task ${task_id} to match actual ${actual_remaining_minutes} min remaining...`);
+
+      // Archive old SLA warning notifications for this task
+      const archiveQuery = `
+        INSERT INTO finops_notification_archived_status (activity_log_id, archived_at)
+        SELECT id, NOW() FROM finops_activity_log
+        WHERE task_id = $1
+        AND LOWER(details) LIKE '%sla warning%'
+        AND LOWER(details) LIKE '%min remaining%'
+        AND id NOT IN (
+          SELECT activity_log_id FROM finops_notification_archived_status
+        )
+        ON CONFLICT (activity_log_id) DO NOTHING
+      `;
+
+      const archiveResult = await pool.query(archiveQuery, [task_id]);
+
+      // Create new notification with current actual time
+      const insertQuery = `
+        INSERT INTO finops_activity_log (action, task_id, subtask_id, user_name, details, timestamp)
+        VALUES ($1, $2, $3, $4, $5, NOW())
+        RETURNING *
+      `;
+
+      const result = await pool.query(insertQuery, [
+        "sla_alert",
+        task_id,
+        29, // Default subtask for task 16
+        "System",
+        `SLA Warning - ${actual_remaining_minutes} min remaining • need to start`,
+      ]);
+
+      res.json({
+        message: `SLA warning auto-synced to actual ${actual_remaining_minutes} min remaining`,
+        notification: result.rows[0],
+        archived_count: archiveResult.rowCount || 0,
+        sync_time: new Date().toISOString(),
+      });
+    } else {
+      res.json({
+        message: "Database unavailable",
+        timestamp: new Date().toISOString(),
+      });
+    }
+  } catch (error) {
+    console.error("Error auto-syncing SLA warning time:", error);
+    res.status(500).json({
+      error: "Failed to auto-sync SLA warning time",
+      message: error.message,
+    });
+  }
+});
+
 export default router;
