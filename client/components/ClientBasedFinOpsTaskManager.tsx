@@ -1080,15 +1080,25 @@ export default function ClientBasedFinOpsTaskManager() {
         task.client_id,
       );
 
-      // Show all clients, including unknown ones for debugging
-      const clientName =
-        task.client_name ||
-        clients.find((c: any) => c.id.toString() === task.client_id?.toString())
-          ?.company_name ||
-        clients.find((c: any) => c.id.toString() === task.client_id?.toString())
-          ?.client_name ||
-        `Client ${task.client_id}` ||
-        "Unknown Client";
+      // Resolve client name with proper fallback logic
+      let clientName = "Unknown Client";
+
+      if (task.client_name) {
+        // Use the client_name if available
+        clientName = task.client_name;
+      } else if (task.client_id) {
+        // Look up client by ID in the clients array
+        const foundClient = clients.find((c: any) =>
+          c.id.toString() === task.client_id.toString()
+        );
+        if (foundClient) {
+          clientName = foundClient.company_name || foundClient.client_name || `Client ${foundClient.id}`;
+        } else {
+          clientName = `Client ${task.client_id}`;
+        }
+      }
+
+      console.log(`📝 Task "${task.task_name}" -> Client: "${clientName}" (ID: ${task.client_id})`);
 
       if (!clientSummary[clientName]) {
         clientSummary[clientName] = {
