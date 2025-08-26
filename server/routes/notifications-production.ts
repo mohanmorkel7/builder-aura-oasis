@@ -944,8 +944,8 @@ router.post("/test/create-payswiff-overdue", async (req: Request, res: Response)
       if (taskExists.rows.length === 0) {
         console.log("Task 16 doesn't exist, creating it...");
         const createTaskQuery = `
-          INSERT INTO finops_tasks (id, task_name, description, assigned_to, reporting_managers, escalation_managers, effective_from, duration, is_active, created_by, client_id, client_name)
-          VALUES (16, 'Check', 'check', 'Sanjay Kumar', '["Sarumathi Manickam", "Vishnu Vardhan"]'::jsonb, '["Harini NL", "Vishal S"]'::jsonb, '2025-08-23', 'daily', true, 72, 4, 'PaySwiff')
+          INSERT INTO finops_tasks (id, task_name, description, assigned_to, reporting_managers, escalation_managers, effective_from, duration, is_active, created_by)
+          VALUES (16, 'Check', 'check', 'Sanjay Kumar', '["Sarumathi Manickam", "Vishnu Vardhan"]'::jsonb, '["Harini NL", "Vishal S"]'::jsonb, '2025-08-23', 'daily', true, 1)
           ON CONFLICT (id) DO NOTHING
         `;
 
