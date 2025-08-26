@@ -91,43 +91,7 @@ const transformDbNotifications = (
   });
 };
 
-// Map database notification types to FinOps types
-const mapDbTypeToFinOpsType = (dbType: string): FinOpsNotification["type"] => {
-  switch (dbType) {
-    case "overdue":
-      return "sla_overdue";
-    case "warning":
-      return "sla_warning";
-    case "reminder":
-      return "daily_reminder";
-    case "completed":
-      return "task_completed";
-    case "delayed":
-      return "task_delayed";
-    case "escalation":
-      return "escalation";
-    default:
-      return "daily_reminder";
-  }
-};
-
-// Map database priority to FinOps priority
-const mapDbPriorityToFinOpsPriority = (
-  dbPriority: string,
-): FinOpsNotification["priority"] => {
-  switch (dbPriority) {
-    case "high":
-      return "high";
-    case "medium":
-      return "medium";
-    case "low":
-      return "low";
-    case "critical":
-      return "critical";
-    default:
-      return "medium";
-  }
-};
+// Type and priority mapping functions removed since API already returns correct format
 
 const mockNotifications: FinOpsNotification[] = [
   {
