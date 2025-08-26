@@ -99,23 +99,7 @@ router.get("/", async (req: Request, res: Response) => {
           ? `WHERE ${whereConditions.join(" AND ")}`
           : "";
 
-      // Create read status and archived status tables if they don't exist
-      const createTablesQuery = `
-        CREATE TABLE IF NOT EXISTS finops_notification_read_status (
-          activity_log_id INTEGER PRIMARY KEY,
-          read_at TIMESTAMP DEFAULT NOW(),
-          FOREIGN KEY (activity_log_id) REFERENCES finops_activity_log(id) ON DELETE CASCADE
-        );
-
-        CREATE TABLE IF NOT EXISTS finops_notification_archived_status (
-          activity_log_id INTEGER PRIMARY KEY,
-          archived_at TIMESTAMP DEFAULT NOW(),
-          FOREIGN KEY (activity_log_id) REFERENCES finops_activity_log(id) ON DELETE CASCADE
-        );
-      `;
-
-      await pool.query(createTablesQuery);
-
+      // Simplified query with better indexing
       const query = `
         SELECT
           fal.id,
@@ -142,7 +126,7 @@ router.get("/", async (req: Request, res: Response) => {
             WHEN fal.action = 'completion_notification_sent' THEN 'low'
             ELSE 'medium'
           END as priority,
-          CASE WHEN fnrs.activity_log_id IS NOT NULL THEN true ELSE false END as read,
+          COALESCE(fnrs.activity_log_id IS NOT NULL, false) as read,
           1 as user_id
         FROM finops_activity_log fal
         LEFT JOIN finops_tasks ft ON fal.task_id = ft.id
