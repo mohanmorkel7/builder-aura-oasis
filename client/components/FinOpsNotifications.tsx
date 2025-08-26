@@ -943,6 +943,63 @@ export default function FinOpsNotifications() {
           })
         )}
       </div>
+
+      {/* Overdue Reason Dialog */}
+      <Dialog
+        open={overdueReasonDialog.open}
+        onOpenChange={(open) => {
+          if (!open) {
+            setOverdueReasonDialog({ open: false, notificationId: "", taskName: "" });
+            setOverdueReason("");
+          }
+        }}
+      >
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-red-600" />
+              Overdue Task - Reason Required
+            </DialogTitle>
+            <DialogDescription>
+              Please provide a reason for marking this overdue notification as read:
+              <br />
+              <strong>{overdueReasonDialog.taskName}</strong>
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="overdue-reason">Overdue Reason</Label>
+              <Textarea
+                id="overdue-reason"
+                placeholder="Please explain why this task was overdue and what actions were taken..."
+                value={overdueReason}
+                onChange={(e) => setOverdueReason(e.target.value)}
+                className="min-h-[100px]"
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setOverdueReasonDialog({ open: false, notificationId: "", taskName: "" });
+                setOverdueReason("");
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={submitOverdueReason}
+              disabled={!overdueReason.trim()}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Submit Reason & Mark Read
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
