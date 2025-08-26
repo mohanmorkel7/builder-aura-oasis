@@ -172,10 +172,10 @@ const transformDbNotifications = (
             `🚨 SLA EXPIRED: ${originalMinutes} min → OVERDUE by ${overdueMinutesFromSLA} min (${minutesPassed}:${secondsPassed.toString().padStart(2, "0")} elapsed)`,
           );
         } else {
-          // Still within SLA
+          // Still within SLA - preserve any text after "min remaining" like "• need to start"
           realTimeDetails = dbNotif.details.replace(
-            /(\d+) min remaining/,
-            `${currentRemainingMinutes} min remaining`,
+            /(\d+) min remaining(.*)$/,
+            `${currentRemainingMinutes} min remaining$2`,
           );
           realTimeTitle = realTimeDetails;
           realTimeSlaRemaining = `${currentRemainingMinutes} min remaining`;
