@@ -622,6 +622,8 @@ export default function FinOpsNotifications() {
         return CheckCircle;
       case "task_delayed":
         return MessageSquare;
+      case "task_pending":
+        return Clock;
       case "daily_reminder":
         return Calendar;
       default:
