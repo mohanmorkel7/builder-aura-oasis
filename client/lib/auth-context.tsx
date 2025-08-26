@@ -457,7 +457,7 @@ export const AuthProvider = React.memo(function AuthProvider({
               };
 
               console.log("🎯 Setting user data with role:", userData.role);
-              setUser(userData);
+              safeSetUser(userData);
               localStorage.setItem("banani_user", JSON.stringify(userData));
               localStorage.setItem(
                 "msal_account",
