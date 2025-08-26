@@ -458,10 +458,20 @@ export default function FinOpsNotifications() {
           <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
             <Bell className="w-6 h-6" />
             FinOps Notifications
+            {isUsingRealData ? (
+              <Badge variant="outline" className="ml-2 text-green-600 bg-green-50 border-green-200">
+                Live Data
+              </Badge>
+            ) : (
+              <Badge variant="outline" className="ml-2 text-amber-600 bg-amber-50 border-amber-200">
+                Demo Data
+              </Badge>
+            )}
           </h2>
           <p className="text-gray-600 mt-1">
-            Stay updated with task progress, SLA alerts, and important
-            notifications
+            Stay updated with task progress, SLA alerts, and important notifications
+            {isUsingRealData && " • Connected to real-time database"}
+            {!isUsingRealData && " • Showing sample data for demonstration"}
           </p>
         </div>
         <div className="flex gap-2">
