@@ -928,6 +928,56 @@ router.post("/test/create-sla-warning", async (req: Request, res: Response) => {
   }
 });
 
+// Create PaySwiff Check task overdue notification
+router.post("/test/create-payswiff-overdue", async (req: Request, res: Response) => {
+  try {
+    if (await isDatabaseAvailable()) {
+      console.log("Creating PaySwiff Check task overdue notification...");
+
+      // Create the overdue notification for task 16 (Check task)
+      const query = `
+        INSERT INTO finops_activity_log (action, task_id, subtask_id, user_name, details, timestamp)
+        VALUES ($1, $2, $3, $4, $5, NOW() - INTERVAL '18 minutes')
+        RETURNING *
+      `;
+
+      const result = await pool.query(query, [
+        "task_status_changed",
+        16,
+        29,
+        "System",
+        "Subtasks (0/1 completed) check test Start: 05:15 PM Pending Overdue by 4 min",
+      ]);
+
+      res.json({
+        message: "PaySwiff Check task overdue notification created successfully!",
+        notification: result.rows[0],
+        description: "Subtasks (0/1 completed) check test Start: 05:15 PM Pending Overdue by 4 min • 18 min ago",
+        task_details: "Check",
+        client: "PaySwiff",
+        assigned_to: "Sanjay Kumar, Mugundhan Selvam",
+        reporting_managers: "Sarumathi Manickam, Vishnu Vardhan",
+        escalation_managers: "Harini NL, Vishal S",
+        subtask: "check",
+        created_18_minutes_ago: true,
+        timestamp: new Date().toISOString(),
+      });
+    } else {
+      res.json({
+        message:
+          "Database unavailable - would create PaySwiff overdue notification in production",
+        timestamp: new Date().toISOString(),
+      });
+    }
+  } catch (error) {
+    console.error("Error creating PaySwiff overdue notification:", error);
+    res.status(500).json({
+      error: "Failed to create PaySwiff overdue notification",
+      message: error.message,
+    });
+  }
+});
+
 // Create the exact SLA warning that user described
 router.post(
   "/test/create-enterprise-banking-sla",
