@@ -286,9 +286,9 @@ const transformDbNotifications = (
         )),
       delay_reason:
         dbNotif.action === "delay_reported" ? "Process delayed" : undefined,
-      sla_remaining: overdueMinutes
+      sla_remaining: realTimeSlaRemaining || (overdueMinutes
         ? `Overdue by ${overdueMinutes} min`
-        : undefined,
+        : undefined),
       overdue_minutes: overdueMinutes,
       members_list: members.members_list,
     };
@@ -487,7 +487,7 @@ export default function FinOpsNotifications() {
     refetchInterval: 60000, // Refresh every 60 seconds (reduced from 30s)
     staleTime: 30000, // Consider data stale after 30 seconds
     retry: (failureCount, error) => {
-      console.log(`🔄 Retry attempt ${failureCount} for notifications`);
+      console.log(`���� Retry attempt ${failureCount} for notifications`);
 
       // Don't retry timeout errors immediately
       if (error instanceof Error && error.message.includes("timeout")) {
