@@ -150,17 +150,19 @@ export function createServer() {
       server: {
         uptime: process.uptime(),
         memory: process.memoryUsage(),
-        version: process.version
+        version: process.version,
       },
       routes: {
         finops: "loaded",
         finops_production: "loaded",
-        notifications_production: "loaded"
+        notifications_production: "loaded",
       },
       environment: {
         node_env: process.env.NODE_ENV || "development",
-        database_url: process.env.DATABASE_URL ? "configured" : "not configured"
-      }
+        database_url: process.env.DATABASE_URL
+          ? "configured"
+          : "not configured",
+      },
     };
 
     try {
@@ -175,7 +177,7 @@ export function createServer() {
     } catch (error) {
       healthCheck.database = {
         status: "error",
-        message: error.message
+        message: error.message,
       };
       healthCheck.status = "degraded";
     }
