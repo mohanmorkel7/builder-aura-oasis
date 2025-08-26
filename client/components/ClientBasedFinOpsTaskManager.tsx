@@ -88,29 +88,51 @@ import {
 const extractNameFromValue = (value: string): string => {
   if (!value) return value;
 
-  // Handle JSON objects like {"John Doe"} or {\"John Doe\"}
+  console.log('🔍 extractNameFromValue input:', JSON.stringify(value));
+
+  // Handle malformed JSON objects like {"John Doe"} - extract content between braces
   if (value.startsWith("{") && value.endsWith("}")) {
+    // First try normal JSON parsing
     try {
       const parsed = JSON.parse(value);
-      // If it's an object with string values, return the first string value
       if (typeof parsed === "object" && parsed !== null) {
         const values = Object.values(parsed);
         const firstString = values.find((v) => typeof v === "string");
-        return firstString || value;
+        if (firstString) {
+          console.log('✅ JSON object parsed:', firstString);
+          return firstString;
+        }
       }
-      return typeof parsed === "string" ? parsed : value;
+      if (typeof parsed === "string") {
+        console.log('✅ JSON string parsed:', parsed);
+        return parsed;
+      }
     } catch (e) {
-      // If parsing fails, continue with other checks
+      // If JSON parsing fails, try to extract content manually
+      console.log('⚠️ JSON parsing failed, trying manual extraction');
+      const content = value.slice(1, -1); // Remove { and }
+
+      // Handle cases like {"John Doe"} where John Doe might be quoted or unquoted
+      if (content.startsWith('"') && content.endsWith('"')) {
+        const extracted = content.slice(1, -1); // Remove quotes
+        console.log('✅ Manual extraction with quotes:', extracted);
+        return extracted;
+      } else {
+        // Handle unquoted content
+        console.log('✅ Manual extraction without quotes:', content);
+        return content;
+      }
     }
   }
 
-  // Handle JSON stringified values like "{\"Sanjay Kumar\"}"
+  // Handle JSON stringified values like "{\"Sanjay Kumar\"}" or nested like "{"{\"Sanjay Kumar\"}"}"
   if (value.startsWith('"{') && value.endsWith('}"')) {
     try {
       const parsed = JSON.parse(value);
+      console.log('✅ Stringified JSON parsed:', parsed);
       return typeof parsed === "string" ? parsed : value;
     } catch (e) {
-      // If parsing fails, continue with other checks
+      console.log('⚠️ Stringified JSON parsing failed');
     }
   }
 
@@ -118,15 +140,22 @@ const extractNameFromValue = (value: string): string => {
   if (value.startsWith('"') && value.endsWith('"')) {
     try {
       const parsed = JSON.parse(value);
+      console.log('✅ Quoted string parsed:', parsed);
       return typeof parsed === "string" ? parsed : value;
     } catch (e) {
-      // If parsing fails, continue with other checks
+      console.log('⚠️ Quoted string parsing failed');
     }
   }
 
   // Handle "Name (email)" format
   const match = value.match(/^(.+)\s\([^)]+\)$/);
-  return match ? match[1] : value;
+  if (match) {
+    console.log('✅ Email format matched:', match[1]);
+    return match[1];
+  }
+
+  console.log('✅ Returning original value:', value);
+  return value;
 };
 
 // Helper function to convert name to "Name (email)" format
