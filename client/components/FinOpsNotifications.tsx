@@ -232,20 +232,20 @@ const transformDbNotifications = (
     const transformed = {
       id: dbNotif.id.toString(),
       type: notificationType,
-      title: dbNotif.details?.includes("FinOps: sla warning")
-        ? dbNotif.details
-        : dbNotif.details?.includes("SLA Warning - ") && dbNotif.details?.includes("min remaining")
-          ? dbNotif.details
-          : dbNotif.details?.includes("Subtasks (0/1 completed)")
-            ? dbNotif.details.split("Start:")[0].trim()
-            : dbNotif.details?.includes("CLEARING - FILE TRANSFER AND VALIDATION")
+      title: realTimeDetails?.includes("FinOps: sla warning")
+        ? realTimeDetails
+        : realTimeDetails?.includes("SLA Warning - ") && realTimeDetails?.includes("min remaining")
+          ? realTimeDetails
+          : realTimeDetails?.includes("Subtasks (0/1 completed)")
+            ? realTimeDetails.split("Start:")[0].trim()
+            : realTimeDetails?.includes("CLEARING - FILE TRANSFER AND VALIDATION")
               ? "CLEARING - FILE TRANSFER AND VALIDATION"
               : startTime
                 ? `Task (Start: ${startTime})`
                 : dbNotif.action
                   ? `FinOps: ${dbNotif.action.replace(/_/g, " ")}`
                   : "FinOps Notification",
-      message: dbNotif.details || "",
+      message: realTimeDetails || "",
       task_name:
         dbNotif.task_name ||
         (dbNotif.task_id === 5 || dbNotif.task_id === 6
