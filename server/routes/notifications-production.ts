@@ -391,18 +391,33 @@ router.put("/read-all", async (req: Request, res: Response) => {
         return res.status(400).json({ error: "user_id is required" });
       }
 
-      const query = `
-        UPDATE notifications 
-        SET read = true, read_at = NOW()
-        WHERE user_id = $1 AND read = false
-        RETURNING id
+      // Create read status table if it doesn't exist
+      const createTableQuery = `
+        CREATE TABLE IF NOT EXISTS finops_notification_read_status (
+          activity_log_id INTEGER PRIMARY KEY,
+          read_at TIMESTAMP DEFAULT NOW(),
+          FOREIGN KEY (activity_log_id) REFERENCES finops_activity_log(id) ON DELETE CASCADE
+        )
       `;
 
-      const result = await pool.query(query, [user_id]);
+      await pool.query(createTableQuery);
+
+      // Mark all unread activity logs as read
+      const query = `
+        INSERT INTO finops_notification_read_status (activity_log_id, read_at)
+        SELECT fal.id, NOW()
+        FROM finops_activity_log fal
+        LEFT JOIN finops_notification_read_status fnrs ON fal.id = fnrs.activity_log_id
+        WHERE fal.timestamp >= NOW() - INTERVAL '7 days'
+        AND fnrs.activity_log_id IS NULL
+        ON CONFLICT (activity_log_id) DO NOTHING
+      `;
+
+      const result = await pool.query(query);
 
       res.json({
         message: "All notifications marked as read",
-        updated_count: result.rows.length,
+        updated_count: result.rowCount || 0,
       });
     } else {
       console.log("Database unavailable, returning mock read-all update");
