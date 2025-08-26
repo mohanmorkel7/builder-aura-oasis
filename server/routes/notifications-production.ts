@@ -1494,4 +1494,97 @@ router.get("/test/check-task-activity", async (req: Request, res: Response) => {
   }
 });
 
+// Check for duplicate notifications
+router.get("/test/check-duplicates", async (req: Request, res: Response) => {
+  try {
+    if (await isDatabaseAvailable()) {
+      const query = `
+        SELECT
+          action,
+          task_id,
+          subtask_id,
+          details,
+          COUNT(*) as duplicate_count,
+          STRING_AGG(id::text, ', ') as notification_ids,
+          MIN(timestamp) as first_created,
+          MAX(timestamp) as last_created
+        FROM finops_activity_log
+        WHERE task_id = 16
+        AND action = 'status_changed'
+        AND LOWER(details) LIKE '%pending%'
+        GROUP BY action, task_id, subtask_id, details
+        HAVING COUNT(*) > 1
+        ORDER BY duplicate_count DESC
+      `;
+
+      const result = await pool.query(query);
+
+      res.json({
+        message: "Duplicate notifications check",
+        duplicates_found: result.rows.length,
+        duplicates: result.rows,
+        timestamp: new Date().toISOString(),
+      });
+    } else {
+      res.json({
+        message: "Database unavailable",
+        timestamp: new Date().toISOString(),
+      });
+    }
+  } catch (error) {
+    console.error("Error checking duplicates:", error);
+    res.status(500).json({
+      error: "Failed to check duplicates",
+      message: error.message,
+    });
+  }
+});
+
+// Clean up duplicate notifications for Check task
+router.delete("/test/clean-duplicates", async (req: Request, res: Response) => {
+  try {
+    if (await isDatabaseAvailable()) {
+      // Keep only the latest notification for each unique combination
+      const cleanupQuery = `
+        DELETE FROM finops_activity_log
+        WHERE id IN (
+          SELECT id FROM (
+            SELECT id,
+              ROW_NUMBER() OVER (
+                PARTITION BY action, task_id, subtask_id, details
+                ORDER BY timestamp DESC
+              ) as rn
+            FROM finops_activity_log
+            WHERE task_id = 16
+            AND action = 'status_changed'
+            AND LOWER(details) LIKE '%pending%'
+          ) ranked
+          WHERE rn > 1
+        )
+        RETURNING *
+      `;
+
+      const result = await pool.query(cleanupQuery);
+
+      res.json({
+        message: "Duplicate notifications cleaned up",
+        deleted_count: result.rowCount,
+        deleted_notifications: result.rows,
+        timestamp: new Date().toISOString(),
+      });
+    } else {
+      res.json({
+        message: "Database unavailable - would clean duplicates in production",
+        timestamp: new Date().toISOString(),
+      });
+    }
+  } catch (error) {
+    console.error("Error cleaning duplicates:", error);
+    res.status(500).json({
+      error: "Failed to clean duplicates",
+      message: error.message,
+    });
+  }
+});
+
 export default router;
