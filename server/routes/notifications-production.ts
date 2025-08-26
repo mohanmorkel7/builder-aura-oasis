@@ -420,14 +420,16 @@ router.put("/read-all", async (req: Request, res: Response) => {
 
       await pool.query(createTablesQuery);
 
-      // Mark all unread activity logs as read
+      // Mark all unread activity logs as read (excluding archived ones)
       const query = `
         INSERT INTO finops_notification_read_status (activity_log_id, read_at)
         SELECT fal.id, NOW()
         FROM finops_activity_log fal
         LEFT JOIN finops_notification_read_status fnrs ON fal.id = fnrs.activity_log_id
+        LEFT JOIN finops_notification_archived_status fnas ON fal.id = fnas.activity_log_id
         WHERE fal.timestamp >= NOW() - INTERVAL '7 days'
         AND fnrs.activity_log_id IS NULL
+        AND fnas.activity_log_id IS NULL
         ON CONFLICT (activity_log_id) DO NOTHING
       `;
 
