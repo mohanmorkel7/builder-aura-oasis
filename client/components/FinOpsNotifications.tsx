@@ -868,19 +868,19 @@ export default function FinOpsNotifications() {
           <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
             <Bell className="w-6 h-6" />
             FinOps Notifications
-            {isUsingRealData ? (
+            {isDatabaseConnected ? (
               <Badge
                 variant="outline"
                 className="ml-2 text-green-600 bg-green-50 border-green-200"
               >
-                Live Data
+                Database Connected
               </Badge>
             ) : (
               <Badge
                 variant="outline"
-                className="ml-2 text-amber-600 bg-amber-50 border-amber-200"
+                className="ml-2 text-red-600 bg-red-50 border-red-200"
               >
-                Demo Data
+                Database Unavailable
               </Badge>
             )}
           </h2>
