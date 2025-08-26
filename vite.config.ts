@@ -12,10 +12,7 @@ export default defineConfig(({ mode }) => ({
       timeout: 15000, // Increased timeout to prevent premature disconnections
       overlay: false,
       clientPort: 8080, // Explicit client port to avoid connection issues
-      skipFile: (file) => {
-        // Skip HMR for certain files that might cause race conditions
-        return file.includes('auth-context') && process.env.NODE_ENV === 'development';
-      },
+      port: 8080, // Ensure HMR port matches server port
     },
     fs: {
       allow: ["./client", "./shared"],
