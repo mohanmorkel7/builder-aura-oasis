@@ -254,7 +254,7 @@ router.get("/tasks", async (req: Request, res: Response) => {
       const query = `
         SELECT
           t.*,
-          COALESCE(c.company_name, c.client_name) as client_name,
+          COALESCE(t.client_name, c.company_name) as client_name,
           json_agg(
             json_build_object(
               'id', st.id,
@@ -272,7 +272,7 @@ router.get("/tasks", async (req: Request, res: Response) => {
         LEFT JOIN finops_subtasks st ON t.id = st.task_id
         LEFT JOIN finops_clients c ON t.client_id = c.id AND c.deleted_at IS NULL
         WHERE t.deleted_at IS NULL
-        GROUP BY t.id, c.company_name, c.client_name
+        GROUP BY t.id, t.client_name, c.company_name
         ORDER BY t.created_at DESC
       `;
 
