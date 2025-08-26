@@ -597,7 +597,7 @@ export default function ClientBasedFinOpsTaskManager() {
 
   // Fetch FinOps clients (separate from sales leads)
   const {
-    data: clients = [],
+    data: rawClients = [],
     isLoading: clientsLoading,
     error: clientsError,
   } = useQuery({
@@ -615,6 +615,21 @@ export default function ClientBasedFinOpsTaskManager() {
       }
     },
   });
+
+  // Deduplicate clients at the component level to prevent dropdown duplicates
+  const clients = React.useMemo(() => {
+    const uniqueClients = rawClients.filter(
+      (client: any, index: number, arr: any[]) => {
+        const firstIndex = arr.findIndex((c: any) => c.id === client.id);
+        return firstIndex === index;
+      }
+    );
+    console.log('Raw clients count:', rawClients.length, 'Unique clients count:', uniqueClients.length);
+    if (rawClients.length !== uniqueClients.length) {
+      console.warn('Duplicate clients detected and removed:', rawClients.length - uniqueClients.length);
+    }
+    return uniqueClients;
+  }, [rawClients]);
 
   // Fetch users for assignment
   const { data: users = [] } = useQuery({
