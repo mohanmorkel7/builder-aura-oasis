@@ -211,15 +211,17 @@ const transformDbNotifications = (
       type: notificationType,
       title: dbNotif.details?.includes("FinOps: sla warning")
         ? dbNotif.details
-        : dbNotif.details?.includes("Subtasks (0/1 completed)")
-          ? dbNotif.details.split("Start:")[0].trim()
-          : dbNotif.details?.includes("CLEARING - FILE TRANSFER AND VALIDATION")
-            ? "CLEARING - FILE TRANSFER AND VALIDATION"
-            : startTime
-              ? `Task (Start: ${startTime})`
-              : dbNotif.action
-                ? `FinOps: ${dbNotif.action.replace(/_/g, " ")}`
-                : "FinOps Notification",
+        : dbNotif.details?.includes("SLA Warning - ") && dbNotif.details?.includes("min remaining")
+          ? dbNotif.details
+          : dbNotif.details?.includes("Subtasks (0/1 completed)")
+            ? dbNotif.details.split("Start:")[0].trim()
+            : dbNotif.details?.includes("CLEARING - FILE TRANSFER AND VALIDATION")
+              ? "CLEARING - FILE TRANSFER AND VALIDATION"
+              : startTime
+                ? `Task (Start: ${startTime})`
+                : dbNotif.action
+                  ? `FinOps: ${dbNotif.action.replace(/_/g, " ")}`
+                  : "FinOps Notification",
       message: dbNotif.details || "",
       task_name:
         dbNotif.task_name ||
