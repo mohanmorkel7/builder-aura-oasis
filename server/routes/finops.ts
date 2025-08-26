@@ -1614,9 +1614,16 @@ router.post("/tasks", async (req: Request, res: Response) => {
       created_by,
     } = req.body;
 
-    if (!task_name || !assigned_to || !effective_from || !duration || !created_by) {
+    if (
+      !task_name ||
+      !assigned_to ||
+      !effective_from ||
+      !duration ||
+      !created_by
+    ) {
       return res.status(400).json({
-        error: "Missing required fields: task_name, assigned_to, effective_from, duration, created_by"
+        error:
+          "Missing required fields: task_name, assigned_to, effective_from, duration, created_by",
       });
     }
 
@@ -1625,7 +1632,9 @@ router.post("/tasks", async (req: Request, res: Response) => {
       const clientIdInt = client_id ? parseInt(client_id.toString()) : null;
 
       // Convert assigned_to array to JSON string if it's an array
-      const assignedToStr = Array.isArray(assigned_to) ? assigned_to[0] : assigned_to;
+      const assignedToStr = Array.isArray(assigned_to)
+        ? assigned_to[0]
+        : assigned_to;
 
       // Create the main task
       const taskResult = await pool.query(
@@ -1649,7 +1658,7 @@ router.post("/tasks", async (req: Request, res: Response) => {
           duration,
           is_active !== false, // Default to true if not specified
           created_by,
-        ]
+        ],
       );
 
       const newTask = taskResult.rows[0];
@@ -1676,7 +1685,7 @@ router.post("/tasks", async (req: Request, res: Response) => {
               subtask.order_position || 0,
               subtask.status || "pending",
               subtask.assigned_to || assignedToStr,
-            ]
+            ],
           );
           createdSubtasks.push(subtaskResult.rows[0]);
         }
@@ -1688,7 +1697,7 @@ router.post("/tasks", async (req: Request, res: Response) => {
         null,
         "created",
         "User",
-        `Task "${task_name}" created successfully`
+        `Task "${task_name}" created successfully`,
       );
 
       // Return the created task with subtasks
