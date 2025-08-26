@@ -263,7 +263,7 @@ export const AuthProvider = React.memo(function AuthProvider({
   }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
-    setIsLoading(true);
+    safeSetIsLoading(true);
 
     try {
       const response: any = await apiClient.login(email, password);
