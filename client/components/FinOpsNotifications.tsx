@@ -103,8 +103,10 @@ const transformDbNotifications = (
     ) {
       notificationType = "sla_overdue";
     } else if (
+      dbNotif.action === "sla_alert" ||
       dbNotif.action === "sla_warning" ||
-      dbNotif.details?.includes("starting in")
+      dbNotif.details?.includes("starting in") ||
+      dbNotif.details?.includes("sla warning")
     ) {
       notificationType = "sla_warning";
     } else if (dbNotif.action === "escalation_required") {
