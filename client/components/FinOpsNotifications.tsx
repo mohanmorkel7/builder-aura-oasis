@@ -85,6 +85,13 @@ const transformDbNotifications = (
   console.log("🔄 Transform input:", dbNotifications.slice(0, 2)); // Log first 2 items for debugging
 
   return dbNotifications.map((dbNotif) => {
+    // Initialize all variables at the beginning to avoid reference errors
+    let realTimeDetails = dbNotif.details;
+    let realTimeTitle = dbNotif.details;
+    let realTimeSlaRemaining = undefined;
+    let isExpiredSLA = false;
+    let overdueMinutesFromSLA = 0;
+
     // Extract overdue minutes from details if present and calculate real-time overdue
     const overdueMatch =
       dbNotif.details?.match(/overdue by (\d+) min/i) ||
@@ -118,11 +125,6 @@ const transformDbNotifications = (
     const startTime = startTimeMatch ? startTimeMatch[1] : undefined;
 
     // Calculate real-time remaining minutes for SLA warnings with improved precision
-    let realTimeDetails = dbNotif.details;
-    let realTimeTitle = dbNotif.details;
-    let realTimeSlaRemaining = undefined;
-    let isExpiredSLA = false;
-    let overdueMinutesFromSLA = 0;
 
     if (currentTime && dbNotif.details?.includes("SLA Warning - ") && dbNotif.details?.includes("min remaining")) {
       const originalMinMatch = dbNotif.details.match(/(\d+) min remaining/);
