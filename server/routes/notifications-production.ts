@@ -131,9 +131,9 @@ router.get("/", async (req: Request, res: Response) => {
           ? `WHERE ${whereConditions.join(" AND ")}`
           : "";
 
-      // Simplified query with better indexing and deduplication
+      // Query with better deduplication that preserves important notifications
       const query = `
-        SELECT DISTINCT ON (fal.action, fal.task_id, fal.subtask_id, fal.details)
+        SELECT
           fal.id,
           fal.task_id,
           fal.subtask_id,
@@ -169,7 +169,15 @@ router.get("/", async (req: Request, res: Response) => {
             ELSE 'medium'
           END as priority,
           COALESCE(fnrs.activity_log_id IS NOT NULL, false) as read,
-          1 as user_id
+          1 as user_id,
+          ROW_NUMBER() OVER (
+            PARTITION BY
+              CASE WHEN fal.action = 'sla_alert' THEN fal.id ELSE fal.action END,
+              fal.task_id,
+              fal.subtask_id,
+              CASE WHEN fal.action = 'sla_alert' THEN fal.id ELSE fal.details END
+            ORDER BY fal.timestamp DESC
+          ) as rn
         FROM finops_activity_log fal
         LEFT JOIN finops_tasks ft ON fal.task_id = ft.id
         LEFT JOIN finops_subtasks fs ON fal.subtask_id = fs.id
@@ -177,7 +185,15 @@ router.get("/", async (req: Request, res: Response) => {
         LEFT JOIN finops_notification_archived_status fnas ON fal.id = fnas.activity_log_id
         WHERE fal.timestamp >= NOW() - INTERVAL '7 days'
         AND fnas.activity_log_id IS NULL
-        ORDER BY fal.action, fal.task_id, fal.subtask_id, fal.details, fal.timestamp DESC
+        AND ROW_NUMBER() OVER (
+          PARTITION BY
+            CASE WHEN fal.action = 'sla_alert' THEN fal.id ELSE fal.action END,
+            fal.task_id,
+            fal.subtask_id,
+            CASE WHEN fal.action = 'sla_alert' THEN fal.id ELSE fal.details END
+          ORDER BY fal.timestamp DESC
+        ) = 1
+        ORDER BY fal.timestamp DESC
         LIMIT $${paramIndex++} OFFSET $${paramIndex++}
       `;
 
