@@ -116,11 +116,13 @@ const extractNameFromValue = (value: string): string => {
       if (content.startsWith('"') && content.endsWith('"')) {
         const extracted = content.slice(1, -1); // Remove quotes
         console.log("✅ Manual extraction with quotes:", extracted);
-        return extracted;
+        // Recursively parse in case there are more nested levels
+        return extractNameFromValue(extracted);
       } else {
         // Handle unquoted content
         console.log("✅ Manual extraction without quotes:", content);
-        return content;
+        // Recursively parse in case there are more nested levels
+        return extractNameFromValue(content);
       }
     }
   }
