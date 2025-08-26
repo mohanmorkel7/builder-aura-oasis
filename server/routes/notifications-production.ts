@@ -100,15 +100,37 @@ router.get("/", async (req: Request, res: Response) => {
           : "";
 
       const query = `
-        SELECT 
-          n.*,
-          u.first_name || ' ' || u.last_name as user_name,
-          c.name as client_name
-        FROM notifications n
-        LEFT JOIN users u ON n.user_id = u.id
-        LEFT JOIN clients c ON n.client_id = c.id
-        ${whereClause}
-        ORDER BY n.created_at DESC
+        SELECT
+          fal.id,
+          fal.task_id,
+          fal.subtask_id,
+          fal.action,
+          fal.user_name,
+          fal.details,
+          fal.timestamp as created_at,
+          ft.task_name,
+          ft.client_name,
+          fs.name as subtask_name,
+          CASE
+            WHEN fal.action = 'delay_reported' THEN 'task_delayed'
+            WHEN fal.action = 'overdue_notification_sent' THEN 'sla_overdue'
+            WHEN fal.action = 'completion_notification_sent' THEN 'task_completed'
+            WHEN fal.action = 'status_changed' AND fal.details LIKE '%completed%' THEN 'task_completed'
+            WHEN fal.action = 'status_changed' AND fal.details LIKE '%overdue%' THEN 'sla_overdue'
+            ELSE 'daily_reminder'
+          END as type,
+          CASE
+            WHEN fal.action = 'delay_reported' OR fal.action = 'overdue_notification_sent' THEN 'critical'
+            WHEN fal.action = 'completion_notification_sent' THEN 'low'
+            ELSE 'medium'
+          END as priority,
+          false as read,
+          1 as user_id
+        FROM finops_activity_log fal
+        LEFT JOIN finops_tasks ft ON fal.task_id = ft.id
+        LEFT JOIN finops_subtasks fs ON fal.subtask_id = fs.id
+        WHERE fal.timestamp >= NOW() - INTERVAL '7 days'
+        ORDER BY fal.timestamp DESC
         LIMIT $${paramIndex++} OFFSET $${paramIndex++}
       `;
 
