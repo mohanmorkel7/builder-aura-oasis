@@ -446,6 +446,10 @@ export default function FinOpsNotifications() {
     (n) => n.action_required && n.status !== "archived",
   ).length;
 
+  // Determine if we're showing real data or mock data
+  const isUsingRealData = dbNotifications && typeof dbNotifications === 'object' && 'notifications' in dbNotifications;
+  const isEmptyRealData = isUsingRealData && (!dbNotifications.notifications || dbNotifications.notifications.length === 0);
+
   return (
     <div className="space-y-6">
       {/* Header */}
