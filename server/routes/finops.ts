@@ -250,10 +250,11 @@ const mockActivityLog = [
 router.get("/tasks", async (req: Request, res: Response) => {
   try {
     if (await isDatabaseAvailable()) {
-      // Real database query
+      // Real database query with client information
       const query = `
-        SELECT 
+        SELECT
           t.*,
+          COALESCE(c.company_name, c.client_name) as client_name,
           json_agg(
             json_build_object(
               'id', st.id,
@@ -269,8 +270,9 @@ router.get("/tasks", async (req: Request, res: Response) => {
           ) FILTER (WHERE st.id IS NOT NULL) as subtasks
         FROM finops_tasks t
         LEFT JOIN finops_subtasks st ON t.id = st.task_id
+        LEFT JOIN finops_clients c ON t.client_id = c.id AND c.deleted_at IS NULL
         WHERE t.deleted_at IS NULL
-        GROUP BY t.id
+        GROUP BY t.id, c.company_name, c.client_name
         ORDER BY t.created_at DESC
       `;
 
