@@ -138,7 +138,7 @@ const extractNameFromValue = (value: string, depth: number = 0): string => {
     try {
       const parsed = JSON.parse(value);
       console.log("✅ Stringified JSON parsed:", parsed);
-      return typeof parsed === "string" ? parsed : value;
+      return typeof parsed === "string" ? extractNameFromValue(parsed, depth + 1) : value;
     } catch (e) {
       console.log("⚠️ Stringified JSON parsing failed");
     }
@@ -149,7 +149,7 @@ const extractNameFromValue = (value: string, depth: number = 0): string => {
     try {
       const parsed = JSON.parse(value);
       console.log("✅ Quoted string parsed:", parsed);
-      return typeof parsed === "string" ? parsed : value;
+      return typeof parsed === "string" ? extractNameFromValue(parsed, depth + 1) : value;
     } catch (e) {
       console.log("⚠️ Quoted string parsing failed");
     }
