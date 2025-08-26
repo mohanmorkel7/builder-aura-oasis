@@ -447,7 +447,7 @@ export default function FinOpsNotifications() {
 
         // Check if it's timeout error
         if (error instanceof Error && error.message.includes("timeout")) {
-          console.warn("⏱️ Request timeout - using empty notifications");
+          console.warn("⏱��� Request timeout - using empty notifications");
           return {
             notifications: [],
             pagination: { total: 0, limit: 50, offset: 0, has_more: false },
@@ -522,6 +522,7 @@ export default function FinOpsNotifications() {
         );
         const transformed = transformDbNotifications(
           dbNotifications.notifications,
+          currentTime,
         );
         console.log(
           `✅ Transformation complete: ${transformed.length} notifications processed`,
