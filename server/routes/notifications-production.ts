@@ -154,6 +154,8 @@ router.get("/", async (req: Request, res: Response) => {
             WHEN fal.action IN ('status_changed', 'task_status_changed') AND LOWER(fal.details) LIKE '%overdue%' THEN 'sla_overdue'
             WHEN fal.action IN ('status_changed', 'task_status_changed') AND LOWER(fal.details) LIKE '%completed%' THEN 'task_completed'
             WHEN LOWER(fal.details) LIKE '%starting in%' OR LOWER(fal.details) LIKE '%sla warning%' THEN 'sla_warning'
+            WHEN LOWER(fal.details) LIKE '%pending%' AND LOWER(fal.details) LIKE '%need to start%' THEN 'task_pending'
+            WHEN LOWER(fal.details) LIKE '%pending status%' THEN 'task_pending'
             ELSE 'daily_reminder'
           END as type,
           CASE
@@ -1113,6 +1115,8 @@ router.get("/test/categorization", async (req: Request, res: Response) => {
             WHEN fal.action IN ('status_changed', 'task_status_changed') AND LOWER(fal.details) LIKE '%overdue%' THEN 'sla_overdue'
             WHEN fal.action IN ('status_changed', 'task_status_changed') AND LOWER(fal.details) LIKE '%completed%' THEN 'task_completed'
             WHEN LOWER(fal.details) LIKE '%starting in%' OR LOWER(fal.details) LIKE '%sla warning%' THEN 'sla_warning'
+            WHEN LOWER(fal.details) LIKE '%pending%' AND LOWER(fal.details) LIKE '%need to start%' THEN 'task_pending'
+            WHEN LOWER(fal.details) LIKE '%pending status%' THEN 'task_pending'
             ELSE 'daily_reminder'
           END as computed_type,
           CASE
@@ -1217,6 +1221,8 @@ router.get("/test/user-query", async (req: Request, res: Response) => {
             WHEN fal.action IN ('status_changed', 'task_status_changed') AND LOWER(fal.details) LIKE '%overdue%' THEN 'sla_overdue'
             WHEN fal.action IN ('status_changed', 'task_status_changed') AND LOWER(fal.details) LIKE '%completed%' THEN 'task_completed'
             WHEN LOWER(fal.details) LIKE '%starting in%' OR LOWER(fal.details) LIKE '%sla warning%' THEN 'sla_warning'
+            WHEN LOWER(fal.details) LIKE '%pending%' AND LOWER(fal.details) LIKE '%need to start%' THEN 'task_pending'
+            WHEN LOWER(fal.details) LIKE '%pending status%' THEN 'task_pending'
             ELSE 'daily_reminder'
           END as type,
           CASE
