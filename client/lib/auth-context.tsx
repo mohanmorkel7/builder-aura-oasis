@@ -211,7 +211,7 @@ export const AuthProvider = React.memo(function AuthProvider({
         // Check if localStorage is available
         if (typeof Storage === "undefined") {
           console.log("localStorage not available");
-          setIsLoading(false);
+          safeSetIsLoading(false);
           return;
         }
 
