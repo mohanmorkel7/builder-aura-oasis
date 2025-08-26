@@ -24,6 +24,9 @@ export default defineConfig(({ mode }) => ({
       usePolling: false,
       interval: 100,
     },
+    // Add connection stability
+    middlewareMode: false,
+    open: false,
   },
   build: {
     outDir: "dist/spa",
