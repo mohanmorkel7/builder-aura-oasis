@@ -225,7 +225,7 @@ export const AuthProvider = React.memo(function AuthProvider({
               "Successfully loaded user from localStorage:",
               userData.email,
             );
-            setUser(userData);
+            safeSetUser(userData);
           } else {
             console.warn("Invalid user data in localStorage, clearing");
             localStorage.removeItem("banani_user");
