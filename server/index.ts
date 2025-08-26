@@ -142,6 +142,47 @@ export function createServer() {
     res.json({ message: "Server is working!" });
   });
 
+  // Comprehensive health check endpoint
+  app.get("/api/health", async (_req, res) => {
+    const healthCheck = {
+      status: "healthy",
+      timestamp: new Date().toISOString(),
+      server: {
+        uptime: process.uptime(),
+        memory: process.memoryUsage(),
+        version: process.version
+      },
+      routes: {
+        finops: "loaded",
+        finops_production: "loaded",
+        notifications_production: "loaded"
+      },
+      environment: {
+        node_env: process.env.NODE_ENV || "development",
+        database_url: process.env.DATABASE_URL ? "configured" : "not configured"
+      }
+    };
+
+    try {
+      // Test database connection if configured
+      if (process.env.DATABASE_URL) {
+        const { pool } = await import("./database/connection");
+        await pool.query("SELECT 1");
+        healthCheck.database = { status: "connected" };
+      } else {
+        healthCheck.database = { status: "not configured" };
+      }
+    } catch (error) {
+      healthCheck.database = {
+        status: "error",
+        message: error.message
+      };
+      healthCheck.status = "degraded";
+    }
+
+    res.json(healthCheck);
+  });
+
   // Test login endpoint
   app.post("/api/test-login", (req, res) => {
     const { email, password } = req.body;
