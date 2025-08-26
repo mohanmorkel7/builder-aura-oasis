@@ -84,6 +84,12 @@ import {
   isAfter,
 } from "date-fns";
 
+// Helper function to extract name from "Name (email)" format
+const extractNameFromValue = (value: string): string => {
+  const match = value.match(/^(.+)\s\([^)]+\)$/);
+  return match ? match[1] : value;
+};
+
 // Time conversion utilities for AM/PM format
 const convertTo12Hour = (time24: string): { time: string; period: string } => {
   if (!time24) return { time: "", period: "AM" };
@@ -1511,9 +1517,9 @@ export default function ClientBasedFinOpsTaskManager() {
                             Assigned:{" "}
                             {Array.isArray(task.assigned_to)
                               ? task.assigned_to.length > 0
-                                ? task.assigned_to.join(", ")
+                                ? task.assigned_to.map(extractNameFromValue).join(", ")
                                 : "Unassigned"
-                              : task.assigned_to || "Unassigned"}
+                              : extractNameFromValue(task.assigned_to || "Unassigned")}
                           </span>
                         </div>
                         <div className="flex items-center gap-1">
@@ -1945,7 +1951,7 @@ export default function ClientBasedFinOpsTaskManager() {
                       variant="default"
                       className="gap-1"
                     >
-                      {assignee}
+                      {extractNameFromValue(assignee)}
                       <X
                         className="w-3 h-3 cursor-pointer"
                         onClick={() =>
@@ -2088,7 +2094,7 @@ export default function ClientBasedFinOpsTaskManager() {
                       variant="secondary"
                       className="gap-1"
                     >
-                      {manager}
+                      {extractNameFromValue(manager)}
                       <X
                         className="w-3 h-3 cursor-pointer"
                         onClick={() =>
@@ -2179,7 +2185,7 @@ export default function ClientBasedFinOpsTaskManager() {
                       variant="destructive"
                       className="gap-1"
                     >
-                      {manager}
+                      {extractNameFromValue(manager)}
                       <X
                         className="w-3 h-3 cursor-pointer"
                         onClick={() =>
