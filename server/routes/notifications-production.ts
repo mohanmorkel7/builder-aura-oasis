@@ -99,6 +99,17 @@ router.get("/", async (req: Request, res: Response) => {
           ? `WHERE ${whereConditions.join(" AND ")}`
           : "";
 
+      // Create read status table if it doesn't exist
+      const createTableQuery = `
+        CREATE TABLE IF NOT EXISTS finops_notification_read_status (
+          activity_log_id INTEGER PRIMARY KEY,
+          read_at TIMESTAMP DEFAULT NOW(),
+          FOREIGN KEY (activity_log_id) REFERENCES finops_activity_log(id) ON DELETE CASCADE
+        )
+      `;
+
+      await pool.query(createTableQuery);
+
       const query = `
         SELECT
           fal.id,
@@ -117,18 +128,20 @@ router.get("/", async (req: Request, res: Response) => {
             WHEN fal.action = 'completion_notification_sent' THEN 'task_completed'
             WHEN fal.action = 'status_changed' AND fal.details LIKE '%completed%' THEN 'task_completed'
             WHEN fal.action = 'status_changed' AND fal.details LIKE '%overdue%' THEN 'sla_overdue'
+            WHEN fal.details LIKE '%overdue%' THEN 'sla_overdue'
             ELSE 'daily_reminder'
           END as type,
           CASE
-            WHEN fal.action = 'delay_reported' OR fal.action = 'overdue_notification_sent' THEN 'critical'
+            WHEN fal.action = 'delay_reported' OR fal.action = 'overdue_notification_sent' OR fal.details LIKE '%overdue%' THEN 'critical'
             WHEN fal.action = 'completion_notification_sent' THEN 'low'
             ELSE 'medium'
           END as priority,
-          false as read,
+          CASE WHEN fnrs.activity_log_id IS NOT NULL THEN true ELSE false END as read,
           1 as user_id
         FROM finops_activity_log fal
         LEFT JOIN finops_tasks ft ON fal.task_id = ft.id
         LEFT JOIN finops_subtasks fs ON fal.subtask_id = fs.id
+        LEFT JOIN finops_notification_read_status fnrs ON fal.id = fnrs.activity_log_id
         WHERE fal.timestamp >= NOW() - INTERVAL '7 days'
         ORDER BY fal.timestamp DESC
         LIMIT $${paramIndex++} OFFSET $${paramIndex++}
