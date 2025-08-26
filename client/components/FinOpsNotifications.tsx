@@ -433,6 +433,7 @@ export default function FinOpsNotifications() {
     taskName: string;
   }>({ open: false, notificationId: "", taskName: "" });
   const [overdueReason, setOverdueReason] = useState("");
+  const [debugMode, setDebugMode] = useState(false);
 
   // Real-time timer for live time updates - synchronized to minute boundaries
   React.useEffect(() => {
