@@ -855,4 +855,73 @@ router.post("/test/create-user-format", async (req: Request, res: Response) => {
   }
 });
 
+// Create SLA warning notification exactly as user described
+router.post("/test/create-sla-warning", async (req: Request, res: Response) => {
+  try {
+    if (await isDatabaseAvailable()) {
+      console.log("Creating SLA warning notification...");
+
+      // Ensure task exists for RECONCILIATION - DAILY SETTLEMENT PROCESS
+      const taskQuery = `
+        INSERT INTO finops_tasks (id, task_name, assigned_to, reporting_managers, escalation_managers, effective_from, duration, is_active, created_by)
+        VALUES (5, 'RECONCILIATION - DAILY SETTLEMENT PROCESS', 'Maria Garcia', '["Robert Chen"]'::jsonb, '["Sarah Wilson"]'::jsonb, CURRENT_DATE, 'daily', true, 1)
+        ON CONFLICT (id) DO UPDATE SET
+          task_name = EXCLUDED.task_name,
+          assigned_to = EXCLUDED.assigned_to,
+          reporting_managers = EXCLUDED.reporting_managers
+      `;
+
+      await pool.query(taskQuery);
+
+      // Create the SLA warning notification
+      const query = `
+        INSERT INTO finops_activity_log (action, task_id, subtask_id, user_name, details, timestamp)
+        VALUES ($1, $2, $3, $4, $5, NOW() - INTERVAL '57 minutes')
+        RETURNING *
+      `;
+
+      const result = await pool.query(query, [
+        "sla_alert",
+        5,
+        1,
+        "System",
+        "FinOps: sla warning Task starting in 10 minutes - prepare for execution",
+      ]);
+
+      // Also insert subtask data for MASTER AND VISA FILE VALIDATION
+      const subtaskQuery = `
+        INSERT INTO finops_subtasks (task_id, name, estimated_duration, status, created_by)
+        VALUES (5, 'MASTER AND VISA FILE VALIDATION', 60, 'pending', 1)
+        ON CONFLICT (task_id, name) DO NOTHING
+      `;
+
+      await pool.query(subtaskQuery);
+
+      res.json({
+        message: "SLA warning notification created successfully!",
+        notification: result.rows[0],
+        description: "FinOps: sla warning Task starting in 10 minutes - prepare for execution",
+        task_details: "RECONCILIATION - DAILY SETTLEMENT PROCESS",
+        assigned_to: "Maria Garcia",
+        subtask: "MASTER AND VISA FILE VALIDATION",
+        reporting_managers: "Robert Chen",
+        created_57_minutes_ago: true,
+        timestamp: new Date().toISOString(),
+      });
+    } else {
+      res.json({
+        message:
+          "Database unavailable - would create SLA warning notification in production",
+        timestamp: new Date().toISOString(),
+      });
+    }
+  } catch (error) {
+    console.error("Error creating SLA warning notification:", error);
+    res.status(500).json({
+      error: "Failed to create SLA warning notification",
+      message: error.message,
+    });
+  }
+});
+
 export default router;
