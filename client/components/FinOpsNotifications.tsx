@@ -434,13 +434,28 @@ export default function FinOpsNotifications() {
   }>({ open: false, notificationId: "", taskName: "" });
   const [overdueReason, setOverdueReason] = useState("");
 
-  // Real-time timer for live time updates
+  // Real-time timer for live time updates - synchronized to minute boundaries
   React.useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 30000); // Update every 30 seconds for better real-time responsiveness
+    // Initial update
+    setCurrentTime(new Date());
 
-    return () => clearInterval(timer);
+    // Calculate time until next minute boundary for synchronization
+    const now = new Date();
+    const secondsUntilNextMinute = 60 - now.getSeconds();
+
+    // First timeout to sync to minute boundary
+    const syncTimeout = setTimeout(() => {
+      setCurrentTime(new Date());
+
+      // Then set regular 30-second intervals
+      const timer = setInterval(() => {
+        setCurrentTime(new Date());
+      }, 30000); // Update every 30 seconds for better real-time responsiveness
+
+      return () => clearInterval(timer);
+    }, secondsUntilNextMinute * 1000);
+
+    return () => clearTimeout(syncTimeout);
   }, []);
 
   // Fetch notifications from database
