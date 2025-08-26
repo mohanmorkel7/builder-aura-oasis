@@ -1662,6 +1662,12 @@ router.post("/tasks", async (req: Request, res: Response) => {
       );
 
       const newTask = taskResult.rows[0];
+      console.log("✅ Task created successfully:", {
+        id: newTask.id,
+        task_name: newTask.task_name,
+        client_id: newTask.client_id,
+        client_name: newTask.client_name
+      });
 
       // Create subtasks if provided
       const createdSubtasks = [];
