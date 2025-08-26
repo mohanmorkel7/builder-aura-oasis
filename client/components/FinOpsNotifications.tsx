@@ -269,7 +269,9 @@ export default function FinOpsNotifications() {
 
   // Transform database notifications to match our interface or fallback to mock
   const notifications =
-    dbNotifications && dbNotifications.notifications && dbNotifications.notifications.length > 0
+    dbNotifications &&
+    dbNotifications.notifications &&
+    dbNotifications.notifications.length > 0
       ? transformDbNotifications(dbNotifications.notifications)
       : dbNotifications && dbNotifications.notifications
         ? [] // Real database but empty
@@ -391,7 +393,8 @@ export default function FinOpsNotifications() {
       return "Just now";
     } else if (diffMinutes < 60) {
       return `${diffMinutes} min ago`;
-    } else if (diffMinutes < 1440) { // Less than 24 hours
+    } else if (diffMinutes < 1440) {
+      // Less than 24 hours
       const hours = Math.floor(diffMinutes / 60);
       const mins = diffMinutes % 60;
       return `${hours}h ${mins}m ago`;

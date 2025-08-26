@@ -239,7 +239,7 @@ router.get(
         FROM finops_activity_log fal
         LEFT JOIN finops_tasks ft ON fal.task_id = ft.id
         LEFT JOIN finops_subtasks fs ON fal.subtask_id = fs.id
-        WHERE 1=1 ${whereClause ? whereClause.replace('WHERE', 'AND') : ''}
+        WHERE 1=1 ${whereClause ? whereClause.replace("WHERE", "AND") : ""}
         ORDER BY fal.timestamp DESC
         LIMIT $${paramIndex++} OFFSET $${paramIndex++}
       `;
@@ -252,7 +252,7 @@ router.get(
         const countQuery = `
         SELECT COUNT(*) as total
         FROM finops_activity_log fal
-        WHERE 1=1 ${whereClause ? whereClause.replace('WHERE', 'AND') : ''}
+        WHERE 1=1 ${whereClause ? whereClause.replace("WHERE", "AND") : ""}
       `;
 
         const countResult = await pool.query(countQuery, params.slice(0, -2)); // Remove limit and offset params
@@ -415,8 +415,8 @@ router.post("/", async (req: Request, res: Response) => {
 
       const result = await pool.query(query, [
         action,
-        entity_type === 'task' ? entity_id : null, // task_id
-        entity_type === 'subtask' ? entity_id : null, // subtask_id
+        entity_type === "task" ? entity_id : null, // task_id
+        entity_type === "subtask" ? entity_id : null, // subtask_id
         `User ${user_id}`, // user_name
         details || `${action} action performed`,
       ]);
