@@ -98,6 +98,7 @@ const transformDbNotifications = (
     // Calculate real-time remaining minutes for SLA warnings
     let realTimeDetails = dbNotif.details;
     let realTimeTitle = dbNotif.details;
+    let realTimeSlaRemaining = undefined;
     if (currentTime && dbNotif.details?.includes("SLA Warning - ") && dbNotif.details?.includes("min remaining")) {
       const originalMinMatch = dbNotif.details.match(/(\d+) min remaining/);
       if (originalMinMatch && dbNotif.created_at) {
@@ -112,6 +113,13 @@ const transformDbNotifications = (
           `${currentRemainingMinutes} min remaining`
         );
         realTimeTitle = realTimeDetails;
+
+        // Set real-time SLA remaining
+        if (currentRemainingMinutes <= 0) {
+          realTimeSlaRemaining = "SLA BREACHED";
+        } else {
+          realTimeSlaRemaining = `${currentRemainingMinutes} min remaining`;
+        }
 
         console.log(`🕒 Real-time SLA calculation: ${originalMinutes} min → ${currentRemainingMinutes} min (${minutesPassed} min passed)`);
       }
