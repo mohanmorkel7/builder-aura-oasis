@@ -151,12 +151,11 @@ router.get("/", async (req: Request, res: Response) => {
       // Get unread count (all FinOps notifications are considered unread)
       const unreadQuery = `
         SELECT COUNT(*) as unread_count
-        FROM notifications
-        WHERE read = false ${user_id ? "AND user_id = $1" : ""}
+        FROM finops_activity_log fal
+        WHERE fal.timestamp >= NOW() - INTERVAL '7 days'
       `;
 
-      const unreadParams = user_id ? [parseInt(user_id as string)] : [];
-      const unreadResult = await pool.query(unreadQuery, unreadParams);
+      const unreadResult = await pool.query(unreadQuery);
       const unreadCount = parseInt(unreadResult.rows[0].unread_count);
 
       res.json({
