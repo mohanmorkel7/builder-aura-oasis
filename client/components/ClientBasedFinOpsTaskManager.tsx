@@ -94,7 +94,7 @@ const convertTo12Hour = (time24: string): { time: string; period: string } => {
 
   return {
     time: `${adjustedHours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`,
-    period
+    period,
   };
 };
 
@@ -159,7 +159,12 @@ interface TimePickerWithAmPmProps {
   required?: boolean;
 }
 
-function TimePickerWithAmPm({ value, onChange, placeholder = "Select time", required = false }: TimePickerWithAmPmProps) {
+function TimePickerWithAmPm({
+  value,
+  onChange,
+  placeholder = "Select time",
+  required = false,
+}: TimePickerWithAmPmProps) {
   const [searchTerm, setSearchTerm] = useState("");
 
   // Convert current value to 12-hour format for display
@@ -168,15 +173,16 @@ function TimePickerWithAmPm({ value, onChange, placeholder = "Select time", requ
   // Generate time options for 12-hour format
   const timeOptions = [];
   for (let hour = 1; hour <= 12; hour++) {
-    for (let minute = 0; minute < 60; minute += 15) { // 15-minute intervals
+    for (let minute = 0; minute < 60; minute += 15) {
+      // 15-minute intervals
       const timeStr = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
       timeOptions.push(timeStr);
     }
   }
 
   // Filter time options based on search
-  const filteredTimes = timeOptions.filter(time =>
-    time.includes(searchTerm.toLowerCase())
+  const filteredTimes = timeOptions.filter((time) =>
+    time.includes(searchTerm.toLowerCase()),
   );
 
   const handleTimeSelect = (time12: string, period: string) => {
@@ -206,12 +212,12 @@ function TimePickerWithAmPm({ value, onChange, placeholder = "Select time", requ
             />
           </div>
           <div className="max-h-48 overflow-y-auto">
-            {["AM", "PM"].map(period => (
+            {["AM", "PM"].map((period) => (
               <div key={period}>
                 <div className="px-3 py-1 text-xs font-medium text-gray-500 bg-gray-50">
                   {period}
                 </div>
-                {filteredTimes.map(time => (
+                {filteredTimes.map((time) => (
                   <SelectItem
                     key={`${time}-${period}`}
                     value={`${time} ${period}`}
@@ -315,9 +321,14 @@ function SortableSubTaskItem({
                     )}
                     <div className="flex items-center gap-3 mt-2 text-xs text-gray-500">
                       <span>
-                        Start: {(() => {
-                          const { time, period } = convertTo12Hour(subtask.start_time);
-                          return time ? `${time} ${period}` : subtask.start_time;
+                        Start:{" "}
+                        {(() => {
+                          const { time, period } = convertTo12Hour(
+                            subtask.start_time,
+                          );
+                          return time
+                            ? `${time} ${period}`
+                            : subtask.start_time;
                         })()}
                       </span>
                       {subtask.started_at && (
@@ -382,9 +393,7 @@ function SortableSubTaskItem({
                   <Label>Daily Start Time *</Label>
                   <TimePickerWithAmPm
                     value={subtask.start_time || ""}
-                    onChange={(value) =>
-                      onUpdate(index, "start_time", value)
-                    }
+                    onChange={(value) => onUpdate(index, "start_time", value)}
                     placeholder="Select start time"
                     required
                   />
@@ -855,7 +864,11 @@ export default function ClientBasedFinOpsTaskManager() {
       task_name: task.task_name || "",
       description: task.description || "",
       client_id: task.client_id?.toString() || "",
-      assigned_to: Array.isArray(task.assigned_to) ? task.assigned_to : (task.assigned_to ? [task.assigned_to] : []), // Handle both array and string
+      assigned_to: Array.isArray(task.assigned_to)
+        ? task.assigned_to
+        : task.assigned_to
+          ? [task.assigned_to]
+          : [], // Handle both array and string
       reporting_managers: task.reporting_managers || [],
       escalation_managers: task.escalation_managers || [],
       effective_from:
@@ -1487,7 +1500,8 @@ export default function ClientBasedFinOpsTaskManager() {
                         <div className="flex items-center gap-1">
                           <User className="w-4 h-4" />
                           <span>
-                            Assigned: {Array.isArray(task.assigned_to)
+                            Assigned:{" "}
+                            {Array.isArray(task.assigned_to)
                               ? task.assigned_to.length > 0
                                 ? task.assigned_to.join(", ")
                                 : "Unassigned"
@@ -1522,7 +1536,9 @@ export default function ClientBasedFinOpsTaskManager() {
                                           b.start_time || "",
                                         ),
                                     );
-                                    const { time, period } = convertTo12Hour(sorted[0].start_time);
+                                    const { time, period } = convertTo12Hour(
+                                      sorted[0].start_time,
+                                    );
                                     return `Starts: ${time ? `${time} ${period}` : sorted[0].start_time}`;
                                   })()
                                 : "No schedule set"}
@@ -1855,16 +1871,10 @@ export default function ClientBasedFinOpsTaskManager() {
                   <Select
                     value=""
                     onValueChange={(value) => {
-                      if (
-                        value &&
-                        !taskForm.assigned_to.includes(value)
-                      ) {
+                      if (value && !taskForm.assigned_to.includes(value)) {
                         setTaskForm((prev) => ({
                           ...prev,
-                          assigned_to: [
-                            ...prev.assigned_to,
-                            value,
-                          ],
+                          assigned_to: [...prev.assigned_to, value],
                         }));
                       }
                     }}
@@ -1887,10 +1897,18 @@ export default function ClientBasedFinOpsTaskManager() {
                             (user: any, index: number, arr: any[]) =>
                               arr.findIndex((u) => u.id === user.id) === index,
                           )
-                          .filter((user: any) => !taskForm.assigned_to.includes(`${user.first_name} ${user.last_name}`))
+                          .filter(
+                            (user: any) =>
+                              !taskForm.assigned_to.includes(
+                                `${user.first_name} ${user.last_name}`,
+                              ),
+                          )
                           .filter((user: any) => {
-                            const fullName = `${user.first_name} ${user.last_name}`.toLowerCase();
-                            return fullName.includes(assignedToSearch.toLowerCase());
+                            const fullName =
+                              `${user.first_name} ${user.last_name}`.toLowerCase();
+                            return fullName.includes(
+                              assignedToSearch.toLowerCase(),
+                            );
                           })
                           .map((user: any, index: number) => (
                             <SelectItem
@@ -2009,7 +2027,9 @@ export default function ClientBasedFinOpsTaskManager() {
                           placeholder="Search reporting managers..."
                           value={reportingManagerSearch}
                           className="h-8"
-                          onChange={(e) => setReportingManagerSearch(e.target.value)}
+                          onChange={(e) =>
+                            setReportingManagerSearch(e.target.value)
+                          }
                         />
                       </div>
                       <div className="max-h-48 overflow-y-auto">
@@ -2018,10 +2038,18 @@ export default function ClientBasedFinOpsTaskManager() {
                             (user: any, index: number, arr: any[]) =>
                               arr.findIndex((u) => u.id === user.id) === index,
                           )
-                          .filter((user: any) => !taskForm.reporting_managers.includes(`${user.first_name} ${user.last_name}`))
+                          .filter(
+                            (user: any) =>
+                              !taskForm.reporting_managers.includes(
+                                `${user.first_name} ${user.last_name}`,
+                              ),
+                          )
                           .filter((user: any) => {
-                            const fullName = `${user.first_name} ${user.last_name}`.toLowerCase();
-                            return fullName.includes(reportingManagerSearch.toLowerCase());
+                            const fullName =
+                              `${user.first_name} ${user.last_name}`.toLowerCase();
+                            return fullName.includes(
+                              reportingManagerSearch.toLowerCase(),
+                            );
                           })
                           .map((user: any, index: number) => (
                             <SelectItem
@@ -2088,7 +2116,9 @@ export default function ClientBasedFinOpsTaskManager() {
                           placeholder="Search escalation managers..."
                           value={escalationManagerSearch}
                           className="h-8"
-                          onChange={(e) => setEscalationManagerSearch(e.target.value)}
+                          onChange={(e) =>
+                            setEscalationManagerSearch(e.target.value)
+                          }
                         />
                       </div>
                       <div className="max-h-48 overflow-y-auto">
@@ -2097,10 +2127,18 @@ export default function ClientBasedFinOpsTaskManager() {
                             (user: any, index: number, arr: any[]) =>
                               arr.findIndex((u) => u.id === user.id) === index,
                           )
-                          .filter((user: any) => !taskForm.escalation_managers.includes(`${user.first_name} ${user.last_name}`))
+                          .filter(
+                            (user: any) =>
+                              !taskForm.escalation_managers.includes(
+                                `${user.first_name} ${user.last_name}`,
+                              ),
+                          )
                           .filter((user: any) => {
-                            const fullName = `${user.first_name} ${user.last_name}`.toLowerCase();
-                            return fullName.includes(escalationManagerSearch.toLowerCase());
+                            const fullName =
+                              `${user.first_name} ${user.last_name}`.toLowerCase();
+                            return fullName.includes(
+                              escalationManagerSearch.toLowerCase(),
+                            );
                           })
                           .map((user: any, index: number) => (
                             <SelectItem
