@@ -9,7 +9,9 @@ const dbConfig = {
   database: process.env.PG_DB || "banani_crm",
   password: process.env.PG_PASSWORD || "password",
   port: Number(process.env.PG_PORT) || 5432,
-  ssl: false, // Change to { rejectUnauthorized: false } if required in production
+  ssl: process.env.PG_HOST && process.env.PG_HOST !== "localhost"
+    ? { rejectUnauthorized: false }
+    : false, // Enable SSL for cloud databases, disable for localhost
 };
 
 // Log the actual connection parameters being used (hide password for security)
