@@ -1753,23 +1753,25 @@ export default function ClientBasedFinOpsTaskManager() {
                                         : "border-orange-200 bg-orange-50"
                                     }`}
                                   >
-                                    <Clock
-                                      className={`h-3 w-3 ${
-                                        slaWarning.type === "overdue"
-                                          ? "text-red-600"
-                                          : "text-orange-600"
-                                      }`}
-                                    />
-                                    <AlertDescription
-                                      className={`text-xs ml-1 ${
-                                        slaWarning.type === "overdue"
-                                          ? "text-red-700"
-                                          : "text-orange-700"
-                                      }`}
-                                    >
-                                      {slaWarning.message} •{" "}
-                                      {getTimeSinceStart(subtask.start_time)}
-                                    </AlertDescription>
+                                    <div className="flex items-center gap-1">
+                                      <Clock
+                                        className={`h-3 w-3 flex-shrink-0 ${
+                                          slaWarning.type === "overdue"
+                                            ? "text-red-600"
+                                            : "text-orange-600"
+                                        }`}
+                                      />
+                                      <AlertDescription
+                                        className={`text-xs ${
+                                          slaWarning.type === "overdue"
+                                            ? "text-red-700"
+                                            : "text-orange-700"
+                                        }`}
+                                      >
+                                        {slaWarning.message} •{" "}
+                                        {getTimeSinceStart(subtask.start_time)}
+                                      </AlertDescription>
+                                    </div>
                                   </Alert>
                                 )}
                               </div>
