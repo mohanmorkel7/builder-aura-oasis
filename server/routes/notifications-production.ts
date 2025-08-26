@@ -589,7 +589,8 @@ router.post("/test/create-sample", async (req: Request, res: Response) => {
           task_id: 1,
           subtask_id: 1,
           user_name: "System",
-          details: "CLEARING - FILE TRANSFER AND VALIDATION is overdue by 29 minutes",
+          details:
+            "CLEARING - FILE TRANSFER AND VALIDATION is overdue by 29 minutes",
         },
         {
           action: "sla_warning",
@@ -675,7 +676,8 @@ router.post("/test/create-sample", async (req: Request, res: Response) => {
 router.post("/overdue-reason", async (req: Request, res: Response) => {
   try {
     if (await isDatabaseAvailable()) {
-      const { notification_id, task_name, overdue_reason, created_at } = req.body;
+      const { notification_id, task_name, overdue_reason, created_at } =
+        req.body;
 
       // Validate required fields
       if (!notification_id || !overdue_reason) {
@@ -714,10 +716,12 @@ router.post("/overdue-reason", async (req: Request, res: Response) => {
 
       res.status(201).json({
         message: "Overdue reason stored successfully",
-        data: result.rows[0]
+        data: result.rows[0],
       });
     } else {
-      console.log("Database unavailable, returning mock overdue reason storage");
+      console.log(
+        "Database unavailable, returning mock overdue reason storage",
+      );
       res.status(201).json({
         message: "Overdue reason stored successfully (mock)",
         data: {
@@ -726,7 +730,7 @@ router.post("/overdue-reason", async (req: Request, res: Response) => {
           task_name: req.body.task_name,
           overdue_reason: req.body.overdue_reason,
           created_at: new Date().toISOString(),
-        }
+        },
       });
     }
   } catch (error) {

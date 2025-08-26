@@ -89,9 +89,15 @@ const transformDbNotifications = (
 
     // Determine notification type based on action and details
     let notificationType = "daily_reminder";
-    if (dbNotif.action === "overdue_notification_sent" || dbNotif.details?.includes("overdue")) {
+    if (
+      dbNotif.action === "overdue_notification_sent" ||
+      dbNotif.details?.includes("overdue")
+    ) {
       notificationType = "sla_overdue";
-    } else if (dbNotif.action === "sla_warning" || dbNotif.details?.includes("starting in")) {
+    } else if (
+      dbNotif.action === "sla_warning" ||
+      dbNotif.details?.includes("starting in")
+    ) {
       notificationType = "sla_warning";
     } else if (dbNotif.action === "escalation_required") {
       notificationType = "escalation";
@@ -100,31 +106,45 @@ const transformDbNotifications = (
     // Mock member data based on task type
     const getMembersForTask = (taskId: number, type: string) => {
       const taskMembers = {
-        1: { // CLEARING - FILE TRANSFER AND VALIDATION
+        1: {
+          // CLEARING - FILE TRANSFER AND VALIDATION
           assigned_to: "John Durairaj",
           reporting_managers: ["Albert Kumar", "Hari Prasad"],
           escalation_managers: ["Sarah Wilson", "Mike Johnson"],
-          members_list: ["John Durairaj", "Albert Kumar", "Hari Prasad", "Sarah Wilson", "Mike Johnson"]
+          members_list: [
+            "John Durairaj",
+            "Albert Kumar",
+            "Hari Prasad",
+            "Sarah Wilson",
+            "Mike Johnson",
+          ],
         },
         2: {
           assigned_to: "Maria Garcia",
           reporting_managers: ["Robert Chen"],
           escalation_managers: ["David Lee"],
-          members_list: ["Maria Garcia", "Robert Chen", "David Lee"]
+          members_list: ["Maria Garcia", "Robert Chen", "David Lee"],
         },
         3: {
           assigned_to: "Alex Thompson",
           reporting_managers: ["Jennifer Smith", "Mark Davis"],
           escalation_managers: ["Lisa Brown"],
-          members_list: ["Alex Thompson", "Jennifer Smith", "Mark Davis", "Lisa Brown"]
+          members_list: [
+            "Alex Thompson",
+            "Jennifer Smith",
+            "Mark Davis",
+            "Lisa Brown",
+          ],
+        },
+      };
+      return (
+        taskMembers[taskId] || {
+          assigned_to: "Unassigned",
+          reporting_managers: [],
+          escalation_managers: [],
+          members_list: [],
         }
-      };
-      return taskMembers[taskId] || {
-        assigned_to: "Unassigned",
-        reporting_managers: [],
-        escalation_managers: [],
-        members_list: []
-      };
+      );
     };
 
     const members = getMembersForTask(dbNotif.task_id, notificationType);
@@ -132,9 +152,13 @@ const transformDbNotifications = (
     const transformed = {
       id: dbNotif.id.toString(),
       type: notificationType,
-      title: dbNotif.details?.includes("CLEARING - FILE TRANSFER AND VALIDATION")
+      title: dbNotif.details?.includes(
+        "CLEARING - FILE TRANSFER AND VALIDATION",
+      )
         ? "CLEARING - FILE TRANSFER AND VALIDATION"
-        : dbNotif.action ? `FinOps: ${dbNotif.action.replace(/_/g, " ")}` : "FinOps Notification",
+        : dbNotif.action
+          ? `FinOps: ${dbNotif.action.replace(/_/g, " ")}`
+          : "FinOps Notification",
       message: dbNotif.details || "",
       task_name: dbNotif.task_name || "CLEARING - FILE TRANSFER AND VALIDATION",
       client_name: dbNotif.client_name || "ABC Corporation",
@@ -142,12 +166,16 @@ const transformDbNotifications = (
       assigned_to: members.assigned_to,
       reporting_managers: members.reporting_managers,
       escalation_managers: members.escalation_managers,
-      priority: overdueMinutes ? "critical" : (dbNotif.priority || "medium"),
+      priority: overdueMinutes ? "critical" : dbNotif.priority || "medium",
       status: dbNotif.read ? "read" : "unread",
       created_at: dbNotif.created_at,
-      action_required: notificationType === "sla_overdue" || notificationType === "escalation",
-      delay_reason: dbNotif.action === "delay_reported" ? "Process delayed" : undefined,
-      sla_remaining: overdueMinutes ? `Overdue by ${overdueMinutes} min` : undefined,
+      action_required:
+        notificationType === "sla_overdue" || notificationType === "escalation",
+      delay_reason:
+        dbNotif.action === "delay_reported" ? "Process delayed" : undefined,
+      sla_remaining: overdueMinutes
+        ? `Overdue by ${overdueMinutes} min`
+        : undefined,
       overdue_minutes: overdueMinutes,
       members_list: members.members_list,
     };
@@ -397,13 +425,17 @@ export default function FinOpsNotifications() {
     return true;
   });
 
-  const markAsRead = async (notificationId: string, isOverdue = false, taskName = "") => {
+  const markAsRead = async (
+    notificationId: string,
+    isOverdue = false,
+    taskName = "",
+  ) => {
     if (isOverdue) {
       // Open dialog for overdue reason
       setOverdueReasonDialog({
         open: true,
         notificationId,
-        taskName
+        taskName,
       });
       return;
     }
@@ -424,10 +456,10 @@ export default function FinOpsNotifications() {
   const submitOverdueReason = async () => {
     try {
       // First, store the overdue reason
-      await apiClient.request('/notifications-production/overdue-reason', {
-        method: 'POST',
+      await apiClient.request("/notifications-production/overdue-reason", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           notification_id: overdueReasonDialog.notificationId,
@@ -854,45 +886,58 @@ export default function FinOpsNotifications() {
                         )}
 
                         {/* Members List - Enhanced Display */}
-                        {notification.members_list && notification.members_list.length > 0 && (
-                          <div className="mt-3 p-3 bg-gray-50 rounded-lg border">
-                            <div className="text-xs font-medium text-gray-800 mb-2">Team Members:</div>
+                        {notification.members_list &&
+                          notification.members_list.length > 0 && (
+                            <div className="mt-3 p-3 bg-gray-50 rounded-lg border">
+                              <div className="text-xs font-medium text-gray-800 mb-2">
+                                Team Members:
+                              </div>
 
-                            {/* Assigned To */}
-                            <div className="mb-2">
-                              <span className="text-xs text-blue-600 font-medium flex items-center gap-1">
-                                <User className="w-3 h-3" />
-                                Assigned: {notification.assigned_to}
-                              </span>
+                              {/* Assigned To */}
+                              <div className="mb-2">
+                                <span className="text-xs text-blue-600 font-medium flex items-center gap-1">
+                                  <User className="w-3 h-3" />
+                                  Assigned: {notification.assigned_to}
+                                </span>
+                              </div>
+
+                              {/* Reporting Managers - Show for tasks <15 min or overdue */}
+                              {notification.reporting_managers &&
+                                notification.reporting_managers.length > 0 && (
+                                  <div className="mb-2">
+                                    <span className="text-xs text-green-600 font-medium flex items-center gap-1">
+                                      <Users className="w-3 h-3" />
+                                      Reporting Managers:{" "}
+                                      {notification.reporting_managers.join(
+                                        ", ",
+                                      )}
+                                    </span>
+                                  </div>
+                                )}
+
+                              {/* Escalation Managers - Show for overdue tasks */}
+                              {notification.type === "sla_overdue" &&
+                                notification.escalation_managers &&
+                                notification.escalation_managers.length > 0 && (
+                                  <div className="mb-2">
+                                    <span className="text-xs text-red-600 font-medium flex items-center gap-1">
+                                      <Shield className="w-3 h-3" />
+                                      Escalation Managers:{" "}
+                                      {notification.escalation_managers.join(
+                                        ", ",
+                                      )}
+                                    </span>
+                                  </div>
+                                )}
                             </div>
-
-                            {/* Reporting Managers - Show for tasks <15 min or overdue */}
-                            {notification.reporting_managers && notification.reporting_managers.length > 0 && (
-                              <div className="mb-2">
-                                <span className="text-xs text-green-600 font-medium flex items-center gap-1">
-                                  <Users className="w-3 h-3" />
-                                  Reporting Managers: {notification.reporting_managers.join(", ")}
-                                </span>
-                              </div>
-                            )}
-
-                            {/* Escalation Managers - Show for overdue tasks */}
-                            {notification.type === "sla_overdue" && notification.escalation_managers && notification.escalation_managers.length > 0 && (
-                              <div className="mb-2">
-                                <span className="text-xs text-red-600 font-medium flex items-center gap-1">
-                                  <Shield className="w-3 h-3" />
-                                  Escalation Managers: {notification.escalation_managers.join(", ")}
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                        )}
+                          )}
 
                         {notification.action_required && (
                           <Alert className="mt-3 p-2 border-orange-200 bg-orange-50">
                             <AlertCircle className="h-3 w-3 text-orange-600" />
                             <AlertDescription className="text-xs text-orange-700 ml-1">
-                              Action required - Please review and take necessary steps
+                              Action required - Please review and take necessary
+                              steps
                             </AlertDescription>
                           </Alert>
                         )}
@@ -904,13 +949,19 @@ export default function FinOpsNotifications() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => markAsRead(
-                            notification.id,
-                            notification.type === "sla_overdue",
-                            notification.task_name
-                          )}
+                          onClick={() =>
+                            markAsRead(
+                              notification.id,
+                              notification.type === "sla_overdue",
+                              notification.task_name,
+                            )
+                          }
                           className="h-8 px-2"
-                          title={notification.type === "sla_overdue" ? "Mark as read and provide reason" : "Mark as read"}
+                          title={
+                            notification.type === "sla_overdue"
+                              ? "Mark as read and provide reason"
+                              : "Mark as read"
+                          }
                         >
                           <CheckCircle className="w-3 h-3" />
                         </Button>
@@ -949,7 +1000,11 @@ export default function FinOpsNotifications() {
         open={overdueReasonDialog.open}
         onOpenChange={(open) => {
           if (!open) {
-            setOverdueReasonDialog({ open: false, notificationId: "", taskName: "" });
+            setOverdueReasonDialog({
+              open: false,
+              notificationId: "",
+              taskName: "",
+            });
             setOverdueReason("");
           }
         }}
@@ -961,7 +1016,8 @@ export default function FinOpsNotifications() {
               Overdue Task - Reason Required
             </DialogTitle>
             <DialogDescription>
-              Please provide a reason for marking this overdue notification as read:
+              Please provide a reason for marking this overdue notification as
+              read:
               <br />
               <strong>{overdueReasonDialog.taskName}</strong>
             </DialogDescription>
@@ -984,7 +1040,11 @@ export default function FinOpsNotifications() {
             <Button
               variant="outline"
               onClick={() => {
-                setOverdueReasonDialog({ open: false, notificationId: "", taskName: "" });
+                setOverdueReasonDialog({
+                  open: false,
+                  notificationId: "",
+                  taskName: "",
+                });
                 setOverdueReason("");
               }}
             >
