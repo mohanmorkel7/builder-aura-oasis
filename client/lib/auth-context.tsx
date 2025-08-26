@@ -174,8 +174,15 @@ export const AuthProvider = React.memo(function AuthProvider({
 }: {
   children: React.ReactNode;
 }) {
-  // Only detect actual HMR updates, not page refreshes
-  const isHMR = import.meta.hot?.data?.isHMRUpdate;
+  // Only detect actual HMR updates, not page refreshes - with error handling
+  const isHMR = (() => {
+    try {
+      return import.meta.hot?.data?.isHMRUpdate || false;
+    } catch (error) {
+      console.warn("HMR data access failed (safe to ignore):", error);
+      return false;
+    }
+  })();
 
   const [user, setUser] = React.useState<User | null>(null);
   const [isLoading, setIsLoading] = React.useState(true);
