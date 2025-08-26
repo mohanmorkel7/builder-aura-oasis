@@ -89,16 +89,16 @@ const extractNameFromValue = (value: string): string => {
   if (!value) return value;
 
   // Handle JSON objects like {"John Doe"} or {\"John Doe\"}
-  if (value.startsWith('{') && value.endsWith('}')) {
+  if (value.startsWith("{") && value.endsWith("}")) {
     try {
       const parsed = JSON.parse(value);
       // If it's an object with string values, return the first string value
-      if (typeof parsed === 'object' && parsed !== null) {
+      if (typeof parsed === "object" && parsed !== null) {
         const values = Object.values(parsed);
-        const firstString = values.find(v => typeof v === 'string');
+        const firstString = values.find((v) => typeof v === "string");
         return firstString || value;
       }
-      return typeof parsed === 'string' ? parsed : value;
+      return typeof parsed === "string" ? parsed : value;
     } catch (e) {
       // If parsing fails, continue with other checks
     }
