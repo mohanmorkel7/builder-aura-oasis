@@ -435,19 +435,44 @@ router.put("/read-all", async (req: Request, res: Response) => {
   }
 });
 
-// Delete notification
+// Archive notification (mark as archived instead of deleting)
 router.delete("/:id", async (req: Request, res: Response) => {
   try {
     if (await isDatabaseAvailable()) {
       const id = req.params.id;
 
-      const query = `DELETE FROM notifications WHERE id = $1 RETURNING id`;
+      // Check if the activity log entry exists
+      const checkQuery = `
+        SELECT id FROM finops_activity_log WHERE id = $1
+      `;
 
-      const result = await pool.query(query, [id]);
+      const checkResult = await pool.query(checkQuery, [id]);
 
-      if (result.rows.length === 0) {
+      if (checkResult.rows.length === 0) {
         return res.status(404).json({ error: "Notification not found" });
       }
+
+      // Create archived status table if it doesn't exist
+      const createTableQuery = `
+        CREATE TABLE IF NOT EXISTS finops_notification_archived_status (
+          activity_log_id INTEGER PRIMARY KEY,
+          archived_at TIMESTAMP DEFAULT NOW(),
+          FOREIGN KEY (activity_log_id) REFERENCES finops_activity_log(id) ON DELETE CASCADE
+        )
+      `;
+
+      await pool.query(createTableQuery);
+
+      // Insert archived status
+      const archiveQuery = `
+        INSERT INTO finops_notification_archived_status (activity_log_id, archived_at)
+        VALUES ($1, NOW())
+        ON CONFLICT (activity_log_id)
+        DO UPDATE SET archived_at = NOW()
+        RETURNING *
+      `;
+
+      await pool.query(archiveQuery, [id]);
 
       res.status(204).send();
     } else {
@@ -455,9 +480,9 @@ router.delete("/:id", async (req: Request, res: Response) => {
       res.status(204).send();
     }
   } catch (error) {
-    console.error("Error deleting notification:", error);
+    console.error("Error archiving notification:", error);
     res.status(500).json({
-      error: "Failed to delete notification",
+      error: "Failed to archive notification",
       message: error.message,
     });
   }
