@@ -379,12 +379,12 @@ export const AuthProvider = React.memo(function AuthProvider({
     }
 
     // If API response exists but doesn't contain user, it means invalid credentials
-    setIsLoading(false);
+    safeSetIsLoading(false);
     return false;
   };
 
   const loginWithSSO = async (provider: string): Promise<boolean> => {
-    setIsLoading(true);
+    safeSetIsLoading(true);
 
     try {
       if (provider === "microsoft") {
