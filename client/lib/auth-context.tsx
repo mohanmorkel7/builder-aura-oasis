@@ -505,7 +505,7 @@ export const AuthProvider = React.memo(function AuthProvider({
             avatar: undefined,
           };
 
-          setUser(userData);
+          safeSetUser(userData);
           localStorage.setItem("banani_user", JSON.stringify(userData));
           localStorage.setItem(
             "msal_account",
