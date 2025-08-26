@@ -242,7 +242,7 @@ export const AuthProvider = React.memo(function AuthProvider({
           console.warn("Could not clean up localStorage:", cleanupError);
         }
       }
-      setIsLoading(false);
+      safeSetIsLoading(false);
     };
 
     // Only skip during actual HMR updates, not page refreshes - with error handling
