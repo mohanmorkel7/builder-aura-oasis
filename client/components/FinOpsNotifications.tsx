@@ -217,7 +217,9 @@ const transformDbNotifications = (
         dbNotif.client_name ||
         (dbNotif.task_id === 6
           ? "Enterprise Banking Solutions"
-          : "ABC Corporation"),
+          : dbNotif.task_id === 16
+            ? "PaySwiff"
+            : "ABC Corporation"),
       subtask_name: dbNotif.subtask_name,
       assigned_to: members.assigned_to,
       reporting_managers: members.reporting_managers,
