@@ -294,7 +294,7 @@ const transformDbNotifications = (
       assigned_to: members.assigned_to,
       reporting_managers: members.reporting_managers,
       escalation_managers: members.escalation_managers,
-      priority: overdueMinutes ? "critical" : dbNotif.priority || "medium",
+      priority: (overdueMinutes || isExpiredSLA) ? "critical" : dbNotif.priority || "medium",
       status: dbNotif.read ? "read" : "unread",
       created_at: dbNotif.created_at,
       action_required:
