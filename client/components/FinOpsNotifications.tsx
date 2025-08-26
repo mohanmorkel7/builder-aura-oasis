@@ -180,15 +180,15 @@ const transformDbNotifications = (
     const transformed = {
       id: dbNotif.id.toString(),
       type: notificationType,
-      title: dbNotif.details?.includes(
-        "CLEARING - FILE TRANSFER AND VALIDATION",
-      )
-        ? "CLEARING - FILE TRANSFER AND VALIDATION"
-        : startTime
-          ? `Task (Start: ${startTime})`
-          : dbNotif.action
-            ? `FinOps: ${dbNotif.action.replace(/_/g, " ")}`
-            : "FinOps Notification",
+      title: dbNotif.details?.includes("FinOps: sla warning")
+        ? dbNotif.details
+        : dbNotif.details?.includes("CLEARING - FILE TRANSFER AND VALIDATION")
+          ? "CLEARING - FILE TRANSFER AND VALIDATION"
+          : startTime
+            ? `Task (Start: ${startTime})`
+            : dbNotif.action
+              ? `FinOps: ${dbNotif.action.replace(/_/g, " ")}`
+              : "FinOps Notification",
       message: dbNotif.details || "",
       task_name:
         dbNotif.task_name ||
