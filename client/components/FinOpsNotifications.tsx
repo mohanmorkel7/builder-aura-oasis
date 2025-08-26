@@ -176,7 +176,14 @@ const transformDbNotifications = (
           assigned_to: "Sanjay Kumar",
           reporting_managers: ["Sarumathi Manickam", "Vishnu Vardhan"],
           escalation_managers: ["Harini NL", "Vishal S"],
-          members_list: ["Sanjay Kumar", "Mugundhan Selvam", "Sarumathi Manickam", "Vishnu Vardhan", "Harini NL", "Vishal S"],
+          members_list: [
+            "Sanjay Kumar",
+            "Mugundhan Selvam",
+            "Sarumathi Manickam",
+            "Vishnu Vardhan",
+            "Harini NL",
+            "Vishal S",
+          ],
         },
       };
       return (

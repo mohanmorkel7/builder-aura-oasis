@@ -929,72 +929,77 @@ router.post("/test/create-sla-warning", async (req: Request, res: Response) => {
 });
 
 // Create PaySwiff Check task overdue notification
-router.post("/test/create-payswiff-overdue", async (req: Request, res: Response) => {
-  try {
-    if (await isDatabaseAvailable()) {
-      console.log("Creating PaySwiff Check task overdue notification...");
+router.post(
+  "/test/create-payswiff-overdue",
+  async (req: Request, res: Response) => {
+    try {
+      if (await isDatabaseAvailable()) {
+        console.log("Creating PaySwiff Check task overdue notification...");
 
-      // Check if task 16 exists, if not create it based on user's data
-      const checkTaskQuery = `
+        // Check if task 16 exists, if not create it based on user's data
+        const checkTaskQuery = `
         SELECT id FROM finops_tasks WHERE id = 16
       `;
 
-      const taskExists = await pool.query(checkTaskQuery);
+        const taskExists = await pool.query(checkTaskQuery);
 
-      if (taskExists.rows.length === 0) {
-        console.log("Task 16 doesn't exist, creating it...");
-        const createTaskQuery = `
+        if (taskExists.rows.length === 0) {
+          console.log("Task 16 doesn't exist, creating it...");
+          const createTaskQuery = `
           INSERT INTO finops_tasks (id, task_name, description, assigned_to, reporting_managers, escalation_managers, effective_from, duration, is_active, created_by)
           VALUES (16, 'Check', 'check', 'Sanjay Kumar', '["Sarumathi Manickam", "Vishnu Vardhan"]'::jsonb, '["Harini NL", "Vishal S"]'::jsonb, '2025-08-23', 'daily', true, 1)
           ON CONFLICT (id) DO NOTHING
         `;
 
-        await pool.query(createTaskQuery);
-      }
+          await pool.query(createTaskQuery);
+        }
 
-      // Create the overdue notification for task 16 (Check task)
-      const query = `
+        // Create the overdue notification for task 16 (Check task)
+        const query = `
         INSERT INTO finops_activity_log (action, task_id, subtask_id, user_name, details, timestamp)
         VALUES ($1, $2, $3, $4, $5, NOW() - INTERVAL '18 minutes')
         RETURNING *
       `;
 
-      const result = await pool.query(query, [
-        "task_status_changed",
-        16,
-        29,
-        "System",
-        "Subtasks (0/1 completed) check test Start: 05:15 PM Pending Overdue by 4 min",
-      ]);
+        const result = await pool.query(query, [
+          "task_status_changed",
+          16,
+          29,
+          "System",
+          "Subtasks (0/1 completed) check test Start: 05:15 PM Pending Overdue by 4 min",
+        ]);
 
-      res.json({
-        message: "PaySwiff Check task overdue notification created successfully!",
-        notification: result.rows[0],
-        description: "Subtasks (0/1 completed) check test Start: 05:15 PM Pending Overdue by 4 min • 18 min ago",
-        task_details: "Check",
-        client: "PaySwiff",
-        assigned_to: "Sanjay Kumar, Mugundhan Selvam",
-        reporting_managers: "Sarumathi Manickam, Vishnu Vardhan",
-        escalation_managers: "Harini NL, Vishal S",
-        subtask: "check",
-        created_18_minutes_ago: true,
-        timestamp: new Date().toISOString(),
-      });
-    } else {
-      res.json({
-        message:
-          "Database unavailable - would create PaySwiff overdue notification in production",
-        timestamp: new Date().toISOString(),
+        res.json({
+          message:
+            "PaySwiff Check task overdue notification created successfully!",
+          notification: result.rows[0],
+          description:
+            "Subtasks (0/1 completed) check test Start: 05:15 PM Pending Overdue by 4 min • 18 min ago",
+          task_details: "Check",
+          client: "PaySwiff",
+          assigned_to: "Sanjay Kumar, Mugundhan Selvam",
+          reporting_managers: "Sarumathi Manickam, Vishnu Vardhan",
+          escalation_managers: "Harini NL, Vishal S",
+          subtask: "check",
+          created_18_minutes_ago: true,
+          timestamp: new Date().toISOString(),
+        });
+      } else {
+        res.json({
+          message:
+            "Database unavailable - would create PaySwiff overdue notification in production",
+          timestamp: new Date().toISOString(),
+        });
+      }
+    } catch (error) {
+      console.error("Error creating PaySwiff overdue notification:", error);
+      res.status(500).json({
+        error: "Failed to create PaySwiff overdue notification",
+        message: error.message,
       });
     }
-  } catch (error) {
-    console.error("Error creating PaySwiff overdue notification:", error);
-    res.status(500).json({
-      error: "Failed to create PaySwiff overdue notification",
-      message: error.message,
-    });
-  }
-});
+  },
+);
 
 // Create the exact SLA warning that user described
 router.post(
