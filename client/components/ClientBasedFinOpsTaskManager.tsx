@@ -1911,26 +1911,27 @@ export default function ClientBasedFinOpsTaskManager() {
                             arr.findIndex((u) => u.id === user.id) === index,
                         )
                         .filter(
-                          (user: any) =>
-                            !taskForm.assigned_to.includes(
-                              `${user.first_name} ${user.last_name}`,
-                            ),
+                          (user: any) => {
+                            const userValue = `${user.first_name} ${user.last_name} (${user.email || 'no-email'})`;
+                            return !taskForm.assigned_to.includes(userValue);
+                          },
                         )
                         .filter((user: any) => {
                           const fullName =
                             `${user.first_name} ${user.last_name}`.toLowerCase();
-                          return fullName.includes(
-                            assignedToSearch.toLowerCase(),
-                          );
+                          const email = (user.email || '').toLowerCase();
+                          const searchTerm = assignedToSearch.toLowerCase();
+                          return fullName.includes(searchTerm) || email.includes(searchTerm);
                         })
                         .map((user: any, index: number) => {
                           const fullName = `${user.first_name} ${user.last_name}`;
+                          const userValue = `${fullName} (${user.email || 'no-email'})`;
                           return (
                             <SelectItem
                               key={`assigned-to-${user.id}`}
-                              value={fullName}
+                              value={userValue}
                             >
-                              {fullName}
+                              {fullName} <span className="text-xs text-gray-500">({user.email || 'no-email'})</span>
                             </SelectItem>
                           );
                         })}
@@ -2053,26 +2054,27 @@ export default function ClientBasedFinOpsTaskManager() {
                             arr.findIndex((u) => u.id === user.id) === index,
                         )
                         .filter(
-                          (user: any) =>
-                            !taskForm.reporting_managers.includes(
-                              `${user.first_name} ${user.last_name}`,
-                            ),
+                          (user: any) => {
+                            const userValue = `${user.first_name} ${user.last_name} (${user.email || 'no-email'})`;
+                            return !taskForm.reporting_managers.includes(userValue);
+                          },
                         )
                         .filter((user: any) => {
                           const fullName =
                             `${user.first_name} ${user.last_name}`.toLowerCase();
-                          return fullName.includes(
-                            reportingManagerSearch.toLowerCase(),
-                          );
+                          const email = (user.email || '').toLowerCase();
+                          const searchTerm = reportingManagerSearch.toLowerCase();
+                          return fullName.includes(searchTerm) || email.includes(searchTerm);
                         })
                         .map((user: any, index: number) => {
                           const fullName = `${user.first_name} ${user.last_name}`;
+                          const userValue = `${fullName} (${user.email || 'no-email'})`;
                           return (
                             <SelectItem
                               key={`reporting-manager-${user.id}`}
-                              value={fullName}
+                              value={userValue}
                             >
-                              {fullName}
+                              {fullName} <span className="text-xs text-gray-500">({user.email || 'no-email'})</span>
                             </SelectItem>
                           );
                         })}
@@ -2143,26 +2145,27 @@ export default function ClientBasedFinOpsTaskManager() {
                             arr.findIndex((u) => u.id === user.id) === index,
                         )
                         .filter(
-                          (user: any) =>
-                            !taskForm.escalation_managers.includes(
-                              `${user.first_name} ${user.last_name}`,
-                            ),
+                          (user: any) => {
+                            const userValue = `${user.first_name} ${user.last_name} (${user.email || 'no-email'})`;
+                            return !taskForm.escalation_managers.includes(userValue);
+                          },
                         )
                         .filter((user: any) => {
                           const fullName =
                             `${user.first_name} ${user.last_name}`.toLowerCase();
-                          return fullName.includes(
-                            escalationManagerSearch.toLowerCase(),
-                          );
+                          const email = (user.email || '').toLowerCase();
+                          const searchTerm = escalationManagerSearch.toLowerCase();
+                          return fullName.includes(searchTerm) || email.includes(searchTerm);
                         })
                         .map((user: any, index: number) => {
                           const fullName = `${user.first_name} ${user.last_name}`;
+                          const userValue = `${fullName} (${user.email || 'no-email'})`;
                           return (
                             <SelectItem
                               key={`escalation-manager-${user.id}`}
-                              value={fullName}
+                              value={userValue}
                             >
-                              {fullName}
+                              {fullName} <span className="text-xs text-gray-500">({user.email || 'no-email'})</span>
                             </SelectItem>
                           );
                         })}
