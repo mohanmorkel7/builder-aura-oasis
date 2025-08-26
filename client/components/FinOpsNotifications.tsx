@@ -245,6 +245,16 @@ export default function FinOpsNotifications() {
   const [filterType, setFilterType] = useState<string>("all");
   const [filterPriority, setFilterPriority] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  // Real-time timer for live time updates
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000); // Update every minute
+
+    return () => clearInterval(timer);
+  }, []);
 
   // Fetch notifications from database
   const {
