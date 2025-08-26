@@ -112,6 +112,12 @@ const transformDbNotifications = (
       notificationType = "sla_warning";
     } else if (dbNotif.action === "escalation_required") {
       notificationType = "escalation";
+    } else if (
+      (dbNotif.details?.toLowerCase().includes("pending") &&
+        dbNotif.details?.toLowerCase().includes("need to start")) ||
+      dbNotif.details?.toLowerCase().includes("pending status")
+    ) {
+      notificationType = "task_pending";
     }
 
     // Mock member data based on task type
