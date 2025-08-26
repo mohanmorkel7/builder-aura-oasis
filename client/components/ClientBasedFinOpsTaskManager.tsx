@@ -84,6 +84,35 @@ import {
   isAfter,
 } from "date-fns";
 
+// Time conversion utilities for AM/PM format
+const convertTo12Hour = (time24: string): { time: string; period: string } => {
+  if (!time24) return { time: "", period: "AM" };
+
+  const [hours, minutes] = time24.split(":").map(Number);
+  const period = hours >= 12 ? "PM" : "AM";
+  const adjustedHours = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
+
+  return {
+    time: `${adjustedHours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`,
+    period
+  };
+};
+
+const convertTo24Hour = (time12: string, period: string): string => {
+  if (!time12) return "";
+
+  const [hours, minutes] = time12.split(":").map(Number);
+  let adjustedHours = hours;
+
+  if (period === "PM" && hours !== 12) {
+    adjustedHours = hours + 12;
+  } else if (period === "AM" && hours === 12) {
+    adjustedHours = 0;
+  }
+
+  return `${adjustedHours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
+};
+
 // Enhanced interfaces with client integration
 interface ClientBasedFinOpsSubTask {
   id: string;
