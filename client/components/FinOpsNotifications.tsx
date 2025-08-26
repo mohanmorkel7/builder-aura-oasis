@@ -199,7 +199,7 @@ const transformDbNotifications = (
       message: dbNotif.details || "",
       task_name:
         dbNotif.task_name ||
-        (dbNotif.task_id === 5
+        (dbNotif.task_id === 5 || dbNotif.task_id === 6
           ? "RECONCILIATION - DAILY SETTLEMENT PROCESS"
           : startTime
             ? `Task scheduled for ${startTime}`
