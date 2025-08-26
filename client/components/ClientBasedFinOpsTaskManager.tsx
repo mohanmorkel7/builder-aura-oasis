@@ -1022,9 +1022,16 @@ export default function ClientBasedFinOpsTaskManager() {
       description: task.description || "",
       client_id: task.client_id?.toString() || "",
       assigned_to: Array.isArray(task.assigned_to)
-        ? task.assigned_to.map((name) => convertNameToValueFormat(extractNameFromValue(name), users))
+        ? task.assigned_to.map((name) =>
+            convertNameToValueFormat(extractNameFromValue(name), users),
+          )
         : task.assigned_to
-          ? [convertNameToValueFormat(extractNameFromValue(task.assigned_to), users)]
+          ? [
+              convertNameToValueFormat(
+                extractNameFromValue(task.assigned_to),
+                users,
+              ),
+            ]
           : [], // Handle both array and string
       reporting_managers: (task.reporting_managers || []).map((name) =>
         convertNameToValueFormat(extractNameFromValue(name), users),
@@ -1686,27 +1693,44 @@ export default function ClientBasedFinOpsTaskManager() {
                           <span>
                             Assigned:{" "}
                             {(() => {
-                              console.log('🔍 Raw task.assigned_to:', JSON.stringify(task.assigned_to));
+                              console.log(
+                                "🔍 Raw task.assigned_to:",
+                                JSON.stringify(task.assigned_to),
+                              );
 
                               // Handle various formats of assigned_to
                               let assignedArray = [];
 
                               if (Array.isArray(task.assigned_to)) {
-                                console.log('✅ Already an array:', task.assigned_to);
+                                console.log(
+                                  "✅ Already an array:",
+                                  task.assigned_to,
+                                );
                                 assignedArray = task.assigned_to;
                               } else if (task.assigned_to) {
                                 // First try to extract using our helper function
-                                const extracted = extractNameFromValue(task.assigned_to);
-                                console.log('🔄 After extractNameFromValue:', extracted);
+                                const extracted = extractNameFromValue(
+                                  task.assigned_to,
+                                );
+                                console.log(
+                                  "🔄 After extractNameFromValue:",
+                                  extracted,
+                                );
 
                                 // Check if the result looks like multiple names separated by comma
-                                if (extracted.includes('","') || extracted.includes('", "') || extracted.includes(',')) {
+                                if (
+                                  extracted.includes('","') ||
+                                  extracted.includes('", "') ||
+                                  extracted.includes(",")
+                                ) {
                                   // Split by various comma patterns
                                   const splitNames = extracted
                                     .split(/,\s*"?|",\s*"?|"\s*,\s*"?/)
-                                    .map(name => name.replace(/^"|"$/g, '').trim())
-                                    .filter(name => name.length > 0);
-                                  console.log('🔄 Split names:', splitNames);
+                                    .map((name) =>
+                                      name.replace(/^"|"$/g, "").trim(),
+                                    )
+                                    .filter((name) => name.length > 0);
+                                  console.log("🔄 Split names:", splitNames);
                                   assignedArray = splitNames;
                                 } else {
                                   // Single name
@@ -1714,13 +1738,14 @@ export default function ClientBasedFinOpsTaskManager() {
                                 }
                               }
 
-                              const result = assignedArray.length > 0
-                                ? assignedArray
-                                    .map(name => extractNameFromValue(name))
-                                    .join(", ")
-                                : "Unassigned";
+                              const result =
+                                assignedArray.length > 0
+                                  ? assignedArray
+                                      .map((name) => extractNameFromValue(name))
+                                      .join(", ")
+                                  : "Unassigned";
 
-                              console.log('✅ Final result:', result);
+                              console.log("✅ Final result:", result);
                               return result;
                             })()}
                           </span>
@@ -1878,8 +1903,8 @@ export default function ClientBasedFinOpsTaskManager() {
                                       slaWarning?.type === "overdue"
                                         ? "border-red-200 bg-red-50"
                                         : slaWarning?.type === "warning"
-                                        ? "border-orange-200 bg-orange-50"
-                                        : "border-blue-200 bg-blue-50"
+                                          ? "border-orange-200 bg-orange-50"
+                                          : "border-blue-200 bg-blue-50"
                                     }`}
                                   >
                                     <div className="flex items-center gap-1">
@@ -1888,8 +1913,8 @@ export default function ClientBasedFinOpsTaskManager() {
                                           slaWarning?.type === "overdue"
                                             ? "text-red-600"
                                             : slaWarning?.type === "warning"
-                                            ? "text-orange-600"
-                                            : "text-blue-600"
+                                              ? "text-orange-600"
+                                              : "text-blue-600"
                                         }`}
                                       />
                                       <AlertDescription
@@ -1897,8 +1922,8 @@ export default function ClientBasedFinOpsTaskManager() {
                                           slaWarning?.type === "overdue"
                                             ? "text-red-700"
                                             : slaWarning?.type === "warning"
-                                            ? "text-orange-700"
-                                            : "text-blue-700"
+                                              ? "text-orange-700"
+                                              : "text-blue-700"
                                         }`}
                                       >
                                         {slaWarning?.message || "Status"} •{" "}
