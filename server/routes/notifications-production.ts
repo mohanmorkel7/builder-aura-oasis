@@ -634,6 +634,10 @@ router.post("/test/create-sample", async (req: Request, res: Response) => {
         INSERT INTO finops_tasks (task_name, assigned_to, reporting_managers, escalation_managers, effective_from, duration, is_active, created_by)
         SELECT 'SYSTEM MAINTENANCE TASK', 'Alex Thompson', '["Jennifer Smith", "Mark Davis"]'::jsonb, '["Lisa Brown"]'::jsonb, CURRENT_DATE, 'daily', true, 1
         WHERE NOT EXISTS (SELECT 1 FROM finops_tasks WHERE id = 3);
+
+        INSERT INTO finops_tasks (task_name, assigned_to, reporting_managers, escalation_managers, effective_from, duration, is_active, created_by)
+        SELECT 'TEST TASK (04:00 PM)', 'Test User', '["Manager One", "Manager Two"]'::jsonb, '["Escalation Manager"]'::jsonb, CURRENT_DATE, 'daily', true, 1
+        WHERE NOT EXISTS (SELECT 1 FROM finops_tasks WHERE id = 4);
       `;
 
       await pool.query(taskQuery);
