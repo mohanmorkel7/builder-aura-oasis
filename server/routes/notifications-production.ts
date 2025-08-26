@@ -585,26 +585,25 @@ router.post("/test/create-sample", async (req: Request, res: Response) => {
       // Create sample activity log entries that would generate notifications
       const sampleNotifications = [
         {
-          action: "status_changed",
+          action: "overdue_notification_sent",
           task_id: 1,
           subtask_id: 1,
-          user_name: "PaySwiff User",
-          details:
-            "Task Check PaySwiff User is overdue by 6 hours and 11 minutes",
+          user_name: "System",
+          details: "CLEARING - FILE TRANSFER AND VALIDATION is overdue by 29 minutes",
         },
         {
-          action: "delay_reported",
+          action: "sla_warning",
           task_id: 2,
-          subtask_id: null,
-          user_name: "Test User",
-          details: "Task has been delayed due to technical issues",
-        },
-        {
-          action: "overdue_notification_sent",
-          task_id: 3,
           subtask_id: 2,
           user_name: "System",
-          details: "SLA overdue notification sent for task processing",
+          details: "Task starting in 10 minutes - prepare for execution",
+        },
+        {
+          action: "escalation_required",
+          task_id: 3,
+          subtask_id: 3,
+          user_name: "System",
+          details: "Multiple overdue tasks require immediate escalation",
         },
       ];
 
