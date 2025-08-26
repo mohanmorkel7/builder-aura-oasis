@@ -976,6 +976,7 @@ router.get("/daily-tasks", async (req: Request, res: Response) => {
               'id', st.id,
               'name', st.name,
               'description', st.description,
+              'start_time', st.start_time,
               'sla_hours', st.sla_hours,
               'sla_minutes', st.sla_minutes,
               'order_position', st.order_position,
