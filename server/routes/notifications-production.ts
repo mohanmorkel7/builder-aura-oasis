@@ -472,16 +472,22 @@ router.delete("/:id", async (req: Request, res: Response) => {
         return res.status(404).json({ error: "Notification not found" });
       }
 
-      // Create archived status table if it doesn't exist
-      const createTableQuery = `
+      // Create status tables if they don't exist
+      const createTablesQuery = `
+        CREATE TABLE IF NOT EXISTS finops_notification_read_status (
+          activity_log_id INTEGER PRIMARY KEY,
+          read_at TIMESTAMP DEFAULT NOW(),
+          FOREIGN KEY (activity_log_id) REFERENCES finops_activity_log(id) ON DELETE CASCADE
+        );
+
         CREATE TABLE IF NOT EXISTS finops_notification_archived_status (
           activity_log_id INTEGER PRIMARY KEY,
           archived_at TIMESTAMP DEFAULT NOW(),
           FOREIGN KEY (activity_log_id) REFERENCES finops_activity_log(id) ON DELETE CASCADE
-        )
+        );
       `;
 
-      await pool.query(createTableQuery);
+      await pool.query(createTablesQuery);
 
       // Insert archived status
       const archiveQuery = `
