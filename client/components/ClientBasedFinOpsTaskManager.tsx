@@ -85,10 +85,16 @@ import {
 } from "date-fns";
 
 // Helper function to extract name from "Name (email)" format or JSON stringified format
-const extractNameFromValue = (value: string): string => {
+const extractNameFromValue = (value: string, depth: number = 0): string => {
   if (!value) return value;
 
-  console.log("🔍 extractNameFromValue input:", JSON.stringify(value));
+  // Prevent infinite recursion
+  if (depth > 5) {
+    console.log("⚠️ Max recursion depth reached, returning:", value);
+    return value;
+  }
+
+  console.log(`🔍 extractNameFromValue input (depth ${depth}):`, JSON.stringify(value));
 
   // Handle malformed JSON objects like {"John Doe"} - extract content between braces
   if (value.startsWith("{") && value.endsWith("}")) {
