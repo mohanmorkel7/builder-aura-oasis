@@ -435,6 +435,13 @@ export default function FinOpsNotifications() {
   const [overdueReason, setOverdueReason] = useState("");
   const [debugMode, setDebugMode] = useState(false);
 
+  // Manual sync function for debugging time gaps
+  const forceTimeSync = React.useCallback(() => {
+    console.log("🔧 Force time synchronization triggered");
+    setCurrentTime(new Date());
+    refetch(); // Refresh notifications from API
+  }, [refetch]);
+
   // Real-time timer for live time updates - synchronized to minute boundaries
   React.useEffect(() => {
     // Initial update
