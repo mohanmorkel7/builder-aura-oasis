@@ -185,37 +185,37 @@ router.get(
 
         // Build dynamic WHERE clause
         if (entity_type) {
-          whereConditions.push(`al.entity_type = $${paramIndex++}`);
+          whereConditions.push(`CASE WHEN fal.subtask_id IS NOT NULL THEN 'subtask' ELSE 'task' END = $${paramIndex++}`);
           params.push(entity_type);
         }
 
         if (entity_id) {
-          whereConditions.push(`al.entity_id = $${paramIndex++}`);
+          whereConditions.push(`fal.task_id = $${paramIndex++}`);
           params.push(entity_id);
         }
 
         if (action) {
-          whereConditions.push(`al.action = $${paramIndex++}`);
+          whereConditions.push(`fal.action = $${paramIndex++}`);
           params.push(action);
         }
 
         if (user_id) {
-          whereConditions.push(`al.user_id = $${paramIndex++}`);
-          params.push(parseInt(user_id as string));
+          whereConditions.push(`fal.user_name LIKE $${paramIndex++}`);
+          params.push(`%User ${user_id}%`);
         }
 
         if (client_id) {
-          whereConditions.push(`al.client_id = $${paramIndex++}`);
+          whereConditions.push(`ft.client_id = $${paramIndex++}`);
           params.push(parseInt(client_id as string));
         }
 
         if (validStartDate) {
-          whereConditions.push(`al.timestamp >= $${paramIndex++}`);
+          whereConditions.push(`fal.timestamp >= $${paramIndex++}`);
           params.push(validStartDate.toISOString());
         }
 
         if (validEndDate) {
-          whereConditions.push(`al.timestamp <= $${paramIndex++}`);
+          whereConditions.push(`fal.timestamp <= $${paramIndex++}`);
           params.push(validEndDate.toISOString());
         }
 
