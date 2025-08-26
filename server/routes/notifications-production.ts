@@ -891,8 +891,11 @@ router.post("/test/create-sla-warning", async (req: Request, res: Response) => {
       // Also insert subtask data for MASTER AND VISA FILE VALIDATION
       const subtaskQuery = `
         INSERT INTO finops_subtasks (task_id, name, sla_hours, sla_minutes, status, assigned_to)
-        VALUES (5, 'MASTER AND VISA FILE VALIDATION', 1, 0, 'pending', 'Maria Garcia')
-        ON CONFLICT (task_id, name) DO NOTHING
+        SELECT 5, 'MASTER AND VISA FILE VALIDATION', 1, 0, 'pending', 'Maria Garcia'
+        WHERE NOT EXISTS (
+          SELECT 1 FROM finops_subtasks
+          WHERE task_id = 5 AND name = 'MASTER AND VISA FILE VALIDATION'
+        )
       `;
 
       await pool.query(subtaskQuery);
