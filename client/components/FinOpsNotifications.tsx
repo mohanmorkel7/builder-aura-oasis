@@ -173,11 +173,13 @@ const transformDbNotifications = (
         "CLEARING - FILE TRANSFER AND VALIDATION",
       )
         ? "CLEARING - FILE TRANSFER AND VALIDATION"
+        : startTime
+        ? `Task (Start: ${startTime})`
         : dbNotif.action
           ? `FinOps: ${dbNotif.action.replace(/_/g, " ")}`
           : "FinOps Notification",
       message: dbNotif.details || "",
-      task_name: dbNotif.task_name || "CLEARING - FILE TRANSFER AND VALIDATION",
+      task_name: dbNotif.task_name || (startTime ? `Task scheduled for ${startTime}` : "CLEARING - FILE TRANSFER AND VALIDATION"),
       client_name: dbNotif.client_name || "ABC Corporation",
       subtask_name: dbNotif.subtask_name,
       assigned_to: members.assigned_to,
