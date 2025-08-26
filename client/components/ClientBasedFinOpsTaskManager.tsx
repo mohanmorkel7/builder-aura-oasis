@@ -622,11 +622,19 @@ export default function ClientBasedFinOpsTaskManager() {
       (client: any, index: number, arr: any[]) => {
         const firstIndex = arr.findIndex((c: any) => c.id === client.id);
         return firstIndex === index;
-      }
+      },
     );
-    console.log('Raw clients count:', rawClients.length, 'Unique clients count:', uniqueClients.length);
+    console.log(
+      "Raw clients count:",
+      rawClients.length,
+      "Unique clients count:",
+      uniqueClients.length,
+    );
     if (rawClients.length !== uniqueClients.length) {
-      console.warn('Duplicate clients detected and removed:', rawClients.length - uniqueClients.length);
+      console.warn(
+        "Duplicate clients detected and removed:",
+        rawClients.length - uniqueClients.length,
+      );
     }
     return uniqueClients;
   }, [rawClients]);
