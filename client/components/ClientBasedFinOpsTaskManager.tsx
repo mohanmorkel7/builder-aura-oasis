@@ -100,12 +100,12 @@ const extractNameFromValue = (value: string): string => {
         const firstString = values.find((v) => typeof v === "string");
         if (firstString) {
           console.log("✅ JSON object parsed:", firstString);
-          return firstString;
+          return extractNameFromValue(firstString);
         }
       }
       if (typeof parsed === "string") {
         console.log("✅ JSON string parsed:", parsed);
-        return parsed;
+        return extractNameFromValue(parsed);
       }
     } catch (e) {
       // If JSON parsing fails, try to extract content manually
