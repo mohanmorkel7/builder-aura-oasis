@@ -934,6 +934,24 @@ router.post("/test/create-payswiff-overdue", async (req: Request, res: Response)
     if (await isDatabaseAvailable()) {
       console.log("Creating PaySwiff Check task overdue notification...");
 
+      // Check if task 16 exists, if not create it based on user's data
+      const checkTaskQuery = `
+        SELECT id FROM finops_tasks WHERE id = 16
+      `;
+
+      const taskExists = await pool.query(checkTaskQuery);
+
+      if (taskExists.rows.length === 0) {
+        console.log("Task 16 doesn't exist, creating it...");
+        const createTaskQuery = `
+          INSERT INTO finops_tasks (id, task_name, description, assigned_to, reporting_managers, escalation_managers, effective_from, duration, is_active, created_by, client_id, client_name)
+          VALUES (16, 'Check', 'check', 'Sanjay Kumar', '["Sarumathi Manickam", "Vishnu Vardhan"]'::jsonb, '["Harini NL", "Vishal S"]'::jsonb, '2025-08-23', 'daily', true, 72, 4, 'PaySwiff')
+          ON CONFLICT (id) DO NOTHING
+        `;
+
+        await pool.query(createTaskQuery);
+      }
+
       // Create the overdue notification for task 16 (Check task)
       const query = `
         INSERT INTO finops_activity_log (action, task_id, subtask_id, user_name, details, timestamp)
