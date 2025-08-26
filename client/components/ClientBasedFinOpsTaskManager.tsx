@@ -1865,7 +1865,13 @@ export default function ClientBasedFinOpsTaskManager() {
                         }
 
                         if (clients.length > 0) {
-                          console.log("📋 Rendering clients list:", clients.map(c => ({ id: c.id, name: c.company_name || c.client_name })));
+                          console.log(
+                            "📋 Rendering clients list:",
+                            clients.map((c) => ({
+                              id: c.id,
+                              name: c.company_name || c.client_name,
+                            })),
+                          );
                           return clients.map((client: any) => (
                             <SelectItem
                               key={`create-client-${client.id}`}
