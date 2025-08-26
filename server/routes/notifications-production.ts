@@ -1243,7 +1243,9 @@ router.get("/test/user-query", async (req: Request, res: Response) => {
 
       res.json({
         message: "User's exact SQL query results",
-        overdue_notifications: result.rows.filter(row => row.type === 'sla_overdue'),
+        overdue_notifications: result.rows.filter(
+          (row) => row.type === "sla_overdue",
+        ),
         all_notifications: result.rows,
         timestamp: new Date().toISOString(),
       });
