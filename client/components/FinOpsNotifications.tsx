@@ -142,6 +142,17 @@ const transformDbNotifications = (
             "Lisa Brown",
           ],
         },
+        4: {
+          assigned_to: "Test User",
+          reporting_managers: ["Manager One", "Manager Two"],
+          escalation_managers: ["Escalation Manager"],
+          members_list: [
+            "Test User",
+            "Manager One",
+            "Manager Two",
+            "Escalation Manager",
+          ],
+        },
       };
       return (
         taskMembers[taskId] || {
