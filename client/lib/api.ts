@@ -189,30 +189,36 @@ export class ApiClient {
         }
 
         let errorText: string = "";
+        let errorData: any = null;
+
         try {
-          // Clone the response before reading to avoid "body stream already read" errors
-          const responseClone = response.clone();
-          errorText = await responseClone.text();
+          // Read response body immediately without cloning to avoid conflicts
+          errorText = await response.text();
           console.log("Server error response:", errorText);
+
+          // Try to parse as JSON if possible
+          if (errorText.trim()) {
+            try {
+              errorData = JSON.parse(errorText);
+              console.log("Parsed error data:", errorData);
+            } catch (parseError) {
+              console.log("Error response is not JSON");
+            }
+          }
         } catch (textError) {
           console.error("Could not read error response body:", textError);
-          // If we can't read the response body, provide a status-specific error
-          if (response.status === 400) {
-            throw new Error(
-              `Bad Request (${response.status}): Invalid data provided`,
-            );
-          } else if (response.status === 403) {
-            throw new Error(`Forbidden (${response.status}): Access denied`);
-          } else if (response.status === 404) {
-            throw new Error(
-              `Not Found (${response.status}): Resource not found`,
-            );
-          } else if (response.status >= 500) {
-            throw new Error(
-              `Server Error (${response.status}): Internal server error`,
-            );
-          } else {
-            throw new Error(`HTTP Error (${response.status}): Request failed`);
+          // Provide status-specific error without reading body
+          switch (response.status) {
+            case 400:
+              throw new Error(`Bad Request (${response.status}): Invalid data provided`);
+            case 403:
+              throw new Error(`Forbidden (${response.status}): Access denied`);
+            case 404:
+              throw new Error(`Not Found (${response.status}): Resource not found`);
+            case 500:
+              throw new Error(`Server Error (${response.status}): Internal server error`);
+            default:
+              throw new Error(`HTTP Error (${response.status}): Request failed`);
           }
         }
 
