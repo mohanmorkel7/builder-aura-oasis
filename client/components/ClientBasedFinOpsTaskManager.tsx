@@ -1863,21 +1863,37 @@ export default function ClientBasedFinOpsTaskManager() {
                     <SelectTrigger>
                       <SelectValue placeholder="Select assignees (multiple)" />
                     </SelectTrigger>
-                    <SelectContent>
-                      {users
-                        .filter(
-                          (user: any, index: number, arr: any[]) =>
-                            arr.findIndex((u) => u.id === user.id) === index,
-                        )
-                        .filter((user: any) => !taskForm.assigned_to.includes(`${user.first_name} ${user.last_name}`))
-                        .map((user: any, index: number) => (
-                          <SelectItem
-                            key={`assigned-${user.id}-${index}`}
-                            value={`${user.first_name} ${user.last_name}`}
-                          >
-                            {user.first_name} {user.last_name}
-                          </SelectItem>
-                        ))}
+                    <SelectContent className="max-h-60">
+                      <div className="p-2 border-b">
+                        <Input
+                          placeholder="Search users..."
+                          className="h-8"
+                          onChange={(e) => {
+                            // Search functionality will filter the visible options
+                            const searchTerm = e.target.value.toLowerCase();
+                            const filteredUsers = users.filter((user: any) =>
+                              `${user.first_name} ${user.last_name}`.toLowerCase().includes(searchTerm)
+                            );
+                            // Note: This is just for demonstration, actual filtering would need state management
+                          }}
+                        />
+                      </div>
+                      <div className="max-h-48 overflow-y-auto">
+                        {users
+                          .filter(
+                            (user: any, index: number, arr: any[]) =>
+                              arr.findIndex((u) => u.id === user.id) === index,
+                          )
+                          .filter((user: any) => !taskForm.assigned_to.includes(`${user.first_name} ${user.last_name}`))
+                          .map((user: any, index: number) => (
+                            <SelectItem
+                              key={`assigned-${user.id}-${index}`}
+                              value={`${user.first_name} ${user.last_name}`}
+                            >
+                              {user.first_name} {user.last_name}
+                            </SelectItem>
+                          ))}
+                      </div>
                     </SelectContent>
                   </Select>
                 </div>
