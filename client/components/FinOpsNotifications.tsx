@@ -204,7 +204,8 @@ const transformDbNotifications = (
           : startTime
             ? `Task scheduled for ${startTime}`
             : "CLEARING - FILE TRANSFER AND VALIDATION"),
-      client_name: dbNotif.client_name || "ABC Corporation",
+      client_name: dbNotif.client_name ||
+        (dbNotif.task_id === 6 ? "Enterprise Banking Solutions" : "ABC Corporation"),
       subtask_name: dbNotif.subtask_name,
       assigned_to: members.assigned_to,
       reporting_managers: members.reporting_managers,
