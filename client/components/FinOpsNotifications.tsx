@@ -65,27 +65,30 @@ interface FinOpsNotification {
 const transformDbNotifications = (
   dbNotifications: any[],
 ): FinOpsNotification[] => {
-  return dbNotifications.map((dbNotif) => ({
-    id: dbNotif.id.toString(),
-    type: mapDbTypeToFinOpsType(dbNotif.type),
-    title: dbNotif.title || "FinOps Notification",
-    message: dbNotif.description || dbNotif.message || "",
-    task_name:
-      dbNotif.entity_type === "task"
-        ? `Task #${dbNotif.entity_id}`
-        : "Unknown Task",
-    client_name: dbNotif.client_name,
-    subtask_name: dbNotif.subtask_name,
-    assigned_to: dbNotif.assigned_to || "Unassigned",
-    reporting_managers: dbNotif.reporting_managers || [],
-    priority: mapDbPriorityToFinOpsPriority(dbNotif.priority),
-    status: dbNotif.read ? "read" : "unread",
-    created_at: dbNotif.created_at,
-    action_required:
-      dbNotif.priority === "high" || dbNotif.priority === "critical",
-    delay_reason: dbNotif.delay_reason,
-    sla_remaining: dbNotif.sla_remaining,
-  }));
+  console.log("🔄 Transform input:", dbNotifications.slice(0, 2)); // Log first 2 items for debugging
+
+  return dbNotifications.map((dbNotif) => {
+    const transformed = {
+      id: dbNotif.id.toString(),
+      type: dbNotif.type || "daily_reminder", // API already maps the type
+      title: dbNotif.action ? `FinOps: ${dbNotif.action.replace(/_/g, ' ')}` : "FinOps Notification",
+      message: dbNotif.details || "",
+      task_name: dbNotif.task_name || `Task #${dbNotif.task_id}`,
+      client_name: dbNotif.client_name,
+      subtask_name: dbNotif.subtask_name,
+      assigned_to: dbNotif.user_name || "Unassigned",
+      reporting_managers: [], // Not available in activity log
+      priority: dbNotif.priority || "medium", // API already maps the priority
+      status: dbNotif.read ? "read" : "unread",
+      created_at: dbNotif.created_at,
+      action_required: dbNotif.priority === "high" || dbNotif.priority === "critical",
+      delay_reason: dbNotif.action === "delay_reported" ? "Process delayed" : undefined,
+      sla_remaining: undefined, // Not available in activity log
+    };
+
+    console.log("🔄 Transformed notification:", transformed);
+    return transformed;
+  });
 };
 
 // Map database notification types to FinOps types
