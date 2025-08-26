@@ -117,8 +117,24 @@ export class ApiClient {
           fetchError,
         );
 
-        // Check if it's a network connectivity issue or timeout
-        if (
+        // Check if it's FullStory interference
+        const isFullStoryError = fetchError instanceof Error &&
+          (fetchError.stack?.includes('fullstory') ||
+           fetchError.stack?.includes('fs.js') ||
+           fetchError.message.includes('Failed to fetch'));
+
+        if (isFullStoryError) {
+          console.error("🚨 FullStory interference detected - using XMLHttpRequest fallback");
+          try {
+            response = await this.xmlHttpRequestFallback(url, config);
+          } catch (xhrError) {
+            console.error("XMLHttpRequest fallback also failed:", xhrError);
+            this.failureCount++;
+            this.lastFailureTime = Date.now();
+            this.checkOfflineMode();
+            return null;
+          }
+        } else if (
           fetchError instanceof TypeError &&
           fetchError.message.includes("Failed to fetch")
         ) {
@@ -136,45 +152,16 @@ export class ApiClient {
           this.checkOfflineMode();
           // Return null instead of throwing for timeout errors
           return null;
-        }
-
-        // Try native fetch one more time before XMLHttpRequest fallback
-        try {
-          console.log("Attempting second fetch with shorter timeout...");
-          const shortTimeoutPromise = new Promise<never>((_, reject) => {
-            setTimeout(() => reject(new Error("Request timeout")), 5000); // 5 seconds
-          });
-          const secondFetchPromise = fetch(url, config);
-          response = await Promise.race([
-            secondFetchPromise,
-            shortTimeoutPromise,
-          ]);
-        } catch (secondFetchError) {
-          console.error(
-            "Second fetch attempt failed, using XMLHttpRequest:",
-            secondFetchError,
-          );
-
-          // If it's a timeout, don't try XMLHttpRequest fallback
-          if (secondFetchError.message === "Request timeout") {
-            console.error("Second attempt also timed out - server likely down");
-            this.failureCount++;
-            this.lastFailureTime = Date.now();
-            this.checkOfflineMode();
-            // Return null instead of throwing for second timeout
-            return null;
-          }
-
-          // Fallback to XMLHttpRequest if fetch is blocked or intercepted (but not for timeouts)
+        } else {
+          // For other errors, try XMLHttpRequest fallback
           try {
+            console.log("Using XMLHttpRequest fallback for other fetch error");
             response = await this.xmlHttpRequestFallback(url, config);
           } catch (xhrError) {
-            // If all methods fail, increment failure count and return null
-            console.error("All request methods failed:", xhrError);
+            console.error("XMLHttpRequest fallback failed:", xhrError);
             this.failureCount++;
             this.lastFailureTime = Date.now();
             this.checkOfflineMode();
-            // Return null instead of throwing when all methods fail
             return null;
           }
         }
