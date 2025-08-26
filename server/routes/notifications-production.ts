@@ -3,6 +3,38 @@ import { pool } from "../database/connection";
 
 const router = Router();
 
+// Initialize notification status tables
+async function initializeNotificationTables() {
+  try {
+    const createTablesQuery = `
+      CREATE TABLE IF NOT EXISTS finops_notification_read_status (
+        activity_log_id INTEGER PRIMARY KEY,
+        read_at TIMESTAMP DEFAULT NOW(),
+        FOREIGN KEY (activity_log_id) REFERENCES finops_activity_log(id) ON DELETE CASCADE
+      );
+
+      CREATE TABLE IF NOT EXISTS finops_notification_archived_status (
+        activity_log_id INTEGER PRIMARY KEY,
+        archived_at TIMESTAMP DEFAULT NOW(),
+        FOREIGN KEY (activity_log_id) REFERENCES finops_activity_log(id) ON DELETE CASCADE
+      );
+
+      -- Add indexes for better performance
+      CREATE INDEX IF NOT EXISTS idx_notification_read_status ON finops_notification_read_status(activity_log_id);
+      CREATE INDEX IF NOT EXISTS idx_notification_archived_status ON finops_notification_archived_status(activity_log_id);
+      CREATE INDEX IF NOT EXISTS idx_finops_activity_log_timestamp ON finops_activity_log(timestamp DESC);
+    `;
+
+    await pool.query(createTablesQuery);
+    console.log("✅ Notification status tables initialized");
+  } catch (error) {
+    console.log("⚠️  Failed to initialize notification tables:", error.message);
+  }
+}
+
+// Initialize tables on router load
+initializeNotificationTables();
+
 // Production database availability check with graceful fallback
 async function isDatabaseAvailable() {
   try {
