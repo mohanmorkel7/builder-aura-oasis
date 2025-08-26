@@ -1513,7 +1513,8 @@ export default function ClientBasedFinOpsTaskManager() {
                                           b.start_time || "",
                                         ),
                                     );
-                                    return `Starts: ${sorted[0].start_time}`;
+                                    const { time, period } = convertTo12Hour(sorted[0].start_time);
+                                    return `Starts: ${time ? `${time} ${period}` : sorted[0].start_time}`;
                                   })()
                                 : "No schedule set"}
                             </span>
