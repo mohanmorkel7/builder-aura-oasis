@@ -1599,6 +1599,8 @@ router.delete("/clients/:id", async (req: Request, res: Response) => {
 // Create new FinOps task
 router.post("/tasks", async (req: Request, res: Response) => {
   try {
+    console.log("🔥 POST /tasks called with body:", JSON.stringify(req.body, null, 2));
+
     const {
       task_name,
       description,
@@ -1613,6 +1615,14 @@ router.post("/tasks", async (req: Request, res: Response) => {
       subtasks,
       created_by,
     } = req.body;
+
+    console.log("🔥 Extracted fields:", {
+      task_name,
+      client_id,
+      client_name,
+      assigned_to,
+      created_by
+    });
 
     if (
       !task_name ||
@@ -1635,6 +1645,12 @@ router.post("/tasks", async (req: Request, res: Response) => {
       const assignedToStr = Array.isArray(assigned_to)
         ? assigned_to[0]
         : assigned_to;
+
+      console.log("🔥 Processed for DB:", {
+        clientIdInt,
+        assignedToStr,
+        client_name
+      });
 
       // Create the main task
       const taskResult = await pool.query(
