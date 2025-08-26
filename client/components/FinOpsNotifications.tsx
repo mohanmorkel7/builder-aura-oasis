@@ -96,7 +96,8 @@ const transformDbNotifications = (
     let notificationType = "daily_reminder";
     if (
       dbNotif.action === "overdue_notification_sent" ||
-      dbNotif.details?.includes("overdue")
+      dbNotif.details?.toLowerCase().includes("overdue") ||
+      dbNotif.action === "task_status_changed" && dbNotif.details?.toLowerCase().includes("overdue")
     ) {
       notificationType = "sla_overdue";
     } else if (
