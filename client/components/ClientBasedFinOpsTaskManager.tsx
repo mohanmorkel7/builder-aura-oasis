@@ -1891,7 +1891,10 @@ export default function ClientBasedFinOpsTaskManager() {
                           onChange={(e) => setAssignedToSearch(e.target.value)}
                         />
                       </div>
-                      <div className="max-h-60 overflow-y-auto overflow-x-hidden" style={{scrollbarWidth: 'thin'}}>
+                      <div
+                        className="max-h-60 overflow-y-auto overflow-x-hidden"
+                        style={{ scrollbarWidth: "thin" }}
+                      >
                         {users
                           .filter(
                             (user: any, index: number, arr: any[]) =>
@@ -2035,7 +2038,10 @@ export default function ClientBasedFinOpsTaskManager() {
                           }
                         />
                       </div>
-                      <div className="max-h-60 overflow-y-auto overflow-x-hidden" style={{scrollbarWidth: 'thin'}}>
+                      <div
+                        className="max-h-60 overflow-y-auto overflow-x-hidden"
+                        style={{ scrollbarWidth: "thin" }}
+                      >
                         {users
                           .filter(
                             (user: any, index: number, arr: any[]) =>
@@ -2127,7 +2133,10 @@ export default function ClientBasedFinOpsTaskManager() {
                           }
                         />
                       </div>
-                      <div className="max-h-60 overflow-y-auto overflow-x-hidden" style={{scrollbarWidth: 'thin'}}>
+                      <div
+                        className="max-h-60 overflow-y-auto overflow-x-hidden"
+                        style={{ scrollbarWidth: "thin" }}
+                      >
                         {users
                           .filter(
                             (user: any, index: number, arr: any[]) =>
