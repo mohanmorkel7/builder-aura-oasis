@@ -769,7 +769,8 @@ router.get("/debug/raw-data", async (req: Request, res: Response) => {
           ft.task_name,
           ft.assigned_to,
           ft.reporting_managers,
-          ft.escalation_managers
+          ft.escalation_managers,
+          EXTRACT(EPOCH FROM (NOW() - fal.timestamp))/60 as minutes_ago
         FROM finops_activity_log fal
         LEFT JOIN finops_tasks ft ON fal.task_id = ft.id
         WHERE fal.timestamp >= NOW() - INTERVAL '24 hours'
@@ -778,10 +779,19 @@ router.get("/debug/raw-data", async (req: Request, res: Response) => {
 
       const result = await pool.query(query);
 
+      // Look for patterns like "Start:", "Pending", "Overdue by X min"
+      const overduePattern = result.rows.filter(row =>
+        row.details?.toLowerCase().includes('overdue') ||
+        row.details?.toLowerCase().includes('start:') ||
+        row.details?.toLowerCase().includes('pending')
+      );
+
       res.json({
         message: "Raw activity log data from your local database",
         total_records: result.rows.length,
-        data: result.rows,
+        overdue_pattern_matches: overduePattern.length,
+        matching_notifications: overduePattern,
+        all_data: result.rows,
         timestamp: new Date().toISOString()
       });
     } else {
