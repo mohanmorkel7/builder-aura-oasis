@@ -1109,9 +1109,9 @@ router.get("/test/categorization", async (req: Request, res: Response) => {
             WHEN fal.action = 'completion_notification_sent' THEN 'task_completed'
             WHEN fal.action = 'sla_alert' THEN 'sla_warning'
             WHEN fal.action = 'escalation_required' THEN 'escalation'
-            WHEN fal.action IN ('status_changed', 'task_status_changed') AND fal.details LIKE '%completed%' THEN 'task_completed'
-            WHEN fal.action IN ('status_changed', 'task_status_changed') AND fal.details LIKE '%overdue%' THEN 'sla_overdue'
             WHEN fal.details LIKE '%overdue%' THEN 'sla_overdue'
+            WHEN fal.action IN ('status_changed', 'task_status_changed') AND fal.details LIKE '%overdue%' THEN 'sla_overdue'
+            WHEN fal.action IN ('status_changed', 'task_status_changed') AND fal.details LIKE '%completed%' THEN 'task_completed'
             WHEN fal.details LIKE '%starting in%' OR fal.details LIKE '%sla warning%' THEN 'sla_warning'
             ELSE 'daily_reminder'
           END as computed_type,
