@@ -185,7 +185,9 @@ router.get(
 
         // Build dynamic WHERE clause
         if (entity_type) {
-          whereConditions.push(`CASE WHEN fal.subtask_id IS NOT NULL THEN 'subtask' ELSE 'task' END = $${paramIndex++}`);
+          whereConditions.push(
+            `CASE WHEN fal.subtask_id IS NOT NULL THEN 'subtask' ELSE 'task' END = $${paramIndex++}`,
+          );
           params.push(entity_type);
         }
 

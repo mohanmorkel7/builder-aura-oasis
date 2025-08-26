@@ -210,15 +210,23 @@ export class ApiClient {
           // Provide status-specific error without reading body
           switch (response.status) {
             case 400:
-              throw new Error(`Bad Request (${response.status}): Invalid data provided`);
+              throw new Error(
+                `Bad Request (${response.status}): Invalid data provided`,
+              );
             case 403:
               throw new Error(`Forbidden (${response.status}): Access denied`);
             case 404:
-              throw new Error(`Not Found (${response.status}): Resource not found`);
+              throw new Error(
+                `Not Found (${response.status}): Resource not found`,
+              );
             case 500:
-              throw new Error(`Server Error (${response.status}): Internal server error`);
+              throw new Error(
+                `Server Error (${response.status}): Internal server error`,
+              );
             default:
-              throw new Error(`HTTP Error (${response.status}): Request failed`);
+              throw new Error(
+                `HTTP Error (${response.status}): Request failed`,
+              );
           }
         }
 
@@ -226,7 +234,9 @@ export class ApiClient {
         if (errorData && (errorData.error || errorData.message)) {
           throw new Error(errorData.error || errorData.message);
         } else if (errorText) {
-          throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
+          throw new Error(
+            `HTTP error! status: ${response.status} - ${errorText}`,
+          );
         } else {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
