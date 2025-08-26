@@ -1,12 +1,20 @@
 import * as React from "react";
 import { apiClient } from "./api";
 
-// Detect HMR at module level
-const IS_HMR_RELOAD =
-  typeof import.meta.hot !== "undefined" &&
-  import.meta.hot &&
-  performance.navigation &&
-  performance.navigation.type === 1;
+// Detect HMR at module level with safer checks
+const IS_HMR_RELOAD = (() => {
+  try {
+    return (
+      typeof import.meta.hot !== "undefined" &&
+      import.meta.hot &&
+      performance.navigation &&
+      performance.navigation.type === 1
+    );
+  } catch (error) {
+    console.warn("HMR detection failed (safe to ignore):", error);
+    return false;
+  }
+})();
 import {
   PublicClientApplication,
   AuthenticationResult,
