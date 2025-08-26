@@ -76,6 +76,16 @@ export default function FinOpsActivityLog() {
     days: 7,
     search: "",
   });
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  // Real-time timer for live time updates
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000); // Update every minute
+
+    return () => clearInterval(timer);
+  }, []);
 
   // Don't render if user is not available
   if (!user) {
