@@ -1788,4 +1788,146 @@ router.post("/test/create-sla-warning-14min", async (req: Request, res: Response
   }
 });
 
+// Create SLA warning notification with 10 min remaining (current time)
+router.post("/test/create-sla-warning-10min", async (req: Request, res: Response) => {
+  try {
+    if (await isDatabaseAvailable()) {
+      console.log("Creating current SLA warning notification with 10 min remaining...");
+
+      // First, mark the old 14 min notification as archived to avoid confusion
+      const archiveOldQuery = `
+        INSERT INTO finops_notification_archived_status (activity_log_id, archived_at)
+        SELECT id, NOW() FROM finops_activity_log
+        WHERE task_id = 16
+        AND LOWER(details) LIKE '%sla warning%'
+        AND LOWER(details) LIKE '%14 min remaining%'
+        ON CONFLICT (activity_log_id) DO NOTHING
+      `;
+
+      await pool.query(archiveOldQuery);
+
+      // Check if 10 min notification already exists
+      const checkExistingQuery = `
+        SELECT id FROM finops_activity_log
+        WHERE task_id = $1
+        AND LOWER(details) LIKE '%sla warning%'
+        AND LOWER(details) LIKE '%10 min remaining%'
+        AND timestamp >= NOW() - INTERVAL '1 hour'
+      `;
+
+      const existingResult = await pool.query(checkExistingQuery, [16]);
+
+      if (existingResult.rows.length > 0) {
+        return res.json({
+          message: "SLA warning with 10 min remaining already exists",
+          existing_notification: existingResult.rows[0],
+          note: "Current time notification exists",
+          timestamp: new Date().toISOString(),
+        });
+      }
+
+      // Create the current SLA warning notification
+      const query = `
+        INSERT INTO finops_activity_log (action, task_id, subtask_id, user_name, details, timestamp)
+        VALUES ($1, $2, $3, $4, $5, NOW())
+        RETURNING *
+      `;
+
+      const result = await pool.query(query, [
+        "sla_alert",
+        16,
+        29,
+        "System",
+        "SLA Warning - 10 min remaining • need to start",
+      ]);
+
+      res.json({
+        message: "Current SLA warning notification (10 min remaining) created successfully!",
+        notification: result.rows[0],
+        description: "SLA Warning - 10 min remaining • need to start",
+        task_details: "Check",
+        client: "PaySwiff",
+        assigned_to: "Sanjay Kumar",
+        archived_old_14min: true,
+        created_now: true,
+        timestamp: new Date().toISOString(),
+      });
+    } else {
+      res.json({
+        message: "Database unavailable - would create current SLA warning notification in production",
+        timestamp: new Date().toISOString(),
+      });
+    }
+  } catch (error) {
+    console.error("Error creating current SLA warning notification:", error);
+    res.status(500).json({
+      error: "Failed to create current SLA warning notification",
+      message: error.message,
+    });
+  }
+});
+
+// Update existing SLA warning with current time
+router.put("/test/update-sla-warning-time", async (req: Request, res: Response) => {
+  try {
+    if (await isDatabaseAvailable()) {
+      const { current_minutes } = req.body;
+
+      if (!current_minutes) {
+        return res.status(400).json({
+          error: "current_minutes is required",
+          example: { current_minutes: 10 }
+        });
+      }
+
+      console.log(`Updating SLA warning to ${current_minutes} min remaining...`);
+
+      // Archive old notifications and create new one with current time
+      const archiveQuery = `
+        INSERT INTO finops_notification_archived_status (activity_log_id, archived_at)
+        SELECT id, NOW() FROM finops_activity_log
+        WHERE task_id = 16
+        AND LOWER(details) LIKE '%sla warning%'
+        AND LOWER(details) LIKE '%min remaining%'
+        ON CONFLICT (activity_log_id) DO NOTHING
+      `;
+
+      await pool.query(archiveQuery);
+
+      // Create new notification with current time
+      const insertQuery = `
+        INSERT INTO finops_activity_log (action, task_id, subtask_id, user_name, details, timestamp)
+        VALUES ($1, $2, $3, $4, $5, NOW())
+        RETURNING *
+      `;
+
+      const result = await pool.query(insertQuery, [
+        "sla_alert",
+        16,
+        29,
+        "System",
+        `SLA Warning - ${current_minutes} min remaining • need to start`,
+      ]);
+
+      res.json({
+        message: `SLA warning updated to ${current_minutes} min remaining`,
+        notification: result.rows[0],
+        archived_old_notifications: true,
+        timestamp: new Date().toISOString(),
+      });
+    } else {
+      res.json({
+        message: "Database unavailable",
+        timestamp: new Date().toISOString(),
+      });
+    }
+  } catch (error) {
+    console.error("Error updating SLA warning time:", error);
+    res.status(500).json({
+      error: "Failed to update SLA warning time",
+      message: error.message,
+    });
+  }
+});
+
 export default router;
