@@ -415,16 +415,10 @@ router.post("/", async (req: Request, res: Response) => {
 
       const result = await pool.query(query, [
         action,
-        entity_type,
-        entity_id,
-        entity_name || null,
-        user_id,
-        client_id || null,
-        details || null,
-        changes ? JSON.stringify(changes) : null,
-        status || null,
-        previous_status || null,
-        delay_reason || null,
+        entity_type === 'task' ? entity_id : null, // task_id
+        entity_type === 'subtask' ? entity_id : null, // subtask_id
+        `User ${user_id}`, // user_name
+        details || `${action} action performed`,
       ]);
 
       res.status(201).json(result.rows[0]);
