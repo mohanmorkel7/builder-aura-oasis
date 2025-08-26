@@ -648,4 +648,71 @@ router.post("/test/create-sample", async (req: Request, res: Response) => {
   }
 });
 
+// Store overdue reason
+router.post("/overdue-reason", async (req: Request, res: Response) => {
+  try {
+    if (await isDatabaseAvailable()) {
+      const { notification_id, task_name, overdue_reason, created_at } = req.body;
+
+      // Validate required fields
+      if (!notification_id || !overdue_reason) {
+        return res.status(400).json({
+          error: "Missing required fields",
+          required: ["notification_id", "overdue_reason"],
+        });
+      }
+
+      // Create overdue reasons table if it doesn't exist
+      const createTableQuery = `
+        CREATE TABLE IF NOT EXISTS finops_overdue_reasons (
+          id SERIAL PRIMARY KEY,
+          notification_id INTEGER,
+          task_name VARCHAR(255),
+          overdue_reason TEXT NOT NULL,
+          created_at TIMESTAMP DEFAULT NOW()
+        )
+      `;
+
+      await pool.query(createTableQuery);
+
+      // Insert the overdue reason
+      const insertQuery = `
+        INSERT INTO finops_overdue_reasons (notification_id, task_name, overdue_reason, created_at)
+        VALUES ($1, $2, $3, $4)
+        RETURNING *
+      `;
+
+      const result = await pool.query(insertQuery, [
+        notification_id,
+        task_name || null,
+        overdue_reason,
+        created_at || new Date().toISOString(),
+      ]);
+
+      res.status(201).json({
+        message: "Overdue reason stored successfully",
+        data: result.rows[0]
+      });
+    } else {
+      console.log("Database unavailable, returning mock overdue reason storage");
+      res.status(201).json({
+        message: "Overdue reason stored successfully (mock)",
+        data: {
+          id: Date.now(),
+          notification_id: req.body.notification_id,
+          task_name: req.body.task_name,
+          overdue_reason: req.body.overdue_reason,
+          created_at: new Date().toISOString(),
+        }
+      });
+    }
+  } catch (error) {
+    console.error("Error storing overdue reason:", error);
+    res.status(500).json({
+      error: "Failed to store overdue reason",
+      message: error.message,
+    });
+  }
+});
+
 export default router;
