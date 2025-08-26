@@ -488,14 +488,15 @@ router.put("/tasks/:id", async (req: Request, res: Response) => {
           for (const subtask of subtasks) {
             const subtaskQuery = `
               INSERT INTO finops_subtasks (
-                task_id, name, description, sla_hours, sla_minutes, order_position
-              ) VALUES ($1, $2, $3, $4, $5, $6)
+                task_id, name, description, start_time, sla_hours, sla_minutes, order_position
+              ) VALUES ($1, $2, $3, $4, $5, $6, $7)
             `;
 
             await client.query(subtaskQuery, [
               taskId,
               subtask.name,
               subtask.description || null,
+              subtask.start_time || null,
               subtask.sla_hours,
               subtask.sla_minutes,
               subtask.order_position,
