@@ -1089,4 +1089,45 @@ router.post(
   },
 );
 
+// Test endpoint to check query performance
+router.get("/test/performance", async (req: Request, res: Response) => {
+  try {
+    const startTime = Date.now();
+
+    if (await isDatabaseAvailable()) {
+      const query = `
+        SELECT COUNT(*) as total_records,
+               COUNT(CASE WHEN timestamp >= NOW() - INTERVAL '7 days' THEN 1 END) as recent_records
+        FROM finops_activity_log
+      `;
+
+      const result = await pool.query(query);
+      const queryTime = Date.now() - startTime;
+
+      res.json({
+        message: "Performance test completed",
+        query_time_ms: queryTime,
+        database_available: true,
+        records: result.rows[0],
+        timestamp: new Date().toISOString(),
+      });
+    } else {
+      res.json({
+        message: "Database unavailable",
+        query_time_ms: Date.now() - startTime,
+        database_available: false,
+        timestamp: new Date().toISOString(),
+      });
+    }
+  } catch (error) {
+    const queryTime = Date.now() - startTime;
+    console.error("Performance test error:", error);
+    res.status(500).json({
+      error: "Performance test failed",
+      query_time_ms: queryTime,
+      message: error.message,
+    });
+  }
+});
+
 export default router;
