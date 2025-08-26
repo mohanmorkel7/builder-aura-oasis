@@ -107,7 +107,7 @@ interface ClientBasedFinOpsTask {
   description: string;
   client_id: number;
   client_name: string;
-  assigned_to: string;
+  assigned_to: string[]; // Changed to array for multiple assignments
   reporting_managers: string[];
   escalation_managers: string[];
   effective_from: string;
