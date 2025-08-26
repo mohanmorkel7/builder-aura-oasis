@@ -88,12 +88,17 @@ export class ApiClient {
 
       try {
         // Detect FullStory interference
-        const hasFS = typeof window !== 'undefined' && !!(window as any).FS;
-        const hasFullStoryScript = typeof document !== 'undefined' && !!document.querySelector('script[src*="fullstory"]');
-        const fetchContainsFullStory = window.fetch.toString().includes('fullstory') || window.fetch.toString().includes('fs.js');
+        const hasFS = typeof window !== "undefined" && !!(window as any).FS;
+        const hasFullStoryScript =
+          typeof document !== "undefined" &&
+          !!document.querySelector('script[src*="fullstory"]');
+        const fetchContainsFullStory =
+          window.fetch.toString().includes("fullstory") ||
+          window.fetch.toString().includes("fs.js");
         const hasPreservedFetch = !!(window as any).__originalFetch;
 
-        const isFullStoryActive = hasFS || hasFullStoryScript || fetchContainsFullStory;
+        const isFullStoryActive =
+          hasFS || hasFullStoryScript || fetchContainsFullStory;
 
         console.log("🔍 FullStory detection:", {
           hasFS,
@@ -101,17 +106,24 @@ export class ApiClient {
           fetchContainsFullStory,
           hasPreservedFetch,
           isFullStoryActive,
-          fetchSource: window.fetch.toString().substring(0, 100) + "..."
+          fetchSource: window.fetch.toString().substring(0, 100) + "...",
         });
 
         // Try to use preserved original fetch first
-        const originalFetch = (window as any).__originalFetch || window.fetch.bind(window);
+        const originalFetch =
+          (window as any).__originalFetch || window.fetch.bind(window);
 
         if (isFullStoryActive && !(window as any).__originalFetch) {
-          console.warn("🚨 FullStory detected and no preserved fetch - using XMLHttpRequest fallback");
+          console.warn(
+            "🚨 FullStory detected and no preserved fetch - using XMLHttpRequest fallback",
+          );
           response = await this.xmlHttpRequestFallback(url, config);
         } else {
-          console.log("🔒 Using", (window as any).__originalFetch ? "preserved" : "current", "fetch for request");
+          console.log(
+            "🔒 Using",
+            (window as any).__originalFetch ? "preserved" : "current",
+            "fetch for request",
+          );
 
           // Add timeout to prevent hanging requests
           const timeoutMs = 8000; // 8 seconds
@@ -131,13 +143,16 @@ export class ApiClient {
         );
 
         // Check if it's FullStory interference
-        const isFullStoryError = fetchError instanceof Error &&
-          (fetchError.stack?.includes('fullstory') ||
-           fetchError.stack?.includes('fs.js') ||
-           fetchError.message.includes('Failed to fetch'));
+        const isFullStoryError =
+          fetchError instanceof Error &&
+          (fetchError.stack?.includes("fullstory") ||
+            fetchError.stack?.includes("fs.js") ||
+            fetchError.message.includes("Failed to fetch"));
 
         if (isFullStoryError) {
-          console.error("🚨 FullStory interference detected - using XMLHttpRequest fallback");
+          console.error(
+            "🚨 FullStory interference detected - using XMLHttpRequest fallback",
+          );
           try {
             response = await this.xmlHttpRequestFallback(url, config);
           } catch (xhrError) {
@@ -381,7 +396,7 @@ export class ApiClient {
         xhr.timeout = 15000; // Shorter timeout for faster fallback
 
         // Handle CORS for cross-origin requests
-        if (url.includes('://') && !url.startsWith(window.location.origin)) {
+        if (url.includes("://") && !url.startsWith(window.location.origin)) {
           xhr.withCredentials = false;
         }
 
@@ -392,7 +407,11 @@ export class ApiClient {
           Object.entries(config.headers).forEach(([key, value]) => {
             try {
               // Skip problematic headers that XHR handles automatically
-              if (!['content-length', 'host', 'origin', 'referer'].includes(key.toLowerCase())) {
+              if (
+                !["content-length", "host", "origin", "referer"].includes(
+                  key.toLowerCase(),
+                )
+              ) {
                 xhr.setRequestHeader(key, value as string);
               }
             } catch (headerError) {
@@ -403,7 +422,11 @@ export class ApiClient {
 
         xhr.onload = () => {
           try {
-            console.log("✅ XMLHttpRequest success:", xhr.status, xhr.statusText);
+            console.log(
+              "✅ XMLHttpRequest success:",
+              xhr.status,
+              xhr.statusText,
+            );
 
             // Parse response headers
             const headers = new Headers();
@@ -422,7 +445,10 @@ export class ApiClient {
             });
             resolve(response);
           } catch (responseError) {
-            console.error("❌ Error creating response from XHR:", responseError);
+            console.error(
+              "❌ Error creating response from XHR:",
+              responseError,
+            );
             reject(new Error("Failed to process XMLHttpRequest response"));
           }
         };
@@ -445,7 +471,9 @@ export class ApiClient {
         xhr.send((config.body as string) || null);
       } catch (setupError) {
         console.error("❌ Failed to setup XMLHttpRequest:", setupError);
-        reject(new Error(`Failed to setup XMLHttpRequest: ${setupError.message}`));
+        reject(
+          new Error(`Failed to setup XMLHttpRequest: ${setupError.message}`),
+        );
       }
     });
   }

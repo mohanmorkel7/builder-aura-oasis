@@ -71,7 +71,9 @@ const transformDbNotifications = (
     const transformed = {
       id: dbNotif.id.toString(),
       type: dbNotif.type || "daily_reminder", // API already maps the type
-      title: dbNotif.action ? `FinOps: ${dbNotif.action.replace(/_/g, ' ')}` : "FinOps Notification",
+      title: dbNotif.action
+        ? `FinOps: ${dbNotif.action.replace(/_/g, " ")}`
+        : "FinOps Notification",
       message: dbNotif.details || "",
       task_name: dbNotif.task_name || `Task #${dbNotif.task_id}`,
       client_name: dbNotif.client_name,
@@ -81,8 +83,10 @@ const transformDbNotifications = (
       priority: dbNotif.priority || "medium", // API already maps the priority
       status: dbNotif.read ? "read" : "unread",
       created_at: dbNotif.created_at,
-      action_required: dbNotif.priority === "high" || dbNotif.priority === "critical",
-      delay_reason: dbNotif.action === "delay_reported" ? "Process delayed" : undefined,
+      action_required:
+        dbNotif.priority === "high" || dbNotif.priority === "critical",
+      delay_reason:
+        dbNotif.action === "delay_reported" ? "Process delayed" : undefined,
       sla_remaining: undefined, // Not available in activity log
     };
 
@@ -241,16 +245,20 @@ export default function FinOpsNotifications() {
         console.error("❌ FinOps notifications API failed:", error);
 
         // Check if it's FullStory interference
-        if (error instanceof Error &&
-            (error.message.includes("Failed to fetch") ||
-             error.stack?.includes("fullstory") ||
-             error.stack?.includes("fs.js"))) {
-          console.warn("🚨 FullStory interference detected in notifications query");
+        if (
+          error instanceof Error &&
+          (error.message.includes("Failed to fetch") ||
+            error.stack?.includes("fullstory") ||
+            error.stack?.includes("fs.js"))
+        ) {
+          console.warn(
+            "🚨 FullStory interference detected in notifications query",
+          );
           // Return empty structure to prevent component crash
           return {
             notifications: [],
             pagination: { total: 0, limit: 50, offset: 0, has_more: false },
-            unread_count: 0
+            unread_count: 0,
           };
         }
 
@@ -293,8 +301,12 @@ export default function FinOpsNotifications() {
         console.log(
           `📊 Transforming ${dbNotifications.notifications.length} real notifications`,
         );
-        const transformed = transformDbNotifications(dbNotifications.notifications);
-        console.log(`✅ Transformation complete: ${transformed.length} notifications processed`);
+        const transformed = transformDbNotifications(
+          dbNotifications.notifications,
+        );
+        console.log(
+          `✅ Transformation complete: ${transformed.length} notifications processed`,
+        );
         return transformed;
       } else {
         console.log("📭 Real API returned empty notifications array");
