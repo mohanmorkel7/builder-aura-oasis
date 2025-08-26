@@ -2138,7 +2138,7 @@ export default function ClientBasedFinOpsTaskManager() {
                       <SelectValue placeholder="Select reporting manager" />
                     </SelectTrigger>
                     <SelectContent className="max-h-80">
-                      <div className="p-2 border-b bg-white">
+                      <div className="p-2 border-b bg-white sticky top-0 z-10">
                         <Input
                           placeholder="Search reporting managers..."
                           value={reportingManagerSearch}
@@ -2146,6 +2146,15 @@ export default function ClientBasedFinOpsTaskManager() {
                           onChange={(e) =>
                             setReportingManagerSearch(e.target.value)
                           }
+                          onKeyDown={(e) => {
+                            // Prevent Select from closing when typing
+                            e.stopPropagation();
+                          }}
+                          onMouseDown={(e) => {
+                            // Prevent Select from capturing mouse events
+                            e.stopPropagation();
+                          }}
+                          autoFocus={false}
                         />
                       </div>
                       {users
