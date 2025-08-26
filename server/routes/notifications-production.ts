@@ -162,7 +162,7 @@ router.get("/", async (req: Request, res: Response) => {
           CASE
             WHEN fal.action = 'delay_reported' OR fal.action = 'overdue_notification_sent' OR LOWER(fal.details) LIKE '%overdue%' THEN 'critical'
             WHEN fal.action = 'completion_notification_sent' THEN 'low'
-            WHEN fal.action = 'sla_alert' OR LOWER(fal.details) LIKE '%starting in%' OR LOWER(fal.details) LIKE '%sla warning%' THEN 'high'
+            WHEN fal.action = 'sla_alert' OR LOWER(fal.details) LIKE '%starting in%' OR LOWER(fal.details) LIKE '%sla warning%' OR LOWER(fal.details) LIKE '%min remaining%' THEN 'high'
             WHEN fal.action = 'escalation_required' THEN 'critical'
             WHEN LOWER(fal.details) LIKE '%pending%' AND LOWER(fal.details) LIKE '%need to start%' THEN 'medium'
             WHEN LOWER(fal.details) LIKE '%pending status%' THEN 'medium'
@@ -1126,7 +1126,7 @@ router.get("/test/categorization", async (req: Request, res: Response) => {
           CASE
             WHEN fal.action = 'delay_reported' OR fal.action = 'overdue_notification_sent' OR LOWER(fal.details) LIKE '%overdue%' THEN 'critical'
             WHEN fal.action = 'completion_notification_sent' THEN 'low'
-            WHEN fal.action = 'sla_alert' OR LOWER(fal.details) LIKE '%starting in%' OR LOWER(fal.details) LIKE '%sla warning%' THEN 'high'
+            WHEN fal.action = 'sla_alert' OR LOWER(fal.details) LIKE '%starting in%' OR LOWER(fal.details) LIKE '%sla warning%' OR LOWER(fal.details) LIKE '%min remaining%' THEN 'high'
             WHEN fal.action = 'escalation_required' THEN 'critical'
             WHEN LOWER(fal.details) LIKE '%pending%' AND LOWER(fal.details) LIKE '%need to start%' THEN 'medium'
             WHEN LOWER(fal.details) LIKE '%pending status%' THEN 'medium'
@@ -1235,7 +1235,7 @@ router.get("/test/user-query", async (req: Request, res: Response) => {
           CASE
             WHEN fal.action = 'delay_reported' OR fal.action = 'overdue_notification_sent' OR LOWER(fal.details) LIKE '%overdue%' THEN 'critical'
             WHEN fal.action = 'completion_notification_sent' THEN 'low'
-            WHEN fal.action = 'sla_alert' OR LOWER(fal.details) LIKE '%starting in%' OR LOWER(fal.details) LIKE '%sla warning%' THEN 'high'
+            WHEN fal.action = 'sla_alert' OR LOWER(fal.details) LIKE '%starting in%' OR LOWER(fal.details) LIKE '%sla warning%' OR LOWER(fal.details) LIKE '%min remaining%' THEN 'high'
             WHEN fal.action = 'escalation_required' THEN 'critical'
             WHEN LOWER(fal.details) LIKE '%pending%' AND LOWER(fal.details) LIKE '%need to start%' THEN 'medium'
             WHEN LOWER(fal.details) LIKE '%pending status%' THEN 'medium'
@@ -1472,7 +1472,7 @@ router.get("/test/check-task-activity", async (req: Request, res: Response) => {
           CASE
             WHEN fal.action = 'delay_reported' OR fal.action = 'overdue_notification_sent' OR LOWER(fal.details) LIKE '%overdue%' THEN 'critical'
             WHEN fal.action = 'completion_notification_sent' THEN 'low'
-            WHEN fal.action = 'sla_alert' OR LOWER(fal.details) LIKE '%starting in%' OR LOWER(fal.details) LIKE '%sla warning%' THEN 'high'
+            WHEN fal.action = 'sla_alert' OR LOWER(fal.details) LIKE '%starting in%' OR LOWER(fal.details) LIKE '%sla warning%' OR LOWER(fal.details) LIKE '%min remaining%' THEN 'high'
             WHEN fal.action = 'escalation_required' THEN 'critical'
             WHEN LOWER(fal.details) LIKE '%pending%' AND LOWER(fal.details) LIKE '%need to start%' THEN 'medium'
             ELSE 'medium'
