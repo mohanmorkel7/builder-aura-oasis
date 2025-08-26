@@ -903,7 +903,8 @@ router.post("/test/create-sla-warning", async (req: Request, res: Response) => {
       res.json({
         message: "SLA warning notification created successfully!",
         notification: result.rows[0],
-        description: "FinOps: sla warning Task starting in 10 minutes - prepare for execution",
+        description:
+          "FinOps: sla warning Task starting in 10 minutes - prepare for execution",
         task_details: "RECONCILIATION - DAILY SETTLEMENT PROCESS",
         assigned_to: "Maria Garcia",
         subtask: "MASTER AND VISA FILE VALIDATION",
@@ -928,13 +929,15 @@ router.post("/test/create-sla-warning", async (req: Request, res: Response) => {
 });
 
 // Create the exact SLA warning that user described
-router.post("/test/create-enterprise-banking-sla", async (req: Request, res: Response) => {
-  try {
-    if (await isDatabaseAvailable()) {
-      console.log("Creating Enterprise Banking SLA warning notification...");
+router.post(
+  "/test/create-enterprise-banking-sla",
+  async (req: Request, res: Response) => {
+    try {
+      if (await isDatabaseAvailable()) {
+        console.log("Creating Enterprise Banking SLA warning notification...");
 
-      // Ensure task exists for RECONCILIATION - DAILY SETTLEMENT PROCESS (Enterprise Banking Solutions)
-      const taskQuery = `
+        // Ensure task exists for RECONCILIATION - DAILY SETTLEMENT PROCESS (Enterprise Banking Solutions)
+        const taskQuery = `
         INSERT INTO finops_tasks (id, task_name, assigned_to, reporting_managers, escalation_managers, effective_from, duration, is_active, created_by)
         VALUES (6, 'RECONCILIATION - DAILY SETTLEMENT PROCESS', 'Maria Garcia', '["Robert Chen"]'::jsonb, '["Sarah Wilson"]'::jsonb, CURRENT_DATE, 'daily', true, 1)
         ON CONFLICT (id) DO UPDATE SET
@@ -943,25 +946,25 @@ router.post("/test/create-enterprise-banking-sla", async (req: Request, res: Res
           reporting_managers = EXCLUDED.reporting_managers
       `;
 
-      await pool.query(taskQuery);
+        await pool.query(taskQuery);
 
-      // Create the exact SLA warning notification format the user described
-      const query = `
+        // Create the exact SLA warning notification format the user described
+        const query = `
         INSERT INTO finops_activity_log (action, task_id, subtask_id, user_name, details, timestamp)
         VALUES ($1, $2, $3, $4, $5, NOW() - INTERVAL '57 minutes')
         RETURNING *
       `;
 
-      const result = await pool.query(query, [
-        "sla_alert",
-        6,
-        1,
-        "System",
-        "FinOps: sla warning Task starting in 10 minutes - prepare for execution medium RECONCILIATION - DAILY SETTLEMENT PROCESS Enterprise Banking Solutions Maria Garcia",
-      ]);
+        const result = await pool.query(query, [
+          "sla_alert",
+          6,
+          1,
+          "System",
+          "FinOps: sla warning Task starting in 10 minutes - prepare for execution medium RECONCILIATION - DAILY SETTLEMENT PROCESS Enterprise Banking Solutions Maria Garcia",
+        ]);
 
-      // Insert subtask data for MASTER AND VISA FILE VALIDATION
-      const subtaskQuery = `
+        // Insert subtask data for MASTER AND VISA FILE VALIDATION
+        const subtaskQuery = `
         INSERT INTO finops_subtasks (task_id, name, sla_hours, sla_minutes, status, assigned_to)
         SELECT 6, 'MASTER AND VISA FILE VALIDATION', 1, 0, 'pending', 'Maria Garcia'
         WHERE NOT EXISTS (
@@ -970,35 +973,41 @@ router.post("/test/create-enterprise-banking-sla", async (req: Request, res: Res
         )
       `;
 
-      await pool.query(subtaskQuery);
+        await pool.query(subtaskQuery);
 
-      res.json({
-        message: "Enterprise Banking SLA warning notification created successfully!",
-        notification: result.rows[0],
-        description: "FinOps: sla warning Task starting in 10 minutes - prepare for execution",
-        task_details: "RECONCILIATION - DAILY SETTLEMENT PROCESS",
-        client: "Enterprise Banking Solutions",
-        assigned_to: "Maria Garcia",
-        subtask: "MASTER AND VISA FILE VALIDATION",
-        reporting_managers: "Robert Chen",
-        priority: "medium",
-        created_57_minutes_ago: true,
-        timestamp: new Date().toISOString(),
-      });
-    } else {
-      res.json({
-        message:
-          "Database unavailable - would create Enterprise Banking SLA warning notification in production",
-        timestamp: new Date().toISOString(),
+        res.json({
+          message:
+            "Enterprise Banking SLA warning notification created successfully!",
+          notification: result.rows[0],
+          description:
+            "FinOps: sla warning Task starting in 10 minutes - prepare for execution",
+          task_details: "RECONCILIATION - DAILY SETTLEMENT PROCESS",
+          client: "Enterprise Banking Solutions",
+          assigned_to: "Maria Garcia",
+          subtask: "MASTER AND VISA FILE VALIDATION",
+          reporting_managers: "Robert Chen",
+          priority: "medium",
+          created_57_minutes_ago: true,
+          timestamp: new Date().toISOString(),
+        });
+      } else {
+        res.json({
+          message:
+            "Database unavailable - would create Enterprise Banking SLA warning notification in production",
+          timestamp: new Date().toISOString(),
+        });
+      }
+    } catch (error) {
+      console.error(
+        "Error creating Enterprise Banking SLA warning notification:",
+        error,
+      );
+      res.status(500).json({
+        error: "Failed to create Enterprise Banking SLA warning notification",
+        message: error.message,
       });
     }
-  } catch (error) {
-    console.error("Error creating Enterprise Banking SLA warning notification:", error);
-    res.status(500).json({
-      error: "Failed to create Enterprise Banking SLA warning notification",
-      message: error.message,
-    });
-  }
-});
+  },
+);
 
 export default router;
