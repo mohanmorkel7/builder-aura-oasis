@@ -1310,4 +1310,176 @@ router.get("/test/overdue-check", async (req: Request, res: Response) => {
   }
 });
 
+// Test endpoint to create pending status notification like user described
+router.post("/test/create-pending-check", async (req: Request, res: Response) => {
+  try {
+    if (await isDatabaseAvailable()) {
+      console.log("Creating pending status notification for Check task...");
+
+      // Ensure task 16 exists based on user's data
+      const checkTaskQuery = `
+        SELECT id FROM finops_tasks WHERE id = 16
+      `;
+
+      const taskExists = await pool.query(checkTaskQuery);
+
+      if (taskExists.rows.length === 0) {
+        console.log("Task 16 doesn't exist, creating it...");
+        const createTaskQuery = `
+          INSERT INTO finops_tasks (id, task_name, description, assigned_to, reporting_managers, escalation_managers, effective_from, duration, is_active, status, created_by, client_name)
+          VALUES (16, 'Check', 'check', 'Sanjay Kumar', '["Sarumathi Manickam", "Vishnu Vardhan"]'::jsonb, '["Harini NL", "Vishal S"]'::jsonb, '2025-08-23', 'daily', true, 'active', 1, 'PaySwiff')
+          ON CONFLICT (id) DO UPDATE SET
+            task_name = EXCLUDED.task_name,
+            assigned_to = EXCLUDED.assigned_to,
+            client_name = EXCLUDED.client_name
+        `;
+
+        await pool.query(createTaskQuery);
+      }
+
+      // Ensure subtask 29 exists
+      const checkSubtaskQuery = `
+        SELECT id FROM finops_subtasks WHERE id = 29
+      `;
+
+      const subtaskExists = await pool.query(checkSubtaskQuery);
+
+      if (subtaskExists.rows.length === 0) {
+        console.log("Subtask 29 doesn't exist, creating it...");
+        const createSubtaskQuery = `
+          INSERT INTO finops_subtasks (id, task_id, name, description, start_time, status, assigned_to)
+          VALUES (29, 16, 'test check', 'test', '18:15:00', 'pending', 'Sanjay Kumar')
+          ON CONFLICT (id) DO UPDATE SET
+            name = EXCLUDED.name,
+            status = EXCLUDED.status,
+            assigned_to = EXCLUDED.assigned_to
+        `;
+
+        await pool.query(createSubtaskQuery);
+      }
+
+      // Create the pending status notification exactly as user described
+      const query = `
+        INSERT INTO finops_activity_log (action, task_id, subtask_id, user_name, details, timestamp)
+        VALUES ($1, $2, $3, $4, $5, NOW())
+        RETURNING *
+      `;
+
+      const result = await pool.query(query, [
+        "status_changed",
+        16,
+        29,
+        "System",
+        "Check Active Pending check Assigned: Sanjay Kumar daily 0/1 completed Starts: 06:15 PM Edit Subtasks (0/1 completed) test check Start: 06:15 PM Pending Status • need to start",
+      ]);
+
+      res.json({
+        message: "Pending status notification created successfully!",
+        notification: result.rows[0],
+        description: "Check Active Pending check - Starts: 06:15 PM Pending Status • need to start",
+        task_details: "Check",
+        client: "PaySwiff",
+        assigned_to: "Sanjay Kumar",
+        subtask: "test check",
+        status: "Pending",
+        action_needed: "need to start",
+        created_now: true,
+        timestamp: new Date().toISOString(),
+      });
+    } else {
+      res.json({
+        message: "Database unavailable - would create pending status notification in production",
+        timestamp: new Date().toISOString(),
+      });
+    }
+  } catch (error) {
+    console.error("Error creating pending status notification:", error);
+    res.status(500).json({
+      error: "Failed to create pending status notification",
+      message: error.message,
+    });
+  }
+});
+
+// Check what's actually in the activity log for Check task (ID 16)
+router.get("/test/check-task-activity", async (req: Request, res: Response) => {
+  try {
+    if (await isDatabaseAvailable()) {
+      const query = `
+        SELECT
+          fal.id,
+          fal.task_id,
+          fal.subtask_id,
+          fal.action,
+          fal.user_name,
+          fal.details,
+          fal.timestamp,
+          ft.task_name,
+          ft.assigned_to,
+          ft.client_name,
+          fs.name as subtask_name,
+          fs.status as subtask_status,
+          CASE
+            WHEN fal.action = 'delay_reported' THEN 'task_delayed'
+            WHEN fal.action = 'overdue_notification_sent' THEN 'sla_overdue'
+            WHEN fal.action = 'completion_notification_sent' THEN 'task_completed'
+            WHEN fal.action = 'sla_alert' THEN 'sla_warning'
+            WHEN fal.action = 'escalation_required' THEN 'escalation'
+            WHEN LOWER(fal.details) LIKE '%overdue%' THEN 'sla_overdue'
+            WHEN fal.action IN ('status_changed', 'task_status_changed') AND LOWER(fal.details) LIKE '%overdue%' THEN 'sla_overdue'
+            WHEN fal.action IN ('status_changed', 'task_status_changed') AND LOWER(fal.details) LIKE '%completed%' THEN 'task_completed'
+            WHEN LOWER(fal.details) LIKE '%starting in%' OR LOWER(fal.details) LIKE '%sla warning%' THEN 'sla_warning'
+            WHEN LOWER(fal.details) LIKE '%pending%' AND LOWER(fal.details) LIKE '%need to start%' THEN 'task_pending'
+            ELSE 'daily_reminder'
+          END as notification_type,
+          CASE
+            WHEN fal.action = 'delay_reported' OR fal.action = 'overdue_notification_sent' OR LOWER(fal.details) LIKE '%overdue%' THEN 'critical'
+            WHEN fal.action = 'completion_notification_sent' THEN 'low'
+            WHEN fal.action = 'sla_alert' OR LOWER(fal.details) LIKE '%starting in%' OR LOWER(fal.details) LIKE '%sla warning%' THEN 'high'
+            WHEN fal.action = 'escalation_required' THEN 'critical'
+            WHEN LOWER(fal.details) LIKE '%pending%' AND LOWER(fal.details) LIKE '%need to start%' THEN 'medium'
+            ELSE 'medium'
+          END as notification_priority
+        FROM finops_activity_log fal
+        LEFT JOIN finops_tasks ft ON fal.task_id = ft.id
+        LEFT JOIN finops_subtasks fs ON fal.subtask_id = fs.id
+        WHERE fal.task_id = 16 OR ft.task_name ILIKE '%check%'
+        ORDER BY fal.timestamp DESC
+      `;
+
+      const result = await pool.query(query);
+
+      // Filter pending and need to start patterns
+      const pendingNotifications = result.rows.filter(
+        (row) =>
+          row.details?.toLowerCase().includes("pending") ||
+          row.details?.toLowerCase().includes("need to start")
+      );
+
+      res.json({
+        message: "Check task activity log analysis",
+        task_id: 16,
+        task_name: "Check",
+        total_activity_records: result.rows.length,
+        pending_pattern_matches: pendingNotifications.length,
+        pending_notifications: pendingNotifications,
+        all_activity: result.rows,
+        note: "Looking for 'pending' and 'need to start' patterns in details",
+        timestamp: new Date().toISOString(),
+      });
+    } else {
+      res.json({
+        message: "Database unavailable",
+        timestamp: new Date().toISOString(),
+      });
+    }
+  } catch (error) {
+    console.error("Error checking task activity:", error);
+    res.status(500).json({
+      error: "Failed to check task activity",
+      message: error.message,
+    });
+  }
+});
+
 export default router;
