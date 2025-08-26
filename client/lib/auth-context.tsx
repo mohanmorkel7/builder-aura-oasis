@@ -276,9 +276,9 @@ export const AuthProvider = React.memo(function AuthProvider({
           role: response.user.role,
         };
 
-        setUser(userData);
+        safeSetUser(userData);
         localStorage.setItem("banani_user", JSON.stringify(userData));
-        setIsLoading(false);
+        safeSetIsLoading(false);
         return true;
       }
     } catch (error: any) {
