@@ -90,6 +90,15 @@ const extractNameFromValue = (value: string): string => {
   return match ? match[1] : value;
 };
 
+// Helper function to convert name to "Name (email)" format
+const convertNameToValueFormat = (name: string, users: any[]): string => {
+  if (name.includes('(') && name.includes(')')) {
+    return name; // Already in new format
+  }
+  const user = users.find(u => `${u.first_name} ${u.last_name}` === name);
+  return user ? `${name} (${user.email || 'no-email'})` : `${name} (no-email)`;
+};
+
 // Time conversion utilities for AM/PM format
 const convertTo12Hour = (time24: string): { time: string; period: string } => {
   if (!time24) return { time: "", period: "AM" };
@@ -853,6 +862,9 @@ export default function ClientBasedFinOpsTaskManager() {
 
     const taskData = {
       ...taskForm,
+      assigned_to: taskForm.assigned_to.map(extractNameFromValue),
+      reporting_managers: taskForm.reporting_managers.map(extractNameFromValue),
+      escalation_managers: taskForm.escalation_managers.map(extractNameFromValue),
       client_name: selectedClientData?.company_name || "",
       created_by: user?.id || 1,
     };
@@ -871,12 +883,12 @@ export default function ClientBasedFinOpsTaskManager() {
       description: task.description || "",
       client_id: task.client_id?.toString() || "",
       assigned_to: Array.isArray(task.assigned_to)
-        ? task.assigned_to
+        ? task.assigned_to.map(name => convertNameToValueFormat(name, users))
         : task.assigned_to
-          ? [task.assigned_to]
+          ? [convertNameToValueFormat(task.assigned_to, users)]
           : [], // Handle both array and string
-      reporting_managers: task.reporting_managers || [],
-      escalation_managers: task.escalation_managers || [],
+      reporting_managers: (task.reporting_managers || []).map(name => convertNameToValueFormat(name, users)),
+      escalation_managers: (task.escalation_managers || []).map(name => convertNameToValueFormat(name, users)),
       effective_from:
         task.effective_from || new Date().toISOString().split("T")[0],
       duration: task.duration || "daily",
