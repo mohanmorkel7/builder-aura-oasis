@@ -282,19 +282,23 @@ const transformDbNotifications = (
     const transformed = {
       id: dbNotif.id.toString(),
       type: notificationType,
-      title: realTimeDetails?.includes("FinOps: sla warning")
-        ? realTimeDetails
-        : realTimeDetails?.includes("SLA Warning - ") && realTimeDetails?.includes("min remaining")
+      title: realTimeTitle && realTimeTitle !== dbNotif.details
+        ? realTimeTitle
+        : realTimeDetails?.includes("FinOps: sla warning")
           ? realTimeDetails
-          : realTimeDetails?.includes("Subtasks (0/1 completed)")
-            ? realTimeDetails.split("Start:")[0].trim()
-            : realTimeDetails?.includes("CLEARING - FILE TRANSFER AND VALIDATION")
-              ? "CLEARING - FILE TRANSFER AND VALIDATION"
-              : startTime
-                ? `Task (Start: ${startTime})`
-                : dbNotif.action
-                  ? `FinOps: ${dbNotif.action.replace(/_/g, " ")}`
-                  : "FinOps Notification",
+          : realTimeDetails?.includes("SLA Warning - ") && realTimeDetails?.includes("min remaining")
+            ? realTimeDetails
+            : realTimeDetails?.includes("Overdue by")
+              ? realTimeTitle || `SLA Overdue - ${overdueMinutes} min overdue`
+              : realTimeDetails?.includes("Subtasks (0/1 completed)")
+                ? realTimeDetails.split("Start:")[0].trim()
+                : realTimeDetails?.includes("CLEARING - FILE TRANSFER AND VALIDATION")
+                  ? "CLEARING - FILE TRANSFER AND VALIDATION"
+                  : startTime
+                    ? `Task (Start: ${startTime})`
+                    : dbNotif.action
+                      ? `FinOps: ${dbNotif.action.replace(/_/g, " ")}`
+                      : "FinOps Notification",
       message: realTimeDetails || "",
       task_name:
         dbNotif.task_name ||
