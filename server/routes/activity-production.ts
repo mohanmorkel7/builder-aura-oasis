@@ -458,14 +458,20 @@ router.get("/:id", async (req: Request, res: Response) => {
       const id = req.params.id;
 
       const query = `
-        SELECT 
-          al.*,
-          u.first_name || ' ' || u.last_name as user_name,
-          c.name as client_name
-        FROM activity_logs al
-        LEFT JOIN users u ON al.user_id = u.id
-        LEFT JOIN clients c ON al.client_id = c.id
-        WHERE al.id = $1
+        SELECT
+          fal.id,
+          fal.task_id as entity_id,
+          CASE WHEN fal.subtask_id IS NOT NULL THEN 'subtask' ELSE 'task' END as entity_type,
+          COALESCE(fs.name, ft.task_name) as entity_name,
+          fal.action,
+          fal.user_name,
+          fal.details,
+          fal.timestamp,
+          ft.client_name
+        FROM finops_activity_log fal
+        LEFT JOIN finops_tasks ft ON fal.task_id = ft.id
+        LEFT JOIN finops_subtasks fs ON fal.subtask_id = fs.id
+        WHERE fal.id = $1
       `;
 
       const result = await pool.query(query, [id]);
