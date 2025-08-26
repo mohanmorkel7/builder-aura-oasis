@@ -228,11 +228,17 @@ export const AuthProvider = React.memo(function AuthProvider({
       setIsLoading(false);
     };
 
-    // Only skip during actual HMR updates, not page refreshes
-    if (isHMR && import.meta.hot?.data.skip) {
-      console.log("Skipping auth initialization during HMR update");
-      setIsLoading(false);
-      return;
+    // Only skip during actual HMR updates, not page refreshes - with error handling
+    if (isHMR) {
+      try {
+        if (import.meta.hot?.data?.skip) {
+          console.log("Skipping auth initialization during HMR update");
+          setIsLoading(false);
+          return;
+        }
+      } catch (error) {
+        console.warn("HMR skip check failed (safe to ignore):", error);
+      }
     }
 
     // Load stored user immediately for page refreshes
