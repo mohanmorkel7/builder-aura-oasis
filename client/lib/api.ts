@@ -87,17 +87,28 @@ export class ApiClient {
       let response: Response;
 
       try {
-        // Store original fetch in case it gets overridden by third-party scripts
-        const originalFetch = window.fetch.bind(window);
+        // Detect FullStory interference
+        const isFullStoryActive = typeof window !== 'undefined' &&
+          (window.FS || document.querySelector('script[src*="fullstory"]') ||
+           window.fetch.toString().includes('fullstory') ||
+           window.fetch.toString().includes('fs.js'));
 
-        // Add timeout to prevent hanging requests
-        const timeoutMs = 8000; // 8 seconds
-        const timeoutPromise = new Promise<never>((_, reject) => {
-          setTimeout(() => reject(new Error("Request timeout")), timeoutMs);
-        });
+        if (isFullStoryActive) {
+          console.warn("🚨 FullStory detected - using XMLHttpRequest fallback");
+          response = await this.xmlHttpRequestFallback(url, config);
+        } else {
+          // Store original fetch in case it gets overridden by third-party scripts
+          const originalFetch = window.fetch.bind(window);
 
-        const fetchPromise = originalFetch(url, config);
-        response = await Promise.race([fetchPromise, timeoutPromise]);
+          // Add timeout to prevent hanging requests
+          const timeoutMs = 8000; // 8 seconds
+          const timeoutPromise = new Promise<never>((_, reject) => {
+            setTimeout(() => reject(new Error("Request timeout")), timeoutMs);
+          });
+
+          const fetchPromise = originalFetch(url, config);
+          response = await Promise.race([fetchPromise, timeoutPromise]);
+        }
       } catch (fetchError) {
         console.error(
           "Primary fetch failed for URL:",
