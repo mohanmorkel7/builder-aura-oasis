@@ -95,7 +95,7 @@ const transformDbNotifications = (
     const startTimeMatch = dbNotif.details?.match(/Start: (\d+:\d+ [AP]M)/i);
     const startTime = startTimeMatch ? startTimeMatch[1] : undefined;
 
-    // Calculate real-time remaining minutes for SLA warnings
+    // Calculate real-time remaining minutes for SLA warnings with improved precision
     let realTimeDetails = dbNotif.details;
     let realTimeTitle = dbNotif.details;
     let realTimeSlaRemaining = undefined;
@@ -104,8 +104,15 @@ const transformDbNotifications = (
       if (originalMinMatch && dbNotif.created_at) {
         const originalMinutes = parseInt(originalMinMatch[1]);
         const notificationTime = new Date(dbNotif.created_at);
-        const minutesPassed = Math.floor((currentTime.getTime() - notificationTime.getTime()) / 60000);
-        const currentRemainingMinutes = Math.max(0, originalMinutes - minutesPassed);
+
+        // More precise calculation with seconds consideration
+        const timeDiffMs = currentTime.getTime() - notificationTime.getTime();
+        const minutesPassed = Math.floor(timeDiffMs / 60000);
+        const secondsPassed = Math.floor((timeDiffMs % 60000) / 1000);
+
+        // Calculate current remaining minutes with better rounding
+        const exactRemainingMinutes = originalMinutes - (timeDiffMs / 60000);
+        const currentRemainingMinutes = Math.max(0, Math.ceil(exactRemainingMinutes));
 
         // Update the details and title with real-time calculation
         realTimeDetails = dbNotif.details.replace(
@@ -121,7 +128,7 @@ const transformDbNotifications = (
           realTimeSlaRemaining = `${currentRemainingMinutes} min remaining`;
         }
 
-        console.log(`🕒 Real-time SLA calculation: ${originalMinutes} min → ${currentRemainingMinutes} min (${minutesPassed} min passed)`);
+        console.log(`🕒 Real-time SLA calculation (precise): ${originalMinutes} min → ${currentRemainingMinutes} min (${minutesPassed}:${secondsPassed.toString().padStart(2, '0')} elapsed, exact: ${exactRemainingMinutes.toFixed(2)})`);
       }
     }
 
@@ -487,7 +494,7 @@ export default function FinOpsNotifications() {
     refetchInterval: 60000, // Refresh every 60 seconds (reduced from 30s)
     staleTime: 30000, // Consider data stale after 30 seconds
     retry: (failureCount, error) => {
-      console.log(`���� Retry attempt ${failureCount} for notifications`);
+      console.log(`🔄 Retry attempt ${failureCount} for notifications`);
 
       // Don't retry timeout errors immediately
       if (error instanceof Error && error.message.includes("timeout")) {
