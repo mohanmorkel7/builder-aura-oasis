@@ -373,65 +373,79 @@ export class ApiClient {
     url: string,
     config: RequestInit,
   ): Promise<Response> {
+    console.log("🔧 Using XMLHttpRequest fallback for:", url);
+
     return new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.timeout = 45000; // 45 second timeout
+      try {
+        const xhr = new XMLHttpRequest();
+        xhr.timeout = 15000; // Shorter timeout for faster fallback
 
-      xhr.open(config.method || "GET", url);
+        // Handle CORS for cross-origin requests
+        if (url.includes('://') && !url.startsWith(window.location.origin)) {
+          xhr.withCredentials = false;
+        }
 
-      // Set headers
-      if (config.headers) {
-        Object.entries(config.headers).forEach(([key, value]) => {
-          try {
-            xhr.setRequestHeader(key, value as string);
-          } catch (headerError) {
-            console.log(`Could not set header ${key}:`, headerError);
-          }
-        });
-      }
+        xhr.open(config.method || "GET", url, true);
 
-      xhr.onload = () => {
-        try {
-          // Parse response headers
-          const headers = new Headers();
-          const headerLines = xhr.getAllResponseHeaders().split("\r\n");
-          headerLines.forEach((line) => {
-            const parts = line.split(": ");
-            if (parts.length === 2) {
-              headers.append(parts[0], parts[1]);
+        // Set headers with better error handling
+        if (config.headers) {
+          Object.entries(config.headers).forEach(([key, value]) => {
+            try {
+              // Skip problematic headers that XHR handles automatically
+              if (!['content-length', 'host', 'origin', 'referer'].includes(key.toLowerCase())) {
+                xhr.setRequestHeader(key, value as string);
+              }
+            } catch (headerError) {
+              console.warn(`⚠️ Could not set header ${key}:`, headerError);
             }
           });
-
-          const response = new Response(xhr.responseText, {
-            status: xhr.status,
-            statusText: xhr.statusText,
-            headers: headers,
-          });
-          resolve(response);
-        } catch (responseError) {
-          console.error("Error creating response from XHR:", responseError);
-          reject(new Error("Failed to process XMLHttpRequest response"));
         }
-      };
 
-      xhr.onerror = () => {
-        reject(new Error("XMLHttpRequest network error"));
-      };
+        xhr.onload = () => {
+          try {
+            console.log("✅ XMLHttpRequest success:", xhr.status, xhr.statusText);
 
-      xhr.ontimeout = () => {
-        reject(new Error("XMLHttpRequest timeout"));
-      };
+            // Parse response headers
+            const headers = new Headers();
+            const headerLines = xhr.getAllResponseHeaders().split("\r\n");
+            headerLines.forEach((line) => {
+              const parts = line.split(": ");
+              if (parts.length === 2) {
+                headers.append(parts[0], parts[1]);
+              }
+            });
 
-      xhr.onabort = () => {
-        reject(new Error("XMLHttpRequest aborted"));
-      };
+            const response = new Response(xhr.responseText, {
+              status: xhr.status,
+              statusText: xhr.statusText,
+              headers: headers,
+            });
+            resolve(response);
+          } catch (responseError) {
+            console.error("❌ Error creating response from XHR:", responseError);
+            reject(new Error("Failed to process XMLHttpRequest response"));
+          }
+        };
 
-      try {
+        xhr.onerror = (e) => {
+          console.error("❌ XMLHttpRequest network error:", e);
+          reject(new Error("XMLHttpRequest network error"));
+        };
+
+        xhr.ontimeout = () => {
+          console.error("❌ XMLHttpRequest timeout");
+          reject(new Error("XMLHttpRequest timeout"));
+        };
+
+        xhr.onabort = () => {
+          console.error("❌ XMLHttpRequest aborted");
+          reject(new Error("XMLHttpRequest aborted"));
+        };
+
         xhr.send((config.body as string) || null);
-      } catch (sendError) {
-        reject(
-          new Error(`Failed to send XMLHttpRequest: ${sendError.message}`),
-        );
+      } catch (setupError) {
+        console.error("❌ Failed to setup XMLHttpRequest:", setupError);
+        reject(new Error(`Failed to setup XMLHttpRequest: ${setupError.message}`));
       }
     });
   }
