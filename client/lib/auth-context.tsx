@@ -542,14 +542,14 @@ export const AuthProvider = React.memo(function AuthProvider({
           role: "admin",
         };
 
-        setUser(userData);
+        safeSetUser(userData);
         localStorage.setItem("banani_user", JSON.stringify(userData));
-        setIsLoading(false);
+        safeSetIsLoading(false);
         return true;
       }
     }
 
-    setIsLoading(false);
+    safeSetIsLoading(false);
     return false;
   };
 
