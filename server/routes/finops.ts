@@ -324,7 +324,7 @@ router.post("/tasks", async (req: Request, res: Response) => {
       client_id,
       client_name,
       assigned_to,
-      created_by
+      created_by,
     });
 
     if (await isDatabaseAvailable()) {
@@ -416,7 +416,7 @@ router.post("/tasks", async (req: Request, res: Response) => {
       console.log("✅ Mock task created with client info:", {
         id: newTask.id,
         client_id: newTask.client_id,
-        client_name: newTask.client_name
+        client_name: newTask.client_name,
       });
       res.status(201).json({
         id: newTask.id,
@@ -1624,7 +1624,10 @@ router.delete("/clients/:id", async (req: Request, res: Response) => {
 // Create new FinOps task
 router.post("/tasks", async (req: Request, res: Response) => {
   try {
-    console.log("🔥 POST /tasks called with body:", JSON.stringify(req.body, null, 2));
+    console.log(
+      "🔥 POST /tasks called with body:",
+      JSON.stringify(req.body, null, 2),
+    );
 
     const {
       task_name,
@@ -1646,7 +1649,7 @@ router.post("/tasks", async (req: Request, res: Response) => {
       client_id,
       client_name,
       assigned_to,
-      created_by
+      created_by,
     });
 
     if (
@@ -1674,7 +1677,7 @@ router.post("/tasks", async (req: Request, res: Response) => {
       console.log("🔥 Processed for DB:", {
         clientIdInt,
         assignedToStr,
-        client_name
+        client_name,
       });
 
       // Create the main task
@@ -1707,7 +1710,7 @@ router.post("/tasks", async (req: Request, res: Response) => {
         id: newTask.id,
         task_name: newTask.task_name,
         client_id: newTask.client_id,
-        client_name: newTask.client_name
+        client_name: newTask.client_name,
       });
 
       // Create subtasks if provided
