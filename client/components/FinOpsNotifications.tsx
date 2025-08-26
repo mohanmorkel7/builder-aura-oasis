@@ -423,7 +423,7 @@ export default function FinOpsNotifications() {
   React.useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
-    }, 60000); // Update every minute
+    }, 30000); // Update every 30 seconds for better real-time responsiveness
 
     return () => clearInterval(timer);
   }, []);
