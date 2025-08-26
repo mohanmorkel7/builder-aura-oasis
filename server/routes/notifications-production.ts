@@ -1094,6 +1094,62 @@ router.post(
   },
 );
 
+// Test endpoint to verify notification categorization
+router.get("/test/categorization", async (req: Request, res: Response) => {
+  try {
+    if (await isDatabaseAvailable()) {
+      const query = `
+        SELECT
+          fal.id,
+          fal.action,
+          fal.details,
+          CASE
+            WHEN fal.action = 'delay_reported' THEN 'task_delayed'
+            WHEN fal.action = 'overdue_notification_sent' THEN 'sla_overdue'
+            WHEN fal.action = 'completion_notification_sent' THEN 'task_completed'
+            WHEN fal.action = 'sla_alert' THEN 'sla_warning'
+            WHEN fal.action = 'escalation_required' THEN 'escalation'
+            WHEN fal.action IN ('status_changed', 'task_status_changed') AND fal.details LIKE '%completed%' THEN 'task_completed'
+            WHEN fal.action IN ('status_changed', 'task_status_changed') AND fal.details LIKE '%overdue%' THEN 'sla_overdue'
+            WHEN fal.details LIKE '%overdue%' THEN 'sla_overdue'
+            WHEN fal.details LIKE '%starting in%' OR fal.details LIKE '%sla warning%' THEN 'sla_warning'
+            ELSE 'daily_reminder'
+          END as computed_type,
+          CASE
+            WHEN fal.action = 'delay_reported' OR fal.action = 'overdue_notification_sent' OR fal.details LIKE '%overdue%' THEN 'critical'
+            WHEN fal.action = 'completion_notification_sent' THEN 'low'
+            WHEN fal.action = 'sla_alert' OR fal.details LIKE '%starting in%' OR fal.details LIKE '%sla warning%' THEN 'high'
+            WHEN fal.action = 'escalation_required' THEN 'critical'
+            ELSE 'medium'
+          END as computed_priority
+        FROM finops_activity_log fal
+        WHERE fal.timestamp >= NOW() - INTERVAL '24 hours'
+        ORDER BY fal.timestamp DESC
+      `;
+
+      const result = await pool.query(query);
+
+      res.json({
+        message: "Notification categorization test",
+        total_records: result.rows.length,
+        notifications: result.rows,
+        timestamp: new Date().toISOString(),
+      });
+    } else {
+      res.json({
+        message: "Database unavailable",
+        timestamp: new Date().toISOString(),
+      });
+    }
+  } catch (error) {
+    console.error("Categorization test error:", error);
+    res.status(500).json({
+      error: "Categorization test failed",
+      message: error.message,
+    });
+  }
+});
+
 // Test endpoint to check query performance
 router.get("/test/performance", async (req: Request, res: Response) => {
   try {
