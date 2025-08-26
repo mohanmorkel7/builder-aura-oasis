@@ -1609,4 +1609,160 @@ router.delete("/test/clean-duplicates", async (req: Request, res: Response) => {
   }
 });
 
+// Search for SLA warning patterns specifically
+router.get("/test/search-sla-warnings", async (req: Request, res: Response) => {
+  try {
+    if (await isDatabaseAvailable()) {
+      const query = `
+        SELECT
+          fal.id,
+          fal.task_id,
+          fal.subtask_id,
+          fal.action,
+          fal.user_name,
+          fal.details,
+          fal.timestamp,
+          ft.task_name,
+          ft.client_name,
+          fs.name as subtask_name,
+          CASE
+            WHEN fal.action = 'delay_reported' THEN 'task_delayed'
+            WHEN fal.action = 'overdue_notification_sent' THEN 'sla_overdue'
+            WHEN fal.action = 'completion_notification_sent' THEN 'task_completed'
+            WHEN fal.action = 'sla_alert' THEN 'sla_warning'
+            WHEN fal.action = 'escalation_required' THEN 'escalation'
+            WHEN LOWER(fal.details) LIKE '%overdue%' THEN 'sla_overdue'
+            WHEN fal.action IN ('status_changed', 'task_status_changed') AND LOWER(fal.details) LIKE '%overdue%' THEN 'sla_overdue'
+            WHEN fal.action IN ('status_changed', 'task_status_changed') AND LOWER(fal.details) LIKE '%completed%' THEN 'task_completed'
+            WHEN LOWER(fal.details) LIKE '%starting in%' OR LOWER(fal.details) LIKE '%sla warning%' THEN 'sla_warning'
+            WHEN LOWER(fal.details) LIKE '%min remaining%' THEN 'sla_warning'
+            WHEN LOWER(fal.details) LIKE '%pending%' AND LOWER(fal.details) LIKE '%need to start%' THEN 'task_pending'
+            WHEN LOWER(fal.details) LIKE '%pending status%' THEN 'task_pending'
+            ELSE 'daily_reminder'
+          END as computed_type
+        FROM finops_activity_log fal
+        LEFT JOIN finops_tasks ft ON fal.task_id = ft.id
+        LEFT JOIN finops_subtasks fs ON fal.subtask_id = fs.id
+        WHERE LOWER(fal.details) LIKE '%sla warning%'
+        OR LOWER(fal.details) LIKE '%min remaining%'
+        OR LOWER(fal.details) LIKE '%need to start%'
+        OR fal.action = 'sla_alert'
+        ORDER BY fal.timestamp DESC
+      `;
+
+      const result = await pool.query(query);
+
+      res.json({
+        message: "SLA warning pattern search",
+        total_found: result.rows.length,
+        sla_warnings: result.rows,
+        search_patterns: [
+          "sla warning",
+          "min remaining",
+          "need to start",
+          "action=sla_alert"
+        ],
+        timestamp: new Date().toISOString(),
+      });
+    } else {
+      res.json({
+        message: "Database unavailable",
+        timestamp: new Date().toISOString(),
+      });
+    }
+  } catch (error) {
+    console.error("Error searching SLA warnings:", error);
+    res.status(500).json({
+      error: "Failed to search SLA warnings",
+      message: error.message,
+    });
+  }
+});
+
+// Create SLA warning notification with 14 min remaining pattern
+router.post("/test/create-sla-warning-14min", async (req: Request, res: Response) => {
+  try {
+    if (await isDatabaseAvailable()) {
+      console.log("Creating SLA warning notification with 14 min remaining...");
+
+      // Ensure task 16 exists
+      const checkTaskQuery = `
+        SELECT id FROM finops_tasks WHERE id = 16
+      `;
+
+      const taskExists = await pool.query(checkTaskQuery);
+
+      if (taskExists.rows.length === 0) {
+        const createTaskQuery = `
+          INSERT INTO finops_tasks (id, task_name, description, assigned_to, reporting_managers, escalation_managers, effective_from, duration, is_active, status, created_by, client_name)
+          VALUES (16, 'Check', 'check', 'Sanjay Kumar', '["Sarumathi Manickam", "Vishnu Vardhan"]'::jsonb, '["Harini NL", "Vishal S"]'::jsonb, '2025-08-23', 'daily', true, 'active', 1, 'PaySwiff')
+          ON CONFLICT (id) DO UPDATE SET
+            task_name = EXCLUDED.task_name,
+            assigned_to = EXCLUDED.assigned_to,
+            client_name = EXCLUDED.client_name
+        `;
+
+        await pool.query(createTaskQuery);
+      }
+
+      // Check if this SLA warning already exists
+      const checkExistingQuery = `
+        SELECT id FROM finops_activity_log
+        WHERE task_id = $1
+        AND LOWER(details) LIKE '%sla warning%'
+        AND LOWER(details) LIKE '%14 min remaining%'
+        AND timestamp >= NOW() - INTERVAL '1 hour'
+      `;
+
+      const existingResult = await pool.query(checkExistingQuery, [16]);
+
+      if (existingResult.rows.length > 0) {
+        return res.json({
+          message: "SLA warning with 14 min remaining already exists",
+          existing_notification: existingResult.rows[0],
+          note: "Duplicate prevention - not creating new notification",
+          timestamp: new Date().toISOString(),
+        });
+      }
+
+      // Create the SLA warning notification
+      const query = `
+        INSERT INTO finops_activity_log (action, task_id, subtask_id, user_name, details, timestamp)
+        VALUES ($1, $2, $3, $4, $5, NOW())
+        RETURNING *
+      `;
+
+      const result = await pool.query(query, [
+        "sla_alert",
+        16,
+        29,
+        "System",
+        "SLA Warning - 14 min remaining • need to start",
+      ]);
+
+      res.json({
+        message: "SLA warning notification (14 min remaining) created successfully!",
+        notification: result.rows[0],
+        description: "SLA Warning - 14 min remaining • need to start",
+        task_details: "Check",
+        client: "PaySwiff",
+        assigned_to: "Sanjay Kumar",
+        created_now: true,
+        timestamp: new Date().toISOString(),
+      });
+    } else {
+      res.json({
+        message: "Database unavailable - would create SLA warning notification in production",
+        timestamp: new Date().toISOString(),
+      });
+    }
+  } catch (error) {
+    console.error("Error creating SLA warning notification:", error);
+    res.status(500).json({
+      error: "Failed to create SLA warning notification",
+      message: error.message,
+    });
+  }
+});
+
 export default router;
