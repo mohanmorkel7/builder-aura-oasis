@@ -222,17 +222,11 @@ export class ApiClient {
           }
         }
 
-        if (errorText) {
-          try {
-            const errorData = JSON.parse(errorText);
-            throw new Error(
-              errorData.error || `HTTP error! status: ${response.status}`,
-            );
-          } catch {
-            throw new Error(
-              `HTTP error! status: ${response.status} - ${errorText}`,
-            );
-          }
+        // Use already parsed error data or fall back to text
+        if (errorData && (errorData.error || errorData.message)) {
+          throw new Error(errorData.error || errorData.message);
+        } else if (errorText) {
+          throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
         } else {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
