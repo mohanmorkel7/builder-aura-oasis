@@ -1843,30 +1843,36 @@ export default function ClientBasedFinOpsTaskManager() {
                                   }
                                   isInline={true}
                                 />
-                                {slaWarning && (
+                                {(slaWarning || subtask.start_time) && (
                                   <Alert
                                     className={`mt-2 p-2 ${
-                                      slaWarning.type === "overdue"
+                                      slaWarning?.type === "overdue"
                                         ? "border-red-200 bg-red-50"
-                                        : "border-orange-200 bg-orange-50"
+                                        : slaWarning?.type === "warning"
+                                        ? "border-orange-200 bg-orange-50"
+                                        : "border-blue-200 bg-blue-50"
                                     }`}
                                   >
                                     <div className="flex items-center gap-1">
                                       <Clock
                                         className={`h-3 w-3 flex-shrink-0 ${
-                                          slaWarning.type === "overdue"
+                                          slaWarning?.type === "overdue"
                                             ? "text-red-600"
-                                            : "text-orange-600"
+                                            : slaWarning?.type === "warning"
+                                            ? "text-orange-600"
+                                            : "text-blue-600"
                                         }`}
                                       />
                                       <AlertDescription
                                         className={`text-xs ${
-                                          slaWarning.type === "overdue"
+                                          slaWarning?.type === "overdue"
                                             ? "text-red-700"
-                                            : "text-orange-700"
+                                            : slaWarning?.type === "warning"
+                                            ? "text-orange-700"
+                                            : "text-blue-700"
                                         }`}
                                       >
-                                        {slaWarning.message} •{" "}
+                                        {slaWarning?.message || "Status"} •{" "}
                                         {getTimeSinceStart(subtask.start_time)}
                                       </AlertDescription>
                                     </div>
