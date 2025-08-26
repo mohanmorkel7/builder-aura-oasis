@@ -620,7 +620,11 @@ export default function ClientBasedFinOpsTaskManager() {
   const clients = React.useMemo(() => {
     const uniqueClients = rawClients.filter(
       (client: any, index: number, arr: any[]) => {
-        const firstIndex = arr.findIndex((c: any) => c.id === client.id);
+        const clientName = client.company_name || client.client_name || `Client ${client.id}`;
+        const firstIndex = arr.findIndex((c: any) => {
+          const cName = c.company_name || c.client_name || `Client ${c.id}`;
+          return cName === clientName;
+        });
         return firstIndex === index;
       },
     );
@@ -634,6 +638,14 @@ export default function ClientBasedFinOpsTaskManager() {
       console.warn(
         "Duplicate clients detected and removed:",
         rawClients.length - uniqueClients.length,
+        "\nDuplicates:",
+        rawClients.filter((client: any, index: number) => {
+          const clientName = client.company_name || client.client_name || `Client ${client.id}`;
+          return !uniqueClients.some((uc: any) => {
+            const ucName = uc.company_name || uc.client_name || `Client ${uc.id}`;
+            return ucName === clientName && uc.id === client.id;
+          });
+        })
       );
     }
     return uniqueClients;
