@@ -1370,6 +1370,28 @@ router.post("/test/create-pending-check", async (req: Request, res: Response) =>
         await pool.query(createSubtaskQuery);
       }
 
+      // Check if this notification already exists to prevent duplicates
+      const checkExistingQuery = `
+        SELECT id FROM finops_activity_log
+        WHERE task_id = $1
+        AND subtask_id = $2
+        AND action = $3
+        AND LOWER(details) LIKE '%pending%'
+        AND LOWER(details) LIKE '%need to start%'
+        AND timestamp >= NOW() - INTERVAL '24 hours'
+      `;
+
+      const existingResult = await pool.query(checkExistingQuery, [16, 29, "status_changed"]);
+
+      if (existingResult.rows.length > 0) {
+        return res.json({
+          message: "Pending status notification already exists",
+          existing_notification: existingResult.rows[0],
+          note: "Duplicate prevention - not creating new notification",
+          timestamp: new Date().toISOString(),
+        });
+      }
+
       // Create the pending status notification exactly as user described
       const query = `
         INSERT INTO finops_activity_log (action, task_id, subtask_id, user_name, details, timestamp)
