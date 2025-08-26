@@ -1021,18 +1021,38 @@ export default function ClientBasedFinOpsTaskManager() {
       task_name: task.task_name || "",
       description: task.description || "",
       client_id: task.client_id?.toString() || "",
-      assigned_to: Array.isArray(task.assigned_to)
-        ? task.assigned_to.map((name) =>
-            convertNameToValueFormat(extractNameFromValue(name), users),
-          )
-        : task.assigned_to
-          ? [
-              convertNameToValueFormat(
-                extractNameFromValue(task.assigned_to),
-                users,
-              ),
-            ]
-          : [], // Handle both array and string
+      assigned_to: (() => {
+        console.log('🔍 Edit form - raw task.assigned_to:', JSON.stringify(task.assigned_to));
+
+        let assignedArray = [];
+
+        if (Array.isArray(task.assigned_to)) {
+          assignedArray = task.assigned_to;
+        } else if (task.assigned_to) {
+          // Extract and parse the assigned_to value
+          const extracted = extractNameFromValue(task.assigned_to);
+          console.log('🔄 Edit form - after extractNameFromValue:', extracted);
+
+          // Check if it contains comma-separated names
+          if (extracted.includes('","') || extracted.includes('", "') || extracted.includes(',')) {
+            // Split by various comma patterns and clean up
+            assignedArray = extracted
+              .split(/,\s*"?|",\s*"?|"\s*,\s*"?/)
+              .map(name => name.replace(/^"|"$/g, '').trim())
+              .filter(name => name.length > 0);
+            console.log('🔄 Edit form - split names:', assignedArray);
+          } else {
+            // Single name
+            assignedArray = [extracted];
+          }
+        }
+
+        const result = assignedArray.map((name) =>
+          convertNameToValueFormat(extractNameFromValue(name), users)
+        );
+        console.log('✅ Edit form - final assigned_to array:', result);
+        return result;
+      })(),
       reporting_managers: (task.reporting_managers || []).map((name) =>
         convertNameToValueFormat(extractNameFromValue(name), users),
       ),
