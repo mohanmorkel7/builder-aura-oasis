@@ -251,8 +251,8 @@ router.get(
         // Get total count for pagination
         const countQuery = `
         SELECT COUNT(*) as total
-        FROM activity_logs al
-        ${whereClause}
+        FROM finops_activity_log fal
+        WHERE 1=1 ${whereClause ? whereClause.replace('WHERE', 'AND') : ''}
       `;
 
         const countResult = await pool.query(countQuery, params.slice(0, -2)); // Remove limit and offset params
