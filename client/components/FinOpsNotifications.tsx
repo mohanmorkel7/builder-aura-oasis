@@ -55,6 +55,7 @@ interface FinOpsNotification {
     | "sla_overdue"
     | "task_delayed"
     | "task_completed"
+    | "task_pending"
     | "daily_reminder"
     | "escalation";
   title: string;
