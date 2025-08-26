@@ -123,12 +123,12 @@ const extractNameFromValue = (value: string, depth: number = 0): string => {
         const extracted = content.slice(1, -1); // Remove quotes
         console.log("✅ Manual extraction with quotes:", extracted);
         // Recursively parse in case there are more nested levels
-        return extractNameFromValue(extracted);
+        return extractNameFromValue(extracted, depth + 1);
       } else {
         // Handle unquoted content
         console.log("✅ Manual extraction without quotes:", content);
         // Recursively parse in case there are more nested levels
-        return extractNameFromValue(content);
+        return extractNameFromValue(content, depth + 1);
       }
     }
   }
