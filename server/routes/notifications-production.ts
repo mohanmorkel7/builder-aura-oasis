@@ -809,4 +809,46 @@ router.get("/debug/raw-data", async (req: Request, res: Response) => {
   }
 });
 
+// Create exact notification matching user's format
+router.post("/test/create-user-format", async (req: Request, res: Response) => {
+  try {
+    if (await isDatabaseAvailable()) {
+      console.log("Creating notification with user's exact format...");
+
+      // Create the exact notification format the user described
+      const query = `
+        INSERT INTO finops_activity_log (action, task_id, subtask_id, user_name, details, timestamp)
+        VALUES ($1, $2, $3, $4, $5, NOW() - INTERVAL '1 hour 8 minutes')
+        RETURNING *
+      `;
+
+      const result = await pool.query(query, [
+        'task_status_changed',
+        4,
+        4,
+        'System',
+        'Start: 04:00 PM Pending Overdue by 54 min'
+      ]);
+
+      res.json({
+        message: "User format notification created successfully!",
+        notification: result.rows[0],
+        description: "This should show: Start: 04:00 PM Pending Overdue by 54 min • 1h 8m ago",
+        timestamp: new Date().toISOString(),
+      });
+    } else {
+      res.json({
+        message: "Database unavailable - would create user format notification in production",
+        timestamp: new Date().toISOString(),
+      });
+    }
+  } catch (error) {
+    console.error("Error creating user format notification:", error);
+    res.status(500).json({
+      error: "Failed to create user format notification",
+      message: error.message,
+    });
+  }
+});
+
 export default router;
