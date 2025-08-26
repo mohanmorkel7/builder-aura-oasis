@@ -594,22 +594,22 @@ export default function FinOpsNotifications() {
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
   });
 
-  // Transform database notifications to match our interface or fallback to mock
+  // Transform database notifications - DATABASE ONLY (no mock fallback)
   const notifications = React.useMemo(() => {
-    console.log("🔍 Processing notifications data:", {
+    console.log("🔍 Processing notifications data (DATABASE-ONLY MODE):", {
       dbNotifications,
       hasError: !!error,
       isLoading,
       dbStructure: dbNotifications ? Object.keys(dbNotifications) : null,
     });
 
-    // If API call succeeded and we have a valid response structure
+    // Only use database data - no mock fallback
     if (
       dbNotifications &&
       typeof dbNotifications === "object" &&
       "notifications" in dbNotifications
     ) {
-      console.log("✅ Using real data from API", {
+      console.log("✅ Using REAL DATABASE data:", {
         notificationsArray: dbNotifications.notifications,
         arrayLength: dbNotifications.notifications?.length,
         pagination: dbNotifications.pagination,
@@ -621,25 +621,25 @@ export default function FinOpsNotifications() {
         dbNotifications.notifications.length > 0
       ) {
         console.log(
-          `📊 Transforming ${dbNotifications.notifications.length} real notifications`,
+          `📊 Transforming ${dbNotifications.notifications.length} database notifications`,
         );
         const transformed = transformDbNotifications(
           dbNotifications.notifications,
           currentTime,
         );
         console.log(
-          `✅ Transformation complete: ${transformed.length} notifications processed`,
+          `✅ Database transformation complete: ${transformed.length} notifications processed`,
         );
         return transformed;
       } else {
-        console.log("📭 Real API returned empty notifications array");
-        return []; // Real database but empty
+        console.log("📭 Database returned empty notifications array");
+        return []; // Database is empty - this is valid
       }
     }
 
-    // If we have an error or invalid response, fall back to mock data
-    console.log("🎭 Falling back to mock notifications due to API failure");
-    return mockNotifications;
+    // Return empty array if database is unavailable (no mock fallback)
+    console.log("❌ Database unavailable - showing empty notifications (database-only mode)");
+    return [];
   }, [dbNotifications, error, isLoading, currentTime]);
 
   // Manual sync function for debugging time gaps (defined after refetch is available)
