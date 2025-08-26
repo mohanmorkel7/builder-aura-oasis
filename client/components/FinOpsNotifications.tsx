@@ -269,9 +269,11 @@ export default function FinOpsNotifications() {
 
   // Transform database notifications to match our interface or fallback to mock
   const notifications =
-    dbNotifications.length > 0
-      ? transformDbNotifications(dbNotifications)
-      : mockNotifications;
+    dbNotifications && dbNotifications.notifications && dbNotifications.notifications.length > 0
+      ? transformDbNotifications(dbNotifications.notifications)
+      : dbNotifications && dbNotifications.notifications
+        ? [] // Real database but empty
+        : mockNotifications; // Fallback to mock only if API failed
 
   // Filter notifications
   const filteredNotifications = notifications.filter((notification) => {
