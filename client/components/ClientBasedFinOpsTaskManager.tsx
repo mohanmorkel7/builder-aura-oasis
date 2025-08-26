@@ -1027,10 +1027,10 @@ export default function ClientBasedFinOpsTaskManager() {
           ? [convertNameToValueFormat(extractNameFromValue(task.assigned_to), users)]
           : [], // Handle both array and string
       reporting_managers: (task.reporting_managers || []).map((name) =>
-        convertNameToValueFormat(name, users),
+        convertNameToValueFormat(extractNameFromValue(name), users),
       ),
       escalation_managers: (task.escalation_managers || []).map((name) =>
-        convertNameToValueFormat(name, users),
+        convertNameToValueFormat(extractNameFromValue(name), users),
       ),
       effective_from: task.effective_from
         ? new Date(task.effective_from).toISOString().split("T")[0]
