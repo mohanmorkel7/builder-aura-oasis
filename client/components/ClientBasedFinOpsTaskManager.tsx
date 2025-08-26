@@ -1910,14 +1910,17 @@ export default function ClientBasedFinOpsTaskManager() {
                               assignedToSearch.toLowerCase(),
                             );
                           })
-                          .map((user: any, index: number) => (
-                            <SelectItem
-                              key={`assigned-${user.id}-${index}`}
-                              value={`${user.first_name} ${user.last_name}`}
-                            >
-                              {user.first_name} {user.last_name}
-                            </SelectItem>
-                          ))}
+                          .map((user: any, index: number) => {
+                            const fullName = `${user.first_name} ${user.last_name}`;
+                            return (
+                              <SelectItem
+                                key={`assigned-to-${user.id}`}
+                                value={fullName}
+                              >
+                                {fullName}
+                              </SelectItem>
+                            );
+                          })}
                       </div>
                     </SelectContent>
                   </Select>
@@ -2051,14 +2054,17 @@ export default function ClientBasedFinOpsTaskManager() {
                               reportingManagerSearch.toLowerCase(),
                             );
                           })
-                          .map((user: any, index: number) => (
-                            <SelectItem
-                              key={`reporting-${user.id}-${index}`}
-                              value={`${user.first_name} ${user.last_name}`}
-                            >
-                              {user.first_name} {user.last_name}
-                            </SelectItem>
-                          ))}
+                          .map((user: any, index: number) => {
+                            const fullName = `${user.first_name} ${user.last_name}`;
+                            return (
+                              <SelectItem
+                                key={`reporting-manager-${user.id}`}
+                                value={fullName}
+                              >
+                                {fullName}
+                              </SelectItem>
+                            );
+                          })}
                       </div>
                     </SelectContent>
                   </Select>
@@ -2140,14 +2146,17 @@ export default function ClientBasedFinOpsTaskManager() {
                               escalationManagerSearch.toLowerCase(),
                             );
                           })
-                          .map((user: any, index: number) => (
-                            <SelectItem
-                              key={`escalation-${user.id}-${index}`}
-                              value={`${user.first_name} ${user.last_name}`}
-                            >
-                              {user.first_name} {user.last_name}
-                            </SelectItem>
-                          ))}
+                          .map((user: any, index: number) => {
+                            const fullName = `${user.first_name} ${user.last_name}`;
+                            return (
+                              <SelectItem
+                                key={`escalation-manager-${user.id}`}
+                                value={fullName}
+                              >
+                                {fullName}
+                              </SelectItem>
+                            );
+                          })}
                       </div>
                     </SelectContent>
                   </Select>
