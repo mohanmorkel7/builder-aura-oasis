@@ -373,7 +373,7 @@ router.put("/:id/read", async (req: Request, res: Response) => {
       res.json({
         id: id,
         read: true,
-        read_at: result.rows[0].read_at
+        read_at: result.rows[0].read_at,
       });
     } else {
       console.log("Database unavailable, returning mock read update");
@@ -585,26 +585,27 @@ router.post("/test/create-sample", async (req: Request, res: Response) => {
       // Create sample activity log entries that would generate notifications
       const sampleNotifications = [
         {
-          action: 'status_changed',
+          action: "status_changed",
           task_id: 1,
           subtask_id: 1,
-          user_name: 'PaySwiff User',
-          details: 'Task Check PaySwiff User is overdue by 6 hours and 11 minutes'
+          user_name: "PaySwiff User",
+          details:
+            "Task Check PaySwiff User is overdue by 6 hours and 11 minutes",
         },
         {
-          action: 'delay_reported',
+          action: "delay_reported",
           task_id: 2,
           subtask_id: null,
-          user_name: 'Test User',
-          details: 'Task has been delayed due to technical issues'
+          user_name: "Test User",
+          details: "Task has been delayed due to technical issues",
         },
         {
-          action: 'overdue_notification_sent',
+          action: "overdue_notification_sent",
           task_id: 3,
           subtask_id: 2,
-          user_name: 'System',
-          details: 'SLA overdue notification sent for task processing'
-        }
+          user_name: "System",
+          details: "SLA overdue notification sent for task processing",
+        },
       ];
 
       const insertedNotifications = [];
@@ -621,7 +622,7 @@ router.post("/test/create-sample", async (req: Request, res: Response) => {
           notif.task_id,
           notif.subtask_id,
           notif.user_name,
-          notif.details
+          notif.details,
         ]);
 
         insertedNotifications.push(result.rows[0]);
@@ -634,7 +635,8 @@ router.post("/test/create-sample", async (req: Request, res: Response) => {
       });
     } else {
       res.json({
-        message: "Database unavailable - would create sample notifications in production",
+        message:
+          "Database unavailable - would create sample notifications in production",
         timestamp: new Date().toISOString(),
       });
     }
