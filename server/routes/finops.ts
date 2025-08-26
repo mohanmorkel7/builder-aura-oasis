@@ -22,6 +22,8 @@ const mockFinOpsTasks = [
     id: 1,
     task_name: "CLEARING - FILE TRANSFER AND VALIDATION",
     description: "clearing daily steps for file transfer",
+    client_id: "1",
+    client_name: "Global Financial Services",
     assigned_to: "John Durairaj",
     reporting_managers: ["Albert", "Hari"],
     escalation_managers: ["Albert", "Hari"],
