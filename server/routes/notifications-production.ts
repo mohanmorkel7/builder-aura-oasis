@@ -131,9 +131,9 @@ router.get("/", async (req: Request, res: Response) => {
           ? `WHERE ${whereConditions.join(" AND ")}`
           : "";
 
-      // Simplified query with better indexing
+      // Simplified query with better indexing and deduplication
       const query = `
-        SELECT
+        SELECT DISTINCT ON (fal.action, fal.task_id, fal.subtask_id, fal.details)
           fal.id,
           fal.task_id,
           fal.subtask_id,
@@ -176,7 +176,7 @@ router.get("/", async (req: Request, res: Response) => {
         LEFT JOIN finops_notification_archived_status fnas ON fal.id = fnas.activity_log_id
         WHERE fal.timestamp >= NOW() - INTERVAL '7 days'
         AND fnas.activity_log_id IS NULL
-        ORDER BY fal.timestamp DESC
+        ORDER BY fal.action, fal.task_id, fal.subtask_id, fal.details, fal.timestamp DESC
         LIMIT $${paramIndex++} OFFSET $${paramIndex++}
       `;
 
