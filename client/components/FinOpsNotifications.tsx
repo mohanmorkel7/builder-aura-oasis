@@ -247,7 +247,12 @@ const transformDbNotifications = (
       status: dbNotif.read ? "read" : "unread",
       created_at: dbNotif.created_at,
       action_required:
-        notificationType === "sla_overdue" || notificationType === "escalation",
+        notificationType === "sla_overdue" ||
+        notificationType === "escalation" ||
+        (notificationType === "sla_warning" && (
+          dbNotif.details?.includes("min remaining") ||
+          dbNotif.details?.includes("need to start")
+        )),
       delay_reason:
         dbNotif.action === "delay_reported" ? "Process delayed" : undefined,
       sla_remaining: overdueMinutes
