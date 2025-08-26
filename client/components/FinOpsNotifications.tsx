@@ -842,7 +842,7 @@ export default function FinOpsNotifications() {
 
                         {notification.sla_remaining && (
                           <div
-                            className={`text-xs mb-2 ${
+                            className={`text-xs mb-2 font-semibold ${
                               notification.type === "sla_overdue"
                                 ? "text-red-600"
                                 : "text-orange-600"
@@ -853,12 +853,46 @@ export default function FinOpsNotifications() {
                           </div>
                         )}
 
+                        {/* Members List - Enhanced Display */}
+                        {notification.members_list && notification.members_list.length > 0 && (
+                          <div className="mt-3 p-3 bg-gray-50 rounded-lg border">
+                            <div className="text-xs font-medium text-gray-800 mb-2">Team Members:</div>
+
+                            {/* Assigned To */}
+                            <div className="mb-2">
+                              <span className="text-xs text-blue-600 font-medium flex items-center gap-1">
+                                <User className="w-3 h-3" />
+                                Assigned: {notification.assigned_to}
+                              </span>
+                            </div>
+
+                            {/* Reporting Managers - Show for tasks <15 min or overdue */}
+                            {notification.reporting_managers && notification.reporting_managers.length > 0 && (
+                              <div className="mb-2">
+                                <span className="text-xs text-green-600 font-medium flex items-center gap-1">
+                                  <Users className="w-3 h-3" />
+                                  Reporting Managers: {notification.reporting_managers.join(", ")}
+                                </span>
+                              </div>
+                            )}
+
+                            {/* Escalation Managers - Show for overdue tasks */}
+                            {notification.type === "sla_overdue" && notification.escalation_managers && notification.escalation_managers.length > 0 && (
+                              <div className="mb-2">
+                                <span className="text-xs text-red-600 font-medium flex items-center gap-1">
+                                  <Shield className="w-3 h-3" />
+                                  Escalation Managers: {notification.escalation_managers.join(", ")}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        )}
+
                         {notification.action_required && (
                           <Alert className="mt-3 p-2 border-orange-200 bg-orange-50">
                             <AlertCircle className="h-3 w-3 text-orange-600" />
                             <AlertDescription className="text-xs text-orange-700 ml-1">
-                              Action required - Please review and take necessary
-                              steps
+                              Action required - Please review and take necessary steps
                             </AlertDescription>
                           </Alert>
                         )}
