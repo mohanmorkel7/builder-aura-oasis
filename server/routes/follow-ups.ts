@@ -388,7 +388,7 @@ router.get("/", async (req: Request, res: Response) => {
                  cl.client_name,
                  l.client_name as lead_client_name,
                  l.project_title as lead_project_title,
-                 ls.name as step_name,
+                 NULL as step_name,
                  NULL as vc_round_title,
                  NULL as investor_name,
                  NULL as vc_step_name
@@ -397,7 +397,6 @@ router.get("/", async (req: Request, res: Response) => {
           LEFT JOIN users c ON f.created_by = c.id
           LEFT JOIN clients cl ON f.client_id = cl.id
           LEFT JOIN leads l ON f.lead_id = l.id
-          LEFT JOIN lead_steps ls ON f.step_id = ls.id
           ${whereClause}
           ORDER BY f.created_at DESC
         `;
