@@ -400,15 +400,22 @@ router.post("/tasks", async (req: Request, res: Response) => {
         client.release();
       }
     } else {
-      // Mock response
+      // Mock response with client information
       const newTask = {
         id: Date.now(),
         ...req.body,
+        client_id: req.body.client_id || null,
+        client_name: req.body.client_name || "Unknown Client",
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         status: "active",
       };
       mockFinOpsTasks.push(newTask);
+      console.log("✅ Mock task created with client info:", {
+        id: newTask.id,
+        client_id: newTask.client_id,
+        client_name: newTask.client_name
+      });
       res.status(201).json({
         id: newTask.id,
         message: "FinOps task created successfully (mock)",
