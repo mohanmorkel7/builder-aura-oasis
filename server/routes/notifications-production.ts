@@ -159,23 +159,27 @@ router.get("/", async (req: Request, res: Response) => {
 
       const result = await pool.query(query, params);
 
-      // Get total count for pagination
+      // Get total count for pagination (excluding archived)
       const countQuery = `
         SELECT COUNT(*) as total
         FROM finops_activity_log fal
+        LEFT JOIN finops_notification_archived_status fnas ON fal.id = fnas.activity_log_id
         WHERE fal.timestamp >= NOW() - INTERVAL '7 days'
+        AND fnas.activity_log_id IS NULL
       `;
 
       const countResult = await pool.query(countQuery);
       const total = parseInt(countResult.rows[0].total);
 
-      // Get unread count (excluding those marked as read)
+      // Get unread count (excluding those marked as read or archived)
       const unreadQuery = `
         SELECT COUNT(*) as unread_count
         FROM finops_activity_log fal
         LEFT JOIN finops_notification_read_status fnrs ON fal.id = fnrs.activity_log_id
+        LEFT JOIN finops_notification_archived_status fnas ON fal.id = fnas.activity_log_id
         WHERE fal.timestamp >= NOW() - INTERVAL '7 days'
         AND fnrs.activity_log_id IS NULL
+        AND fnas.activity_log_id IS NULL
       `;
 
       const unreadResult = await pool.query(unreadQuery);
