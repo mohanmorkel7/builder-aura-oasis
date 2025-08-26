@@ -386,12 +386,10 @@ router.post("/tasks", async (req: Request, res: Response) => {
         status: "active",
       };
       mockFinOpsTasks.push(newTask);
-      res
-        .status(201)
-        .json({
-          id: newTask.id,
-          message: "FinOps task created successfully (mock)",
-        });
+      res.status(201).json({
+        id: newTask.id,
+        message: "FinOps task created successfully (mock)",
+      });
     }
   } catch (error) {
     console.error("Error creating FinOps task:", error);
@@ -1329,7 +1327,8 @@ router.get("/clients", async (req: Request, res: Response) => {
           email: "michael.chen@globalfinance.com",
           phone: "+1 (555) 201-3456",
           address: "100 Financial Plaza, New York, NY 10001",
-          notes: "Tier 1 FinOps client - Daily clearing operations, high volume transactions",
+          notes:
+            "Tier 1 FinOps client - Daily clearing operations, high volume transactions",
           created_at: "2024-01-01T00:00:00Z",
           created_by: 1,
         },
@@ -1340,7 +1339,8 @@ router.get("/clients", async (req: Request, res: Response) => {
           email: "sarah.martinez@ebsolutions.com",
           phone: "+1 (555) 202-7890",
           address: "250 Banking Center, Chicago, IL 60601",
-          notes: "Tier 1 FinOps client - Weekly reconciliation, multi-currency processing",
+          notes:
+            "Tier 1 FinOps client - Weekly reconciliation, multi-currency processing",
           created_at: "2024-01-10T00:00:00Z",
           created_by: 1,
         },
@@ -1351,7 +1351,8 @@ router.get("/clients", async (req: Request, res: Response) => {
           email: "david.kim@pacifictrade.com",
           phone: "+1 (555) 203-4567",
           address: "500 Trade Plaza, San Francisco, CA 94105",
-          notes: "Tier 2 FinOps client - Bi-weekly operations, trade finance focus",
+          notes:
+            "Tier 2 FinOps client - Bi-weekly operations, trade finance focus",
           created_at: "2024-01-15T00:00:00Z",
           created_by: 1,
         },
@@ -1373,10 +1374,11 @@ router.get("/clients", async (req: Request, res: Response) => {
           email: "robert.johnson@intpaysys.com",
           phone: "+1 (555) 205-2345",
           address: "300 Payment Way, Miami, FL 33101",
-          notes: "Tier 1 FinOps client - Real-time processing, cross-border payments",
+          notes:
+            "Tier 1 FinOps client - Real-time processing, cross-border payments",
           created_at: "2024-01-25T00:00:00Z",
           created_by: 1,
-        }
+        },
       ];
       console.log("Database unavailable, using dedicated FinOps clients data");
       res.json(finOpsClients);
@@ -1393,10 +1395,13 @@ router.get("/clients/:id", async (req: Request, res: Response) => {
     const { id } = req.params;
 
     if (await isDatabaseAvailable()) {
-      const result = await pool.query(`
+      const result = await pool.query(
+        `
         SELECT * FROM finops_clients
         WHERE id = $1 AND deleted_at IS NULL
-      `, [id]);
+      `,
+        [id],
+      );
 
       if (result.rows.length === 0) {
         return res.status(404).json({ error: "FinOps client not found" });
@@ -1441,12 +1446,23 @@ router.post("/clients", async (req: Request, res: Response) => {
     }
 
     if (await isDatabaseAvailable()) {
-      const result = await pool.query(`
+      const result = await pool.query(
+        `
         INSERT INTO finops_clients (
           company_name, contact_person, email, phone, address, notes, created_by, created_at
         ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())
         RETURNING *
-      `, [company_name, contact_person, email, phone, address, notes, created_by]);
+      `,
+        [
+          company_name,
+          contact_person,
+          email,
+          phone,
+          address,
+          notes,
+          created_by,
+        ],
+      );
 
       res.status(201).json(result.rows[0]);
     } else {
@@ -1462,7 +1478,9 @@ router.post("/clients", async (req: Request, res: Response) => {
         created_by,
         created_at: new Date().toISOString(),
       };
-      console.log("Database unavailable, returning mock FinOps client creation");
+      console.log(
+        "Database unavailable, returning mock FinOps client creation",
+      );
       res.status(201).json(newClient);
     }
   } catch (error) {
@@ -1475,27 +1493,24 @@ router.post("/clients", async (req: Request, res: Response) => {
 router.put("/clients/:id", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const {
-      company_name,
-      contact_person,
-      email,
-      phone,
-      address,
-      notes,
-    } = req.body;
+    const { company_name, contact_person, email, phone, address, notes } =
+      req.body;
 
     if (!company_name) {
       return res.status(400).json({ error: "Company name is required" });
     }
 
     if (await isDatabaseAvailable()) {
-      const result = await pool.query(`
+      const result = await pool.query(
+        `
         UPDATE finops_clients
         SET company_name = $1, contact_person = $2, email = $3, phone = $4,
             address = $5, notes = $6, updated_at = NOW()
         WHERE id = $7 AND deleted_at IS NULL
         RETURNING *
-      `, [company_name, contact_person, email, phone, address, notes, id]);
+      `,
+        [company_name, contact_person, email, phone, address, notes, id],
+      );
 
       if (result.rows.length === 0) {
         return res.status(404).json({ error: "FinOps client not found" });
@@ -1530,23 +1545,30 @@ router.delete("/clients/:id", async (req: Request, res: Response) => {
 
     if (await isDatabaseAvailable()) {
       // Check if client has any active tasks
-      const tasksCheck = await pool.query(`
+      const tasksCheck = await pool.query(
+        `
         SELECT COUNT(*) FROM finops_tasks
         WHERE client_id = $1 AND is_active = true
-      `, [id]);
+      `,
+        [id],
+      );
 
       if (parseInt(tasksCheck.rows[0].count) > 0) {
         return res.status(400).json({
-          error: "Cannot delete client with active tasks. Please deactivate all tasks first."
+          error:
+            "Cannot delete client with active tasks. Please deactivate all tasks first.",
         });
       }
 
-      const result = await pool.query(`
+      const result = await pool.query(
+        `
         UPDATE finops_clients
         SET deleted_at = NOW()
         WHERE id = $1 AND deleted_at IS NULL
         RETURNING id
-      `, [id]);
+      `,
+        [id],
+      );
 
       if (result.rows.length === 0) {
         return res.status(404).json({ error: "FinOps client not found" });
@@ -1554,7 +1576,9 @@ router.delete("/clients/:id", async (req: Request, res: Response) => {
 
       res.json({ message: "FinOps client deleted successfully" });
     } else {
-      console.log("Database unavailable, returning mock FinOps client deletion");
+      console.log(
+        "Database unavailable, returning mock FinOps client deletion",
+      );
       res.json({ message: "FinOps client deleted successfully" });
     }
   } catch (error) {

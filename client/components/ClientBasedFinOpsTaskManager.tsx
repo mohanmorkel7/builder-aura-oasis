@@ -1085,17 +1085,22 @@ export default function ClientBasedFinOpsTaskManager() {
         clientName = task.client_name;
       } else if (task.client_id) {
         // Look up client by ID in the clients array
-        const foundClient = clients.find((c: any) =>
-          c.id.toString() === task.client_id.toString()
+        const foundClient = clients.find(
+          (c: any) => c.id.toString() === task.client_id.toString(),
         );
         if (foundClient) {
-          clientName = foundClient.company_name || foundClient.client_name || `Client ${foundClient.id}`;
+          clientName =
+            foundClient.company_name ||
+            foundClient.client_name ||
+            `Client ${foundClient.id}`;
         } else {
           clientName = `Client ${task.client_id}`;
         }
       }
 
-      console.log(`📝 Task "${task.task_name}" -> Client: "${clientName}" (ID: ${task.client_id})`);
+      console.log(
+        `📝 Task "${task.task_name}" -> Client: "${clientName}" (ID: ${task.client_id})`,
+      );
 
       if (!clientSummary[clientName]) {
         clientSummary[clientName] = {
