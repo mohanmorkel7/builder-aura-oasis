@@ -4,6 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mylapay - Business Management Platform</title>
+
+    <!-- Preserve original fetch before third-party scripts interfere -->
+    <script>
+      window.__originalFetch = window.fetch ? window.fetch.bind(window) : null;
+      console.log("🔒 Original fetch preserved:", !!window.__originalFetch);
+    </script>
   </head>
 
   <body>
