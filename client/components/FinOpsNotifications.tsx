@@ -443,19 +443,22 @@ export default function FinOpsNotifications() {
     const now = new Date();
     const secondsUntilNextMinute = 60 - now.getSeconds();
 
+    let timer: NodeJS.Timeout;
+
     // First timeout to sync to minute boundary
     const syncTimeout = setTimeout(() => {
       setCurrentTime(new Date());
 
       // Then set regular 30-second intervals
-      const timer = setInterval(() => {
+      timer = setInterval(() => {
         setCurrentTime(new Date());
       }, 30000); // Update every 30 seconds for better real-time responsiveness
-
-      return () => clearInterval(timer);
     }, secondsUntilNextMinute * 1000);
 
-    return () => clearTimeout(syncTimeout);
+    return () => {
+      clearTimeout(syncTimeout);
+      if (timer) clearInterval(timer);
+    };
   }, []);
 
   // Fetch notifications from database
