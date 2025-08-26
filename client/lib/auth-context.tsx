@@ -250,7 +250,7 @@ export const AuthProvider = React.memo(function AuthProvider({
       try {
         if (import.meta.hot?.data?.skip) {
           console.log("Skipping auth initialization during HMR update");
-          setIsLoading(false);
+          safeSetIsLoading(false);
           return;
         }
       } catch (error) {
