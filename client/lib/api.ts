@@ -125,8 +125,8 @@ export class ApiClient {
             "fetch for request",
           );
 
-          // Add timeout to prevent hanging requests
-          const timeoutMs = 8000; // 8 seconds
+          // Add timeout to prevent hanging requests - longer for notifications
+          const timeoutMs = endpoint.includes('notifications') ? 15000 : 8000; // 15s for notifications, 8s for others
           const timeoutPromise = new Promise<never>((_, reject) => {
             setTimeout(() => reject(new Error("Request timeout")), timeoutMs);
           });
