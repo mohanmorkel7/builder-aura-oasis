@@ -606,6 +606,13 @@ router.post("/test/create-sample", async (req: Request, res: Response) => {
           user_name: "System",
           details: "Multiple overdue tasks require immediate escalation",
         },
+        {
+          action: "task_status_changed",
+          task_id: 4,
+          subtask_id: 4,
+          user_name: "System",
+          details: "Start: 04:00 PM Pending Overdue by 54 min",
+        },
       ];
 
       // First, ensure we have task records with member information
