@@ -2107,4 +2107,80 @@ router.post("/auto-sync-current-time", async (req: Request, res: Response) => {
   }
 });
 
+// Create overdue notification when SLA expires
+router.post("/create-overdue-from-sla", async (req: Request, res: Response) => {
+  try {
+    if (await isDatabaseAvailable()) {
+      const { task_id, subtask_id, overdue_minutes, original_sla_warning_id } = req.body;
+
+      if (!task_id || overdue_minutes === undefined) {
+        return res.status(400).json({
+          error: "task_id and overdue_minutes are required",
+          example: {
+            task_id: 16,
+            subtask_id: 29,
+            overdue_minutes: 2,
+            original_sla_warning_id: 32
+          }
+        });
+      }
+
+      console.log(`Creating overdue notification for task ${task_id}, ${overdue_minutes} min overdue...`);
+
+      // Archive the original SLA warning notification if specified
+      if (original_sla_warning_id) {
+        const archiveQuery = `
+          INSERT INTO finops_notification_archived_status (activity_log_id, archived_at)
+          VALUES ($1, NOW())
+          ON CONFLICT (activity_log_id) DO NOTHING
+        `;
+
+        await pool.query(archiveQuery, [original_sla_warning_id]);
+        console.log(`Archived original SLA warning notification ${original_sla_warning_id}`);
+      }
+
+      // Create new overdue notification
+      const insertQuery = `
+        INSERT INTO finops_activity_log (action, task_id, subtask_id, user_name, details, timestamp)
+        VALUES ($1, $2, $3, $4, $5, NOW())
+        RETURNING *
+      `;
+
+      const currentTime = new Date();
+      const overdueTime = new Date(currentTime.getTime() - (overdue_minutes * 60000));
+      const timeAgo = Math.floor((currentTime.getTime() - overdueTime.getTime()) / 60000);
+
+      const result = await pool.query(insertQuery, [
+        "overdue_notification_sent",
+        task_id,
+        subtask_id || null,
+        "System",
+        `Overdue by ${overdue_minutes} min • ${timeAgo} min ago`,
+      ]);
+
+      res.json({
+        message: `Overdue notification created for ${overdue_minutes} min overdue`,
+        notification: result.rows[0],
+        archived_original: !!original_sla_warning_id,
+        overdue_details: {
+          overdue_minutes,
+          created_at: result.rows[0].timestamp,
+        },
+        timestamp: new Date().toISOString(),
+      });
+    } else {
+      res.json({
+        message: "Database unavailable",
+        timestamp: new Date().toISOString(),
+      });
+    }
+  } catch (error) {
+    console.error("Error creating overdue notification:", error);
+    res.status(500).json({
+      error: "Failed to create overdue notification",
+      message: error.message,
+    });
+  }
+});
+
 export default router;
