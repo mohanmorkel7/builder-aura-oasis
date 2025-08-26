@@ -1022,7 +1022,10 @@ export default function ClientBasedFinOpsTaskManager() {
       description: task.description || "",
       client_id: task.client_id?.toString() || "",
       assigned_to: (() => {
-        console.log('🔍 Edit form - raw task.assigned_to:', JSON.stringify(task.assigned_to));
+        console.log(
+          "🔍 Edit form - raw task.assigned_to:",
+          JSON.stringify(task.assigned_to),
+        );
 
         let assignedArray = [];
 
@@ -1031,16 +1034,20 @@ export default function ClientBasedFinOpsTaskManager() {
         } else if (task.assigned_to) {
           // Extract and parse the assigned_to value
           const extracted = extractNameFromValue(task.assigned_to);
-          console.log('🔄 Edit form - after extractNameFromValue:', extracted);
+          console.log("🔄 Edit form - after extractNameFromValue:", extracted);
 
           // Check if it contains comma-separated names
-          if (extracted.includes('","') || extracted.includes('", "') || extracted.includes(',')) {
+          if (
+            extracted.includes('","') ||
+            extracted.includes('", "') ||
+            extracted.includes(",")
+          ) {
             // Split by various comma patterns and clean up
             assignedArray = extracted
               .split(/,\s*"?|",\s*"?|"\s*,\s*"?/)
-              .map(name => name.replace(/^"|"$/g, '').trim())
-              .filter(name => name.length > 0);
-            console.log('🔄 Edit form - split names:', assignedArray);
+              .map((name) => name.replace(/^"|"$/g, "").trim())
+              .filter((name) => name.length > 0);
+            console.log("🔄 Edit form - split names:", assignedArray);
           } else {
             // Single name
             assignedArray = [extracted];
@@ -1048,9 +1055,9 @@ export default function ClientBasedFinOpsTaskManager() {
         }
 
         const result = assignedArray.map((name) =>
-          convertNameToValueFormat(extractNameFromValue(name), users)
+          convertNameToValueFormat(extractNameFromValue(name), users),
         );
-        console.log('✅ Edit form - final assigned_to array:', result);
+        console.log("✅ Edit form - final assigned_to array:", result);
         return result;
       })(),
       reporting_managers: (task.reporting_managers || []).map((name) =>
