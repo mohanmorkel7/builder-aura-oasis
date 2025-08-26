@@ -92,7 +92,7 @@ const extractNameFromValue = (value: string): string => {
   if (value.startsWith('"{') && value.endsWith('}"')) {
     try {
       const parsed = JSON.parse(value);
-      return typeof parsed === 'string' ? parsed : value;
+      return typeof parsed === "string" ? parsed : value;
     } catch (e) {
       // If parsing fails, continue with other checks
     }
@@ -102,7 +102,7 @@ const extractNameFromValue = (value: string): string => {
   if (value.startsWith('"') && value.endsWith('"')) {
     try {
       const parsed = JSON.parse(value);
-      return typeof parsed === 'string' ? parsed : value;
+      return typeof parsed === "string" ? parsed : value;
     } catch (e) {
       // If parsing fails, continue with other checks
     }
