@@ -1191,4 +1191,50 @@ router.get("/test/performance", async (req: Request, res: Response) => {
   }
 });
 
+// Quick test to verify overdue notifications are categorized correctly
+router.get("/test/overdue-check", async (req: Request, res: Response) => {
+  try {
+    if (await isDatabaseAvailable()) {
+      const query = `
+        SELECT
+          id,
+          task_id,
+          action,
+          details,
+          CASE
+            WHEN LOWER(details) LIKE '%overdue%' THEN 'sla_overdue'
+            ELSE 'other'
+          END as should_be_type,
+          CASE
+            WHEN LOWER(details) LIKE '%overdue%' THEN 'critical'
+            ELSE 'other'
+          END as should_be_priority
+        FROM finops_activity_log
+        WHERE LOWER(details) LIKE '%overdue%'
+        ORDER BY timestamp DESC
+      `;
+
+      const result = await pool.query(query);
+
+      res.json({
+        message: "Overdue notifications verification",
+        count: result.rows.length,
+        overdue_notifications: result.rows,
+        timestamp: new Date().toISOString(),
+      });
+    } else {
+      res.json({
+        message: "Database unavailable",
+        timestamp: new Date().toISOString(),
+      });
+    }
+  } catch (error) {
+    console.error("Overdue check error:", error);
+    res.status(500).json({
+      error: "Overdue check failed",
+      message: error.message,
+    });
+  }
+});
+
 export default router;
