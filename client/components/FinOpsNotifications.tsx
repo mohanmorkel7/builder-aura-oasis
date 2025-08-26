@@ -80,6 +80,7 @@ interface FinOpsNotification {
 // Transform database notifications to match our interface
 const transformDbNotifications = (
   dbNotifications: any[],
+  currentTime?: Date,
 ): FinOpsNotification[] => {
   console.log("🔄 Transform input:", dbNotifications.slice(0, 2)); // Log first 2 items for debugging
 
