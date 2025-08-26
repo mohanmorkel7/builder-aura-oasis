@@ -1472,7 +1472,13 @@ export default function ClientBasedFinOpsTaskManager() {
                       <div className="flex items-center gap-6 mt-3 text-sm text-gray-600">
                         <div className="flex items-center gap-1">
                           <User className="w-4 h-4" />
-                          <span>Assigned: {task.assigned_to}</span>
+                          <span>
+                            Assigned: {Array.isArray(task.assigned_to)
+                              ? task.assigned_to.length > 0
+                                ? task.assigned_to.join(", ")
+                                : "Unassigned"
+                              : task.assigned_to || "Unassigned"}
+                          </span>
                         </div>
                         <div className="flex items-center gap-1">
                           <Calendar className="w-4 h-4" />
