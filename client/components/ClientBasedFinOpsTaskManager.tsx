@@ -2090,7 +2090,7 @@ export default function ClientBasedFinOpsTaskManager() {
                 />
               </div>
 
-              <div>
+              <div className="md:col-start-1">
                 <Label htmlFor="effective_from">Effective From *</Label>
                 <Input
                   id="effective_from"
@@ -2106,7 +2106,7 @@ export default function ClientBasedFinOpsTaskManager() {
                 />
               </div>
 
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 md:col-start-2">
                 <Switch
                   checked={taskForm.is_active}
                   onCheckedChange={(checked) =>
