@@ -143,10 +143,31 @@ router.get("/", async (req: Request, res: Response) => {
             ON CONFLICT DO NOTHING
           `;
 
-          const action =
-            notification.notification_type === "sla_warning"
-              ? "sla_alert"
-              : "overdue_notification_sent";
+          // Map notification types to actions and mark as sent
+          let action;
+          switch (notification.notification_type) {
+            case "pre_start_alert":
+              action = "pre_start_notification";
+              break;
+            case "sla_warning":
+              action = "sla_alert";
+              break;
+            case "escalation_alert":
+              action = "escalation_notification";
+              break;
+            default:
+              action = "overdue_notification_sent";
+          }
+
+          // Mark notification as sent to prevent duplicates
+          try {
+            await pool.query(
+              `SELECT mark_notification_sent($1, $2)`,
+              [notification.subtask_id, notification.notification_type]
+            );
+          } catch (markError) {
+            console.log(`Warning: Could not mark notification as sent: ${markError.message}`);
+          }
 
           await pool.query(insertQuery, [
             action,
