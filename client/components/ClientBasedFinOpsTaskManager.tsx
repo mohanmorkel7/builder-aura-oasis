@@ -734,9 +734,10 @@ export default function ClientBasedFinOpsTaskManager() {
         return [];
       }
     },
-    retry: 2,
-    retryDelay: 1000,
+    retry: 1, // Only retry once
+    retryDelay: 3000, // Wait 3 seconds before retry
     staleTime: 1000 * 60 * 5, // 5 minutes
+    refetchInterval: clientsError ? false : 60000, // Don't auto-refetch if there's an error
   });
 
   // Deduplicate clients at the component level to prevent dropdown duplicates
