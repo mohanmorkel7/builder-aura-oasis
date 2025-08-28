@@ -199,34 +199,45 @@ const transformDbNotifications = (
       }
     }
 
-    // Determine notification type based on action and details (with real-time SLA expiry check)
-    let notificationType = "daily_reminder";
+    // Determine notification type based on IST action types (with real-time SLA expiry check)
+    let notificationType = "task_pending";
+
     if (isExpiredSLA) {
       // SLA warning has expired, convert to overdue
-      notificationType = "sla_overdue";
-    } else if (
-      dbNotif.action === "overdue_notification_sent" ||
-      dbNotif.details?.toLowerCase().includes("overdue") ||
-      (dbNotif.action === "task_status_changed" &&
-        dbNotif.details?.toLowerCase().includes("overdue"))
-    ) {
-      notificationType = "sla_overdue";
+      notificationType = "escalation_alert";
+    } else if (dbNotif.action === "pre_start_notification") {
+      notificationType = "pre_start_alert";
     } else if (
       dbNotif.action === "sla_alert" ||
       dbNotif.action === "sla_warning" ||
-      dbNotif.details?.includes("starting in") ||
-      dbNotif.details?.includes("sla warning") ||
-      dbNotif.details?.includes("min remaining")
+      dbNotif.details?.includes("SLA Warning") ||
+      dbNotif.details?.includes("min remaining") ||
+      dbNotif.details?.includes("minutes late")
     ) {
       notificationType = "sla_warning";
-    } else if (dbNotif.action === "escalation_required") {
-      notificationType = "escalation";
+    } else if (
+      dbNotif.action === "escalation_notification" ||
+      dbNotif.details?.includes("ESCALATION") ||
+      dbNotif.details?.includes("Immediate action required")
+    ) {
+      notificationType = "escalation_alert";
+    } else if (
+      dbNotif.action === "overdue_notification_sent" ||
+      dbNotif.details?.toLowerCase().includes("overdue")
+    ) {
+      notificationType = "sla_warning"; // Legacy overdue becomes sla_warning
     } else if (
       (dbNotif.details?.toLowerCase().includes("pending") &&
         dbNotif.details?.toLowerCase().includes("need to start")) ||
       dbNotif.details?.toLowerCase().includes("pending status")
     ) {
       notificationType = "task_pending";
+    } else if (dbNotif.action === "task_completed") {
+      notificationType = "task_completed"; // Will be filtered out
+    } else if (dbNotif.action === "task_overdue") {
+      notificationType = "task_overdue"; // Will be filtered out
+    } else if (dbNotif.details?.includes("starts in")) {
+      notificationType = "pre_start_alert";
     }
 
     // Mock member data based on task type
@@ -360,9 +371,13 @@ const transformDbNotifications = (
       reporting_managers: members.reporting_managers,
       escalation_managers: members.escalation_managers,
       priority:
-        overdueMinutes || isExpiredSLA
+        notificationType === "escalation_alert" || isExpiredSLA
           ? "critical"
-          : dbNotif.priority || "medium",
+          : notificationType === "sla_warning" || overdueMinutes
+            ? "high"
+            : notificationType === "pre_start_alert"
+              ? "medium"
+              : "low",
       status: dbNotif.read ? "read" : "unread",
       created_at: dbNotif.created_at,
       action_required:
