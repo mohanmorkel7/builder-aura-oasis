@@ -1679,8 +1679,12 @@ router.get("/test/sla-function", async (req: Request, res: Response) => {
         function_exists: true,
         notification_count: count,
         sample_notifications: sampleResult.rows,
-        status: count > 0 ? 'Active notifications found' : 'No active notifications (normal if no subtasks are due)',
-        fix_confirmed: "Time arithmetic error resolved - function working correctly",
+        status:
+          count > 0
+            ? "Active notifications found"
+            : "No active notifications (normal if no subtasks are due)",
+        fix_confirmed:
+          "Time arithmetic error resolved - function working correctly",
         timestamp: new Date().toISOString(),
       });
     } else {
@@ -1693,12 +1697,14 @@ router.get("/test/sla-function", async (req: Request, res: Response) => {
     console.error("SLA function test error:", error);
 
     // Check for the specific time arithmetic error
-    if (error.message && error.message.includes('operator does not exist')) {
+    if (error.message && error.message.includes("operator does not exist")) {
       res.status(500).json({
         error: "Time arithmetic error still present",
         message: error.message,
-        fix_needed: "The PostgreSQL function still has time zone arithmetic issues",
-        recommendation: "Run the setup endpoint again or manually apply the database fix",
+        fix_needed:
+          "The PostgreSQL function still has time zone arithmetic issues",
+        recommendation:
+          "Run the setup endpoint again or manually apply the database fix",
       });
     } else {
       res.status(500).json({
