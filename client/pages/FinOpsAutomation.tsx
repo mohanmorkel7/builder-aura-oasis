@@ -81,7 +81,7 @@ export default function FinOpsAutomation() {
   const queryClient = useQueryClient();
 
   // Fetch workflow projects for FinOps
-  const { data: finopsProjects = [], isLoading: projectsLoading } = useQuery({
+  const { data: finopsProjects = [], isLoading: projectsLoading, error: projectsError } = useQuery({
     queryKey: ["workflow-projects-finops"],
     queryFn: async () => {
       try {
@@ -91,12 +91,14 @@ export default function FinOpsAutomation() {
         );
       } catch (error) {
         console.warn(
-          "🚨 Workflow projects query failed, likely FullStory interference:",
+          "🚨 Workflow projects query failed, likely network or database issue:",
           error,
         );
         return []; // Return empty array to prevent crash
       }
     },
+    retry: 1,
+    retryDelay: 2000,
   });
 
   // Fetch automation tasks
