@@ -259,6 +259,17 @@ export default function FinOpsActivityLog() {
         </Button>
       </div>
 
+      {/* Database Status Alert */}
+      {activityError && (
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            <strong>Database Connection Issue:</strong> Unable to load activity logs.
+            Please ensure the database connection is working properly.
+          </AlertDescription>
+        </Alert>
+      )}
+
       {/* Filters */}
       <Card>
         <CardHeader>
