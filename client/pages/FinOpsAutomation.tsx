@@ -102,23 +102,25 @@ export default function FinOpsAutomation() {
   });
 
   // Fetch automation tasks
-  const { data: automations = [], isLoading: automationsLoading } = useQuery({
+  const { data: automations = [], isLoading: automationsLoading, error: automationsError } = useQuery({
     queryKey: ["workflow-automations"],
     queryFn: async () => {
       try {
         return await apiClient.getWorkflowAutomations();
       } catch (error) {
         console.warn(
-          "🚨 Workflow automations query failed, likely FullStory interference:",
+          "🚨 Workflow automations query failed, likely network or database issue:",
           error,
         );
         return []; // Return empty array to prevent crash
       }
     },
+    retry: 1,
+    retryDelay: 2000,
   });
 
   // Fetch notifications
-  const { data: notifications = [], isLoading: notificationsLoading } =
+  const { data: notifications = [], isLoading: notificationsLoading, error: notificationsError } =
     useQuery({
       queryKey: ["workflow-notifications"],
       queryFn: async () => {
@@ -129,12 +131,14 @@ export default function FinOpsAutomation() {
           );
         } catch (error) {
           console.warn(
-            "🚨 Workflow notifications query failed, likely FullStory interference:",
+            "🚨 Workflow notifications query failed, likely network or database issue:",
             error,
           );
           return []; // Return empty array to prevent crash
         }
       },
+      retry: 1,
+      retryDelay: 2000,
     });
 
   const triggerAutomationMutation = useMutation({
