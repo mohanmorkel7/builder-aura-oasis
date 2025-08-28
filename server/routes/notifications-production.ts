@@ -1658,6 +1658,57 @@ router.get("/test/overdue-check", async (req: Request, res: Response) => {
   }
 });
 
+// Test endpoint to verify SLA function fix
+router.get("/test/sla-function", async (req: Request, res: Response) => {
+  try {
+    if (await isDatabaseAvailable()) {
+      console.log("Testing check_subtask_sla_notifications() function...");
+
+      // First test if the function exists and can be called
+      const testQuery = `SELECT COUNT(*) as notification_count FROM check_subtask_sla_notifications()`;
+      const result = await pool.query(testQuery);
+
+      const count = parseInt(result.rows[0].notification_count);
+
+      // Also get a sample of the actual data structure
+      const sampleQuery = `SELECT * FROM check_subtask_sla_notifications() LIMIT 3`;
+      const sampleResult = await pool.query(sampleQuery);
+
+      res.json({
+        message: "SLA function test completed successfully!",
+        function_exists: true,
+        notification_count: count,
+        sample_notifications: sampleResult.rows,
+        status: count > 0 ? 'Active notifications found' : 'No active notifications (normal if no subtasks are due)',
+        fix_confirmed: "Time arithmetic error resolved - function working correctly",
+        timestamp: new Date().toISOString(),
+      });
+    } else {
+      res.json({
+        message: "Database unavailable - cannot test SLA function",
+        timestamp: new Date().toISOString(),
+      });
+    }
+  } catch (error) {
+    console.error("SLA function test error:", error);
+
+    // Check for the specific time arithmetic error
+    if (error.message && error.message.includes('operator does not exist')) {
+      res.status(500).json({
+        error: "Time arithmetic error still present",
+        message: error.message,
+        fix_needed: "The PostgreSQL function still has time zone arithmetic issues",
+        recommendation: "Run the setup endpoint again or manually apply the database fix",
+      });
+    } else {
+      res.status(500).json({
+        error: "SLA function test failed",
+        message: error.message,
+      });
+    }
+  }
+});
+
 // Test endpoint to create pending status notification like user described
 router.post(
   "/test/create-pending-check",
