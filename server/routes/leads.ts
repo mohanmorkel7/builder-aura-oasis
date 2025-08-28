@@ -901,9 +901,11 @@ router.post("/", async (req: Request, res: Response) => {
         const lead = await LeadRepository.create(leadData);
         res.status(201).json(lead);
       } else {
+        // Generate safe integer ID for mock data (max PostgreSQL integer is 2,147,483,647)
+        const safeId = Math.floor(Math.random() * 1000000) + 1;
         const mockLead = {
-          id: Date.now(),
-          lead_id: leadData.lead_id || `#${Date.now().toString().slice(-4)}`,
+          id: safeId,
+          lead_id: leadData.lead_id || `#${safeId.toString().padStart(4, "0")}`,
           ...leadData,
           status: leadData.status || ("in-progress" as const),
           priority: leadData.priority || ("medium" as const),
@@ -919,9 +921,11 @@ router.post("/", async (req: Request, res: Response) => {
         "Database error, returning mock lead response:",
         dbError.message,
       );
+      // Generate safe integer ID for mock data (max PostgreSQL integer is 2,147,483,647)
+      const safeId = Math.floor(Math.random() * 1000000) + 1;
       const mockLead = {
-        id: Date.now(),
-        lead_id: leadData.lead_id || `#${Date.now().toString().slice(-4)}`,
+        id: safeId,
+        lead_id: leadData.lead_id || `#${safeId.toString().padStart(4, "0")}`,
         ...leadData,
         status: leadData.status || ("in-progress" as const),
         priority: leadData.priority || ("medium" as const),
