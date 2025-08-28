@@ -81,7 +81,11 @@ export default function FinOpsAutomation() {
   const queryClient = useQueryClient();
 
   // Fetch workflow projects for FinOps
-  const { data: finopsProjects = [], isLoading: projectsLoading, error: projectsError } = useQuery({
+  const {
+    data: finopsProjects = [],
+    isLoading: projectsLoading,
+    error: projectsError,
+  } = useQuery({
     queryKey: ["workflow-projects-finops"],
     queryFn: async () => {
       try {
@@ -102,7 +106,11 @@ export default function FinOpsAutomation() {
   });
 
   // Fetch automation tasks
-  const { data: automations = [], isLoading: automationsLoading, error: automationsError } = useQuery({
+  const {
+    data: automations = [],
+    isLoading: automationsLoading,
+    error: automationsError,
+  } = useQuery({
     queryKey: ["workflow-automations"],
     queryFn: async () => {
       try {
@@ -120,26 +128,29 @@ export default function FinOpsAutomation() {
   });
 
   // Fetch notifications
-  const { data: notifications = [], isLoading: notificationsLoading, error: notificationsError } =
-    useQuery({
-      queryKey: ["workflow-notifications"],
-      queryFn: async () => {
-        try {
-          return await apiClient.getWorkflowNotifications(
-            parseInt(user?.id || "1"),
-            true,
-          );
-        } catch (error) {
-          console.warn(
-            "🚨 Workflow notifications query failed, likely network or database issue:",
-            error,
-          );
-          return []; // Return empty array to prevent crash
-        }
-      },
-      retry: 1,
-      retryDelay: 2000,
-    });
+  const {
+    data: notifications = [],
+    isLoading: notificationsLoading,
+    error: notificationsError,
+  } = useQuery({
+    queryKey: ["workflow-notifications"],
+    queryFn: async () => {
+      try {
+        return await apiClient.getWorkflowNotifications(
+          parseInt(user?.id || "1"),
+          true,
+        );
+      } catch (error) {
+        console.warn(
+          "🚨 Workflow notifications query failed, likely network or database issue:",
+          error,
+        );
+        return []; // Return empty array to prevent crash
+      }
+    },
+    retry: 1,
+    retryDelay: 2000,
+  });
 
   const triggerAutomationMutation = useMutation({
     mutationFn: (automationId: number) =>
@@ -270,14 +281,22 @@ export default function FinOpsAutomation() {
         <Alert variant="destructive">
           <Database className="h-4 w-4" />
           <AlertDescription>
-            <strong>Database Connection Issue:</strong> The application is currently unable to connect to the database.
-            Features may be limited to mock data. Please check that PostgreSQL is running on localhost:5432.
+            <strong>Database Connection Issue:</strong> The application is
+            currently unable to connect to the database. Features may be limited
+            to mock data. Please check that PostgreSQL is running on
+            localhost:5432.
             <details className="mt-2 text-xs">
               <summary className="cursor-pointer">Technical Details</summary>
               <div className="mt-1 space-y-1">
-                {projectsError && <div>• Projects API: {projectsError.message}</div>}
-                {automationsError && <div>• Automations API: {automationsError.message}</div>}
-                {notificationsError && <div>• Notifications API: {notificationsError.message}</div>}
+                {projectsError && (
+                  <div>• Projects API: {projectsError.message}</div>
+                )}
+                {automationsError && (
+                  <div>• Automations API: {automationsError.message}</div>
+                )}
+                {notificationsError && (
+                  <div>• Notifications API: {notificationsError.message}</div>
+                )}
               </div>
             </details>
           </AlertDescription>

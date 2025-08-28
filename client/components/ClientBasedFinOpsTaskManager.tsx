@@ -797,7 +797,7 @@ export default function ClientBasedFinOpsTaskManager() {
   // Control refetch intervals based on error states
   useEffect(() => {
     if (error || clientsError || usersError) {
-      console.log('🚫 Errors detected, reducing refetch frequency');
+      console.log("🚫 Errors detected, reducing refetch frequency");
       // Could implement more sophisticated error-based refetch control here
     }
   }, [error, clientsError, usersError]);
@@ -1067,13 +1067,15 @@ export default function ClientBasedFinOpsTaskManager() {
   // Check if user can edit a task (full edit permissions)
   const canEditTask = (task: ClientBasedFinOpsTask): boolean => {
     // Admin can edit any task
-    if (user?.role === 'admin') {
+    if (user?.role === "admin") {
       return true;
     }
 
     // Creator can edit their own task
-    if (task.created_by === user?.id?.toString() ||
-        task.created_by === `${user?.first_name} ${user?.last_name}`) {
+    if (
+      task.created_by === user?.id?.toString() ||
+      task.created_by === `${user?.first_name} ${user?.last_name}`
+    ) {
       return true;
     }
 
@@ -1083,32 +1085,38 @@ export default function ClientBasedFinOpsTaskManager() {
 
     // Check assigned users
     if (Array.isArray(task.assigned_to)) {
-      const isAssigned = task.assigned_to.some(assignee =>
-        extractNameFromValue(assignee) === userName ||
-        assignee.includes(userEmail || '')
+      const isAssigned = task.assigned_to.some(
+        (assignee) =>
+          extractNameFromValue(assignee) === userName ||
+          assignee.includes(userEmail || ""),
       );
       if (isAssigned) return true;
     } else if (task.assigned_to) {
       const assignedName = extractNameFromValue(task.assigned_to);
-      if (assignedName === userName || task.assigned_to.includes(userEmail || '')) {
+      if (
+        assignedName === userName ||
+        task.assigned_to.includes(userEmail || "")
+      ) {
         return true;
       }
     }
 
     // Reporting managers can edit
     if (Array.isArray(task.reporting_managers)) {
-      const isReportingManager = task.reporting_managers.some(manager =>
-        extractNameFromValue(manager) === userName ||
-        manager.includes(userEmail || '')
+      const isReportingManager = task.reporting_managers.some(
+        (manager) =>
+          extractNameFromValue(manager) === userName ||
+          manager.includes(userEmail || ""),
       );
       if (isReportingManager) return true;
     }
 
     // Escalation managers can edit
     if (Array.isArray(task.escalation_managers)) {
-      const isEscalationManager = task.escalation_managers.some(manager =>
-        extractNameFromValue(manager) === userName ||
-        manager.includes(userEmail || '')
+      const isEscalationManager = task.escalation_managers.some(
+        (manager) =>
+          extractNameFromValue(manager) === userName ||
+          manager.includes(userEmail || ""),
       );
       if (isEscalationManager) return true;
     }
@@ -1126,16 +1134,18 @@ export default function ClientBasedFinOpsTaskManager() {
 
     // Check if user is mentioned anywhere in the task
     const allInvolvedUsers = [
-      ...(Array.isArray(task.assigned_to) ? task.assigned_to : [task.assigned_to].filter(Boolean)),
+      ...(Array.isArray(task.assigned_to)
+        ? task.assigned_to
+        : [task.assigned_to].filter(Boolean)),
       ...task.reporting_managers,
-      ...task.escalation_managers
+      ...task.escalation_managers,
     ];
 
-    const isInvolved = allInvolvedUsers.some(person =>
-      person && (
-        extractNameFromValue(person) === userName ||
-        person.includes(userEmail || '')
-      )
+    const isInvolved = allInvolvedUsers.some(
+      (person) =>
+        person &&
+        (extractNameFromValue(person) === userName ||
+          person.includes(userEmail || "")),
     );
 
     return isInvolved;
@@ -1144,7 +1154,9 @@ export default function ClientBasedFinOpsTaskManager() {
   const startEditing = (task: ClientBasedFinOpsTask) => {
     // Check permissions before allowing edit
     if (!canEditTask(task)) {
-      alert('You do not have permission to edit this task. Only the creator, assigned users, reporting managers, escalation managers, and admins can edit tasks.');
+      alert(
+        "You do not have permission to edit this task. Only the creator, assigned users, reporting managers, escalation managers, and admins can edit tasks.",
+      );
       return;
     }
     setEditingTask(task);
@@ -1490,8 +1502,9 @@ export default function ClientBasedFinOpsTaskManager() {
           <Alert variant="destructive">
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
-              <strong>Database Connection Issue:</strong> Unable to connect to the database.
-              Task management features may be limited. Please ensure PostgreSQL is running.
+              <strong>Database Connection Issue:</strong> Unable to connect to
+              the database. Task management features may be limited. Please
+              ensure PostgreSQL is running.
               <details className="mt-2 text-xs">
                 <summary className="cursor-pointer">Error Details</summary>
                 <div className="mt-1 space-y-1">
@@ -1999,7 +2012,7 @@ export default function ClientBasedFinOpsTaskManager() {
                         </Button>
                       )}
 
-                      {(canEditTask(task) || user?.role === 'admin') && (
+                      {(canEditTask(task) || user?.role === "admin") && (
                         <Button
                           variant="outline"
                           size="sm"

@@ -98,7 +98,11 @@ export default function FinOpsActivityLog() {
   }
 
   // Fetch activity logs
-  const { data: activityData, isLoading, error: activityError } = useQuery({
+  const {
+    data: activityData,
+    isLoading,
+    error: activityError,
+  } = useQuery({
     queryKey: ["activity-logs", filters],
     queryFn: async () => {
       try {
@@ -264,8 +268,8 @@ export default function FinOpsActivityLog() {
         <Alert variant="destructive">
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription>
-            <strong>Database Connection Issue:</strong> Unable to load activity logs.
-            Please ensure the database connection is working properly.
+            <strong>Database Connection Issue:</strong> Unable to load activity
+            logs. Please ensure the database connection is working properly.
           </AlertDescription>
         </Alert>
       )}

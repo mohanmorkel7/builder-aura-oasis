@@ -1,11 +1,13 @@
 # Database Connection Fix Guide
 
 ## The Issue
+
 The application is showing "Failed to fetch" errors because the PostgreSQL database is not running on localhost:5432.
 
 ## Quick Fixes
 
 ### Option 1: Start PostgreSQL (Recommended)
+
 ```bash
 # On macOS with Homebrew
 brew services start postgresql
@@ -21,6 +23,7 @@ sudo systemctl start postgresql
 ```
 
 ### Option 2: Check if PostgreSQL is installed
+
 ```bash
 # Check if PostgreSQL is installed
 psql --version
@@ -37,6 +40,7 @@ sudo apt install postgresql postgresql-contrib
 ```
 
 ### Option 3: Create Database and User
+
 ```bash
 # Connect to PostgreSQL as superuser
 sudo -u postgres psql
@@ -49,6 +53,7 @@ GRANT ALL PRIVILEGES ON DATABASE banani_crm TO postgres;
 ```
 
 ### Option 4: Use Docker (Alternative)
+
 ```bash
 # Run PostgreSQL in Docker
 docker run --name postgres-db \
@@ -63,7 +68,9 @@ docker ps
 ```
 
 ## Environment Variables
+
 The application expects these default values:
+
 - **Host:** localhost
 - **Port:** 5432
 - **Database:** banani_crm
@@ -71,6 +78,7 @@ The application expects these default values:
 - **Password:** password
 
 You can override these with environment variables:
+
 ```bash
 export PG_HOST=localhost
 export PG_PORT=5432
@@ -80,17 +88,20 @@ export PG_PASSWORD=password
 ```
 
 ## Test Connection
+
 ```bash
 # Test if database is accessible
 psql -h localhost -p 5432 -U postgres -d banani_crm -c "SELECT 1;"
 ```
 
 ## Verify Fix
+
 1. Start/restart your development server: `npm run dev`
 2. Open the application and check for the green "Database Connected" status
 3. The API errors should be resolved
 
 ## Still Having Issues?
+
 - Check PostgreSQL logs: `tail -f /usr/local/var/log/postgres.log` (macOS)
 - Verify port 5432 is not in use: `lsof -i :5432`
 - Check firewall settings
