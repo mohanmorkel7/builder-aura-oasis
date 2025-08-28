@@ -1937,30 +1937,55 @@ export default function ClientBasedFinOpsTaskManager() {
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => startEditing(task)}
-                      >
-                        <Edit className="w-4 h-4 mr-1" />
-                        Edit
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          if (
-                            confirm(
-                              `Are you sure you want to delete "${task.task_name}"?`,
-                            )
-                          ) {
-                            deleteTaskMutation.mutate(task.id);
-                          }
-                        }}
-                        className="text-red-600"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
+                      {canEditTask(task) ? (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => startEditing(task)}
+                        >
+                          <Edit className="w-4 h-4 mr-1" />
+                          Edit
+                        </Button>
+                      ) : canChangeStatusOnly(task) ? (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => startEditing(task)}
+                          title="You can only change subtask status"
+                        >
+                          <CheckCircle className="w-4 h-4 mr-1" />
+                          Status
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          disabled
+                          title="You don't have permission to edit this task"
+                        >
+                          <Edit className="w-4 h-4 mr-1" />
+                          View Only
+                        </Button>
+                      )}
+
+                      {(canEditTask(task) || user?.role === 'admin') && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            if (
+                              confirm(
+                                `Are you sure you want to delete "${task.task_name}"?`,
+                              )
+                            ) {
+                              deleteTaskMutation.mutate(task.id);
+                            }
+                          }}
+                          className="text-red-600"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </CardHeader>
