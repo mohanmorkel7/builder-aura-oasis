@@ -1052,7 +1052,89 @@ export default function ClientBasedFinOpsTaskManager() {
     }
   };
 
+  // Check if user can edit a task (full edit permissions)
+  const canEditTask = (task: ClientBasedFinOpsTask): boolean => {
+    // Admin can edit any task
+    if (user?.role === 'admin') {
+      return true;
+    }
+
+    // Creator can edit their own task
+    if (task.created_by === user?.id?.toString() ||
+        task.created_by === `${user?.first_name} ${user?.last_name}`) {
+      return true;
+    }
+
+    // Assigned users can edit the task
+    const userName = `${user?.first_name} ${user?.last_name}`;
+    const userEmail = user?.email;
+
+    // Check assigned users
+    if (Array.isArray(task.assigned_to)) {
+      const isAssigned = task.assigned_to.some(assignee =>
+        extractNameFromValue(assignee) === userName ||
+        assignee.includes(userEmail || '')
+      );
+      if (isAssigned) return true;
+    } else if (task.assigned_to) {
+      const assignedName = extractNameFromValue(task.assigned_to);
+      if (assignedName === userName || task.assigned_to.includes(userEmail || '')) {
+        return true;
+      }
+    }
+
+    // Reporting managers can edit
+    if (Array.isArray(task.reporting_managers)) {
+      const isReportingManager = task.reporting_managers.some(manager =>
+        extractNameFromValue(manager) === userName ||
+        manager.includes(userEmail || '')
+      );
+      if (isReportingManager) return true;
+    }
+
+    // Escalation managers can edit
+    if (Array.isArray(task.escalation_managers)) {
+      const isEscalationManager = task.escalation_managers.some(manager =>
+        extractNameFromValue(manager) === userName ||
+        manager.includes(userEmail || '')
+      );
+      if (isEscalationManager) return true;
+    }
+
+    return false;
+  };
+
+  // Check if user can only change status (not full edit)
+  const canChangeStatusOnly = (task: ClientBasedFinOpsTask): boolean => {
+    if (canEditTask(task)) return false; // Already has full edit permission
+
+    // Any user involved in the task can change status
+    const userName = `${user?.first_name} ${user?.last_name}`;
+    const userEmail = user?.email;
+
+    // Check if user is mentioned anywhere in the task
+    const allInvolvedUsers = [
+      ...(Array.isArray(task.assigned_to) ? task.assigned_to : [task.assigned_to].filter(Boolean)),
+      ...task.reporting_managers,
+      ...task.escalation_managers
+    ];
+
+    const isInvolved = allInvolvedUsers.some(person =>
+      person && (
+        extractNameFromValue(person) === userName ||
+        person.includes(userEmail || '')
+      )
+    );
+
+    return isInvolved;
+  };
+
   const startEditing = (task: ClientBasedFinOpsTask) => {
+    // Check permissions before allowing edit
+    if (!canEditTask(task)) {
+      alert('You do not have permission to edit this task. Only the creator, assigned users, reporting managers, escalation managers, and admins can edit tasks.');
+      return;
+    }
     setEditingTask(task);
     setTaskForm({
       task_name: task.task_name || "",
