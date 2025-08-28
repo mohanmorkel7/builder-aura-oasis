@@ -51,13 +51,14 @@ import { format, formatDistanceToNow, isToday, isYesterday } from "date-fns";
 interface FinOpsNotification {
   id: string;
   type:
-    | "sla_warning"
-    | "sla_overdue"
-    | "task_delayed"
-    | "task_completed"
-    | "task_pending"
+    | "pre_start_alert"    // 15 mins before start time
+    | "sla_warning"        // Task missed start time
+    | "escalation_alert"   // 15+ mins overdue
+    | "task_completed"     // Task completed (moved to activity log)
+    | "task_overdue"       // Task overdue (moved to activity log)
     | "daily_reminder"
-    | "escalation";
+    | "task_pending"
+    | "task_delayed";
   title: string;
   message: string;
   task_name: string;
@@ -74,6 +75,8 @@ interface FinOpsNotification {
   sla_remaining?: string;
   overdue_minutes?: number;
   members_list?: string[];
+  scheduled_time_ist?: string;  // IST time when task should start
+  time_diff_minutes?: number;   // Minutes until/since start time
 }
 
 // Mock notifications data
