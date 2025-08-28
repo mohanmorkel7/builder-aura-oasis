@@ -1477,6 +1477,25 @@ export default function ClientBasedFinOpsTaskManager() {
           </div>
         </div>
 
+        {/* Database Status Alert */}
+        {(error || clientsError || usersError) && (
+          <Alert variant="destructive">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription>
+              <strong>Database Connection Issue:</strong> Unable to connect to the database.
+              Task management features may be limited. Please ensure PostgreSQL is running.
+              <details className="mt-2 text-xs">
+                <summary className="cursor-pointer">Error Details</summary>
+                <div className="mt-1 space-y-1">
+                  {error && <div>• Tasks API: Connection failed</div>}
+                  {clientsError && <div>• Clients API: Connection failed</div>}
+                  {usersError && <div>• Users API: Connection failed</div>}
+                </div>
+              </details>
+            </AlertDescription>
+          </Alert>
+        )}
+
         {/* Overall Summary Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
           <Card>
