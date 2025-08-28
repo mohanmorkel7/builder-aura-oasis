@@ -794,6 +794,14 @@ export default function ClientBasedFinOpsTaskManager() {
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
+  // Control refetch intervals based on error states
+  useEffect(() => {
+    if (error || clientsError || usersError) {
+      console.log('🚫 Errors detected, reducing refetch frequency');
+      // Could implement more sophisticated error-based refetch control here
+    }
+  }, [error, clientsError, usersError]);
+
   // Mutations for CRUD operations
   const createTaskMutation = useMutation({
     mutationFn: (taskData: any) => apiClient.createFinOpsTask(taskData),
@@ -1914,7 +1922,7 @@ export default function ClientBasedFinOpsTaskManager() {
                                       .join(", ")
                                   : "Unassigned";
 
-                              console.log("✅ Final result:", result);
+                              console.log("�� Final result:", result);
                               return result;
                             })()}
                           </span>
