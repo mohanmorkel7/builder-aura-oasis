@@ -2635,7 +2635,9 @@ router.get("/debug/subtask/:subtaskId", async (req: Request, res: Response) => {
     if (await isDatabaseAvailable()) {
       const subtaskId = parseInt(req.params.subtaskId);
 
-      console.log(`🔍 Debugging notification issue for subtask ID ${subtaskId}...`);
+      console.log(
+        `🔍 Debugging notification issue for subtask ID ${subtaskId}...`,
+      );
 
       // 1. Check current time
       const currentTimeResult = await pool.query(`
@@ -2647,12 +2649,15 @@ router.get("/debug/subtask/:subtaskId", async (req: Request, res: Response) => {
       const currentTime = currentTimeResult.rows[0];
 
       // 2. Check the specific subtask
-      const subtaskResult = await pool.query(`
+      const subtaskResult = await pool.query(
+        `
         SELECT fs.*, ft.task_name, ft.is_active, ft.client_name
         FROM finops_subtasks fs
         LEFT JOIN finops_tasks ft ON fs.task_id = ft.id
         WHERE fs.id = $1
-      `, [subtaskId]);
+      `,
+        [subtaskId],
+      );
 
       if (subtaskResult.rows.length === 0) {
         return res.json({
@@ -2664,7 +2669,8 @@ router.get("/debug/subtask/:subtaskId", async (req: Request, res: Response) => {
       const subtask = subtaskResult.rows[0];
 
       // 3. Calculate time differences for debugging
-      const timeDiffResult = await pool.query(`
+      const timeDiffResult = await pool.query(
+        `
         SELECT
           fs.id,
           fs.start_time,
@@ -2685,7 +2691,9 @@ router.get("/debug/subtask/:subtaskId", async (req: Request, res: Response) => {
           END as notification_window
         FROM finops_subtasks fs
         WHERE fs.id = $1
-      `, [subtaskId]);
+      `,
+        [subtaskId],
+      );
 
       const timeDiff = timeDiffResult.rows[0];
 
@@ -2693,13 +2701,16 @@ router.get("/debug/subtask/:subtaskId", async (req: Request, res: Response) => {
       let notificationResult;
       let functionError = null;
       try {
-        notificationResult = await pool.query('SELECT * FROM check_subtask_sla_notifications()');
+        notificationResult = await pool.query(
+          "SELECT * FROM check_subtask_sla_notifications()",
+        );
       } catch (error) {
         functionError = error.message;
       }
 
       // 5. Check criteria for why no notifications
-      const debugResult = await pool.query(`
+      const debugResult = await pool.query(
+        `
         SELECT
           fs.id,
           fs.start_time IS NOT NULL as has_start_time,
@@ -2727,17 +2738,22 @@ router.get("/debug/subtask/:subtaskId", async (req: Request, res: Response) => {
         FROM finops_subtasks fs
         LEFT JOIN finops_tasks ft ON fs.task_id = ft.id
         WHERE fs.id = $1
-      `, [subtaskId]);
+      `,
+        [subtaskId],
+      );
 
       const debug = debugResult.rows[0];
 
       // 6. Check recent activity log entries
-      const activityResult = await pool.query(`
+      const activityResult = await pool.query(
+        `
         SELECT * FROM finops_activity_log
         WHERE task_id = $1 AND subtask_id = $2
         ORDER BY timestamp DESC
         LIMIT 5
-      `, [subtask.task_id, subtaskId]);
+      `,
+        [subtask.task_id, subtaskId],
+      );
 
       // 7. Check if the auto-sla setup has been run
       const setupCheckResult = await pool.query(`
@@ -2777,15 +2793,23 @@ router.get("/debug/subtask/:subtaskId", async (req: Request, res: Response) => {
         time_analysis: {
           today_start_datetime: timeDiff.today_start_datetime,
           current_timestamp: timeDiff.current_timestamp,
-          minutes_until_start: timeDiff.minutes_until_start ? parseFloat(timeDiff.minutes_until_start.toFixed(2)) : null,
-          minutes_after_start: timeDiff.minutes_after_start ? parseFloat(timeDiff.minutes_after_start.toFixed(2)) : null,
+          minutes_until_start: timeDiff.minutes_until_start
+            ? parseFloat(timeDiff.minutes_until_start.toFixed(2))
+            : null,
+          minutes_after_start: timeDiff.minutes_after_start
+            ? parseFloat(timeDiff.minutes_after_start.toFixed(2))
+            : null,
           notification_window: timeDiff.notification_window,
         },
         function_test: {
           function_exists: functionCheckResult.rows.length > 0,
           function_error: functionError,
-          notifications_generated: notificationResult ? notificationResult.rows.length : 0,
-          generated_notifications: notificationResult ? notificationResult.rows : [],
+          notifications_generated: notificationResult
+            ? notificationResult.rows.length
+            : 0,
+          generated_notifications: notificationResult
+            ? notificationResult.rows
+            : [],
         },
         eligibility_criteria: {
           has_start_time: debug.has_start_time,
@@ -2809,11 +2833,15 @@ router.get("/debug/subtask/:subtaskId", async (req: Request, res: Response) => {
           const recs = [];
 
           if (setupCheckResult.rows.length < 2) {
-            recs.push("Run POST /api/notifications-production/setup-auto-sla to add required columns");
+            recs.push(
+              "Run POST /api/notifications-production/setup-auto-sla to add required columns",
+            );
           }
 
           if (functionCheckResult.rows.length === 0) {
-            recs.push("Run POST /api/notifications-production/setup-auto-sla to create the monitoring function");
+            recs.push(
+              "Run POST /api/notifications-production/setup-auto-sla to create the monitoring function",
+            );
           }
 
           if (!debug.has_start_time) {
@@ -2825,26 +2853,32 @@ router.get("/debug/subtask/:subtaskId", async (req: Request, res: Response) => {
           }
 
           if (!debug.status_eligible) {
-            recs.push(`Subtask status '${debug.status}' should be 'pending' or 'in_progress'`);
+            recs.push(
+              `Subtask status '${debug.status}' should be 'pending' or 'in_progress'`,
+            );
           }
 
           if (!debug.task_active) {
             recs.push("Parent task needs to be active (is_active = true)");
           }
 
-          if (timeDiff.notification_window === 'TOO_EARLY') {
-            recs.push(`Too early for notifications. SLA warning starts at 15 minutes before start_time`);
+          if (timeDiff.notification_window === "TOO_EARLY") {
+            recs.push(
+              `Too early for notifications. SLA warning starts at 15 minutes before start_time`,
+            );
           }
 
-          if (timeDiff.notification_window === 'RECENTLY_STARTED') {
-            recs.push(`Within 15 minutes of start time. Wait for overdue window (15+ minutes after start_time)`);
+          if (timeDiff.notification_window === "RECENTLY_STARTED") {
+            recs.push(
+              `Within 15 minutes of start time. Wait for overdue window (15+ minutes after start_time)`,
+            );
           }
 
-          if (timeDiff.notification_window === 'SLA_WARNING_WINDOW') {
+          if (timeDiff.notification_window === "SLA_WARNING_WINDOW") {
             recs.push("Should generate SLA warning notification now!");
           }
 
-          if (timeDiff.notification_window === 'SLA_OVERDUE_WINDOW') {
+          if (timeDiff.notification_window === "SLA_OVERDUE_WINDOW") {
             recs.push("Should generate SLA overdue notification now!");
           }
 
@@ -2857,14 +2891,15 @@ router.get("/debug/subtask/:subtaskId", async (req: Request, res: Response) => {
           }
 
           if (recs.length === 0) {
-            recs.push("All criteria met! Try running POST /api/notifications-production/auto-sync to force check");
+            recs.push(
+              "All criteria met! Try running POST /api/notifications-production/auto-sync to force check",
+            );
           }
 
           return recs;
         })(),
         timestamp: new Date().toISOString(),
       });
-
     } else {
       res.json({
         error: "Database unavailable",
@@ -2882,115 +2917,141 @@ router.get("/debug/subtask/:subtaskId", async (req: Request, res: Response) => {
 });
 
 // Test endpoint to manually create notification for specific subtask (like ID 31)
-router.post("/test/create-for-subtask/:subtaskId", async (req: Request, res: Response) => {
-  try {
-    if (await isDatabaseAvailable()) {
-      const subtaskId = parseInt(req.params.subtaskId);
-      const { notification_type = "sla_warning", custom_message } = req.body;
+router.post(
+  "/test/create-for-subtask/:subtaskId",
+  async (req: Request, res: Response) => {
+    try {
+      if (await isDatabaseAvailable()) {
+        const subtaskId = parseInt(req.params.subtaskId);
+        const { notification_type = "sla_warning", custom_message } = req.body;
 
-      console.log(`Creating test notification for subtask ID ${subtaskId}...`);
+        console.log(
+          `Creating test notification for subtask ID ${subtaskId}...`,
+        );
 
-      // Get subtask info
-      const subtaskResult = await pool.query(`
+        // Get subtask info
+        const subtaskResult = await pool.query(
+          `
         SELECT fs.*, ft.task_name, ft.client_name, ft.assigned_to, ft.is_active
         FROM finops_subtasks fs
         LEFT JOIN finops_tasks ft ON fs.task_id = ft.id
         WHERE fs.id = $1
-      `, [subtaskId]);
+      `,
+          [subtaskId],
+        );
 
-      if (subtaskResult.rows.length === 0) {
-        return res.status(404).json({
-          error: `Subtask ID ${subtaskId} not found`,
-          timestamp: new Date().toISOString(),
-        });
-      }
+        if (subtaskResult.rows.length === 0) {
+          return res.status(404).json({
+            error: `Subtask ID ${subtaskId} not found`,
+            timestamp: new Date().toISOString(),
+          });
+        }
 
-      const subtask = subtaskResult.rows[0];
+        const subtask = subtaskResult.rows[0];
 
-      // Calculate time difference for realistic message
-      const timeResult = await pool.query(`
+        // Calculate time difference for realistic message
+        const timeResult = await pool.query(
+          `
         SELECT
           EXTRACT(EPOCH FROM ((CURRENT_DATE + $1) - NOW())) / 60 as minutes_until_start,
           EXTRACT(EPOCH FROM (NOW() - (CURRENT_DATE + $1))) / 60 as minutes_after_start
-      `, [subtask.start_time]);
+      `,
+          [subtask.start_time],
+        );
 
-      const timeDiff = timeResult.rows[0];
+        const timeDiff = timeResult.rows[0];
 
-      // Generate appropriate message based on time and type
-      let message;
-      let action;
+        // Generate appropriate message based on time and type
+        let message;
+        let action;
 
-      if (custom_message) {
-        message = custom_message;
-        action = notification_type === "sla_overdue" ? "overdue_notification_sent" : "sla_alert";
-      } else if (notification_type === "sla_warning") {
-        const minutesRemaining = Math.max(1, Math.ceil(timeDiff.minutes_until_start || 15));
-        message = `SLA Warning - ${minutesRemaining} min remaining • need to start`;
-        action = "sla_alert";
-      } else if (notification_type === "sla_overdue") {
-        const minutesOverdue = Math.max(1, Math.ceil(timeDiff.minutes_after_start || 20));
-        message = `Overdue by ${minutesOverdue} min • ${minutesOverdue} min ago`;
-        action = "overdue_notification_sent";
-      } else {
-        message = `${notification_type} notification for ${subtask.name}`;
-        action = "task_status_changed";
-      }
+        if (custom_message) {
+          message = custom_message;
+          action =
+            notification_type === "sla_overdue"
+              ? "overdue_notification_sent"
+              : "sla_alert";
+        } else if (notification_type === "sla_warning") {
+          const minutesRemaining = Math.max(
+            1,
+            Math.ceil(timeDiff.minutes_until_start || 15),
+          );
+          message = `SLA Warning - ${minutesRemaining} min remaining • need to start`;
+          action = "sla_alert";
+        } else if (notification_type === "sla_overdue") {
+          const minutesOverdue = Math.max(
+            1,
+            Math.ceil(timeDiff.minutes_after_start || 20),
+          );
+          message = `Overdue by ${minutesOverdue} min • ${minutesOverdue} min ago`;
+          action = "overdue_notification_sent";
+        } else {
+          message = `${notification_type} notification for ${subtask.name}`;
+          action = "task_status_changed";
+        }
 
-      // Create the notification
-      const insertQuery = `
+        // Create the notification
+        const insertQuery = `
         INSERT INTO finops_activity_log (action, task_id, subtask_id, user_name, details, timestamp)
         VALUES ($1, $2, $3, $4, $5, NOW())
         RETURNING *
       `;
 
-      const result = await pool.query(insertQuery, [
-        action,
-        subtask.task_id,
-        subtaskId,
-        "System",
-        message,
-      ]);
+        const result = await pool.query(insertQuery, [
+          action,
+          subtask.task_id,
+          subtaskId,
+          "System",
+          message,
+        ]);
 
-      res.json({
-        message: `Test notification created for subtask ID ${subtaskId}`,
-        notification: result.rows[0],
-        subtask_info: {
-          id: subtask.id,
-          name: subtask.name,
-          start_time: subtask.start_time,
-          auto_notify: subtask.auto_notify,
-          status: subtask.status,
-          task_name: subtask.task_name,
-          client_name: subtask.client_name,
-          task_active: subtask.is_active,
-        },
-        time_analysis: {
-          minutes_until_start: timeDiff.minutes_until_start ? parseFloat(timeDiff.minutes_until_start.toFixed(2)) : null,
-          minutes_after_start: timeDiff.minutes_after_start ? parseFloat(timeDiff.minutes_after_start.toFixed(2)) : null,
-        },
-        notification_details: {
-          type: notification_type,
-          message: message,
-          action: action,
-        },
-        timestamp: new Date().toISOString(),
-      });
-
-    } else {
-      res.json({
-        error: "Database unavailable",
+        res.json({
+          message: `Test notification created for subtask ID ${subtaskId}`,
+          notification: result.rows[0],
+          subtask_info: {
+            id: subtask.id,
+            name: subtask.name,
+            start_time: subtask.start_time,
+            auto_notify: subtask.auto_notify,
+            status: subtask.status,
+            task_name: subtask.task_name,
+            client_name: subtask.client_name,
+            task_active: subtask.is_active,
+          },
+          time_analysis: {
+            minutes_until_start: timeDiff.minutes_until_start
+              ? parseFloat(timeDiff.minutes_until_start.toFixed(2))
+              : null,
+            minutes_after_start: timeDiff.minutes_after_start
+              ? parseFloat(timeDiff.minutes_after_start.toFixed(2))
+              : null,
+          },
+          notification_details: {
+            type: notification_type,
+            message: message,
+            action: action,
+          },
+          timestamp: new Date().toISOString(),
+        });
+      } else {
+        res.json({
+          error: "Database unavailable",
+          timestamp: new Date().toISOString(),
+        });
+      }
+    } catch (error) {
+      console.error(
+        `Error creating test notification for subtask ${req.params.subtaskId}:`,
+        error,
+      );
+      res.status(500).json({
+        error: "Failed to create test notification",
+        message: error.message,
         timestamp: new Date().toISOString(),
       });
     }
-  } catch (error) {
-    console.error(`Error creating test notification for subtask ${req.params.subtaskId}:`, error);
-    res.status(500).json({
-      error: "Failed to create test notification",
-      message: error.message,
-      timestamp: new Date().toISOString(),
-    });
-  }
-});
+  },
+);
 
 // Auto-sync notification time to match actual current remaining time
 router.post("/auto-sync-current-time", async (req: Request, res: Response) => {
