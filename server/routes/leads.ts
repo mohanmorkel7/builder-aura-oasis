@@ -959,6 +959,52 @@ router.put("/:id", async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Invalid status value" });
     }
 
+    // Validate numeric fields
+    if (
+      leadData.probability !== undefined &&
+      leadData.probability !== null &&
+      leadData.probability !== ""
+    ) {
+      if (!DatabaseValidator.isValidNumber(leadData.probability, 0, 100)) {
+        return res
+          .status(400)
+          .json({ error: "Probability must be between 0 and 100" });
+      }
+    }
+
+    if (
+      leadData.expected_daily_txn_volume !== undefined &&
+      leadData.expected_daily_txn_volume !== null &&
+      leadData.expected_daily_txn_volume !== ""
+    ) {
+      if (
+        !DatabaseValidator.isValidNumber(leadData.expected_daily_txn_volume, 0)
+      ) {
+        return res.status(400).json({
+          error: "Expected daily transaction volume must be a positive number",
+        });
+      }
+    }
+
+    // Validate transaction volume year fields
+    const txnVolumeFields = [
+      { field: "expected_daily_txn_volume_year1", label: "Expected Daily Txn Volume First Year" },
+      { field: "expected_daily_txn_volume_year2", label: "Expected Daily Txn Volume Second Year" },
+      { field: "expected_daily_txn_volume_year3", label: "Expected Daily Txn Volume Third Year" },
+      { field: "expected_daily_txn_volume_year5", label: "Expected Daily Txn Volume Fifth Year" },
+    ];
+
+    for (const { field, label } of txnVolumeFields) {
+      const value = leadData[field];
+      if (value !== undefined && value !== null && value !== "") {
+        if (!DatabaseValidator.isValidNumber(value, 0)) {
+          return res.status(400).json({
+            error: `${label} must be a positive number`,
+          });
+        }
+      }
+    }
+
     try {
       const dbAvailable = await isDatabaseAvailable();
 
