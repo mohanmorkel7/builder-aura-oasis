@@ -87,7 +87,21 @@ const transformDbNotifications = (
 ): FinOpsNotification[] => {
   console.log("🔄 Transform input:", dbNotifications.slice(0, 2)); // Log first 2 items for debugging
 
-  return dbNotifications.map((dbNotif) => {
+  // Filter out completed and overdue tasks from notifications (these go to activity log only)
+  const activeNotifications = dbNotifications.filter((dbNotif) => {
+    // Don't show completed tasks in notifications tab
+    if (dbNotif.action === "task_completed") return false;
+
+    // Don't show overdue tasks in notifications tab (they go to activity log)
+    if (dbNotif.action === "task_overdue") return false;
+
+    // Don't show daily reset notifications in notifications tab
+    if (dbNotif.action === "daily_reset") return false;
+
+    return true;
+  });
+
+  return activeNotifications.map((dbNotif) => {
     // Initialize all variables at the beginning to avoid reference errors
     let realTimeDetails = dbNotif.details;
     let realTimeTitle = dbNotif.details;
@@ -394,6 +408,8 @@ const transformDbNotifications = (
         (overdueMinutes ? `Overdue by ${overdueMinutes} min` : undefined),
       overdue_minutes: overdueMinutes,
       members_list: members.members_list,
+      scheduled_time_ist: istTime,
+      time_diff_minutes: timeRemaining || (overdueMinutes ? -overdueMinutes : undefined),
     };
 
     console.log("🔄 Transformed notification:", transformed);
