@@ -304,8 +304,8 @@ router.post("/", async (req: Request, res: Response) => {
         res.status(201).json(lead);
       } else {
         const mockLead = {
-          id: Date.now(),
-          lead_id: leadData.lead_id || `#${Date.now().toString().slice(-4)}`,
+          id: Math.floor(Math.random() * 1000000) + 1,
+          lead_id: leadData.lead_id || `#${Math.floor(Math.random() * 9999) + 1}`,
           ...leadData,
           status: leadData.status || ("in-progress" as const),
           created_at: new Date().toISOString(),
@@ -320,7 +320,7 @@ router.post("/", async (req: Request, res: Response) => {
         dbError.message,
       );
       const mockLead = {
-        id: Date.now(),
+        id: Math.floor(Math.random() * 1000000) + 1,
         lead_id:
           leadData.lead_id || (await DatabaseValidator.generateUniqueLeadId()),
         ...leadData,
