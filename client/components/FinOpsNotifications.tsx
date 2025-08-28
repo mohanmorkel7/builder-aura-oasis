@@ -51,11 +51,11 @@ import { format, formatDistanceToNow, isToday, isYesterday } from "date-fns";
 interface FinOpsNotification {
   id: string;
   type:
-    | "pre_start_alert"    // 15 mins before start time
-    | "sla_warning"        // Task missed start time
-    | "escalation_alert"   // 15+ mins overdue
-    | "task_completed"     // Task completed (moved to activity log)
-    | "task_overdue"       // Task overdue (moved to activity log)
+    | "pre_start_alert" // 15 mins before start time
+    | "sla_warning" // Task missed start time
+    | "escalation_alert" // 15+ mins overdue
+    | "task_completed" // Task completed (moved to activity log)
+    | "task_overdue" // Task overdue (moved to activity log)
     | "daily_reminder"
     | "task_pending"
     | "task_delayed";
@@ -75,8 +75,8 @@ interface FinOpsNotification {
   sla_remaining?: string;
   overdue_minutes?: number;
   members_list?: string[];
-  scheduled_time_ist?: string;  // IST time when task should start
-  time_diff_minutes?: number;   // Minutes until/since start time
+  scheduled_time_ist?: string; // IST time when task should start
+  time_diff_minutes?: number; // Minutes until/since start time
 }
 
 // Mock notifications data
@@ -117,12 +117,18 @@ const transformDbNotifications = (
     let overdueMinutes = overdueMatch ? parseInt(overdueMatch[1]) : undefined;
 
     // Extract IST time information
-    const istTimeMatch = dbNotif.details?.match(/(\d{1,2}:\d{2}(?::\d{2})?) IST/i);
+    const istTimeMatch = dbNotif.details?.match(
+      /(\d{1,2}:\d{2}(?::\d{2})?) IST/i,
+    );
     const istTime = istTimeMatch ? istTimeMatch[1] : undefined;
 
     // Extract time remaining information
-    const timeRemainingMatch = dbNotif.details?.match(/starts in (\d+) minutes?/i);
-    const timeRemaining = timeRemainingMatch ? parseInt(timeRemainingMatch[1]) : undefined;
+    const timeRemainingMatch = dbNotif.details?.match(
+      /starts in (\d+) minutes?/i,
+    );
+    const timeRemaining = timeRemainingMatch
+      ? parseInt(timeRemainingMatch[1])
+      : undefined;
 
     // For existing overdue notifications, calculate current overdue time
     if (
@@ -409,7 +415,8 @@ const transformDbNotifications = (
       overdue_minutes: overdueMinutes,
       members_list: members.members_list,
       scheduled_time_ist: istTime,
-      time_diff_minutes: timeRemaining || (overdueMinutes ? -overdueMinutes : undefined),
+      time_diff_minutes:
+        timeRemaining || (overdueMinutes ? -overdueMinutes : undefined),
     };
 
     console.log("🔄 Transformed notification:", transformed);

@@ -621,19 +621,27 @@ export default function ClientBasedFinOpsTaskManager() {
     if (!user) return false;
 
     // Admin can edit everything
-    if (user.role === 'admin') return true;
+    if (user.role === "admin") return true;
 
     // Check if user is in reporting managers
-    if (task.reporting_managers.some(manager =>
-      extractNameFromValue(manager) === user.name ||
-      manager.includes(user.email || '')
-    )) return true;
+    if (
+      task.reporting_managers.some(
+        (manager) =>
+          extractNameFromValue(manager) === user.name ||
+          manager.includes(user.email || ""),
+      )
+    )
+      return true;
 
     // Check if user is in escalation managers
-    if (task.escalation_managers.some(manager =>
-      extractNameFromValue(manager) === user.name ||
-      manager.includes(user.email || '')
-    )) return true;
+    if (
+      task.escalation_managers.some(
+        (manager) =>
+          extractNameFromValue(manager) === user.name ||
+          manager.includes(user.email || ""),
+      )
+    )
+      return true;
 
     return false;
   };
@@ -1383,7 +1391,7 @@ export default function ClientBasedFinOpsTaskManager() {
             </p>
           </div>
           <div className="flex gap-2">
-            {user?.role === 'admin' && (
+            {user?.role === "admin" && (
               <Button onClick={() => setIsCreateDialogOpen(true)}>
                 <Plus className="w-4 h-4 mr-2" />
                 Create Task

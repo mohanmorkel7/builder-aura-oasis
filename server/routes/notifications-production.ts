@@ -161,12 +161,14 @@ router.get("/", async (req: Request, res: Response) => {
 
           // Mark notification as sent to prevent duplicates
           try {
-            await pool.query(
-              `SELECT mark_notification_sent($1, $2)`,
-              [notification.subtask_id, notification.notification_type]
-            );
+            await pool.query(`SELECT mark_notification_sent($1, $2)`, [
+              notification.subtask_id,
+              notification.notification_type,
+            ]);
           } catch (markError) {
-            console.log(`Warning: Could not mark notification as sent: ${markError.message}`);
+            console.log(
+              `Warning: Could not mark notification as sent: ${markError.message}`,
+            );
           }
 
           await pool.query(insertQuery, [

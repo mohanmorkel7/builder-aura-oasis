@@ -239,7 +239,9 @@ export async function initializeDatabase() {
           "utf8",
         );
         await client.query(finopsIstMigration);
-        console.log("IST FinOps SLA notifications migration applied successfully");
+        console.log(
+          "IST FinOps SLA notifications migration applied successfully",
+        );
       }
     } catch (finopsIstMigrationError) {
       console.log(
