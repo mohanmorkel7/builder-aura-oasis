@@ -1149,7 +1149,9 @@ router.get("/:leadId/steps", async (req: Request, res: Response) => {
 
     // Check if leadId is within PostgreSQL integer range to prevent overflow
     if (leadId > 2147483647 || leadId < -2147483648) {
-      console.log(`❌ Lead ID ${leadId} is out of PostgreSQL integer range, using mock data`);
+      console.log(
+        `❌ Lead ID ${leadId} is out of PostgreSQL integer range, using mock data`,
+      );
       const steps = await MockDataService.getLeadSteps(leadId);
       return res.json(steps);
     }

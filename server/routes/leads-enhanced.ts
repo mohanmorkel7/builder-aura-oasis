@@ -305,7 +305,8 @@ router.post("/", async (req: Request, res: Response) => {
       } else {
         const mockLead = {
           id: Math.floor(Math.random() * 1000000) + 1,
-          lead_id: leadData.lead_id || `#${Math.floor(Math.random() * 9999) + 1}`,
+          lead_id:
+            leadData.lead_id || `#${Math.floor(Math.random() * 9999) + 1}`,
           ...leadData,
           status: leadData.status || ("in-progress" as const),
           created_at: new Date().toISOString(),

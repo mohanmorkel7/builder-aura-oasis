@@ -981,7 +981,9 @@ export default function CreateLead() {
         solutions: JSON.stringify(leadData.solutions || []),
         contacts: JSON.stringify(leadData.contacts || []),
         flat_fee_config: JSON.stringify(leadData.flat_fee_config || []),
-        transaction_fee_config: JSON.stringify(leadData.transaction_fee_config || []),
+        transaction_fee_config: JSON.stringify(
+          leadData.transaction_fee_config || [],
+        ),
         project_budget:
           leadData.project_budget && leadData.project_budget !== ""
             ? parseFloat(leadData.project_budget)
