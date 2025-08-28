@@ -615,6 +615,39 @@ function SortableSubTaskItem({
 export default function ClientBasedFinOpsTaskManager() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+
+  // Check if user can edit FinOps tasks
+  const canEditFinOpsTasks = (task: ClientBasedFinOpsTask): boolean => {
+    if (!user) return false;
+
+    // Admin can edit everything
+    if (user.role === 'admin') return true;
+
+    // Check if user is in reporting managers
+    if (task.reporting_managers.some(manager =>
+      extractNameFromValue(manager) === user.name ||
+      manager.includes(user.email || '')
+    )) return true;
+
+    // Check if user is in escalation managers
+    if (task.escalation_managers.some(manager =>
+      extractNameFromValue(manager) === user.name ||
+      manager.includes(user.email || '')
+    )) return true;
+
+    return false;
+  };
+
+  // Check if user can only change status (view-only users)
+  const canOnlyChangeStatus = (task: ClientBasedFinOpsTask): boolean => {
+    if (!user) return false;
+
+    // Admin and managers can do full edits
+    if (canEditFinOpsTasks(task)) return false;
+
+    // Other users can only change status
+    return true;
+  };
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<ClientBasedFinOpsTask | null>(
     null,
