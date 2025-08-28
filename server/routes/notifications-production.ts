@@ -131,9 +131,9 @@ router.get("/", async (req: Request, res: Response) => {
           ? `WHERE ${whereConditions.join(" AND ")}`
           : "";
 
-      // First run auto-sync to check for new SLA notifications
+      // First run auto-sync to check for new SLA notifications (IST-based)
       try {
-        const autoSyncQuery = `SELECT * FROM check_subtask_sla_notifications()`;
+        const autoSyncQuery = `SELECT * FROM check_subtask_sla_notifications_ist()`;
         const autoSyncResult = await pool.query(autoSyncQuery);
 
         for (const notification of autoSyncResult.rows) {
