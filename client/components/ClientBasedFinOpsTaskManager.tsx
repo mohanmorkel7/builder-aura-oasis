@@ -254,6 +254,8 @@ interface ClientBasedFinOpsTask {
   last_run?: string;
   next_run?: string;
   status: "active" | "inactive" | "completed" | "overdue" | "delayed";
+  can_edit?: boolean; // User permission to edit this task
+  can_admin?: boolean; // Admin permission to edit this task
 }
 
 // Time Picker Component with AM/PM support
