@@ -170,7 +170,7 @@ export class ApiClient {
             this.failureCount++;
             this.lastFailureTime = Date.now();
             this.checkOfflineMode();
-            return null;
+            return this.getEmptyFallbackResponse(endpoint);
           }
         } else if (
           fetchError instanceof TypeError &&
@@ -180,16 +180,21 @@ export class ApiClient {
           this.failureCount++;
           this.lastFailureTime = Date.now();
           this.checkOfflineMode();
-          // For network connectivity issues, return an empty response rather than throwing
-          return null;
+          // Try XMLHttpRequest fallback first
+          try {
+            console.log("Trying XMLHttpRequest fallback for network error");
+            response = await this.xmlHttpRequestFallback(url, config);
+          } catch (xhrError) {
+            console.error("XMLHttpRequest fallback failed:", xhrError);
+            return this.getEmptyFallbackResponse(endpoint);
+          }
         } else if (fetchError.message === "Request timeout") {
           console.error("Request timed out - server may be unresponsive");
           // For timeouts, increment failure count for circuit breaker
           this.failureCount++;
           this.lastFailureTime = Date.now();
           this.checkOfflineMode();
-          // Return null instead of throwing for timeout errors
-          return null;
+          return this.getEmptyFallbackResponse(endpoint);
         } else {
           // For other errors, try XMLHttpRequest fallback
           try {
@@ -200,7 +205,7 @@ export class ApiClient {
             this.failureCount++;
             this.lastFailureTime = Date.now();
             this.checkOfflineMode();
-            return null;
+            return this.getEmptyFallbackResponse(endpoint);
           }
         }
       }
