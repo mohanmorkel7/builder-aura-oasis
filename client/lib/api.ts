@@ -493,6 +493,45 @@ export class ApiClient {
     });
   }
 
+  private getEmptyFallbackResponse(endpoint: string): any {
+    console.log(`🔄 Providing empty fallback response for endpoint: ${endpoint}`);
+
+    // Return appropriate empty structures based on endpoint
+    if (endpoint.includes('/notifications') || endpoint.includes('notifications')) {
+      return {
+        notifications: [],
+        pagination: { total: 0, limit: 50, offset: 0, has_more: false },
+        unread_count: 0
+      };
+    }
+
+    if (endpoint.includes('/finops/tasks') || endpoint.includes('finops/tasks')) {
+      return [];
+    }
+
+    if (endpoint.includes('/finops/clients') || endpoint.includes('finops/clients')) {
+      return [];
+    }
+
+    if (endpoint.includes('/users') || endpoint.includes('users')) {
+      return [];
+    }
+
+    if (endpoint.includes('/workflow/') || endpoint.includes('workflow')) {
+      return [];
+    }
+
+    if (endpoint.includes('/activity') || endpoint.includes('activity')) {
+      return {
+        activity_logs: [],
+        pagination: { total: 0, limit: 50, offset: 0, has_more: false }
+      };
+    }
+
+    // Default empty response
+    return [];
+  }
+
   // Auth methods
   async login(email: string, password: string) {
     return this.request("/users/auth/login", {
