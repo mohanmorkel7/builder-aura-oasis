@@ -234,6 +234,7 @@ router.get("/", async (req: Request, res: Response) => {
         LEFT JOIN finops_notification_archived_status fnas ON rn.id = fnas.activity_log_id
         WHERE rn.rn = 1
         AND fnas.activity_log_id IS NULL
+        AND NOT (rn.action = 'completion_notification_sent' OR LOWER(rn.details) LIKE '%completed%')
         ORDER BY rn.timestamp DESC
         LIMIT $${paramIndex++} OFFSET $${paramIndex++}
       `;
