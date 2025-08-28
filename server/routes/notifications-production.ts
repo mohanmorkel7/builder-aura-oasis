@@ -1283,10 +1283,19 @@ router.post("/setup-auto-sla", async (req: Request, res: Response) => {
       // Add start_time column to subtasks if it doesn't exist
       const addColumnQuery = `
         ALTER TABLE finops_subtasks
-        ADD COLUMN IF NOT EXISTS start_time TIME;
+        ADD COLUMN IF NOT EXISTS start_time TIME DEFAULT '05:00:00';
 
         ALTER TABLE finops_subtasks
         ADD COLUMN IF NOT EXISTS auto_notify BOOLEAN DEFAULT true;
+
+        -- Update existing records to have default values
+        UPDATE finops_subtasks
+        SET start_time = '05:00:00'
+        WHERE start_time IS NULL;
+
+        UPDATE finops_subtasks
+        SET auto_notify = true
+        WHERE auto_notify IS NULL;
 
         -- Add index for performance
         CREATE INDEX IF NOT EXISTS idx_finops_subtasks_start_time ON finops_subtasks(start_time);
