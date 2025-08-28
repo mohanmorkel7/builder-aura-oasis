@@ -1430,8 +1430,8 @@ router.post("/auto-sync", async (req: Request, res: Response) => {
     if (await isDatabaseAvailable()) {
       console.log("Running automated SLA sync...");
 
-      // Get notifications that need to be created
-      const checkQuery = `SELECT * FROM check_subtask_sla_notifications()`;
+      // Get notifications that need to be created (IST-based)
+      const checkQuery = `SELECT * FROM check_subtask_sla_notifications_ist()`;
       const checkResult = await pool.query(checkQuery);
 
       const createdNotifications = [];
@@ -1891,7 +1891,7 @@ router.post("/enable-auto-sync", async (req: Request, res: Response) => {
           console.log("🔄 Running automated SLA sync...");
 
           if (await isDatabaseAvailable()) {
-            const checkQuery = `SELECT * FROM check_subtask_sla_notifications()`;
+            const checkQuery = `SELECT * FROM check_subtask_sla_notifications_ist()`;
             const checkResult = await pool.query(checkQuery);
 
             for (const notification of checkResult.rows) {
