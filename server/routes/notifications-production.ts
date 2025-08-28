@@ -1311,7 +1311,7 @@ router.post("/setup-auto-sla", async (req: Request, res: Response) => {
           notification_type TEXT,
           subtask_id INTEGER,
           task_id INTEGER,
-          task_name TEXT,
+          task_name VARCHAR(255),
           subtask_name TEXT,
           assigned_to TEXT,
           time_diff_minutes INTEGER,
