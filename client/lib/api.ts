@@ -213,7 +213,7 @@ export class ApiClient {
       // Handle null response from network errors
       if (response === null) {
         console.warn("Network error - returning empty response");
-        return [];
+        return this.getEmptyFallbackResponse(endpoint);
       }
 
       if (!response.ok) {
