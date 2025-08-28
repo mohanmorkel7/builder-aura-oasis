@@ -579,7 +579,7 @@ router.post("/:leadId/steps", async (req: Request, res: Response) => {
         res.status(201).json(step);
       } else {
         const mockStep = {
-          id: Date.now(),
+          id: Math.floor(Math.random() * 1000000) + 1,
           lead_id: leadId,
           name: stepData.name,
           description: stepData.description || null,
@@ -601,7 +601,7 @@ router.post("/:leadId/steps", async (req: Request, res: Response) => {
         dbError.message,
       );
       const mockStep = {
-        id: Date.now(),
+        id: Math.floor(Math.random() * 1000000) + 1,
         lead_id: leadId,
         name: stepData.name,
         description: stepData.description || null,
