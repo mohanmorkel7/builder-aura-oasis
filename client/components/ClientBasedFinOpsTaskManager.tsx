@@ -779,9 +779,19 @@ export default function ClientBasedFinOpsTaskManager() {
   }, [rawClients]);
 
   // Fetch users for assignment
-  const { data: users = [] } = useQuery({
+  const { data: users = [], error: usersError } = useQuery({
     queryKey: ["users"],
-    queryFn: () => apiClient.getUsers(),
+    queryFn: async () => {
+      try {
+        return await apiClient.getUsers();
+      } catch (error) {
+        console.error("❌ Error fetching users:", error);
+        return [];
+      }
+    },
+    retry: 1,
+    retryDelay: 3000,
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
   // Mutations for CRUD operations
