@@ -702,11 +702,18 @@ export class LeadRepository {
           key === "solutions" ||
           key === "commercials" ||
           key === "commercial_pricing" ||
-          key === "contacts"
+          key === "contacts" ||
+          key === "flat_fee_config" ||
+          key === "transaction_fee_config"
         ) {
           // Handle JSON fields
           setClause.push(`${key} = $${paramIndex}`);
-          values.push(JSON.stringify(processedValue));
+          // If it's already a JSON string, use it as is; otherwise stringify it
+          if (typeof processedValue === "string") {
+            values.push(processedValue);
+          } else {
+            values.push(JSON.stringify(processedValue));
+          }
         } else {
           setClause.push(`${key} = $${paramIndex}`);
           values.push(processedValue);
