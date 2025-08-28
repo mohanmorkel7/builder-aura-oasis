@@ -579,7 +579,7 @@ export default function FinOpsNotifications() {
         throw error;
       }
     },
-    refetchInterval: error ? false : 60000, // Don't auto-refetch if there's an error
+    refetchInterval: 60000, // Auto-refetch every 60 seconds
     staleTime: 30000, // Consider data stale after 30 seconds
     retry: 1, // Only retry once to avoid spam
     retryDelay: 5000, // Wait 5 seconds before retry
@@ -879,7 +879,7 @@ export default function FinOpsNotifications() {
           </h2>
           <p className="text-gray-600 mt-1">
             Automated SLA monitoring with 15-minute warnings and overdue alerts
-            {isDatabaseConnected && " • Real-time database monitoring active"}
+            {isDatabaseConnected && " �� Real-time database monitoring active"}
             {!isDatabaseConnected && " • Database connection required"}
           </p>
         </div>
