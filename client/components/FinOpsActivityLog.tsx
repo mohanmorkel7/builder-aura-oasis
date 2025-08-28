@@ -98,7 +98,7 @@ export default function FinOpsActivityLog() {
   }
 
   // Fetch activity logs
-  const { data: activityData, isLoading } = useQuery({
+  const { data: activityData, isLoading, error: activityError } = useQuery({
     queryKey: ["activity-logs", filters],
     queryFn: async () => {
       try {
@@ -132,15 +132,9 @@ export default function FinOpsActivityLog() {
         };
       }
     },
-    refetchInterval: 30000, // Refresh every 30 seconds
-    retry: (failureCount, error) => {
-      // Don't retry if it's a JSON parsing error
-      if (error?.message?.includes("Invalid JSON")) {
-        console.error("JSON parsing error - not retrying:", error);
-        return false;
-      }
-      return failureCount < 3;
-    },
+    refetchInterval: activityError ? false : 30000, // Don't auto-refetch if there's an error
+    retry: 1, // Only retry once
+    retryDelay: 3000, // Wait 3 seconds before retry
   });
 
   const activityLogs = activityData?.activity_logs || [];
