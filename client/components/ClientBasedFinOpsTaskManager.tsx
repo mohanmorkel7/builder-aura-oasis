@@ -1886,30 +1886,53 @@ export default function ClientBasedFinOpsTaskManager() {
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => startEditing(task)}
-                      >
-                        <Edit className="w-4 h-4 mr-1" />
-                        Edit
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          if (
-                            confirm(
-                              `Are you sure you want to delete "${task.task_name}"?`,
-                            )
-                          ) {
-                            deleteTaskMutation.mutate(task.id);
-                          }
-                        }}
-                        className="text-red-600"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
+                      {canEditFinOpsTasks(task) ? (
+                        <>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => startEditing(task)}
+                          >
+                            <Edit className="w-4 h-4 mr-1" />
+                            Edit Task
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              if (
+                                confirm(
+                                  `Are you sure you want to delete "${task.task_name}"?`,
+                                )
+                              ) {
+                                deleteTaskMutation.mutate(task.id);
+                              }
+                            }}
+                            className="text-red-600"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </>
+                      ) : canOnlyChangeStatus(task) ? (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => startEditing(task)}
+                        >
+                          <Activity className="w-4 h-4 mr-1" />
+                          Update Status Only
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          disabled
+                          className="text-gray-400"
+                        >
+                          <Activity className="w-4 h-4 mr-1" />
+                          View Only
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </CardHeader>
