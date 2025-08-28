@@ -695,7 +695,7 @@ export default function ClientBasedFinOpsTaskManager() {
         return [];
       }
     },
-    refetchInterval: error ? false : 30000, // Don't auto-refetch if there's an error
+    refetchInterval: 30000, // Auto-refetch every 30 seconds
     retry: 1, // Only retry once to avoid spam
     retryDelay: 3000, // Wait 3 seconds before retry
     staleTime: 30000, // Consider data stale after 30 seconds
