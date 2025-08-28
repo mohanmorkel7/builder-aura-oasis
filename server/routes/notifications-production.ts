@@ -1295,7 +1295,7 @@ router.post("/setup-auto-sla", async (req: Request, res: Response) => {
 
       await pool.query(addColumnQuery);
 
-      // Create SLA monitoring function
+      // Create SLA monitoring function with proper time arithmetic
       const createMonitoringFunction = `
         CREATE OR REPLACE FUNCTION check_subtask_sla_notifications()
         RETURNS TABLE(
@@ -1309,8 +1309,9 @@ router.post("/setup-auto-sla", async (req: Request, res: Response) => {
           message TEXT
         ) AS $$
         DECLARE
-          current_time TIME := CURRENT_TIME;
-          current_date DATE := CURRENT_DATE;
+          current_time_only TIME := CURRENT_TIME::TIME;
+          current_date_only DATE := CURRENT_DATE;
+          current_timestamp_val TIMESTAMP := NOW();
         BEGIN
           -- Check for SLA warnings (15 minutes before start_time)
           RETURN QUERY
@@ -1321,9 +1322,14 @@ router.post("/setup-auto-sla", async (req: Request, res: Response) => {
             ft.task_name,
             fs.name as subtask_name,
             COALESCE(fs.assigned_to, ft.assigned_to) as assigned_to,
-            EXTRACT(EPOCH FROM (fs.start_time - current_time))/60 as time_diff_minutes,
+            -- Calculate time difference properly by converting to timestamps
+            EXTRACT(EPOCH FROM (
+              (current_date_only + fs.start_time) - current_timestamp_val
+            ))::INTEGER / 60 as time_diff_minutes,
             format('SLA Warning - %s min remaining • need to start',
-                   ROUND(EXTRACT(EPOCH FROM (fs.start_time - current_time))/60)) as message
+                   ROUND(EXTRACT(EPOCH FROM (
+                     (current_date_only + fs.start_time) - current_timestamp_val
+                   )) / 60)) as message
           FROM finops_subtasks fs
           LEFT JOIN finops_tasks ft ON fs.task_id = ft.id
           WHERE fs.start_time IS NOT NULL
@@ -1331,15 +1337,15 @@ router.post("/setup-auto-sla", async (req: Request, res: Response) => {
           AND fs.status IN ('pending', 'in_progress')
           AND ft.is_active = true
           -- Check if start_time is within next 15 minutes
-          AND fs.start_time > current_time
-          AND fs.start_time <= current_time + INTERVAL '15 minutes'
+          AND (current_date_only + fs.start_time) > current_timestamp_val
+          AND (current_date_only + fs.start_time) <= current_timestamp_val + INTERVAL '15 minutes'
           -- Prevent duplicate notifications
           AND NOT EXISTS (
             SELECT 1 FROM finops_activity_log fal
             WHERE fal.task_id = fs.task_id
             AND fal.subtask_id = fs.id
             AND fal.action = 'sla_alert'
-            AND fal.timestamp > current_date + current_time - INTERVAL '1 hour'
+            AND fal.timestamp > current_timestamp_val - INTERVAL '1 hour'
           );
 
           -- Check for overdue notifications (15+ minutes after start_time)
@@ -1351,10 +1357,17 @@ router.post("/setup-auto-sla", async (req: Request, res: Response) => {
             ft.task_name,
             fs.name as subtask_name,
             COALESCE(fs.assigned_to, ft.assigned_to) as assigned_to,
-            EXTRACT(EPOCH FROM (current_time - fs.start_time))/60 as time_diff_minutes,
-            format('Overdue by %s min • %s min ago',
-                   ROUND(EXTRACT(EPOCH FROM (current_time - fs.start_time))/60),
-                   ROUND(EXTRACT(EPOCH FROM (current_time - fs.start_time))/60)) as message
+            -- Calculate time difference properly by converting to timestamps
+            EXTRACT(EPOCH FROM (
+              current_timestamp_val - (current_date_only + fs.start_time)
+            ))::INTEGER / 60 as time_diff_minutes,
+            format('Overdue by %s min • started %s min ago',
+                   ROUND(EXTRACT(EPOCH FROM (
+                     current_timestamp_val - (current_date_only + fs.start_time)
+                   )) / 60),
+                   ROUND(EXTRACT(EPOCH FROM (
+                     current_timestamp_val - (current_date_only + fs.start_time)
+                   )) / 60)) as message
           FROM finops_subtasks fs
           LEFT JOIN finops_tasks ft ON fs.task_id = ft.id
           WHERE fs.start_time IS NOT NULL
@@ -1362,14 +1375,14 @@ router.post("/setup-auto-sla", async (req: Request, res: Response) => {
           AND fs.status IN ('pending', 'in_progress')
           AND ft.is_active = true
           -- Check if start_time was more than 15 minutes ago
-          AND fs.start_time < current_time - INTERVAL '15 minutes'
+          AND (current_date_only + fs.start_time) < current_timestamp_val - INTERVAL '15 minutes'
           -- Prevent duplicate notifications
           AND NOT EXISTS (
             SELECT 1 FROM finops_activity_log fal
             WHERE fal.task_id = fs.task_id
             AND fal.subtask_id = fs.id
             AND fal.action = 'overdue_notification_sent'
-            AND fal.timestamp > current_date + current_time - INTERVAL '1 hour'
+            AND fal.timestamp > current_timestamp_val - INTERVAL '1 hour'
           );
         END;
         $$ LANGUAGE plpgsql;
