@@ -2881,6 +2881,117 @@ router.get("/debug/subtask/:subtaskId", async (req: Request, res: Response) => {
   }
 });
 
+// Test endpoint to manually create notification for specific subtask (like ID 31)
+router.post("/test/create-for-subtask/:subtaskId", async (req: Request, res: Response) => {
+  try {
+    if (await isDatabaseAvailable()) {
+      const subtaskId = parseInt(req.params.subtaskId);
+      const { notification_type = "sla_warning", custom_message } = req.body;
+
+      console.log(`Creating test notification for subtask ID ${subtaskId}...`);
+
+      // Get subtask info
+      const subtaskResult = await pool.query(`
+        SELECT fs.*, ft.task_name, ft.client_name, ft.assigned_to, ft.is_active
+        FROM finops_subtasks fs
+        LEFT JOIN finops_tasks ft ON fs.task_id = ft.id
+        WHERE fs.id = $1
+      `, [subtaskId]);
+
+      if (subtaskResult.rows.length === 0) {
+        return res.status(404).json({
+          error: `Subtask ID ${subtaskId} not found`,
+          timestamp: new Date().toISOString(),
+        });
+      }
+
+      const subtask = subtaskResult.rows[0];
+
+      // Calculate time difference for realistic message
+      const timeResult = await pool.query(`
+        SELECT
+          EXTRACT(EPOCH FROM ((CURRENT_DATE + $1) - NOW())) / 60 as minutes_until_start,
+          EXTRACT(EPOCH FROM (NOW() - (CURRENT_DATE + $1))) / 60 as minutes_after_start
+      `, [subtask.start_time]);
+
+      const timeDiff = timeResult.rows[0];
+
+      // Generate appropriate message based on time and type
+      let message;
+      let action;
+
+      if (custom_message) {
+        message = custom_message;
+        action = notification_type === "sla_overdue" ? "overdue_notification_sent" : "sla_alert";
+      } else if (notification_type === "sla_warning") {
+        const minutesRemaining = Math.max(1, Math.ceil(timeDiff.minutes_until_start || 15));
+        message = `SLA Warning - ${minutesRemaining} min remaining • need to start`;
+        action = "sla_alert";
+      } else if (notification_type === "sla_overdue") {
+        const minutesOverdue = Math.max(1, Math.ceil(timeDiff.minutes_after_start || 20));
+        message = `Overdue by ${minutesOverdue} min • ${minutesOverdue} min ago`;
+        action = "overdue_notification_sent";
+      } else {
+        message = `${notification_type} notification for ${subtask.name}`;
+        action = "task_status_changed";
+      }
+
+      // Create the notification
+      const insertQuery = `
+        INSERT INTO finops_activity_log (action, task_id, subtask_id, user_name, details, timestamp)
+        VALUES ($1, $2, $3, $4, $5, NOW())
+        RETURNING *
+      `;
+
+      const result = await pool.query(insertQuery, [
+        action,
+        subtask.task_id,
+        subtaskId,
+        "System",
+        message,
+      ]);
+
+      res.json({
+        message: `Test notification created for subtask ID ${subtaskId}`,
+        notification: result.rows[0],
+        subtask_info: {
+          id: subtask.id,
+          name: subtask.name,
+          start_time: subtask.start_time,
+          auto_notify: subtask.auto_notify,
+          status: subtask.status,
+          task_name: subtask.task_name,
+          client_name: subtask.client_name,
+          task_active: subtask.is_active,
+        },
+        time_analysis: {
+          minutes_until_start: timeDiff.minutes_until_start ? parseFloat(timeDiff.minutes_until_start.toFixed(2)) : null,
+          minutes_after_start: timeDiff.minutes_after_start ? parseFloat(timeDiff.minutes_after_start.toFixed(2)) : null,
+        },
+        notification_details: {
+          type: notification_type,
+          message: message,
+          action: action,
+        },
+        timestamp: new Date().toISOString(),
+      });
+
+    } else {
+      res.json({
+        error: "Database unavailable",
+        timestamp: new Date().toISOString(),
+      });
+    }
+  } catch (error) {
+    console.error(`Error creating test notification for subtask ${req.params.subtaskId}:`, error);
+    res.status(500).json({
+      error: "Failed to create test notification",
+      message: error.message,
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
 // Auto-sync notification time to match actual current remaining time
 router.post("/auto-sync-current-time", async (req: Request, res: Response) => {
   try {
