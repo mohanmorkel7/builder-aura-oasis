@@ -132,7 +132,7 @@ export default function FinOpsActivityLog() {
         };
       }
     },
-    refetchInterval: activityError ? false : 30000, // Don't auto-refetch if there's an error
+    refetchInterval: 30000, // Auto-refetch every 30 seconds
     retry: 1, // Only retry once
     retryDelay: 3000, // Wait 3 seconds before retry
   });
