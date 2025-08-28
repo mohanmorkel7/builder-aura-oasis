@@ -227,6 +227,27 @@ export async function initializeDatabase() {
       );
     }
 
+    // Always try to apply IST FinOps SLA notifications migration
+    try {
+      const finopsIstMigrationPath = path.join(
+        __dirname,
+        "migration-create-finops-sla-notifications-ist.sql",
+      );
+      if (fs.existsSync(finopsIstMigrationPath)) {
+        const finopsIstMigration = fs.readFileSync(
+          finopsIstMigrationPath,
+          "utf8",
+        );
+        await client.query(finopsIstMigration);
+        console.log("IST FinOps SLA notifications migration applied successfully");
+      }
+    } catch (finopsIstMigrationError) {
+      console.log(
+        "IST FinOps SLA notifications migration already applied or error:",
+        finopsIstMigrationError.message,
+      );
+    }
+
     // await client.query(schema);
     console.log("Database initialized successfully");
     client.release();
