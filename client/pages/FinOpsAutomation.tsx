@@ -265,6 +265,25 @@ export default function FinOpsAutomation() {
         </div>
       </div>
 
+      {/* Database Status Alert */}
+      {(projectsError || automationsError || notificationsError) && (
+        <Alert variant="destructive">
+          <Database className="h-4 w-4" />
+          <AlertDescription>
+            <strong>Database Connection Issue:</strong> The application is currently unable to connect to the database.
+            Features may be limited to mock data. Please check that PostgreSQL is running on localhost:5432.
+            <details className="mt-2 text-xs">
+              <summary className="cursor-pointer">Technical Details</summary>
+              <div className="mt-1 space-y-1">
+                {projectsError && <div>• Projects API: {projectsError.message}</div>}
+                {automationsError && <div>• Automations API: {automationsError.message}</div>}
+                {notificationsError && <div>• Notifications API: {notificationsError.message}</div>}
+              </div>
+            </details>
+          </AlertDescription>
+        </Alert>
+      )}
+
       {/* Alert for Critical Notifications */}
       {notifications.filter((n: any) => n.priority === "critical").length >
         0 && (
