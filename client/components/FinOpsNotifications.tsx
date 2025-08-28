@@ -95,11 +95,20 @@ const transformDbNotifications = (
     let isExpiredSLA = false;
     let overdueMinutesFromSLA = 0;
 
-    // Extract overdue minutes from details if present and calculate real-time overdue
+    // Extract timing information from details
     const overdueMatch =
       dbNotif.details?.match(/overdue by (\d+) min/i) ||
-      dbNotif.details?.match(/overdue by (\d+) minutes?/i);
+      dbNotif.details?.match(/overdue by (\d+) minutes?/i) ||
+      dbNotif.details?.match(/(\d+) minutes late/i);
     let overdueMinutes = overdueMatch ? parseInt(overdueMatch[1]) : undefined;
+
+    // Extract IST time information
+    const istTimeMatch = dbNotif.details?.match(/(\d{1,2}:\d{2}(?::\d{2})?) IST/i);
+    const istTime = istTimeMatch ? istTimeMatch[1] : undefined;
+
+    // Extract time remaining information
+    const timeRemainingMatch = dbNotif.details?.match(/starts in (\d+) minutes?/i);
+    const timeRemaining = timeRemainingMatch ? parseInt(timeRemainingMatch[1]) : undefined;
 
     // For existing overdue notifications, calculate current overdue time
     if (
