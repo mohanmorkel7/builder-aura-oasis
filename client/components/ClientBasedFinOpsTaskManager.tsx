@@ -741,7 +741,7 @@ export default function ClientBasedFinOpsTaskManager() {
       console.error("🚨 FinOps tasks query error:", error);
     },
     onSuccess: (data) => {
-      console.log("✅ FinOps tasks query success:", data?.length || 0, "tasks");
+      console.log("�� FinOps tasks query success:", data?.length || 0, "tasks");
     },
   });
 
@@ -1383,10 +1383,12 @@ export default function ClientBasedFinOpsTaskManager() {
             </p>
           </div>
           <div className="flex gap-2">
-            <Button onClick={() => setIsCreateDialogOpen(true)}>
-              <Plus className="w-4 h-4 mr-2" />
-              Create Task
-            </Button>
+            {user?.role === 'admin' && (
+              <Button onClick={() => setIsCreateDialogOpen(true)}>
+                <Plus className="w-4 h-4 mr-2" />
+                Create Task
+              </Button>
+            )}
             <Button
               variant="outline"
               onClick={() => {
