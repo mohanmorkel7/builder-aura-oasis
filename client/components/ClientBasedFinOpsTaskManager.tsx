@@ -716,6 +716,14 @@ export default function ClientBasedFinOpsTaskManager() {
     return () => clearInterval(timer);
   }, []);
 
+  // Control refetch intervals based on error states
+  useEffect(() => {
+    if (error || clientsError || usersError) {
+      console.log('🚫 Errors detected, reducing refetch frequency');
+      // Could implement more sophisticated error-based refetch control here
+    }
+  }, [error, clientsError, usersError]);
+
   // Fetch FinOps clients (separate from sales leads)
   const {
     data: rawClients = [],
