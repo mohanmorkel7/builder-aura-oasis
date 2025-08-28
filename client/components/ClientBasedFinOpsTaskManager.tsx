@@ -695,16 +695,9 @@ export default function ClientBasedFinOpsTaskManager() {
         return [];
       }
     },
-    refetchInterval: 30000,
-    retry: (failureCount, error) => {
-      console.log(`🔄 FinOps tasks query retry ${failureCount}:`, error);
-      // Only retry network errors, not server errors
-      if (error instanceof Error && error.message.includes("Failed to fetch")) {
-        return failureCount < 2; // Max 2 retries for network errors
-      }
-      return false; // Don't retry server errors
-    },
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000),
+    refetchInterval: error ? false : 30000, // Don't auto-refetch if there's an error
+    retry: 1, // Only retry once to avoid spam
+    retryDelay: 3000, // Wait 3 seconds before retry
     staleTime: 30000, // Consider data stale after 30 seconds
     onError: (error) => {
       console.error("🚨 FinOps tasks query error:", error);
