@@ -70,7 +70,7 @@ async function isDatabaseAvailable() {
   }
 }
 
-// Mock notifications for fallback
+// Mock notifications for fallback (IST timezone)
 const mockNotifications = [
   {
     id: "1",
@@ -85,7 +85,7 @@ const mockNotifications = [
     entity_id: "1",
     priority: "high",
     read: false,
-    created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
+    created_at: new Date(getCurrentISTTime().getTime() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago IST
     action_url: "/leads/1",
   },
   {
@@ -101,7 +101,7 @@ const mockNotifications = [
     entity_id: "2",
     priority: "medium",
     read: false,
-    created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
+    created_at: new Date(getCurrentISTTime().getTime() - 24 * 60 * 60 * 1000).toISOString(), // 1 day ago IST
     action_url: "/leads/2",
   },
   {
@@ -117,7 +117,7 @@ const mockNotifications = [
     entity_id: "3",
     priority: "low",
     read: true,
-    created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days ago
+    created_at: new Date(getCurrentISTTime().getTime() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days ago IST
     action_url: "/clients/3",
   },
 ];
@@ -1771,7 +1771,7 @@ router.post(
           16,
           29,
           "System",
-          "Check Active Pending check Assigned: Sanjay Kumar daily 0/1 completed Starts: 06:15 PM Edit Subtasks (0/1 completed) test check Start: 06:15 PM Pending Status ��� need to start",
+          "Check Active Pending check Assigned: Sanjay Kumar daily 0/1 completed Starts: 06:15 PM Edit Subtasks (0/1 completed) test check Start: 06:15 PM Pending Status • need to start",
         ]);
 
         res.json({
