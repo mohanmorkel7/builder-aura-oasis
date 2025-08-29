@@ -623,9 +623,15 @@ function parseManagerNames(val: any): string[] {
     try {
       const parsed = JSON.parse(s);
       if (Array.isArray(parsed))
-        return parsed.map(String).map((x) => x.trim()).filter(Boolean);
+        return parsed
+          .map(String)
+          .map((x) => x.trim())
+          .filter(Boolean);
     } catch {}
-    return s.split(",").map((x) => x.trim()).filter(Boolean);
+    return s
+      .split(",")
+      .map((x) => x.trim())
+      .filter(Boolean);
   }
   try {
     const parsed = JSON.parse(val);
@@ -996,22 +1002,28 @@ async function handleStatusChangeNotifications(
           .map((s) => s.trim())
           .filter(Boolean);
       if (typeof val === "string") {
-    let s = val.trim();
-    if (s.startsWith("{") && s.endsWith("}")) {
-      s = s.slice(1, -1);
-      return s
-        .split(",")
-        .map((x) => x.trim())
-        .map((x) => x.replace(/^\"|\"$/g, ""))
-        .filter(Boolean);
-    }
-    try {
-      const parsed = JSON.parse(s);
-      if (Array.isArray(parsed))
-        return parsed.map(String).map((x) => x.trim()).filter(Boolean);
-    } catch {}
-    return s.split(",").map((x) => x.trim()).filter(Boolean);
-  }
+        let s = val.trim();
+        if (s.startsWith("{") && s.endsWith("}")) {
+          s = s.slice(1, -1);
+          return s
+            .split(",")
+            .map((x) => x.trim())
+            .map((x) => x.replace(/^\"|\"$/g, ""))
+            .filter(Boolean);
+        }
+        try {
+          const parsed = JSON.parse(s);
+          if (Array.isArray(parsed))
+            return parsed
+              .map(String)
+              .map((x) => x.trim())
+              .filter(Boolean);
+        } catch {}
+        return s
+          .split(",")
+          .map((x) => x.trim())
+          .filter(Boolean);
+      }
       try {
         return JSON.parse(val);
       } catch {

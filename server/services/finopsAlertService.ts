@@ -46,7 +46,11 @@ class FinOpsAlertService {
 
   private parseManagers(val: any): string[] {
     if (!val) return [];
-    if (Array.isArray(val)) return val.map(String).map((s) => s.trim()).filter(Boolean);
+    if (Array.isArray(val))
+      return val
+        .map(String)
+        .map((s) => s.trim())
+        .filter(Boolean);
     if (typeof val === "string") {
       let s = val.trim();
       if (s.startsWith("{") && s.endsWith("}")) {
@@ -59,13 +63,25 @@ class FinOpsAlertService {
       }
       try {
         const parsed = JSON.parse(s);
-        if (Array.isArray(parsed)) return parsed.map(String).map((x) => x.trim()).filter(Boolean);
+        if (Array.isArray(parsed))
+          return parsed
+            .map(String)
+            .map((x) => x.trim())
+            .filter(Boolean);
       } catch {}
-      return s.split(",").map((x) => x.trim()).filter(Boolean);
+      return s
+        .split(",")
+        .map((x) => x.trim())
+        .filter(Boolean);
     }
     try {
       const parsed = JSON.parse(val);
-      return Array.isArray(parsed) ? parsed.map(String).map((x) => x.trim()).filter(Boolean) : [];
+      return Array.isArray(parsed)
+        ? parsed
+            .map(String)
+            .map((x) => x.trim())
+            .filter(Boolean)
+        : [];
     } catch {
       return [];
     }
