@@ -406,6 +406,14 @@ class FinOpsAlertService {
       );
       const userIds = await this.getUserIdsFromNames(names);
 
+      console.log("Direct-call payload (service)", {
+        taskId,
+        subtaskId,
+        title,
+        manager_names: names,
+        user_ids: userIds,
+      });
+
       const response = await fetch(
         "https://pulsealerts.mylapay.com/direct-call",
         {
