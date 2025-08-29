@@ -1583,7 +1583,9 @@ router.post("/auto-sync", async (req: Request, res: Response) => {
       const slaCheckQuery = `SELECT * FROM check_subtask_sla_notifications_ist()`;
       const slaResult = await pool.query(slaCheckQuery);
 
-      console.log(`📊 SLA check found ${slaResult.rows.length} notifications to create`);
+      console.log(
+        `📊 SLA check found ${slaResult.rows.length} notifications to create`,
+      );
 
       let createdNotifications = 0;
 
@@ -1632,10 +1634,14 @@ router.post("/auto-sync", async (req: Request, res: Response) => {
               notification.notification_type,
             ]);
 
-            console.log(`✅ Created ${notification.notification_type} notification for task ${notification.task_id}`);
+            console.log(
+              `✅ Created ${notification.notification_type} notification for task ${notification.task_id}`,
+            );
           }
         } catch (notificationError) {
-          console.error(`❌ Failed to create notification: ${notificationError.message}`);
+          console.error(
+            `❌ Failed to create notification: ${notificationError.message}`,
+          );
         }
       }
 
