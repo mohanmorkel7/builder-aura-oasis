@@ -781,6 +781,7 @@ router.patch(
             new Set([
               ...parseManagerNames(subtaskData.reporting_managers),
               ...parseManagerNames(subtaskData.escalation_managers),
+              ...parseManagerNames(subtaskData.assigned_to),
             ]),
           );
           const userIds = await getUserIdsFromNames(managerNames);
