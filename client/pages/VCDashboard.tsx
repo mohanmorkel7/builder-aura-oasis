@@ -1042,7 +1042,7 @@ export default function VCDashboard() {
                                                   getStepColor(stepIndex),
                                                 opacity: 0.8,
                                               }}
-                                              title={`${stepData.stepName}: ${stepData.totalVCsAtStep} VCs currently in progress`}
+                                              title={`${stepData.stepName}: ${stepData.totalVCsAtStep} VCs in progress`}
                                             >
                                               {/* All bars represent current VCs only */}
 
@@ -1053,11 +1053,15 @@ export default function VCDashboard() {
                                                 </span>
                                               </div>
 
-                                              {/* Hover tooltip */}
-                                              <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20 pointer-events-none">
-                                                {stepData.stepName}:{" "}
-                                                {stepData.totalVCsAtStep} VCs in
-                                                progress
+                                              {/* Hover tooltip with VC names */}
+                                              <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-pre-wrap z-20 pointer-events-none max-w-xs">
+                                                {(() => {
+                                                  const names = (vcProgressData || [])
+                                                    .filter((vc: any) => vc.current_step?.name === stepData.stepName)
+                                                    .map((vc: any) => vc.investor_name || vc.round_title)
+                                                    .slice(0, 20);
+                                                  return `${stepData.stepName}: ${stepData.totalVCsAtStep} VCs\n- ${names.join("\n- ")}`;
+                                                })()}
                                               </div>
                                             </div>
                                           </div>
