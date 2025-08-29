@@ -64,18 +64,20 @@ initializeNotificationTables();
 // Production database availability check with graceful fallback
 async function isDatabaseAvailable() {
   try {
-    const result = await pool.query("SELECT NOW() as current_time, version() as db_version");
+    const result = await pool.query(
+      "SELECT NOW() as current_time, version() as db_version",
+    );
     console.log("✅ Database is available:", {
       current_time: result.rows[0].current_time,
       version: result.rows[0].db_version?.substring(0, 50) + "...",
-      status: "connected"
+      status: "connected",
     });
     return true;
   } catch (error) {
     console.log("❌ Database unavailable:", {
       error: error.message,
       status: "disconnected",
-      fallback: "using_mock_data_with_dynamic_timestamps"
+      fallback: "using_mock_data_with_dynamic_timestamps",
     });
     return false;
   }
@@ -359,7 +361,9 @@ router.get("/", async (req: Request, res: Response) => {
         },
       });
     } else {
-      console.log("Database unavailable, using dynamic mock notifications with real-time timestamps");
+      console.log(
+        "Database unavailable, using dynamic mock notifications with real-time timestamps",
+      );
 
       // Generate fresh mock notifications with current timestamps
       const mockNotifications = generateMockNotifications();
@@ -625,7 +629,8 @@ router.put("/read-all", async (req: Request, res: Response) => {
       console.log("Database unavailable, returning mock read-all update");
       res.json({
         message: "All notifications marked as read",
-        updated_count: generateMockNotifications().filter((n) => !n.read).length,
+        updated_count: generateMockNotifications().filter((n) => !n.read)
+          .length,
       });
     }
   } catch (error) {
@@ -1497,7 +1502,9 @@ router.post("/auto-sync", async (req: Request, res: Response) => {
               notification.notification_type,
             ]);
           } catch (markError) {
-            console.log(`Warning: Could not mark notification as sent: ${markError.message}`);
+            console.log(
+              `Warning: Could not mark notification as sent: ${markError.message}`,
+            );
           }
         }
 
@@ -1562,7 +1569,7 @@ router.get("/debug/timestamps", async (req: Request, res: Response) => {
         database_current_time: new Date().toISOString(),
         javascript_current_time: new Date().toISOString(),
         database_timezone: "Check database NOW() vs JavaScript Date()",
-        recent_notifications: result.rows.map(row => ({
+        recent_notifications: result.rows.map((row) => ({
           id: row.id,
           action: row.action,
           details: row.details?.substring(0, 100),
@@ -1575,7 +1582,8 @@ router.get("/debug/timestamps", async (req: Request, res: Response) => {
         })),
         analysis: {
           total_recent_notifications: result.rows.length,
-          timestamp_issue_check: "Compare database_timestamp with current times above"
+          timestamp_issue_check:
+            "Compare database_timestamp with current times above",
         },
         timestamp: new Date().toISOString(),
       });

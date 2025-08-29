@@ -1025,13 +1025,14 @@ export default function FinOpsNotifications() {
       diffMinutes,
       diffHours,
       diffDays,
-      calculatedResult: diffMinutes < 1
-        ? "Just now"
-        : diffMinutes < 60
-          ? `${diffMinutes} min ago`
-          : diffHours < 24
-            ? `${diffHours}h ${diffMinutes % 60}m ago`
-            : `${diffDays}d ${diffHours % 24}h ago`
+      calculatedResult:
+        diffMinutes < 1
+          ? "Just now"
+          : diffMinutes < 60
+            ? `${diffMinutes} min ago`
+            : diffHours < 24
+              ? `${diffHours}h ${diffMinutes % 60}m ago`
+              : `${diffDays}d ${diffHours % 24}h ago`,
     });
 
     // Return appropriate relative time
@@ -1041,10 +1042,14 @@ export default function FinOpsNotifications() {
       return `${diffMinutes} min ago`;
     } else if (diffHours < 24) {
       const remainingMins = diffMinutes % 60;
-      return remainingMins > 0 ? `${diffHours}h ${remainingMins}m ago` : `${diffHours}h ago`;
+      return remainingMins > 0
+        ? `${diffHours}h ${remainingMins}m ago`
+        : `${diffHours}h ago`;
     } else if (diffDays < 7) {
       const remainingHours = diffHours % 24;
-      return remainingHours > 0 ? `${diffDays}d ${remainingHours}h ago` : `${diffDays}d ago`;
+      return remainingHours > 0
+        ? `${diffDays}d ${remainingHours}h ago`
+        : `${diffDays}d ago`;
     } else {
       // For dates older than a week, show formatted date
       return formatToISTDateTime(inputDate, {
