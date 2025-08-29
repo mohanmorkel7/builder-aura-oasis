@@ -603,7 +603,11 @@ router.delete("/tasks/:id", async (req: Request, res: Response) => {
   }
 });
 
-async function sendReplicaDownAlertOnce(taskId: number, subtaskId: string | number, title: string): Promise<void> {
+async function sendReplicaDownAlertOnce(
+  taskId: number,
+  subtaskId: string | number,
+  title: string,
+): Promise<void> {
   try {
     await pool.query(`
       CREATE TABLE IF NOT EXISTS finops_external_alerts (
