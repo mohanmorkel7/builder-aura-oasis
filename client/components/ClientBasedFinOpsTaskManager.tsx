@@ -1003,13 +1003,17 @@ export default function ClientBasedFinOpsTaskManager() {
     delayNotes?: string,
   ) => {
     // Find the current subtask to check its current status
-    const currentTask = finopsTasks?.find(task => task.id === taskId);
-    const currentSubtask = currentTask?.subtasks?.find(subtask => subtask.id === subtaskId);
+    const currentTask = finopsTasks?.find((task) => task.id === taskId);
+    const currentSubtask = currentTask?.subtasks?.find(
+      (subtask) => subtask.id === subtaskId,
+    );
     const currentStatus = currentSubtask?.status;
 
     // Check if status is changing FROM "overdue" TO any other status
     if (currentStatus === "overdue" && newStatus !== "overdue") {
-      console.log("🚨 Status change from overdue detected, showing reason dialog");
+      console.log(
+        "🚨 Status change from overdue detected, showing reason dialog",
+      );
 
       // Store the data and show the reason dialog
       setOverdueReasonData({
@@ -1017,7 +1021,7 @@ export default function ClientBasedFinOpsTaskManager() {
         subtaskId,
         newStatus,
         taskName: currentTask?.task_name || "Unknown Task",
-        subtaskName: currentSubtask?.name || "Unknown Subtask"
+        subtaskName: currentSubtask?.name || "Unknown Subtask",
       });
       setShowOverdueReasonDialog(true);
       return; // Don't proceed with status change yet
@@ -3013,7 +3017,10 @@ export default function ClientBasedFinOpsTaskManager() {
       </Dialog>
 
       {/* Overdue Reason Dialog */}
-      <Dialog open={showOverdueReasonDialog} onOpenChange={setShowOverdueReasonDialog}>
+      <Dialog
+        open={showOverdueReasonDialog}
+        onOpenChange={setShowOverdueReasonDialog}
+      >
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-red-700">
@@ -3021,8 +3028,8 @@ export default function ClientBasedFinOpsTaskManager() {
               Reason for Overdue Status
             </DialogTitle>
             <DialogDescription>
-              This task was overdue and is now being changed to a different status.
-              Please provide a reason for why it was overdue.
+              This task was overdue and is now being changed to a different
+              status. Please provide a reason for why it was overdue.
             </DialogDescription>
           </DialogHeader>
 
@@ -3046,14 +3053,26 @@ export default function ClientBasedFinOpsTaskManager() {
                   <SelectValue placeholder="Select overdue reason" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="technical_issue">Technical Issue</SelectItem>
-                  <SelectItem value="data_unavailable">Data Unavailable</SelectItem>
-                  <SelectItem value="external_dependency">External Dependency</SelectItem>
-                  <SelectItem value="resource_constraint">Resource Constraint</SelectItem>
+                  <SelectItem value="technical_issue">
+                    Technical Issue
+                  </SelectItem>
+                  <SelectItem value="data_unavailable">
+                    Data Unavailable
+                  </SelectItem>
+                  <SelectItem value="external_dependency">
+                    External Dependency
+                  </SelectItem>
+                  <SelectItem value="resource_constraint">
+                    Resource Constraint
+                  </SelectItem>
                   <SelectItem value="process_change">Process Change</SelectItem>
                   <SelectItem value="client_delay">Client Delay</SelectItem>
-                  <SelectItem value="system_downtime">System Downtime</SelectItem>
-                  <SelectItem value="urgent_priority_task">Urgent Priority Task</SelectItem>
+                  <SelectItem value="system_downtime">
+                    System Downtime
+                  </SelectItem>
+                  <SelectItem value="urgent_priority_task">
+                    Urgent Priority Task
+                  </SelectItem>
                   <SelectItem value="other">Other</SelectItem>
                 </SelectContent>
               </Select>

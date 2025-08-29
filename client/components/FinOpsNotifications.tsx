@@ -599,7 +599,7 @@ export default function FinOpsNotifications() {
 
   // Date filter state - default to today
   const [selectedDate, setSelectedDate] = useState(
-    new Date().toISOString().split('T')[0]
+    new Date().toISOString().split("T")[0],
   );
 
   // Fetch notifications from database (moved before useEffect to fix refetch dependency)
@@ -612,8 +612,13 @@ export default function FinOpsNotifications() {
     queryKey: ["finops-notifications", selectedDate],
     queryFn: async () => {
       try {
-        console.log("🔍 Fetching FinOps notifications from API for date:", selectedDate);
-        const url = selectedDate ? `/notifications-production?date=${selectedDate}` : "/notifications-production";
+        console.log(
+          "🔍 Fetching FinOps notifications from API for date:",
+          selectedDate,
+        );
+        const url = selectedDate
+          ? `/notifications-production?date=${selectedDate}`
+          : "/notifications-production";
         const result = await apiClient.request(url);
         console.log("✅ FinOps notifications API response:", result);
         return result;
@@ -831,7 +836,9 @@ export default function FinOpsNotifications() {
 
     // Date filter - only show notifications from selected date
     if (selectedDate) {
-      const notificationDate = new Date(notification.created_at).toISOString().split('T')[0];
+      const notificationDate = new Date(notification.created_at)
+        .toISOString()
+        .split("T")[0];
       if (notificationDate !== selectedDate) return false;
     }
 
@@ -1220,7 +1227,7 @@ export default function FinOpsNotifications() {
                 className="w-full"
               />
               <div className="text-xs text-gray-500 mt-1">
-                {selectedDate === new Date().toISOString().split('T')[0]
+                {selectedDate === new Date().toISOString().split("T")[0]
                   ? "Today's notifications"
                   : `Notifications from ${new Date(selectedDate).toLocaleDateString()}`}
               </div>
