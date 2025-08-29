@@ -48,10 +48,10 @@ BEGIN
     ft.task_name,
     fs.name as subtask_name,
     COALESCE(fs.assigned_to, ft.assigned_to) as assigned_to,
-    COALESCE(fc.name, 'Unknown Client') as client_name,
+    COALESCE(fc.company_name, 'Unknown Client') as client_name,
     EXTRACT(EPOCH FROM (fs.start_time_ist - current_time_only))/60 as time_diff_minutes,
     format('📋 Task Starting Soon: %s starts in 15 minutes (%s IST). Client: %s',
-           fs.name, fs.start_time_ist, COALESCE(fc.name, 'N/A')) as message,
+           fs.name, fs.start_time_ist, COALESCE(fc.company_name, 'N/A')) as message,
     'medium'::TEXT as priority,
     format('/finops/tasks/%s', fs.task_id) as action_url,
     ft.reporting_managers,
@@ -79,12 +79,12 @@ BEGIN
     ft.task_name,
     fs.name as subtask_name,
     COALESCE(fs.assigned_to, ft.assigned_to) as assigned_to,
-    COALESCE(fc.name, 'Unknown Client') as client_name,
+    COALESCE(fc.company_name, 'Unknown Client') as client_name,
     EXTRACT(EPOCH FROM (current_time_only - fs.start_time_ist))/60 as time_diff_minutes,
     format('⚠️ SLA Warning: %s was scheduled to start at %s IST. Currently %s minutes late. Client: %s',
            fs.name, fs.start_time_ist, 
            ROUND(EXTRACT(EPOCH FROM (current_time_only - fs.start_time_ist))/60),
-           COALESCE(fc.name, 'N/A')) as message,
+           COALESCE(fc.company_name, 'N/A')) as message,
     'high'::TEXT as priority,
     format('/finops/tasks/%s', fs.task_id) as action_url,
     ft.reporting_managers,
@@ -112,12 +112,12 @@ BEGIN
     ft.task_name,
     fs.name as subtask_name,
     COALESCE(fs.assigned_to, ft.assigned_to) as assigned_to,
-    COALESCE(fc.name, 'Unknown Client') as client_name,
+    COALESCE(fc.company_name, 'Unknown Client') as client_name,
     EXTRACT(EPOCH FROM (current_time_only - fs.start_time_ist))/60 as time_diff_minutes,
     format('🚨 ESCALATION: %s missed start time (%s IST) by %s minutes. Immediate action required. Client: %s',
            fs.name, fs.start_time_ist,
            ROUND(EXTRACT(EPOCH FROM (current_time_only - fs.start_time_ist))/60),
-           COALESCE(fc.name, 'N/A')) as message,
+           COALESCE(fc.company_name, 'N/A')) as message,
     'critical'::TEXT as priority,
     format('/finops/tasks/%s', fs.task_id) as action_url,
     ft.reporting_managers,
@@ -309,11 +309,11 @@ WHERE task_id IN (SELECT id FROM finops_tasks WHERE task_name LIKE '%IST%' OR ta
 AND start_time_ist IS NULL;
 
 -- Add sample client for testing
-INSERT INTO finops_clients (name, email, phone, company, address, created_by)
-VALUES ('Test Client Ltd', 'test@client.com', '+91-9999999999', 'Test Client Ltd', 'Mumbai, India', 1)
+INSERT INTO finops_clients (company_name, contact_person, email, phone, address, created_by)
+VALUES ('Test Client Ltd', 'Test Contact', 'test@client.com', '+91-9999999999', 'Mumbai, India', 1)
 ON CONFLICT DO NOTHING;
 
 -- Update tasks to have client_id
-UPDATE finops_tasks 
-SET client_id = (SELECT id FROM finops_clients WHERE name = 'Test Client Ltd' LIMIT 1)
+UPDATE finops_tasks
+SET client_id = (SELECT id FROM finops_clients WHERE company_name = 'Test Client Ltd' LIMIT 1)
 WHERE client_id IS NULL;
