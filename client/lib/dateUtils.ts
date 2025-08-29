@@ -150,9 +150,9 @@ export const getRelativeTimeIST = (date: string | Date): string => {
 export const convertToIST = (date: string | Date): Date => {
   const dateObj = typeof date === "string" ? new Date(date) : date;
 
-  // Use the same reliable timezone calculation as getCurrentISTTimestamp
-  const utcMs = dateObj.getTime() + dateObj.getTimezoneOffset() * 60000;
-  const istMs = utcMs + 5.5 * 60 * 60 * 1000; // Add 5.5 hours for IST (+05:30)
+  // Convert to IST by adding 5.5 hours directly to UTC time
+  // dateObj.getTime() already returns UTC milliseconds, no need for getTimezoneOffset
+  const istMs = dateObj.getTime() + 5.5 * 60 * 60 * 1000; // Add 5.5 hours for IST (+05:30)
   return new Date(istMs);
 };
 
