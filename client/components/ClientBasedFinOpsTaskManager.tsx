@@ -753,6 +753,28 @@ export default function ClientBasedFinOpsTaskManager() {
     },
   });
 
+  // Mutations for CRUD operations (moved here to fix reference error)
+  const updateSubTaskMutation = useMutation({
+    mutationFn: ({
+      taskId,
+      subTaskId,
+      status,
+      userName,
+      delayReason,
+      delayNotes,
+    }: {
+      taskId: number;
+      subTaskId: string;
+      status: string;
+      userName?: string;
+      delayReason?: string;
+      delayNotes?: string;
+    }) => apiClient.updateFinOpsSubTask(taskId, subTaskId, status, userName),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["client-finops-tasks"] });
+    },
+  });
+
   // Real-time updates for SLA warnings and automatic status updates
   useEffect(() => {
     const timer = setInterval(() => {
