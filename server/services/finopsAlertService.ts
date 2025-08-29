@@ -499,8 +499,11 @@ const now = new Date();
         [status, taskId, subtaskId],
       );
 
-      // Build human-readable status change message
-      const statusChangeMessage = `Subtask "${subtaskName}" status changed from "${previousStatus}" to "${status}"`;
+      // Build human-readable status change message (special phrasing for overdue)
+      const statusChangeMessage =
+        status === "overdue"
+          ? `Take immediate action on the overdue subtask ${subtaskName}`
+          : `Subtask "${subtaskName}" status changed from "${previousStatus}" to "${status}"`;
 
       await this.logActivity(
         taskId,
