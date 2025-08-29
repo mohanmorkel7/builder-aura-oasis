@@ -326,9 +326,7 @@ export class DepartmentService {
     try {
       console.log("Loading user departments from JSON...");
       const { users: allUsersForCount } = this.readUserDepartments();
-      console.log(
-        `Total users in JSON to process: ${allUsersForCount.length}`,
-      );
+      console.log(`Total users in JSON to process: ${allUsersForCount.length}`);
       console.log(`Skip existing users: ${options.skipExistingUsers}`);
 
       // Check database availability first
