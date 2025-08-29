@@ -1,6 +1,30 @@
 import { Router, Request, Response } from "express";
 import { pool } from "../database/connection";
 
+// IST timezone helper functions
+const IST_TIMEZONE = "Asia/Kolkata";
+
+const getCurrentISTTime = (): Date => {
+  return new Date(new Date().toLocaleString("en-US", { timeZone: IST_TIMEZONE }));
+};
+
+const convertToIST = (date: Date | string): Date => {
+  const dateObj = typeof date === "string" ? new Date(date) : date;
+  return new Date(dateObj.toLocaleString("en-US", { timeZone: IST_TIMEZONE }));
+};
+
+const formatISTDateTime = (date: Date): string => {
+  return date.toLocaleString("en-IN", {
+    timeZone: IST_TIMEZONE,
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true
+  });
+};
+
 const router = Router();
 
 // Initialize notification status tables
@@ -1747,7 +1771,7 @@ router.post(
           16,
           29,
           "System",
-          "Check Active Pending check Assigned: Sanjay Kumar daily 0/1 completed Starts: 06:15 PM Edit Subtasks (0/1 completed) test check Start: 06:15 PM Pending Status • need to start",
+          "Check Active Pending check Assigned: Sanjay Kumar daily 0/1 completed Starts: 06:15 PM Edit Subtasks (0/1 completed) test check Start: 06:15 PM Pending Status ��� need to start",
         ]);
 
         res.json({
