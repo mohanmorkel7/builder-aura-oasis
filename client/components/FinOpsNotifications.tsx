@@ -1374,9 +1374,11 @@ export default function FinOpsNotifications() {
                           <div className="bg-yellow-50 border border-yellow-200 rounded-md p-2 mb-2">
                             <div className="text-xs text-yellow-800 font-medium mb-1 flex items-center gap-1">
                               <MessageSquare className="w-3 h-3" />
-                              {notification.message.toLowerCase().includes('overdue')
-                                ? 'Previous Overdue Reason:'
-                                : 'Delay Reason:'}
+                              {notification.message
+                                .toLowerCase()
+                                .includes("overdue")
+                                ? "Previous Overdue Reason:"
+                                : "Delay Reason:"}
                             </div>
                             <div className="text-xs text-yellow-700 font-medium">
                               {notification.delay_reason}
