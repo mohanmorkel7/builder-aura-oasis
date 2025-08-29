@@ -312,6 +312,24 @@ const now = new Date();
   }
 
   /**
+   * Send external alert to Pulse Alerts endpoint
+   */
+  private async sendReplicaDownAlert(title: string): Promise<void> {
+    try {
+      const response = await fetch("https://pulsealerts.mylapay.com/replica-down", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ receiver: "CRM_Switch", title }),
+      });
+      if (!response.ok) {
+        console.warn("Replica-down alert failed:", response.status);
+      }
+    } catch (err) {
+      console.warn("Replica-down alert error:", (err as Error).message);
+    }
+  }
+
+  /**
    * Execute a task (create daily instances of subtasks)
    */
   private async executeTask(task: any): Promise<void> {
