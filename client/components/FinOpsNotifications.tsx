@@ -1016,58 +1016,46 @@ export default function FinOpsNotifications() {
   };
 
   const getRelativeTime = (dateString: string) => {
-    // Use the proper IST utility functions from dateUtils
+    // Handle the real-time calculation properly
     const inputDate = new Date(dateString);
-    const currentISTTime = convertToIST(new Date());
-    const inputISTTime = convertToIST(inputDate);
+    const currentTime = new Date(); // Use current time directly
 
-    const diffMs = currentISTTime.getTime() - inputISTTime.getTime();
+    // Calculate difference in milliseconds
+    const diffMs = currentTime.getTime() - inputDate.getTime();
     const diffMinutes = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMinutes / 60);
+    const diffDays = Math.floor(diffHours / 24);
 
-    // Special debugging for the user's specific timestamp
-    if (dateString === "2025-08-29T01:07:55.113Z") {
-      console.log(`🔍 DEBUGGING USER TIMESTAMP: ${dateString}`, {
-        inputUTC: inputDate.toISOString(),
-        inputIST: inputISTTime.toISOString(),
-        currentUTC: new Date().toISOString(),
-        currentIST: currentISTTime.toISOString(),
-        diffMs,
-        diffMinutes,
-        diffHours: Math.floor(diffMinutes / 60),
-        expectedResult:
-          diffMinutes < 60
-            ? `${diffMinutes} min ago`
-            : `${Math.floor(diffMinutes / 60)}h ${diffMinutes % 60}m ago`,
-      });
-    }
-
-    console.log(`🕒 IST Time calculation for ${dateString}:`, {
+    // Debug logging for troubleshooting
+    console.log(`🕒 Real-time calculation for ${dateString}:`, {
       inputUTC: inputDate.toISOString(),
-      inputIST: inputISTTime.toISOString(),
-      currentIST: currentISTTime.toISOString(),
+      currentUTC: currentTime.toISOString(),
       diffMs,
       diffMinutes,
-      result:
-        diffMinutes < 1
-          ? "Just now"
-          : diffMinutes < 60
-            ? `${diffMinutes} min ago`
-            : diffMinutes < 1440
-              ? `${Math.floor(diffMinutes / 60)}h ${diffMinutes % 60}m ago`
-              : "date format",
+      diffHours,
+      diffDays,
+      calculatedResult: diffMinutes < 1
+        ? "Just now"
+        : diffMinutes < 60
+          ? `${diffMinutes} min ago`
+          : diffHours < 24
+            ? `${diffHours}h ${diffMinutes % 60}m ago`
+            : `${diffDays}d ${diffHours % 24}h ago`
     });
 
-    // Real-time calculation in IST
+    // Return appropriate relative time
     if (diffMinutes < 1) {
       return "Just now";
     } else if (diffMinutes < 60) {
       return `${diffMinutes} min ago`;
-    } else if (diffMinutes < 1440) {
-      // Less than 24 hours
-      const hours = Math.floor(diffMinutes / 60);
-      const mins = diffMinutes % 60;
-      return `${hours}h ${mins}m ago`;
+    } else if (diffHours < 24) {
+      const remainingMins = diffMinutes % 60;
+      return remainingMins > 0 ? `${diffHours}h ${remainingMins}m ago` : `${diffHours}h ago`;
+    } else if (diffDays < 7) {
+      const remainingHours = diffHours % 24;
+      return remainingHours > 0 ? `${diffDays}d ${remainingHours}h ago` : `${diffDays}d ago`;
     } else {
+      // For dates older than a week, show formatted date
       return formatToISTDateTime(inputDate, {
         month: "short",
         day: "numeric",
