@@ -1094,15 +1094,15 @@ export default function ClientBasedFinOpsTaskManager() {
       status,
     });
 
-    // Task is overdue if it's past start time and not completed/in_progress
-    if (diffMinutes > 0 && status === "pending") {
+    // Task is overdue if it's past start time (for both pending and overdue status)
+    if (diffMinutes > 0 && (status === "pending" || status === "overdue")) {
       return {
         type: "overdue",
         message: `Overdue by ${diffMinutes} min`,
       };
     }
-    // SLA warning if within 15 minutes of start time
-    else if (diffMinutes >= -15 && diffMinutes <= 0) {
+    // SLA warning if within 15 minutes of start time (and still pending)
+    else if (diffMinutes >= -15 && diffMinutes <= 0 && status === "pending") {
       const remainingMinutes = Math.abs(diffMinutes);
       return {
         type: "warning",
