@@ -1782,6 +1782,36 @@ router.post(
   },
 );
 
+// Debug IST timezone calculations
+router.get("/debug/ist-time", async (req: Request, res: Response) => {
+  try {
+    const now = new Date();
+    const istTime = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
+    const istDate = new Date(istTime);
+
+    res.json({
+      message: "IST Timezone Debug Information",
+      server_utc_time: now.toISOString(),
+      server_ist_time: istTime,
+      ist_date_object: istDate.toISOString(),
+      ist_formatted: istDate.toLocaleString("en-IN"),
+      offset_hours: 5.5,
+      timezone: "Asia/Kolkata",
+      calculations: {
+        manual_ist_offset: new Date(now.getTime() + (5.5 * 60 * 60 * 1000)).toISOString(),
+        locale_based_ist: now.toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),
+      },
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error("IST debug error:", error);
+    res.status(500).json({
+      error: "IST debug failed",
+      message: error.message,
+    });
+  }
+});
+
 // Test endpoint to check query performance
 router.get("/test/performance", async (req: Request, res: Response) => {
   try {
