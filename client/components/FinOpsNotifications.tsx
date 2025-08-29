@@ -111,7 +111,7 @@ const transformDbNotifications = (
     return true;
   });
 
-  return activeNotifications.map((dbNotif) => {
+  return activeNotifications.map((dbNotif, index) => {
     // Initialize all variables at the beginning to avoid reference errors
     let realTimeDetails = dbNotif.details;
     let realTimeTitle = dbNotif.details;
@@ -370,7 +370,7 @@ const transformDbNotifications = (
     const members = getMembersForTask(dbNotif.task_id, notificationType);
 
     const transformed = {
-      id: dbNotif.id.toString(),
+      id: `${dbNotif.id}_${index}`,
       type: notificationType,
       title:
         realTimeTitle && realTimeTitle !== dbNotif.details
@@ -1280,7 +1280,7 @@ export default function FinOpsNotifications() {
                     ? "✅ Database connected. No notifications yet. The system automatically monitors subtask start_time and creates SLA warnings 15 minutes before and overdue alerts 15 minutes after scheduled times."
                     : isDatabaseConnected
                       ? "Database connected but no notifications found. Check subtasks table for entries with start_time to enable automatic notifications."
-                      : "❌ Database unavailable. Please ensure database connection is working to see automated SLA notifications."
+                      : "�� Database unavailable. Please ensure database connection is working to see automated SLA notifications."
                   : "No notifications match your current filters."}
               </p>
             </CardContent>
