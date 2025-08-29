@@ -1493,7 +1493,9 @@ router.post("/trigger-sla-check", async (req: Request, res: Response) => {
       console.log("🚨 Manual SLA check triggered...");
 
       // Import and use the alert service directly
-      const { default: finopsAlertService } = await import("../services/finopsAlertService");
+      const { default: finopsAlertService } = await import(
+        "../services/finopsAlertService"
+      );
 
       // Run SLA checks
       await finopsAlertService.checkSLAAlerts();
@@ -1511,7 +1513,10 @@ router.post("/trigger-sla-check", async (req: Request, res: Response) => {
           RETURNING *
         `;
 
-        const action = notification.notification_type === "sla_warning" ? "sla_alert" : "overdue_notification_sent";
+        const action =
+          notification.notification_type === "sla_warning"
+            ? "sla_alert"
+            : "overdue_notification_sent";
 
         const result = await pool.query(insertQuery, [
           action,
@@ -1536,7 +1541,9 @@ router.post("/trigger-sla-check", async (req: Request, res: Response) => {
         notifications_created: createdNotifications.length,
         notifications: createdNotifications,
         timestamp: new Date().toISOString(),
-        ist_time: new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),
+        ist_time: new Date().toLocaleString("en-IN", {
+          timeZone: "Asia/Kolkata",
+        }),
       });
     } else {
       res.json({
@@ -1628,7 +1635,9 @@ router.post("/test/create-overdue-now", async (req: Request, res: Response) => {
       console.log("Creating task that is overdue right now in IST...");
 
       // Get current IST time
-      const nowIST = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
+      const nowIST = new Date().toLocaleString("en-US", {
+        timeZone: "Asia/Kolkata",
+      });
       const currentIST = new Date(nowIST);
 
       // Create a time that was 1 minute ago in IST (so it's already overdue)
@@ -1636,7 +1645,9 @@ router.post("/test/create-overdue-now", async (req: Request, res: Response) => {
       const overdueTimeStr = overdueTime.toTimeString().slice(0, 5); // HH:MM format
 
       console.log(`🕐 Current IST: ${currentIST.toLocaleString("en-IN")}`);
-      console.log(`⏰ Setting task start time to: ${overdueTimeStr} (1 minute ago)`);
+      console.log(
+        `⏰ Setting task start time to: ${overdueTimeStr} (1 minute ago)`,
+      );
 
       // Create/update test task
       const taskQuery = `
@@ -1671,7 +1682,7 @@ router.post("/test/create-overdue-now", async (req: Request, res: Response) => {
           "2. It should be detected as overdue immediately",
           "3. Trigger manual SLA check using: POST /api/notifications-production/trigger-sla-check",
           "4. Watch FinOps Notifications for real-time updates",
-          "5. The system should automatically mark it as overdue and create notifications"
+          "5. The system should automatically mark it as overdue and create notifications",
         ],
         task_details: {
           task_id: 98,
@@ -1679,14 +1690,16 @@ router.post("/test/create-overdue-now", async (req: Request, res: Response) => {
           assigned_to: "Test User Real Time",
           start_time_ist: overdueTimeStr,
           current_ist: currentIST.toLocaleString("en-IN"),
-          should_be_overdue_by: "1 minute"
+          should_be_overdue_by: "1 minute",
         },
-        next_step: "Call POST /api/notifications-production/trigger-sla-check to test",
+        next_step:
+          "Call POST /api/notifications-production/trigger-sla-check to test",
         timestamp: new Date().toISOString(),
       });
     } else {
       res.json({
-        message: "Database unavailable - would create real-time overdue task in production",
+        message:
+          "Database unavailable - would create real-time overdue task in production",
         timestamp: new Date().toISOString(),
       });
     }
@@ -1786,7 +1799,9 @@ router.post(
 router.get("/debug/ist-time", async (req: Request, res: Response) => {
   try {
     const now = new Date();
-    const istTime = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
+    const istTime = new Date().toLocaleString("en-US", {
+      timeZone: "Asia/Kolkata",
+    });
     const istDate = new Date(istTime);
 
     res.json({
@@ -1798,8 +1813,12 @@ router.get("/debug/ist-time", async (req: Request, res: Response) => {
       offset_hours: 5.5,
       timezone: "Asia/Kolkata",
       calculations: {
-        manual_ist_offset: new Date(now.getTime() + (5.5 * 60 * 60 * 1000)).toISOString(),
-        locale_based_ist: now.toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),
+        manual_ist_offset: new Date(
+          now.getTime() + 5.5 * 60 * 60 * 1000,
+        ).toISOString(),
+        locale_based_ist: now.toLocaleString("en-IN", {
+          timeZone: "Asia/Kolkata",
+        }),
       },
       timestamp: new Date().toISOString(),
     });

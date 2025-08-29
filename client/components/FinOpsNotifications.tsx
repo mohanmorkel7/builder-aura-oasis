@@ -596,7 +596,7 @@ export default function FinOpsNotifications() {
           console.log("🔍 Triggering real-time SLA check...");
           // Trigger SLA monitoring on the server
           await apiClient.request("/notifications-production/auto-sync", {
-            method: "POST"
+            method: "POST",
           });
           // Refresh notifications after SLA check
           refetch();
@@ -951,7 +951,7 @@ export default function FinOpsNotifications() {
       dateUTC: dateUTC.toISOString(),
       istDate: istDate.toISOString(),
       currentIST: currentIST.toISOString(),
-      diffMinutes
+      diffMinutes,
     });
 
     // Real-time calculation in IST
