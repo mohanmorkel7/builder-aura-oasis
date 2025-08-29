@@ -1210,6 +1210,20 @@ export default function FinOpsNotifications() {
                 </SelectContent>
               </Select>
             </div>
+            <div className="min-w-[150px]">
+              <Label>Filter by Date</Label>
+              <Input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="w-full"
+              />
+              <div className="text-xs text-gray-500 mt-1">
+                {selectedDate === new Date().toISOString().split('T')[0]
+                  ? "Today's notifications"
+                  : `Notifications from ${new Date(selectedDate).toLocaleDateString()}`}
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
