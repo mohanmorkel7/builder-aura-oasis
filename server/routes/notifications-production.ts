@@ -294,6 +294,12 @@ router.get("/", async (req: Request, res: Response) => {
         LIMIT $${paramIndex++} OFFSET $${paramIndex++}
       `;
 
+      // Add date parameter if provided
+      if (date) {
+        params.push(date as string);
+        paramIndex++;
+      }
+
       params.push(parseInt(limit as string), parseInt(offset as string));
 
       const result = await pool.query(query, params);
