@@ -5,7 +5,9 @@ import { pool } from "../database/connection";
 const IST_TIMEZONE = "Asia/Kolkata";
 
 const getCurrentISTTime = (): Date => {
-  return new Date(new Date().toLocaleString("en-US", { timeZone: IST_TIMEZONE }));
+  return new Date(
+    new Date().toLocaleString("en-US", { timeZone: IST_TIMEZONE }),
+  );
 };
 
 const convertToIST = (date: Date | string): Date => {
@@ -21,7 +23,7 @@ const formatISTDateTime = (date: Date): string => {
     year: "numeric",
     hour: "numeric",
     minute: "2-digit",
-    hour12: true
+    hour12: true,
   });
 };
 
@@ -85,7 +87,9 @@ const mockNotifications = [
     entity_id: "1",
     priority: "high",
     read: false,
-    created_at: new Date(getCurrentISTTime().getTime() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago IST
+    created_at: new Date(
+      getCurrentISTTime().getTime() - 2 * 60 * 60 * 1000,
+    ).toISOString(), // 2 hours ago IST
     action_url: "/leads/1",
   },
   {
@@ -101,7 +105,9 @@ const mockNotifications = [
     entity_id: "2",
     priority: "medium",
     read: false,
-    created_at: new Date(getCurrentISTTime().getTime() - 24 * 60 * 60 * 1000).toISOString(), // 1 day ago IST
+    created_at: new Date(
+      getCurrentISTTime().getTime() - 24 * 60 * 60 * 1000,
+    ).toISOString(), // 1 day ago IST
     action_url: "/leads/2",
   },
   {
@@ -117,7 +123,9 @@ const mockNotifications = [
     entity_id: "3",
     priority: "low",
     read: true,
-    created_at: new Date(getCurrentISTTime().getTime() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days ago IST
+    created_at: new Date(
+      getCurrentISTTime().getTime() - 5 * 24 * 60 * 60 * 1000,
+    ).toISOString(), // 5 days ago IST
     action_url: "/clients/3",
   },
 ];

@@ -5,7 +5,9 @@ import { pool } from "../database/connection";
 const IST_TIMEZONE = "Asia/Kolkata";
 
 const getCurrentISTTime = (): Date => {
-  return new Date(new Date().toLocaleString("en-US", { timeZone: IST_TIMEZONE }));
+  return new Date(
+    new Date().toLocaleString("en-US", { timeZone: IST_TIMEZONE }),
+  );
 };
 
 const convertToIST = (date: Date | string): Date => {
@@ -21,7 +23,7 @@ const formatISTDateTime = (date: Date): string => {
     year: "numeric",
     hour: "numeric",
     minute: "2-digit",
-    hour12: true
+    hour12: true,
   });
 };
 
@@ -61,7 +63,9 @@ async function isDatabaseAvailable() {
 const mockActivityLogs = [
   {
     id: "1",
-    timestamp: new Date(getCurrentISTTime().getTime() - 30 * 60 * 1000).toISOString(), // 30 minutes ago IST
+    timestamp: new Date(
+      getCurrentISTTime().getTime() - 30 * 60 * 1000,
+    ).toISOString(), // 30 minutes ago IST
     action: "subtask_status_changed",
     entity_type: "subtask",
     entity_id: "st_001",
@@ -76,7 +80,9 @@ const mockActivityLogs = [
   },
   {
     id: "2",
-    timestamp: new Date(getCurrentISTTime().getTime() - 45 * 60 * 1000).toISOString(), // 45 minutes ago IST
+    timestamp: new Date(
+      getCurrentISTTime().getTime() - 45 * 60 * 1000,
+    ).toISOString(), // 45 minutes ago IST
     action: "delay_reported",
     entity_type: "subtask",
     entity_id: "st_002",
@@ -92,7 +98,9 @@ const mockActivityLogs = [
   },
   {
     id: "3",
-    timestamp: new Date(getCurrentISTTime().getTime() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago IST
+    timestamp: new Date(
+      getCurrentISTTime().getTime() - 2 * 60 * 60 * 1000,
+    ).toISOString(), // 2 hours ago IST
     action: "sla_alert",
     entity_type: "subtask",
     entity_id: "st_003",
@@ -106,7 +114,9 @@ const mockActivityLogs = [
   },
   {
     id: "4",
-    timestamp: new Date(getCurrentISTTime().getTime() - 4 * 60 * 60 * 1000).toISOString(), // 4 hours ago IST
+    timestamp: new Date(
+      getCurrentISTTime().getTime() - 4 * 60 * 60 * 1000,
+    ).toISOString(), // 4 hours ago IST
     action: "task_created",
     entity_type: "task",
     entity_id: "t_001",
@@ -241,7 +251,9 @@ router.get(
           istStartDate.setHours(0, 0, 0, 0);
           whereConditions.push(`fal.timestamp >= $${paramIndex++}`);
           params.push(istStartDate.toISOString());
-          console.log(`Activity logs: IST start date filter: ${formatISTDateTime(istStartDate)}`);
+          console.log(
+            `Activity logs: IST start date filter: ${formatISTDateTime(istStartDate)}`,
+          );
         }
 
         if (validEndDate) {
@@ -250,7 +262,9 @@ router.get(
           istEndDate.setHours(23, 59, 59, 999);
           whereConditions.push(`fal.timestamp <= $${paramIndex++}`);
           params.push(istEndDate.toISOString());
-          console.log(`Activity logs: IST end date filter: ${formatISTDateTime(istEndDate)}`);
+          console.log(
+            `Activity logs: IST end date filter: ${formatISTDateTime(istEndDate)}`,
+          );
         }
 
         const whereClause =

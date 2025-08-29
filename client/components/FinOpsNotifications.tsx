@@ -47,7 +47,11 @@ import {
   Shield,
 } from "lucide-react";
 import { format, formatDistanceToNow, isToday, isYesterday } from "date-fns";
-import { formatToISTDateTime, getRelativeTimeIST, convertToIST } from "@/lib/dateUtils";
+import {
+  formatToISTDateTime,
+  getRelativeTimeIST,
+  convertToIST,
+} from "@/lib/dateUtils";
 
 interface FinOpsNotification {
   id: string;
@@ -892,7 +896,7 @@ export default function FinOpsNotifications() {
         day: "numeric",
         hour: "numeric",
         minute: "2-digit",
-        hour12: true
+        hour12: true,
       });
     }
   };

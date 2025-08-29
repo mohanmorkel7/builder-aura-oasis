@@ -5,7 +5,9 @@ import * as nodemailer from "nodemailer";
 const IST_TIMEZONE = "Asia/Kolkata";
 
 const getCurrentISTTime = (): Date => {
-  return new Date(new Date().toLocaleString("en-US", { timeZone: IST_TIMEZONE }));
+  return new Date(
+    new Date().toLocaleString("en-US", { timeZone: IST_TIMEZONE }),
+  );
 };
 
 const convertToIST = (date: Date | string): Date => {
@@ -21,7 +23,7 @@ const formatISTDateTime = (date: Date): string => {
     year: "numeric",
     hour: "numeric",
     minute: "2-digit",
-    hour12: true
+    hour12: true,
   });
 };
 
@@ -61,14 +63,14 @@ class FinOpsAlertService {
   async checkSLAAlerts(): Promise<void> {
     try {
       console.log("Starting SLA alert check...");
-      
+
       // Get all active tasks with their subtasks
       const activeTasks = await this.getActiveTasksWithSubtasks();
-      
+
       for (const task of activeTasks) {
         await this.processTaskAlerts(task);
       }
-      
+
       console.log("SLA alert check completed");
     } catch (error) {
       console.error("Error in SLA alert check:", error);
@@ -81,24 +83,29 @@ class FinOpsAlertService {
   async checkDailyTaskExecution(): Promise<void> {
     try {
       console.log("Checking for daily tasks to execute...");
-      
-      const todayIST = getCurrentISTTime().toISOString().split('T')[0];
+
+      const todayIST = getCurrentISTTime().toISOString().split("T")[0];
       console.log(`Checking daily tasks for IST date: ${todayIST}`);
-      
-      const tasksToExecute = await pool.query(`
+
+      const tasksToExecute = await pool.query(
+        `
         SELECT * FROM finops_tasks 
         WHERE is_active = true 
         AND duration = 'daily'
         AND effective_from <= $1
         AND (last_run IS NULL OR DATE(last_run AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Kolkata') < $1)
         AND deleted_at IS NULL
-      `, [todayIST]);
-      
+      `,
+        [todayIST],
+      );
+
       for (const task of tasksToExecute.rows) {
         await this.executeTask(task);
       }
-      
-      console.log(`Daily task execution completed. Processed ${tasksToExecute.rows.length} tasks`);
+
+      console.log(
+        `Daily task execution completed. Processed ${tasksToExecute.rows.length} tasks`,
+      );
     } catch (error) {
       console.error("Error in daily task execution:", error);
     }
@@ -109,7 +116,7 @@ class FinOpsAlertService {
    */
   private async processTaskAlerts(task: any): Promise<void> {
     for (const subtask of task.subtasks) {
-      if (subtask.status === 'in_progress' || subtask.status === 'pending') {
+      if (subtask.status === "in_progress" || subtask.status === "pending") {
         await this.checkSubtaskSLA(task, subtask);
       }
     }
@@ -136,7 +143,9 @@ class FinOpsAlertService {
     const timeDiff = dueTimeIST.getTime() - nowIST.getTime();
     const minutesRemaining = Math.floor(timeDiff / (1000 * 60));
 
-    console.log(`SLA Check (IST): Task ${task.task_name}, Subtask ${subtask.name}`);
+    console.log(
+      `SLA Check (IST): Task ${task.task_name}, Subtask ${subtask.name}`,
+    );
     console.log(`Current IST: ${formatISTDateTime(nowIST)}`);
     console.log(`Due IST: ${formatISTDateTime(dueTimeIST)}`);
     console.log(`Minutes remaining: ${minutesRemaining}`);
@@ -144,7 +153,7 @@ class FinOpsAlertService {
     // Check if already overdue
     if (minutesRemaining < 0) {
       await this.sendSLAOverdueAlert(task, subtask, Math.abs(minutesRemaining));
-      await this.updateSubtaskStatus(task.id, subtask.id, 'overdue');
+      await this.updateSubtaskStatus(task.id, subtask.id, "overdue");
     }
     // Check if within 15 minutes of SLA breach
     else if (minutesRemaining <= 15 && minutesRemaining > 0) {
@@ -155,28 +164,39 @@ class FinOpsAlertService {
   /**
    * Send SLA warning alert (15 minutes before breach)
    */
-  private async sendSLAWarningAlert(task: any, subtask: any, minutesRemaining: number): Promise<void> {
+  private async sendSLAWarningAlert(
+    task: any,
+    subtask: any,
+    minutesRemaining: number,
+  ): Promise<void> {
     try {
       // Check if warning already sent
-      const existingAlert = await pool.query(`
+      const existingAlert = await pool.query(
+        `
         SELECT * FROM finops_alerts 
         WHERE task_id = $1 AND subtask_id = $2 AND alert_type = 'sla_warning'
         AND created_at > (CURRENT_TIMESTAMP - INTERVAL '1 hour')
-      `, [task.id, subtask.id]);
-      
+      `,
+        [task.id, subtask.id],
+      );
+
       if (existingAlert.rows.length > 0) {
         return; // Alert already sent
       }
-      
+
       const recipients = [
-        { name: task.assigned_to, email: `${task.assigned_to.toLowerCase().replace(' ', '.')}@company.com`, type: 'assigned' as const },
-        ...JSON.parse(task.reporting_managers || '[]').map((name: string) => ({
+        {
+          name: task.assigned_to,
+          email: `${task.assigned_to.toLowerCase().replace(" ", ".")}@company.com`,
+          type: "assigned" as const,
+        },
+        ...JSON.parse(task.reporting_managers || "[]").map((name: string) => ({
           name,
-          email: `${name.toLowerCase().replace(' ', '.')}@company.com`,
-          type: 'reporting' as const
-        }))
+          email: `${name.toLowerCase().replace(" ", ".")}@company.com`,
+          type: "reporting" as const,
+        })),
       ];
-      
+
       const currentTimeIST = formatISTDateTime(getCurrentISTTime());
       const subject = `⚠️ SLA Warning: ${task.task_name} - ${subtask.name}`;
       const message = `
@@ -193,10 +213,15 @@ class FinOpsAlertService {
         <hr>
         <p><small>This is an automated alert from the FinOps Task Management System (IST).</small></p>
       `;
-      
+
       await this.sendEmailAlerts(recipients, subject, message);
-      await this.logAlert(task.id, subtask.id, 'sla_warning', 'assigned_user,reporting_managers', minutesRemaining);
-      
+      await this.logAlert(
+        task.id,
+        subtask.id,
+        "sla_warning",
+        "assigned_user,reporting_managers",
+        minutesRemaining,
+      );
     } catch (error) {
       console.error("Error sending SLA warning alert:", error);
     }
@@ -205,33 +230,44 @@ class FinOpsAlertService {
   /**
    * Send SLA overdue alert (immediate escalation)
    */
-  private async sendSLAOverdueAlert(task: any, subtask: any, minutesOverdue: number): Promise<void> {
+  private async sendSLAOverdueAlert(
+    task: any,
+    subtask: any,
+    minutesOverdue: number,
+  ): Promise<void> {
     try {
       // Check if overdue alert already sent
-      const existingAlert = await pool.query(`
+      const existingAlert = await pool.query(
+        `
         SELECT * FROM finops_alerts 
         WHERE task_id = $1 AND subtask_id = $2 AND alert_type = 'sla_overdue'
         AND created_at > (CURRENT_TIMESTAMP - INTERVAL '30 minutes')
-      `, [task.id, subtask.id]);
-      
+      `,
+        [task.id, subtask.id],
+      );
+
       if (existingAlert.rows.length > 0) {
         return; // Alert already sent
       }
-      
+
       const recipients = [
-        { name: task.assigned_to, email: `${task.assigned_to.toLowerCase().replace(' ', '.')}@company.com`, type: 'assigned' as const },
-        ...JSON.parse(task.reporting_managers || '[]').map((name: string) => ({
+        {
+          name: task.assigned_to,
+          email: `${task.assigned_to.toLowerCase().replace(" ", ".")}@company.com`,
+          type: "assigned" as const,
+        },
+        ...JSON.parse(task.reporting_managers || "[]").map((name: string) => ({
           name,
-          email: `${name.toLowerCase().replace(' ', '.')}@company.com`,
-          type: 'reporting' as const
+          email: `${name.toLowerCase().replace(" ", ".")}@company.com`,
+          type: "reporting" as const,
         })),
-        ...JSON.parse(task.escalation_managers || '[]').map((name: string) => ({
+        ...JSON.parse(task.escalation_managers || "[]").map((name: string) => ({
           name,
-          email: `${name.toLowerCase().replace(' ', '.')}@company.com`,
-          type: 'escalation' as const
-        }))
+          email: `${name.toLowerCase().replace(" ", ".")}@company.com`,
+          type: "escalation" as const,
+        })),
       ];
-      
+
       const currentTimeIST = formatISTDateTime(getCurrentISTTime());
       const subject = `🚨 SLA OVERDUE: ${task.task_name} - ${subtask.name}`;
       const message = `
@@ -252,10 +288,15 @@ class FinOpsAlertService {
         <hr>
         <p><small>This is an automated escalation alert from the FinOps Task Management System (IST).</small></p>
       `;
-      
+
       await this.sendEmailAlerts(recipients, subject, message);
-      await this.logAlert(task.id, subtask.id, 'sla_overdue', 'all', minutesOverdue);
-      
+      await this.logAlert(
+        task.id,
+        subtask.id,
+        "sla_overdue",
+        "all",
+        minutesOverdue,
+      );
     } catch (error) {
       console.error("Error sending SLA overdue alert:", error);
     }
@@ -267,39 +308,53 @@ class FinOpsAlertService {
   private async executeTask(task: any): Promise<void> {
     try {
       console.log(`Executing daily task: ${task.task_name}`);
-      
+
       // Get subtasks for this task
-      const subtasks = await pool.query(`
+      const subtasks = await pool.query(
+        `
         SELECT * FROM finops_subtasks 
         WHERE task_id = $1 
         ORDER BY order_position
-      `, [task.id]);
-      
+      `,
+        [task.id],
+      );
+
       // Reset all subtasks to pending status for daily execution
       for (const subtask of subtasks.rows) {
-        await pool.query(`
+        await pool.query(
+          `
           UPDATE finops_subtasks 
           SET status = 'pending', 
               started_at = NULL, 
               completed_at = NULL,
               updated_at = CURRENT_TIMESTAMP
           WHERE id = $1
-        `, [subtask.id]);
+        `,
+          [subtask.id],
+        );
       }
-      
+
       // Update task last run time
-      await pool.query(`
+      await pool.query(
+        `
         UPDATE finops_tasks 
         SET last_run = CURRENT_TIMESTAMP,
             next_run = CURRENT_TIMESTAMP + INTERVAL '1 day'
         WHERE id = $1
-      `, [task.id]);
-      
+      `,
+        [task.id],
+      );
+
       // Log activity
-      await this.logActivity(task.id, null, 'daily_execution', 'System', 'Daily task execution started');
-      
+      await this.logActivity(
+        task.id,
+        null,
+        "daily_execution",
+        "System",
+        "Daily task execution started",
+      );
+
       console.log(`Daily task executed successfully: ${task.task_name}`);
-      
     } catch (error) {
       console.error(`Error executing daily task ${task.task_name}:`, error);
     }
@@ -330,28 +385,34 @@ class FinOpsAlertService {
       WHERE t.is_active = true AND t.deleted_at IS NULL
       GROUP BY t.id
     `;
-    
+
     const result = await pool.query(query);
-    return result.rows.map(row => ({
+    return result.rows.map((row) => ({
       ...row,
-      subtasks: row.subtasks || []
+      subtasks: row.subtasks || [],
     }));
   }
 
   /**
    * Send email alerts to recipients
    */
-  private async sendEmailAlerts(recipients: EmailRecipient[], subject: string, htmlMessage: string): Promise<void> {
+  private async sendEmailAlerts(
+    recipients: EmailRecipient[],
+    subject: string,
+    htmlMessage: string,
+  ): Promise<void> {
     for (const recipient of recipients) {
       try {
         await this.emailTransporter.sendMail({
-          from: process.env.SMTP_FROM || 'finops@company.com',
+          from: process.env.SMTP_FROM || "finops@company.com",
           to: recipient.email,
           subject: subject,
           html: htmlMessage,
         });
-        
-        console.log(`Alert email sent to ${recipient.name} (${recipient.email})`);
+
+        console.log(
+          `Alert email sent to ${recipient.name} (${recipient.email})`,
+        );
       } catch (error) {
         console.error(`Failed to send email to ${recipient.name}:`, error);
       }
@@ -361,12 +422,21 @@ class FinOpsAlertService {
   /**
    * Log alert in database
    */
-  private async logAlert(taskId: number, subtaskId: string, alertType: string, recipients: string, minutesData: number): Promise<void> {
+  private async logAlert(
+    taskId: number,
+    subtaskId: string,
+    alertType: string,
+    recipients: string,
+    minutesData: number,
+  ): Promise<void> {
     try {
-      await pool.query(`
+      await pool.query(
+        `
         INSERT INTO finops_alerts (task_id, subtask_id, alert_type, recipients, minutes_data, status)
         VALUES ($1, $2, $3, $4, $5, 'sent')
-      `, [taskId, subtaskId, alertType, recipients, minutesData]);
+      `,
+        [taskId, subtaskId, alertType, recipients, minutesData],
+      );
     } catch (error) {
       console.error("Error logging alert:", error);
     }
@@ -375,15 +445,28 @@ class FinOpsAlertService {
   /**
    * Update subtask status
    */
-  private async updateSubtaskStatus(taskId: number, subtaskId: string, status: string): Promise<void> {
+  private async updateSubtaskStatus(
+    taskId: number,
+    subtaskId: string,
+    status: string,
+  ): Promise<void> {
     try {
-      await pool.query(`
+      await pool.query(
+        `
         UPDATE finops_subtasks 
         SET status = $1, updated_at = CURRENT_TIMESTAMP 
         WHERE task_id = $2 AND id = $3
-      `, [status, taskId, subtaskId]);
-      
-      await this.logActivity(taskId, subtaskId, 'status_changed', 'System', `Status automatically changed to ${status} due to SLA breach`);
+      `,
+        [status, taskId, subtaskId],
+      );
+
+      await this.logActivity(
+        taskId,
+        subtaskId,
+        "status_changed",
+        "System",
+        `Status automatically changed to ${status} due to SLA breach`,
+      );
     } catch (error) {
       console.error("Error updating subtask status:", error);
     }
@@ -392,12 +475,21 @@ class FinOpsAlertService {
   /**
    * Log activity
    */
-  private async logActivity(taskId: number, subtaskId: string | null, action: string, userName: string, details: string): Promise<void> {
+  private async logActivity(
+    taskId: number,
+    subtaskId: string | null,
+    action: string,
+    userName: string,
+    details: string,
+  ): Promise<void> {
     try {
-      await pool.query(`
+      await pool.query(
+        `
         INSERT INTO finops_activity_log (task_id, subtask_id, action, user_name, details)
         VALUES ($1, $2, $3, $4, $5)
-      `, [taskId, subtaskId, action, userName, details]);
+      `,
+        [taskId, subtaskId, action, userName, details],
+      );
     } catch (error) {
       console.error("Error logging activity:", error);
     }
@@ -409,7 +501,7 @@ class FinOpsAlertService {
   async checkIncompleteSubtasks(): Promise<void> {
     try {
       console.log("Checking for incomplete subtasks...");
-      
+
       const incompleteSubtasks = await pool.query(`
         SELECT t.*, st.*, 
                t.task_name, t.assigned_to, t.reporting_managers, t.escalation_managers
@@ -420,12 +512,14 @@ class FinOpsAlertService {
         AND t.is_active = true
         AND t.deleted_at IS NULL
       `);
-      
+
       for (const row of incompleteSubtasks.rows) {
         await this.sendIncompleteSubtaskAlert(row);
       }
-      
-      console.log(`Incomplete subtask check completed. Found ${incompleteSubtasks.rows.length} incomplete subtasks`);
+
+      console.log(
+        `Incomplete subtask check completed. Found ${incompleteSubtasks.rows.length} incomplete subtasks`,
+      );
     } catch (error) {
       console.error("Error checking incomplete subtasks:", error);
     }
@@ -437,14 +531,20 @@ class FinOpsAlertService {
   private async sendIncompleteSubtaskAlert(subtaskData: any): Promise<void> {
     try {
       const recipients = [
-        { name: subtaskData.assigned_to, email: `${subtaskData.assigned_to.toLowerCase().replace(' ', '.')}@company.com`, type: 'assigned' as const },
-        ...JSON.parse(subtaskData.reporting_managers || '[]').map((name: string) => ({
-          name,
-          email: `${name.toLowerCase().replace(' ', '.')}@company.com`,
-          type: 'reporting' as const
-        }))
+        {
+          name: subtaskData.assigned_to,
+          email: `${subtaskData.assigned_to.toLowerCase().replace(" ", ".")}@company.com`,
+          type: "assigned" as const,
+        },
+        ...JSON.parse(subtaskData.reporting_managers || "[]").map(
+          (name: string) => ({
+            name,
+            email: `${name.toLowerCase().replace(" ", ".")}@company.com`,
+            type: "reporting" as const,
+          }),
+        ),
       ];
-      
+
       const subject = `📋 Incomplete Subtask Alert: ${subtaskData.task_name}`;
       const message = `
         <h2>Incomplete Subtask Alert</h2>
@@ -459,10 +559,15 @@ class FinOpsAlertService {
         <hr>
         <p><small>This is an automated alert from the FinOps Task Management System.</small></p>
       `;
-      
+
       await this.sendEmailAlerts(recipients, subject, message);
-      await this.logAlert(subtaskData.task_id, subtaskData.id, 'subtask_incomplete', 'assigned_user,reporting_managers', 0);
-      
+      await this.logAlert(
+        subtaskData.task_id,
+        subtaskData.id,
+        "subtask_incomplete",
+        "assigned_user,reporting_managers",
+        0,
+      );
     } catch (error) {
       console.error("Error sending incomplete subtask alert:", error);
     }

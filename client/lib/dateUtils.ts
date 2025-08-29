@@ -52,7 +52,9 @@ export const formatToISTDateTime = (
   } catch (error) {
     console.warn("Error formatting date:", error);
     // Fallback formatting with IST conversion
-    const istDate = new Date(dateObj.toLocaleString("en-US", { timeZone: IST_TIMEZONE }));
+    const istDate = new Date(
+      dateObj.toLocaleString("en-US", { timeZone: IST_TIMEZONE }),
+    );
     const day = istDate.getDate();
     const month = istDate.toLocaleString("en-IN", { month: "short" });
     const year = istDate.getFullYear();
@@ -92,8 +94,10 @@ export const getCurrentISTTimestamp = (): string => {
  */
 export const getCurrentISTDate = (): string => {
   const now = new Date();
-  const istDate = new Date(now.toLocaleString("en-US", { timeZone: IST_TIMEZONE }));
-  return istDate.toISOString().split('T')[0];
+  const istDate = new Date(
+    now.toLocaleString("en-US", { timeZone: IST_TIMEZONE }),
+  );
+  return istDate.toISOString().split("T")[0];
 };
 
 /**
@@ -149,5 +153,5 @@ export const convertToIST = (date: string | Date): Date => {
 export const formatDateForAPI = (date: Date | string): string => {
   const dateObj = typeof date === "string" ? new Date(date) : date;
   const istDate = convertToIST(dateObj);
-  return istDate.toISOString().split('T')[0];
+  return istDate.toISOString().split("T")[0];
 };

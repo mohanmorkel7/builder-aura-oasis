@@ -45,7 +45,13 @@ import {
   startOfDay,
   endOfDay,
 } from "date-fns";
-import { formatToISTDateTime, getRelativeTimeIST, convertToIST, formatDateForAPI, getCurrentISTDate } from "@/lib/dateUtils";
+import {
+  formatToISTDateTime,
+  getRelativeTimeIST,
+  convertToIST,
+  formatDateForAPI,
+  getCurrentISTDate,
+} from "@/lib/dateUtils";
 
 interface ActivityLogEntry {
   id: string;
@@ -100,7 +106,11 @@ export default function FinOpsActivityLog() {
   }
 
   // Fetch activity logs
-  const { data: activityData, isLoading, refetch } = useQuery({
+  const {
+    data: activityData,
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ["activity-logs", filters],
     queryFn: async () => {
       try {
@@ -241,7 +251,7 @@ export default function FinOpsActivityLog() {
           day: "2-digit",
           hour: "2-digit",
           minute: "2-digit",
-          second: "2-digit"
+          second: "2-digit",
         }),
         log.action,
         log.entity_type,
@@ -350,7 +360,10 @@ export default function FinOpsActivityLog() {
                   type="date"
                   value={filters.date_filter}
                   onChange={(e) =>
-                    setFilters((prev) => ({ ...prev, date_filter: e.target.value }))
+                    setFilters((prev) => ({
+                      ...prev,
+                      date_filter: e.target.value,
+                    }))
                   }
                   max={getCurrentISTDate()}
                   className="flex-1"
@@ -358,7 +371,12 @@ export default function FinOpsActivityLog() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setFilters((prev) => ({ ...prev, date_filter: getCurrentISTDate() }))}
+                  onClick={() =>
+                    setFilters((prev) => ({
+                      ...prev,
+                      date_filter: getCurrentISTDate(),
+                    }))
+                  }
                   className="whitespace-nowrap"
                 >
                   Today
@@ -369,7 +387,10 @@ export default function FinOpsActivityLog() {
                   onClick={() => {
                     const yesterday = new Date();
                     yesterday.setDate(yesterday.getDate() - 1);
-                    setFilters((prev) => ({ ...prev, date_filter: formatDateForAPI(yesterday) }));
+                    setFilters((prev) => ({
+                      ...prev,
+                      date_filter: formatDateForAPI(yesterday),
+                    }));
                   }}
                   className="whitespace-nowrap"
                 >
@@ -402,31 +423,37 @@ export default function FinOpsActivityLog() {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <Activity className="w-5 h-5" />
-            Activity Log
-            {filters.date_filter && (
-              <span className="text-sm font-normal text-gray-600">
-                ({formatToISTDateTime(new Date(filters.date_filter), {
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric"
-                })})
-              </span>
-            )}
-          </CardTitle>
-          <div className="flex items-center gap-2">
-            <Badge variant="secondary">{filteredLogs.length} activities</Badge>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => refetch()}
-              disabled={isLoading}
-            >
-              <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
-            </Button>
+            <CardTitle className="flex items-center gap-2">
+              <Activity className="w-5 h-5" />
+              Activity Log
+              {filters.date_filter && (
+                <span className="text-sm font-normal text-gray-600">
+                  (
+                  {formatToISTDateTime(new Date(filters.date_filter), {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                  )
+                </span>
+              )}
+            </CardTitle>
+            <div className="flex items-center gap-2">
+              <Badge variant="secondary">
+                {filteredLogs.length} activities
+              </Badge>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => refetch()}
+                disabled={isLoading}
+              >
+                <RefreshCw
+                  className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`}
+                />
+              </Button>
+            </div>
           </div>
-        </div>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -507,7 +534,7 @@ export default function FinOpsActivityLog() {
                                   day: "numeric",
                                   hour: "numeric",
                                   minute: "2-digit",
-                                  hour12: true
+                                  hour12: true,
                                 })}
                               </span>
                             </div>
