@@ -129,49 +129,67 @@ export default function UserProfile() {
       try {
         setLoading(true);
 
-        // Fetch detailed user info from database
-        const userResponse = await apiClient.request(`/users/${user.id}`, {
-          method: "GET",
-        });
+        // Fetch detailed user info from database, supporting non-numeric SSO IDs
+        const numericId = parseInt(user.id as string);
+        let userResponse: any = null;
+        if (!isNaN(numericId)) {
+          userResponse = await apiClient.request(`/users/${numericId}`, {
+            method: "GET",
+          });
+        } else {
+          const azureId = (user as any).azureObjectId || (user.id as string);
+          userResponse = await apiClient.request(
+            `/users/by-azure/${azureId}`,
+            {
+              method: "GET",
+            },
+          );
+        }
         setUserDetails(userResponse);
 
-        // Fetch recent activity logs
-        const activityResponse = await apiClient.request(
-          "/activity-production",
-          {
-            method: "GET",
-            params: new URLSearchParams({
-              limit: "10",
-              user_id: user.id.toString(),
-            }),
-          },
-        );
+        // Fetch recent activity logs only when numeric user ID is available
+        let activityResponse: any = null;
+        if (!isNaN(numericId)) {
+          activityResponse = await apiClient.request(
+            "/activity-production",
+            {
+              method: "GET",
+              params: new URLSearchParams({
+                limit: "10",
+                user_id: numericId.toString(),
+              }),
+            },
+          );
+        }
 
         if (activityResponse?.activity_logs) {
           setActivityLogs(activityResponse.activity_logs);
         }
 
-        // Fetch activity statistics
-        const statsResponse = await apiClient.request(
-          "/activity-production/stats/summary",
-          {
-            method: "GET",
-            params: new URLSearchParams({
-              days: "30",
-              user_id: user.id.toString(),
-            }),
-          },
-        );
+        // Fetch activity statistics only when numeric user ID is available
+        if (!isNaN(numericId)) {
+          const statsResponse = await apiClient.request(
+            "/activity-production/stats/summary",
+            {
+              method: "GET",
+              params: new URLSearchParams({
+                days: "30",
+                user_id: numericId.toString(),
+              }),
+            },
+          );
 
-        if (statsResponse) {
-          setActivityStats({
-            totalActions: statsResponse.total_count || 0,
-            actionsThisMonth: statsResponse.recent_count || 0,
-            lastLoginDate: userResponse?.last_login || new Date().toISOString(),
-            accountCreatedDate:
-              userResponse?.created_at || new Date().toISOString(),
-            loginCount: statsResponse.total_count || 0,
-          });
+          if (statsResponse) {
+            setActivityStats({
+              totalActions: statsResponse.total_count || 0,
+              actionsThisMonth: statsResponse.recent_count || 0,
+              lastLoginDate:
+                userResponse?.last_login || new Date().toISOString(),
+              accountCreatedDate:
+                userResponse?.created_at || new Date().toISOString(),
+              loginCount: statsResponse.total_count || 0,
+            });
+          }
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
