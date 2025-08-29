@@ -236,13 +236,21 @@ router.get(
         }
 
         if (validStartDate) {
+          // Handle IST date filtering - convert to start of day in IST
+          const istStartDate = new Date(validStartDate);
+          istStartDate.setHours(0, 0, 0, 0);
           whereConditions.push(`fal.timestamp >= $${paramIndex++}`);
-          params.push(validStartDate.toISOString());
+          params.push(istStartDate.toISOString());
+          console.log(`Activity logs: IST start date filter: ${formatISTDateTime(istStartDate)}`);
         }
 
         if (validEndDate) {
+          // Handle IST date filtering - convert to end of day in IST
+          const istEndDate = new Date(validEndDate);
+          istEndDate.setHours(23, 59, 59, 999);
           whereConditions.push(`fal.timestamp <= $${paramIndex++}`);
-          params.push(validEndDate.toISOString());
+          params.push(istEndDate.toISOString());
+          console.log(`Activity logs: IST end date filter: ${formatISTDateTime(istEndDate)}`);
         }
 
         const whereClause =
