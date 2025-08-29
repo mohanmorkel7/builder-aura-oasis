@@ -45,6 +45,7 @@ import {
   startOfDay,
   endOfDay,
 } from "date-fns";
+import { formatToISTDateTime, getRelativeTimeIST, convertToIST, formatDateForAPI, getCurrentISTDate } from "@/lib/dateUtils";
 
 interface ActivityLogEntry {
   id: string;
@@ -75,6 +76,7 @@ export default function FinOpsActivityLog() {
     action: "all",
     days: 7,
     search: "",
+    date_filter: getCurrentISTDate(), // Default to today in IST
   });
   const [currentTime, setCurrentTime] = useState(new Date());
 
@@ -98,7 +100,7 @@ export default function FinOpsActivityLog() {
   }
 
   // Fetch activity logs
-  const { data: activityData, isLoading } = useQuery({
+  const { data: activityData, isLoading, refetch } = useQuery({
     queryKey: ["activity-logs", filters],
     queryFn: async () => {
       try {
@@ -108,13 +110,24 @@ export default function FinOpsActivityLog() {
         if (filters.action !== "all") params.append("action", filters.action);
         params.append("limit", "50");
 
-        const startDate = new Date(
-          Date.now() - filters.days * 24 * 60 * 60 * 1000,
-        ).toISOString();
-        params.append("start_date", startDate);
+        // Use IST date for filtering
+        if (filters.date_filter) {
+          // Convert selected date to IST and use for filtering
+          const selectedDate = new Date(filters.date_filter);
+          const startOfDayIST = formatDateForAPI(startOfDay(selectedDate));
+          const endOfDayIST = formatDateForAPI(endOfDay(selectedDate));
+          params.append("start_date", startOfDayIST);
+          params.append("end_date", endOfDayIST);
+        } else {
+          // Fallback to days filter
+          const startDate = new Date(
+            Date.now() - filters.days * 24 * 60 * 60 * 1000,
+          );
+          params.append("start_date", formatDateForAPI(startDate));
+        }
 
         const url = `/activity-production?${params.toString()}`;
-        console.log("Activity API request URL:", url);
+        console.log("Activity API request URL (IST):", url);
 
         return await apiClient.request(url);
       } catch (error) {
@@ -321,25 +334,18 @@ export default function FinOpsActivityLog() {
               </Select>
             </div>
 
-            {/* Time Range Filter */}
+            {/* Date Filter */}
             <div>
-              <Label htmlFor="days">Time Range</Label>
-              <Select
-                value={filters.days.toString()}
-                onValueChange={(value) =>
-                  setFilters((prev) => ({ ...prev, days: parseInt(value) }))
+              <Label htmlFor="date_filter">Filter by Date (IST)</Label>
+              <Input
+                id="date_filter"
+                type="date"
+                value={filters.date_filter}
+                onChange={(e) =>
+                  setFilters((prev) => ({ ...prev, date_filter: e.target.value }))
                 }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1">Last 24 hours</SelectItem>
-                  <SelectItem value="7">Last 7 days</SelectItem>
-                  <SelectItem value="30">Last 30 days</SelectItem>
-                  <SelectItem value="90">Last 90 days</SelectItem>
-                </SelectContent>
-              </Select>
+                max={getCurrentISTDate()}
+              />
             </div>
 
             {/* Search Filter */}
@@ -447,10 +453,13 @@ export default function FinOpsActivityLog() {
                             <div className="flex items-center gap-1">
                               <Calendar className="w-3 h-3" />
                               <span>
-                                {format(
-                                  new Date(log.timestamp),
-                                  "MMM d, h:mm a",
-                                )}
+                                {formatToISTDateTime(log.timestamp, {
+                                  month: "short",
+                                  day: "numeric",
+                                  hour: "numeric",
+                                  minute: "2-digit",
+                                  hour12: true
+                                })}
                               </span>
                             </div>
                           </div>
