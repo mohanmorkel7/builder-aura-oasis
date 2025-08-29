@@ -1573,6 +1573,97 @@ router.post("/setup-auto-sla", async (req: Request, res: Response) => {
   }
 });
 
+// Auto-sync endpoint for real-time SLA monitoring (called every 30 seconds)
+router.post("/auto-sync", async (req: Request, res: Response) => {
+  try {
+    if (await isDatabaseAvailable()) {
+      console.log("🔄 Auto-sync SLA check triggered...");
+
+      // Run the IST SLA notification function
+      const slaCheckQuery = `SELECT * FROM check_subtask_sla_notifications_ist()`;
+      const slaResult = await pool.query(slaCheckQuery);
+
+      console.log(`📊 SLA check found ${slaResult.rows.length} notifications to create`);
+
+      let createdNotifications = 0;
+
+      // Process each notification found by the SLA check
+      for (const notification of slaResult.rows) {
+        try {
+          // Insert into activity log
+          const insertQuery = `
+            INSERT INTO finops_activity_log (
+              action, task_id, subtask_id, user_name, details, timestamp
+            ) VALUES ($1, $2, $3, $4, $5, NOW())
+            ON CONFLICT DO NOTHING
+            RETURNING id
+          `;
+
+          // Map notification types to actions
+          let action;
+          switch (notification.notification_type) {
+            case "pre_start_alert":
+              action = "pre_start_notification";
+              break;
+            case "sla_warning":
+              action = "sla_alert";
+              break;
+            case "escalation_alert":
+              action = "escalation_notification";
+              break;
+            default:
+              action = "overdue_notification_sent";
+          }
+
+          const insertResult = await pool.query(insertQuery, [
+            action,
+            notification.task_id,
+            notification.subtask_id,
+            "System",
+            notification.message,
+          ]);
+
+          if (insertResult.rows.length > 0) {
+            createdNotifications++;
+
+            // Mark notification as sent to prevent duplicates
+            await pool.query(`SELECT mark_notification_sent($1, $2)`, [
+              notification.subtask_id,
+              notification.notification_type,
+            ]);
+
+            console.log(`✅ Created ${notification.notification_type} notification for task ${notification.task_id}`);
+          }
+        } catch (notificationError) {
+          console.error(`❌ Failed to create notification: ${notificationError.message}`);
+        }
+      }
+
+      res.json({
+        success: true,
+        message: "Auto-sync SLA check completed",
+        notifications_found: slaResult.rows.length,
+        notifications_created: createdNotifications,
+        timestamp: new Date().toISOString(),
+      });
+    } else {
+      res.status(503).json({
+        success: false,
+        message: "Database unavailable - cannot perform auto-sync",
+        timestamp: new Date().toISOString(),
+      });
+    }
+  } catch (error) {
+    console.error("❌ Auto-sync error:", error);
+    res.status(500).json({
+      success: false,
+      error: "Auto-sync failed",
+      message: error.message,
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
 // Manual SLA trigger endpoint for immediate testing
 router.post("/trigger-sla-check", async (req: Request, res: Response) => {
   try {
