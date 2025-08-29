@@ -644,8 +644,8 @@ export default function FinOpsNotifications() {
         throw error;
       }
     },
-    refetchInterval: 60000, // Refresh every 60 seconds (reduced from 30s)
-    staleTime: 30000, // Consider data stale after 30 seconds
+    refetchInterval: 15000, // Refresh every 15 seconds for real-time monitoring
+    staleTime: 10000, // Consider data stale after 10 seconds
     retry: (failureCount, error) => {
       console.log(`🔄 Retry attempt ${failureCount} for notifications`);
 
@@ -675,12 +675,12 @@ export default function FinOpsNotifications() {
     const syncTimeout = setTimeout(() => {
       setCurrentTime(new Date());
 
-      // Then set regular 30-second intervals for time updates
+      // Then set regular 15-second intervals for time updates
       timer = setInterval(() => {
         setCurrentTime(new Date());
-      }, 30000); // Update every 30 seconds for better real-time responsiveness
+      }, 15000); // Update every 15 seconds for real-time responsiveness
 
-      // Set up SLA monitoring every minute to check for overdue tasks
+      // Set up SLA monitoring every 30 seconds to check for overdue tasks
       slaTimer = setInterval(async () => {
         try {
           console.log("🔍 Triggering real-time SLA check...");
@@ -693,7 +693,7 @@ export default function FinOpsNotifications() {
         } catch (error) {
           console.log("SLA monitoring error (non-critical):", error);
         }
-      }, 60000); // Check every minute
+      }, 30000); // Check every 30 seconds for faster overdue detection
     }, secondsUntilNextMinute * 1000);
 
     return () => {
