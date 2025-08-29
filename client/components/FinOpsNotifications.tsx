@@ -1358,7 +1358,7 @@ export default function FinOpsNotifications() {
         )}
       </div>
 
-      {/* Overdue Reason Dialog */}
+      {/* Enhanced Overdue Reason Dialog */}
       <Dialog
         open={overdueReasonDialog.open}
         onOpenChange={(open) => {
@@ -1372,34 +1372,42 @@ export default function FinOpsNotifications() {
           }
         }}
       >
-        <DialogContent className="sm:max-w-[500px]">
+        <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <AlertTriangle className="w-5 h-5 text-red-600" />
-              Overdue Task - Reason Required
+            <DialogTitle className="flex items-center gap-2 text-red-700">
+              <AlertTriangle className="w-6 h-6 text-red-600 animate-pulse" />
+              🚨 URGENT: Overdue Task - Immediate Explanation Required
             </DialogTitle>
-            <DialogDescription>
-              Please provide a reason for marking this overdue notification as
-              read:
+            <DialogDescription className="text-base">
+              This task has exceeded its SLA deadline and requires an immediate explanation.
               <br />
-              <strong>{overdueReasonDialog.taskName}</strong>
+              <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-md">
+                <strong className="text-red-800">Task: {overdueReasonDialog.taskName}</strong>
+                <br />
+                <span className="text-red-600 text-sm">Status automatically changed to OVERDUE</span>
+              </div>
             </DialogDescription>
           </DialogHeader>
 
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="overdue-reason">Overdue Reason</Label>
+              <Label htmlFor="overdue-reason" className="text-red-700 font-semibold">
+                Overdue Explanation *
+              </Label>
               <Textarea
                 id="overdue-reason"
-                placeholder="Please explain why this task was overdue and what actions were taken..."
+                placeholder="REQUIRED: Explain why this task became overdue and what corrective actions have been or will be taken...\n\nExample:\n- Root cause: Unexpected system downtime\n- Impact: 2-minute delay in file processing\n- Corrective action: Monitoring system upgraded\n- Prevention: Added automated alerts"
                 value={overdueReason}
                 onChange={(e) => setOverdueReason(e.target.value)}
-                className="min-h-[100px]"
+                className="min-h-[120px] border-red-300 focus:border-red-500"
               />
+              <p className="text-xs text-red-600">
+                ⚠️ This explanation will be logged and may be reviewed by management.
+              </p>
             </div>
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="gap-2">
             <Button
               variant="outline"
               onClick={() => {
@@ -1410,17 +1418,24 @@ export default function FinOpsNotifications() {
                 });
                 setOverdueReason("");
               }}
+              className="border-gray-300"
             >
               Cancel
             </Button>
             <Button
               onClick={submitOverdueReason}
-              disabled={!overdueReason.trim()}
-              className="bg-red-600 hover:bg-red-700"
+              disabled={!overdueReason.trim() || overdueReason.trim().length < 10}
+              className="bg-red-600 hover:bg-red-700 text-white px-6"
             >
-              Submit Reason & Mark Read
+              ✓ Submit Explanation & Acknowledge
             </Button>
           </DialogFooter>
+
+          {overdueReason.trim() && overdueReason.trim().length < 10 && (
+            <div className="text-xs text-red-500 text-center mb-2">
+              Please provide a detailed explanation (minimum 10 characters)
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>
