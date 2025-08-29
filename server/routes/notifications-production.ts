@@ -142,7 +142,9 @@ router.get("/", async (req: Request, res: Response) => {
       let params = [];
       let paramIndex = 1;
 
-      // Build dynamic WHERE clause
+      // Build dynamic WHERE clause and track date parameter index
+      let dateParamIndex = null;
+
       if (user_id) {
         whereConditions.push(`n.user_id = $${paramIndex++}`);
         params.push(parseInt(user_id as string));
@@ -158,8 +160,9 @@ router.get("/", async (req: Request, res: Response) => {
         params.push(read === "true");
       }
 
-      // Add date parameter if provided
+      // Add date parameter if provided and track its index
       if (date) {
+        dateParamIndex = paramIndex++;
         params.push(date as string);
       }
 
