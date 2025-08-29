@@ -393,7 +393,7 @@ class FinOpsAlertService {
 
       // Resolve user_ids from reporting & escalation managers
       const taskRow = await pool.query(
-        `SELECT reporting_managers, escalation_managers FROM finops_tasks WHERE id = $1`,
+        `SELECT reporting_managers, escalation_managers, assigned_to FROM finops_tasks WHERE id = $1`,
         [taskId],
       );
       const managers = taskRow.rows[0] || {};
@@ -401,6 +401,7 @@ class FinOpsAlertService {
         new Set([
           ...this.parseManagers(managers.reporting_managers),
           ...this.parseManagers(managers.escalation_managers),
+          ...this.parseManagers(managers.assigned_to),
         ]),
       );
       const userIds = await this.getUserIdsFromNames(names);
