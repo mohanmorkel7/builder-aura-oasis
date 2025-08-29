@@ -864,12 +864,26 @@ async function handleStatusChangeNotifications(
   delayNotes?: string,
 ) {
   try {
-    const reportingManagers = JSON.parse(
-      subtaskData.reporting_managers || "[]",
-    );
-    const escalationManagers = JSON.parse(
-      subtaskData.escalation_managers || "[]",
-    );
+    const parseManagers = (val: any): string[] => {
+      if (!val) return [];
+      if (Array.isArray(val)) return val.map(String).map((s) => s.trim()).filter(Boolean);
+      if (typeof val === "string") {
+        const s = val.trim();
+        try {
+          const parsed = JSON.parse(s);
+          if (Array.isArray(parsed)) return parsed.map(String).map((x) => x.trim()).filter(Boolean);
+        } catch {}
+        return s.split(",").map((x) => x.trim()).filter(Boolean);
+      }
+      try {
+        return JSON.parse(val);
+      } catch {
+        return [];
+      }
+    };
+
+    const reportingManagers = parseManagers(subtaskData.reporting_managers);
+    const escalationManagers = parseManagers(subtaskData.escalation_managers);
 
     // Send delay notifications
     if (newStatus === "delayed") {
