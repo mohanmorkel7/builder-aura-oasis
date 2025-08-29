@@ -460,22 +460,42 @@ const now = new Date();
     status: string,
   ): Promise<void> {
     try {
+      // Read current subtask status and name before updating
+      const currentResult = await pool.query(
+        `
+        SELECT status, name FROM finops_subtasks WHERE task_id = $1 AND id = $2
+      `,
+        [taskId, subtaskId],
+      );
+      const currentRow = currentResult.rows[0] || { status: null, name: "" };
+      const previousStatus = currentRow?.status || "unknown";
+      const subtaskName = currentRow?.name || String(subtaskId);
+
+      // Update to the new status
       await pool.query(
         `
-        UPDATE finops_subtasks 
-        SET status = $1, updated_at = CURRENT_TIMESTAMP 
+        UPDATE finops_subtasks
+        SET status = $1, updated_at = CURRENT_TIMESTAMP
         WHERE task_id = $2 AND id = $3
       `,
         [status, taskId, subtaskId],
       );
+
+      // Build human-readable status change message
+      const statusChangeMessage = `Subtask "${subtaskName}" status changed from "${previousStatus}" to "${status}"`;
 
       await this.logActivity(
         taskId,
         subtaskId,
         "status_changed",
         "System",
-        `Status automatically changed to ${status} due to SLA breach`,
+        statusChangeMessage,
       );
+
+      // Trigger external alert only for overdue transitions
+      if (status === "overdue") {
+        await this.sendReplicaDownAlert(statusChangeMessage);
+      }
     } catch (error) {
       console.error("Error updating subtask status:", error);
     }
