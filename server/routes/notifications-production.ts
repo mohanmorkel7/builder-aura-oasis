@@ -356,6 +356,13 @@ router.get("/", async (req: Request, res: Response) => {
         );
       }
 
+      if (date) {
+        filteredNotifications = filteredNotifications.filter((n) => {
+          const notificationDate = new Date(n.timestamp || n.created_at).toISOString().split('T')[0];
+          return notificationDate === date;
+        });
+      }
+
       const total = filteredNotifications.length;
       const unreadCount = filteredNotifications.filter((n) => !n.read).length;
       const limitNum = parseInt(limit as string);
