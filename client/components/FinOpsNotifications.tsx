@@ -234,7 +234,7 @@ const transformDbNotifications = (
     console.log("🔍 Type determination:", {
       apiType: dbNotif.type,
       computedType: notificationType,
-      action: dbNotif.action
+      action: dbNotif.action,
     });
 
     // Only override if API didn't provide type or for special real-time cases
@@ -415,8 +415,9 @@ const transformDbNotifications = (
       assigned_to: dbNotif.user_name || members.assigned_to || "Unassigned",
       reporting_managers: members.reporting_managers,
       escalation_managers: members.escalation_managers,
-      priority: dbNotif.priority || (
-        notificationType === "overdue_reason_required"
+      priority:
+        dbNotif.priority ||
+        (notificationType === "overdue_reason_required"
           ? "critical"
           : notificationType === "escalation_alert" || isExpiredSLA
             ? "critical"
@@ -424,8 +425,7 @@ const transformDbNotifications = (
               ? "high"
               : notificationType === "pre_start_alert"
                 ? "medium"
-                : "medium" // Default to medium instead of low
-      ),
+                : "medium"), // Default to medium instead of low
       status: dbNotif.read ? "read" : "unread",
       created_at: dbNotif.created_at,
       action_required:
@@ -453,14 +453,14 @@ const transformDbNotifications = (
       priority: dbNotif.priority,
       user_name: dbNotif.user_name,
       created_at: dbNotif.created_at,
-      details: dbNotif.details
+      details: dbNotif.details,
     });
     console.log("🔄 Transformed notification:", {
       id: transformed.id,
       priority: transformed.priority,
       assigned_to: transformed.assigned_to,
       created_at: transformed.created_at,
-      title: transformed.title
+      title: transformed.title,
     });
     return transformed;
   });
@@ -726,7 +726,10 @@ export default function FinOpsNotifications() {
       });
 
       // Log first notification in detail for debugging
-      if (dbNotifications.notifications && dbNotifications.notifications.length > 0) {
+      if (
+        dbNotifications.notifications &&
+        dbNotifications.notifications.length > 0
+      ) {
         console.log("🔍 DEBUGGING: First notification from API:", {
           raw: dbNotifications.notifications[0],
           priority: dbNotifications.notifications[0]?.priority,
@@ -736,8 +739,8 @@ export default function FinOpsNotifications() {
           hasRequiredFields: {
             hasPriority: "priority" in dbNotifications.notifications[0],
             hasUserName: "user_name" in dbNotifications.notifications[0],
-            hasCreatedAt: "created_at" in dbNotifications.notifications[0]
-          }
+            hasCreatedAt: "created_at" in dbNotifications.notifications[0],
+          },
         });
       }
 
@@ -993,7 +996,10 @@ export default function FinOpsNotifications() {
         diffMs,
         diffMinutes,
         diffHours: Math.floor(diffMinutes / 60),
-        expectedResult: diffMinutes < 60 ? `${diffMinutes} min ago` : `${Math.floor(diffMinutes / 60)}h ${diffMinutes % 60}m ago`
+        expectedResult:
+          diffMinutes < 60
+            ? `${diffMinutes} min ago`
+            : `${Math.floor(diffMinutes / 60)}h ${diffMinutes % 60}m ago`,
       });
     }
 
@@ -1003,10 +1009,14 @@ export default function FinOpsNotifications() {
       currentIST: currentISTTime.toISOString(),
       diffMs,
       diffMinutes,
-      result: diffMinutes < 1 ? "Just now"
-             : diffMinutes < 60 ? `${diffMinutes} min ago`
-             : diffMinutes < 1440 ? `${Math.floor(diffMinutes / 60)}h ${diffMinutes % 60}m ago`
-             : "date format"
+      result:
+        diffMinutes < 1
+          ? "Just now"
+          : diffMinutes < 60
+            ? `${diffMinutes} min ago`
+            : diffMinutes < 1440
+              ? `${Math.floor(diffMinutes / 60)}h ${diffMinutes % 60}m ago`
+              : "date format",
     });
 
     // Real-time calculation in IST
