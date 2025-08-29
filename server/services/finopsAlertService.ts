@@ -218,7 +218,7 @@ class FinOpsAlertService {
           email: `${task.assigned_to.toLowerCase().replace(" ", ".")}@company.com`,
           type: "assigned" as const,
         },
-        ...JSON.parse(task.reporting_managers || "[]").map((name: string) => ({
+        ...this.parseManagers(task.reporting_managers).map((name: string) => ({
           name,
           email: `${name.toLowerCase().replace(" ", ".")}@company.com`,
           type: "reporting" as const,
@@ -284,12 +284,12 @@ class FinOpsAlertService {
           email: `${task.assigned_to.toLowerCase().replace(" ", ".")}@company.com`,
           type: "assigned" as const,
         },
-        ...JSON.parse(task.reporting_managers || "[]").map((name: string) => ({
+        ...this.parseManagers(task.reporting_managers).map((name: string) => ({
           name,
           email: `${name.toLowerCase().replace(" ", ".")}@company.com`,
           type: "reporting" as const,
         })),
-        ...JSON.parse(task.escalation_managers || "[]").map((name: string) => ({
+        ...this.parseManagers(task.escalation_managers).map((name: string) => ({
           name,
           email: `${name.toLowerCase().replace(" ", ".")}@company.com`,
           type: "escalation" as const,
@@ -683,7 +683,7 @@ class FinOpsAlertService {
           email: `${subtaskData.assigned_to.toLowerCase().replace(" ", ".")}@company.com`,
           type: "assigned" as const,
         },
-        ...JSON.parse(subtaskData.reporting_managers || "[]").map(
+        ...this.parseManagers(subtaskData.reporting_managers).map(
           (name: string) => ({
             name,
             email: `${name.toLowerCase().replace(" ", ".")}@company.com`,
