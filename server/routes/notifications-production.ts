@@ -247,7 +247,7 @@ router.get("/", async (req: Request, res: Response) => {
             ) as rn
           FROM finops_activity_log fal
           WHERE fal.timestamp >= NOW() - INTERVAL '7 days'
-            ${date ? `AND DATE(fal.timestamp) = DATE($${paramIndex})` : ""}
+            ${date ? `AND DATE(fal.timestamp) = DATE($${params.length})` : ""}
         )
         SELECT
           rn.id,
