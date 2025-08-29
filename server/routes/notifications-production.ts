@@ -265,6 +265,7 @@ router.get("/", async (req: Request, res: Response) => {
           fs.name as subtask_name,
           fs.start_time,
           fs.auto_notify,
+          for_reason.reason as overdue_reason,
           CASE
             WHEN rn.action = 'delay_reported' THEN 'task_delayed'
             WHEN rn.action = 'overdue_notification_sent' THEN 'sla_overdue'
