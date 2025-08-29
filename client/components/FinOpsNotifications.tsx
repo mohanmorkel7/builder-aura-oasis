@@ -614,7 +614,7 @@ export default function FinOpsNotifications() {
     queryFn: async () => {
       try {
         console.log(
-          "🔍 Fetching FinOps notifications from API for date:",
+          "�� Fetching FinOps notifications from API for date:",
           selectedDate,
         );
         const url = selectedDate
@@ -677,56 +677,47 @@ export default function FinOpsNotifications() {
     // Initial update
     setCurrentTime(new Date());
 
-    // Calculate time until next minute boundary for synchronization
-    const now = new Date();
-    const secondsUntilNextMinute = 60 - now.getSeconds();
-
     let timer: NodeJS.Timeout;
     let slaTimer: NodeJS.Timeout;
 
-    // First timeout to sync to minute boundary
-    const syncTimeout = setTimeout(() => {
+    // Set up real-time updates every 10 seconds for better responsiveness
+    timer = setInterval(() => {
       setCurrentTime(new Date());
+      console.log("🔄 Real-time timer update:", new Date().toISOString());
+    }, 10000); // Update every 10 seconds for better real-time feel
 
-      // Then set regular 15-second intervals for time updates
-      timer = setInterval(() => {
-        setCurrentTime(new Date());
-      }, 15000); // Update every 15 seconds for real-time responsiveness
+    // Set up SLA monitoring every 30 seconds to check for overdue tasks
+    slaTimer = setInterval(async () => {
+      try {
+        console.log("🔍 Triggering real-time SLA check...");
+        // Trigger SLA monitoring on the server
+        const response = await apiClient.request(
+          "/notifications-production/auto-sync",
+          {
+            method: "POST",
+          },
+        );
 
-      // Set up SLA monitoring every 30 seconds to check for overdue tasks
-      slaTimer = setInterval(async () => {
-        try {
-          console.log("🔍 Triggering real-time SLA check...");
-          // Trigger SLA monitoring on the server
-          const response = await apiClient.request(
-            "/notifications-production/auto-sync",
-            {
-              method: "POST",
-            },
+        console.log("📊 Auto-sync response:", response);
+
+        // Always refresh notifications after auto-sync attempt
+        refetch();
+      } catch (error) {
+        // Check if it's a 503 (database unavailable) error
+        if (error.status === 503) {
+          console.log("⚠️ SLA monitoring paused: Database unavailable");
+        } else {
+          console.log(
+            "SLA monitoring error (non-critical):",
+            error.message || error,
           );
-
-          // Only refresh notifications if auto-sync was successful
-          if (response?.success !== false) {
-            refetch();
-          } else {
-            console.log("⚠️ Auto-sync skipped due to database unavailability");
-          }
-        } catch (error) {
-          // Check if it's a 503 (database unavailable) error
-          if (error.status === 503) {
-            console.log("⚠️ SLA monitoring paused: Database unavailable");
-          } else {
-            console.log(
-              "SLA monitoring error (non-critical):",
-              error.message || error,
-            );
-          }
         }
-      }, 30000); // Check every 30 seconds for faster overdue detection
-    }, secondsUntilNextMinute * 1000);
+        // Still refresh notifications even if auto-sync fails
+        refetch();
+      }
+    }, 30000); // Check every 30 seconds for faster overdue detection
 
     return () => {
-      clearTimeout(syncTimeout);
       if (timer) clearInterval(timer);
       if (slaTimer) clearInterval(slaTimer);
     };
