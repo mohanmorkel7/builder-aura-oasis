@@ -603,6 +603,21 @@ router.delete("/tasks/:id", async (req: Request, res: Response) => {
   }
 });
 
+async function sendReplicaDownAlert(title: string): Promise<void> {
+  try {
+    const resp = await fetch("https://pulsealerts.mylapay.com/replica-down", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ receiver: "CRM_Switch", title }),
+    });
+    if (!resp.ok) {
+      console.warn("Replica-down alert failed:", resp.status);
+    }
+  } catch (e) {
+    console.warn("Replica-down alert error:", (e as Error).message);
+  }
+}
+
 // Enhanced subtask status update with delay tracking and notifications
 router.patch(
   "/tasks/:taskId/subtasks/:subtaskId",
@@ -679,6 +694,12 @@ router.patch(
           delay_notes,
         );
 
+        // External alert: trigger only when marked overdue
+        if (status === "overdue") {
+          const title = `Take immediate action on the overdue subtask ${subtaskName}`;
+          await sendReplicaDownAlert(title);
+        }
+
         // Log user activity and update task status
         await logUserActivity(userName, taskId);
         await checkAndUpdateTaskStatus(taskId, userName);
@@ -709,6 +730,12 @@ router.patch(
             if (status === "delayed") {
               (subtask as any).delay_reason = delay_reason;
               (subtask as any).delay_notes = delay_notes;
+            }
+
+            // External alert for overdue in mock mode as well
+            if (status === "overdue") {
+              const title = `Take immediate action on the overdue subtask ${subtask.name}`;
+              await sendReplicaDownAlert(title);
             }
 
             res.json({
