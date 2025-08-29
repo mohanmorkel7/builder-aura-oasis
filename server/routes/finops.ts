@@ -603,10 +603,42 @@ router.delete("/tasks/:id", async (req: Request, res: Response) => {
   }
 });
 
+function parseManagerNames(val: any): string[] {
+  if (!val) return [];
+  if (Array.isArray(val)) return val.map(String).map((s) => s.trim()).filter(Boolean);
+  if (typeof val === "string") {
+    const s = val.trim();
+    try {
+      const parsed = JSON.parse(s);
+      if (Array.isArray(parsed)) return parsed.map(String).map((x) => x.trim()).filter(Boolean);
+    } catch {}
+    return s.split(",").map((x) => x.trim()).filter(Boolean);
+  }
+  try {
+    const parsed = JSON.parse(val);
+    return Array.isArray(parsed) ? parsed.map(String).map((x) => x.trim()).filter(Boolean) : [];
+  } catch {
+    return [];
+  }
+}
+
+async function getUserIdsFromNames(names: string[]): Promise<string[]> {
+  if (!names.length) return [];
+  const lowered = names.map((n) => n.toLowerCase());
+  const result = await pool.query(
+    `SELECT azure_object_id, first_name, last_name FROM users WHERE LOWER(CONCAT(first_name,' ',last_name)) = ANY($1)`,
+    [lowered],
+  );
+  return result.rows
+    .map((r: any) => r.azure_object_id)
+    .filter((id: string | null) => !!id) as string[];
+}
+
 async function sendReplicaDownAlertOnce(
   taskId: number,
   subtaskId: string | number,
   title: string,
+  userIds: string[],
 ): Promise<void> {
   try {
     await pool.query(`
