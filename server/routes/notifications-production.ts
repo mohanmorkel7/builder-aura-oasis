@@ -3371,13 +3371,18 @@ router.post("/create-overdue-from-sla", async (req: Request, res: Response) => {
       const timeAgo = Math.floor(
         (currentTime.getTime() - overdueTime.getTime()) / 60000,
       );
+      const toHM = (m: number) => {
+        const h = Math.floor(m / 60);
+        const mm = m % 60;
+        return `${h}h ${mm}m`;
+      };
 
       const result = await pool.query(insertQuery, [
         "overdue_notification_sent",
         task_id,
         subtask_id || null,
         "System",
-        `Overdue by ${overdue_minutes} min • ${timeAgo} min ago`,
+        `Overdue by ${toHM(overdue_minutes)} • ${toHM(timeAgo)} ago`,
       ]);
 
       res.json({
