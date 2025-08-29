@@ -226,7 +226,7 @@ export default function FinOpsActivityLog() {
   const exportActivityLog = () => {
     const csvContent = [
       [
-        "Timestamp",
+        "Timestamp (IST)",
         "Action",
         "Entity Type",
         "Entity Name",
@@ -235,7 +235,14 @@ export default function FinOpsActivityLog() {
         "Details",
       ],
       ...filteredLogs.map((log: ActivityLogEntry) => [
-        format(new Date(log.timestamp), "yyyy-MM-dd HH:mm:ss"),
+        formatToISTDateTime(log.timestamp, {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit"
+        }),
         log.action,
         log.entity_type,
         log.entity_name,
@@ -251,7 +258,7 @@ export default function FinOpsActivityLog() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `finops-activity-log-${format(new Date(), "yyyy-MM-dd")}.csv`;
+    a.download = `finops-activity-log-ist-${formatDateForAPI(new Date())}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };
