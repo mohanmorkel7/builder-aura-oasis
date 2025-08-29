@@ -150,10 +150,16 @@ class FinOpsAlertService {
     console.log(`Due IST: ${formatISTDateTime(dueTimeIST)}`);
     console.log(`Minutes remaining: ${minutesRemaining}`);
 
-    // Check if already overdue
-    if (minutesRemaining < 0) {
-      await this.sendSLAOverdueAlert(task, subtask, Math.abs(minutesRemaining));
+    // Check if overdue (including exactly at deadline - 0 minutes)
+    if (minutesRemaining <= 0) {
+      const overdueMinutes = Math.abs(minutesRemaining);
+      console.log(`🚨 Task is overdue by ${overdueMinutes} minutes - marking as overdue immediately`);
+
+      await this.sendSLAOverdueAlert(task, subtask, overdueMinutes);
       await this.updateSubtaskStatus(task.id, subtask.id, "overdue");
+
+      // Create immediate overdue reason request
+      await this.createOverdueReasonRequest(task, subtask, overdueMinutes);
     }
     // Check if within 15 minutes of SLA breach
     else if (minutesRemaining <= 15 && minutesRemaining > 0) {
