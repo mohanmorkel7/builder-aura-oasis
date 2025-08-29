@@ -1673,7 +1673,8 @@ router.post("/auto-sync", async (req: Request, res: Response) => {
       console.log("⚠️ Auto-sync skipped: Database unavailable");
       res.status(503).json({
         success: false,
-        message: "Database unavailable - auto-sync will retry when database is available",
+        message:
+          "Database unavailable - auto-sync will retry when database is available",
         timestamp: new Date().toISOString(),
         next_retry_in: "30 seconds",
         fallback_mode: "mock_data_active",
@@ -1763,7 +1764,6 @@ router.post("/trigger-sla-check", async (req: Request, res: Response) => {
     });
   }
 });
-
 
 // Create a task that is overdue RIGHT NOW for real-time testing
 router.post("/test/create-overdue-now", async (req: Request, res: Response) => {

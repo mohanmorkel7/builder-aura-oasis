@@ -697,9 +697,12 @@ export default function FinOpsNotifications() {
         try {
           console.log("🔍 Triggering real-time SLA check...");
           // Trigger SLA monitoring on the server
-          const response = await apiClient.request("/notifications-production/auto-sync", {
-            method: "POST",
-          });
+          const response = await apiClient.request(
+            "/notifications-production/auto-sync",
+            {
+              method: "POST",
+            },
+          );
 
           // Only refresh notifications if auto-sync was successful
           if (response?.success !== false) {
@@ -712,7 +715,10 @@ export default function FinOpsNotifications() {
           if (error.status === 503) {
             console.log("⚠️ SLA monitoring paused: Database unavailable");
           } else {
-            console.log("SLA monitoring error (non-critical):", error.message || error);
+            console.log(
+              "SLA monitoring error (non-critical):",
+              error.message || error,
+            );
           }
         }
       }, 30000); // Check every 30 seconds for faster overdue detection
