@@ -24,10 +24,12 @@ class FinOpsScheduler {
       timezone: "Asia/Kolkata"
     });
 
-    // SLA monitoring every 5 minutes
-    cron.schedule("*/5 * * * *", async () => {
-      console.log("Running SLA monitoring check...");
+    // SLA monitoring every minute for real-time detection
+    cron.schedule("* * * * *", async () => {
+      console.log("Running real-time SLA monitoring check...");
       await finopsAlertService.checkSLAAlerts();
+    }, {
+      timezone: "Asia/Kolkata"
     });
 
     // Incomplete subtask check every 30 minutes
