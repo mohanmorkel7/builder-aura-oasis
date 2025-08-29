@@ -716,6 +716,25 @@ export default function FinOpsNotifications() {
     refetch(); // Refresh notifications from API
   }, [refetch]);
 
+  // Auto-open overdue reason dialog for critical notifications
+  React.useEffect(() => {
+    const overdueReasonNotifications = notifications.filter(
+      (n) => n.type === "overdue_reason_required" && n.status === "unread"
+    );
+
+    // Auto-open the first unread overdue reason required notification
+    if (overdueReasonNotifications.length > 0 && !overdueReasonDialog.open) {
+      const firstOverdue = overdueReasonNotifications[0];
+      console.log("🚨 Auto-opening overdue reason dialog for:", firstOverdue.task_name);
+
+      setOverdueReasonDialog({
+        open: true,
+        notificationId: firstOverdue.id,
+        taskName: firstOverdue.task_name,
+      });
+    }
+  }, [notifications, overdueReasonDialog.open]);
+
   // Expose debug functions to window for console access (after all dependencies are available)
   React.useEffect(() => {
     if (typeof window !== "undefined") {
@@ -857,7 +876,12 @@ export default function FinOpsNotifications() {
     }
   };
 
-  const getNotificationColor = (priority: string) => {
+  const getNotificationColor = (priority: string, type?: string) => {
+    // Special styling for overdue reason required
+    if (type === "overdue_reason_required") {
+      return "border-l-red-600 bg-red-100 border-2 animate-pulse";
+    }
+
     switch (priority) {
       case "critical":
         return "border-l-red-500 bg-red-50";
@@ -1112,8 +1136,10 @@ export default function FinOpsNotifications() {
             return (
               <Card
                 key={notification.id}
-                className={`${getNotificationColor(notification.priority)} border-l-4 ${
-                  notification.status === "unread" ? "shadow-md" : ""
+                className={`${getNotificationColor(notification.priority, notification.type)} border-l-4 ${
+                  notification.status === "unread\" ? \"shadow-md\" : "
+                } ${
+                  notification.type === "overdue_reason_required\" ? \"ring-2 ring-red-300\" : "
                 }`}
               >
                 <CardContent className="p-4">
@@ -1256,11 +1282,24 @@ export default function FinOpsNotifications() {
                           )}
 
                         {notification.action_required && (
-                          <Alert className="mt-3 p-2 border-orange-200 bg-orange-50">
-                            <AlertCircle className="h-3 w-3 text-orange-600" />
-                            <AlertDescription className="text-xs text-orange-700 ml-1">
-                              Action required - Please review and take necessary
-                              steps
+                          <Alert className={`mt-3 p-2 ${
+                            notification.type === "overdue_reason_required"
+                              ? "border-red-300 bg-red-100"
+                              : "border-orange-200 bg-orange-50"
+                          }`}>
+                            <AlertCircle className={`h-3 w-3 ${
+                              notification.type === "overdue_reason_required"
+                                ? "text-red-700"
+                                : "text-orange-600"
+                            }`} />
+                            <AlertDescription className={`text-xs ml-1 ${
+                              notification.type === "overdue_reason_required"
+                                ? "text-red-800 font-semibold"
+                                : "text-orange-700"
+                            }`}>
+                              {notification.type === "overdue_reason_required"
+                                ? "🚨 URGENT: Overdue reason required - Click to provide explanation"
+                                : "Action required - Please review and take necessary steps"}
                             </AlertDescription>
                           </Alert>
                         )}
