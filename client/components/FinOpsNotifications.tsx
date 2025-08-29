@@ -743,8 +743,10 @@ export default function FinOpsNotifications() {
     notificationId: string,
     isOverdue = false,
     taskName = "",
+    notificationType = "",
   ) => {
-    if (isOverdue) {
+    // Auto-open overdue reason dialog for critical overdue notifications
+    if (isOverdue || notificationType === "overdue_reason_required") {
       // Open dialog for overdue reason
       setOverdueReasonDialog({
         open: true,
@@ -835,8 +837,10 @@ export default function FinOpsNotifications() {
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
+      case "overdue_reason_required":
+        return AlertTriangle;
       case "sla_overdue":
-      case "escalation":
+      case "escalation_alert":
         return AlertTriangle;
       case "sla_warning":
         return Clock;
@@ -1269,12 +1273,13 @@ export default function FinOpsNotifications() {
                           variant="ghost"
                           size="sm"
                           onClick={() =>
-                            markAsRead(
-                              notification.id,
-                              notification.type === "sla_overdue",
-                              notification.task_name,
-                            )
-                          }
+                          markAsRead(
+                            notification.id,
+                            notification.type === "sla_overdue" || notification.type === "overdue_reason_required",
+                            notification.task_name,
+                            notification.type,
+                          )
+                        }
                           className="h-8 px-2"
                           title={
                             notification.type === "sla_overdue"
