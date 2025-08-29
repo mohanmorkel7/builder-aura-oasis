@@ -37,7 +37,10 @@ export class DepartmentService {
         };
       }
     } catch (e) {
-      console.warn("Could not read user-departments.json:", (e as Error).message);
+      console.warn(
+        "Could not read user-departments.json:",
+        (e as Error).message,
+      );
     }
     return { users: [], departments: {} };
   }
