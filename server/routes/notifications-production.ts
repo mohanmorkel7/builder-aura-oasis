@@ -1157,6 +1157,89 @@ router.post(
   },
 );
 
+// Create notification with exact user-reported values for debugging
+router.post("/test/create-user-reported-values", async (req: Request, res: Response) => {
+  try {
+    if (await isDatabaseAvailable()) {
+      console.log("Creating notification with exact user-reported values...");
+
+      const query = `
+        INSERT INTO finops_activity_log (action, task_id, subtask_id, user_name, details, timestamp)
+        VALUES ($1, $2, $3, $4, $5, $6)
+        RETURNING *
+      `;
+
+      // Create with exact timestamp user mentioned: "2025-08-29T01:07:55.113Z"
+      const userTimestamp = "2025-08-29T01:07:55.113Z";
+
+      const result = await pool.query(query, [
+        "updated",
+        4,
+        4,
+        "User", // This should map to assigned_to
+        "Task updated", // This should be the title
+        userTimestamp
+      ]);
+
+      // Now test the query that the main endpoint uses to see what it returns
+      const testQuery = `
+        SELECT
+          fal.id,
+          fal.task_id,
+          fal.subtask_id,
+          fal.action,
+          fal.user_name,
+          fal.details,
+          fal.timestamp as created_at,
+          ft.task_name,
+          ft.client_name,
+          fs.name as subtask_name,
+          fs.start_time,
+          fs.auto_notify,
+          'task_pending' as type,
+          'medium' as priority,
+          false as read
+        FROM finops_activity_log fal
+        LEFT JOIN finops_tasks ft ON fal.task_id = ft.id
+        LEFT JOIN finops_subtasks fs ON fal.subtask_id = fs.id
+        WHERE fal.id = $1
+      `;
+
+      const testResult = await pool.query(testQuery, [result.rows[0].id]);
+
+      res.json({
+        message: "Test notification created with user-reported values!",
+        inserted_data: result.rows[0],
+        query_result: testResult.rows[0],
+        expected_mapping: {
+          priority: "medium (should be preserved)",
+          user_name: "User (should map to assigned_to)",
+          created_at: userTimestamp,
+          details: "Task updated (should be clean title)"
+        },
+        debug_info: {
+          api_priority: testResult.rows[0]?.priority,
+          api_user_name: testResult.rows[0]?.user_name,
+          api_created_at: testResult.rows[0]?.created_at,
+          api_details: testResult.rows[0]?.details
+        },
+        timestamp: new Date().toISOString(),
+      });
+    } else {
+      res.json({
+        message: "Database unavailable - would create test notification in production",
+        timestamp: new Date().toISOString(),
+      });
+    }
+  } catch (error) {
+    console.error("Error creating test notification:", error);
+    res.status(500).json({
+      error: "Failed to create test notification",
+      message: error.message,
+    });
+  }
+});
+
 // Create the exact SLA warning that user described
 router.post(
   "/test/create-enterprise-banking-sla",
