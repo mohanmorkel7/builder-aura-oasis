@@ -84,8 +84,7 @@ class FinOpsAlertService {
     try {
       console.log("Checking for daily tasks to execute...");
 
-      const todayIST = getCurrentISTTime().toISOString().split("T")[0];
-      console.log(`Checking daily tasks for IST date: ${todayIST}`);
+const today = new Date().toISOString().split("T")[0];
 
       const tasksToExecute = await pool.query(
         `
@@ -96,7 +95,7 @@ class FinOpsAlertService {
         AND (last_run IS NULL OR DATE(last_run AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Kolkata') < $1)
         AND deleted_at IS NULL
       `,
-        [todayIST],
+      [today],
       );
 
       for (const task of tasksToExecute.rows) {
@@ -116,7 +115,7 @@ class FinOpsAlertService {
    */
   private async processTaskAlerts(task: any): Promise<void> {
     for (const subtask of task.subtasks) {
-      if (subtask.status === "in_progress" || subtask.status === "pending") {
+      if (subtask.status === "pending") {
         await this.checkSubtaskSLA(task, subtask);
       }
     }
@@ -126,46 +125,48 @@ class FinOpsAlertService {
    * Check SLA for individual subtask and send alerts if needed
    */
   private async checkSubtaskSLA(task: any, subtask: any): Promise<void> {
-    const nowIST = getCurrentISTTime();
-    let dueTimeIST: Date;
+const now = new Date();
 
-    if (subtask.started_at) {
-      // Calculate due time from start time in IST
-      dueTimeIST = convertToIST(new Date(subtask.started_at));
-    } else {
-      // Use current IST time if not started yet
-      dueTimeIST = nowIST;
+    // Only check pending tasks for overdue status
+    if (subtask.status !== "pending") {
+      return;
     }
 
-    dueTimeIST.setHours(dueTimeIST.getHours() + (subtask.sla_hours || 0));
-    dueTimeIST.setMinutes(dueTimeIST.getMinutes() + (subtask.sla_minutes || 0));
+    // Calculate due time based on task schedule (start_time)
+    // For pending tasks, we check against their scheduled start time
+    let dueTime: Date;
 
-    const timeDiff = dueTimeIST.getTime() - nowIST.getTime();
-    const minutesRemaining = Math.floor(timeDiff / (1000 * 60));
+    if (subtask.start_time) {
+      // Parse start_time (format: "HH:MM:SS" or "HH:MM")
+      const today = new Date();
+      const [hours, minutes] = subtask.start_time.split(":").map(Number);
 
-    console.log(
-      `SLA Check (IST): Task ${task.task_name}, Subtask ${subtask.name}`,
-    );
-    console.log(`Current IST: ${formatISTDateTime(nowIST)}`);
-    console.log(`Due IST: ${formatISTDateTime(dueTimeIST)}`);
-    console.log(`Minutes remaining: ${minutesRemaining}`);
-
-    // Check if overdue (including exactly at deadline - 0 minutes)
-    if (minutesRemaining <= 0) {
-      const overdueMinutes = Math.abs(minutesRemaining);
-      console.log(
-        `🚨 Task is overdue by ${overdueMinutes} minutes - marking as overdue immediately`,
+      dueTime = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        today.getDate(),
+        hours,
+        minutes || 0,
       );
 
-      await this.sendSLAOverdueAlert(task, subtask, overdueMinutes);
-      await this.updateSubtaskStatus(task.id, subtask.id, "overdue");
+      // If the scheduled time has passed today, the task is overdue
+      if (now > dueTime) {
+        const minutesOverdue = Math.floor(
+          (now.getTime() - dueTime.getTime()) / (1000 * 60),
+        );
 
-      // Create immediate overdue reason request
-      await this.createOverdueReasonRequest(task, subtask, overdueMinutes);
-    }
-    // Check if within 15 minutes of SLA breach
-    else if (minutesRemaining <= 15 && minutesRemaining > 0) {
-      await this.sendSLAWarningAlert(task, subtask, minutesRemaining);
+        console.log(
+          `Pending task overdue - Task: ${task.task_name}, Subtask: ${subtask.name}, Overdue by: ${minutesOverdue} minutes`,
+        );
+
+        // Mark as overdue and send alert
+        await this.sendSLAOverdueAlert(task, subtask, minutesOverdue);
+        await this.updateSubtaskStatus(task.id, subtask.id, "overdue");
+      }
+    } else {
+      console.log(
+        `Subtask ${subtask.id} has no start_time defined, cannot check for overdue status`,
+      );
     }
   }
 

@@ -28,11 +28,10 @@ class FinOpsScheduler {
       },
     );
 
-    // SLA monitoring every minute for real-time detection
-    cron.schedule(
-      "* * * * *",
+cron.schedule(
+      "*/5 * * * *",
       async () => {
-        console.log("Running real-time SLA monitoring check...");
+        console.log("Running SLA monitoring check...");
         await finopsAlertService.checkSLAAlerts();
       },
       {
@@ -41,10 +40,16 @@ class FinOpsScheduler {
     );
 
     // Incomplete subtask check every 30 minutes
-    cron.schedule("*/30 * * * *", async () => {
-      console.log("Checking for incomplete subtasks...");
-      await finopsAlertService.checkIncompleteSubtasks();
-    });
+    cron.schedule(
+      "*/30 * * * *",
+      async () => {
+        console.log("Checking for incomplete subtasks...");
+        await finopsAlertService.checkIncompleteSubtasks();
+      },
+      {
+        timezone: "Asia/Kolkata",
+      },
+    );
 
     // Weekly task execution on Mondays at 5:00 AM
     cron.schedule(
@@ -71,9 +76,15 @@ class FinOpsScheduler {
     );
 
     // Task status sync every minute for real-time monitoring
-    cron.schedule("* * * * *", async () => {
-      await this.syncTaskStatuses();
-    });
+    cron.schedule(
+      "* * * * *",
+      async () => {
+        await this.syncTaskStatuses();
+      },
+      {
+        timezone: "Asia/Kolkata",
+      },
+    );
 
     // Database cleanup weekly on Sundays at 2:00 AM
     cron.schedule(
