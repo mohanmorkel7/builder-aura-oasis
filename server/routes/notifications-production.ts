@@ -316,7 +316,10 @@ router.get("/", async (req: Request, res: Response) => {
         ${date ? `AND DATE(fal.timestamp) = DATE($1)` : ""}
       `;
 
-      const countsResult = await pool.query(countsQuery, date ? [date as string] : []);
+      const countsResult = await pool.query(
+        countsQuery,
+        date ? [date as string] : [],
+      );
       const total = parseInt(countsResult.rows[0].total);
       const unreadCount = parseInt(countsResult.rows[0].unread_count);
 

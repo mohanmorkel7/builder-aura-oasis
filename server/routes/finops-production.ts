@@ -669,7 +669,10 @@ router.post("/tasks/overdue-reason", async (req: Request, res: Response) => {
       }
     } catch (dbError) {
       // Database unavailable - provide mock response
-      console.log("Database unavailable for overdue reason, using mock response:", dbError.message);
+      console.log(
+        "Database unavailable for overdue reason, using mock response:",
+        dbError.message,
+      );
 
       // Return mock success response
       const mockOverdueReason = {
@@ -684,7 +687,8 @@ router.post("/tasks/overdue-reason", async (req: Request, res: Response) => {
       res.status(201).json({
         success: true,
         overdue_reason: mockOverdueReason,
-        message: "Overdue reason stored successfully (mock mode - database unavailable)",
+        message:
+          "Overdue reason stored successfully (mock mode - database unavailable)",
         mock: true,
       });
     }
