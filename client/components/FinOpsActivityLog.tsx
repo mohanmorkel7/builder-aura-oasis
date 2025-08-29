@@ -337,15 +337,38 @@ export default function FinOpsActivityLog() {
             {/* Date Filter */}
             <div>
               <Label htmlFor="date_filter">Filter by Date (IST)</Label>
-              <Input
-                id="date_filter"
-                type="date"
-                value={filters.date_filter}
-                onChange={(e) =>
-                  setFilters((prev) => ({ ...prev, date_filter: e.target.value }))
-                }
-                max={getCurrentISTDate()}
-              />
+              <div className="flex gap-2">
+                <Input
+                  id="date_filter"
+                  type="date"
+                  value={filters.date_filter}
+                  onChange={(e) =>
+                    setFilters((prev) => ({ ...prev, date_filter: e.target.value }))
+                  }
+                  max={getCurrentISTDate()}
+                  className="flex-1"
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setFilters((prev) => ({ ...prev, date_filter: getCurrentISTDate() }))}
+                  className="whitespace-nowrap"
+                >
+                  Today
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const yesterday = new Date();
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    setFilters((prev) => ({ ...prev, date_filter: formatDateForAPI(yesterday) }));
+                  }}
+                  className="whitespace-nowrap"
+                >
+                  Yesterday
+                </Button>
+              </div>
             </div>
 
             {/* Search Filter */}
@@ -372,12 +395,31 @@ export default function FinOpsActivityLog() {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <Activity className="w-5 h-5" />
-              Recent Activity
-            </CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Activity className="w-5 h-5" />
+            Activity Log
+            {filters.date_filter && (
+              <span className="text-sm font-normal text-gray-600">
+                ({formatToISTDateTime(new Date(filters.date_filter), {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric"
+                })})
+              </span>
+            )}
+          </CardTitle>
+          <div className="flex items-center gap-2">
             <Badge variant="secondary">{filteredLogs.length} activities</Badge>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => refetch()}
+              disabled={isLoading}
+            >
+              <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+            </Button>
           </div>
+        </div>
         </CardHeader>
         <CardContent>
           {isLoading ? (
