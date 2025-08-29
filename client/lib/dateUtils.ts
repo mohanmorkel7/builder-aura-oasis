@@ -58,10 +58,8 @@ export const formatToISTDateTime = (
     return formatter.format(dateObj);
   } catch (error) {
     console.warn("Error formatting date:", error);
-    // Fallback formatting with IST conversion
-    const istDate = new Date(
-      dateObj.toLocaleString("en-US", { timeZone: IST_TIMEZONE }),
-    );
+    // Fallback formatting with proper IST conversion
+    const istDate = convertToIST(dateObj);
     const day = istDate.getDate();
     const month = istDate.toLocaleString("en-IN", { month: "short" });
     const year = istDate.getFullYear();
