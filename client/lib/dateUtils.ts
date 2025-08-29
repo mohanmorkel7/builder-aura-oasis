@@ -90,8 +90,8 @@ export const formatToISTDateOnly = (date: string | Date): string => {
  */
 export const getCurrentISTTimestamp = (): Date => {
   const now = new Date();
-  const utcMs = now.getTime() + (now.getTimezoneOffset() * 60000);
-  const istMs = utcMs + (5.5 * 60 * 60 * 1000); // Add 5.5 hours for IST
+  const utcMs = now.getTime() + now.getTimezoneOffset() * 60000;
+  const istMs = utcMs + 5.5 * 60 * 60 * 1000; // Add 5.5 hours for IST
   return new Date(istMs);
 };
 
