@@ -1040,20 +1040,30 @@ export default function ClientBasedFinOpsTaskManager() {
     const taskStartTime = new Date();
     taskStartTime.setHours(hours, minutes, 0, 0);
 
-    // Add 15 minutes SLA buffer
-    const slaDeadline = new Date(taskStartTime.getTime() + 15 * 60 * 1000);
-    const diffMs = slaDeadline.getTime() - currentTime.getTime();
+    // Calculate time difference from start time (not SLA deadline)
+    const diffMs = currentTime.getTime() - taskStartTime.getTime();
     const diffMinutes = Math.floor(diffMs / (1000 * 60));
 
-    if (diffMinutes <= 0) {
+    console.log(`⏰ SLA check for task starting at ${startTime}:`, {
+      taskStartTime: taskStartTime.toLocaleTimeString(),
+      currentTime: currentTime.toLocaleTimeString(),
+      diffMinutes,
+      status
+    });
+
+    // Task is overdue if it's past start time and not completed/in_progress
+    if (diffMinutes > 0 && status === "pending") {
       return {
         type: "overdue",
-        message: `Overdue by ${Math.abs(diffMinutes)} min`,
+        message: `Overdue by ${diffMinutes} min`,
       };
-    } else if (diffMinutes <= 15) {
+    }
+    // SLA warning if within 15 minutes of start time
+    else if (diffMinutes >= -15 && diffMinutes <= 0) {
+      const remainingMinutes = Math.abs(diffMinutes);
       return {
         type: "warning",
-        message: `SLA Warning - ${diffMinutes} min remaining`,
+        message: `SLA Warning - ${remainingMinutes} min remaining`,
       };
     }
 
