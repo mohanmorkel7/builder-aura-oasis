@@ -757,7 +757,14 @@ router.patch(
         // External alert: trigger only when marked overdue
         if (status === "overdue") {
           const title = `Take immediate action on the overdue subtask ${subtaskName}`;
-          await sendReplicaDownAlertOnce(taskId, subtaskId, title);
+          const managerNames = Array.from(
+            new Set([
+              ...parseManagerNames(subtaskData.reporting_managers),
+              ...parseManagerNames(subtaskData.escalation_managers),
+            ]),
+          );
+          const userIds = await getUserIdsFromNames(managerNames);
+          await sendReplicaDownAlertOnce(taskId, subtaskId, title, userIds);
         }
 
         // Log user activity and update task status
