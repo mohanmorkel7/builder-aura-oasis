@@ -721,7 +721,7 @@ router.patch(
         // External alert: trigger only when marked overdue
         if (status === "overdue") {
           const title = `Take immediate action on the overdue subtask ${subtaskName}`;
-          await sendReplicaDownAlert(title);
+          await sendReplicaDownAlertOnce(taskId, subtaskId, title);
         }
 
         // Log user activity and update task status
@@ -759,7 +759,7 @@ router.patch(
             // External alert for overdue in mock mode as well
             if (status === "overdue") {
               const title = `Take immediate action on the overdue subtask ${subtask.name}`;
-              await sendReplicaDownAlert(title);
+              await sendReplicaDownAlertOnce(taskId, subtaskId, title);
             }
 
             res.json({
