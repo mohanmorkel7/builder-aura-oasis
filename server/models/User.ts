@@ -94,7 +94,9 @@ export class UserRepository {
     return result.rows;
   }
 
-  static async findByAzureObjectId(azureObjectId: string): Promise<User | null> {
+  static async findByAzureObjectId(
+    azureObjectId: string,
+  ): Promise<User | null> {
     const query = `
       SELECT id, first_name, last_name, email, phone, role, department,
              manager_id, status, start_date, last_login, two_factor_enabled,

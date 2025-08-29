@@ -138,28 +138,22 @@ export default function UserProfile() {
           });
         } else {
           const azureId = (user as any).azureObjectId || (user.id as string);
-          userResponse = await apiClient.request(
-            `/users/by-azure/${azureId}`,
-            {
-              method: "GET",
-            },
-          );
+          userResponse = await apiClient.request(`/users/by-azure/${azureId}`, {
+            method: "GET",
+          });
         }
         setUserDetails(userResponse);
 
         // Fetch recent activity logs only when numeric user ID is available
         let activityResponse: any = null;
         if (!isNaN(numericId)) {
-          activityResponse = await apiClient.request(
-            "/activity-production",
-            {
-              method: "GET",
-              params: new URLSearchParams({
-                limit: "10",
-                user_id: numericId.toString(),
-              }),
-            },
-          );
+          activityResponse = await apiClient.request("/activity-production", {
+            method: "GET",
+            params: new URLSearchParams({
+              limit: "10",
+              user_id: numericId.toString(),
+            }),
+          });
         }
 
         if (activityResponse?.activity_logs) {
