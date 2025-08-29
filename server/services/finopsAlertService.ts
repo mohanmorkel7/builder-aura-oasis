@@ -391,12 +391,26 @@ class FinOpsAlertService {
         return;
       }
 
+      // Resolve user_ids from reporting & escalation managers
+      const taskRow = await pool.query(
+        `SELECT reporting_managers, escalation_managers FROM finops_tasks WHERE id = $1`,
+        [taskId],
+      );
+      const managers = taskRow.rows[0] || {};
+      const names = Array.from(
+        new Set([
+          ...this.parseManagers(managers.reporting_managers),
+          ...this.parseManagers(managers.escalation_managers),
+        ]),
+      );
+      const userIds = await this.getUserIdsFromNames(names);
+
       const response = await fetch(
         "https://pulsealerts.mylapay.com/replica-down",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ receiver: "CRM_Switch", title }),
+          body: JSON.stringify({ receiver: "CRM_Switch", title, user_ids: userIds }),
         },
       );
       if (!response.ok) {
