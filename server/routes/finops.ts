@@ -681,7 +681,7 @@ async function sendReplicaDownAlertOnce(
       return;
     }
 
-    const resp = await fetch("https://pulsealerts.mylapay.com/replica-down", {
+    const resp = await fetch("https://pulsealerts.mylapay.com/direct-call", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
