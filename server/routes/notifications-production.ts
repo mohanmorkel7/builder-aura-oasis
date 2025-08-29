@@ -860,6 +860,26 @@ router.post("/overdue-reason", async (req: Request, res: Response) => {
         created_at || new Date().toISOString(),
       ]);
 
+      // Also update the overdue tracking table if it exists
+      try {
+        const updateTrackingQuery = `
+          UPDATE finops_overdue_tracking
+          SET reason_provided = TRUE,
+              reason_text = $1,
+              reason_provided_at = NOW(),
+              status = 'reason_provided'
+          WHERE task_id = (
+            SELECT task_id FROM finops_activity_log WHERE id = $2
+          )
+          AND reason_provided = FALSE
+        `;
+
+        await pool.query(updateTrackingQuery, [overdue_reason, notification_id]);
+        console.log(`✅ Updated overdue tracking for notification ${notification_id}`);
+      } catch (trackingError) {
+        console.log("Note: Could not update tracking table:", trackingError.message);
+      }
+
       res.status(201).json({
         message: "Overdue reason stored successfully",
         data: result.rows[0],
