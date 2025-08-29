@@ -64,71 +64,86 @@ initializeNotificationTables();
 // Production database availability check with graceful fallback
 async function isDatabaseAvailable() {
   try {
-    await pool.query("SELECT 1");
+    const result = await pool.query(
+      "SELECT NOW() as current_time, version() as db_version",
+    );
+    console.log("✅ Database is available:", {
+      current_time: result.rows[0].current_time,
+      version: result.rows[0].db_version?.substring(0, 50) + "...",
+      status: "connected",
+    });
     return true;
   } catch (error) {
-    console.log("Database unavailable:", error.message);
+    console.log("❌ Database unavailable:", {
+      error: error.message,
+      status: "disconnected",
+      fallback: "using_mock_data_with_dynamic_timestamps",
+    });
     return false;
   }
 }
 
-// Mock notifications for fallback (IST timezone)
-const mockNotifications = [
-  {
-    id: "1",
-    type: "overdue",
-    title: "Overdue: Client Onboarding - Step 1",
-    description:
-      "Initial Contact for 'Acme Corp' is 2 days overdue. Action required.",
-    user_id: 1,
-    client_id: 1,
-    client_name: "Acme Corp",
-    entity_type: "task",
-    entity_id: "1",
-    priority: "high",
-    read: false,
-    created_at: new Date(
-      getCurrentISTTime().getTime() - 2 * 60 * 60 * 1000,
-    ).toISOString(), // 2 hours ago IST
-    action_url: "/leads/1",
-  },
-  {
-    id: "2",
-    type: "followup",
-    title: "New Follow-up: Project Alpha",
-    description:
-      "A new follow-up note has been added to 'Project Alpha' by Jane Smith.",
-    user_id: 1,
-    client_id: 2,
-    client_name: "Beta Corp",
-    entity_type: "lead",
-    entity_id: "2",
-    priority: "medium",
-    read: false,
-    created_at: new Date(
-      getCurrentISTTime().getTime() - 24 * 60 * 60 * 1000,
-    ).toISOString(), // 1 day ago IST
-    action_url: "/leads/2",
-  },
-  {
-    id: "3",
-    type: "completed",
-    title: "Onboarding Complete: Global Solutions",
-    description:
-      "Client 'Global Solutions' has successfully completed their onboarding process.",
-    user_id: 1,
-    client_id: 3,
-    client_name: "Global Solutions",
-    entity_type: "client",
-    entity_id: "3",
-    priority: "low",
-    read: true,
-    created_at: new Date(
-      getCurrentISTTime().getTime() - 5 * 24 * 60 * 60 * 1000,
-    ).toISOString(), // 5 days ago IST
-    action_url: "/clients/3",
-  },
-];
+// Generate real-time mock notifications (IST timezone) - recalculated on each request
+const generateMockNotifications = () => {
+  const currentTime = getCurrentISTTime();
+
+  return [
+    {
+      id: "1",
+      type: "overdue",
+      title: "Overdue: Client Onboarding - Step 1",
+      description:
+        "Initial Contact for 'Acme Corp' is 2 days overdue. Action required.",
+      user_id: 1,
+      client_id: 1,
+      client_name: "Acme Corp",
+      entity_type: "task",
+      entity_id: "1",
+      priority: "high",
+      read: false,
+      created_at: new Date(
+        currentTime.getTime() - 2 * 60 * 60 * 1000,
+      ).toISOString(), // 2 hours ago IST
+      action_url: "/leads/1",
+    },
+    {
+      id: "2",
+      type: "followup",
+      title: "New Follow-up: Project Alpha",
+      description:
+        "A new follow-up note has been added to 'Project Alpha' by Jane Smith.",
+      user_id: 1,
+      client_id: 2,
+      client_name: "Beta Corp",
+      entity_type: "lead",
+      entity_id: "2",
+      priority: "medium",
+      read: false,
+      created_at: new Date(
+        currentTime.getTime() - 24 * 60 * 60 * 1000,
+      ).toISOString(), // 1 day ago IST
+      action_url: "/leads/2",
+    },
+    {
+      id: "3",
+      type: "completed",
+      title: "Onboarding Complete: Global Solutions",
+      description:
+        "Client 'Global Solutions' has successfully completed their onboarding process.",
+      user_id: 1,
+      client_id: 3,
+      client_name: "Global Solutions",
+      entity_type: "client",
+      entity_id: "3",
+      priority: "low",
+      read: true,
+      created_at: new Date(
+        currentTime.getTime() - 5 * 24 * 60 * 60 * 1000,
+      ).toISOString(), // 5 days ago IST
+      action_url: "/clients/3",
+    },
+  ];
+};
 
 // ===== NOTIFICATIONS ROUTES =====
 
@@ -338,9 +353,20 @@ router.get("/", async (req: Request, res: Response) => {
             parseInt(offset as string) + parseInt(limit as string) < total,
         },
         unread_count: unreadCount,
+        debug_info: {
+          data_source: "real_database",
+          query_timestamp: new Date().toISOString(),
+          database_connected: true,
+          total_notifications_in_db: total,
+        },
       });
     } else {
-      console.log("Database unavailable, using mock notifications");
+      console.log(
+        "Database unavailable, using dynamic mock notifications with real-time timestamps",
+      );
+
+      // Generate fresh mock notifications with current timestamps
+      const mockNotifications = generateMockNotifications();
 
       // Filter mock notifications
       let filteredNotifications = mockNotifications;
@@ -391,11 +417,19 @@ router.get("/", async (req: Request, res: Response) => {
           has_more: offsetNum + limitNum < total,
         },
         unread_count: unreadCount,
+        debug_info: {
+          data_source: "dynamic_mock_data",
+          query_timestamp: new Date().toISOString(),
+          database_connected: false,
+          mock_data_refreshed: true,
+          note: "Timestamps are dynamically generated for real-time simulation",
+        },
       });
     }
   } catch (error) {
     console.error("Error fetching notifications:", error);
-    // Fallback to mock data
+    // Fallback to dynamic mock data with current timestamps
+    const mockNotifications = generateMockNotifications();
     res.json({
       notifications: mockNotifications,
       pagination: {
@@ -595,7 +629,8 @@ router.put("/read-all", async (req: Request, res: Response) => {
       console.log("Database unavailable, returning mock read-all update");
       res.json({
         message: "All notifications marked as read",
-        updated_count: mockNotifications.filter((n) => !n.read).length,
+        updated_count: generateMockNotifications().filter((n) => !n.read)
+          .length,
       });
     }
   } catch (error) {
@@ -1407,6 +1442,163 @@ router.get("/test/categorization", async (req: Request, res: Response) => {
     res.status(500).json({
       error: "Categorization test failed",
       message: error.message,
+    });
+  }
+});
+
+// Auto-sync endpoint for real-time SLA monitoring
+router.post("/auto-sync", async (req: Request, res: Response) => {
+  try {
+    if (await isDatabaseAvailable()) {
+      console.log("🔄 Running real-time SLA auto-sync...");
+
+      // Run the SLA monitoring function to check for new notifications
+      try {
+        const autoSyncQuery = `SELECT * FROM check_subtask_sla_notifications_ist()`;
+        const autoSyncResult = await pool.query(autoSyncQuery);
+
+        let newNotificationsCount = 0;
+
+        for (const notification of autoSyncResult.rows) {
+          const insertQuery = `
+            INSERT INTO finops_activity_log (action, task_id, subtask_id, user_name, details, timestamp)
+            VALUES ($1, $2, $3, $4, $5, NOW())
+            ON CONFLICT DO NOTHING
+            RETURNING id
+          `;
+
+          // Map notification types to actions
+          let action;
+          switch (notification.notification_type) {
+            case "pre_start_alert":
+              action = "pre_start_notification";
+              break;
+            case "sla_warning":
+              action = "sla_alert";
+              break;
+            case "escalation_alert":
+              action = "escalation_notification";
+              break;
+            default:
+              action = "overdue_notification_sent";
+          }
+
+          const result = await pool.query(insertQuery, [
+            action,
+            notification.task_id,
+            notification.subtask_id,
+            "System",
+            notification.message,
+          ]);
+
+          if (result.rows.length > 0) {
+            newNotificationsCount++;
+          }
+
+          // Mark notification as sent to prevent duplicates
+          try {
+            await pool.query(`SELECT mark_notification_sent($1, $2)`, [
+              notification.subtask_id,
+              notification.notification_type,
+            ]);
+          } catch (markError) {
+            console.log(
+              `Warning: Could not mark notification as sent: ${markError.message}`,
+            );
+          }
+        }
+
+        res.json({
+          success: true,
+          message: `Auto-sync completed: ${newNotificationsCount} new notifications created`,
+          new_notifications: newNotificationsCount,
+          total_checked: autoSyncResult.rows.length,
+          timestamp: new Date().toISOString(),
+        });
+      } catch (syncError) {
+        console.log("Auto-sync error:", syncError.message);
+        res.json({
+          success: false,
+          message: "Auto-sync failed: " + syncError.message,
+          timestamp: new Date().toISOString(),
+        });
+      }
+    } else {
+      res.status(503).json({
+        success: false,
+        message: "Database unavailable for auto-sync",
+        timestamp: new Date().toISOString(),
+      });
+    }
+  } catch (error) {
+    console.error("Auto-sync endpoint error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Auto-sync endpoint failed: " + error.message,
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
+// Debug endpoint to check current database timestamps vs current time
+router.get("/debug/timestamps", async (req: Request, res: Response) => {
+  try {
+    if (await isDatabaseAvailable()) {
+      const query = `
+        SELECT
+          fal.id,
+          fal.action,
+          fal.details,
+          fal.timestamp,
+          ft.task_name,
+          ft.client_name,
+          NOW() as current_database_time,
+          EXTRACT(EPOCH FROM (NOW() - fal.timestamp))/60 as minutes_ago_in_db,
+          fal.timestamp::text as timestamp_string
+        FROM finops_activity_log fal
+        LEFT JOIN finops_tasks ft ON fal.task_id = ft.id
+        WHERE fal.timestamp >= NOW() - INTERVAL '24 hours'
+        ORDER BY fal.timestamp DESC
+        LIMIT 10
+      `;
+
+      const result = await pool.query(query);
+
+      res.json({
+        message: "Database timestamp analysis",
+        database_current_time: new Date().toISOString(),
+        javascript_current_time: new Date().toISOString(),
+        database_timezone: "Check database NOW() vs JavaScript Date()",
+        recent_notifications: result.rows.map((row) => ({
+          id: row.id,
+          action: row.action,
+          details: row.details?.substring(0, 100),
+          database_timestamp: row.timestamp,
+          timestamp_string: row.timestamp_string,
+          current_db_time: row.current_database_time,
+          minutes_ago_calculated_by_db: Math.round(row.minutes_ago_in_db),
+          task_name: row.task_name,
+          client_name: row.client_name,
+        })),
+        analysis: {
+          total_recent_notifications: result.rows.length,
+          timestamp_issue_check:
+            "Compare database_timestamp with current times above",
+        },
+        timestamp: new Date().toISOString(),
+      });
+    } else {
+      res.json({
+        message: "Database unavailable for timestamp analysis",
+        timestamp: new Date().toISOString(),
+      });
+    }
+  } catch (error) {
+    console.error("Timestamp debug error:", error);
+    res.status(500).json({
+      error: "Timestamp debug failed",
+      message: error.message,
+      timestamp: new Date().toISOString(),
     });
   }
 });

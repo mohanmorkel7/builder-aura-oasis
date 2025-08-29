@@ -677,56 +677,47 @@ export default function FinOpsNotifications() {
     // Initial update
     setCurrentTime(new Date());
 
-    // Calculate time until next minute boundary for synchronization
-    const now = new Date();
-    const secondsUntilNextMinute = 60 - now.getSeconds();
-
     let timer: NodeJS.Timeout;
     let slaTimer: NodeJS.Timeout;
 
-    // First timeout to sync to minute boundary
-    const syncTimeout = setTimeout(() => {
+    // Set up real-time updates every 10 seconds for better responsiveness
+    timer = setInterval(() => {
       setCurrentTime(new Date());
+      console.log("🔄 Real-time timer update:", new Date().toISOString());
+    }, 10000); // Update every 10 seconds for better real-time feel
 
-      // Then set regular 15-second intervals for time updates
-      timer = setInterval(() => {
-        setCurrentTime(new Date());
-      }, 15000); // Update every 15 seconds for real-time responsiveness
+    // Set up SLA monitoring every 30 seconds to check for overdue tasks
+    slaTimer = setInterval(async () => {
+      try {
+        console.log("🔍 Triggering real-time SLA check...");
+        // Trigger SLA monitoring on the server
+        const response = await apiClient.request(
+          "/notifications-production/auto-sync",
+          {
+            method: "POST",
+          },
+        );
 
-      // Set up SLA monitoring every 30 seconds to check for overdue tasks
-      slaTimer = setInterval(async () => {
-        try {
-          console.log("🔍 Triggering real-time SLA check...");
-          // Trigger SLA monitoring on the server
-          const response = await apiClient.request(
-            "/notifications-production/auto-sync",
-            {
-              method: "POST",
-            },
+        console.log("📊 Auto-sync response:", response);
+
+        // Always refresh notifications after auto-sync attempt
+        refetch();
+      } catch (error) {
+        // Check if it's a 503 (database unavailable) error
+        if (error.status === 503) {
+          console.log("⚠️ SLA monitoring paused: Database unavailable");
+        } else {
+          console.log(
+            "SLA monitoring error (non-critical):",
+            error.message || error,
           );
-
-          // Only refresh notifications if auto-sync was successful
-          if (response?.success !== false) {
-            refetch();
-          } else {
-            console.log("⚠️ Auto-sync skipped due to database unavailability");
-          }
-        } catch (error) {
-          // Check if it's a 503 (database unavailable) error
-          if (error.status === 503) {
-            console.log("⚠️ SLA monitoring paused: Database unavailable");
-          } else {
-            console.log(
-              "SLA monitoring error (non-critical):",
-              error.message || error,
-            );
-          }
         }
-      }, 30000); // Check every 30 seconds for faster overdue detection
-    }, secondsUntilNextMinute * 1000);
+        // Still refresh notifications even if auto-sync fails
+        refetch();
+      }
+    }, 30000); // Check every 30 seconds for faster overdue detection
 
     return () => {
-      clearTimeout(syncTimeout);
       if (timer) clearInterval(timer);
       if (slaTimer) clearInterval(slaTimer);
     };
@@ -1016,58 +1007,51 @@ export default function FinOpsNotifications() {
   };
 
   const getRelativeTime = (dateString: string) => {
-    // Use the proper IST utility functions from dateUtils
+    // Handle the real-time calculation properly
     const inputDate = new Date(dateString);
-    const currentISTTime = convertToIST(new Date());
-    const inputISTTime = convertToIST(inputDate);
+    const currentTime = new Date(); // Use current time directly
 
-    const diffMs = currentISTTime.getTime() - inputISTTime.getTime();
+    // Calculate difference in milliseconds
+    const diffMs = currentTime.getTime() - inputDate.getTime();
     const diffMinutes = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMinutes / 60);
+    const diffDays = Math.floor(diffHours / 24);
 
-    // Special debugging for the user's specific timestamp
-    if (dateString === "2025-08-29T01:07:55.113Z") {
-      console.log(`🔍 DEBUGGING USER TIMESTAMP: ${dateString}`, {
-        inputUTC: inputDate.toISOString(),
-        inputIST: inputISTTime.toISOString(),
-        currentUTC: new Date().toISOString(),
-        currentIST: currentISTTime.toISOString(),
-        diffMs,
-        diffMinutes,
-        diffHours: Math.floor(diffMinutes / 60),
-        expectedResult:
-          diffMinutes < 60
-            ? `${diffMinutes} min ago`
-            : `${Math.floor(diffMinutes / 60)}h ${diffMinutes % 60}m ago`,
-      });
-    }
-
-    console.log(`🕒 IST Time calculation for ${dateString}:`, {
+    // Debug logging for troubleshooting
+    console.log(`🕒 Real-time calculation for ${dateString}:`, {
       inputUTC: inputDate.toISOString(),
-      inputIST: inputISTTime.toISOString(),
-      currentIST: currentISTTime.toISOString(),
+      currentUTC: currentTime.toISOString(),
       diffMs,
       diffMinutes,
-      result:
+      diffHours,
+      diffDays,
+      calculatedResult:
         diffMinutes < 1
           ? "Just now"
           : diffMinutes < 60
             ? `${diffMinutes} min ago`
-            : diffMinutes < 1440
-              ? `${Math.floor(diffMinutes / 60)}h ${diffMinutes % 60}m ago`
-              : "date format",
+            : diffHours < 24
+              ? `${diffHours}h ${diffMinutes % 60}m ago`
+              : `${diffDays}d ${diffHours % 24}h ago`,
     });
 
-    // Real-time calculation in IST
+    // Return appropriate relative time
     if (diffMinutes < 1) {
       return "Just now";
     } else if (diffMinutes < 60) {
       return `${diffMinutes} min ago`;
-    } else if (diffMinutes < 1440) {
-      // Less than 24 hours
-      const hours = Math.floor(diffMinutes / 60);
-      const mins = diffMinutes % 60;
-      return `${hours}h ${mins}m ago`;
+    } else if (diffHours < 24) {
+      const remainingMins = diffMinutes % 60;
+      return remainingMins > 0
+        ? `${diffHours}h ${remainingMins}m ago`
+        : `${diffHours}h ago`;
+    } else if (diffDays < 7) {
+      const remainingHours = diffHours % 24;
+      return remainingHours > 0
+        ? `${diffDays}d ${remainingHours}h ago`
+        : `${diffDays}d ago`;
     } else {
+      // For dates older than a week, show formatted date
       return formatToISTDateTime(inputDate, {
         month: "short",
         day: "numeric",
@@ -1120,6 +1104,12 @@ export default function FinOpsNotifications() {
                 Database Unavailable
               </Badge>
             )}
+            <Badge
+              variant="outline"
+              className="ml-2 text-blue-600 bg-blue-50 border-blue-200"
+            >
+              Real-time: {format(currentTime, "HH:mm:ss")}
+            </Badge>
           </h2>
           <p className="text-gray-600 mt-1">
             Automated SLA monitoring with 15-minute warnings and overdue alerts
@@ -1131,6 +1121,15 @@ export default function FinOpsNotifications() {
           <Button variant="outline" size="sm" onClick={markAllAsRead}>
             <CheckCircle className="w-4 h-4 mr-1" />
             Mark All Read
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={forceTimeSync}
+            title="Force sync current time and refresh data"
+          >
+            <Clock className="w-4 h-4 mr-1" />
+            Force Sync
           </Button>
           <Button
             variant="outline"
