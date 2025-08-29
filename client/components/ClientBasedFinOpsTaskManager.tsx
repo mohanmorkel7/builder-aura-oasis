@@ -1503,6 +1503,22 @@ export default function ClientBasedFinOpsTaskManager() {
             >
               Create Test Task
             </Button>
+            <Button
+              variant="outline"
+              onClick={forceUpdateOverdueStatuses}
+              className="text-orange-600 border-orange-300 hover:bg-orange-50"
+            >
+              <AlertTriangle className="w-4 h-4 mr-1" />
+              Force Status Update
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => refetch()}
+              className="text-blue-600 border-blue-300 hover:bg-blue-50"
+            >
+              <RefreshCw className="w-4 h-4 mr-1" />
+              Refresh Data
+            </Button>
           </div>
         </div>
 
