@@ -344,7 +344,10 @@ router.get("/", async (req: Request, res: Response) => {
         unread_count: unreadCount,
       });
     } else {
-      console.log("Database unavailable, using mock notifications");
+      console.log("Database unavailable, using dynamic mock notifications with real-time timestamps");
+
+      // Generate fresh mock notifications with current timestamps
+      const mockNotifications = generateMockNotifications();
 
       // Filter mock notifications
       let filteredNotifications = mockNotifications;
@@ -399,7 +402,8 @@ router.get("/", async (req: Request, res: Response) => {
     }
   } catch (error) {
     console.error("Error fetching notifications:", error);
-    // Fallback to mock data
+    // Fallback to dynamic mock data with current timestamps
+    const mockNotifications = generateMockNotifications();
     res.json({
       notifications: mockNotifications,
       pagination: {
@@ -599,7 +603,7 @@ router.put("/read-all", async (req: Request, res: Response) => {
       console.log("Database unavailable, returning mock read-all update");
       res.json({
         message: "All notifications marked as read",
-        updated_count: mockNotifications.filter((n) => !n.read).length,
+        updated_count: generateMockNotifications().filter((n) => !n.read).length,
       });
     }
   } catch (error) {
