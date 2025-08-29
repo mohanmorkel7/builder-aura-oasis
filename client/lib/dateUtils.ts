@@ -29,8 +29,7 @@ export const formatToISTDateTime = (
   date: string | Date,
   options: Intl.DateTimeFormatOptions = {},
 ): string => {
-  
-let dateObj: Date;
+  let dateObj: Date;
 
   if (typeof date === "string") {
     // Parse the date normally - database timestamps should be in UTC
@@ -152,8 +151,8 @@ export const convertToIST = (date: string | Date): Date => {
   const dateObj = typeof date === "string" ? new Date(date) : date;
 
   // Use the same reliable timezone calculation as getCurrentISTTimestamp
-  const utcMs = dateObj.getTime() + (dateObj.getTimezoneOffset() * 60000);
-  const istMs = utcMs + (5.5 * 60 * 60 * 1000); // Add 5.5 hours for IST (+05:30)
+  const utcMs = dateObj.getTime() + dateObj.getTimezoneOffset() * 60000;
+  const istMs = utcMs + 5.5 * 60 * 60 * 1000; // Add 5.5 hours for IST (+05:30)
   return new Date(istMs);
 };
 
