@@ -940,26 +940,22 @@ export default function FinOpsNotifications() {
   };
 
   const getRelativeTime = (dateString: string) => {
-    const date = new Date(dateString);
+    // Use the proper IST utility functions from dateUtils
+    const inputDate = new Date(dateString);
+    const currentISTTime = convertToIST(new Date());
+    const inputISTTime = convertToIST(inputDate);
 
-    // Get current time in IST
-    const nowIST = new Date();
-    const istOffset = 5.5 * 60 * 60 * 1000; // IST is UTC+5:30
-
-    // Convert input date to IST
-    const dateUTC = new Date(date.toISOString());
-    const istDate = new Date(dateUTC.getTime() + istOffset);
-    const currentIST = new Date(nowIST.getTime() + istOffset);
-
-    const diffMs = currentIST.getTime() - istDate.getTime();
+    const diffMs = currentISTTime.getTime() - inputISTTime.getTime();
     const diffMinutes = Math.floor(diffMs / (1000 * 60));
 
-    console.log(`🕒 IST Time calculation:`, {
+    console.log(`🕒 Fixed IST Time calculation:`, {
       original: dateString,
-      dateUTC: dateUTC.toISOString(),
-      istDate: istDate.toISOString(),
-      currentIST: currentIST.toISOString(),
+      inputUTC: inputDate.toISOString(),
+      inputIST: inputISTTime.toISOString(),
+      currentIST: currentISTTime.toISOString(),
+      diffMs,
       diffMinutes,
+      serverCurrentTime: new Date().toISOString()
     });
 
     // Real-time calculation in IST
@@ -973,7 +969,7 @@ export default function FinOpsNotifications() {
       const mins = diffMinutes % 60;
       return `${hours}h ${mins}m ago`;
     } else {
-      return formatToISTDateTime(date, {
+      return formatToISTDateTime(inputDate, {
         month: "short",
         day: "numeric",
         hour: "numeric",
