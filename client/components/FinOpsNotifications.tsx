@@ -438,7 +438,8 @@ const transformDbNotifications = (
           (dbNotif.details?.includes("min remaining") ||
             dbNotif.details?.includes("need to start"))),
       delay_reason:
-        dbNotif.action === "delay_reported" ? "Process delayed" : undefined,
+        dbNotif.overdue_reason || // Use overdue reason from API response
+        (dbNotif.action === "delay_reported" ? "Process delayed" : undefined),
       sla_remaining:
         realTimeSlaRemaining ||
         (overdueMinutes ? `Overdue by ${overdueMinutes} min` : undefined),
