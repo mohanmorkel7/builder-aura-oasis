@@ -1682,11 +1682,13 @@ router.get("/test/user-query", async (req: Request, res: Response) => {
           ft.client_name,
           fs.name as subtask_name,
           CASE
+            WHEN fal.action = 'overdue_reason_required' THEN 'overdue_reason_required'
             WHEN fal.action = 'delay_reported' THEN 'task_delayed'
             WHEN fal.action = 'overdue_notification_sent' THEN 'sla_overdue'
             WHEN fal.action = 'completion_notification_sent' THEN 'task_completed'
             WHEN fal.action = 'sla_alert' THEN 'sla_warning'
             WHEN fal.action = 'escalation_required' THEN 'escalation'
+            WHEN LOWER(fal.details) LIKE '%overdue reason required%' THEN 'overdue_reason_required'
             WHEN LOWER(fal.details) LIKE '%overdue%' THEN 'sla_overdue'
             WHEN fal.action IN ('status_changed', 'task_status_changed') AND LOWER(fal.details) LIKE '%overdue%' THEN 'sla_overdue'
             WHEN fal.action IN ('status_changed', 'task_status_changed') AND LOWER(fal.details) LIKE '%completed%' THEN 'task_completed'
@@ -1697,6 +1699,7 @@ router.get("/test/user-query", async (req: Request, res: Response) => {
             ELSE 'daily_reminder'
           END as type,
           CASE
+            WHEN fal.action = 'overdue_reason_required' OR LOWER(fal.details) LIKE '%overdue reason required%' THEN 'critical'
             WHEN fal.action = 'delay_reported' OR fal.action = 'overdue_notification_sent' OR LOWER(fal.details) LIKE '%overdue%' THEN 'critical'
             WHEN fal.action = 'completion_notification_sent' THEN 'low'
             WHEN fal.action = 'sla_alert' OR LOWER(fal.details) LIKE '%starting in%' OR LOWER(fal.details) LIKE '%sla warning%' OR LOWER(fal.details) LIKE '%min remaining%' THEN 'high'
