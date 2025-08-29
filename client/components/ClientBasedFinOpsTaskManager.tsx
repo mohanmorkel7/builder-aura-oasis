@@ -1034,6 +1034,43 @@ export default function ClientBasedFinOpsTaskManager() {
     });
   };
 
+  const submitOverdueReason = async () => {
+    try {
+      // Store the overdue reason in database
+      await apiClient.request("/finops-tasks/overdue-reason", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          task_id: overdueReasonData?.taskId,
+          subtask_id: overdueReasonData?.subtaskId,
+          reason: overdueReason,
+          created_by: user?.id || 1,
+          created_at: new Date().toISOString(),
+        }),
+      });
+
+      // Now proceed with the status change
+      if (overdueReasonData) {
+        updateSubTaskMutation.mutate({
+          taskId: overdueReasonData.taskId,
+          subTaskId: overdueReasonData.subtaskId,
+          status: overdueReasonData.newStatus,
+          userName: user?.first_name + " " + user?.last_name,
+        });
+      }
+
+      // Close dialog and reset
+      setShowOverdueReasonDialog(false);
+      setOverdueReasonData(null);
+      setOverdueReason("");
+    } catch (error) {
+      console.error("Failed to submit overdue reason:", error);
+      alert("Failed to submit overdue reason. Please try again.");
+    }
+  };
+
   // Force update all overdue statuses immediately
   const forceUpdateOverdueStatuses = () => {
     console.log("🔧 Force updating all overdue statuses...");
