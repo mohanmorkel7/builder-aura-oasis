@@ -83,6 +83,7 @@ class FinOpsAlertService {
       console.log("Checking for daily tasks to execute...");
       
       const todayIST = getCurrentISTTime().toISOString().split('T')[0];
+      console.log(`Checking daily tasks for IST date: ${todayIST}`);
       
       const tasksToExecute = await pool.query(`
         SELECT * FROM finops_tasks 
