@@ -84,7 +84,7 @@ class FinOpsAlertService {
     try {
       console.log("Checking for daily tasks to execute...");
 
-const today = new Date().toISOString().split("T")[0];
+      const today = new Date().toISOString().split("T")[0];
 
       const tasksToExecute = await pool.query(
         `
@@ -95,7 +95,7 @@ const today = new Date().toISOString().split("T")[0];
         AND (last_run IS NULL OR DATE(last_run AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Kolkata') < $1)
         AND deleted_at IS NULL
       `,
-      [today],
+        [today],
       );
 
       for (const task of tasksToExecute.rows) {
@@ -125,7 +125,7 @@ const today = new Date().toISOString().split("T")[0];
    * Check SLA for individual subtask and send alerts if needed
    */
   private async checkSubtaskSLA(task: any, subtask: any): Promise<void> {
-const now = new Date();
+    const now = new Date();
 
     // Only check pending tasks for overdue status
     if (subtask.status !== "pending") {
@@ -316,11 +316,14 @@ const now = new Date();
    */
   private async sendReplicaDownAlert(title: string): Promise<void> {
     try {
-      const response = await fetch("https://pulsealerts.mylapay.com/replica-down", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ receiver: "CRM_Switch", title }),
-      });
+      const response = await fetch(
+        "https://pulsealerts.mylapay.com/replica-down",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ receiver: "CRM_Switch", title }),
+        },
+      );
       if (!response.ok) {
         console.warn("Replica-down alert failed:", response.status);
       }
