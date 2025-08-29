@@ -422,10 +422,10 @@ router.post("/:id/change-password", async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Invalid user ID" });
     }
 
-    if (!oldPassword || !newPassword) {
+    if (!newPassword) {
       return res
         .status(400)
-        .json({ error: "Old password and new password are required" });
+        .json({ error: "New password is required" });
     }
 
     if (newPassword.length < 6) {
@@ -442,13 +442,23 @@ router.post("/:id/change-password", async (req: Request, res: Response) => {
         return res.status(404).json({ error: "User not found" });
       }
 
-      // Verify old password
-      const isOldPasswordValid = await bcrypt.compare(
-        oldPassword,
-        user.password_hash,
-      );
-      if (!isOldPasswordValid) {
-        return res.status(400).json({ error: "Current password is incorrect" });
+      // Allow SSO users without a real password to set one without verifying old password
+      const hasRealHash = typeof user.password_hash === "string" && user.password_hash.startsWith("$2");
+      if (hasRealHash) {
+        if (!oldPassword) {
+          return res
+            .status(400)
+            .json({ error: "Old password is required" });
+        }
+        const isOldPasswordValid = await bcrypt.compare(
+          oldPassword,
+          user.password_hash,
+        );
+        if (!isOldPasswordValid) {
+          return res
+            .status(400)
+            .json({ error: "Current password is incorrect" });
+        }
       }
 
       // Hash new password and update
