@@ -79,6 +79,18 @@ class FinOpsAlertService {
     }
   }
 
+  private async getUserIdsFromNames(names: string[]): Promise<string[]> {
+    if (!names.length) return [];
+    const lowered = names.map((n) => n.toLowerCase());
+    const result = await pool.query(
+      `SELECT azure_object_id, first_name, last_name FROM users WHERE LOWER(CONCAT(first_name,' ',last_name)) = ANY($1)`,
+      [lowered],
+    );
+    return result.rows
+      .map((r: any) => r.azure_object_id)
+      .filter((id: string | null) => !!id) as string[];
+  }
+
   constructor() {
     // Initialize email transporter
     this.emailTransporter = nodemailer.createTransport({
