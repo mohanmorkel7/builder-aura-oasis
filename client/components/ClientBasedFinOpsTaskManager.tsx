@@ -1463,6 +1463,12 @@ export default function ClientBasedFinOpsTaskManager() {
               Daily process tracking and task execution monitoring for the
               selected date
             </p>
+
+            {/* Real-time Status Debug Info */}
+            <div className="mt-2 text-xs text-gray-500 bg-gray-50 px-3 py-1 rounded border">
+              🕒 Auto-Status Updates: Every 30s | Current Time: {currentTime.toLocaleTimeString()} |
+              {finopsTasks?.reduce((acc, task) => acc + (task.subtasks?.filter(st => st.status === "pending" && st.start_time).length || 0), 0)} pending tasks monitored
+            </div>
           </div>
           <div className="flex gap-2">
             {user?.role === "admin" && (
