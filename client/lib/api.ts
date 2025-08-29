@@ -505,6 +505,10 @@ export class ApiClient {
     return this.request(`/users/${id}`);
   }
 
+  async getUserByAzure(azureObjectId: string) {
+    return this.request(`/users/by-azure/${azureObjectId}`);
+  }
+
   async createUser(userData: any) {
     return this.request("/users", {
       method: "POST",

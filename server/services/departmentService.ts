@@ -1,5 +1,12 @@
 import { pool } from "../database/connection";
-import userDepartments from "../data/user-departments.json";
+import * as fs from "fs";
+import * as path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const USER_DEPTS_PATH = path.join(__dirname, "../data/user-departments.json");
 
 export interface Department {
   id: number;
@@ -19,6 +26,25 @@ export interface UserDepartmentInfo {
 }
 
 export class DepartmentService {
+  private static readUserDepartments(): { users: any[]; departments: any } {
+    try {
+      if (fs.existsSync(USER_DEPTS_PATH)) {
+        const content = fs.readFileSync(USER_DEPTS_PATH, "utf8");
+        const data = JSON.parse(content);
+        return {
+          users: Array.isArray(data.users) ? data.users : [],
+          departments: data.departments || {},
+        };
+      }
+    } catch (e) {
+      console.warn(
+        "Could not read user-departments.json:",
+        (e as Error).message,
+      );
+    }
+    return { users: [], departments: {} };
+  }
+
   // Map departments to appropriate user roles
   private static getDepartmentRole(department: string): string {
     // If no department provided, assign 'unknown' role for manual assignment
@@ -142,18 +168,24 @@ export class DepartmentService {
     ssoUser: any,
   ): Promise<UserDepartmentInfo | null> {
     try {
+      if (!ssoUser || !ssoUser.mail) {
+        console.warn("SSO user missing email. Skipping create/update.");
+        return null;
+      }
       console.log(`🔧 createOrUpdateSSOUser called for: ${ssoUser.mail}`);
 
-      // Find user in our department mapping
-      const userMapping = userDepartments.users.find(
-        (u) => u.email === ssoUser.mail,
-      );
+      // Find user in our department mapping (fresh read from disk)
+      const { users } = this.readUserDepartments();
+      const userMapping = users.find((u: any) => u.email === ssoUser.mail);
 
       if (!userMapping) {
         console.warn(`❌ User ${ssoUser.mail} not found in department mapping`);
-        console.log(
-          `Available users in mapping: ${userDepartments.users.map((u) => u.email).join(", ")}`,
-        );
+        try {
+          const { users: allUsers } = this.readUserDepartments();
+          console.log(
+            `Available users in mapping: ${allUsers.map((u: any) => u.email).join(", ")}`,
+          );
+        } catch {}
         return null;
       }
 
@@ -293,9 +325,8 @@ export class DepartmentService {
   ): Promise<void> {
     try {
       console.log("Loading user departments from JSON...");
-      console.log(
-        `Total users in JSON to process: ${userDepartments.users.length}`,
-      );
+      const { users: allUsersForCount } = this.readUserDepartments();
+      console.log(`Total users in JSON to process: ${allUsersForCount.length}`);
       console.log(`Skip existing users: ${options.skipExistingUsers}`);
 
       // Check database availability first
@@ -321,7 +352,17 @@ export class DepartmentService {
       let skippedCount = 0;
       let updatedCount = 0;
 
-      for (const user of userDepartments.users) {
+      const { users } = this.readUserDepartments();
+      for (const user of users) {
+        // Skip entries without an email (likely rooms/resources)
+        if (!user.email) {
+          console.log(
+            `⏭️  Skipping entry without email: ${user.displayName || "unknown"}`,
+          );
+          skippedCount++;
+          continue;
+        }
+
         console.log(
           `🔍 Processing user: ${user.email} (department: ${user.department || "none"})`,
         );
@@ -403,7 +444,8 @@ export class DepartmentService {
           `📊 Database sync summary: ${processedCount} new users, ${updatedCount} updated users, ${skippedCount} skipped users`,
         );
       } else {
-        console.log(`Loaded ${userDepartments.users.length} users from JSON`);
+        const { users: finalUsers } = this.readUserDepartments();
+        console.log(`Loaded ${finalUsers.length} users from JSON`);
       }
     } catch (error) {
       console.error("Error loading users from JSON:", error);

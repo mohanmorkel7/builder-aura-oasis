@@ -33,6 +33,32 @@ router.get("/", async (req: Request, res: Response) => {
   }
 });
 
+// Get user by Azure AD object ID (SSO mapping)
+router.get("/by-azure/:azureObjectId", async (req: Request, res: Response) => {
+  try {
+    const azureObjectId = req.params.azureObjectId;
+    if (!azureObjectId || azureObjectId.length < 5) {
+      return res.status(400).json({ error: "Invalid Azure Object ID" });
+    }
+
+    if (!(await isDatabaseAvailable())) {
+      return res
+        .status(503)
+        .json({ error: "Database not available for SSO lookup" });
+    }
+
+    const user = await UserRepository.findByAzureObjectId(azureObjectId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json(user);
+  } catch (error) {
+    console.error("Error fetching user by azure_object_id:", error);
+    res.status(500).json({ error: "Failed to fetch user by Azure ID" });
+  }
+});
+
 // Get user by ID
 router.get("/:id", async (req: Request, res: Response) => {
   try {
