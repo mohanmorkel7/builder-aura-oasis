@@ -64,10 +64,19 @@ initializeNotificationTables();
 // Production database availability check with graceful fallback
 async function isDatabaseAvailable() {
   try {
-    await pool.query("SELECT 1");
+    const result = await pool.query("SELECT NOW() as current_time, version() as db_version");
+    console.log("✅ Database is available:", {
+      current_time: result.rows[0].current_time,
+      version: result.rows[0].db_version?.substring(0, 50) + "...",
+      status: "connected"
+    });
     return true;
   } catch (error) {
-    console.log("Database unavailable:", error.message);
+    console.log("❌ Database unavailable:", {
+      error: error.message,
+      status: "disconnected",
+      fallback: "using_mock_data_with_dynamic_timestamps"
+    });
     return false;
   }
 }
@@ -342,6 +351,12 @@ router.get("/", async (req: Request, res: Response) => {
             parseInt(offset as string) + parseInt(limit as string) < total,
         },
         unread_count: unreadCount,
+        debug_info: {
+          data_source: "real_database",
+          query_timestamp: new Date().toISOString(),
+          database_connected: true,
+          total_notifications_in_db: total,
+        },
       });
     } else {
       console.log("Database unavailable, using dynamic mock notifications with real-time timestamps");
@@ -398,6 +413,13 @@ router.get("/", async (req: Request, res: Response) => {
           has_more: offsetNum + limitNum < total,
         },
         unread_count: unreadCount,
+        debug_info: {
+          data_source: "dynamic_mock_data",
+          query_timestamp: new Date().toISOString(),
+          database_connected: false,
+          mock_data_refreshed: true,
+          note: "Timestamps are dynamically generated for real-time simulation",
+        },
       });
     }
   } catch (error) {
