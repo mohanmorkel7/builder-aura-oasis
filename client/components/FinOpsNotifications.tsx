@@ -231,6 +231,12 @@ const transformDbNotifications = (
     // Use API-provided type if available, otherwise determine from action types
     let notificationType = dbNotif.type || "task_pending"; // Respect API type first
 
+    console.log("🔍 Type determination:", {
+      apiType: dbNotif.type,
+      computedType: notificationType,
+      action: dbNotif.action
+    });
+
     // Only override if API didn't provide type or for special real-time cases
     if (!dbNotif.type) {
       if (dbNotif.action === "overdue_reason_required") {
@@ -418,7 +424,7 @@ const transformDbNotifications = (
               ? "high"
               : notificationType === "pre_start_alert"
                 ? "medium"
-                : "low"
+                : "medium" // Default to medium instead of low
       ),
       status: dbNotif.read ? "read" : "unread",
       created_at: dbNotif.created_at,
