@@ -1419,6 +1419,98 @@ router.get("/test/categorization", async (req: Request, res: Response) => {
   }
 });
 
+// Auto-sync endpoint for real-time SLA monitoring
+router.post("/auto-sync", async (req: Request, res: Response) => {
+  try {
+    if (await isDatabaseAvailable()) {
+      console.log("🔄 Running real-time SLA auto-sync...");
+
+      // Run the SLA monitoring function to check for new notifications
+      try {
+        const autoSyncQuery = `SELECT * FROM check_subtask_sla_notifications_ist()`;
+        const autoSyncResult = await pool.query(autoSyncQuery);
+
+        let newNotificationsCount = 0;
+
+        for (const notification of autoSyncResult.rows) {
+          const insertQuery = `
+            INSERT INTO finops_activity_log (action, task_id, subtask_id, user_name, details, timestamp)
+            VALUES ($1, $2, $3, $4, $5, NOW())
+            ON CONFLICT DO NOTHING
+            RETURNING id
+          `;
+
+          // Map notification types to actions
+          let action;
+          switch (notification.notification_type) {
+            case "pre_start_alert":
+              action = "pre_start_notification";
+              break;
+            case "sla_warning":
+              action = "sla_alert";
+              break;
+            case "escalation_alert":
+              action = "escalation_notification";
+              break;
+            default:
+              action = "overdue_notification_sent";
+          }
+
+          const result = await pool.query(insertQuery, [
+            action,
+            notification.task_id,
+            notification.subtask_id,
+            "System",
+            notification.message,
+          ]);
+
+          if (result.rows.length > 0) {
+            newNotificationsCount++;
+          }
+
+          // Mark notification as sent to prevent duplicates
+          try {
+            await pool.query(`SELECT mark_notification_sent($1, $2)`, [
+              notification.subtask_id,
+              notification.notification_type,
+            ]);
+          } catch (markError) {
+            console.log(`Warning: Could not mark notification as sent: ${markError.message}`);
+          }
+        }
+
+        res.json({
+          success: true,
+          message: `Auto-sync completed: ${newNotificationsCount} new notifications created`,
+          new_notifications: newNotificationsCount,
+          total_checked: autoSyncResult.rows.length,
+          timestamp: new Date().toISOString(),
+        });
+      } catch (syncError) {
+        console.log("Auto-sync error:", syncError.message);
+        res.json({
+          success: false,
+          message: "Auto-sync failed: " + syncError.message,
+          timestamp: new Date().toISOString(),
+        });
+      }
+    } else {
+      res.status(503).json({
+        success: false,
+        message: "Database unavailable for auto-sync",
+        timestamp: new Date().toISOString(),
+      });
+    }
+  } catch (error) {
+    console.error("Auto-sync endpoint error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Auto-sync endpoint failed: " + error.message,
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
 // Check database schema and current state
 router.get("/check-schema", async (req: Request, res: Response) => {
   try {
