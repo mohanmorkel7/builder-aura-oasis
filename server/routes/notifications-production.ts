@@ -314,9 +314,10 @@ router.get("/", async (req: Request, res: Response) => {
         LEFT JOIN finops_notification_archived_status fnas ON fal.id = fnas.activity_log_id
         WHERE fal.timestamp >= NOW() - INTERVAL '7 days'
         AND fnas.activity_log_id IS NULL
+        ${date ? `AND DATE(fal.timestamp) = DATE($1)` : ''}
       `;
 
-      const countsResult = await pool.query(countsQuery);
+      const countsResult = await pool.query(countsQuery, date ? [date] : []);
       const total = parseInt(countsResult.rows[0].total);
       const unreadCount = parseInt(countsResult.rows[0].unread_count);
 
