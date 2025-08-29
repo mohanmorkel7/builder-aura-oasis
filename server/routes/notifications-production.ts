@@ -1511,6 +1511,68 @@ router.post("/auto-sync", async (req: Request, res: Response) => {
   }
 });
 
+// Debug endpoint to check current database timestamps vs current time
+router.get("/debug/timestamps", async (req: Request, res: Response) => {
+  try {
+    if (await isDatabaseAvailable()) {
+      const query = `
+        SELECT
+          fal.id,
+          fal.action,
+          fal.details,
+          fal.timestamp,
+          ft.task_name,
+          ft.client_name,
+          NOW() as current_database_time,
+          EXTRACT(EPOCH FROM (NOW() - fal.timestamp))/60 as minutes_ago_in_db,
+          fal.timestamp::text as timestamp_string
+        FROM finops_activity_log fal
+        LEFT JOIN finops_tasks ft ON fal.task_id = ft.id
+        WHERE fal.timestamp >= NOW() - INTERVAL '24 hours'
+        ORDER BY fal.timestamp DESC
+        LIMIT 10
+      `;
+
+      const result = await pool.query(query);
+
+      res.json({
+        message: "Database timestamp analysis",
+        database_current_time: new Date().toISOString(),
+        javascript_current_time: new Date().toISOString(),
+        database_timezone: "Check database NOW() vs JavaScript Date()",
+        recent_notifications: result.rows.map(row => ({
+          id: row.id,
+          action: row.action,
+          details: row.details?.substring(0, 100),
+          database_timestamp: row.timestamp,
+          timestamp_string: row.timestamp_string,
+          current_db_time: row.current_database_time,
+          minutes_ago_calculated_by_db: Math.round(row.minutes_ago_in_db),
+          task_name: row.task_name,
+          client_name: row.client_name,
+        })),
+        analysis: {
+          total_recent_notifications: result.rows.length,
+          timestamp_issue_check: "Compare database_timestamp with current times above"
+        },
+        timestamp: new Date().toISOString(),
+      });
+    } else {
+      res.json({
+        message: "Database unavailable for timestamp analysis",
+        timestamp: new Date().toISOString(),
+      });
+    }
+  } catch (error) {
+    console.error("Timestamp debug error:", error);
+    res.status(500).json({
+      error: "Timestamp debug failed",
+      message: error.message,
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
 // Check database schema and current state
 router.get("/check-schema", async (req: Request, res: Response) => {
   try {
