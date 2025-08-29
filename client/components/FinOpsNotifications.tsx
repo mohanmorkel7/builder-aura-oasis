@@ -228,48 +228,53 @@ const transformDbNotifications = (
       }
     }
 
-    // Determine notification type based on IST action types (with real-time SLA expiry check)
-    let notificationType = "task_pending";
+    // Use API-provided type if available, otherwise determine from action types
+    let notificationType = dbNotif.type || "task_pending"; // Respect API type first
 
-    if (dbNotif.action === "overdue_reason_required") {
-      // High priority overdue reason required
-      notificationType = "overdue_reason_required";
+    // Only override if API didn't provide type or for special real-time cases
+    if (!dbNotif.type) {
+      if (dbNotif.action === "overdue_reason_required") {
+        notificationType = "overdue_reason_required";
+      } else if (isExpiredSLA) {
+        // SLA warning has expired, convert to overdue
+        notificationType = "escalation_alert";
+      } else if (dbNotif.action === "pre_start_notification") {
+        notificationType = "pre_start_alert";
+      } else if (
+        dbNotif.action === "sla_alert" ||
+        dbNotif.action === "sla_warning" ||
+        dbNotif.details?.includes("SLA Warning") ||
+        dbNotif.details?.includes("min remaining") ||
+        dbNotif.details?.includes("minutes late")
+      ) {
+        notificationType = "sla_warning";
+      } else if (
+        dbNotif.action === "escalation_notification" ||
+        dbNotif.details?.includes("ESCALATION") ||
+        dbNotif.details?.includes("Immediate action required")
+      ) {
+        notificationType = "escalation_alert";
+      } else if (
+        dbNotif.action === "overdue_notification_sent" ||
+        dbNotif.details?.toLowerCase().includes("overdue")
+      ) {
+        notificationType = "sla_warning";
+      } else if (
+        (dbNotif.details?.toLowerCase().includes("pending") &&
+          dbNotif.details?.toLowerCase().includes("need to start")) ||
+        dbNotif.details?.toLowerCase().includes("pending status")
+      ) {
+        notificationType = "task_pending";
+      } else if (dbNotif.action === "task_completed") {
+        notificationType = "task_completed";
+      } else if (dbNotif.action === "task_overdue") {
+        notificationType = "task_overdue";
+      } else if (dbNotif.details?.includes("starts in")) {
+        notificationType = "pre_start_alert";
+      }
     } else if (isExpiredSLA) {
-      // SLA warning has expired, convert to overdue
+      // Override API type only for real-time SLA expiry
       notificationType = "escalation_alert";
-    } else if (dbNotif.action === "pre_start_notification") {
-      notificationType = "pre_start_alert";
-    } else if (
-      dbNotif.action === "sla_alert" ||
-      dbNotif.action === "sla_warning" ||
-      dbNotif.details?.includes("SLA Warning") ||
-      dbNotif.details?.includes("min remaining") ||
-      dbNotif.details?.includes("minutes late")
-    ) {
-      notificationType = "sla_warning";
-    } else if (
-      dbNotif.action === "escalation_notification" ||
-      dbNotif.details?.includes("ESCALATION") ||
-      dbNotif.details?.includes("Immediate action required")
-    ) {
-      notificationType = "escalation_alert";
-    } else if (
-      dbNotif.action === "overdue_notification_sent" ||
-      dbNotif.details?.toLowerCase().includes("overdue")
-    ) {
-      notificationType = "sla_warning"; // Legacy overdue becomes sla_warning
-    } else if (
-      (dbNotif.details?.toLowerCase().includes("pending") &&
-        dbNotif.details?.toLowerCase().includes("need to start")) ||
-      dbNotif.details?.toLowerCase().includes("pending status")
-    ) {
-      notificationType = "task_pending";
-    } else if (dbNotif.action === "task_completed") {
-      notificationType = "task_completed"; // Will be filtered out
-    } else if (dbNotif.action === "task_overdue") {
-      notificationType = "task_overdue"; // Will be filtered out
-    } else if (dbNotif.details?.includes("starts in")) {
-      notificationType = "pre_start_alert";
     }
 
     // Mock member data based on task type
@@ -378,9 +383,11 @@ const transformDbNotifications = (
                     ? "CLEARING - FILE TRANSFER AND VALIDATION"
                     : startTime
                       ? `Task (Start: ${startTime})`
-                      : dbNotif.action
-                        ? `FinOps: ${dbNotif.action.replace(/_/g, " ")}`
-                        : "FinOps Notification",
+                      : dbNotif.action && dbNotif.details
+                        ? `${dbNotif.action.replace(/_/g, " ").toUpperCase()}: ${dbNotif.details}`
+                        : dbNotif.action
+                          ? dbNotif.action.replace(/_/g, " ").toUpperCase()
+                          : "FinOps Notification",
       message: realTimeDetails || "",
       task_name:
         dbNotif.task_name ||
@@ -399,10 +406,10 @@ const transformDbNotifications = (
             ? "PaySwiff"
             : "ABC Corporation"),
       subtask_name: dbNotif.subtask_name,
-      assigned_to: members.assigned_to,
+      assigned_to: dbNotif.user_name || members.assigned_to || "Unassigned",
       reporting_managers: members.reporting_managers,
       escalation_managers: members.escalation_managers,
-      priority:
+      priority: dbNotif.priority || (
         notificationType === "overdue_reason_required"
           ? "critical"
           : notificationType === "escalation_alert" || isExpiredSLA
@@ -411,7 +418,8 @@ const transformDbNotifications = (
               ? "high"
               : notificationType === "pre_start_alert"
                 ? "medium"
-                : "low",
+                : "low"
+      ),
       status: dbNotif.read ? "read" : "unread",
       created_at: dbNotif.created_at,
       action_required:
