@@ -32,13 +32,8 @@ export const formatToISTDateTime = (
   let dateObj: Date;
 
   if (typeof date === "string") {
-    // Parse the date normally
+    // Parse the date normally - database timestamps should be in UTC
     dateObj = new Date(date);
-
-    // For all database timestamps (string format), add offset to match desired display time
-    // This ensures server timestamps show in desired timezone regardless of format
-    const offsetMs = 5.5 * 60 * 60 * 1000; // 5.5 hours in milliseconds
-    dateObj = new Date(dateObj.getTime() + offsetMs);
   } else {
     dateObj = date;
   }
@@ -91,17 +86,20 @@ export const formatToISTDateOnly = (date: string | Date): string => {
 };
 
 /**
- * Gets current IST timestamp
+ * Gets current IST timestamp as a proper Date object
  */
-export const getCurrentISTTimestamp = (): string => {
-  return new Date().toLocaleString("en-US", { timeZone: IST_TIMEZONE });
+export const getCurrentISTTimestamp = (): Date => {
+  const now = new Date();
+  const utcMs = now.getTime() + now.getTimezoneOffset() * 60000;
+  const istMs = utcMs + 5.5 * 60 * 60 * 1000; // Add 5.5 hours for IST
+  return new Date(istMs);
 };
 
 /**
- * Gets current date/time formatted in local timezone for display
+ * Gets current date/time formatted in IST for display
  */
 export const getCurrentISTDateTime = (): string => {
-  return formatToISTDateTime(new Date());
+  return formatToISTDateTime(getCurrentISTTimestamp());
 };
 
 /**
@@ -109,9 +107,10 @@ export const getCurrentISTDateTime = (): string => {
  */
 export const isOverdue = (dueDate: string | Date): boolean => {
   const dueDateObj = typeof dueDate === "string" ? new Date(dueDate) : dueDate;
-  const currentIST = new Date(getCurrentISTTimestamp());
+  const currentIST = getCurrentISTTimestamp();
 
-  return dueDateObj < currentIST;
+  // Use epoch milliseconds for accurate comparison
+  return dueDateObj.getTime() < currentIST.getTime();
 };
 
 /**
@@ -119,7 +118,7 @@ export const isOverdue = (dueDate: string | Date): boolean => {
  */
 export const getRelativeTimeIST = (date: string | Date): string => {
   const dateObj = typeof date === "string" ? new Date(date) : date;
-  const currentIST = new Date(getCurrentISTTimestamp());
+  const currentIST = getCurrentISTTimestamp();
 
   const diffMs = currentIST.getTime() - dateObj.getTime();
   const diffMinutes = Math.floor(diffMs / (1000 * 60));
