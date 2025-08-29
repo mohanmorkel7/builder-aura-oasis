@@ -349,8 +349,32 @@ class FinOpsAlertService {
   /**
    * Send external alert to Pulse Alerts endpoint
    */
-  private async sendReplicaDownAlert(title: string): Promise<void> {
+  private async sendReplicaDownAlert(taskId: number, subtaskId: string | number, title: string): Promise<void> {
     try {
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS finops_external_alerts (
+          id SERIAL PRIMARY KEY,
+          task_id INTEGER NOT NULL,
+          subtask_id INTEGER NOT NULL,
+          alert_key TEXT NOT NULL,
+          title TEXT,
+          created_at TIMESTAMP DEFAULT NOW(),
+          UNIQUE(task_id, subtask_id, alert_key)
+        )
+      `);
+
+      const reserve = await pool.query(
+        `INSERT INTO finops_external_alerts (task_id, subtask_id, alert_key, title)
+         VALUES ($1, $2, $3, $4)
+         ON CONFLICT (task_id, subtask_id, alert_key) DO NOTHING
+         RETURNING id`,
+        [taskId, Number(subtaskId), "replica_down_overdue", title],
+      );
+
+      if (reserve.rows.length === 0) {
+        return;
+      }
+
       const response = await fetch(
         "https://pulsealerts.mylapay.com/replica-down",
         {
