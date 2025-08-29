@@ -590,4 +590,89 @@ router.post("/daily-process-stats", async (req: Request, res: Response) => {
   }
 });
 
+// Store overdue reason for subtask status change
+router.post("/tasks/overdue-reason", async (req: Request, res: Response) => {
+  try {
+    await requireDatabase();
+
+    const { task_id, subtask_id, reason, created_by } = req.body;
+
+    // Validate required fields
+    if (!task_id || !subtask_id || !reason) {
+      return res.status(400).json({
+        error: "Missing required fields",
+        required: ["task_id", "subtask_id", "reason"],
+      });
+    }
+
+    const client = await pool.connect();
+
+    try {
+      await client.query("BEGIN");
+
+      // Create overdue reasons table if it doesn't exist
+      const createTableQuery = `
+        CREATE TABLE IF NOT EXISTS finops_overdue_reasons (
+          id SERIAL PRIMARY KEY,
+          task_id INTEGER REFERENCES finops_tasks(id),
+          subtask_id VARCHAR(255),
+          reason TEXT NOT NULL,
+          created_by INTEGER,
+          created_at TIMESTAMP DEFAULT NOW()
+        )
+      `;
+
+      await client.query(createTableQuery);
+
+      // Insert the overdue reason
+      const insertQuery = `
+        INSERT INTO finops_overdue_reasons (task_id, subtask_id, reason, created_by, created_at)
+        VALUES ($1, $2, $3, $4, NOW())
+        RETURNING *
+      `;
+
+      const result = await client.query(insertQuery, [
+        task_id,
+        subtask_id,
+        reason,
+        created_by || 1,
+      ]);
+
+      // Log activity
+      await client.query(
+        `
+        INSERT INTO finops_activity_log (task_id, subtask_id, action, user_name, details)
+        VALUES ($1, $2, $3, $4, $5)
+      `,
+        [
+          task_id,
+          subtask_id,
+          "overdue_reason_provided",
+          "User",
+          `Overdue reason provided: ${reason}`,
+        ],
+      );
+
+      await client.query("COMMIT");
+
+      res.status(201).json({
+        success: true,
+        overdue_reason: result.rows[0],
+        message: "Overdue reason stored successfully",
+      });
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    console.error("Error storing overdue reason:", error);
+    res.status(500).json({
+      error: "Failed to store overdue reason",
+      message: error.message,
+    });
+  }
+});
+
 export default router;
