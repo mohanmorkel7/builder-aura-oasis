@@ -23,25 +23,13 @@ export const formatToIST = (
 };
 
 /**
- * Formats a date to local timezone with time included
+ * Formats a date to IST timezone with time included
  */
 export const formatToISTDateTime = (
   date: string | Date,
   options: Intl.DateTimeFormatOptions = {},
 ): string => {
-  let dateObj: Date;
-
-  if (typeof date === "string") {
-    // Parse the date normally
-    dateObj = new Date(date);
-
-    // For all database timestamps (string format), add offset to match desired display time
-    // This ensures server timestamps show in desired timezone regardless of format
-    const offsetMs = 5.5 * 60 * 60 * 1000; // 5.5 hours in milliseconds
-    dateObj = new Date(dateObj.getTime() + offsetMs);
-  } else {
-    dateObj = date;
-  }
+  const dateObj = typeof date === "string" ? new Date(date) : date;
 
   // Ensure we have a valid date
   if (isNaN(dateObj.getTime())) {
@@ -50,6 +38,7 @@ export const formatToISTDateTime = (
 
   try {
     const formatter = new Intl.DateTimeFormat("en-IN", {
+      timeZone: IST_TIMEZONE,
       day: "numeric",
       month: "short",
       year: "numeric",
@@ -62,12 +51,13 @@ export const formatToISTDateTime = (
     return formatter.format(dateObj);
   } catch (error) {
     console.warn("Error formatting date:", error);
-    // Fallback formatting
-    const day = dateObj.getDate();
-    const month = dateObj.toLocaleString("en-IN", { month: "short" });
-    const year = dateObj.getFullYear();
-    let hours = dateObj.getHours();
-    const minutes = dateObj.getMinutes().toString().padStart(2, "0");
+    // Fallback formatting with IST conversion
+    const istDate = new Date(dateObj.toLocaleString("en-US", { timeZone: IST_TIMEZONE }));
+    const day = istDate.getDate();
+    const month = istDate.toLocaleString("en-IN", { month: "short" });
+    const year = istDate.getFullYear();
+    let hours = istDate.getHours();
+    const minutes = istDate.getMinutes().toString().padStart(2, "0");
     const ampm = hours >= 12 ? "pm" : "am";
     hours = hours % 12;
     hours = hours ? hours : 12;
@@ -95,6 +85,15 @@ export const formatToISTDateOnly = (date: string | Date): string => {
  */
 export const getCurrentISTTimestamp = (): string => {
   return new Date().toLocaleString("en-US", { timeZone: IST_TIMEZONE });
+};
+
+/**
+ * Gets current date in IST timezone (YYYY-MM-DD format)
+ */
+export const getCurrentISTDate = (): string => {
+  const now = new Date();
+  const istDate = new Date(now.toLocaleString("en-US", { timeZone: IST_TIMEZONE }));
+  return istDate.toISOString().split('T')[0];
 };
 
 /**
@@ -134,4 +133,21 @@ export const getRelativeTimeIST = (date: string | Date): string => {
   if (diffDays < 7) return `${diffDays} day${diffDays !== 1 ? "s" : ""} ago`;
 
   return formatToIST(dateObj);
+};
+
+/**
+ * Converts any date to IST timezone and returns as Date object
+ */
+export const convertToIST = (date: string | Date): Date => {
+  const dateObj = typeof date === "string" ? new Date(date) : date;
+  return new Date(dateObj.toLocaleString("en-US", { timeZone: IST_TIMEZONE }));
+};
+
+/**
+ * Formats date for API queries (YYYY-MM-DD in IST)
+ */
+export const formatDateForAPI = (date: Date | string): string => {
+  const dateObj = typeof date === "string" ? new Date(date) : date;
+  const istDate = convertToIST(dateObj);
+  return istDate.toISOString().split('T')[0];
 };
