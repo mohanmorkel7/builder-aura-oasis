@@ -84,8 +84,8 @@ class FinOpsAlertService {
    */
   private async processTaskAlerts(task: any): Promise<void> {
     for (const subtask of task.subtasks) {
-      // Only check SLA for active subtasks, skip completed and already overdue ones
-      if (subtask.status === 'in_progress' || subtask.status === 'pending') {
+      // Only check pending tasks for overdue status
+      if (subtask.status === 'pending') {
         await this.checkSubtaskSLA(task, subtask);
       }
     }
@@ -97,41 +97,34 @@ class FinOpsAlertService {
   private async checkSubtaskSLA(task: any, subtask: any): Promise<void> {
     const now = new Date();
 
-    // Only check SLA for tasks that have actually started
-    if (!subtask.started_at || subtask.status === 'pending') {
-      console.log(`Skipping SLA check for subtask ${subtask.id}: not started yet (status: ${subtask.status})`);
+    // Only check pending tasks for overdue status
+    if (subtask.status !== 'pending') {
       return;
     }
 
-    // Don't mark completed tasks as overdue
-    if (subtask.status === 'completed') {
-      return;
-    }
-
+    // Calculate due time based on task schedule (start_time)
+    // For pending tasks, we check against their scheduled start time
     let dueTime: Date;
 
-    // Calculate due time from actual start time
-    dueTime = new Date(subtask.started_at);
-    dueTime.setHours(dueTime.getHours() + (subtask.sla_hours || 0));
-    dueTime.setMinutes(dueTime.getMinutes() + (subtask.sla_minutes || 0));
+    if (subtask.start_time) {
+      // Parse start_time (format: "HH:MM:SS" or "HH:MM")
+      const today = new Date();
+      const [hours, minutes] = subtask.start_time.split(':').map(Number);
 
-    const timeDiff = dueTime.getTime() - now.getTime();
-    const minutesRemaining = Math.floor(timeDiff / (1000 * 60));
+      dueTime = new Date(today.getFullYear(), today.getMonth(), today.getDate(), hours, minutes || 0);
 
-    console.log(`SLA Check - Task: ${task.task_name}, Subtask: ${subtask.name}, Status: ${subtask.status}, Minutes Remaining: ${minutesRemaining}`);
+      // If the scheduled time has passed today, the task is overdue
+      if (now > dueTime) {
+        const minutesOverdue = Math.floor((now.getTime() - dueTime.getTime()) / (1000 * 60));
 
-    // Only mark as overdue if:
-    // 1. Task is in_progress (not pending)
-    // 2. Started time + SLA time has passed
-    // 3. More than 30 minutes overdue (buffer for processing delays)
-    if (minutesRemaining < -30 && subtask.status === 'in_progress') {
-      console.log(`Marking subtask ${subtask.id} as overdue: ${Math.abs(minutesRemaining)} minutes past SLA`);
-      await this.sendSLAOverdueAlert(task, subtask, Math.abs(minutesRemaining));
-      await this.updateSubtaskStatus(task.id, subtask.id, 'overdue');
-    }
-    // Check if within 15 minutes of SLA breach (only for in_progress tasks)
-    else if (minutesRemaining <= 15 && minutesRemaining > 0 && subtask.status === 'in_progress') {
-      await this.sendSLAWarningAlert(task, subtask, minutesRemaining);
+        console.log(`Pending task overdue - Task: ${task.task_name}, Subtask: ${subtask.name}, Overdue by: ${minutesOverdue} minutes`);
+
+        // Mark as overdue and send alert
+        await this.sendSLAOverdueAlert(task, subtask, minutesOverdue);
+        await this.updateSubtaskStatus(task.id, subtask.id, 'overdue');
+      }
+    } else {
+      console.log(`Subtask ${subtask.id} has no start_time defined, cannot check for overdue status`);
     }
   }
 
