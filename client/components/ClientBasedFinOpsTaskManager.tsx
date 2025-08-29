@@ -1569,54 +1569,6 @@ export default function ClientBasedFinOpsTaskManager() {
                 Create Task
               </Button>
             )}
-            <Button
-              variant="outline"
-              onClick={() => {
-                // Create a test task for today's date
-                const testTaskData = {
-                  task_name: "Test Daily Task",
-                  description: "Test task for date filtering",
-                  client_id: "1",
-                  client_name: "Test Client",
-                  assigned_to: "Test User",
-                  reporting_managers: [],
-                  escalation_managers: [],
-                  effective_from: dateFilter,
-                  duration: "daily",
-                  is_active: true,
-                  subtasks: [
-                    {
-                      id: "test-subtask-1",
-                      name: "Test Subtask",
-                      description: "Test subtask",
-                      start_time: "09:00",
-                      order_position: 0,
-                      status: "pending",
-                    },
-                  ],
-                  created_by: user?.id || 1,
-                };
-                createTaskMutation.mutate(testTaskData);
-              }}
-            >
-              Create Test Task
-            </Button>
-            <Button
-              variant="outline"
-              onClick={forceUpdateOverdueStatuses}
-              className="text-orange-600 border-orange-300 hover:bg-orange-50"
-            >
-              <AlertTriangle className="w-4 h-4 mr-1" />
-              Force Status Update
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => refetch()}
-              className="text-blue-600 border-blue-300 hover:bg-blue-50"
-            >
-              <RefreshCw className="w-4 h-4 mr-1" />
-              Refresh Data
-            </Button>
           </div>
         </div>
 
