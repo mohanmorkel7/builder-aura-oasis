@@ -909,27 +909,6 @@ export default function ClientBasedFinOpsTaskManager() {
     },
   });
 
-  const updateSubTaskMutation = useMutation({
-    mutationFn: ({
-      taskId,
-      subTaskId,
-      status,
-      userName,
-      delayReason,
-      delayNotes,
-    }: {
-      taskId: number;
-      subTaskId: string;
-      status: string;
-      userName?: string;
-      delayReason?: string;
-      delayNotes?: string;
-    }) => apiClient.updateFinOpsSubTask(taskId, subTaskId, status, userName),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["client-finops-tasks"] });
-    },
-  });
-
   // FinOps client mutations
   const createFinOpsClientMutation = useMutation({
     mutationFn: (clientData: any) => apiClient.createFinOpsClient(clientData),
