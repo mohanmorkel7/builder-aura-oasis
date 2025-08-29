@@ -596,6 +596,11 @@ export default function FinOpsNotifications() {
   const [overdueReason, setOverdueReason] = useState("");
   const [debugMode, setDebugMode] = useState(false);
 
+  // Date filter state - default to today
+  const [selectedDate, setSelectedDate] = useState(
+    new Date().toISOString().split('T')[0]
+  );
+
   // Fetch notifications from database (moved before useEffect to fix refetch dependency)
   const {
     data: dbNotifications,
@@ -603,11 +608,12 @@ export default function FinOpsNotifications() {
     refetch,
     error,
   } = useQuery({
-    queryKey: ["finops-notifications"],
+    queryKey: ["finops-notifications", selectedDate],
     queryFn: async () => {
       try {
-        console.log("🔍 Fetching FinOps notifications from API...");
-        const result = await apiClient.request("/notifications-production");
+        console.log("🔍 Fetching FinOps notifications from API for date:", selectedDate);
+        const url = selectedDate ? `/notifications-production?date=${selectedDate}` : "/notifications-production";
+        const result = await apiClient.request(url);
         console.log("✅ FinOps notifications API response:", result);
         return result;
       } catch (error) {
@@ -821,6 +827,13 @@ export default function FinOpsNotifications() {
       return false;
     if (filterStatus !== "all" && notification.status !== filterStatus)
       return false;
+
+    // Date filter - only show notifications from selected date
+    if (selectedDate) {
+      const notificationDate = new Date(notification.created_at).toISOString().split('T')[0];
+      if (notificationDate !== selectedDate) return false;
+    }
+
     return true;
   });
 
