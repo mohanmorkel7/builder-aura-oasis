@@ -135,7 +135,7 @@ const mockNotifications = [
 // Get notifications with filtering
 router.get("/", async (req: Request, res: Response) => {
   try {
-    const { user_id, type, read, limit = 50, offset = 0 } = req.query;
+    const { user_id, type, read, limit = 50, offset = 0, date } = req.query;
 
     if (await isDatabaseAvailable()) {
       let whereConditions = [];
