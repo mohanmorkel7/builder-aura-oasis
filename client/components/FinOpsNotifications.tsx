@@ -61,6 +61,7 @@ interface FinOpsNotification {
     | "escalation_alert" // 15+ mins overdue
     | "task_completed" // Task completed (moved to activity log)
     | "task_overdue" // Task overdue (moved to activity log)
+    | "overdue_reason_required" // Requires immediate overdue reason
     | "daily_reminder"
     | "task_pending"
     | "task_delayed";
@@ -102,6 +103,9 @@ const transformDbNotifications = (
 
     // Don't show daily reset notifications in notifications tab
     if (dbNotif.action === "daily_reset") return false;
+
+    // Always show overdue reason required notifications (high priority)
+    if (dbNotif.action === "overdue_reason_required") return true;
 
     return true;
   });
@@ -227,7 +231,10 @@ const transformDbNotifications = (
     // Determine notification type based on IST action types (with real-time SLA expiry check)
     let notificationType = "task_pending";
 
-    if (isExpiredSLA) {
+    if (dbNotif.action === "overdue_reason_required") {
+      // High priority overdue reason required
+      notificationType = "overdue_reason_required";
+    } else if (isExpiredSLA) {
       // SLA warning has expired, convert to overdue
       notificationType = "escalation_alert";
     } else if (dbNotif.action === "pre_start_notification") {
@@ -396,16 +403,19 @@ const transformDbNotifications = (
       reporting_managers: members.reporting_managers,
       escalation_managers: members.escalation_managers,
       priority:
-        notificationType === "escalation_alert" || isExpiredSLA
+        notificationType === "overdue_reason_required"
           ? "critical"
-          : notificationType === "sla_warning" || overdueMinutes
-            ? "high"
-            : notificationType === "pre_start_alert"
-              ? "medium"
-              : "low",
+          : notificationType === "escalation_alert" || isExpiredSLA
+            ? "critical"
+            : notificationType === "sla_warning" || overdueMinutes
+              ? "high"
+              : notificationType === "pre_start_alert"
+                ? "medium"
+                : "low",
       status: dbNotif.read ? "read" : "unread",
       created_at: dbNotif.created_at,
       action_required:
+        notificationType === "overdue_reason_required" ||
         notificationType === "sla_overdue" ||
         notificationType === "escalation" ||
         isExpiredSLA ||
@@ -1019,6 +1029,7 @@ export default function FinOpsNotifications() {
                   <SelectItem value="all">All Types</SelectItem>
                   <SelectItem value="sla_overdue">SLA Overdue</SelectItem>
                   <SelectItem value="sla_warning">SLA Warning</SelectItem>
+                  <SelectItem value="overdue_reason_required">Overdue Reason Required</SelectItem>
                   <SelectItem value="task_delayed">Task Delayed</SelectItem>
                   <SelectItem value="task_completed">Task Completed</SelectItem>
                   <SelectItem value="daily_reminder">Daily Reminder</SelectItem>
