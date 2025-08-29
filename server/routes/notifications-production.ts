@@ -297,6 +297,7 @@ router.get("/", async (req: Request, res: Response) => {
         LEFT JOIN finops_subtasks fs ON rn.subtask_id = fs.id
         LEFT JOIN finops_notification_read_status fnrs ON rn.id = fnrs.activity_log_id
         LEFT JOIN finops_notification_archived_status fnas ON rn.id = fnas.activity_log_id
+        LEFT JOIN finops_overdue_reasons for_reason ON (rn.task_id = for_reason.task_id AND rn.subtask_id = for_reason.subtask_id)
         WHERE rn.rn = 1
         AND fnas.activity_log_id IS NULL
         ORDER BY rn.timestamp DESC
