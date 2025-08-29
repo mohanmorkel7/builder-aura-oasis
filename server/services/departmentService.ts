@@ -180,9 +180,12 @@ export class DepartmentService {
 
       if (!userMapping) {
         console.warn(`❌ User ${ssoUser.mail} not found in department mapping`);
-        console.log(
-          `Available users in mapping: ${userDepartments.users.map((u) => u.email).join(", ")}`,
-        );
+        try {
+          const { users: allUsers } = this.readUserDepartments();
+          console.log(
+            `Available users in mapping: ${allUsers.map((u: any) => u.email).join(", ")}`,
+          );
+        } catch {}
         return null;
       }
 
@@ -322,8 +325,9 @@ export class DepartmentService {
   ): Promise<void> {
     try {
       console.log("Loading user departments from JSON...");
+      const { users: allUsersForCount } = this.readUserDepartments();
       console.log(
-        `Total users in JSON to process: ${userDepartments.users.length}`,
+        `Total users in JSON to process: ${allUsersForCount.length}`,
       );
       console.log(`Skip existing users: ${options.skipExistingUsers}`);
 
@@ -442,7 +446,8 @@ export class DepartmentService {
           `📊 Database sync summary: ${processedCount} new users, ${updatedCount} updated users, ${skippedCount} skipped users`,
         );
       } else {
-        console.log(`Loaded ${userDepartments.users.length} users from JSON`);
+        const { users: finalUsers } = this.readUserDepartments();
+        console.log(`Loaded ${finalUsers.length} users from JSON`);
       }
     } catch (error) {
       console.error("Error loading users from JSON:", error);
