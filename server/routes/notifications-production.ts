@@ -316,7 +316,7 @@ router.get("/", async (req: Request, res: Response) => {
         ${date ? `AND DATE(fal.timestamp) = DATE($1)` : ""}
       `;
 
-      const countsResult = await pool.query(countsQuery, date ? [date] : []);
+      const countsResult = await pool.query(countsQuery, date ? [date as string] : []);
       const total = parseInt(countsResult.rows[0].total);
       const unreadCount = parseInt(countsResult.rows[0].unread_count);
 
@@ -1780,7 +1780,7 @@ router.post("/test/create-overdue-now", async (req: Request, res: Response) => {
       const overdueTime = new Date(currentIST.getTime() - 60000); // 1 minute ago
       const overdueTimeStr = overdueTime.toTimeString().slice(0, 5); // HH:MM format
 
-      console.log(`��� Current IST: ${currentIST.toLocaleString("en-IN")}`);
+      console.log(`🕐 Current IST: ${currentIST.toLocaleString("en-IN")}`);
       console.log(
         `⏰ Setting task start time to: ${overdueTimeStr} (1 minute ago)`,
       );
