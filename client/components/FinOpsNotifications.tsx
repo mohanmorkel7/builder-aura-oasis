@@ -569,7 +569,7 @@ export default function FinOpsNotifications() {
   const [overdueReason, setOverdueReason] = useState("");
   const [debugMode, setDebugMode] = useState(false);
 
-  // Real-time timer for live time updates - synchronized to minute boundaries
+  // Real-time timer for live time updates and SLA monitoring
   React.useEffect(() => {
     // Initial update
     setCurrentTime(new Date());
@@ -579,22 +579,39 @@ export default function FinOpsNotifications() {
     const secondsUntilNextMinute = 60 - now.getSeconds();
 
     let timer: NodeJS.Timeout;
+    let slaTimer: NodeJS.Timeout;
 
     // First timeout to sync to minute boundary
     const syncTimeout = setTimeout(() => {
       setCurrentTime(new Date());
 
-      // Then set regular 30-second intervals
+      // Then set regular 30-second intervals for time updates
       timer = setInterval(() => {
         setCurrentTime(new Date());
       }, 30000); // Update every 30 seconds for better real-time responsiveness
+
+      // Set up SLA monitoring every minute to check for overdue tasks
+      slaTimer = setInterval(async () => {
+        try {
+          console.log("🔍 Triggering real-time SLA check...");
+          // Trigger SLA monitoring on the server
+          await apiClient.request("/notifications-production/auto-sync", {
+            method: "POST"
+          });
+          // Refresh notifications after SLA check
+          refetch();
+        } catch (error) {
+          console.log("SLA monitoring error (non-critical):", error);
+        }
+      }, 60000); // Check every minute
     }, secondsUntilNextMinute * 1000);
 
     return () => {
       clearTimeout(syncTimeout);
       if (timer) clearInterval(timer);
+      if (slaTimer) clearInterval(slaTimer);
     };
-  }, []);
+  }, [refetch]);
 
   // Fetch notifications from database
   const {
@@ -916,12 +933,28 @@ export default function FinOpsNotifications() {
 
   const getRelativeTime = (dateString: string) => {
     const date = new Date(dateString);
-    const istDate = convertToIST(date);
-    const nowIST = convertToIST(new Date());
-    const diffMs = nowIST.getTime() - istDate.getTime();
+
+    // Get current time in IST
+    const nowIST = new Date();
+    const istOffset = 5.5 * 60 * 60 * 1000; // IST is UTC+5:30
+
+    // Convert input date to IST
+    const dateUTC = new Date(date.toISOString());
+    const istDate = new Date(dateUTC.getTime() + istOffset);
+    const currentIST = new Date(nowIST.getTime() + istOffset);
+
+    const diffMs = currentIST.getTime() - istDate.getTime();
     const diffMinutes = Math.floor(diffMs / (1000 * 60));
 
-    // Real-time calculation like in task management with IST
+    console.log(`🕒 IST Time calculation:`, {
+      original: dateString,
+      dateUTC: dateUTC.toISOString(),
+      istDate: istDate.toISOString(),
+      currentIST: currentIST.toISOString(),
+      diffMinutes
+    });
+
+    // Real-time calculation in IST
     if (diffMinutes < 1) {
       return "Just now";
     } else if (diffMinutes < 60) {
