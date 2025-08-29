@@ -111,7 +111,7 @@ const transformDbNotifications = (
     return true;
   });
 
-  return activeNotifications.map((dbNotif) => {
+  return activeNotifications.map((dbNotif, index) => {
     // Initialize all variables at the beginning to avoid reference errors
     let realTimeDetails = dbNotif.details;
     let realTimeTitle = dbNotif.details;
