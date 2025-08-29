@@ -1,6 +1,32 @@
 import { pool } from "../database/connection";
 import * as nodemailer from "nodemailer";
 
+// IST timezone helper functions
+const IST_TIMEZONE = "Asia/Kolkata";
+
+const getCurrentISTTime = (): Date => {
+  return new Date(
+    new Date().toLocaleString("en-US", { timeZone: IST_TIMEZONE }),
+  );
+};
+
+const convertToIST = (date: Date | string): Date => {
+  const dateObj = typeof date === "string" ? new Date(date) : date;
+  return new Date(dateObj.toLocaleString("en-US", { timeZone: IST_TIMEZONE }));
+};
+
+const formatISTDateTime = (date: Date): string => {
+  return date.toLocaleString("en-IN", {
+    timeZone: IST_TIMEZONE,
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+};
+
 interface AlertConfig {
   taskId: number;
   subtaskId?: string;
@@ -58,7 +84,7 @@ class FinOpsAlertService {
     try {
       console.log("Checking for daily tasks to execute...");
 
-      const today = new Date().toISOString().split("T")[0];
+const today = new Date().toISOString().split("T")[0];
 
       const tasksToExecute = await pool.query(
         `
@@ -66,10 +92,10 @@ class FinOpsAlertService {
         WHERE is_active = true 
         AND duration = 'daily'
         AND effective_from <= $1
-        AND (last_run IS NULL OR DATE(last_run) < $1)
+        AND (last_run IS NULL OR DATE(last_run AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Kolkata') < $1)
         AND deleted_at IS NULL
       `,
-        [today],
+      [today],
       );
 
       for (const task of tasksToExecute.rows) {
@@ -89,7 +115,6 @@ class FinOpsAlertService {
    */
   private async processTaskAlerts(task: any): Promise<void> {
     for (const subtask of task.subtasks) {
-      // Only check pending tasks for overdue status
       if (subtask.status === "pending") {
         await this.checkSubtaskSLA(task, subtask);
       }
@@ -100,7 +125,7 @@ class FinOpsAlertService {
    * Check SLA for individual subtask and send alerts if needed
    */
   private async checkSubtaskSLA(task: any, subtask: any): Promise<void> {
-    const now = new Date();
+const now = new Date();
 
     // Only check pending tasks for overdue status
     if (subtask.status !== "pending") {
@@ -181,6 +206,7 @@ class FinOpsAlertService {
         })),
       ];
 
+      const currentTimeIST = formatISTDateTime(getCurrentISTTime());
       const subject = `⚠️ SLA Warning: ${task.task_name} - ${subtask.name}`;
       const message = `
         <h2>SLA Warning Alert</h2>
@@ -189,11 +215,12 @@ class FinOpsAlertService {
         <p><strong>Time Remaining:</strong> ${minutesRemaining} minutes</p>
         <p><strong>Current Status:</strong> ${subtask.status}</p>
         <p><strong>Assigned To:</strong> ${task.assigned_to}</p>
-        
+        <p><strong>Alert Time (IST):</strong> ${currentTimeIST}</p>
+
         <p>This subtask is approaching its SLA deadline. Please ensure timely completion to avoid escalation.</p>
-        
+
         <hr>
-        <p><small>This is an automated alert from the FinOps Task Management System.</small></p>
+        <p><small>This is an automated alert from the FinOps Task Management System (IST).</small></p>
       `;
 
       await this.sendEmailAlerts(recipients, subject, message);
@@ -250,6 +277,7 @@ class FinOpsAlertService {
         })),
       ];
 
+      const currentTimeIST = formatISTDateTime(getCurrentISTTime());
       const subject = `🚨 SLA OVERDUE: ${task.task_name} - ${subtask.name}`;
       const message = `
         <h2 style="color: #dc2626;">SLA OVERDUE ALERT</h2>
@@ -258,15 +286,16 @@ class FinOpsAlertService {
         <p><strong>Time Overdue:</strong> ${minutesOverdue} minutes</p>
         <p><strong>Current Status:</strong> ${subtask.status}</p>
         <p><strong>Assigned To:</strong> ${task.assigned_to}</p>
-        
+        <p><strong>Alert Time (IST):</strong> ${currentTimeIST}</p>
+
         <div style="background-color: #fef2f2; border: 1px solid #fecaca; padding: 15px; margin: 20px 0; border-radius: 4px;">
           <h3 style="color: #dc2626; margin-top: 0;">IMMEDIATE ACTION REQUIRED</h3>
           <p>This subtask has exceeded its SLA deadline and requires immediate escalation.</p>
           <p>Escalation managers have been notified.</p>
         </div>
-        
+
         <hr>
-        <p><small>This is an automated escalation alert from the FinOps Task Management System.</small></p>
+        <p><small>This is an automated escalation alert from the FinOps Task Management System (IST).</small></p>
       `;
 
       await this.sendEmailAlerts(recipients, subject, message);
@@ -449,6 +478,81 @@ class FinOpsAlertService {
       );
     } catch (error) {
       console.error("Error updating subtask status:", error);
+    }
+  }
+
+  /**
+   * Create an overdue reason request that requires immediate attention
+   */
+  private async createOverdueReasonRequest(
+    task: any,
+    subtask: any,
+    overdueMinutes: number,
+  ): Promise<void> {
+    try {
+      console.log(
+        `Creating overdue reason request for ${task.task_name} - ${subtask.name}`,
+      );
+
+      // Create a special notification type that requires overdue reason
+      await pool.query(
+        `
+        INSERT INTO finops_activity_log (action, task_id, subtask_id, user_name, details, timestamp)
+        VALUES ($1, $2, $3, $4, $5, NOW())
+      `,
+        [
+          "overdue_reason_required",
+          task.id,
+          subtask.id,
+          "System",
+          `OVERDUE REASON REQUIRED: ${task.task_name} - ${subtask.name} is overdue by ${overdueMinutes} minutes. Immediate explanation required.`,
+        ],
+      );
+
+      // Also create an entry in a dedicated overdue tracking table
+      const createTableQuery = `
+        CREATE TABLE IF NOT EXISTS finops_overdue_tracking (
+          id SERIAL PRIMARY KEY,
+          task_id INTEGER NOT NULL,
+          subtask_id INTEGER,
+          task_name VARCHAR(255),
+          subtask_name VARCHAR(255),
+          assigned_to VARCHAR(255),
+          overdue_minutes INTEGER DEFAULT 0,
+          reason_provided BOOLEAN DEFAULT FALSE,
+          reason_text TEXT,
+          overdue_detected_at TIMESTAMP DEFAULT NOW(),
+          reason_provided_at TIMESTAMP,
+          status VARCHAR(50) DEFAULT 'pending_reason',
+          created_at TIMESTAMP DEFAULT NOW()
+        )
+      `;
+
+      await pool.query(createTableQuery);
+
+      // Insert tracking record
+      await pool.query(
+        `
+        INSERT INTO finops_overdue_tracking
+        (task_id, subtask_id, task_name, subtask_name, assigned_to, overdue_minutes, status)
+        VALUES ($1, $2, $3, $4, $5, $6, 'pending_reason')
+        ON CONFLICT DO NOTHING
+      `,
+        [
+          task.id,
+          subtask.id,
+          task.task_name,
+          subtask.name,
+          task.assigned_to,
+          overdueMinutes,
+        ],
+      );
+
+      console.log(
+        `✅ Overdue reason request created for ${task.task_name} - ${subtask.name}`,
+      );
+    } catch (error) {
+      console.error("Error creating overdue reason request:", error);
     }
   }
 

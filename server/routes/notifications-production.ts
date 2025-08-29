@@ -1,6 +1,32 @@
 import { Router, Request, Response } from "express";
 import { pool } from "../database/connection";
 
+// IST timezone helper functions
+const IST_TIMEZONE = "Asia/Kolkata";
+
+const getCurrentISTTime = (): Date => {
+  return new Date(
+    new Date().toLocaleString("en-US", { timeZone: IST_TIMEZONE }),
+  );
+};
+
+const convertToIST = (date: Date | string): Date => {
+  const dateObj = typeof date === "string" ? new Date(date) : date;
+  return new Date(dateObj.toLocaleString("en-US", { timeZone: IST_TIMEZONE }));
+};
+
+const formatISTDateTime = (date: Date): string => {
+  return date.toLocaleString("en-IN", {
+    timeZone: IST_TIMEZONE,
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+};
+
 const router = Router();
 
 // Initialize notification status tables
@@ -46,7 +72,7 @@ async function isDatabaseAvailable() {
   }
 }
 
-// Mock notifications for fallback
+// Mock notifications for fallback (IST timezone)
 const mockNotifications = [
   {
     id: "1",
@@ -61,7 +87,9 @@ const mockNotifications = [
     entity_id: "1",
     priority: "high",
     read: false,
-    created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
+    created_at: new Date(
+      getCurrentISTTime().getTime() - 2 * 60 * 60 * 1000,
+    ).toISOString(), // 2 hours ago IST
     action_url: "/leads/1",
   },
   {
@@ -77,7 +105,9 @@ const mockNotifications = [
     entity_id: "2",
     priority: "medium",
     read: false,
-    created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
+    created_at: new Date(
+      getCurrentISTTime().getTime() - 24 * 60 * 60 * 1000,
+    ).toISOString(), // 1 day ago IST
     action_url: "/leads/2",
   },
   {
@@ -93,7 +123,9 @@ const mockNotifications = [
     entity_id: "3",
     priority: "low",
     read: true,
-    created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days ago
+    created_at: new Date(
+      getCurrentISTTime().getTime() - 5 * 24 * 60 * 60 * 1000,
+    ).toISOString(), // 5 days ago IST
     action_url: "/clients/3",
   },
 ];
@@ -103,14 +135,16 @@ const mockNotifications = [
 // Get notifications with filtering
 router.get("/", async (req: Request, res: Response) => {
   try {
-    const { user_id, type, read, limit = 50, offset = 0 } = req.query;
+    const { user_id, type, read, limit = 50, offset = 0, date } = req.query;
 
     if (await isDatabaseAvailable()) {
       let whereConditions = [];
       let params = [];
       let paramIndex = 1;
 
-      // Build dynamic WHERE clause
+      // Build dynamic WHERE clause and track date parameter index
+      let dateParamIndex = null;
+
       if (user_id) {
         whereConditions.push(`n.user_id = $${paramIndex++}`);
         params.push(parseInt(user_id as string));
@@ -126,14 +160,20 @@ router.get("/", async (req: Request, res: Response) => {
         params.push(read === "true");
       }
 
+      // Add date parameter if provided and track its index
+      if (date) {
+        dateParamIndex = paramIndex++;
+        params.push(date as string);
+      }
+
       const whereClause =
         whereConditions.length > 0
           ? `WHERE ${whereConditions.join(" AND ")}`
           : "";
 
-      // First run auto-sync to check for new SLA notifications
+      // First run auto-sync to check for new SLA notifications (IST-based)
       try {
-        const autoSyncQuery = `SELECT * FROM check_subtask_sla_notifications()`;
+        const autoSyncQuery = `SELECT * FROM check_subtask_sla_notifications_ist()`;
         const autoSyncResult = await pool.query(autoSyncQuery);
 
         for (const notification of autoSyncResult.rows) {
@@ -143,10 +183,33 @@ router.get("/", async (req: Request, res: Response) => {
             ON CONFLICT DO NOTHING
           `;
 
-          const action =
-            notification.notification_type === "sla_warning"
-              ? "sla_alert"
-              : "overdue_notification_sent";
+          // Map notification types to actions and mark as sent
+          let action;
+          switch (notification.notification_type) {
+            case "pre_start_alert":
+              action = "pre_start_notification";
+              break;
+            case "sla_warning":
+              action = "sla_alert";
+              break;
+            case "escalation_alert":
+              action = "escalation_notification";
+              break;
+            default:
+              action = "overdue_notification_sent";
+          }
+
+          // Mark notification as sent to prevent duplicates
+          try {
+            await pool.query(`SELECT mark_notification_sent($1, $2)`, [
+              notification.subtask_id,
+              notification.notification_type,
+            ]);
+          } catch (markError) {
+            console.log(
+              `Warning: Could not mark notification as sent: ${markError.message}`,
+            );
+          }
 
           await pool.query(insertQuery, [
             action,
@@ -187,6 +250,7 @@ router.get("/", async (req: Request, res: Response) => {
             ) as rn
           FROM finops_activity_log fal
           WHERE fal.timestamp >= NOW() - INTERVAL '7 days'
+            ${date ? `AND DATE(fal.timestamp) = DATE($${dateParamIndex})` : ""}
         )
         SELECT
           rn.id,
@@ -201,6 +265,7 @@ router.get("/", async (req: Request, res: Response) => {
           fs.name as subtask_name,
           fs.start_time,
           fs.auto_notify,
+          for_reason.reason as overdue_reason,
           CASE
             WHEN rn.action = 'delay_reported' THEN 'task_delayed'
             WHEN rn.action = 'overdue_notification_sent' THEN 'sla_overdue'
@@ -232,6 +297,7 @@ router.get("/", async (req: Request, res: Response) => {
         LEFT JOIN finops_subtasks fs ON rn.subtask_id = fs.id
         LEFT JOIN finops_notification_read_status fnrs ON rn.id = fnrs.activity_log_id
         LEFT JOIN finops_notification_archived_status fnas ON rn.id = fnas.activity_log_id
+        LEFT JOIN finops_overdue_reasons for_reason ON (rn.task_id = for_reason.task_id AND rn.subtask_id::text = for_reason.subtask_id)
         WHERE rn.rn = 1
         AND fnas.activity_log_id IS NULL
         ORDER BY rn.timestamp DESC
@@ -252,9 +318,13 @@ router.get("/", async (req: Request, res: Response) => {
         LEFT JOIN finops_notification_archived_status fnas ON fal.id = fnas.activity_log_id
         WHERE fal.timestamp >= NOW() - INTERVAL '7 days'
         AND fnas.activity_log_id IS NULL
+        ${date ? `AND DATE(fal.timestamp) = DATE($1)` : ""}
       `;
 
-      const countsResult = await pool.query(countsQuery);
+      const countsResult = await pool.query(
+        countsQuery,
+        date ? [date as string] : [],
+      );
       const total = parseInt(countsResult.rows[0].total);
       const unreadCount = parseInt(countsResult.rows[0].unread_count);
 
@@ -291,6 +361,15 @@ router.get("/", async (req: Request, res: Response) => {
         filteredNotifications = filteredNotifications.filter(
           (n) => n.read === (read === "true"),
         );
+      }
+
+      if (date) {
+        filteredNotifications = filteredNotifications.filter((n) => {
+          const notificationDate = new Date(n.timestamp || n.created_at)
+            .toISOString()
+            .split("T")[0];
+          return notificationDate === date;
+        });
       }
 
       const total = filteredNotifications.length;
@@ -805,6 +884,34 @@ router.post("/overdue-reason", async (req: Request, res: Response) => {
         created_at || new Date().toISOString(),
       ]);
 
+      // Also update the overdue tracking table if it exists
+      try {
+        const updateTrackingQuery = `
+          UPDATE finops_overdue_tracking
+          SET reason_provided = TRUE,
+              reason_text = $1,
+              reason_provided_at = NOW(),
+              status = 'reason_provided'
+          WHERE task_id = (
+            SELECT task_id FROM finops_activity_log WHERE id = $2
+          )
+          AND reason_provided = FALSE
+        `;
+
+        await pool.query(updateTrackingQuery, [
+          overdue_reason,
+          notification_id,
+        ]);
+        console.log(
+          `✅ Updated overdue tracking for notification ${notification_id}`,
+        );
+      } catch (trackingError) {
+        console.log(
+          "Note: Could not update tracking table:",
+          trackingError.message,
+        );
+      }
+
       res.status(201).json({
         message: "Overdue reason stored successfully",
         data: result.rows[0],
@@ -1068,6 +1175,93 @@ router.post(
       console.error("Error creating PaySwiff overdue notification:", error);
       res.status(500).json({
         error: "Failed to create PaySwiff overdue notification",
+        message: error.message,
+      });
+    }
+  },
+);
+
+// Create notification with exact user-reported values for debugging
+router.post(
+  "/test/create-user-reported-values",
+  async (req: Request, res: Response) => {
+    try {
+      if (await isDatabaseAvailable()) {
+        console.log("Creating notification with exact user-reported values...");
+
+        const query = `
+        INSERT INTO finops_activity_log (action, task_id, subtask_id, user_name, details, timestamp)
+        VALUES ($1, $2, $3, $4, $5, $6)
+        RETURNING *
+      `;
+
+        // Create with exact timestamp user mentioned: "2025-08-29T01:07:55.113Z"
+        const userTimestamp = "2025-08-29T01:07:55.113Z";
+
+        const result = await pool.query(query, [
+          "updated",
+          4,
+          4,
+          "User", // This should map to assigned_to
+          "Task updated", // This should be the title
+          userTimestamp,
+        ]);
+
+        // Now test the query that the main endpoint uses to see what it returns
+        const testQuery = `
+        SELECT
+          fal.id,
+          fal.task_id,
+          fal.subtask_id,
+          fal.action,
+          fal.user_name,
+          fal.details,
+          fal.timestamp as created_at,
+          ft.task_name,
+          ft.client_name,
+          fs.name as subtask_name,
+          fs.start_time,
+          fs.auto_notify,
+          'task_pending' as type,
+          'medium' as priority,
+          false as read
+        FROM finops_activity_log fal
+        LEFT JOIN finops_tasks ft ON fal.task_id = ft.id
+        LEFT JOIN finops_subtasks fs ON fal.subtask_id = fs.id
+        WHERE fal.id = $1
+      `;
+
+        const testResult = await pool.query(testQuery, [result.rows[0].id]);
+
+        res.json({
+          message: "Test notification created with user-reported values!",
+          inserted_data: result.rows[0],
+          query_result: testResult.rows[0],
+          expected_mapping: {
+            priority: "medium (should be preserved)",
+            user_name: "User (should map to assigned_to)",
+            created_at: userTimestamp,
+            details: "Task updated (should be clean title)",
+          },
+          debug_info: {
+            api_priority: testResult.rows[0]?.priority,
+            api_user_name: testResult.rows[0]?.user_name,
+            api_created_at: testResult.rows[0]?.created_at,
+            api_details: testResult.rows[0]?.details,
+          },
+          timestamp: new Date().toISOString(),
+        });
+      } else {
+        res.json({
+          message:
+            "Database unavailable - would create test notification in production",
+          timestamp: new Date().toISOString(),
+        });
+      }
+    } catch (error) {
+      console.error("Error creating test notification:", error);
+      res.status(500).json({
+        error: "Failed to create test notification",
         message: error.message,
       });
     }
@@ -1403,20 +1597,128 @@ router.post("/setup-auto-sla", async (req: Request, res: Response) => {
   }
 });
 
-// Auto-sync endpoint to check and create SLA notifications
+// Auto-sync endpoint for real-time SLA monitoring (called every 30 seconds)
 router.post("/auto-sync", async (req: Request, res: Response) => {
   try {
     if (await isDatabaseAvailable()) {
-      console.log("Running automated SLA sync...");
+      console.log("🔄 Auto-sync SLA check triggered...");
 
-      // Get notifications that need to be created
-      const checkQuery = `SELECT * FROM check_subtask_sla_notifications()`;
+      // Run the IST SLA notification function
+      const slaCheckQuery = `SELECT * FROM check_subtask_sla_notifications_ist()`;
+      const slaResult = await pool.query(slaCheckQuery);
+
+      console.log(
+        `📊 SLA check found ${slaResult.rows.length} notifications to create`,
+      );
+
+      let createdNotifications = 0;
+
+      // Process each notification found by the SLA check
+      for (const notification of slaResult.rows) {
+        try {
+          // Insert into activity log
+          const insertQuery = `
+            INSERT INTO finops_activity_log (
+              action, task_id, subtask_id, user_name, details, timestamp
+            ) VALUES ($1, $2, $3, $4, $5, NOW())
+            ON CONFLICT DO NOTHING
+            RETURNING id
+          `;
+
+          // Map notification types to actions
+          let action;
+          switch (notification.notification_type) {
+            case "pre_start_alert":
+              action = "pre_start_notification";
+              break;
+            case "sla_warning":
+              action = "sla_alert";
+              break;
+            case "escalation_alert":
+              action = "escalation_notification";
+              break;
+            default:
+              action = "overdue_notification_sent";
+          }
+
+          const insertResult = await pool.query(insertQuery, [
+            action,
+            notification.task_id,
+            notification.subtask_id,
+            "System",
+            notification.message,
+          ]);
+
+          if (insertResult.rows.length > 0) {
+            createdNotifications++;
+
+            // Mark notification as sent to prevent duplicates
+            await pool.query(`SELECT mark_notification_sent($1, $2)`, [
+              notification.subtask_id,
+              notification.notification_type,
+            ]);
+
+            console.log(
+              `✅ Created ${notification.notification_type} notification for task ${notification.task_id}`,
+            );
+          }
+        } catch (notificationError) {
+          console.error(
+            `❌ Failed to create notification: ${notificationError.message}`,
+          );
+        }
+      }
+
+      res.json({
+        success: true,
+        message: "Auto-sync SLA check completed",
+        notifications_found: slaResult.rows.length,
+        notifications_created: createdNotifications,
+        timestamp: new Date().toISOString(),
+      });
+    } else {
+      console.log("⚠️ Auto-sync skipped: Database unavailable");
+      res.status(503).json({
+        success: false,
+        message:
+          "Database unavailable - auto-sync will retry when database is available",
+        timestamp: new Date().toISOString(),
+        next_retry_in: "30 seconds",
+        fallback_mode: "mock_data_active",
+      });
+    }
+  } catch (error) {
+    console.error("❌ Auto-sync error:", error);
+    res.status(500).json({
+      success: false,
+      error: "Auto-sync failed",
+      message: error.message,
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
+// Manual SLA trigger endpoint for immediate testing
+router.post("/trigger-sla-check", async (req: Request, res: Response) => {
+  try {
+    if (await isDatabaseAvailable()) {
+      console.log("🚨 Manual SLA check triggered...");
+
+      // Import and use the alert service directly
+      const { default: finopsAlertService } = await import(
+        "../services/finopsAlertService"
+      );
+
+      // Run SLA checks
+      await finopsAlertService.checkSLAAlerts();
+
+      // Also run auto-sync to create notifications
+      const checkQuery = `SELECT * FROM check_subtask_sla_notifications_ist()`;
       const checkResult = await pool.query(checkQuery);
 
       const createdNotifications = [];
 
       for (const notification of checkResult.rows) {
-        // Create activity log entry for this notification
         const insertQuery = `
           INSERT INTO finops_activity_log (action, task_id, subtask_id, user_name, details, timestamp)
           VALUES ($1, $2, $3, $4, $5, NOW())
@@ -1444,28 +1746,230 @@ router.post("/auto-sync", async (req: Request, res: Response) => {
           assigned_to: notification.assigned_to,
           time_diff_minutes: notification.time_diff_minutes,
         });
-
-        console.log(
-          `✅ Created ${notification.notification_type} for ${notification.task_name} - ${notification.subtask_name}`,
-        );
       }
 
       res.json({
-        message: "Automated SLA sync completed",
+        message: "Manual SLA check completed successfully",
         notifications_created: createdNotifications.length,
         notifications: createdNotifications,
         timestamp: new Date().toISOString(),
+        ist_time: new Date().toLocaleString("en-IN", {
+          timeZone: "Asia/Kolkata",
+        }),
       });
     } else {
       res.json({
-        message: "Database unavailable - cannot perform auto-sync",
+        message: "Database unavailable - cannot perform SLA check",
         timestamp: new Date().toISOString(),
       });
     }
   } catch (error) {
-    console.error("Auto-sync error:", error);
+    console.error("Manual SLA check error:", error);
     res.status(500).json({
-      error: "Auto-sync failed",
+      error: "Manual SLA check failed",
+      message: error.message,
+    });
+  }
+});
+
+// Create a task that is overdue RIGHT NOW for real-time testing
+router.post("/test/create-overdue-now", async (req: Request, res: Response) => {
+  try {
+    if (await isDatabaseAvailable()) {
+      console.log("Creating task that is overdue right now in IST...");
+
+      // Get current IST time
+      const nowIST = new Date().toLocaleString("en-US", {
+        timeZone: "Asia/Kolkata",
+      });
+      const currentIST = new Date(nowIST);
+
+      // Create a time that was 1 minute ago in IST (so it's already overdue)
+      const overdueTime = new Date(currentIST.getTime() - 60000); // 1 minute ago
+      const overdueTimeStr = overdueTime.toTimeString().slice(0, 5); // HH:MM format
+
+      console.log(`🕐 Current IST: ${currentIST.toLocaleString("en-IN")}`);
+      console.log(
+        `⏰ Setting task start time to: ${overdueTimeStr} (1 minute ago)`,
+      );
+
+      // Create/update test task
+      const taskQuery = `
+        INSERT INTO finops_tasks (id, task_name, assigned_to, reporting_managers, escalation_managers, effective_from, duration, is_active, created_by, status, client_name)
+        VALUES (98, 'REAL-TIME OVERDUE TEST', 'Test User Real Time', '["Test Manager"]'::jsonb, '["Test Escalation"]'::jsonb, CURRENT_DATE, 'daily', true, 1, 'in_progress', 'Real Time Test Client')
+        ON CONFLICT (id) DO UPDATE SET
+          task_name = EXCLUDED.task_name,
+          assigned_to = EXCLUDED.assigned_to,
+          status = 'in_progress',
+          client_name = EXCLUDED.client_name
+      `;
+
+      await pool.query(taskQuery);
+
+      // Create/update test subtask with start_time that's already passed
+      const subtaskQuery = `
+        INSERT INTO finops_subtasks (id, task_id, name, description, start_time, sla_hours, sla_minutes, status, assigned_to, auto_notify, order_position)
+        VALUES (98, 98, 'Real Time Test Subtask', 'This should be overdue immediately', $1::TIME, 0, 1, 'pending', 'Test User Real Time', true, 1)
+        ON CONFLICT (id) DO UPDATE SET
+          start_time = EXCLUDED.start_time,
+          status = 'pending',
+          assigned_to = EXCLUDED.assigned_to,
+          auto_notify = true
+      `;
+
+      await pool.query(subtaskQuery, [overdueTimeStr]);
+
+      res.json({
+        message: "Real-time overdue test task created successfully!",
+        instructions: [
+          "1. This task has start_time set to 1 minute ago in IST",
+          "2. It should be detected as overdue immediately",
+          "3. Trigger manual SLA check using: POST /api/notifications-production/trigger-sla-check",
+          "4. Watch FinOps Notifications for real-time updates",
+          "5. The system should automatically mark it as overdue and create notifications",
+        ],
+        task_details: {
+          task_id: 98,
+          task_name: "REAL-TIME OVERDUE TEST",
+          assigned_to: "Test User Real Time",
+          start_time_ist: overdueTimeStr,
+          current_ist: currentIST.toLocaleString("en-IN"),
+          should_be_overdue_by: "1 minute",
+        },
+        next_step:
+          "Call POST /api/notifications-production/trigger-sla-check to test",
+        timestamp: new Date().toISOString(),
+      });
+    } else {
+      res.json({
+        message:
+          "Database unavailable - would create real-time overdue task in production",
+        timestamp: new Date().toISOString(),
+      });
+    }
+  } catch (error) {
+    console.error("Error creating real-time overdue task:", error);
+    res.status(500).json({
+      error: "Failed to create real-time overdue task",
+      message: error.message,
+    });
+  }
+});
+
+// Create immediate overdue notification for testing the new system
+router.post(
+  "/test/create-immediate-overdue",
+  async (req: Request, res: Response) => {
+    try {
+      if (await isDatabaseAvailable()) {
+        console.log("Creating immediate overdue notification for testing...");
+
+        // Ensure we have a test task
+        const taskQuery = `
+        INSERT INTO finops_tasks (id, task_name, assigned_to, reporting_managers, escalation_managers, effective_from, duration, is_active, created_by, status)
+        VALUES (99, 'TEST OVERDUE TASK', 'Test User', '["Test Manager"]'::jsonb, '["Test Escalation"]'::jsonb, CURRENT_DATE, 'daily', true, 1, 'overdue')
+        ON CONFLICT (id) DO UPDATE SET
+          task_name = EXCLUDED.task_name,
+          assigned_to = EXCLUDED.assigned_to,
+          status = 'overdue'
+      `;
+
+        await pool.query(taskQuery);
+
+        // Create the overdue reason required notification
+        const query = `
+        INSERT INTO finops_activity_log (action, task_id, subtask_id, user_name, details, timestamp)
+        VALUES ($1, $2, $3, $4, $5, NOW())
+        RETURNING *
+      `;
+
+        const result = await pool.query(query, [
+          "overdue_reason_required",
+          99,
+          99,
+          "System",
+          "OVERDUE REASON REQUIRED: TEST OVERDUE TASK - Test Subtask is overdue by 0 minutes. Immediate explanation required.",
+        ]);
+
+        // Create overdue tracking entry
+        const trackingQuery = `
+        INSERT INTO finops_overdue_tracking
+        (task_id, subtask_id, task_name, subtask_name, assigned_to, overdue_minutes, status)
+        VALUES ($1, $2, $3, $4, $5, $6, 'pending_reason')
+        ON CONFLICT DO NOTHING
+      `;
+
+        await pool.query(trackingQuery, [
+          99,
+          99,
+          "TEST OVERDUE TASK",
+          "Test Subtask",
+          "Test User",
+          0,
+        ]);
+
+        res.json({
+          message: "Immediate overdue notification created successfully!",
+          notification: result.rows[0],
+          description:
+            "This notification will auto-open the overdue reason dialog",
+          instructions: [
+            "1. Check the FinOps Notifications page",
+            "2. The overdue reason dialog should auto-open",
+            "3. The notification should have critical priority and pulse animation",
+            "4. Provide an explanation to test the full workflow",
+          ],
+          test_scenario: "Immediate overdue (0 minutes) - requires explanation",
+          timestamp: new Date().toISOString(),
+        });
+      } else {
+        res.json({
+          message:
+            "Database unavailable - would create immediate overdue notification in production",
+          timestamp: new Date().toISOString(),
+        });
+      }
+    } catch (error) {
+      console.error("Error creating immediate overdue notification:", error);
+      res.status(500).json({
+        error: "Failed to create immediate overdue notification",
+        message: error.message,
+      });
+    }
+  },
+);
+
+// Debug IST timezone calculations
+router.get("/debug/ist-time", async (req: Request, res: Response) => {
+  try {
+    const now = new Date();
+    const istTime = new Date().toLocaleString("en-US", {
+      timeZone: "Asia/Kolkata",
+    });
+    const istDate = new Date(istTime);
+
+    res.json({
+      message: "IST Timezone Debug Information",
+      server_utc_time: now.toISOString(),
+      server_ist_time: istTime,
+      ist_date_object: istDate.toISOString(),
+      ist_formatted: istDate.toLocaleString("en-IN"),
+      offset_hours: 5.5,
+      timezone: "Asia/Kolkata",
+      calculations: {
+        manual_ist_offset: new Date(
+          now.getTime() + 5.5 * 60 * 60 * 1000,
+        ).toISOString(),
+        locale_based_ist: now.toLocaleString("en-IN", {
+          timeZone: "Asia/Kolkata",
+        }),
+      },
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error("IST debug error:", error);
+    res.status(500).json({
+      error: "IST debug failed",
       message: error.message,
     });
   }
@@ -1529,11 +2033,13 @@ router.get("/test/user-query", async (req: Request, res: Response) => {
           ft.client_name,
           fs.name as subtask_name,
           CASE
+            WHEN fal.action = 'overdue_reason_required' THEN 'overdue_reason_required'
             WHEN fal.action = 'delay_reported' THEN 'task_delayed'
             WHEN fal.action = 'overdue_notification_sent' THEN 'sla_overdue'
             WHEN fal.action = 'completion_notification_sent' THEN 'task_completed'
             WHEN fal.action = 'sla_alert' THEN 'sla_warning'
             WHEN fal.action = 'escalation_required' THEN 'escalation'
+            WHEN LOWER(fal.details) LIKE '%overdue reason required%' THEN 'overdue_reason_required'
             WHEN LOWER(fal.details) LIKE '%overdue%' THEN 'sla_overdue'
             WHEN fal.action IN ('status_changed', 'task_status_changed') AND LOWER(fal.details) LIKE '%overdue%' THEN 'sla_overdue'
             WHEN fal.action IN ('status_changed', 'task_status_changed') AND LOWER(fal.details) LIKE '%completed%' THEN 'task_completed'
@@ -1544,6 +2050,7 @@ router.get("/test/user-query", async (req: Request, res: Response) => {
             ELSE 'daily_reminder'
           END as type,
           CASE
+            WHEN fal.action = 'overdue_reason_required' OR LOWER(fal.details) LIKE '%overdue reason required%' THEN 'critical'
             WHEN fal.action = 'delay_reported' OR fal.action = 'overdue_notification_sent' OR LOWER(fal.details) LIKE '%overdue%' THEN 'critical'
             WHEN fal.action = 'completion_notification_sent' THEN 'low'
             WHEN fal.action = 'sla_alert' OR LOWER(fal.details) LIKE '%starting in%' OR LOWER(fal.details) LIKE '%sla warning%' OR LOWER(fal.details) LIKE '%min remaining%' THEN 'high'
@@ -1870,7 +2377,7 @@ router.post("/enable-auto-sync", async (req: Request, res: Response) => {
           console.log("🔄 Running automated SLA sync...");
 
           if (await isDatabaseAvailable()) {
-            const checkQuery = `SELECT * FROM check_subtask_sla_notifications()`;
+            const checkQuery = `SELECT * FROM check_subtask_sla_notifications_ist()`;
             const checkResult = await pool.query(checkQuery);
 
             for (const notification of checkResult.rows) {

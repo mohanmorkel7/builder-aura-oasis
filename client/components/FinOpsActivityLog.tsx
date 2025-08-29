@@ -45,6 +45,13 @@ import {
   startOfDay,
   endOfDay,
 } from "date-fns";
+import {
+  formatToISTDateTime,
+  getRelativeTimeIST,
+  convertToIST,
+  formatDateForAPI,
+  getCurrentISTDate,
+} from "@/lib/dateUtils";
 
 interface ActivityLogEntry {
   id: string;
@@ -75,6 +82,7 @@ export default function FinOpsActivityLog() {
     action: "all",
     days: 7,
     search: "",
+    date_filter: getCurrentISTDate(), // Default to today in IST
   });
   const [currentTime, setCurrentTime] = useState(new Date());
 
@@ -98,7 +106,11 @@ export default function FinOpsActivityLog() {
   }
 
   // Fetch activity logs
-  const { data: activityData, isLoading } = useQuery({
+  const {
+    data: activityData,
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ["activity-logs", filters],
     queryFn: async () => {
       try {
@@ -108,13 +120,24 @@ export default function FinOpsActivityLog() {
         if (filters.action !== "all") params.append("action", filters.action);
         params.append("limit", "50");
 
-        const startDate = new Date(
-          Date.now() - filters.days * 24 * 60 * 60 * 1000,
-        ).toISOString();
-        params.append("start_date", startDate);
+        // Use IST date for filtering
+        if (filters.date_filter) {
+          // Convert selected date to IST and use for filtering
+          const selectedDate = new Date(filters.date_filter);
+          const startOfDayIST = formatDateForAPI(startOfDay(selectedDate));
+          const endOfDayIST = formatDateForAPI(endOfDay(selectedDate));
+          params.append("start_date", startOfDayIST);
+          params.append("end_date", endOfDayIST);
+        } else {
+          // Fallback to days filter
+          const startDate = new Date(
+            Date.now() - filters.days * 24 * 60 * 60 * 1000,
+          );
+          params.append("start_date", formatDateForAPI(startDate));
+        }
 
         const url = `/activity-production?${params.toString()}`;
-        console.log("Activity API request URL:", url);
+        console.log("Activity API request URL (IST):", url);
 
         return await apiClient.request(url);
       } catch (error) {
@@ -213,7 +236,7 @@ export default function FinOpsActivityLog() {
   const exportActivityLog = () => {
     const csvContent = [
       [
-        "Timestamp",
+        "Timestamp (IST)",
         "Action",
         "Entity Type",
         "Entity Name",
@@ -222,7 +245,14 @@ export default function FinOpsActivityLog() {
         "Details",
       ],
       ...filteredLogs.map((log: ActivityLogEntry) => [
-        format(new Date(log.timestamp), "yyyy-MM-dd HH:mm:ss"),
+        formatToISTDateTime(log.timestamp, {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        }),
         log.action,
         log.entity_type,
         log.entity_name,
@@ -238,7 +268,7 @@ export default function FinOpsActivityLog() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `finops-activity-log-${format(new Date(), "yyyy-MM-dd")}.csv`;
+    a.download = `finops-activity-log-ist-${formatDateForAPI(new Date())}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -321,25 +351,52 @@ export default function FinOpsActivityLog() {
               </Select>
             </div>
 
-            {/* Time Range Filter */}
+            {/* Date Filter */}
             <div>
-              <Label htmlFor="days">Time Range</Label>
-              <Select
-                value={filters.days.toString()}
-                onValueChange={(value) =>
-                  setFilters((prev) => ({ ...prev, days: parseInt(value) }))
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1">Last 24 hours</SelectItem>
-                  <SelectItem value="7">Last 7 days</SelectItem>
-                  <SelectItem value="30">Last 30 days</SelectItem>
-                  <SelectItem value="90">Last 90 days</SelectItem>
-                </SelectContent>
-              </Select>
+              <Label htmlFor="date_filter">Filter by Date (IST)</Label>
+              <div className="flex gap-2">
+                <Input
+                  id="date_filter"
+                  type="date"
+                  value={filters.date_filter}
+                  onChange={(e) =>
+                    setFilters((prev) => ({
+                      ...prev,
+                      date_filter: e.target.value,
+                    }))
+                  }
+                  max={getCurrentISTDate()}
+                  className="flex-1"
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    setFilters((prev) => ({
+                      ...prev,
+                      date_filter: getCurrentISTDate(),
+                    }))
+                  }
+                  className="whitespace-nowrap"
+                >
+                  Today
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const yesterday = new Date();
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    setFilters((prev) => ({
+                      ...prev,
+                      date_filter: formatDateForAPI(yesterday),
+                    }));
+                  }}
+                  className="whitespace-nowrap"
+                >
+                  Yesterday
+                </Button>
+              </div>
             </div>
 
             {/* Search Filter */}
@@ -368,9 +425,34 @@ export default function FinOpsActivityLog() {
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               <Activity className="w-5 h-5" />
-              Recent Activity
+              Activity Log
+              {filters.date_filter && (
+                <span className="text-sm font-normal text-gray-600">
+                  (
+                  {formatToISTDateTime(new Date(filters.date_filter), {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                  )
+                </span>
+              )}
             </CardTitle>
-            <Badge variant="secondary">{filteredLogs.length} activities</Badge>
+            <div className="flex items-center gap-2">
+              <Badge variant="secondary">
+                {filteredLogs.length} activities
+              </Badge>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => refetch()}
+                disabled={isLoading}
+              >
+                <RefreshCw
+                  className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`}
+                />
+              </Button>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
@@ -447,10 +529,13 @@ export default function FinOpsActivityLog() {
                             <div className="flex items-center gap-1">
                               <Calendar className="w-3 h-3" />
                               <span>
-                                {format(
-                                  new Date(log.timestamp),
-                                  "MMM d, h:mm a",
-                                )}
+                                {formatToISTDateTime(log.timestamp, {
+                                  month: "short",
+                                  day: "numeric",
+                                  hour: "numeric",
+                                  minute: "2-digit",
+                                  hour12: true,
+                                })}
                               </span>
                             </div>
                           </div>

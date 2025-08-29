@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Dialog,
@@ -47,17 +48,24 @@ import {
   Shield,
 } from "lucide-react";
 import { format, formatDistanceToNow, isToday, isYesterday } from "date-fns";
+import {
+  formatToISTDateTime,
+  getRelativeTimeIST,
+  convertToIST,
+} from "@/lib/dateUtils";
 
 interface FinOpsNotification {
   id: string;
   type:
-    | "sla_warning"
-    | "sla_overdue"
-    | "task_delayed"
-    | "task_completed"
-    | "task_pending"
+    | "pre_start_alert" // 15 mins before start time
+    | "sla_warning" // Task missed start time
+    | "escalation_alert" // 15+ mins overdue
+    | "task_completed" // Task completed (moved to activity log)
+    | "task_overdue" // Task overdue (moved to activity log)
+    | "overdue_reason_required" // Requires immediate overdue reason
     | "daily_reminder"
-    | "escalation";
+    | "task_pending"
+    | "task_delayed";
   title: string;
   message: string;
   task_name: string;
@@ -74,6 +82,8 @@ interface FinOpsNotification {
   sla_remaining?: string;
   overdue_minutes?: number;
   members_list?: string[];
+  scheduled_time_ist?: string; // IST time when task should start
+  time_diff_minutes?: number; // Minutes until/since start time
 }
 
 // Mock notifications data
@@ -84,7 +94,24 @@ const transformDbNotifications = (
 ): FinOpsNotification[] => {
   console.log("🔄 Transform input:", dbNotifications.slice(0, 2)); // Log first 2 items for debugging
 
-  return dbNotifications.map((dbNotif) => {
+  // Filter out completed and overdue tasks from notifications (these go to activity log only)
+  const activeNotifications = dbNotifications.filter((dbNotif) => {
+    // Don't show completed tasks in notifications tab
+    if (dbNotif.action === "task_completed") return false;
+
+    // Don't show overdue tasks in notifications tab (they go to activity log)
+    if (dbNotif.action === "task_overdue") return false;
+
+    // Don't show daily reset notifications in notifications tab
+    if (dbNotif.action === "daily_reset") return false;
+
+    // Always show overdue reason required notifications (high priority)
+    if (dbNotif.action === "overdue_reason_required") return true;
+
+    return true;
+  });
+
+  return activeNotifications.map((dbNotif) => {
     // Initialize all variables at the beginning to avoid reference errors
     let realTimeDetails = dbNotif.details;
     let realTimeTitle = dbNotif.details;
@@ -92,11 +119,26 @@ const transformDbNotifications = (
     let isExpiredSLA = false;
     let overdueMinutesFromSLA = 0;
 
-    // Extract overdue minutes from details if present and calculate real-time overdue
+    // Extract timing information from details
     const overdueMatch =
       dbNotif.details?.match(/overdue by (\d+) min/i) ||
-      dbNotif.details?.match(/overdue by (\d+) minutes?/i);
+      dbNotif.details?.match(/overdue by (\d+) minutes?/i) ||
+      dbNotif.details?.match(/(\d+) minutes late/i);
     let overdueMinutes = overdueMatch ? parseInt(overdueMatch[1]) : undefined;
+
+    // Extract IST time information
+    const istTimeMatch = dbNotif.details?.match(
+      /(\d{1,2}:\d{2}(?::\d{2})?) IST/i,
+    );
+    const istTime = istTimeMatch ? istTimeMatch[1] : undefined;
+
+    // Extract time remaining information
+    const timeRemainingMatch = dbNotif.details?.match(
+      /starts in (\d+) minutes?/i,
+    );
+    const timeRemaining = timeRemainingMatch
+      ? parseInt(timeRemainingMatch[1])
+      : undefined;
 
     // For existing overdue notifications, calculate current overdue time
     if (
@@ -187,34 +229,59 @@ const transformDbNotifications = (
       }
     }
 
-    // Determine notification type based on action and details (with real-time SLA expiry check)
-    let notificationType = "daily_reminder";
-    if (isExpiredSLA) {
-      // SLA warning has expired, convert to overdue
-      notificationType = "sla_overdue";
-    } else if (
-      dbNotif.action === "overdue_notification_sent" ||
-      dbNotif.details?.toLowerCase().includes("overdue") ||
-      (dbNotif.action === "task_status_changed" &&
-        dbNotif.details?.toLowerCase().includes("overdue"))
-    ) {
-      notificationType = "sla_overdue";
-    } else if (
-      dbNotif.action === "sla_alert" ||
-      dbNotif.action === "sla_warning" ||
-      dbNotif.details?.includes("starting in") ||
-      dbNotif.details?.includes("sla warning") ||
-      dbNotif.details?.includes("min remaining")
-    ) {
-      notificationType = "sla_warning";
-    } else if (dbNotif.action === "escalation_required") {
-      notificationType = "escalation";
-    } else if (
-      (dbNotif.details?.toLowerCase().includes("pending") &&
-        dbNotif.details?.toLowerCase().includes("need to start")) ||
-      dbNotif.details?.toLowerCase().includes("pending status")
-    ) {
-      notificationType = "task_pending";
+    // Use API-provided type if available, otherwise determine from action types
+    let notificationType = dbNotif.type || "task_pending"; // Respect API type first
+
+    console.log("🔍 Type determination:", {
+      apiType: dbNotif.type,
+      computedType: notificationType,
+      action: dbNotif.action,
+    });
+
+    // Only override if API didn't provide type or for special real-time cases
+    if (!dbNotif.type) {
+      if (dbNotif.action === "overdue_reason_required") {
+        notificationType = "overdue_reason_required";
+      } else if (isExpiredSLA) {
+        // SLA warning has expired, convert to overdue
+        notificationType = "escalation_alert";
+      } else if (dbNotif.action === "pre_start_notification") {
+        notificationType = "pre_start_alert";
+      } else if (
+        dbNotif.action === "sla_alert" ||
+        dbNotif.action === "sla_warning" ||
+        dbNotif.details?.includes("SLA Warning") ||
+        dbNotif.details?.includes("min remaining") ||
+        dbNotif.details?.includes("minutes late")
+      ) {
+        notificationType = "sla_warning";
+      } else if (
+        dbNotif.action === "escalation_notification" ||
+        dbNotif.details?.includes("ESCALATION") ||
+        dbNotif.details?.includes("Immediate action required")
+      ) {
+        notificationType = "escalation_alert";
+      } else if (
+        dbNotif.action === "overdue_notification_sent" ||
+        dbNotif.details?.toLowerCase().includes("overdue")
+      ) {
+        notificationType = "sla_warning";
+      } else if (
+        (dbNotif.details?.toLowerCase().includes("pending") &&
+          dbNotif.details?.toLowerCase().includes("need to start")) ||
+        dbNotif.details?.toLowerCase().includes("pending status")
+      ) {
+        notificationType = "task_pending";
+      } else if (dbNotif.action === "task_completed") {
+        notificationType = "task_completed";
+      } else if (dbNotif.action === "task_overdue") {
+        notificationType = "task_overdue";
+      } else if (dbNotif.details?.includes("starts in")) {
+        notificationType = "pre_start_alert";
+      }
+    } else if (isExpiredSLA) {
+      // Override API type only for real-time SLA expiry
+      notificationType = "escalation_alert";
     }
 
     // Mock member data based on task type
@@ -323,9 +390,11 @@ const transformDbNotifications = (
                     ? "CLEARING - FILE TRANSFER AND VALIDATION"
                     : startTime
                       ? `Task (Start: ${startTime})`
-                      : dbNotif.action
-                        ? `FinOps: ${dbNotif.action.replace(/_/g, " ")}`
-                        : "FinOps Notification",
+                      : dbNotif.details && !dbNotif.details.includes("FinOps: ")
+                        ? dbNotif.details
+                        : dbNotif.action
+                          ? dbNotif.action.replace(/_/g, " ").toUpperCase()
+                          : "FinOps Notification",
       message: realTimeDetails || "",
       task_name:
         dbNotif.task_name ||
@@ -344,16 +413,24 @@ const transformDbNotifications = (
             ? "PaySwiff"
             : "ABC Corporation"),
       subtask_name: dbNotif.subtask_name,
-      assigned_to: members.assigned_to,
+      assigned_to: dbNotif.user_name || members.assigned_to || "Unassigned",
       reporting_managers: members.reporting_managers,
       escalation_managers: members.escalation_managers,
       priority:
-        overdueMinutes || isExpiredSLA
+        dbNotif.priority ||
+        (notificationType === "overdue_reason_required"
           ? "critical"
-          : dbNotif.priority || "medium",
+          : notificationType === "escalation_alert" || isExpiredSLA
+            ? "critical"
+            : notificationType === "sla_warning" || overdueMinutes
+              ? "high"
+              : notificationType === "pre_start_alert"
+                ? "medium"
+                : "medium"), // Default to medium instead of low
       status: dbNotif.read ? "read" : "unread",
       created_at: dbNotif.created_at,
       action_required:
+        notificationType === "overdue_reason_required" ||
         notificationType === "sla_overdue" ||
         notificationType === "escalation" ||
         isExpiredSLA ||
@@ -361,15 +438,32 @@ const transformDbNotifications = (
           (dbNotif.details?.includes("min remaining") ||
             dbNotif.details?.includes("need to start"))),
       delay_reason:
-        dbNotif.action === "delay_reported" ? "Process delayed" : undefined,
+        dbNotif.overdue_reason || // Use overdue reason from API response
+        (dbNotif.action === "delay_reported" ? "Process delayed" : undefined),
       sla_remaining:
         realTimeSlaRemaining ||
         (overdueMinutes ? `Overdue by ${overdueMinutes} min` : undefined),
       overdue_minutes: overdueMinutes,
       members_list: members.members_list,
+      scheduled_time_ist: istTime,
+      time_diff_minutes:
+        timeRemaining || (overdueMinutes ? -overdueMinutes : undefined),
     };
 
-    console.log("🔄 Transformed notification:", transformed);
+    console.log("🔄 API data input:", {
+      id: dbNotif.id,
+      priority: dbNotif.priority,
+      user_name: dbNotif.user_name,
+      created_at: dbNotif.created_at,
+      details: dbNotif.details,
+    });
+    console.log("🔄 Transformed notification:", {
+      id: transformed.id,
+      priority: transformed.priority,
+      assigned_to: transformed.assigned_to,
+      created_at: transformed.created_at,
+      title: transformed.title,
+    });
     return transformed;
   });
 };
@@ -504,45 +598,29 @@ export default function FinOpsNotifications() {
   const [overdueReason, setOverdueReason] = useState("");
   const [debugMode, setDebugMode] = useState(false);
 
-  // Real-time timer for live time updates - synchronized to minute boundaries
-  React.useEffect(() => {
-    // Initial update
-    setCurrentTime(new Date());
+  // Date filter state - default to today
+  const [selectedDate, setSelectedDate] = useState(
+    new Date().toISOString().split("T")[0],
+  );
 
-    // Calculate time until next minute boundary for synchronization
-    const now = new Date();
-    const secondsUntilNextMinute = 60 - now.getSeconds();
-
-    let timer: NodeJS.Timeout;
-
-    // First timeout to sync to minute boundary
-    const syncTimeout = setTimeout(() => {
-      setCurrentTime(new Date());
-
-      // Then set regular 30-second intervals
-      timer = setInterval(() => {
-        setCurrentTime(new Date());
-      }, 30000); // Update every 30 seconds for better real-time responsiveness
-    }, secondsUntilNextMinute * 1000);
-
-    return () => {
-      clearTimeout(syncTimeout);
-      if (timer) clearInterval(timer);
-    };
-  }, []);
-
-  // Fetch notifications from database
+  // Fetch notifications from database (moved before useEffect to fix refetch dependency)
   const {
     data: dbNotifications,
     isLoading,
     refetch,
     error,
   } = useQuery({
-    queryKey: ["finops-notifications"],
+    queryKey: ["finops-notifications", selectedDate],
     queryFn: async () => {
       try {
-        console.log("🔍 Fetching FinOps notifications from API...");
-        const result = await apiClient.request("/notifications-production");
+        console.log(
+          "🔍 Fetching FinOps notifications from API for date:",
+          selectedDate,
+        );
+        const url = selectedDate
+          ? `/notifications-production?date=${selectedDate}`
+          : "/notifications-production";
+        const result = await apiClient.request(url);
         console.log("✅ FinOps notifications API response:", result);
         return result;
       } catch (error) {
@@ -579,8 +657,8 @@ export default function FinOpsNotifications() {
         throw error;
       }
     },
-    refetchInterval: 60000, // Refresh every 60 seconds (reduced from 30s)
-    staleTime: 30000, // Consider data stale after 30 seconds
+    refetchInterval: 15000, // Refresh every 15 seconds for real-time monitoring
+    staleTime: 10000, // Consider data stale after 10 seconds
     retry: (failureCount, error) => {
       console.log(`🔄 Retry attempt ${failureCount} for notifications`);
 
@@ -593,6 +671,66 @@ export default function FinOpsNotifications() {
     },
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
   });
+
+  // Real-time timer for live time updates and SLA monitoring
+  React.useEffect(() => {
+    // Initial update
+    setCurrentTime(new Date());
+
+    // Calculate time until next minute boundary for synchronization
+    const now = new Date();
+    const secondsUntilNextMinute = 60 - now.getSeconds();
+
+    let timer: NodeJS.Timeout;
+    let slaTimer: NodeJS.Timeout;
+
+    // First timeout to sync to minute boundary
+    const syncTimeout = setTimeout(() => {
+      setCurrentTime(new Date());
+
+      // Then set regular 15-second intervals for time updates
+      timer = setInterval(() => {
+        setCurrentTime(new Date());
+      }, 15000); // Update every 15 seconds for real-time responsiveness
+
+      // Set up SLA monitoring every 30 seconds to check for overdue tasks
+      slaTimer = setInterval(async () => {
+        try {
+          console.log("🔍 Triggering real-time SLA check...");
+          // Trigger SLA monitoring on the server
+          const response = await apiClient.request(
+            "/notifications-production/auto-sync",
+            {
+              method: "POST",
+            },
+          );
+
+          // Only refresh notifications if auto-sync was successful
+          if (response?.success !== false) {
+            refetch();
+          } else {
+            console.log("⚠️ Auto-sync skipped due to database unavailability");
+          }
+        } catch (error) {
+          // Check if it's a 503 (database unavailable) error
+          if (error.status === 503) {
+            console.log("⚠️ SLA monitoring paused: Database unavailable");
+          } else {
+            console.log(
+              "SLA monitoring error (non-critical):",
+              error.message || error,
+            );
+          }
+        }
+      }, 30000); // Check every 30 seconds for faster overdue detection
+    }, secondsUntilNextMinute * 1000);
+
+    return () => {
+      clearTimeout(syncTimeout);
+      if (timer) clearInterval(timer);
+      if (slaTimer) clearInterval(slaTimer);
+    };
+  }, [refetch]);
 
   // Transform database notifications - DATABASE ONLY (no mock fallback)
   const notifications = React.useMemo(() => {
@@ -615,6 +753,25 @@ export default function FinOpsNotifications() {
         pagination: dbNotifications.pagination,
         unreadCount: dbNotifications.unread_count,
       });
+
+      // Log first notification in detail for debugging
+      if (
+        dbNotifications.notifications &&
+        dbNotifications.notifications.length > 0
+      ) {
+        console.log("🔍 DEBUGGING: First notification from API:", {
+          raw: dbNotifications.notifications[0],
+          priority: dbNotifications.notifications[0]?.priority,
+          user_name: dbNotifications.notifications[0]?.user_name,
+          created_at: dbNotifications.notifications[0]?.created_at,
+          details: dbNotifications.notifications[0]?.details,
+          hasRequiredFields: {
+            hasPriority: "priority" in dbNotifications.notifications[0],
+            hasUserName: "user_name" in dbNotifications.notifications[0],
+            hasCreatedAt: "created_at" in dbNotifications.notifications[0],
+          },
+        });
+      }
 
       if (
         dbNotifications.notifications &&
@@ -651,6 +808,28 @@ export default function FinOpsNotifications() {
     refetch(); // Refresh notifications from API
   }, [refetch]);
 
+  // Auto-open overdue reason dialog for critical notifications
+  React.useEffect(() => {
+    const overdueReasonNotifications = notifications.filter(
+      (n) => n.type === "overdue_reason_required" && n.status === "unread",
+    );
+
+    // Auto-open the first unread overdue reason required notification
+    if (overdueReasonNotifications.length > 0 && !overdueReasonDialog.open) {
+      const firstOverdue = overdueReasonNotifications[0];
+      console.log(
+        "🚨 Auto-opening overdue reason dialog for:",
+        firstOverdue.task_name,
+      );
+
+      setOverdueReasonDialog({
+        open: true,
+        notificationId: firstOverdue.id,
+        taskName: firstOverdue.task_name,
+      });
+    }
+  }, [notifications, overdueReasonDialog.open]);
+
   // Expose debug functions to window for console access (after all dependencies are available)
   React.useEffect(() => {
     if (typeof window !== "undefined") {
@@ -671,6 +850,15 @@ export default function FinOpsNotifications() {
       return false;
     if (filterStatus !== "all" && notification.status !== filterStatus)
       return false;
+
+    // Date filter - only show notifications from selected date
+    if (selectedDate) {
+      const notificationDate = new Date(notification.created_at)
+        .toISOString()
+        .split("T")[0];
+      if (notificationDate !== selectedDate) return false;
+    }
+
     return true;
   });
 
@@ -678,8 +866,10 @@ export default function FinOpsNotifications() {
     notificationId: string,
     isOverdue = false,
     taskName = "",
+    notificationType = "",
   ) => {
-    if (isOverdue) {
+    // Auto-open overdue reason dialog for critical overdue notifications
+    if (isOverdue || notificationType === "overdue_reason_required") {
       // Open dialog for overdue reason
       setOverdueReasonDialog({
         open: true,
@@ -770,8 +960,10 @@ export default function FinOpsNotifications() {
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
+      case "overdue_reason_required":
+        return AlertTriangle;
       case "sla_overdue":
-      case "escalation":
+      case "escalation_alert":
         return AlertTriangle;
       case "sla_warning":
         return Clock;
@@ -788,7 +980,12 @@ export default function FinOpsNotifications() {
     }
   };
 
-  const getNotificationColor = (priority: string) => {
+  const getNotificationColor = (priority: string, type?: string) => {
+    // Special styling for overdue reason required
+    if (type === "overdue_reason_required") {
+      return "border-l-red-600 bg-red-100 border-2 animate-pulse";
+    }
+
     switch (priority) {
       case "critical":
         return "border-l-red-500 bg-red-50";
@@ -819,12 +1016,48 @@ export default function FinOpsNotifications() {
   };
 
   const getRelativeTime = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
+    // Use the proper IST utility functions from dateUtils
+    const inputDate = new Date(dateString);
+    const currentISTTime = convertToIST(new Date());
+    const inputISTTime = convertToIST(inputDate);
+
+    const diffMs = currentISTTime.getTime() - inputISTTime.getTime();
     const diffMinutes = Math.floor(diffMs / (1000 * 60));
 
-    // Real-time calculation like in task management
+    // Special debugging for the user's specific timestamp
+    if (dateString === "2025-08-29T01:07:55.113Z") {
+      console.log(`🔍 DEBUGGING USER TIMESTAMP: ${dateString}`, {
+        inputUTC: inputDate.toISOString(),
+        inputIST: inputISTTime.toISOString(),
+        currentUTC: new Date().toISOString(),
+        currentIST: currentISTTime.toISOString(),
+        diffMs,
+        diffMinutes,
+        diffHours: Math.floor(diffMinutes / 60),
+        expectedResult:
+          diffMinutes < 60
+            ? `${diffMinutes} min ago`
+            : `${Math.floor(diffMinutes / 60)}h ${diffMinutes % 60}m ago`,
+      });
+    }
+
+    console.log(`🕒 IST Time calculation for ${dateString}:`, {
+      inputUTC: inputDate.toISOString(),
+      inputIST: inputISTTime.toISOString(),
+      currentIST: currentISTTime.toISOString(),
+      diffMs,
+      diffMinutes,
+      result:
+        diffMinutes < 1
+          ? "Just now"
+          : diffMinutes < 60
+            ? `${diffMinutes} min ago`
+            : diffMinutes < 1440
+              ? `${Math.floor(diffMinutes / 60)}h ${diffMinutes % 60}m ago`
+              : "date format",
+    });
+
+    // Real-time calculation in IST
     if (diffMinutes < 1) {
       return "Just now";
     } else if (diffMinutes < 60) {
@@ -834,12 +1067,14 @@ export default function FinOpsNotifications() {
       const hours = Math.floor(diffMinutes / 60);
       const mins = diffMinutes % 60;
       return `${hours}h ${mins}m ago`;
-    } else if (isToday(date)) {
-      return `Today, ${format(date, "h:mm a")}`;
-    } else if (isYesterday(date)) {
-      return `Yesterday, ${format(date, "h:mm a")}`;
     } else {
-      return format(date, "MMM d, h:mm a");
+      return formatToISTDateTime(inputDate, {
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      });
     }
   };
 
@@ -961,6 +1196,9 @@ export default function FinOpsNotifications() {
                   <SelectItem value="all">All Types</SelectItem>
                   <SelectItem value="sla_overdue">SLA Overdue</SelectItem>
                   <SelectItem value="sla_warning">SLA Warning</SelectItem>
+                  <SelectItem value="overdue_reason_required">
+                    Overdue Reason Required
+                  </SelectItem>
                   <SelectItem value="task_delayed">Task Delayed</SelectItem>
                   <SelectItem value="task_completed">Task Completed</SelectItem>
                   <SelectItem value="daily_reminder">Daily Reminder</SelectItem>
@@ -996,6 +1234,20 @@ export default function FinOpsNotifications() {
                   <SelectItem value="archived">Archived</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+            <div className="min-w-[150px]">
+              <Label>Filter by Date</Label>
+              <Input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="w-full"
+              />
+              <div className="text-xs text-gray-500 mt-1">
+                {selectedDate === new Date().toISOString().split("T")[0]
+                  ? "Today's notifications"
+                  : `Notifications from ${new Date(selectedDate).toLocaleDateString()}`}
+              </div>
             </div>
           </div>
         </CardContent>
@@ -1039,8 +1291,11 @@ export default function FinOpsNotifications() {
             return (
               <Card
                 key={notification.id}
-                className={`${getNotificationColor(notification.priority)} border-l-4 ${
-                  notification.status === "unread" ? "shadow-md" : ""
+                className={`${getNotificationColor(notification.priority, notification.type)} border-l-4 ${
+                  notification.status === 'unread" ? "shadow-md" : '
+                } ${
+                  notification.type ===
+                  'overdue_reason_required" ? "ring-2 ring-red-300" : '
                 }`}
               >
                 <CardContent className="p-4">
@@ -1116,9 +1371,18 @@ export default function FinOpsNotifications() {
                         )}
 
                         {notification.delay_reason && (
-                          <div className="text-xs text-yellow-700 mb-2">
-                            <strong>Delay Reason:</strong>{" "}
-                            {notification.delay_reason}
+                          <div className="bg-yellow-50 border border-yellow-200 rounded-md p-2 mb-2">
+                            <div className="text-xs text-yellow-800 font-medium mb-1 flex items-center gap-1">
+                              <MessageSquare className="w-3 h-3" />
+                              {notification.message
+                                .toLowerCase()
+                                .includes("overdue")
+                                ? "Previous Overdue Reason:"
+                                : "Delay Reason:"}
+                            </div>
+                            <div className="text-xs text-yellow-700 font-medium">
+                              {notification.delay_reason}
+                            </div>
                           </div>
                         )}
 
@@ -1183,11 +1447,30 @@ export default function FinOpsNotifications() {
                           )}
 
                         {notification.action_required && (
-                          <Alert className="mt-3 p-2 border-orange-200 bg-orange-50">
-                            <AlertCircle className="h-3 w-3 text-orange-600" />
-                            <AlertDescription className="text-xs text-orange-700 ml-1">
-                              Action required - Please review and take necessary
-                              steps
+                          <Alert
+                            className={`mt-3 p-2 ${
+                              notification.type === "overdue_reason_required"
+                                ? "border-red-300 bg-red-100"
+                                : "border-orange-200 bg-orange-50"
+                            }`}
+                          >
+                            <AlertCircle
+                              className={`h-3 w-3 ${
+                                notification.type === "overdue_reason_required"
+                                  ? "text-red-700"
+                                  : "text-orange-600"
+                              }`}
+                            />
+                            <AlertDescription
+                              className={`text-xs ml-1 ${
+                                notification.type === "overdue_reason_required"
+                                  ? "text-red-800 font-semibold"
+                                  : "text-orange-700"
+                              }`}
+                            >
+                              {notification.type === "overdue_reason_required"
+                                ? "🚨 URGENT: Overdue reason required - Click to provide explanation"
+                                : "Action required - Please review and take necessary steps"}
                             </AlertDescription>
                           </Alert>
                         )}
@@ -1202,8 +1485,10 @@ export default function FinOpsNotifications() {
                           onClick={() =>
                             markAsRead(
                               notification.id,
-                              notification.type === "sla_overdue",
+                              notification.type === "sla_overdue" ||
+                                notification.type === "overdue_reason_required",
                               notification.task_name,
+                              notification.type,
                             )
                           }
                           className="h-8 px-2"
@@ -1245,7 +1530,7 @@ export default function FinOpsNotifications() {
         )}
       </div>
 
-      {/* Overdue Reason Dialog */}
+      {/* Enhanced Overdue Reason Dialog */}
       <Dialog
         open={overdueReasonDialog.open}
         onOpenChange={(open) => {
@@ -1259,34 +1544,51 @@ export default function FinOpsNotifications() {
           }
         }}
       >
-        <DialogContent className="sm:max-w-[500px]">
+        <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <AlertTriangle className="w-5 h-5 text-red-600" />
-              Overdue Task - Reason Required
+            <DialogTitle className="flex items-center gap-2 text-red-700">
+              <AlertTriangle className="w-6 h-6 text-red-600 animate-pulse" />
+              🚨 URGENT: Overdue Task - Immediate Explanation Required
             </DialogTitle>
-            <DialogDescription>
-              Please provide a reason for marking this overdue notification as
-              read:
+            <DialogDescription className="text-base">
+              This task has exceeded its SLA deadline and requires an immediate
+              explanation.
               <br />
-              <strong>{overdueReasonDialog.taskName}</strong>
+              <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-md">
+                <strong className="text-red-800">
+                  Task: {overdueReasonDialog.taskName}
+                </strong>
+                <br />
+                <span className="text-red-600 text-sm">
+                  Status automatically changed to OVERDUE
+                </span>
+              </div>
             </DialogDescription>
           </DialogHeader>
 
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="overdue-reason">Overdue Reason</Label>
+              <Label
+                htmlFor="overdue-reason"
+                className="text-red-700 font-semibold"
+              >
+                Overdue Explanation *
+              </Label>
               <Textarea
                 id="overdue-reason"
-                placeholder="Please explain why this task was overdue and what actions were taken..."
+                placeholder="REQUIRED: Explain why this task became overdue and what corrective actions have been or will be taken...\n\nExample:\n- Root cause: Unexpected system downtime\n- Impact: 2-minute delay in file processing\n- Corrective action: Monitoring system upgraded\n- Prevention: Added automated alerts"
                 value={overdueReason}
                 onChange={(e) => setOverdueReason(e.target.value)}
-                className="min-h-[100px]"
+                className="min-h-[120px] border-red-300 focus:border-red-500"
               />
+              <p className="text-xs text-red-600">
+                ⚠️ This explanation will be logged and may be reviewed by
+                management.
+              </p>
             </div>
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="gap-2">
             <Button
               variant="outline"
               onClick={() => {
@@ -1297,17 +1599,26 @@ export default function FinOpsNotifications() {
                 });
                 setOverdueReason("");
               }}
+              className="border-gray-300"
             >
               Cancel
             </Button>
             <Button
               onClick={submitOverdueReason}
-              disabled={!overdueReason.trim()}
-              className="bg-red-600 hover:bg-red-700"
+              disabled={
+                !overdueReason.trim() || overdueReason.trim().length < 10
+              }
+              className="bg-red-600 hover:bg-red-700 text-white px-6"
             >
-              Submit Reason & Mark Read
+              ✓ Submit Explanation & Acknowledge
             </Button>
           </DialogFooter>
+
+          {overdueReason.trim() && overdueReason.trim().length < 10 && (
+            <div className="text-xs text-red-500 text-center mb-2">
+              Please provide a detailed explanation (minimum 10 characters)
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>

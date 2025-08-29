@@ -10,9 +10,11 @@ const dbConfig = {
   password: process.env.PG_PASSWORD || "password",
   port: Number(process.env.PG_PORT) || 5432,
   ssl:
-    process.env.PG_HOST && process.env.PG_HOST !== "localhost"
-      ? { rejectUnauthorized: false }
-      : false, // Enable SSL for cloud databases, disable for localhost
+    process.env.PG_SSL === "false"
+      ? false
+      : process.env.PG_HOST && process.env.PG_HOST !== "localhost"
+        ? { rejectUnauthorized: false }
+        : false, // Allow explicit SSL disable via PG_SSL=false env variable
 };
 
 // Log the actual connection parameters being used (hide password for security)
@@ -224,6 +226,29 @@ export async function initializeDatabase() {
       console.log(
         "FinOps client columns migration already applied or error:",
         finopsClientColumnsMigrationError.message,
+      );
+    }
+
+    // Always try to apply IST FinOps SLA notifications migration
+    try {
+      const finopsIstMigrationPath = path.join(
+        __dirname,
+        "migration-create-finops-sla-notifications-ist.sql",
+      );
+      if (fs.existsSync(finopsIstMigrationPath)) {
+        const finopsIstMigration = fs.readFileSync(
+          finopsIstMigrationPath,
+          "utf8",
+        );
+        await client.query(finopsIstMigration);
+        console.log(
+          "IST FinOps SLA notifications migration applied successfully",
+        );
+      }
+    } catch (finopsIstMigrationError) {
+      console.log(
+        "IST FinOps SLA notifications migration already applied or error:",
+        finopsIstMigrationError.message,
       );
     }
 

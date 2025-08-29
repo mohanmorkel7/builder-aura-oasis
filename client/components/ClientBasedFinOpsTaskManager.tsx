@@ -124,7 +124,7 @@ const extractNameFromValue = (value: string, depth: number = 0): string => {
       // Handle cases like {"John Doe"} where John Doe might be quoted or unquoted
       if (content.startsWith('"') && content.endsWith('"')) {
         const extracted = content.slice(1, -1); // Remove quotes
-        console.log("✅ Manual extraction with quotes:", extracted);
+        console.log("�� Manual extraction with quotes:", extracted);
         // Recursively parse in case there are more nested levels
         return extractNameFromValue(extracted, depth + 1);
       } else {
@@ -158,7 +158,7 @@ const extractNameFromValue = (value: string, depth: number = 0): string => {
         ? extractNameFromValue(parsed, depth + 1)
         : value;
     } catch (e) {
-      console.log("⚠️ Quoted string parsing failed");
+      console.log("⚠�� Quoted string parsing failed");
     }
   }
 
@@ -615,6 +615,47 @@ function SortableSubTaskItem({
 export default function ClientBasedFinOpsTaskManager() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+
+  // Check if user can edit FinOps tasks
+  const canEditFinOpsTasks = (task: ClientBasedFinOpsTask): boolean => {
+    if (!user) return false;
+
+    // Admin can edit everything
+    if (user.role === "admin") return true;
+
+    // Check if user is in reporting managers
+    if (
+      task.reporting_managers.some(
+        (manager) =>
+          extractNameFromValue(manager) === user.name ||
+          manager.includes(user.email || ""),
+      )
+    )
+      return true;
+
+    // Check if user is in escalation managers
+    if (
+      task.escalation_managers.some(
+        (manager) =>
+          extractNameFromValue(manager) === user.name ||
+          manager.includes(user.email || ""),
+      )
+    )
+      return true;
+
+    return false;
+  };
+
+  // Check if user can only change status (view-only users)
+  const canOnlyChangeStatus = (task: ClientBasedFinOpsTask): boolean => {
+    if (!user) return false;
+
+    // Admin and managers can do full edits
+    if (canEditFinOpsTasks(task)) return false;
+
+    // Other users can only change status
+    return true;
+  };
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<ClientBasedFinOpsTask | null>(
     null,
@@ -655,6 +696,17 @@ export default function ClientBasedFinOpsTaskManager() {
 
   // Real-time timer state
   const [currentTime, setCurrentTime] = useState(new Date());
+
+  // Overdue reason dialog states
+  const [showOverdueReasonDialog, setShowOverdueReasonDialog] = useState(false);
+  const [overdueReasonData, setOverdueReasonData] = useState<{
+    taskId: number;
+    subtaskId: string;
+    newStatus: string;
+    taskName: string;
+    subtaskName: string;
+  } | null>(null);
+  const [overdueReason, setOverdueReason] = useState("");
 
   // Form state for creating/editing tasks
   const [taskForm, setTaskForm] = useState({
@@ -708,18 +760,78 @@ export default function ClientBasedFinOpsTaskManager() {
       console.error("🚨 FinOps tasks query error:", error);
     },
     onSuccess: (data) => {
-      console.log("✅ FinOps tasks query success:", data?.length || 0, "tasks");
+      console.log("�� FinOps tasks query success:", data?.length || 0, "tasks");
     },
   });
 
-  // Real-time updates for SLA warnings
+  // Mutations for CRUD operations (moved here to fix reference error)
+  const updateSubTaskMutation = useMutation({
+    mutationFn: ({
+      taskId,
+      subTaskId,
+      status,
+      userName,
+      delayReason,
+      delayNotes,
+    }: {
+      taskId: number;
+      subTaskId: string;
+      status: string;
+      userName?: string;
+      delayReason?: string;
+      delayNotes?: string;
+    }) => apiClient.updateFinOpsSubTask(taskId, subTaskId, status, userName),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["client-finops-tasks"] });
+    },
+  });
+
+  // Real-time updates for SLA warnings and automatic status updates
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 60000); // Update every minute
+      const now = new Date();
+      setCurrentTime(now);
+
+      // Automatic status updates for overdue tasks
+      if (finopsTasks && finopsTasks.length > 0) {
+        console.log(
+          "🔄 Checking for overdue tasks at",
+          now.toLocaleTimeString(),
+        );
+
+        finopsTasks.forEach((task) => {
+          if (!task.subtasks) return;
+
+          task.subtasks.forEach((subtask) => {
+            // Only update pending tasks that should become overdue
+            if (subtask.status === "pending" && subtask.start_time) {
+              const slaWarning = getSLAWarning(
+                subtask.start_time,
+                subtask.status,
+              );
+
+              // If task is overdue but status is still pending, auto-update it
+              if (slaWarning && slaWarning.type === "overdue") {
+                console.log(
+                  `🚨 Auto-updating task ${subtask.name} from pending to overdue`,
+                );
+
+                // Trigger status update mutation
+                updateSubTaskMutation.mutate({
+                  taskId: task.id,
+                  subTaskId: subtask.id,
+                  status: "overdue",
+                  userName: "System Auto-Update",
+                });
+              }
+            }
+          });
+        });
+      }
+    }, 30000); // Update every 30 seconds for faster overdue detection
 
     return () => clearInterval(timer);
-  }, []);
+  }, [finopsTasks, updateSubTaskMutation]);
 
   // Fetch FinOps clients (separate from sales leads)
   const {
@@ -816,27 +928,6 @@ export default function ClientBasedFinOpsTaskManager() {
     },
   });
 
-  const updateSubTaskMutation = useMutation({
-    mutationFn: ({
-      taskId,
-      subTaskId,
-      status,
-      userName,
-      delayReason,
-      delayNotes,
-    }: {
-      taskId: number;
-      subTaskId: string;
-      status: string;
-      userName?: string;
-      delayReason?: string;
-      delayNotes?: string;
-    }) => apiClient.updateFinOpsSubTask(taskId, subTaskId, status, userName),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["client-finops-tasks"] });
-    },
-  });
-
   // FinOps client mutations
   const createFinOpsClientMutation = useMutation({
     mutationFn: (clientData: any) => apiClient.createFinOpsClient(clientData),
@@ -907,18 +998,115 @@ export default function ClientBasedFinOpsTaskManager() {
   const handleInlineSubTaskStatusChange = (
     taskId: number,
     subtaskId: string,
-    status: string,
+    newStatus: string,
     delayReason?: string,
     delayNotes?: string,
   ) => {
+    // Find the current subtask to check its current status
+    const currentTask = finopsTasks?.find((task) => task.id === taskId);
+    const currentSubtask = currentTask?.subtasks?.find(
+      (subtask) => subtask.id === subtaskId,
+    );
+    const currentStatus = currentSubtask?.status;
+
+    // Check if status is changing FROM "overdue" TO any other status
+    if (currentStatus === "overdue" && newStatus !== "overdue") {
+      console.log(
+        "🚨 Status change from overdue detected, showing reason dialog",
+      );
+
+      // Store the data and show the reason dialog
+      setOverdueReasonData({
+        taskId,
+        subtaskId,
+        newStatus,
+        taskName: currentTask?.task_name || "Unknown Task",
+        subtaskName: currentSubtask?.name || "Unknown Subtask",
+      });
+      setShowOverdueReasonDialog(true);
+      return; // Don't proceed with status change yet
+    }
+
+    // Proceed with normal status change
     updateSubTaskMutation.mutate({
       taskId,
       subTaskId: subtaskId,
-      status,
+      status: newStatus,
       userName: user?.first_name + " " + user?.last_name,
       delayReason,
       delayNotes,
     });
+  };
+
+  const submitOverdueReason = async () => {
+    try {
+      // Store the overdue reason in database
+      await apiClient.request("/finops-production/tasks/overdue-reason", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          task_id: overdueReasonData?.taskId,
+          subtask_id: overdueReasonData?.subtaskId,
+          reason: overdueReason,
+          created_by: user?.id || 1,
+          created_at: new Date().toISOString(),
+        }),
+      });
+
+      // Now proceed with the status change
+      if (overdueReasonData) {
+        updateSubTaskMutation.mutate({
+          taskId: overdueReasonData.taskId,
+          subTaskId: overdueReasonData.subtaskId,
+          status: overdueReasonData.newStatus,
+          userName: user?.first_name + " " + user?.last_name,
+        });
+      }
+
+      // Close dialog and reset
+      setShowOverdueReasonDialog(false);
+      setOverdueReasonData(null);
+      setOverdueReason("");
+    } catch (error) {
+      console.error("Failed to submit overdue reason:", error);
+      alert("Failed to submit overdue reason. Please try again.");
+    }
+  };
+
+  // Force update all overdue statuses immediately
+  const forceUpdateOverdueStatuses = () => {
+    console.log("🔧 Force updating all overdue statuses...");
+    let updatedCount = 0;
+
+    finopsTasks?.forEach((task) => {
+      if (!task.subtasks) return;
+
+      task.subtasks.forEach((subtask) => {
+        if (subtask.status === "pending" && subtask.start_time) {
+          const slaWarning = getSLAWarning(subtask.start_time, subtask.status);
+
+          if (slaWarning && slaWarning.type === "overdue") {
+            console.log(`🚨 Force updating ${subtask.name} to overdue`);
+            updatedCount++;
+
+            updateSubTaskMutation.mutate({
+              taskId: task.id,
+              subTaskId: subtask.id,
+              status: "overdue",
+              userName: "Manual Status Update",
+            });
+          }
+        }
+      });
+    });
+
+    if (updatedCount === 0) {
+      console.log("✅ No overdue tasks found that need status updates");
+    } else {
+      console.log(`✅ Force updated ${updatedCount} tasks to overdue status`);
+    }
   };
 
   const toggleTaskExpansion = (taskId: number) => {
@@ -969,20 +1157,30 @@ export default function ClientBasedFinOpsTaskManager() {
     const taskStartTime = new Date();
     taskStartTime.setHours(hours, minutes, 0, 0);
 
-    // Add 15 minutes SLA buffer
-    const slaDeadline = new Date(taskStartTime.getTime() + 15 * 60 * 1000);
-    const diffMs = slaDeadline.getTime() - currentTime.getTime();
+    // Calculate time difference from start time (not SLA deadline)
+    const diffMs = currentTime.getTime() - taskStartTime.getTime();
     const diffMinutes = Math.floor(diffMs / (1000 * 60));
 
-    if (diffMinutes <= 0) {
+    console.log(`⏰ SLA check for task starting at ${startTime}:`, {
+      taskStartTime: taskStartTime.toLocaleTimeString(),
+      currentTime: currentTime.toLocaleTimeString(),
+      diffMinutes,
+      status,
+    });
+
+    // Task is overdue if it's past start time (for both pending and overdue status)
+    if (diffMinutes > 0 && (status === "pending" || status === "overdue")) {
       return {
         type: "overdue",
-        message: `Overdue by ${Math.abs(diffMinutes)} min`,
+        message: `Overdue by ${diffMinutes} min`,
       };
-    } else if (diffMinutes <= 15) {
+    }
+    // SLA warning if within 15 minutes of start time (and still pending)
+    else if (diffMinutes >= -15 && diffMinutes <= 0 && status === "pending") {
+      const remainingMinutes = Math.abs(diffMinutes);
       return {
         type: "warning",
-        message: `SLA Warning - ${diffMinutes} min remaining`,
+        message: `SLA Warning - ${remainingMinutes} min remaining`,
       };
     }
 
@@ -1348,12 +1546,29 @@ export default function ClientBasedFinOpsTaskManager() {
               Daily process tracking and task execution monitoring for the
               selected date
             </p>
+
+            {/* Real-time Status Debug Info */}
+            <div className="mt-2 text-xs text-gray-500 bg-gray-50 px-3 py-1 rounded border">
+              🕒 Auto-Status Updates: Every 30s | Current Time:{" "}
+              {currentTime.toLocaleTimeString()} |
+              {finopsTasks?.reduce(
+                (acc, task) =>
+                  acc +
+                  (task.subtasks?.filter(
+                    (st) => st.status === "pending" && st.start_time,
+                  ).length || 0),
+                0,
+              )}{" "}
+              pending tasks monitored
+            </div>
           </div>
           <div className="flex gap-2">
-            <Button onClick={() => setIsCreateDialogOpen(true)}>
-              <Plus className="w-4 h-4 mr-2" />
-              Create Task
-            </Button>
+            {user?.role === "admin" && (
+              <Button onClick={() => setIsCreateDialogOpen(true)}>
+                <Plus className="w-4 h-4 mr-2" />
+                Create Task
+              </Button>
+            )}
             <Button
               variant="outline"
               onClick={() => {
@@ -1385,6 +1600,22 @@ export default function ClientBasedFinOpsTaskManager() {
               }}
             >
               Create Test Task
+            </Button>
+            <Button
+              variant="outline"
+              onClick={forceUpdateOverdueStatuses}
+              className="text-orange-600 border-orange-300 hover:bg-orange-50"
+            >
+              <AlertTriangle className="w-4 h-4 mr-1" />
+              Force Status Update
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => refetch()}
+              className="text-blue-600 border-blue-300 hover:bg-blue-50"
+            >
+              <RefreshCw className="w-4 h-4 mr-1" />
+              Refresh Data
             </Button>
           </div>
         </div>
@@ -1853,30 +2084,53 @@ export default function ClientBasedFinOpsTaskManager() {
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => startEditing(task)}
-                      >
-                        <Edit className="w-4 h-4 mr-1" />
-                        Edit
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          if (
-                            confirm(
-                              `Are you sure you want to delete "${task.task_name}"?`,
-                            )
-                          ) {
-                            deleteTaskMutation.mutate(task.id);
-                          }
-                        }}
-                        className="text-red-600"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
+                      {canEditFinOpsTasks(task) ? (
+                        <>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => startEditing(task)}
+                          >
+                            <Edit className="w-4 h-4 mr-1" />
+                            Edit Task
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              if (
+                                confirm(
+                                  `Are you sure you want to delete "${task.task_name}"?`,
+                                )
+                              ) {
+                                deleteTaskMutation.mutate(task.id);
+                              }
+                            }}
+                            className="text-red-600"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </>
+                      ) : canOnlyChangeStatus(task) ? (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => startEditing(task)}
+                        >
+                          <Activity className="w-4 h-4 mr-1" />
+                          Update Status Only
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          disabled
+                          className="text-gray-400"
+                        >
+                          <Activity className="w-4 h-4 mr-1" />
+                          View Only
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </CardHeader>
@@ -2759,6 +3013,103 @@ export default function ClientBasedFinOpsTaskManager() {
               </Button>
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Overdue Reason Dialog */}
+      <Dialog
+        open={showOverdueReasonDialog}
+        onOpenChange={setShowOverdueReasonDialog}
+      >
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-red-700">
+              <AlertTriangle className="w-5 h-5 text-red-600" />
+              Reason for Overdue Status
+            </DialogTitle>
+            <DialogDescription>
+              This task was overdue and is now being changed to a different
+              status. Please provide a reason for why it was overdue.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="p-3 bg-red-50 border border-red-200 rounded-md">
+              <div className="text-sm font-medium text-red-800">
+                Task: {overdueReasonData?.taskName}
+              </div>
+              <div className="text-sm text-red-700">
+                Subtask: {overdueReasonData?.subtaskName}
+              </div>
+              <div className="text-sm text-red-600">
+                Status changing from: Overdue → {overdueReasonData?.newStatus}
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="overdue_reason">Reason for Overdue *</Label>
+              <Select value={overdueReason} onValueChange={setOverdueReason}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select overdue reason" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="technical_issue">
+                    Technical Issue
+                  </SelectItem>
+                  <SelectItem value="data_unavailable">
+                    Data Unavailable
+                  </SelectItem>
+                  <SelectItem value="external_dependency">
+                    External Dependency
+                  </SelectItem>
+                  <SelectItem value="resource_constraint">
+                    Resource Constraint
+                  </SelectItem>
+                  <SelectItem value="process_change">Process Change</SelectItem>
+                  <SelectItem value="client_delay">Client Delay</SelectItem>
+                  <SelectItem value="system_downtime">
+                    System Downtime
+                  </SelectItem>
+                  <SelectItem value="urgent_priority_task">
+                    Urgent Priority Task
+                  </SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {overdueReason === "other" && (
+              <div>
+                <Label htmlFor="custom_reason">Please specify</Label>
+                <Textarea
+                  id="custom_reason"
+                  placeholder="Please describe the specific reason..."
+                  rows={3}
+                />
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setShowOverdueReasonDialog(false);
+                setOverdueReasonData(null);
+                setOverdueReason("");
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={submitOverdueReason}
+              disabled={!overdueReason}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Submit Reason & Update Status
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
