@@ -1,6 +1,30 @@
 import { pool } from "../database/connection";
 import * as nodemailer from "nodemailer";
 
+// IST timezone helper functions
+const IST_TIMEZONE = "Asia/Kolkata";
+
+const getCurrentISTTime = (): Date => {
+  return new Date(new Date().toLocaleString("en-US", { timeZone: IST_TIMEZONE }));
+};
+
+const convertToIST = (date: Date | string): Date => {
+  const dateObj = typeof date === "string" ? new Date(date) : date;
+  return new Date(dateObj.toLocaleString("en-US", { timeZone: IST_TIMEZONE }));
+};
+
+const formatISTDateTime = (date: Date): string => {
+  return date.toLocaleString("en-IN", {
+    timeZone: IST_TIMEZONE,
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true
+  });
+};
+
 interface AlertConfig {
   taskId: number;
   subtaskId?: string;
@@ -58,16 +82,16 @@ class FinOpsAlertService {
     try {
       console.log("Checking for daily tasks to execute...");
       
-      const today = new Date().toISOString().split('T')[0];
+      const todayIST = getCurrentISTTime().toISOString().split('T')[0];
       
       const tasksToExecute = await pool.query(`
         SELECT * FROM finops_tasks 
         WHERE is_active = true 
         AND duration = 'daily'
         AND effective_from <= $1
-        AND (last_run IS NULL OR DATE(last_run) < $1)
+        AND (last_run IS NULL OR DATE(last_run AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Kolkata') < $1)
         AND deleted_at IS NULL
-      `, [today]);
+      `, [todayIST]);
       
       for (const task of tasksToExecute.rows) {
         await this.executeTask(task);
@@ -94,23 +118,28 @@ class FinOpsAlertService {
    * Check SLA for individual subtask and send alerts if needed
    */
   private async checkSubtaskSLA(task: any, subtask: any): Promise<void> {
-    const now = new Date();
-    let dueTime: Date;
-    
+    const nowIST = getCurrentISTTime();
+    let dueTimeIST: Date;
+
     if (subtask.started_at) {
-      // Calculate due time from start time
-      dueTime = new Date(subtask.started_at);
+      // Calculate due time from start time in IST
+      dueTimeIST = convertToIST(new Date(subtask.started_at));
     } else {
-      // Use current time if not started yet
-      dueTime = new Date();
+      // Use current IST time if not started yet
+      dueTimeIST = nowIST;
     }
-    
-    dueTime.setHours(dueTime.getHours() + subtask.sla_hours);
-    dueTime.setMinutes(dueTime.getMinutes() + subtask.sla_minutes);
-    
-    const timeDiff = dueTime.getTime() - now.getTime();
+
+    dueTimeIST.setHours(dueTimeIST.getHours() + (subtask.sla_hours || 0));
+    dueTimeIST.setMinutes(dueTimeIST.getMinutes() + (subtask.sla_minutes || 0));
+
+    const timeDiff = dueTimeIST.getTime() - nowIST.getTime();
     const minutesRemaining = Math.floor(timeDiff / (1000 * 60));
-    
+
+    console.log(`SLA Check (IST): Task ${task.task_name}, Subtask ${subtask.name}`);
+    console.log(`Current IST: ${formatISTDateTime(nowIST)}`);
+    console.log(`Due IST: ${formatISTDateTime(dueTimeIST)}`);
+    console.log(`Minutes remaining: ${minutesRemaining}`);
+
     // Check if already overdue
     if (minutesRemaining < 0) {
       await this.sendSLAOverdueAlert(task, subtask, Math.abs(minutesRemaining));
@@ -147,6 +176,7 @@ class FinOpsAlertService {
         }))
       ];
       
+      const currentTimeIST = formatISTDateTime(getCurrentISTTime());
       const subject = `⚠️ SLA Warning: ${task.task_name} - ${subtask.name}`;
       const message = `
         <h2>SLA Warning Alert</h2>
@@ -155,11 +185,12 @@ class FinOpsAlertService {
         <p><strong>Time Remaining:</strong> ${minutesRemaining} minutes</p>
         <p><strong>Current Status:</strong> ${subtask.status}</p>
         <p><strong>Assigned To:</strong> ${task.assigned_to}</p>
-        
+        <p><strong>Alert Time (IST):</strong> ${currentTimeIST}</p>
+
         <p>This subtask is approaching its SLA deadline. Please ensure timely completion to avoid escalation.</p>
-        
+
         <hr>
-        <p><small>This is an automated alert from the FinOps Task Management System.</small></p>
+        <p><small>This is an automated alert from the FinOps Task Management System (IST).</small></p>
       `;
       
       await this.sendEmailAlerts(recipients, subject, message);
@@ -200,6 +231,7 @@ class FinOpsAlertService {
         }))
       ];
       
+      const currentTimeIST = formatISTDateTime(getCurrentISTTime());
       const subject = `🚨 SLA OVERDUE: ${task.task_name} - ${subtask.name}`;
       const message = `
         <h2 style="color: #dc2626;">SLA OVERDUE ALERT</h2>
@@ -208,15 +240,16 @@ class FinOpsAlertService {
         <p><strong>Time Overdue:</strong> ${minutesOverdue} minutes</p>
         <p><strong>Current Status:</strong> ${subtask.status}</p>
         <p><strong>Assigned To:</strong> ${task.assigned_to}</p>
-        
+        <p><strong>Alert Time (IST):</strong> ${currentTimeIST}</p>
+
         <div style="background-color: #fef2f2; border: 1px solid #fecaca; padding: 15px; margin: 20px 0; border-radius: 4px;">
           <h3 style="color: #dc2626; margin-top: 0;">IMMEDIATE ACTION REQUIRED</h3>
           <p>This subtask has exceeded its SLA deadline and requires immediate escalation.</p>
           <p>Escalation managers have been notified.</p>
         </div>
-        
+
         <hr>
-        <p><small>This is an automated escalation alert from the FinOps Task Management System.</small></p>
+        <p><small>This is an automated escalation alert from the FinOps Task Management System (IST).</small></p>
       `;
       
       await this.sendEmailAlerts(recipients, subject, message);
