@@ -479,6 +479,68 @@ class FinOpsAlertService {
   }
 
   /**
+   * Create an overdue reason request that requires immediate attention
+   */
+  private async createOverdueReasonRequest(task: any, subtask: any, overdueMinutes: number): Promise<void> {
+    try {
+      console.log(`Creating overdue reason request for ${task.task_name} - ${subtask.name}`);
+
+      // Create a special notification type that requires overdue reason
+      await pool.query(`
+        INSERT INTO finops_activity_log (action, task_id, subtask_id, user_name, details, timestamp)
+        VALUES ($1, $2, $3, $4, $5, NOW())
+      `, [
+        'overdue_reason_required',
+        task.id,
+        subtask.id,
+        'System',
+        `OVERDUE REASON REQUIRED: ${task.task_name} - ${subtask.name} is overdue by ${overdueMinutes} minutes. Immediate explanation required.`
+      ]);
+
+      // Also create an entry in a dedicated overdue tracking table
+      const createTableQuery = `
+        CREATE TABLE IF NOT EXISTS finops_overdue_tracking (
+          id SERIAL PRIMARY KEY,
+          task_id INTEGER NOT NULL,
+          subtask_id INTEGER,
+          task_name VARCHAR(255),
+          subtask_name VARCHAR(255),
+          assigned_to VARCHAR(255),
+          overdue_minutes INTEGER DEFAULT 0,
+          reason_provided BOOLEAN DEFAULT FALSE,
+          reason_text TEXT,
+          overdue_detected_at TIMESTAMP DEFAULT NOW(),
+          reason_provided_at TIMESTAMP,
+          status VARCHAR(50) DEFAULT 'pending_reason',
+          created_at TIMESTAMP DEFAULT NOW()
+        )
+      `;
+
+      await pool.query(createTableQuery);
+
+      // Insert tracking record
+      await pool.query(`
+        INSERT INTO finops_overdue_tracking
+        (task_id, subtask_id, task_name, subtask_name, assigned_to, overdue_minutes, status)
+        VALUES ($1, $2, $3, $4, $5, $6, 'pending_reason')
+        ON CONFLICT DO NOTHING
+      `, [
+        task.id,
+        subtask.id,
+        task.task_name,
+        subtask.name,
+        task.assigned_to,
+        overdueMinutes
+      ]);
+
+      console.log(`✅ Overdue reason request created for ${task.task_name} - ${subtask.name}`);
+
+    } catch (error) {
+      console.error("Error creating overdue reason request:", error);
+    }
+  }
+
+  /**
    * Log activity
    */
   private async logActivity(
