@@ -1739,9 +1739,9 @@ router.post("/setup-auto-sla", async (req: Request, res: Response) => {
             fs.name as subtask_name,
             COALESCE(fs.assigned_to, ft.assigned_to) as assigned_to,
             EXTRACT(EPOCH FROM (current_time - fs.start_time))/60 as time_diff_minutes,
-            format('Overdue by %s min • %s min ago',
-                   ROUND(EXTRACT(EPOCH FROM (current_time - fs.start_time))/60),
-                   ROUND(EXTRACT(EPOCH FROM (current_time - fs.start_time))/60)) as message
+            format('Overdue by %s • %s ago',
+                   CONCAT(FLOOR(EXTRACT(EPOCH FROM (current_time - fs.start_time))/3600), 'h ', MOD(ROUND(EXTRACT(EPOCH FROM (current_time - fs.start_time))/60)::int, 60), 'm'),
+                   CONCAT(FLOOR(EXTRACT(EPOCH FROM (current_time - fs.start_time))/3600), 'h ', MOD(ROUND(EXTRACT(EPOCH FROM (current_time - fs.start_time))/60)::int, 60), 'm')) as message
           FROM finops_subtasks fs
           LEFT JOIN finops_tasks ft ON fs.task_id = ft.id
           WHERE fs.start_time IS NOT NULL
