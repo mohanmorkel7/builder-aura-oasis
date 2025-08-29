@@ -423,9 +423,7 @@ router.post("/:id/change-password", async (req: Request, res: Response) => {
     }
 
     if (!newPassword) {
-      return res
-        .status(400)
-        .json({ error: "New password is required" });
+      return res.status(400).json({ error: "New password is required" });
     }
 
     if (newPassword.length < 6) {
@@ -443,12 +441,12 @@ router.post("/:id/change-password", async (req: Request, res: Response) => {
       }
 
       // Allow SSO users without a real password to set one without verifying old password
-      const hasRealHash = typeof user.password_hash === "string" && user.password_hash.startsWith("$2");
+      const hasRealHash =
+        typeof user.password_hash === "string" &&
+        user.password_hash.startsWith("$2");
       if (hasRealHash) {
         if (!oldPassword) {
-          return res
-            .status(400)
-            .json({ error: "Old password is required" });
+          return res.status(400).json({ error: "Old password is required" });
         }
         const isOldPasswordValid = await bcrypt.compare(
           oldPassword,

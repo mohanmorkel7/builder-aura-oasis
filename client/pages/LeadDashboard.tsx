@@ -813,8 +813,16 @@ export default function LeadDashboard() {
                                               <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-pre-wrap z-20 pointer-events-none max-w-xs">
                                                 {(() => {
                                                   const names = leadProgressData
-                                                    .filter((lead: any) => lead.current_step?.name === stepData.stepName)
-                                                    .map((lead: any) => lead.client_name)
+                                                    .filter(
+                                                      (lead: any) =>
+                                                        lead.current_step
+                                                          ?.name ===
+                                                        stepData.stepName,
+                                                    )
+                                                    .map(
+                                                      (lead: any) =>
+                                                        lead.client_name,
+                                                    )
                                                     .slice(0, 20);
                                                   return `${stepData.stepName}: ${stepData.totalLeadsAtStep} leads\n- ${names.join("\n- ")}`;
                                                 })()}
