@@ -632,6 +632,50 @@ export default function FinOpsNotifications() {
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
   });
 
+  // Real-time timer for live time updates and SLA monitoring
+  React.useEffect(() => {
+    // Initial update
+    setCurrentTime(new Date());
+
+    // Calculate time until next minute boundary for synchronization
+    const now = new Date();
+    const secondsUntilNextMinute = 60 - now.getSeconds();
+
+    let timer: NodeJS.Timeout;
+    let slaTimer: NodeJS.Timeout;
+
+    // First timeout to sync to minute boundary
+    const syncTimeout = setTimeout(() => {
+      setCurrentTime(new Date());
+
+      // Then set regular 30-second intervals for time updates
+      timer = setInterval(() => {
+        setCurrentTime(new Date());
+      }, 30000); // Update every 30 seconds for better real-time responsiveness
+
+      // Set up SLA monitoring every minute to check for overdue tasks
+      slaTimer = setInterval(async () => {
+        try {
+          console.log("🔍 Triggering real-time SLA check...");
+          // Trigger SLA monitoring on the server
+          await apiClient.request("/notifications-production/auto-sync", {
+            method: "POST",
+          });
+          // Refresh notifications after SLA check
+          refetch();
+        } catch (error) {
+          console.log("SLA monitoring error (non-critical):", error);
+        }
+      }, 60000); // Check every minute
+    }, secondsUntilNextMinute * 1000);
+
+    return () => {
+      clearTimeout(syncTimeout);
+      if (timer) clearInterval(timer);
+      if (slaTimer) clearInterval(slaTimer);
+    };
+  }, [refetch]);
+
   // Transform database notifications - DATABASE ONLY (no mock fallback)
   const notifications = React.useMemo(() => {
     console.log("🔍 Processing notifications data (DATABASE-ONLY MODE):", {
