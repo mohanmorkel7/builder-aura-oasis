@@ -783,19 +783,27 @@ export default function ClientBasedFinOpsTaskManager() {
 
       // Automatic status updates for overdue tasks
       if (finopsTasks && finopsTasks.length > 0) {
-        console.log("🔄 Checking for overdue tasks at", now.toLocaleTimeString());
+        console.log(
+          "🔄 Checking for overdue tasks at",
+          now.toLocaleTimeString(),
+        );
 
-        finopsTasks.forEach(task => {
+        finopsTasks.forEach((task) => {
           if (!task.subtasks) return;
 
-          task.subtasks.forEach(subtask => {
+          task.subtasks.forEach((subtask) => {
             // Only update pending tasks that should become overdue
             if (subtask.status === "pending" && subtask.start_time) {
-              const slaWarning = getSLAWarning(subtask.start_time, subtask.status);
+              const slaWarning = getSLAWarning(
+                subtask.start_time,
+                subtask.status,
+              );
 
               // If task is overdue but status is still pending, auto-update it
               if (slaWarning && slaWarning.type === "overdue") {
-                console.log(`🚨 Auto-updating task ${subtask.name} from pending to overdue`);
+                console.log(
+                  `🚨 Auto-updating task ${subtask.name} from pending to overdue`,
+                );
 
                 // Trigger status update mutation
                 updateSubTaskMutation.mutate({
@@ -998,10 +1006,10 @@ export default function ClientBasedFinOpsTaskManager() {
     console.log("🔧 Force updating all overdue statuses...");
     let updatedCount = 0;
 
-    finopsTasks?.forEach(task => {
+    finopsTasks?.forEach((task) => {
       if (!task.subtasks) return;
 
-      task.subtasks.forEach(subtask => {
+      task.subtasks.forEach((subtask) => {
         if (subtask.status === "pending" && subtask.start_time) {
           const slaWarning = getSLAWarning(subtask.start_time, subtask.status);
 
@@ -1083,7 +1091,7 @@ export default function ClientBasedFinOpsTaskManager() {
       taskStartTime: taskStartTime.toLocaleTimeString(),
       currentTime: currentTime.toLocaleTimeString(),
       diffMinutes,
-      status
+      status,
     });
 
     // Task is overdue if it's past start time and not completed/in_progress
@@ -1467,8 +1475,17 @@ export default function ClientBasedFinOpsTaskManager() {
 
             {/* Real-time Status Debug Info */}
             <div className="mt-2 text-xs text-gray-500 bg-gray-50 px-3 py-1 rounded border">
-              🕒 Auto-Status Updates: Every 30s | Current Time: {currentTime.toLocaleTimeString()} |
-              {finopsTasks?.reduce((acc, task) => acc + (task.subtasks?.filter(st => st.status === "pending" && st.start_time).length || 0), 0)} pending tasks monitored
+              🕒 Auto-Status Updates: Every 30s | Current Time:{" "}
+              {currentTime.toLocaleTimeString()} |
+              {finopsTasks?.reduce(
+                (acc, task) =>
+                  acc +
+                  (task.subtasks?.filter(
+                    (st) => st.status === "pending" && st.start_time,
+                  ).length || 0),
+                0,
+              )}{" "}
+              pending tasks monitored
             </div>
           </div>
           <div className="flex gap-2">
