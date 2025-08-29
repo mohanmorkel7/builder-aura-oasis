@@ -668,7 +668,7 @@ async function sendReplicaDownAlertOnce(
     const resp = await fetch("https://pulsealerts.mylapay.com/replica-down", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ receiver: "CRM_Switch", title }),
+      body: JSON.stringify({ receiver: "CRM_Switch", title, user_ids: userIds }),
     });
     if (!resp.ok) {
       console.warn("Replica-down alert failed:", resp.status);
