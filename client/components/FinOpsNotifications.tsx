@@ -383,8 +383,8 @@ const transformDbNotifications = (
                     ? "CLEARING - FILE TRANSFER AND VALIDATION"
                     : startTime
                       ? `Task (Start: ${startTime})`
-                      : dbNotif.action && dbNotif.details
-                        ? `${dbNotif.action.replace(/_/g, " ").toUpperCase()}: ${dbNotif.details}`
+                      : dbNotif.details && !dbNotif.details.includes("FinOps: ")
+                        ? dbNotif.details
                         : dbNotif.action
                           ? dbNotif.action.replace(/_/g, " ").toUpperCase()
                           : "FinOps Notification",
@@ -442,7 +442,20 @@ const transformDbNotifications = (
         timeRemaining || (overdueMinutes ? -overdueMinutes : undefined),
     };
 
-    console.log("🔄 Transformed notification:", transformed);
+    console.log("🔄 API data input:", {
+      id: dbNotif.id,
+      priority: dbNotif.priority,
+      user_name: dbNotif.user_name,
+      created_at: dbNotif.created_at,
+      details: dbNotif.details
+    });
+    console.log("🔄 Transformed notification:", {
+      id: transformed.id,
+      priority: transformed.priority,
+      assigned_to: transformed.assigned_to,
+      created_at: transformed.created_at,
+      title: transformed.title
+    });
     return transformed;
   });
 };
