@@ -577,7 +577,7 @@ class FinOpsAlertService {
 
       // Trigger external alert only for overdue transitions
       if (status === "overdue") {
-        await this.sendReplicaDownAlert(statusChangeMessage);
+        await this.sendReplicaDownAlert(taskId, subtaskId, statusChangeMessage);
       }
     } catch (error) {
       console.error("Error updating subtask status:", error);
