@@ -719,6 +719,22 @@ export default function FinOpsNotifications() {
         unreadCount: dbNotifications.unread_count,
       });
 
+      // Log first notification in detail for debugging
+      if (dbNotifications.notifications && dbNotifications.notifications.length > 0) {
+        console.log("🔍 DEBUGGING: First notification from API:", {
+          raw: dbNotifications.notifications[0],
+          priority: dbNotifications.notifications[0]?.priority,
+          user_name: dbNotifications.notifications[0]?.user_name,
+          created_at: dbNotifications.notifications[0]?.created_at,
+          details: dbNotifications.notifications[0]?.details,
+          hasRequiredFields: {
+            hasPriority: "priority" in dbNotifications.notifications[0],
+            hasUserName: "user_name" in dbNotifications.notifications[0],
+            hasCreatedAt: "created_at" in dbNotifications.notifications[0]
+          }
+        });
+      }
+
       if (
         dbNotifications.notifications &&
         dbNotifications.notifications.length > 0
