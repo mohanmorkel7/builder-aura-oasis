@@ -1546,6 +1546,84 @@ router.post("/auto-sync", async (req: Request, res: Response) => {
   }
 });
 
+// Create immediate overdue notification for testing the new system
+router.post("/test/create-immediate-overdue", async (req: Request, res: Response) => {
+  try {
+    if (await isDatabaseAvailable()) {
+      console.log("Creating immediate overdue notification for testing...");
+
+      // Ensure we have a test task
+      const taskQuery = `
+        INSERT INTO finops_tasks (id, task_name, assigned_to, reporting_managers, escalation_managers, effective_from, duration, is_active, created_by, status)
+        VALUES (99, 'TEST OVERDUE TASK', 'Test User', '["Test Manager"]'::jsonb, '["Test Escalation"]'::jsonb, CURRENT_DATE, 'daily', true, 1, 'overdue')
+        ON CONFLICT (id) DO UPDATE SET
+          task_name = EXCLUDED.task_name,
+          assigned_to = EXCLUDED.assigned_to,
+          status = 'overdue'
+      `;
+
+      await pool.query(taskQuery);
+
+      // Create the overdue reason required notification
+      const query = `
+        INSERT INTO finops_activity_log (action, task_id, subtask_id, user_name, details, timestamp)
+        VALUES ($1, $2, $3, $4, $5, NOW())
+        RETURNING *
+      `;
+
+      const result = await pool.query(query, [
+        'overdue_reason_required',
+        99,
+        99,
+        'System',
+        'OVERDUE REASON REQUIRED: TEST OVERDUE TASK - Test Subtask is overdue by 0 minutes. Immediate explanation required.'
+      ]);
+
+      // Create overdue tracking entry
+      const trackingQuery = `
+        INSERT INTO finops_overdue_tracking
+        (task_id, subtask_id, task_name, subtask_name, assigned_to, overdue_minutes, status)
+        VALUES ($1, $2, $3, $4, $5, $6, 'pending_reason')
+        ON CONFLICT DO NOTHING
+      `;
+
+      await pool.query(trackingQuery, [
+        99,
+        99,
+        'TEST OVERDUE TASK',
+        'Test Subtask',
+        'Test User',
+        0
+      ]);
+
+      res.json({
+        message: "Immediate overdue notification created successfully!",
+        notification: result.rows[0],
+        description: "This notification will auto-open the overdue reason dialog",
+        instructions: [
+          "1. Check the FinOps Notifications page",
+          "2. The overdue reason dialog should auto-open",
+          "3. The notification should have critical priority and pulse animation",
+          "4. Provide an explanation to test the full workflow"
+        ],
+        test_scenario: "Immediate overdue (0 minutes) - requires explanation",
+        timestamp: new Date().toISOString(),
+      });
+    } else {
+      res.json({
+        message: "Database unavailable - would create immediate overdue notification in production",
+        timestamp: new Date().toISOString(),
+      });
+    }
+  } catch (error) {
+    console.error("Error creating immediate overdue notification:", error);
+    res.status(500).json({
+      error: "Failed to create immediate overdue notification",
+      message: error.message,
+    });
+  }
+});
+
 // Test endpoint to check query performance
 router.get("/test/performance", async (req: Request, res: Response) => {
   try {
