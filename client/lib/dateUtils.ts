@@ -150,7 +150,11 @@ export const getRelativeTimeIST = (date: string | Date): string => {
  */
 export const convertToIST = (date: string | Date): Date => {
   const dateObj = typeof date === "string" ? new Date(date) : date;
-  return new Date(dateObj.toLocaleString("en-US", { timeZone: IST_TIMEZONE }));
+
+  // Use the same reliable timezone calculation as getCurrentISTTimestamp
+  const utcMs = dateObj.getTime() + (dateObj.getTimezoneOffset() * 60000);
+  const istMs = utcMs + (5.5 * 60 * 60 * 1000); // Add 5.5 hours for IST (+05:30)
+  return new Date(istMs);
 };
 
 /**
