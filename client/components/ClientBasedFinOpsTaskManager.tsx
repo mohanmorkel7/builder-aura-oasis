@@ -697,6 +697,17 @@ export default function ClientBasedFinOpsTaskManager() {
   // Real-time timer state
   const [currentTime, setCurrentTime] = useState(new Date());
 
+  // Overdue reason dialog states
+  const [showOverdueReasonDialog, setShowOverdueReasonDialog] = useState(false);
+  const [overdueReasonData, setOverdueReasonData] = useState<{
+    taskId: number;
+    subtaskId: string;
+    newStatus: string;
+    taskName: string;
+    subtaskName: string;
+  } | null>(null);
+  const [overdueReason, setOverdueReason] = useState("");
+
   // Form state for creating/editing tasks
   const [taskForm, setTaskForm] = useState({
     task_name: "",
@@ -987,14 +998,36 @@ export default function ClientBasedFinOpsTaskManager() {
   const handleInlineSubTaskStatusChange = (
     taskId: number,
     subtaskId: string,
-    status: string,
+    newStatus: string,
     delayReason?: string,
     delayNotes?: string,
   ) => {
+    // Find the current subtask to check its current status
+    const currentTask = finopsTasks?.find(task => task.id === taskId);
+    const currentSubtask = currentTask?.subtasks?.find(subtask => subtask.id === subtaskId);
+    const currentStatus = currentSubtask?.status;
+
+    // Check if status is changing FROM "overdue" TO any other status
+    if (currentStatus === "overdue" && newStatus !== "overdue") {
+      console.log("🚨 Status change from overdue detected, showing reason dialog");
+
+      // Store the data and show the reason dialog
+      setOverdueReasonData({
+        taskId,
+        subtaskId,
+        newStatus,
+        taskName: currentTask?.task_name || "Unknown Task",
+        subtaskName: currentSubtask?.name || "Unknown Subtask"
+      });
+      setShowOverdueReasonDialog(true);
+      return; // Don't proceed with status change yet
+    }
+
+    // Proceed with normal status change
     updateSubTaskMutation.mutate({
       taskId,
       subTaskId: subtaskId,
-      status,
+      status: newStatus,
       userName: user?.first_name + " " + user?.last_name,
       delayReason,
       delayNotes,
