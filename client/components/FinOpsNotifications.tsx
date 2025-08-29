@@ -719,13 +719,16 @@ export default function FinOpsNotifications() {
   // Auto-open overdue reason dialog for critical notifications
   React.useEffect(() => {
     const overdueReasonNotifications = notifications.filter(
-      (n) => n.type === "overdue_reason_required" && n.status === "unread"
+      (n) => n.type === "overdue_reason_required" && n.status === "unread",
     );
 
     // Auto-open the first unread overdue reason required notification
     if (overdueReasonNotifications.length > 0 && !overdueReasonDialog.open) {
       const firstOverdue = overdueReasonNotifications[0];
-      console.log("🚨 Auto-opening overdue reason dialog for:", firstOverdue.task_name);
+      console.log(
+        "🚨 Auto-opening overdue reason dialog for:",
+        firstOverdue.task_name,
+      );
 
       setOverdueReasonDialog({
         open: true,
@@ -1057,7 +1060,9 @@ export default function FinOpsNotifications() {
                   <SelectItem value="all">All Types</SelectItem>
                   <SelectItem value="sla_overdue">SLA Overdue</SelectItem>
                   <SelectItem value="sla_warning">SLA Warning</SelectItem>
-                  <SelectItem value="overdue_reason_required">Overdue Reason Required</SelectItem>
+                  <SelectItem value="overdue_reason_required">
+                    Overdue Reason Required
+                  </SelectItem>
                   <SelectItem value="task_delayed">Task Delayed</SelectItem>
                   <SelectItem value="task_completed">Task Completed</SelectItem>
                   <SelectItem value="daily_reminder">Daily Reminder</SelectItem>
@@ -1137,9 +1142,10 @@ export default function FinOpsNotifications() {
               <Card
                 key={notification.id}
                 className={`${getNotificationColor(notification.priority, notification.type)} border-l-4 ${
-                  notification.status === "unread\" ? \"shadow-md\" : "
+                  notification.status === 'unread" ? "shadow-md" : '
                 } ${
-                  notification.type === "overdue_reason_required\" ? \"ring-2 ring-red-300\" : "
+                  notification.type ===
+                  'overdue_reason_required" ? "ring-2 ring-red-300" : '
                 }`}
               >
                 <CardContent className="p-4">
@@ -1282,21 +1288,27 @@ export default function FinOpsNotifications() {
                           )}
 
                         {notification.action_required && (
-                          <Alert className={`mt-3 p-2 ${
-                            notification.type === "overdue_reason_required"
-                              ? "border-red-300 bg-red-100"
-                              : "border-orange-200 bg-orange-50"
-                          }`}>
-                            <AlertCircle className={`h-3 w-3 ${
+                          <Alert
+                            className={`mt-3 p-2 ${
                               notification.type === "overdue_reason_required"
-                                ? "text-red-700"
-                                : "text-orange-600"
-                            }`} />
-                            <AlertDescription className={`text-xs ml-1 ${
-                              notification.type === "overdue_reason_required"
-                                ? "text-red-800 font-semibold"
-                                : "text-orange-700"
-                            }`}>
+                                ? "border-red-300 bg-red-100"
+                                : "border-orange-200 bg-orange-50"
+                            }`}
+                          >
+                            <AlertCircle
+                              className={`h-3 w-3 ${
+                                notification.type === "overdue_reason_required"
+                                  ? "text-red-700"
+                                  : "text-orange-600"
+                              }`}
+                            />
+                            <AlertDescription
+                              className={`text-xs ml-1 ${
+                                notification.type === "overdue_reason_required"
+                                  ? "text-red-800 font-semibold"
+                                  : "text-orange-700"
+                              }`}
+                            >
                               {notification.type === "overdue_reason_required"
                                 ? "🚨 URGENT: Overdue reason required - Click to provide explanation"
                                 : "Action required - Please review and take necessary steps"}
@@ -1312,13 +1324,14 @@ export default function FinOpsNotifications() {
                           variant="ghost"
                           size="sm"
                           onClick={() =>
-                          markAsRead(
-                            notification.id,
-                            notification.type === "sla_overdue" || notification.type === "overdue_reason_required",
-                            notification.task_name,
-                            notification.type,
-                          )
-                        }
+                            markAsRead(
+                              notification.id,
+                              notification.type === "sla_overdue" ||
+                                notification.type === "overdue_reason_required",
+                              notification.task_name,
+                              notification.type,
+                            )
+                          }
                           className="h-8 px-2"
                           title={
                             notification.type === "sla_overdue"
@@ -1379,19 +1392,27 @@ export default function FinOpsNotifications() {
               🚨 URGENT: Overdue Task - Immediate Explanation Required
             </DialogTitle>
             <DialogDescription className="text-base">
-              This task has exceeded its SLA deadline and requires an immediate explanation.
+              This task has exceeded its SLA deadline and requires an immediate
+              explanation.
               <br />
               <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-md">
-                <strong className="text-red-800">Task: {overdueReasonDialog.taskName}</strong>
+                <strong className="text-red-800">
+                  Task: {overdueReasonDialog.taskName}
+                </strong>
                 <br />
-                <span className="text-red-600 text-sm">Status automatically changed to OVERDUE</span>
+                <span className="text-red-600 text-sm">
+                  Status automatically changed to OVERDUE
+                </span>
               </div>
             </DialogDescription>
           </DialogHeader>
 
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="overdue-reason" className="text-red-700 font-semibold">
+              <Label
+                htmlFor="overdue-reason"
+                className="text-red-700 font-semibold"
+              >
                 Overdue Explanation *
               </Label>
               <Textarea
@@ -1402,7 +1423,8 @@ export default function FinOpsNotifications() {
                 className="min-h-[120px] border-red-300 focus:border-red-500"
               />
               <p className="text-xs text-red-600">
-                ⚠️ This explanation will be logged and may be reviewed by management.
+                ⚠️ This explanation will be logged and may be reviewed by
+                management.
               </p>
             </div>
           </div>
@@ -1424,7 +1446,9 @@ export default function FinOpsNotifications() {
             </Button>
             <Button
               onClick={submitOverdueReason}
-              disabled={!overdueReason.trim() || overdueReason.trim().length < 10}
+              disabled={
+                !overdueReason.trim() || overdueReason.trim().length < 10
+              }
               className="bg-red-600 hover:bg-red-700 text-white px-6"
             >
               ✓ Submit Explanation & Acknowledge

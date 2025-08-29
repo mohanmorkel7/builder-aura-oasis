@@ -153,7 +153,9 @@ class FinOpsAlertService {
     // Check if overdue (including exactly at deadline - 0 minutes)
     if (minutesRemaining <= 0) {
       const overdueMinutes = Math.abs(minutesRemaining);
-      console.log(`🚨 Task is overdue by ${overdueMinutes} minutes - marking as overdue immediately`);
+      console.log(
+        `🚨 Task is overdue by ${overdueMinutes} minutes - marking as overdue immediately`,
+      );
 
       await this.sendSLAOverdueAlert(task, subtask, overdueMinutes);
       await this.updateSubtaskStatus(task.id, subtask.id, "overdue");
@@ -481,21 +483,30 @@ class FinOpsAlertService {
   /**
    * Create an overdue reason request that requires immediate attention
    */
-  private async createOverdueReasonRequest(task: any, subtask: any, overdueMinutes: number): Promise<void> {
+  private async createOverdueReasonRequest(
+    task: any,
+    subtask: any,
+    overdueMinutes: number,
+  ): Promise<void> {
     try {
-      console.log(`Creating overdue reason request for ${task.task_name} - ${subtask.name}`);
+      console.log(
+        `Creating overdue reason request for ${task.task_name} - ${subtask.name}`,
+      );
 
       // Create a special notification type that requires overdue reason
-      await pool.query(`
+      await pool.query(
+        `
         INSERT INTO finops_activity_log (action, task_id, subtask_id, user_name, details, timestamp)
         VALUES ($1, $2, $3, $4, $5, NOW())
-      `, [
-        'overdue_reason_required',
-        task.id,
-        subtask.id,
-        'System',
-        `OVERDUE REASON REQUIRED: ${task.task_name} - ${subtask.name} is overdue by ${overdueMinutes} minutes. Immediate explanation required.`
-      ]);
+      `,
+        [
+          "overdue_reason_required",
+          task.id,
+          subtask.id,
+          "System",
+          `OVERDUE REASON REQUIRED: ${task.task_name} - ${subtask.name} is overdue by ${overdueMinutes} minutes. Immediate explanation required.`,
+        ],
+      );
 
       // Also create an entry in a dedicated overdue tracking table
       const createTableQuery = `
@@ -519,22 +530,26 @@ class FinOpsAlertService {
       await pool.query(createTableQuery);
 
       // Insert tracking record
-      await pool.query(`
+      await pool.query(
+        `
         INSERT INTO finops_overdue_tracking
         (task_id, subtask_id, task_name, subtask_name, assigned_to, overdue_minutes, status)
         VALUES ($1, $2, $3, $4, $5, $6, 'pending_reason')
         ON CONFLICT DO NOTHING
-      `, [
-        task.id,
-        subtask.id,
-        task.task_name,
-        subtask.name,
-        task.assigned_to,
-        overdueMinutes
-      ]);
+      `,
+        [
+          task.id,
+          subtask.id,
+          task.task_name,
+          subtask.name,
+          task.assigned_to,
+          overdueMinutes,
+        ],
+      );
 
-      console.log(`✅ Overdue reason request created for ${task.task_name} - ${subtask.name}`);
-
+      console.log(
+        `✅ Overdue reason request created for ${task.task_name} - ${subtask.name}`,
+      );
     } catch (error) {
       console.error("Error creating overdue reason request:", error);
     }
