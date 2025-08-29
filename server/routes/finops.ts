@@ -681,6 +681,13 @@ async function sendReplicaDownAlertOnce(
       return;
     }
 
+    console.log("Direct-call payload (finops.ts)", {
+      taskId,
+      subtaskId,
+      title,
+      user_ids: userIds,
+    });
+
     const resp = await fetch("https://pulsealerts.mylapay.com/direct-call", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
