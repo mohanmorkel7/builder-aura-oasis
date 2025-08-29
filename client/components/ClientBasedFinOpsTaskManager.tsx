@@ -753,14 +753,44 @@ export default function ClientBasedFinOpsTaskManager() {
     },
   });
 
-  // Real-time updates for SLA warnings
+  // Real-time updates for SLA warnings and automatic status updates
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 60000); // Update every minute
+      const now = new Date();
+      setCurrentTime(now);
+
+      // Automatic status updates for overdue tasks
+      if (finopsTasks && finopsTasks.length > 0) {
+        console.log("🔄 Checking for overdue tasks at", now.toLocaleTimeString());
+
+        finopsTasks.forEach(task => {
+          if (!task.subtasks) return;
+
+          task.subtasks.forEach(subtask => {
+            // Only update pending tasks that should become overdue
+            if (subtask.status === "pending" && subtask.start_time) {
+              const slaWarning = getSLAWarning(subtask.start_time, subtask.status);
+
+              // If task is overdue but status is still pending, auto-update it
+              if (slaWarning && slaWarning.type === "overdue") {
+                console.log(`🚨 Auto-updating task ${subtask.name} from pending to overdue`);
+
+                // Trigger status update mutation
+                updateSubTaskMutation.mutate({
+                  taskId: task.id,
+                  subTaskId: subtask.id,
+                  status: "overdue",
+                  userName: "System Auto-Update",
+                });
+              }
+            }
+          });
+        });
+      }
+    }, 30000); // Update every 30 seconds for faster overdue detection
 
     return () => clearInterval(timer);
-  }, []);
+  }, [finopsTasks, updateSubTaskMutation]);
 
   // Fetch FinOps clients (separate from sales leads)
   const {
