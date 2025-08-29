@@ -124,7 +124,7 @@ const extractNameFromValue = (value: string, depth: number = 0): string => {
       // Handle cases like {"John Doe"} where John Doe might be quoted or unquoted
       if (content.startsWith('"') && content.endsWith('"')) {
         const extracted = content.slice(1, -1); // Remove quotes
-        console.log("✅ Manual extraction with quotes:", extracted);
+        console.log("�� Manual extraction with quotes:", extracted);
         // Recursively parse in case there are more nested levels
         return extractNameFromValue(extracted, depth + 1);
       } else {
@@ -158,7 +158,7 @@ const extractNameFromValue = (value: string, depth: number = 0): string => {
         ? extractNameFromValue(parsed, depth + 1)
         : value;
     } catch (e) {
-      console.log("⚠️ Quoted string parsing failed");
+      console.log("⚠�� Quoted string parsing failed");
     }
   }
 
@@ -990,6 +990,40 @@ export default function ClientBasedFinOpsTaskManager() {
       delayReason,
       delayNotes,
     });
+  };
+
+  // Force update all overdue statuses immediately
+  const forceUpdateOverdueStatuses = () => {
+    console.log("🔧 Force updating all overdue statuses...");
+    let updatedCount = 0;
+
+    finopsTasks?.forEach(task => {
+      if (!task.subtasks) return;
+
+      task.subtasks.forEach(subtask => {
+        if (subtask.status === "pending" && subtask.start_time) {
+          const slaWarning = getSLAWarning(subtask.start_time, subtask.status);
+
+          if (slaWarning && slaWarning.type === "overdue") {
+            console.log(`🚨 Force updating ${subtask.name} to overdue`);
+            updatedCount++;
+
+            updateSubTaskMutation.mutate({
+              taskId: task.id,
+              subTaskId: subtask.id,
+              status: "overdue",
+              userName: "Manual Status Update",
+            });
+          }
+        }
+      });
+    });
+
+    if (updatedCount === 0) {
+      console.log("✅ No overdue tasks found that need status updates");
+    } else {
+      console.log(`✅ Force updated ${updatedCount} tasks to overdue status`);
+    }
   };
 
   const toggleTaskExpansion = (taskId: number) => {
