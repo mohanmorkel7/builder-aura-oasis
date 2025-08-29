@@ -274,6 +274,7 @@ router.get("/", async (req: Request, res: Response) => {
           rn.action,
           rn.user_name,
           rn.details,
+          rn.details as title,
           rn.timestamp as created_at,
           ft.task_name,
           ft.client_name,
