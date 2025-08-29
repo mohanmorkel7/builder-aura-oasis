@@ -3011,6 +3011,88 @@ export default function ClientBasedFinOpsTaskManager() {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Overdue Reason Dialog */}
+      <Dialog open={showOverdueReasonDialog} onOpenChange={setShowOverdueReasonDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-red-700">
+              <AlertTriangle className="w-5 h-5 text-red-600" />
+              Reason for Overdue Status
+            </DialogTitle>
+            <DialogDescription>
+              This task was overdue and is now being changed to a different status.
+              Please provide a reason for why it was overdue.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="p-3 bg-red-50 border border-red-200 rounded-md">
+              <div className="text-sm font-medium text-red-800">
+                Task: {overdueReasonData?.taskName}
+              </div>
+              <div className="text-sm text-red-700">
+                Subtask: {overdueReasonData?.subtaskName}
+              </div>
+              <div className="text-sm text-red-600">
+                Status changing from: Overdue → {overdueReasonData?.newStatus}
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="overdue_reason">Reason for Overdue *</Label>
+              <Select value={overdueReason} onValueChange={setOverdueReason}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select overdue reason" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="technical_issue">Technical Issue</SelectItem>
+                  <SelectItem value="data_unavailable">Data Unavailable</SelectItem>
+                  <SelectItem value="external_dependency">External Dependency</SelectItem>
+                  <SelectItem value="resource_constraint">Resource Constraint</SelectItem>
+                  <SelectItem value="process_change">Process Change</SelectItem>
+                  <SelectItem value="client_delay">Client Delay</SelectItem>
+                  <SelectItem value="system_downtime">System Downtime</SelectItem>
+                  <SelectItem value="urgent_priority_task">Urgent Priority Task</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {overdueReason === "other" && (
+              <div>
+                <Label htmlFor="custom_reason">Please specify</Label>
+                <Textarea
+                  id="custom_reason"
+                  placeholder="Please describe the specific reason..."
+                  rows={3}
+                />
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setShowOverdueReasonDialog(false);
+                setOverdueReasonData(null);
+                setOverdueReason("");
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={submitOverdueReason}
+              disabled={!overdueReason}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Submit Reason & Update Status
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
