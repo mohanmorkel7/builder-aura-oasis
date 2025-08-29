@@ -983,14 +983,30 @@ export default function FinOpsNotifications() {
     const diffMs = currentISTTime.getTime() - inputISTTime.getTime();
     const diffMinutes = Math.floor(diffMs / (1000 * 60));
 
-    console.log(`🕒 Fixed IST Time calculation:`, {
-      original: dateString,
+    // Special debugging for the user's specific timestamp
+    if (dateString === "2025-08-29T01:07:55.113Z") {
+      console.log(`🔍 DEBUGGING USER TIMESTAMP: ${dateString}`, {
+        inputUTC: inputDate.toISOString(),
+        inputIST: inputISTTime.toISOString(),
+        currentUTC: new Date().toISOString(),
+        currentIST: currentISTTime.toISOString(),
+        diffMs,
+        diffMinutes,
+        diffHours: Math.floor(diffMinutes / 60),
+        expectedResult: diffMinutes < 60 ? `${diffMinutes} min ago` : `${Math.floor(diffMinutes / 60)}h ${diffMinutes % 60}m ago`
+      });
+    }
+
+    console.log(`🕒 IST Time calculation for ${dateString}:`, {
       inputUTC: inputDate.toISOString(),
       inputIST: inputISTTime.toISOString(),
       currentIST: currentISTTime.toISOString(),
       diffMs,
       diffMinutes,
-      serverCurrentTime: new Date().toISOString()
+      result: diffMinutes < 1 ? "Just now"
+             : diffMinutes < 60 ? `${diffMinutes} min ago`
+             : diffMinutes < 1440 ? `${Math.floor(diffMinutes / 60)}h ${diffMinutes % 60}m ago`
+             : "date format"
     });
 
     // Real-time calculation in IST
