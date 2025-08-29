@@ -57,11 +57,11 @@ async function isDatabaseAvailable() {
   }
 }
 
-// Mock activity logs for fallback
+// Mock activity logs for fallback (IST timezone)
 const mockActivityLogs = [
   {
     id: "1",
-    timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(), // 30 minutes ago
+    timestamp: new Date(getCurrentISTTime().getTime() - 30 * 60 * 1000).toISOString(), // 30 minutes ago IST
     action: "subtask_status_changed",
     entity_type: "subtask",
     entity_id: "st_001",
@@ -76,7 +76,7 @@ const mockActivityLogs = [
   },
   {
     id: "2",
-    timestamp: new Date(Date.now() - 45 * 60 * 1000).toISOString(), // 45 minutes ago
+    timestamp: new Date(getCurrentISTTime().getTime() - 45 * 60 * 1000).toISOString(), // 45 minutes ago IST
     action: "delay_reported",
     entity_type: "subtask",
     entity_id: "st_002",
@@ -92,7 +92,7 @@ const mockActivityLogs = [
   },
   {
     id: "3",
-    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
+    timestamp: new Date(getCurrentISTTime().getTime() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago IST
     action: "sla_alert",
     entity_type: "subtask",
     entity_id: "st_003",
@@ -106,7 +106,7 @@ const mockActivityLogs = [
   },
   {
     id: "4",
-    timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(), // 4 hours ago
+    timestamp: new Date(getCurrentISTTime().getTime() - 4 * 60 * 60 * 1000).toISOString(), // 4 hours ago IST
     action: "task_created",
     entity_type: "task",
     entity_id: "t_001",
