@@ -1486,6 +1486,73 @@ router.post("/setup-auto-sla", async (req: Request, res: Response) => {
   }
 });
 
+// Manual SLA trigger endpoint for immediate testing
+router.post("/trigger-sla-check", async (req: Request, res: Response) => {
+  try {
+    if (await isDatabaseAvailable()) {
+      console.log("🚨 Manual SLA check triggered...");
+
+      // Import and use the alert service directly
+      const { default: finopsAlertService } = await import("../services/finopsAlertService");
+
+      // Run SLA checks
+      await finopsAlertService.checkSLAAlerts();
+
+      // Also run auto-sync to create notifications
+      const checkQuery = `SELECT * FROM check_subtask_sla_notifications_ist()`;
+      const checkResult = await pool.query(checkQuery);
+
+      const createdNotifications = [];
+
+      for (const notification of checkResult.rows) {
+        const insertQuery = `
+          INSERT INTO finops_activity_log (action, task_id, subtask_id, user_name, details, timestamp)
+          VALUES ($1, $2, $3, $4, $5, NOW())
+          RETURNING *
+        `;
+
+        const action = notification.notification_type === "sla_warning" ? "sla_alert" : "overdue_notification_sent";
+
+        const result = await pool.query(insertQuery, [
+          action,
+          notification.task_id,
+          notification.subtask_id,
+          "System",
+          notification.message,
+        ]);
+
+        createdNotifications.push({
+          ...result.rows[0],
+          notification_type: notification.notification_type,
+          task_name: notification.task_name,
+          subtask_name: notification.subtask_name,
+          assigned_to: notification.assigned_to,
+          time_diff_minutes: notification.time_diff_minutes,
+        });
+      }
+
+      res.json({
+        message: "Manual SLA check completed successfully",
+        notifications_created: createdNotifications.length,
+        notifications: createdNotifications,
+        timestamp: new Date().toISOString(),
+        ist_time: new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),
+      });
+    } else {
+      res.json({
+        message: "Database unavailable - cannot perform SLA check",
+        timestamp: new Date().toISOString(),
+      });
+    }
+  } catch (error) {
+    console.error("Manual SLA check error:", error);
+    res.status(500).json({
+      error: "Manual SLA check failed",
+      message: error.message,
+    });
+  }
+});
+
 // Auto-sync endpoint to check and create SLA notifications
 router.post("/auto-sync", async (req: Request, res: Response) => {
   try {
