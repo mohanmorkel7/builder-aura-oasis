@@ -1621,6 +1621,84 @@ router.post("/auto-sync", async (req: Request, res: Response) => {
   }
 });
 
+// Create a task that is overdue RIGHT NOW for real-time testing
+router.post("/test/create-overdue-now", async (req: Request, res: Response) => {
+  try {
+    if (await isDatabaseAvailable()) {
+      console.log("Creating task that is overdue right now in IST...");
+
+      // Get current IST time
+      const nowIST = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
+      const currentIST = new Date(nowIST);
+
+      // Create a time that was 1 minute ago in IST (so it's already overdue)
+      const overdueTime = new Date(currentIST.getTime() - 60000); // 1 minute ago
+      const overdueTimeStr = overdueTime.toTimeString().slice(0, 5); // HH:MM format
+
+      console.log(`🕐 Current IST: ${currentIST.toLocaleString("en-IN")}`);
+      console.log(`⏰ Setting task start time to: ${overdueTimeStr} (1 minute ago)`);
+
+      // Create/update test task
+      const taskQuery = `
+        INSERT INTO finops_tasks (id, task_name, assigned_to, reporting_managers, escalation_managers, effective_from, duration, is_active, created_by, status, client_name)
+        VALUES (98, 'REAL-TIME OVERDUE TEST', 'Test User Real Time', '["Test Manager"]'::jsonb, '["Test Escalation"]'::jsonb, CURRENT_DATE, 'daily', true, 1, 'in_progress', 'Real Time Test Client')
+        ON CONFLICT (id) DO UPDATE SET
+          task_name = EXCLUDED.task_name,
+          assigned_to = EXCLUDED.assigned_to,
+          status = 'in_progress',
+          client_name = EXCLUDED.client_name
+      `;
+
+      await pool.query(taskQuery);
+
+      // Create/update test subtask with start_time that's already passed
+      const subtaskQuery = `
+        INSERT INTO finops_subtasks (id, task_id, name, description, start_time, sla_hours, sla_minutes, status, assigned_to, auto_notify, order_position)
+        VALUES (98, 98, 'Real Time Test Subtask', 'This should be overdue immediately', $1::TIME, 0, 1, 'pending', 'Test User Real Time', true, 1)
+        ON CONFLICT (id) DO UPDATE SET
+          start_time = EXCLUDED.start_time,
+          status = 'pending',
+          assigned_to = EXCLUDED.assigned_to,
+          auto_notify = true
+      `;
+
+      await pool.query(subtaskQuery, [overdueTimeStr]);
+
+      res.json({
+        message: "Real-time overdue test task created successfully!",
+        instructions: [
+          "1. This task has start_time set to 1 minute ago in IST",
+          "2. It should be detected as overdue immediately",
+          "3. Trigger manual SLA check using: POST /api/notifications-production/trigger-sla-check",
+          "4. Watch FinOps Notifications for real-time updates",
+          "5. The system should automatically mark it as overdue and create notifications"
+        ],
+        task_details: {
+          task_id: 98,
+          task_name: "REAL-TIME OVERDUE TEST",
+          assigned_to: "Test User Real Time",
+          start_time_ist: overdueTimeStr,
+          current_ist: currentIST.toLocaleString("en-IN"),
+          should_be_overdue_by: "1 minute"
+        },
+        next_step: "Call POST /api/notifications-production/trigger-sla-check to test",
+        timestamp: new Date().toISOString(),
+      });
+    } else {
+      res.json({
+        message: "Database unavailable - would create real-time overdue task in production",
+        timestamp: new Date().toISOString(),
+      });
+    }
+  } catch (error) {
+    console.error("Error creating real-time overdue task:", error);
+    res.status(500).json({
+      error: "Failed to create real-time overdue task",
+      message: error.message,
+    });
+  }
+});
+
 // Create immediate overdue notification for testing the new system
 router.post(
   "/test/create-immediate-overdue",
