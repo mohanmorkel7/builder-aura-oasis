@@ -158,6 +158,11 @@ router.get("/", async (req: Request, res: Response) => {
         params.push(read === "true");
       }
 
+      // Add date parameter if provided
+      if (date) {
+        params.push(date as string);
+      }
+
       const whereClause =
         whereConditions.length > 0
           ? `WHERE ${whereConditions.join(" AND ")}`
