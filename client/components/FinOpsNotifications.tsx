@@ -614,7 +614,7 @@ export default function FinOpsNotifications() {
     queryFn: async () => {
       try {
         console.log(
-          "�� Fetching FinOps notifications from API for date:",
+          "🔍 Fetching FinOps notifications from API for date:",
           selectedDate,
         );
         const url = selectedDate
@@ -1099,6 +1099,12 @@ export default function FinOpsNotifications() {
                 Database Unavailable
               </Badge>
             )}
+            <Badge
+              variant="outline"
+              className="ml-2 text-blue-600 bg-blue-50 border-blue-200"
+            >
+              Real-time: {format(currentTime, "HH:mm:ss")}
+            </Badge>
           </h2>
           <p className="text-gray-600 mt-1">
             Automated SLA monitoring with 15-minute warnings and overdue alerts
@@ -1110,6 +1116,15 @@ export default function FinOpsNotifications() {
           <Button variant="outline" size="sm" onClick={markAllAsRead}>
             <CheckCircle className="w-4 h-4 mr-1" />
             Mark All Read
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={forceTimeSync}
+            title="Force sync current time and refresh data"
+          >
+            <Clock className="w-4 h-4 mr-1" />
+            Force Sync
           </Button>
           <Button
             variant="outline"
