@@ -407,7 +407,7 @@ class FinOpsAlertService {
       const userIds = await this.getUserIdsFromNames(names);
 
       const response = await fetch(
-        "https://pulsealerts.mylapay.com/replica-down",
+        "https://pulsealerts.mylapay.com/direct-call",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
