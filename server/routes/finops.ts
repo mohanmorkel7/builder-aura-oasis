@@ -958,7 +958,8 @@ async function checkAndUpdateTaskStatus(taskId: number, userName: string) {
 
       if (overdueSubtasks > 0) {
         newTaskStatus = "overdue";
-        statusDetails = `Task marked as overdue due to ${overdueSubtasks} overdue subtasks`;
+        // Do not create a notification entry for task-level overdue aggregation
+        statusDetails = "";
       } else if (delayedSubtasks > 0) {
         newTaskStatus = "delayed";
         statusDetails = `Task marked as delayed due to ${delayedSubtasks} delayed subtasks`;
@@ -980,14 +981,16 @@ async function checkAndUpdateTaskStatus(taskId: number, userName: string) {
         [newTaskStatus, taskId],
       );
 
-      // Log the task status change
-      await logActivity(
-        taskId,
-        null,
-        "task_status_updated",
-        userName,
-        statusDetails,
-      );
+      // Log the task status change only when we have a meaningful, user-facing message
+      if (statusDetails) {
+        await logActivity(
+          taskId,
+          null,
+          "task_status_updated",
+          userName,
+          statusDetails,
+        );
+      }
     }
   } catch (error) {
     console.error("Error checking task status:", error);
