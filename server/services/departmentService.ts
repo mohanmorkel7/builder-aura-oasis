@@ -142,6 +142,10 @@ export class DepartmentService {
     ssoUser: any,
   ): Promise<UserDepartmentInfo | null> {
     try {
+      if (!ssoUser || !ssoUser.mail) {
+        console.warn("SSO user missing email. Skipping create/update.");
+        return null;
+      }
       console.log(`🔧 createOrUpdateSSOUser called for: ${ssoUser.mail}`);
 
       // Find user in our department mapping
@@ -322,6 +326,15 @@ export class DepartmentService {
       let updatedCount = 0;
 
       for (const user of userDepartments.users) {
+        // Skip entries without an email (likely rooms/resources)
+        if (!user.email) {
+          console.log(
+            `⏭️  Skipping entry without email: ${user.displayName || "unknown"}`,
+          );
+          skippedCount++;
+          continue;
+        }
+
         console.log(
           `🔍 Processing user: ${user.email} (department: ${user.department || "none"})`,
         );
