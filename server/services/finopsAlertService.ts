@@ -44,6 +44,61 @@ interface EmailRecipient {
 class FinOpsAlertService {
   private emailTransporter: nodemailer.Transporter;
 
+  private parseManagers(val: any): string[] {
+    if (!val) return [];
+    if (Array.isArray(val))
+      return val
+        .map(String)
+        .map((s) => s.trim())
+        .filter(Boolean);
+    if (typeof val === "string") {
+      let s = val.trim();
+      if (s.startsWith("{") && s.endsWith("}")) {
+        s = s.slice(1, -1);
+        return s
+          .split(",")
+          .map((x) => x.trim())
+          .map((x) => x.replace(/^"|"$/g, ""))
+          .filter(Boolean);
+      }
+      try {
+        const parsed = JSON.parse(s);
+        if (Array.isArray(parsed))
+          return parsed
+            .map(String)
+            .map((x) => x.trim())
+            .filter(Boolean);
+      } catch {}
+      return s
+        .split(",")
+        .map((x) => x.trim())
+        .filter(Boolean);
+    }
+    try {
+      const parsed = JSON.parse(val);
+      return Array.isArray(parsed)
+        ? parsed
+            .map(String)
+            .map((x) => x.trim())
+            .filter(Boolean)
+        : [];
+    } catch {
+      return [];
+    }
+  }
+
+  private async getUserIdsFromNames(names: string[]): Promise<string[]> {
+    if (!names.length) return [];
+    const lowered = names.map((n) => n.toLowerCase());
+    const result = await pool.query(
+      `SELECT azure_object_id, first_name, last_name FROM users WHERE LOWER(CONCAT(first_name,' ',last_name)) = ANY($1)`,
+      [lowered],
+    );
+    return result.rows
+      .map((r: any) => r.azure_object_id)
+      .filter((id: string | null) => !!id) as string[];
+  }
+
   constructor() {
     // Initialize email transporter
     this.emailTransporter = nodemailer.createTransport({
@@ -84,7 +139,7 @@ class FinOpsAlertService {
     try {
       console.log("Checking for daily tasks to execute...");
 
-const today = new Date().toISOString().split("T")[0];
+      const today = new Date().toISOString().split("T")[0];
 
       const tasksToExecute = await pool.query(
         `
@@ -95,7 +150,7 @@ const today = new Date().toISOString().split("T")[0];
         AND (last_run IS NULL OR DATE(last_run AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Kolkata') < $1)
         AND deleted_at IS NULL
       `,
-      [today],
+        [today],
       );
 
       for (const task of tasksToExecute.rows) {
@@ -125,7 +180,7 @@ const today = new Date().toISOString().split("T")[0];
    * Check SLA for individual subtask and send alerts if needed
    */
   private async checkSubtaskSLA(task: any, subtask: any): Promise<void> {
-const now = new Date();
+    const now = new Date();
 
     // Only check pending tasks for overdue status
     if (subtask.status !== "pending") {
@@ -199,7 +254,7 @@ const now = new Date();
           email: `${task.assigned_to.toLowerCase().replace(" ", ".")}@company.com`,
           type: "assigned" as const,
         },
-        ...JSON.parse(task.reporting_managers || "[]").map((name: string) => ({
+        ...this.parseManagers(task.reporting_managers).map((name: string) => ({
           name,
           email: `${name.toLowerCase().replace(" ", ".")}@company.com`,
           type: "reporting" as const,
@@ -265,12 +320,12 @@ const now = new Date();
           email: `${task.assigned_to.toLowerCase().replace(" ", ".")}@company.com`,
           type: "assigned" as const,
         },
-        ...JSON.parse(task.reporting_managers || "[]").map((name: string) => ({
+        ...this.parseManagers(task.reporting_managers).map((name: string) => ({
           name,
           email: `${name.toLowerCase().replace(" ", ".")}@company.com`,
           type: "reporting" as const,
         })),
-        ...JSON.parse(task.escalation_managers || "[]").map((name: string) => ({
+        ...this.parseManagers(task.escalation_managers).map((name: string) => ({
           name,
           email: `${name.toLowerCase().replace(" ", ".")}@company.com`,
           type: "escalation" as const,
@@ -308,6 +363,82 @@ const now = new Date();
       );
     } catch (error) {
       console.error("Error sending SLA overdue alert:", error);
+    }
+  }
+
+  /**
+   * Send external alert to Pulse Alerts endpoint
+   */
+  private async sendReplicaDownAlert(
+    taskId: number,
+    subtaskId: string | number,
+    title: string,
+  ): Promise<void> {
+    try {
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS finops_external_alerts (
+          id SERIAL PRIMARY KEY,
+          task_id INTEGER NOT NULL,
+          subtask_id INTEGER NOT NULL,
+          alert_key TEXT NOT NULL,
+          title TEXT,
+          created_at TIMESTAMP DEFAULT NOW(),
+          UNIQUE(task_id, subtask_id, alert_key)
+        )
+      `);
+
+      const reserve = await pool.query(
+        `INSERT INTO finops_external_alerts (task_id, subtask_id, alert_key, title)
+         VALUES ($1, $2, $3, $4)
+         ON CONFLICT (task_id, subtask_id, alert_key) DO NOTHING
+         RETURNING id`,
+        [taskId, Number(subtaskId), "replica_down_overdue", title],
+      );
+
+      if (reserve.rows.length === 0) {
+        return;
+      }
+
+      // Resolve user_ids from reporting & escalation managers
+      const taskRow = await pool.query(
+        `SELECT reporting_managers, escalation_managers, assigned_to FROM finops_tasks WHERE id = $1`,
+        [taskId],
+      );
+      const managers = taskRow.rows[0] || {};
+      const names = Array.from(
+        new Set([
+          ...this.parseManagers(managers.reporting_managers),
+          ...this.parseManagers(managers.escalation_managers),
+          ...this.parseManagers(managers.assigned_to),
+        ]),
+      );
+      const userIds = await this.getUserIdsFromNames(names);
+
+      console.log("Direct-call payload (service)", {
+        taskId,
+        subtaskId,
+        title,
+        manager_names: names,
+        user_ids: userIds,
+      });
+
+      const response = await fetch(
+        "https://pulsealerts.mylapay.com/direct-call",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            receiver: "CRM_Switch",
+            title,
+            user_ids: userIds,
+          }),
+        },
+      );
+      if (!response.ok) {
+        console.warn("Replica-down alert failed:", response.status);
+      }
+    } catch (err) {
+      console.warn("Replica-down alert error:", (err as Error).message);
     }
   }
 
@@ -460,22 +591,45 @@ const now = new Date();
     status: string,
   ): Promise<void> {
     try {
+      // Read current subtask status and name before updating
+      const currentResult = await pool.query(
+        `
+        SELECT status, name FROM finops_subtasks WHERE task_id = $1 AND id = $2
+      `,
+        [taskId, subtaskId],
+      );
+      const currentRow = currentResult.rows[0] || { status: null, name: "" };
+      const previousStatus = currentRow?.status || "unknown";
+      const subtaskName = currentRow?.name || String(subtaskId);
+
+      // Update to the new status
       await pool.query(
         `
-        UPDATE finops_subtasks 
-        SET status = $1, updated_at = CURRENT_TIMESTAMP 
+        UPDATE finops_subtasks
+        SET status = $1, updated_at = CURRENT_TIMESTAMP
         WHERE task_id = $2 AND id = $3
       `,
         [status, taskId, subtaskId],
       );
+
+      // Build human-readable status change message (special phrasing for overdue)
+      const statusChangeMessage =
+        status === "overdue"
+          ? `Take immediate action on the overdue subtask ${subtaskName}`
+          : `Subtask "${subtaskName}" status changed from "${previousStatus}" to "${status}"`;
 
       await this.logActivity(
         taskId,
         subtaskId,
         "status_changed",
         "System",
-        `Status automatically changed to ${status} due to SLA breach`,
+        statusChangeMessage,
       );
+
+      // Trigger external alert only for overdue transitions
+      if (status === "overdue") {
+        await this.sendReplicaDownAlert(taskId, subtaskId, statusChangeMessage);
+      }
     } catch (error) {
       console.error("Error updating subtask status:", error);
     }
@@ -620,7 +774,7 @@ const now = new Date();
           email: `${subtaskData.assigned_to.toLowerCase().replace(" ", ".")}@company.com`,
           type: "assigned" as const,
         },
-        ...JSON.parse(subtaskData.reporting_managers || "[]").map(
+        ...this.parseManagers(subtaskData.reporting_managers).map(
           (name: string) => ({
             name,
             email: `${name.toLowerCase().replace(" ", ".")}@company.com`,

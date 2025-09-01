@@ -274,6 +274,7 @@ router.get("/", async (req: Request, res: Response) => {
           rn.action,
           rn.user_name,
           rn.details,
+          rn.details as title,
           rn.timestamp as created_at,
           ft.task_name,
           ft.client_name,
@@ -1738,9 +1739,9 @@ router.post("/setup-auto-sla", async (req: Request, res: Response) => {
             fs.name as subtask_name,
             COALESCE(fs.assigned_to, ft.assigned_to) as assigned_to,
             EXTRACT(EPOCH FROM (current_time - fs.start_time))/60 as time_diff_minutes,
-            format('Overdue by %s min • %s min ago',
-                   ROUND(EXTRACT(EPOCH FROM (current_time - fs.start_time))/60),
-                   ROUND(EXTRACT(EPOCH FROM (current_time - fs.start_time))/60)) as message
+            format('Overdue by %s • %s ago',
+                   CONCAT(FLOOR(EXTRACT(EPOCH FROM (current_time - fs.start_time))/3600), 'h ', MOD(ROUND(EXTRACT(EPOCH FROM (current_time - fs.start_time))/60)::int, 60), 'm'),
+                   CONCAT(FLOOR(EXTRACT(EPOCH FROM (current_time - fs.start_time))/3600), 'h ', MOD(ROUND(EXTRACT(EPOCH FROM (current_time - fs.start_time))/60)::int, 60), 'm')) as message
           FROM finops_subtasks fs
           LEFT JOIN finops_tasks ft ON fs.task_id = ft.id
           WHERE fs.start_time IS NOT NULL
@@ -3370,13 +3371,18 @@ router.post("/create-overdue-from-sla", async (req: Request, res: Response) => {
       const timeAgo = Math.floor(
         (currentTime.getTime() - overdueTime.getTime()) / 60000,
       );
+      const toHM = (m: number) => {
+        const h = Math.floor(m / 60);
+        const mm = m % 60;
+        return `${h}h ${mm}m`;
+      };
 
       const result = await pool.query(insertQuery, [
         "overdue_notification_sent",
         task_id,
         subtask_id || null,
         "System",
-        `Overdue by ${overdue_minutes} min • ${timeAgo} min ago`,
+        `Overdue by ${toHM(overdue_minutes)} • ${toHM(timeAgo)} ago`,
       ]);
 
       res.json({

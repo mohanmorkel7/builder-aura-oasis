@@ -33,6 +33,32 @@ router.get("/", async (req: Request, res: Response) => {
   }
 });
 
+// Get user by Azure AD object ID (SSO mapping)
+router.get("/by-azure/:azureObjectId", async (req: Request, res: Response) => {
+  try {
+    const azureObjectId = req.params.azureObjectId;
+    if (!azureObjectId || azureObjectId.length < 5) {
+      return res.status(400).json({ error: "Invalid Azure Object ID" });
+    }
+
+    if (!(await isDatabaseAvailable())) {
+      return res
+        .status(503)
+        .json({ error: "Database not available for SSO lookup" });
+    }
+
+    const user = await UserRepository.findByAzureObjectId(azureObjectId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json(user);
+  } catch (error) {
+    console.error("Error fetching user by azure_object_id:", error);
+    res.status(500).json({ error: "Failed to fetch user by Azure ID" });
+  }
+});
+
 // Get user by ID
 router.get("/:id", async (req: Request, res: Response) => {
   try {
@@ -396,10 +422,8 @@ router.post("/:id/change-password", async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Invalid user ID" });
     }
 
-    if (!oldPassword || !newPassword) {
-      return res
-        .status(400)
-        .json({ error: "Old password and new password are required" });
+    if (!newPassword) {
+      return res.status(400).json({ error: "New password is required" });
     }
 
     if (newPassword.length < 6) {
@@ -416,13 +440,23 @@ router.post("/:id/change-password", async (req: Request, res: Response) => {
         return res.status(404).json({ error: "User not found" });
       }
 
-      // Verify old password
-      const isOldPasswordValid = await bcrypt.compare(
-        oldPassword,
-        user.password_hash,
-      );
-      if (!isOldPasswordValid) {
-        return res.status(400).json({ error: "Current password is incorrect" });
+      // Allow SSO users without a real password to set one without verifying old password
+      const hasRealHash =
+        typeof user.password_hash === "string" &&
+        user.password_hash.startsWith("$2");
+      if (hasRealHash) {
+        if (!oldPassword) {
+          return res.status(400).json({ error: "Old password is required" });
+        }
+        const isOldPasswordValid = await bcrypt.compare(
+          oldPassword,
+          user.password_hash,
+        );
+        if (!isOldPasswordValid) {
+          return res
+            .status(400)
+            .json({ error: "Current password is incorrect" });
+        }
       }
 
       // Hash new password and update

@@ -603,6 +603,116 @@ router.delete("/tasks/:id", async (req: Request, res: Response) => {
   }
 });
 
+function parseManagerNames(val: any): string[] {
+  if (!val) return [];
+  if (Array.isArray(val))
+    return val
+      .map(String)
+      .map((s) => s.trim())
+      .filter(Boolean);
+  if (typeof val === "string") {
+    let s = val.trim();
+    if (s.startsWith("{") && s.endsWith("}")) {
+      s = s.slice(1, -1);
+      return s
+        .split(",")
+        .map((x) => x.trim())
+        .map((x) => x.replace(/^\"|\"$/g, ""))
+        .filter(Boolean);
+    }
+    try {
+      const parsed = JSON.parse(s);
+      if (Array.isArray(parsed))
+        return parsed
+          .map(String)
+          .map((x) => x.trim())
+          .filter(Boolean);
+    } catch {}
+    return s
+      .split(",")
+      .map((x) => x.trim())
+      .filter(Boolean);
+  }
+  try {
+    const parsed = JSON.parse(val);
+    return Array.isArray(parsed)
+      ? parsed
+          .map(String)
+          .map((x) => x.trim())
+          .filter(Boolean)
+      : [];
+  } catch {
+    return [];
+  }
+}
+
+async function getUserIdsFromNames(names: string[]): Promise<string[]> {
+  if (!names.length) return [];
+  const lowered = names.map((n) => n.toLowerCase());
+  const result = await pool.query(
+    `SELECT azure_object_id, first_name, last_name FROM users WHERE LOWER(CONCAT(first_name,' ',last_name)) = ANY($1)`,
+    [lowered],
+  );
+  return result.rows
+    .map((r: any) => r.azure_object_id)
+    .filter((id: string | null) => !!id) as string[];
+}
+
+async function sendReplicaDownAlertOnce(
+  taskId: number,
+  subtaskId: string | number,
+  title: string,
+  userIds: string[],
+): Promise<void> {
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS finops_external_alerts (
+        id SERIAL PRIMARY KEY,
+        task_id INTEGER NOT NULL,
+        subtask_id INTEGER NOT NULL,
+        alert_key TEXT NOT NULL,
+        title TEXT,
+        created_at TIMESTAMP DEFAULT NOW(),
+        UNIQUE(task_id, subtask_id, alert_key)
+      )
+    `);
+
+    const reserve = await pool.query(
+      `INSERT INTO finops_external_alerts (task_id, subtask_id, alert_key, title)
+       VALUES ($1, $2, $3, $4)
+       ON CONFLICT (task_id, subtask_id, alert_key) DO NOTHING
+       RETURNING id`,
+      [taskId, Number(subtaskId), "replica_down_overdue", title],
+    );
+
+    if (reserve.rows.length === 0) {
+      return;
+    }
+
+    console.log("Direct-call payload (finops.ts)", {
+      taskId,
+      subtaskId,
+      title,
+      user_ids: userIds,
+    });
+
+    const resp = await fetch("https://pulsealerts.mylapay.com/direct-call", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        receiver: "CRM_Switch",
+        title,
+        user_ids: userIds,
+      }),
+    });
+    if (!resp.ok) {
+      console.warn("Replica-down alert failed:", resp.status);
+    }
+  } catch (e) {
+    console.warn("Replica-down alert error:", (e as Error).message);
+  }
+}
+
 // Enhanced subtask status update with delay tracking and notifications
 router.patch(
   "/tasks/:taskId/subtasks/:subtaskId",
@@ -679,6 +789,20 @@ router.patch(
           delay_notes,
         );
 
+        // External alert: trigger only when marked overdue
+        if (status === "overdue") {
+          const title = `Take immediate action on the overdue subtask ${subtaskName}`;
+          const managerNames = Array.from(
+            new Set([
+              ...parseManagerNames(subtaskData.reporting_managers),
+              ...parseManagerNames(subtaskData.escalation_managers),
+              ...parseManagerNames(subtaskData.assigned_to),
+            ]),
+          );
+          const userIds = await getUserIdsFromNames(managerNames);
+          await sendReplicaDownAlertOnce(taskId, subtaskId, title, userIds);
+        }
+
         // Log user activity and update task status
         await logUserActivity(userName, taskId);
         await checkAndUpdateTaskStatus(taskId, userName);
@@ -709,6 +833,12 @@ router.patch(
             if (status === "delayed") {
               (subtask as any).delay_reason = delay_reason;
               (subtask as any).delay_notes = delay_notes;
+            }
+
+            // External alert for overdue in mock mode as well
+            if (status === "overdue") {
+              const title = `Take immediate action on the overdue subtask ${subtask.name}`;
+              await sendReplicaDownAlertOnce(taskId, subtaskId, title, []);
             }
 
             res.json({
@@ -864,12 +994,45 @@ async function handleStatusChangeNotifications(
   delayNotes?: string,
 ) {
   try {
-    const reportingManagers = JSON.parse(
-      subtaskData.reporting_managers || "[]",
-    );
-    const escalationManagers = JSON.parse(
-      subtaskData.escalation_managers || "[]",
-    );
+    const parseManagers = (val: any): string[] => {
+      if (!val) return [];
+      if (Array.isArray(val))
+        return val
+          .map(String)
+          .map((s) => s.trim())
+          .filter(Boolean);
+      if (typeof val === "string") {
+        let s = val.trim();
+        if (s.startsWith("{") && s.endsWith("}")) {
+          s = s.slice(1, -1);
+          return s
+            .split(",")
+            .map((x) => x.trim())
+            .map((x) => x.replace(/^\"|\"$/g, ""))
+            .filter(Boolean);
+        }
+        try {
+          const parsed = JSON.parse(s);
+          if (Array.isArray(parsed))
+            return parsed
+              .map(String)
+              .map((x) => x.trim())
+              .filter(Boolean);
+        } catch {}
+        return s
+          .split(",")
+          .map((x) => x.trim())
+          .filter(Boolean);
+      }
+      try {
+        return JSON.parse(val);
+      } catch {
+        return [];
+      }
+    };
+
+    const reportingManagers = parseManagers(subtaskData.reporting_managers);
+    const escalationManagers = parseManagers(subtaskData.escalation_managers);
 
     // Send delay notifications
     if (newStatus === "delayed") {
@@ -958,7 +1121,8 @@ async function checkAndUpdateTaskStatus(taskId: number, userName: string) {
 
       if (overdueSubtasks > 0) {
         newTaskStatus = "overdue";
-        statusDetails = `Task marked as overdue due to ${overdueSubtasks} overdue subtasks`;
+        // Do not create a notification entry for task-level overdue aggregation
+        statusDetails = "";
       } else if (delayedSubtasks > 0) {
         newTaskStatus = "delayed";
         statusDetails = `Task marked as delayed due to ${delayedSubtasks} delayed subtasks`;
@@ -980,14 +1144,16 @@ async function checkAndUpdateTaskStatus(taskId: number, userName: string) {
         [newTaskStatus, taskId],
       );
 
-      // Log the task status change
-      await logActivity(
-        taskId,
-        null,
-        "task_status_updated",
-        userName,
-        statusDetails,
-      );
+      // Log the task status change only when we have a meaningful, user-facing message
+      if (statusDetails) {
+        await logActivity(
+          taskId,
+          null,
+          "task_status_updated",
+          userName,
+          statusDetails,
+        );
+      }
     }
   } catch (error) {
     console.error("Error checking task status:", error);

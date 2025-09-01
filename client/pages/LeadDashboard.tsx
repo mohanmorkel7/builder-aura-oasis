@@ -798,7 +798,7 @@ export default function LeadDashboard() {
                                                   getStepColor(stepIndex),
                                                 opacity: 0.8,
                                               }}
-                                              title={`${stepData.stepName}: ${stepData.totalLeadsAtStep} leads currently in progress`}
+                                              title={`${stepData.stepName}: ${stepData.totalLeadsAtStep} leads in progress`}
                                             >
                                               {/* All bars represent current leads only */}
 
@@ -809,11 +809,23 @@ export default function LeadDashboard() {
                                                 </span>
                                               </div>
 
-                                              {/* Hover tooltip */}
-                                              <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20 pointer-events-none">
-                                                {stepData.stepName}:{" "}
-                                                {stepData.totalLeadsAtStep}{" "}
-                                                leads in progress
+                                              {/* Hover tooltip with lead names */}
+                                              <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-pre-wrap z-20 pointer-events-none max-w-xs">
+                                                {(() => {
+                                                  const names = leadProgressData
+                                                    .filter(
+                                                      (lead: any) =>
+                                                        lead.current_step
+                                                          ?.name ===
+                                                        stepData.stepName,
+                                                    )
+                                                    .map(
+                                                      (lead: any) =>
+                                                        lead.client_name,
+                                                    )
+                                                    .slice(0, 20);
+                                                  return `${stepData.stepName}: ${stepData.totalLeadsAtStep} leads\n- ${names.join("\n- ")}`;
+                                                })()}
                                               </div>
                                             </div>
                                           </div>

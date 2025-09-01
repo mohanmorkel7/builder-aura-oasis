@@ -891,27 +891,25 @@ export default function FollowUpTracker() {
                             </Button>
                           )}
 
-                          {followUp.status !== "completed" && (
-                            <Select
-                              value={followUp.status}
-                              onValueChange={(value) =>
-                                handleUpdateStatus(followUp.id, value)
-                              }
-                            >
-                              <SelectTrigger className="w-32">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="pending">Pending</SelectItem>
-                                <SelectItem value="in_progress">
-                                  In Progress
-                                </SelectItem>
-                                <SelectItem value="completed">
-                                  Completed
-                                </SelectItem>
-                              </SelectContent>
-                            </Select>
-                          )}
+                          <Select
+                            value={followUp.status}
+                            onValueChange={(value) =>
+                              handleUpdateStatus(followUp.id, value)
+                            }
+                          >
+                            <SelectTrigger className="w-32">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="pending">Pending</SelectItem>
+                              <SelectItem value="in_progress">
+                                In Progress
+                              </SelectItem>
+                              <SelectItem value="completed">
+                                Completed
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
 
                           {followUpType === "lead" ? (
                             <Button
